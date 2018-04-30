@@ -4,6 +4,20 @@ cmake_minimum_required(VERSION 2.8.4 FATAL_ERROR)
 # Name of this project
 project(QwAnalysis)
 
+message(STATUS "System name ${CMAKE_SYSTEM_NAME}")
+#MAC specific variable
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(CMAKE_MACOSX_RPATH ON)
+    set(CMAKE_SKIP_BUILD_RPATH FALSE)
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+    list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+    if("${isSystemDir}" STREQUAL "-1")
+        set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    endif()
+endif()
+
 # Local path for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
@@ -56,6 +70,8 @@ SET( Boost_NO_BOOST_CMAKE ON )
 find_package(Boost COMPONENTS program_options filesystem system regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIR})
+
+add_definitions(-std=c++11)
 
 # Create dictionaries for headers that contain "ClassDef" if ROOT version < 5.90
 if(ROOT_VERSION VERSION_LESS 5.90)
