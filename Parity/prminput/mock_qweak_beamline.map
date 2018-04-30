@@ -1,0 +1,75 @@
+
+ROC=31
+Bank=0x3102
+!
+!
+! module.type, module.num  chan.num, det.type, det.name, if unrotated then last column ->UNROTATED
+
+sample_size=16680
+!ADC11
+  VQWK, 0, 0,  bpmstripline,  QWK_0R06XP
+  VQWK, 0, 1,  bpmstripline,  QWK_0R06XM
+  VQWK, 0, 2,  bpmstripline,  QWK_0R06YP
+  VQWK, 0, 3,  bpmstripline,  QWK_0R06YM
+  VQWK, 0, 4,  bpmstripline,  QWK_0L06XP
+  VQWK, 0, 5,  bpmstripline,  QWK_0L06XM
+  VQWK, 0, 6,  bpmstripline,  QWK_0L06YP
+  VQWK, 0, 7,  bpmstripline,  QWK_0L06YM
+
+!ADC12
+  VQWK, 1, 0,  bcm,  QWK_BCM0L00
+  VQWK, 1, 1,  bcm,  QWK_BCM0L01
+  VQWK, 1, 2,  bcm,  QWK_BCM0L02
+  VQWK, 1, 3,  bcm,  QWK_BCM0L03
+  VQWK, 1, 4,  bcm,  QWK_BCM0L04
+  VQWK, 1, 5,  bcm,  QWK_BCM0L05
+  VQWK, 1, 6,  bcm,  QWK_BCM0L06
+  VQWK, 1, 7,  bcm,  QWK_BCM0L07
+
+!ADC13
+  VQWK, 2, 0,  bpmstripline,  QWK_1C12XP
+  VQWK, 2, 1,  bpmstripline,  QWK_1C12XM
+  VQWK, 2, 2,  bpmstripline,  QWK_1C12YP
+  VQWK, 2, 3,  bpmstripline,  QWK_1C12YM
+  VQWK, 2, 4,  bpmstripline,  QWK_1H04XP
+  VQWK, 2, 5,  bpmstripline,  QWK_1H04XM
+  VQWK, 2, 6,  bpmstripline,  QWK_1H04YP
+  VQWK, 2, 7,  bpmstripline,  QWK_1H04YM
+
+
+begin=combinedbpm
+name=bpm_target
+qwk_0r06, bpmstripline, 1.0, 1.0, 1.0
+qwk_0l06, bpmstripline, 1.0, 1.0, 1.0
+end=combinedbpm
+
+begin=combinedbcm
+name=bcm_target
+qwk_bcm0l00, bcm, 1.0
+qwk_bcm0l01, bcm, 1.0
+qwk_bcm0l02, bcm, 1.0
+qwk_bcm0l03, bcm, 1.0
+qwk_bcm0l04, bcm, 1.0
+qwk_bcm0l05, bcm, 1.0
+qwk_bcm0l06, bcm, 1.0
+qwk_bcm0l07, bcm, 1.0
+end=combinedbcm
+
+begin=energycalculator
+name=target_energy
+!name          type            ratios     property  
+ qwk_1c12,     bpmstripline,   0.00024,   beamposition 
+ bpm_target,   combinedbpm,   -0.00017,   targetbeamposition          
+ bpm_target,   combinedbpm,    2.6,       targetbeamangle
+end=energycalculator
+
+
+[PUBLISH]
+ q_targ,   combobcm,     bcm_target,     c
+ x_targ,   combobpm,     bpm_target,     x
+ y_targ,   combobpm,     bpm_target,     y
+ xp_targ,  combobpm,     bpm_target,     xp
+ yp_targ,  combobpm,     bpm_target,     yp
+ e_targ,   comboenergy,  target_energy,  e
+
+!END

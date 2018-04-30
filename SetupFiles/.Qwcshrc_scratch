@@ -1,0 +1,50 @@
+#*****************************************************************************
+#                         QWEAK environment configuration
+#
+#******************************************************************************
+#              ********** Expects cshell and alike !!! **********
+#******************************************************************************
+#
+# Author :   P. M. King (pking@jlab.org)
+# Date :     07 November 2006
+#
+# 
+#******************************************************************************
+
+if (! $?QWSCRATCH) then
+  if ( -e  /tmp/${USER}.QWSCRATCH) then
+    setenv  QWSCRATCH     `cat /tmp/${USER}.QWSCRATCH`
+    echo "Setting value of QWSCRATCH based on /tmp/${USER}.QWSCRATCH: ${QWSCRATCH}"
+  else
+    setenv  QWSCRATCH     ${HOME}/scratch
+    echo "Setting default value of QWSCRATCH to ${QWSCRATCH}"
+  endif
+endif
+
+if (! -d ${QWSCRATCH})  then
+  echo "Error: QWSCRATCH directory, "${QWSCRATCH}", still does not exist.\nThe Qweak analysis environment will not be properly configured\!\!"
+  exit 1
+endif
+
+
+
+
+# Main QWEAK directories :
+unsetenv QW_ROOTFILES
+unsetenv QW_TMP
+unsetenv QW_DATA
+unsetenv QW_PRMINPUT
+
+unsetenv QW_FIELDMAP
+unsetenv QW_SEARCHTREE
+unsetenv QW_LOOKUP
+
+setenv QW_ROOTFILES  ${QWSCRATCH}/rootfiles
+setenv QW_TMP        ${QWSCRATCH}/tmp
+setenv QW_DATA       ${QWSCRATCH}/data
+setenv QW_PRMINPUT   ${QWSCRATCH}/setupfiles
+
+setenv QW_FIELDMAP   ${QWSCRATCH}/calib
+setenv QW_SEARCHTREE ${QWSCRATCH}/tree
+setenv QW_LOOKUP     ${QWSCRATCH}/calib
+

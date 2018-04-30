@@ -1,0 +1,8 @@
+# This is the detectors map used for VQWK checks
+
+[QwBeamLine]
+ name = ISU_TestStand
+ map = isu_channels.map
+ param = isu_pedestals.map
+ eventcut = isu_eventcuts.in
+

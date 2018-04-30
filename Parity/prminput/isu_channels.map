@@ -1,0 +1,30 @@
+!**************************************************************************
+!  ADC CHANNELS IN ROC0
+!**************************************************************************
+
+
+!same sample size for ADCs in a given bank
+!  sample_size is the total number of samples,
+!  not samples per subblock
+sample_size=2000
+
+ROC=5
+!  Data is actually in bank 5 of ROC4, but subbanks of less than 31
+!  are interpreted as roc numbers.
+!  ROC=4
+!  Bank=0x5
+!  The VQWK readout starts in the second word in example ISU run 664.
+vqwk_buffer_offset=1
+
+!
+!
+! module.type, module.num  chan.num, det.type, det.name
+!ADC0
+   VQWK, 0, 0,  bcm,  QWK_MOD0CH0
+   VQWK, 0, 1,  bcm,  QWK_MOD0CH1
+   VQWK, 0, 2,  bcm,  QWK_MOD0CH2 
+   VQWK, 0, 3,  bcm,  QWK_MOD0CH3 
+   VQWK, 0, 4,  bcm,  QWK_MOD0CH4 
+   VQWK, 0, 5,  bcm,  QWK_MOD0CH5 
+   VQWK, 0, 6,  bcm,  QWK_MOD0CH6 
+   VQWK, 0, 7,  bcm,  QWK_MOD0CH7 

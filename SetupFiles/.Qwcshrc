@@ -1,0 +1,75 @@
+#*****************************************************************************
+#                         QWEAK environment configuration
+#
+#******************************************************************************
+#              ********** Expects cshell and alike !!! **********
+#******************************************************************************
+#
+# Author :   P. M. King (pking@jlab.org)
+# Date :     07 November 2006
+#
+#
+#******************************************************************************
+
+# Main QWEAK directories :
+unsetenv QW_LIB
+unsetenv QW_BIN
+
+set os_hw_name = `uname -s -m | sed 's/ /_/g'`
+if (-d ${QWANALYSIS}/${os_hw_name}) then
+    setenv QW_LIB   ${QWANALYSIS}/${os_hw_name}/lib
+    setenv QW_BIN   ${QWANALYSIS}/${os_hw_name}/bin
+else
+    setenv QW_LIB   ${QWANALYSIS}/lib
+    setenv QW_BIN   ${QWANALYSIS}/bin
+endif
+
+# Searching paths for binaries :
+if ($?PATH) then
+   setenv PATH  ${QW_BIN}:${ROOTSYS}/bin:${PATH}
+else
+   setenv PATH  ${QW_BIN}:${ROOTSYS}/bin
+endif
+
+# Searching paths for linker :
+if (-x ${ROOTSYS}/bin/root-config) then
+    set myrootlib=`root-config --libdir`
+else
+    set myrootlib=${ROOTSYS}/lib
+endif
+if ($?LD_LIBRARY_PATH) then
+   setenv LD_LIBRARY_PATH  ${QW_LIB}:${myrootlib}:${MYSQLPP_LIB_DIR}:${LD_LIBRARY_PATH}
+else
+   setenv LD_LIBRARY_PATH  ${QW_LIB}:${myrootlib}:${MYSQLPP_LIB_DIR}
+endif
+
+# Create alias for make when gmake is not found; the standard
+# GNUmakefile will try (and fail) to use gmake if this isn't done.
+if ( "`which gmake`" == "" ) then
+   alias make='make MAKE=make'
+endif
+
+# QWSHELL
+if (-f /bin/bash) then
+  setenv QWSHELL bash
+else if (-f /bin/ksh) then
+  setenv QWSHELL ksh
+else
+  echo \*\*\* WARNING : could not find either bash or ksh on system
+  echo '    ' --'>' NO MODULARITY : use \'gmake -f Makefile\' instead
+endif
+endif
+
+rehash
+
+#  Set aliases for the standard analyzers if they are are
+#  not execuatable after the rehash.
+#  Basically we're just creating an alias if the file isn't
+#  compiled yet, so that the user doesn't need to rehash
+#  after compiling.
+foreach exefile (qwanalysis_adc qwanalysis_beamline qwsimtracking  qwtracking)
+    unalias $exefile
+    if (! -x ${QW_BIN}/$exefile) then
+	alias $exefile ${QW_BIN}/$exefile
+    endif
+end

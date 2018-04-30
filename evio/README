@@ -1,0 +1,62 @@
+
+   CODA Classes
+   ============
+
+R. Michaels, October 2001
+
+These classes are layers on top of the standard CODA
+libraries 'evio' and 'ET'.  The purposes are:
+
+1. To provide an abstract interfaces so that methods
+   that open, read, and close a CODA file look the same
+   as for an ET connection.  This allows dynamic binding.
+
+2. To hide implementation details, and provide clear
+   error messages.  From a large choice of usages of ET
+   we choose a preferred mode where each user obtains
+   an independent sample of events from anywhere on
+   the network and cannot cause deadtime.
+
+-----------------------------------------------------
+Files:
+
+     README  -- this file
+     Makefile  -- to compile, type 'make'
+                  It was tested on Linux RedHat 6.2 
+                  and SunOS in the ADAQ environment.
+
+ CODA Classes by R. Michaels
+
+     THaCodaData.C    -- abstract class
+     THaCodaData.h
+
+     THaCodaFile.C    -- a file of CODA data
+     THaCodaFile.h
+
+     THaEtClient.C    -- an ET connection
+     THaEtClient.h
+
+  Test codes
+     tstcoda_main.C  -- the most interesting one, tests abstract interface
+     tstcoda_main_brief.C  -- a briefer version of tstcoda.
+     etclient_main.C
+     etclient_main_nonptr.C   -- uses ET class 
+     etclient_main_ptr.C      -- same, but uses pointer to class
+     tstio_main.C             -- read a CODA file
+
+  EVIO and ET stuff from CODA group (mostly untouched, updated Oct 2001)
+
+     et.h
+     evio.C
+     evio.h
+     swap_util.C
+     libevio.a      Evio library (compile with 'make libevio.a')
+                    This library can be used elsewhere, e.g. for
+                    the parity analyzer.  Just copy it where you need it.
+ 
+  Small sample of CODA data
+     snippet.dat
+
+
+
+

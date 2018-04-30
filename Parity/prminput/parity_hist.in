@@ -1,0 +1,470 @@
+#Beamline
+#   This is the histogram parameter input file for the QwHistogramHelper class
+#   "." is the wildcard here!!!! Please use "." only (no "*") since we 
+#   require the exact same length for two strings to match!!!!
+#   The values after the axis titles, if exist, are the min and max of
+#   the histogram filled weight.
+
+
+#name_title          type    x_nbins x_min   x_max   y_nbins y_min   y_max   xtitle  ytitle
+##############################################################################################
+###  Single event histograms
+delta_event_number            	TH1F	12      -1.5	10.5				EventNumber(actual-previous) Events
+delta_pattern_number   		TH1F	12	-1.5 	10.5 				PatternNumber(actual-previous) Counts
+pattern_phase   		TH1F	11	-1.5 	9.5 				PatternPhase Counts
+pat_phase   			TH1F	11	-1.5 	9.5 				PatternPhase Counts
+hel_pat_phase   		TH1F	11	-1.5 	9.5 				PatternPhase Counts
+helicity			TH1F	5 	-2.5	2.5 				Helicity	Counts
+pattern_polarity		TH1F	5 	-2.5	2.5 				Pattern_polarity Counts
+cleandata			TH1F	5 	-2.5	2.5 				Cleandata	Counts
+scandata1			TH1F	101 	-0.5	100.5 				Scandata1 	Counts
+scandata2			TH1F	101 	-0.5	100.5 				Scandata2	Counts
+scalerheader			TH1F	5 	-2.5	2.5 				ScalerHeader	Counts
+scalercounter			TH1F	189 	-2.5	186.5 				ScalerCounter	Counts
+mps_counter			TH1F	189 	-2.5	186.5 				ScalerCounter	Counts
+hel_mps_counter			TH1F	189 	-2.5	186.5 				ScalerCounter	Counts
+pat_counter			TH1F	189 	-2.5	186.5 				ScalerCounter	Counts
+hel_pat_counter			TH1F	189 	-2.5	186.5 				ScalerCounter	Counts
+userbit				TH1F	5 	-2.5	2.5 				Userbit 	Counts
+input_register			TH1F  12      -1.5	10.5				inputregister	Events	
+output_register			TH1F  12      -1.5	10.5				outputregister	Events	
+hel_cleandata			TH1F	5 	-2.5	2.5 				Cleandata	Counts
+hel_scandata1			TH1F	101 	-0.5	100.5 				Scandata1 	Counts
+hel_scandata2			TH1F	101 	-0.5	100.5 				Scandata2	Counts
+hel_scalerheader		TH1F	5 	-2.5	2.5 				ScalerHeader	Counts
+hel_scalercounter		TH1F	189 	-2.5	186.5 				ScalerCounter	Counts
+hel_userbit			TH1F	5 	-2.5	2.5 				Userbit 	Counts
+hel_input_register		TH1F    12      -1.5	10.5				inputregister	Events
+hel_output_register		TH1F    12      -1.5	10.5				inputregister	Events
+
+
+
+###  Beam modulation histograms
+bmod_qwk_target.*				TProfile	371	-5.5	365.5	 -10 10 		Phase/deg	Position
+bmod_qwk_bpm.*				TProfile	371	-5.5	365.5	 -10 10 		Phase/deg	Position
+bmod_qwk_bcm.*				TProfile	371	-5.5	365.5	 0 200 		Phase/deg	Current
+bmod_.*				TProfile	371	-5.5	365.5	 -10000 10000 		Phase/deg	Value
+
+
+###  New MD yield histograms 
+
+qwk_md...._hw			TH1F	10000	-0.08	0.08				V/#muA	Events
+qwk_md...._hw_raw		TH1F	10000	-6.1e7	6.1e7				Samples	Events
+qwk_md...._block.		TH1F	10000	-0.08	0.08				V/#muA	Events
+qwk_md...._block._raw		TH1F	10000	-6.1e7	6.1e7				Samples	Events
+
+qwk_md......._hw		TH1F	10000	-0.08	0.08				V/#muA	Events
+qwk_md......._hw_raw		TH1F	10000	-6.1e7	6.1e7				Samples	Events
+qwk_md......._block.		TH1F	10000	-0.08	0.08				V/#muA	Events
+qwk_md......._block._raw	TH1F	10000	-6.1e7	6.1e7				Samples	Events
+
+qwk_md._qwk_md._hw		TH1F	10000	-0.08	0.08				V/#muA	Events
+qwk_md._qwk_md._hw_raw		TH1F	10000	-6.1e7	6.1e7				Samples	Events
+qwk_md._qwk_md._block.		TH1F	10000	-0.08	0.08				V/#muA	Events
+qwk_md._qwk_md._block._raw	TH1F	10000	-6.1e7	6.1e7				Samples	Events
+
+qwk_mdallbars_hw		TH1F	10000	-0.08	0.08				V/#muA	Events
+qwk_mdallbars_hw_raw		TH1F	10000	-6.1e7	6.1e7				Samples	Events
+qwk_mdallbars_block.		TH1F	10000	-0.08	0.08				V/#muA	Events
+qwk_mdallbars_block._raw	TH1F	10000	-6.1e7	6.1e7				Samples	Events
+
+qwk_mdevenbars_hw		TH1F	10000	-0.08	0.08				V/#muA	Events
+qwk_mdevenbars_hw_raw		TH1F	10000	-6.1e7	6.1e7				Samples	Events
+qwk_mdevenbars_block.		TH1F	10000	-0.08	0.08				V/#muA	Events
+qwk_mdevenbars_block._raw	TH1F	10000	-6.1e7	6.1e7				Samples	Events
+
+qwk_mdoddbars_hw		TH1F	10000	-0.08	0.08				V/#muA	Events
+qwk_mdoddbars_hw_raw		TH1F	10000	-6.1e7	6.1e7				Samples	Events
+qwk_mdoddbars_block.		TH1F	10000	-0.08	0.08				V/#muA	Events
+qwk_mdoddbars_block._raw	TH1F	10000	-6.1e7	6.1e7				Samples	Events
+
+
+asym_qwk_md...._hw		TH1F	1001	0	0				Asymmetry	Events
+asym_qwk_md...._block.		TH1F	1001	0	0				Asymmetry	Events
+
+asym_qwk_md......._hw		TH1F	1001	0	0				Asymmetry	Events
+asym_qwk_md......._block.	TH1F	1001	0	0				Asymmetry	Events
+
+asym_qwk_md._qwk_md._hw		TH1F	1001	0	0				Asymmetry	Events
+asym_qwk_md._qwk_md._block.	TH1F	1001	0	0				Asymmetry	Events
+
+asym_qwk_mdallbars_hw		TH1F	1001	0	0				Asymmetry	Events
+asym_qwk_mdallbars_block.	TH1F	1001	0	0				Asymmetry	Events
+
+asym_qwk_mdevenbars_hw		TH1F	1001	0	0				Asymmetry       Events
+asym_qwk_mdevenbars_block.	TH1F	1001	0	0				Asymmetry       Events
+						 	 				                      
+asym_qwk_mdoddbars_hw		TH1F	1001	0	0				Asymmetry       Events
+asym_qwk_mdoddbars_block.	TH1F	1001	0	0				Asymmetry       Events
+
+
+###  Auxilliary/Background detector
+qwk_pmtled_hw                   TH1F	1001	0 0				V/#muA	Events
+qwk_pmtled_block.               TH1F	1001	0 0				V/#muA	Events
+qwk_pmtonl_hw                   TH1F	1001	0 0				V/#muA	Events
+qwk_pmtonl_block.               TH1F	1001	0 0				V/#muA	Events
+qwk_pmtltg_hw                   TH1F	1001	0 0				V/#muA	Events
+qwk_pmtltg_block.               TH1F	1001	0 0				V/#muA	Events
+qwk_isourc_hw                   TH1F	1001	0 0				V/#muA	Events
+qwk_isourc_block.               TH1F	1001	0 0				V/#muA	Events
+qwk_preamp_hw                   TH1F	1001	0 0				V/#muA	Events
+qwk_preamp_block.               TH1F	1001	0 0				V/#muA	Events
+qwk_cagesr_hw                   TH1F	1001	0 0				V/#muA	Events
+qwk_cagesr_block.               TH1F	1001	0 0				V/#muA	Events
+
+asym_qwk_pmtled_hw              TH1F    1001   0 0	        	Asymmetry Events
+asym_qwk_pmtled_block.          TH1F    1001   0 0   			Asymmetry Events
+asym_qwk_pmtonl_hw              TH1F    1001   0 0   			Asymmetry Events
+asym_qwk_pmtonl_block.          TH1F    1001   0 0   			Asymmetry Events
+asym_qwk_pmtltg_hw              TH1F    1001   0 0   			Asymmetry Events
+asym_qwk_pmtltg_block.          TH1F    1001   0 0   			Asymmetry Events
+asym_qwk_isourc_hw              TH1F    1001   0 0   			Asymmetry Events
+asym_qwk_isourc_block.          TH1F    1001   0 0   			Asymmetry Events
+asym_qwk_preamp_hw              TH1F    1001   0 0   			Asymmetry Events
+asym_qwk_preamp_block.          TH1F    1001   0 0   			Asymmetry Events
+asym_qwk_cagesr_hw              TH1F    1001   0 0   			Asymmetry Events
+asym_qwk_cagesr_block.          TH1F    1001   0 0   			Asymmetry Events
+
+###  New Lumi histograms 
+
+qwk_dslumi._hw			TH1F	10000	0.01	0.03				V/#muA	Events
+qwk_dslumi._hw_raw		TH1F	10000	0		3.1e7				Samples	Events
+qwk_uslumi...._hw		TH1F	10000	0.00	0.05				V/#muA	Events
+qwk_uslumi...._hw_raw	TH1F	10000	0		3.0e7				Samples Events
+
+asym_qwk_dslumi._hw		TH1F	10000	-0.2	0.2				Asymmetry	Events
+asym_qwk_uslumi...._hw	TH1F	10000	-0.2	0.2				Asymmetry	Events
+
+
+
+###  Scanner histograms
+
+.*scanner_vqwk_power		TH1F	4096	0.5		4096.5			vqwk_power	Events
+.*scanner_front_adc		TH1F	4096	0.5		4096.5			front_adc	Events
+.*scanner_back__adc		TH1F	4096	0.5		4096.5			back__adc	Events
+.*scanner_power_adc		TH1F	4096	0.5		4096.5			power_adc	Events
+.*scanner_pos_x_adc		TH1F	4096	0.5		4096.5			pos_x_adc	Events
+.*scanner_pos_y_adc		TH1F	4096	0.5		4096.5			pos_y_adc	Events
+
+.*scanner_front_tdc		TH1F	4096	0.5		4096.5			front_tdc	Events
+.*scanner_back__tdc		TH1F	4096	0.5		4096.5			back__tdc	Events
+.*scanner_front_f1		TH1F	4096	0.5		4096.5			front_f1	Events
+.*scanner_back__f1		TH1F	4096	0.5		4096.5			back__f1	Events
+.*scanner_coinc_f1		TH1F	4096	0.5		4096.5			coinc_f1	Events
+.*scanner_ref_t_f1		TH1F	4096	0.5		4096.5			ref_t_f1	Events
+
+.*scanner_front_sca		TH1F	1500	0.5		1500.5			rate[kps]	Events
+.*scanner_back__sca		TH1F	1500	0.5		1500.5			rate[kps]	Events
+.*scanner_coinc_sca		TH1F	1500	0.5		1500.5			rate[kps]	Events
+.*scanner_randm_sca		TH1F	1500	0.5		1500.5			rate[kps]	Events
+
+.*scanner_bg_chrlt_sca		TH1F	1500	0.5		1500.5			rate[kps]	Events
+.*scanner_bg_wilbr_sca		TH1F	1500	0.5		1500.5			rate[kps]	Events
+
+.*scanner_power_vqwk		TH1F	1000	0.0		5.0e9			power_vqwk	Events
+.*scanner_pos_x_vqwk		TH1F	1000	0.0		5.0e9			pos_x_vqwk	Events
+.*scanner_pos_y_vqwk		TH1F	1000	0.0		5.0e9			pos_y_vqwk	Events
+.*scanner_spare.		TH1F	2001	-5.0e9		5.0e9			spare		Events
+
+.*scanner_position_x		TH1F	2000	-60.0		60.0			X[cm]		Events
+.*scanner_position_y		TH1F	2000	-350.0		-310.0			Y[cm]		Events
+.*scanner_ref_posi_x		TH1F	2000	-60.0		60.0			X[cm]		Events
+.*scanner_ref_posi_y		TH1F	2000	-350.0		-310.0			Y[cm]		Events
+
+.*scanner_rate_map_.m 		TH2F 	220 	-55.0 	55.0 	400	-350.0	-310.0	X[cm] 	Y[cm]
+
+
+###  Compton Electron histograms
+
+Compton_eDet_Accum_Raw_Plane0	TH1F	96    -0.5	95.5	Strips	Hits
+Compton_eDet_Accum_Plane0	TH1F	96    -0.5  	95.5	Strips	Hits
+Compton_eDet_Evt_Raw_Plane0	TH1F	96    -0.5  	95.5	Strips	Hits
+Compton_eDet_Evt_Plane0		TH1F	96    -0.5  	95.5	Strips	Hits
+Compton_eDet_Accum_Raw_Plane1	TH1F	96    -0.5  	95.5	Strips	Hits
+Compton_eDet_Accum_Plane1	TH1F	96    -0.5  	95.5	Strips	Hits
+Compton_eDet_Evt_Raw_Plane1	TH1F	96    -0.5  	95.5	Strips	Hits
+Compton_eDet_Evt_Plane1		TH1F	96    -0.5  	95.5	Strips	Hits
+Compton_eDet_Accum_Raw_Plane2	TH1F	96    -0.5  	95.5	Strips	Hits
+Compton_eDet_Accum_Plane2	TH1F	96    -0.5  	95.5	Strips	Hits
+Compton_eDet_Evt_Raw_Plane2	TH1F	96    -0.5  	95.5	Strips	Hits
+Compton_eDet_Evt_Plane2		TH1F	96    -0.5  	95.5	Strips	Hits
+Compton_eDet_Accum_Raw_Plane3	TH1F	96    -0.5  	95.5	Strips	Hits
+Compton_eDet_Accum_Plane3	TH1F	96    -0.5  	95.5	Strips	Hits
+Compton_eDet_Evt_Raw_Plane3	TH1F	96    -0.5  	95.5	Strips	Hits
+Compton_eDet_Evt_Plane3		TH1F	96    -0.5  	95.5	Strips	Hits
+
+### Halo monitor histograms
+sca_halo3			TH1F
+sca_halo4			TH1F
+sca_halo5			TH1F
+sca_halo6			TH1F
+sca_halo7			TH1F
+sca_halo8			TH1F
+sca_halo9			TH1F
+sca_halo10			TH1F
+
+yield_sca_halo3			TH1F
+yield_sca_halo4			TH1F
+yield_sca_halo5			TH1F
+yield_sca_halo6			TH1F
+yield_sca_halo7			TH1F
+yield_sca_halo8			TH1F
+yield_sca_halo9			TH1F
+yield_sca_halo10		TH1F
+
+asym_sca_halo3			TH1F
+asym_sca_halo4			TH1F
+asym_sca_halo5			TH1F
+asym_sca_halo6			TH1F
+asym_sca_halo7			TH1F
+asym_sca_halo8			TH1F
+asym_sca_halo9			TH1F
+asym_sca_halo10			TH1F
+
+### downstream lumi scaler histograms
+sca_dslumi1			TH1F	100	0	1e6	Rate	Events
+sca_dslumi2			TH1F	100	0	1e6	Rate	Events
+sca_dslumi3			TH1F	100	0	1e6	Rate	Events
+sca_dslumi4			TH1F	100	0	1e6	Rate	Events
+sca_dslumi5			TH1F	100	0	1e6	Rate	Events
+sca_dslumi6			TH1F	100	0	1e6	Rate	Events
+sca_dslumi7			TH1F	100	0	1e6	Rate	Events
+sca_dslumi8			TH1F	100	0	1e6	Rate	Events
+
+yield_sca_dslumi1		TH1F
+yield_sca_dslumi2		TH1F
+yield_sca_dslumi3		TH1F
+yield_sca_dslumi4		TH1F
+yield_sca_dslumi5		TH1F
+yield_sca_dslumi6		TH1F
+yield_sca_dslumi7		TH1F
+yield_sca_dslumi8		TH1F
+
+asym_sca_dslumi1		TH1F
+asym_sca_dslumi2		TH1F
+asym_sca_dslumi3		TH1F
+asym_sca_dslumi4		TH1F
+asym_sca_dslumi5		TH1F
+asym_sca_dslumi6		TH1F
+asym_sca_dslumi7		TH1F
+asym_sca_dslumi8		TH1F
+
+### upstream lumi scaler histograms
+sca_uslumi1neg			TH1F
+sca_uslumi1pos			TH1F
+sca_uslumi3neg			TH1F
+sca_uslumi3pos			TH1F
+sca_uslumi5neg			TH1F
+sca_uslumi5pos			TH1F
+sca_uslumi7neg			TH1F
+sca_uslumi7pos			TH1F
+
+yield_sca_uslumi1neg		TH1F
+yield_sca_uslumi1pos		TH1F
+yield_sca_uslumi3neg		TH1F
+yield_sca_uslumi3pos		TH1F
+yield_sca_uslumi5neg		TH1F
+yield_sca_uslumi5pos		TH1F
+yield_sca_uslumi7neg		TH1F
+yield_sca_uslumi7pos		TH1F
+
+asym_sca_uslumi1neg		TH1F
+asym_sca_uslumi1pos		TH1F
+asym_sca_uslumi3neg		TH1F
+asym_sca_uslumi3pos		TH1F
+asym_sca_uslumi5neg		TH1F
+asym_sca_uslumi5pos		TH1F
+asym_sca_uslumi7neg		TH1F
+asym_sca_uslumi7pos		TH1F
+
+### tracking scaler histograms
+R.DL..				TH1F
+
+######################Beamline##############################
+
+###MPS-yield-BCM########
+qwk_bcm._hw		TH1F	1001	-1.0e1	2.0e2		Yield 		Entries
+qwk_bcm._block.		TH1F	1001	-1.0e2	2.0e2		Yield 		Entries
+qwk_bcm._dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+qwk_charge_hw		TH1F	1001	-1.0e1	2.0e2		Yield 		Entries
+qwk_charge_block.	TH1F	1001	-1.0e2	2.0e2		Yield 		Entries
+qwk_charge_dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+
+###asym-BCM########
+asym_qwk_bcm._hw	TH1F	1001	-2.0e-2	2.0e-2		Asym 		Entries
+asym_qwk_bcm._block.	TH1F	1001	-2.0e-2	2.0e-2		Asym 		Entries
+asym_qwk_bcm._dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+asym_qwk_charge_hw	TH1F	1001	-2.0e-2	2.0e-2		Asym 		Entries
+asym_qwk_charge_block.	TH1F	1001	-2.0e-2	2.0e-2		Asym 		Entries
+asym_qwk_charge_dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+###HEL-yield-BCM########
+yield_qwk_bcm._hw	TH1F	1001	-1.0e1	2.0e2		Yield 		Entries
+yield_qwk_bcm._block.	TH1F	1001	-1.0e2	2.0e2		Yield 		Entries
+yield_qwk_bcm._dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+yield_qwk_charge_hw		TH1F	1001	-1.0e1	2.0e2		Yield 		Entries
+yield_qwk_charge_block.		TH1F	1001	-1.0e2	2.0e2		Yield 		Entries
+yield_qwk_charge_dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+
+
+###asym-BPM-effcharge########
+asym_qwk_bpm.*_EffectiveCharge_block.	TH1F	1001	-2.0e-2	2.0e-2		Eff-Asym	Entries
+asym_qwk_bpm.*_EffectiveCharge_hw	TH1F	1001	-2.0e-2	2.0e-2		Eff-Asym	Entries
+asym_qwk_bpm.*_EffectiveCharge_dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+###Combo-BPM#############
+asym_qwk_target_EffectiveCharge_block.	TH1F	1001	-2.0e-2	2.0e-2		Eff-Asym	Entries
+asym_qwk_target_EffectiveCharge_hw	TH1F	1001	-2.0e-2	2.0e-2		Eff-Asym	Entries
+asym_qwk_target_EffectiveCharge_hw	TH1F	101	-1.0	128          	ErrorCode	Events
+
+
+###diff-BPM-Rel########
+diff_qwk_bpm.*Rel._block.	TH1F	1001	-5.0e-2	5.0e-2		Diff(mm)	Entries
+diff_qwk_bpm.*Rel._hw		TH1F	1001	-5.0e-2	5.0e-2		Diff(mm)	Entriesw
+diff_qwk_bpm.*Rel._dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+
+
+###diff-BPM-X/Y########
+diff_qwk_bpm.*._block.		TH1F	1001	0	0		Diff(mm)	Entries
+diff_qwk_bpm.*._hw		TH1F	1001	0	0		Diff(mm)	Entries			
+diff_qwk_bpm.*._dev_err		TH1F	101	-1.0	128          	ErrorCode	Events
+
+###Combo-BPM#############
+diff_qwk_target._block.		TH1F	1001	 0	0		Diff(mm)	Entries
+diff_qwk_target._hw		TH1F	1001	 0	0		Diff(mm)	Entriesw
+diff_qwk_target._dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+diff_qwk_target.Intercept_block.	TH1F	1001	-5.0e-2	5.0e-2		Diff(mm)	Entries
+diff_qwk_target.Intercept_hw		TH1F	1001	-5.0e-2	5.0e-2		Diff(mm)	Entries
+diff_qwk_target.Intercept_dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+diff_qwk_target.Slope_block.		TH1F	1001	-1.0e-1	1.0e-1		Diff		Entries
+diff_qwk_target.Slope_hw		TH1F	1001	-1.0e-1	1.0e-1		Diff		Entries
+diff_qwk_target.Slope_dev_err		TH1F	101	-1.0	128          	ErrorCode	Events
+
+#####Combo-energy#############
+diff_qwk_energy_block.		TH1F	1001	-1.0e-3		1.0e-3		Diff		Entries
+diff_qwk_energy_hw		TH1F	1001	-1.0e-3		1.0e-3		Diff		Entries
+diff_qwk_energy_dev_err		TH1F	101	-1.0		128          	ErrorCode	Events
+
+
+###yield-BPM-Rel########
+yield_qwk_bpm.*Rel._block.	TH1F	1001	-5.0	5.0		RelPos(mm)	Entries
+yield_qwk_bpm.*Rel._hw		TH1F	1001	-5.0	5.0		RelPos(mm)	Entries
+yield_qwk_bpm.*Rel._dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+###yield-BPM-effcharge########
+yield_qwk_bpm.*_EffectiveCharge_block.	TH1F	10001	-5e4	3.0e5		Eff-Chg		Entries
+yield_qwk_bpm.*_EffectiveCharge_hw	TH1F	10001	-5e4	3.0e5		Eff-Chg		Entries
+yield_qwk_bpm.*_EffectiveCharge_dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+###Combo-BPM#############
+yield_qwk_target_EffectiveCharge_block.		TH1F	1001	-5e4	3.0e5	Eff-Chg		Entries
+yield_qwk_target_EffectiveCharge_hw		TH1F	1001	-5e4	3.0e5	Eff-Chg		Entries
+yield_qwk_target_EffectiveCharge_dev_err	TH1F	101	-1.0	128    	ErrorCode	Events
+
+
+###HEL-BPM-yield########
+yield_qwk_bpm.*._block.			TH1F	1001	-5.0	5.0		AbsPos(mm)	Entries
+yield_qwk_bpm.*._hw			TH1F	1001	-5.0	5.0		AbsPos(mm)	Entries
+yield_qwk_bpm.*._dev_err		TH1F	101	-1.0	128          	ErrorCode	Events
+
+###Combo-BPM#############
+yield_qwk_target._block.		TH1F	1001	-5.0	5.0		Diff(mm)	Entries
+yield_qwk_target._hw			TH1F	1001	-5.0	5.0		Diff(mm)	Entriesw
+yield_qwk_target._dev_err		TH1F	101	-1.0	128          	ErrorCode	Events
+
+yield_qwk_target.Intercept_block.	TH1F	1001	-5.0e2	5.0e2		Intcp(mm)	Entries
+yield_qwk_target.Intercept_hw		TH1F	1001	-5.0e2	5.0e2		Intcp(mm)	Entries
+yield_qwk_target.Intercept_dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+yield_qwk_target.Slope_block.		TH1F	1001	-1.0	1.0		slope		Entries			
+yield_qwk_target.Slope_hw		TH1F	1001	-1.0	1.0		slope		Entries	
+yield_qwk_target.Slope_dev_err		TH1F	101	-1.0	128          	ErrorCode	Events
+
+#####Combo-energy#############
+yield_qwk_energy_block.			TH1F	1001	-1.0e-3	1.0e-3		Energy		Entries		
+yield_qwk_energy_hw			TH1F	1001	-1.0e-3	1.0e-3		Energy		Entries
+yield_qwk_energy_dev_err		TH1F	101	-1.0	128          	ErrorCode	Events
+
+
+
+###MPS-BPM-Abs-yield########
+qwk_bpm.*._block.		TH1F	1001	-5.0	5.0		AbsPos(mm)	Entries
+qwk_bpm.*._hw			TH1F	1001	-5.0	5.0		AbsPos(mm)	Entries	
+qwk_bpm.*._dev_err		TH1F	101	-1.0	128          	ErrorCode	Events
+
+
+###Combo-BPM#############
+qwk_target._block.		TH1F	1001	-5.0	5.0		AbsPos(mm)	Entries
+qwk_target._hw			TH1F	1001	-5.0	5.0		AbsPos(mm)	Entriesw
+qwk_target._dev_err		TH1F	101	-1.0	128          	ErrorCode	Events
+
+qwk_target.Intercept_block.	TH1F	1001	-5.0e2	5.0e2		Intcp(mm)	Entries
+qwk_target.Intercept_hw		TH1F	1001	-5.0e2	5.0e2		Intcp(mm)	Entries
+qwk_target.Intercept_dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+qwk_target.Slope_block.		TH1F	1001	-1.0	1.0		slope		Entries	
+qwk_target.Slope_hw		TH1F	1001	-1.0	1.0		slope		Entries
+qwk_target.Slope_dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+#####Combo-energy#############
+qwk_energy_block.		TH1F	1001	-1.0e-3		1.0e-3		Energy		Entries	
+qwk_energy_hw			TH1F	1001	-1.0e-3		1.0e-3		Energy		Entries	
+qwk_energy_dev_err		TH1F	101	-1.0		128          	ErrorCode	Events
+
+
+###MPS-yield-BPM-Rel########
+qwk_bpm.*Rel._block.		TH1F	1001	-5.0	5.0		RelPos(mm)	Entries
+qwk_bpm.*Rel._hw		TH1F	1001	-5.0	5.0		RelPos(mm)	Entries
+qwk_bpm.*Rel._dev_err		TH1F	101	-1.0	128          	ErrorCode	Events
+
+
+###MPS-yield-BPM-effcharge########
+qwk_bpm.*_EffectiveCharge_block.	TH1F	1001	-5e4	3.0e5		Eff-Chg		Entries
+qwk_bpm.*_EffectiveCharge_hw		TH1F	1001	-5e4	3.0e5		Eff-Chg		Entries
+qwk_bpm.*_EffectiveCharge_dev_err	TH1F	101	-1.0	128          	ErrorCode	Events
+
+
+###MPS-yield-Combo-BPM#############
+qwk_target_EffectiveCharge_block.	TH1F	1001	-5e4	3.0e5	Eff-Chg		Entries
+qwk_target_EffectiveCharge_hw		TH1F	1001	-5e4	3.0e5	Eff-Chg		Entries
+qwk_target_EffectiveCharge_dev_err	TH1F	101	-1.0	128    	ErrorCode	Events
+
+
+
+###########################################
+#  VQWK and scaler wildcard names
+#  Do not add any other specific names below these.
+###########################################
+qwk_md.*_dev_err	TH1F	101	-1.0	128          ErrorCode	Events
+yield_qwk_md.*_dev_err	TH1F	101	-1.0	128          ErrorCode	Events
+asym_qwk_md.*_dev_err	TH1F	101	-1.0	128          ErrorCode	Events
+qwk_.*_dev_err		TH1F	101	-1.0	128          ErrorCode	Events
+.*_dev_err		TH1F	101	-1.0	128          ErrorCode	Events
+qwk_.*			TH1F	1000	-5.0e2	5.0e2		Counts Events
+yield_qwk_.*		TH1F	1000	-5.0e2	5.0e2		Counts Events
+asym.*_qwk_.*		TH1F	1000	-5.0e2	5.0e2		Counts Events
+diff.*_qwk_.*		TH1F	1000	-5.0e2	5.0e2		Counts Events
+
+sca_.*			TH1F
+yield_sca_.*		TH1F
+asym.*_sca_.*		TH1F
+diff.*_sca_.*		TH1F
+
+###########################################
+#  Adding some fully wildcarded histogram names.
+#  Do not add any other specific names below these.
+###########################################
+.*_block._raw		TH1F	1000	-5.0e9	5.0e9		Counts		Events
+.*_block.    		TH1F	1000	-5.0e9	5.0e9		CalibratedCounts Events
+.*_.w_raw		TH1F	1000	-5.0e9	5.0e9		Counts		Events
+.*_.w			TH1F	1000	-5.0e9	5.0e9		CalibratedCounts Events
+.*_sw-hw_raw		TH1F	1000	-5.0e2	5.0e2		Counts		Events
+

@@ -1,0 +1,72 @@
+#!/bin/bash
+#
+
+if ($?QWSCRATCH) then
+  ##  The QWSCRATCH variable is defined.
+  if (-d ${QWSCRATCH}) then
+    echo QWSCRATCH already defined: ${QWSCRATCH}
+  else
+    ##  Here we should tell the user that their
+    ##  QWSCRATCH doesn't exist and ask if they
+    ##  want to specify a different one.
+    ##
+    ##  For now, do nothing.
+  endif
+else
+  ##  Here we should ask the user if they want to
+  ##  use an existing QWSCRATCH, create a new one
+  ##  someplace specific, or use the default value.
+  ##
+  ##  For now, just force the default vaule.
+  setenv  QWSCRATCH   ${HOME}/scratch
+
+  echo "Setting QWSCRATCH to " ${QWSCRATCH}
+  ##  Save the value of QWSCRATCH in a temporary file  
+  echo ${QWSCRATCH} >! /tmp/${USER}.QWSCRATCH
+endif
+
+if (! -d ${QWSCRATCH})  then
+  echo "\*\*\*\*  Creating QWSCRATCH directory: "${QWSCRATCH}
+  mkdir -p ${QWSCRATCH}
+endif
+
+
+###  Check the structure under ${QWSCRATCH} and create
+###  directories if needed.
+if (-d ${QWSCRATCH})  then
+  echo "Checking directory tree under "${QWSCRATCH}:
+    echo `ls $QWSCRATCH` 
+    if (! -d ${QWSCRATCH}/calib)  then
+      echo \*\*\*\* subdirectory calib missing, creating
+      mkdir -p ${QWSCRATCH}/calib
+    endif
+    if (! -d ${QWSCRATCH}/data)  then
+      echo \*\*\*\* subdirectory data missing, creating
+      mkdir -p ${QWSCRATCH}/data
+    endif
+    if (! -d ${QWSCRATCH}/rootfiles)  then
+      echo \*\*\*\* subdirectory rootfiles missing, creating
+      mkdir -p ${QWSCRATCH}/rootfiles
+    endif
+    if (! -d ${QWSCRATCH}/scripts)  then
+      echo \*\*\*\* subdirectory scripts missing, creating
+      mkdir -p ${QWSCRATCH}/scripts
+    endif
+    if (! -d ${QWSCRATCH}/setupfiles)  then
+      echo \*\*\*\* subdirectory setupfiles missing, creating
+      mkdir -p ${QWSCRATCH}/setupfiles
+    endif
+    if (! -d ${QWSCRATCH}/tmp)  then
+      echo \*\*\*\* subdirectory tmp missing, creating
+      mkdir -p ${QWSCRATCH}/tmp
+    endif
+    if (! -d ${QWSCRATCH}/tree)  then
+      echo \*\*\*\* subdirectory tree missing, creating
+      mkdir -p ${QWSCRATCH}/tree
+    endif
+    if (! -d ${QWSCRATCH}/work)  then
+      echo \*\*\*\* subdirectory work missing, creating
+      mkdir -p ${QWSCRATCH}/work
+    endif
+endif
+

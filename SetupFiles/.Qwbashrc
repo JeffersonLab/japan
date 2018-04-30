@@ -1,0 +1,62 @@
+#*****************************************************************************
+#                         QWEAK environment configuration
+#
+#******************************************************************************
+#              ********** Expects bash and alike !!! **********
+#******************************************************************************
+#
+# Author :   P. M. King (pking@jlab.org)
+# Date :     07 November 2006
+#
+#
+#******************************************************************************
+
+# Main QWEAK directories :
+unset QW_LIB
+unset QW_BIN
+
+export OS_HW_NAME="`uname -s -m | sed 's/ /_/g'`"
+if [ -d "${QWANALYSIS}/${OS_HW_NAME}" ] ; then
+   export QW_LIB="${QWANALYSIS}/${OS_HW_NAME}/lib"
+   export QW_BIN="${QWANALYSIS}/${OS_HW_NAME}/bin"
+else
+   export QW_LIB="${QWANALYSIS}/lib"
+   export QW_BIN="${QWANALYSIS}/bin"
+fi
+
+# Searching paths for binaries :
+if [[ -n "$PATH" ]]; then
+   export PATH=${QW_BIN}:${ROOTSYS}/bin:${PATH}
+else
+   export PATH=${QW_BIN}:${ROOTSYS}/bin
+fi
+
+# Searching paths for linker :
+if [ -x "${ROOTSYS}/bin/root-config" ] ; then
+    myrootlib=`root-config --libdir`
+else
+    myrootlib=${ROOTSYS}/lib
+fi
+if [[ -n "$LD_LIBRARY_PATH" ]]; then
+   export LD_LIBRARY_PATH=${QW_LIB}:${myrootlib}:${MYSQLPP_LIB_DIR}:${LD_LIBRARY_PATH}
+else
+   export LD_LIBRARY_PATH=${QW_LIB}:${myrootlib}:${MYSQLPP_LIB_DIR}
+fi
+
+# Create alias for make when gmake is not found; the standard
+# GNUmakefile will try (and fail) to use gmake if this isn't done.
+if [[ -z "`which gmake`" ]]; then
+   alias make='make MAKE=make'
+fi
+
+# QWSHELL
+if [[ -f /bin/bash ]]; then
+   export QWSHELL=/bin/bash
+else
+   if [[ -f /bin/ksh ]]; then
+       export QWSHELL=ksh
+   else
+       echo -e "*** WARNING : could not find either bash or ksh on system"
+       echo -e "'    ' --'>' NO MODULARITY : use \'gmake -f Makefile\' instead"
+   fi
+fi

@@ -1,0 +1,15 @@
+ROC=6
+Bank=0x6110
+sample_size=16680
+!
+!
+! module.type, module.num, module.chan, det.type, det.name
+  VQWK, 0, 0,  IntegrationPMT,  S1_R1_Tr1
+!!VQWK, 0, 1,  IntegrationPMT,  S1_R1_Open
+!!VQWK, 0, 2,  IntegrationPMT,  S1_R1_Tr2
+!!VQWK, 0, 3,  IntegrationPMT,  S1_R1_Closed
+!!VQWK, 0, 4,  IntegrationPMT,  S1_R2_Tr1
+!!VQWK, 0, 5,  IntegrationPMT,  S1_R2_Open
+!!VQWK, 0, 6,  IntegrationPMT,  S1_R2_Tr2
+!!VQWK, 0, 7,  IntegrationPMT,  S1_R2_Closed
+

@@ -1,0 +1,252 @@
+#!/bin/bash
+#
+
+orig_dir=`pwd`
+if [[ -x $0 ]]; then
+    ##  Check to see if $0 is the name of an executable; if it
+    ##  is, we'll use it's directory as our base seach path.
+    search_dir="`dirname $0`"
+else
+    ##  We've probably sourced this file, or are doing some other
+    ##  crazy thing.
+    ##  Let's try to do the best we can to complete the operation
+    ##  we "ought" to do.
+    search_dir="`pwd`"
+fi
+#  Find the full path which contains the make_SET_ME_UP.bash file
+fullname="`find $search_dir -name make_SET_ME_UP`"
+cd `dirname $fullname`
+local_path="`pwd`"
+cd $OLDPWD
+
+##  Backup the old versions of SET_ME_UP
+for setupfile in `find $local_path -name SET_ME_UP\* -print | sort -r` ; do
+	 mv ${setupfile} ${setupfile}_
+done
+
+export QWANALYSIS=`echo $local_path | sed 's/\/SetupFiles//'`
+
+
+
+### ... 64-bit
+if [[ "`uname -m`" == "x86_64" ]]; then
+### But it seems ubuntu is weird, and does not have a lib64 anymore
+  if [ -e /etc/lsb-release ]; then
+    if [ `awk -F= '/DISTRIB_RELEASE/ { print $2}' /etc/lsb-release` > 10 ]; then
+      lib=lib
+    else
+      lib=lib64
+    fi
+  else
+    lib=lib64
+   fi
+else
+  lib=lib
+fi
+
+###  Determine machine type (library names)
+OS=$(uname)
+if [ "$OS" == "Darwin" ] ; then
+    echo "Will use .dylib rather than .so to search for libraries"
+    lib=lib # don't use lib64, doesn't seem to exist on MacOS 10.6 or 10.7
+fi
+echo "Libraries will be searched for in ${lib}."
+
+
+### These helper functions reduce the amount of cutting and pasting
+### required to add an extra search path
+
+function first_existing_directory() {
+    for dir ; ### iterate through the function's positional arguments
+    do
+	if [[ -d "$dir" ]] ; then
+	    echo "$dir"
+	    return
+	fi
+    done
+    {
+	echo "None of the paths"
+	for dir ; do [[ -n $dir ]] && echo "  " "$dir" ; done
+	echo "is a directory"
+    } >&2 
+}
+function first_path_with_file() {
+    file=$1 ; shift
+    for dir; do
+	if [[ -e "$dir/$file" ]] ; then
+	    echo $dir
+	    return
+	fi
+    done
+    {
+	echo "None of the paths"
+	for dir ; do [[ -n $dir ]] && echo "  " "$dir" ; done
+	echo "contains the file $file"
+    } >&2 
+}
+function report_status() {
+    ## If bash had any sort of references or pointers this would be a
+    ## little simpler, but at any rate it's less cutting and pasting
+    ## than what was in place already.
+    name=$1
+    value=$2
+    if [[ -d $value ]] ; then
+	echo "Set $name to $value"
+    else
+	echo "Unable to set $name"
+	exit 1;
+    fi
+}
+
+
+
+###  Try to find boost headers
+libname=boost/version.hpp
+search=(
+    /usr/include
+    /usr/local/include
+    /opt/local/include
+    )
+export BOOST_INC_DIR=$(first_path_with_file $libname "${search[@]}" "${BOOST_INC_DIR}")
+
+libname=libboost_filesystem.a
+search=(
+    /usr/${lib}
+    /usr/${lib}/x86_64-linux-gnu
+    /usr/local/${lib}
+    /opt/local/${lib}
+    )
+export BOOST_LIB_DIR=$(first_path_with_file $libname "${search[@]}" "${BOOST_LIB_DIR}")
+
+report_status BOOST_INC_DIR ${BOOST_INC_DIR}
+report_status BOOST_LIB_DIR ${BOOST_LIB_DIR}
+
+###  Set up ROOT if it isn't done yet.
+###  Expect to use /apps/root/PRO
+
+###  This section could in principle use the first_existing_directory() 
+###  pattern, but so far root-config is doing its job
+
+#  Verify the existence of the ROOTSYS directory
+if [[ -n ${ROOTSYS} ]]; then
+  echo "ROOTSYS already defined: ${ROOTSYS}"
+  if [[ ! -d ${ROOTSYS} ]]; then
+    echo "Directory ${ROOTSYS} does not exist."
+    echo "Unsetting variable ROOTSYS."
+    unset ROOTSYS
+  fi
+fi
+#  First try the JLab /site/12gev_phys/production.csh
+jlab_prod_setup="/site/12gev_phys/production.csh"
+if [[ -z ${ROOTSYS} && -e ${jlab_prod_setup} ]]; then
+    echo "ROOTSYS not defined; trying to get it from ${jlab_prod_setup}..."
+    nextsearchpath=`/bin/csh -c "source ${jlab_prod_setup} >/dev/null ; printenv ROOTSYS"`
+    if [[ -d ${nextsearchpath} ]]; then
+	export ROOTSYS=${nextsearchpath}
+	echo "Setting ROOTSYS to ${ROOTSYS} using ${jlab_prod_setup}"
+    fi
+fi
+#  Try root-config assuming user has setup PATH correctly
+if [[ -z ${ROOTSYS} ]]; then
+  echo "ROOTSYS not defined; trying root-config..."
+  if [[ `which root-config` ]]; then
+      nextsearchpath=`root-config --prefix`
+      if [[ -d ${nextsearchpath} ]]; then
+	  export ROOTSYS=${nextsearchpath}
+	  echo "Setting ROOTSYS to ${ROOTSYS} using root-config"
+      fi
+  fi
+fi
+#  Try /apps/root/5.30-02
+if [[ -z ${ROOTSYS} ]]; then
+  nextsearchpath=/apps/root/5.30-02/root
+  echo "ROOTSYS not defined; trying ${nextsearchpath}."
+  if [[ -d ${nextsearchpath} ]]; then
+    export ROOTSYS=${nextsearchpath}
+    echo "Setting ROOTSYS to ${ROOTSYS}."
+  fi
+fi
+#  Try /apps/root/PRO
+if [[ -z ${ROOTSYS} ]]; then
+  nextsearchpath=/apps/root/PRO/root
+  echo "ROOTSYS not defined; trying ${nextsearchpath}."
+  if [[ -d ${nextsearchpath} ]]; then
+    export ROOTSYS=${nextsearchpath}
+    echo "Setting ROOTSYS to ${ROOTSYS}."
+  fi
+fi
+#  Try 'use root' (last resort)
+if [[ -z ${ROOTSYS} ]]; then
+  echo "ROOTSYS not defined; trying 'use root'..."
+  use root
+fi
+
+#  Check and report failure to find ROOT installation
+if [[ -z ${ROOTSYS} ]]; then
+  echo "ERROR:  The ROOT environment variables could not be set."
+  echo "        Please ensure ROOT is installed on the system,"
+  echo "        set the ROOTSYS environment variables,"
+  echo "        and re-run this program."
+  exit 1
+fi
+
+# Check ROOT version
+${QWANALYSIS}/SetupFiles/checkrootversion
+
+
+
+###  Create the setup scripts.
+
+cat > $local_path/SET_ME_UP.csh << END
+#!/bin/csh
+#
+set analyzer_version = $QWANALYSIS
+
+###
+###  DO NOT CHANGE THE COMMANDS BELOW!!!
+###
+###  This script is automatically generated, all changes will be overwritten!
+###
+
+setenv QWANALYSIS \$analyzer_version
+
+setenv BOOST_INC_DIR $BOOST_INC_DIR
+setenv BOOST_LIB_DIR $BOOST_LIB_DIR
+
+### Set ROOTSYS
+setenv ROOTSYS $ROOTSYS
+
+### Source the setup script
+source \${QWANALYSIS}/SetupFiles/.QwSetup.csh
+
+unset analyzer_version
+
+END
+
+cat > $local_path/SET_ME_UP.bash << END
+#!/bin/bash
+#
+analyzerversion=$QWANALYSIS
+
+###
+###  DO NOT CHANGE THE COMMANDS BELOW!!!
+###
+###  This script is automatically generated, all changes will be overwritten!
+###
+
+export QWANALYSIS=\$analyzerversion
+
+export BOOST_INC_DIR=${BOOST_INC_DIR}
+export BOOST_LIB_DIR=${BOOST_LIB_DIR}
+
+### Set ROOTSYS
+export ROOTSYS=$ROOTSYS
+
+### Source the setup script
+. \$QWANALYSIS/SetupFiles/.QwSetup.bash
+
+unset analyzerversion
+
+END
+
+cd $orig_dir

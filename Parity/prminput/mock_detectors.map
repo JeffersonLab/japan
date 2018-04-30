@@ -1,0 +1,20 @@
+# This is the detectors map used for VQWK checks
+
+
+[QwHelicity]
+ name = Helicity Info
+ map  = mock_qweak_helicity.map
+
+
+[QwBeamLine]
+ name  = Injector BeamLine
+ map   = mock_qweak_beamline.map
+ param = mock_qweak_pedestal.map
+ geom  = mock_beamline_geometry.map
+
+
+[MollerMainDetector]
+ name  = Main Detector
+ map   = mock_moller_maindet_adc.map
+ param = mock_moller_maindet_pedestal.map
+

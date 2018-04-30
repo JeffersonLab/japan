@@ -1,0 +1,48 @@
+#!/bin/bash -e
+
+# Test for whether scanner scaler data is being decoded into the
+# ROOT file.  Return 0 if so, nonzero (shell: failure) if not or
+# if problems are encountered.
+
+[ -d "$QW_ROOTFILES" ]
+RUN=14586
+
+if true ; then
+
+    make -j3 distclean
+    make -j3 config EXES="qwparity qwtracking"
+    nice make -j3
+
+    ./bin/qwparity --help
+    ./bin/qwtracking --help
+fi
+if true ; then
+    rm -f $QW_ROOTFILES/Qweak_$RUN*.root
+    qwparity -r $RUN
+    qwtracking -r $RUN
+
+    [ -e $QW_ROOTFILES/Qweak_$RUN.000.trees.root ] &&
+    mv -f $QW_ROOTFILES/Qweak_$RUN.000.trees.root \
+	  $QW_ROOTFILES/Qweak_$RUN.000.root
+
+fi
+
+if true ; then
+## the tracking test
+root -l -b $QW_ROOTFILES/Qweak_$RUN.root <<EOF
+Mps_Tree->Draw("scanner.FrontSCA")
+cout << htemp->GetMean() << "\n";
+if (0 == htemp->GetMean() ) exit(1);
+exit(0);
+EOF
+fi
+
+## the parity test
+root -l -b $QW_ROOTFILES/Qweak_$RUN.000.root <<EOF
+Mps_Tree->Draw("scanner.FrontSCA")
+cout << htemp->GetMean() << "\n";
+if (0 == htemp->GetMean() ) exit(1);
+exit(0);
+EOF
+
+echo "completed successfully"

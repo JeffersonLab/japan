@@ -1,0 +1,27 @@
+!Global switch to turn ON and OFF eventcut check
+!Available settings
+!To turn OFF all checks
+!EVENTCUTS = 0 
+!To turn OFF event cuts and perform only HW checks
+!EVENTCUTS = 1
+!To turn do both event cuts and HW checks
+!EVENTCUTS = 2
+!To turn do both event cuts and HW checks and only flag event cut failed events
+EVENTCUTS = 3
+
+!IMPORTANT
+!---------
+!Make sure when puting tabs in the map file entries, always put ", " before inserting a tab. 
+!Otherwise the routine QwParameterFile::GetNextToken(", ") will extract the entry with the tab character.
+
+
+!device_type, device_name, lower limit, upper limit, local(l)/global(g), stability percentage
+bcm   QWK_MOD0CH0   -1000000  1000000  g  0
+bcm   QWK_MOD0CH1   -1000000  1000000  g  0
+bcm   QWK_MOD0CH2   -1000000  1000000  g  0
+bcm   QWK_MOD0CH3   -1000000  1000000  g  0
+bcm   QWK_MOD0CH4   -1000000  1000000  g  0
+bcm   QWK_MOD0CH5   -1000000  1000000  g  0
+bcm   QWK_MOD0CH6   -1000000  1000000  g  0
+bcm   QWK_MOD0CH7   -1000000  1000000  g  0
+

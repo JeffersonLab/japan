@@ -1,0 +1,111 @@
+The Qweak analysis package depends upon a few external software packages,
+and they must be installed before you can compile this package.  They
+are:
+  	* ROOT
+	  See http://root.cern.ch/ for downloads.
+	  The analyzer has been tested with versions 5.08-00, and 5.12.00.
+
+	* Boost Libraries
+	  See http://www.boost.org/ for downloads of the source packages,
+	  or an rpm distributor for your OS or precompiled packages.
+	  Note that if you get the precompiled rpms, you will probably
+	  need both "boost" and "boost-devel" rpms, depending on how
+	  the packager has broken up the files.
+	  The analyzer has been tested with versions 1.32.0 and 1.33.1
+	  of the Boost libraries.
+
+	* MySQL.
+
+This package has been tested to compile with gcc-3.2.3 and gcc-3.4.6.
+If you encounter compilation problems please send me a message describing
+what problems you encountered, and what compiler you were using.
+
+
+CONFIGURATION:
+Just after receiving this package, please run "./SetupFiles/make_SET_ME_UP".
+This script will generate a file called "SetupFiles/SET_ME_UP.csh" which
+must be sourced to properly configure the environment variables required 
+to compile and run QwAnalysis.
+
+You may also modify the SET_ME_UP.csh file by hand to reset compiler or
+package versions if you desire.
+
+
+COMPILATION:
+This package has been written to use gmake.
+
+To compile the standard executables, do:
+	gmake
+from the base directory.
+
+To change the executables, do for example:
+	gmake config "EXES=qwanalysis qwparity_test"
+	gmake
+if you were trying to compile a new type of executable.  The configuration
+will remain until the next time you do a full clean ("gmake distclean").
+Doing a regular clean ("gmake clean") will not remove the hidden configuration
+files.
+
+
+PACKAGE LAYOUT:
+The GNUMakefile is expecting a certain structure to the subdirectories
+and uses that to perform the compilation configuration.
+In each subdirectory containing package source files, there will be
+four subdirectories:
+	src
+	include
+	main
+	prminputs
+All paths like "*/include" will be included in the header file search
+path.  The files in the "*/main" subdirectories will be interpreted
+as corresponding to an executable.  If you add a new file in a "main"
+subdirectory, you can enable compilation of it using the "gmake config"
+step outlined above.
+All files in the src directories are interpreted as the source files.
+Only those source files on which depends one or more of the executables
+will be compiled and linked into the library.  This enables easy
+addition or modification of file dependencies.
+
+
+
+
+There are several subdirectories within the package:
+	coda
+		This contains the CODA interface classes written
+		for Hall A and found in the pan distribution.
+		These are responsible for interfacing with CODA
+		format data files, or with the ET event stream 
+		for online analysis.
+		As this is a copy of the Hall A subpackage, it
+		does not follow the package layout conventions,
+		and it has its own Makefile.
+
+	Analysis
+		This directory contains the basic classes of the
+		QwAnalysis engine.  This includes a event handler
+		class which can be configured to draw data from
+		file of event stream, and several base classes
+		used as the framework for the specialized 
+		analyzers.
+		Subdirectories are:
+			src
+			include
+			main
+			prminputs
+	Tracking
+		This directory contains the classes specific to the
+		Qweak tracking analysis.
+		Subdirectories are:
+			src
+			include
+			main
+			prminputs
+	bin
+	lib
+		These will contain the executable and shared library 
+		files after compilation.
+	SetupFiles
+		This contains scripts used in the configuration of
+		the environment used for compilation and running
+		the package.
+

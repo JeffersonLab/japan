@@ -1,0 +1,42 @@
+#!/bin/bash
+
+function usage () {
+	echo "qweak-config [--prefix] [--qwanalysis] [--bin] [--lib] [--libs] [--ldflags] [--cppflags]"
+	exit 1
+}
+
+# If no arguments
+if [ $# -eq 0 ] ; then
+	usage
+fi
+
+cpflags="-I$QWANALYSIS/Analysis/include/ -I$QWANALYSIS/Parity/include/ -I$QWANALYSIS/Tracking/dictionary/ -I$QWANALYSIS/Tracking/include/"
+
+# Loop over the arguments
+while [ $# -ne 0 ] ; do
+
+	# Treat cases
+	case $1 in
+		(--prefix)	echo -n %QWANALYSIS% ;;
+		(--qwanalysis)	echo -n %QWANALYSIS% ;;
+		(--bin)		echo -n %QW_BIN% ;;
+		(--lib)		echo -n %QW_LIB% ;;
+		(--libs)	echo -n %LIBS% ;;
+		(--ldflags)	echo -n %LDFLAGS% ;;
+		(--cppflags)	echo -n %CPPFLAGS% ;;
+	        (--cpflags)     echo -n "$cpflags" ;;
+		(--help)	usage ;;
+		(-h)		usage ;;
+		(*)		usage ;;
+	esac
+
+	# End with a space
+	echo -n " "
+
+	# Shift to the next argument
+	shift
+done
+
+# Finish with a new line
+# (disabled because it could break command lines)
+echo

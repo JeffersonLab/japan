@@ -1,0 +1,95 @@
+/**
+ * \file PackageInfo.dox
+ *
+ * \brief General documentation on the Qweak analysis framework
+ */
+
+/*------------------------------------------------------------------------*//*!
+
+ \mainpage QwAnalysis: the Qweak Analysis Framework
+
+ \section welcome Welcome to the Qweak analysis framework documentation
+
+ For some information on the doxygen system used to write these pages,
+ check out the page \subpage doxygen.
+
+    \subsection software_overview Components in the analysis software
+
+    The Qweak analyzer framework consists of several components:
+    - \ref QwAnalysis includes general analysis classes used by all packages listed below.
+    - QwParity includes all instrumentation classes for parity analysis.
+    - \ref QwTracking includes all classes for tracking analysis.
+    - QwGUIMain includes all classes for the analysis GUI front-end.
+
+
+    \subsection software_structure Structure of the analysis software
+
+    All subsystems in the Qweak analyzer inherit from a single virtual base
+    class VQwSubsystem.  The next level of detail is implemented as the
+    base subsystems for parity and tracking: VQwSubsystemParity and
+    VQwSubsystemTracking.  Finally, these are the base subsystems that
+    the specific subsystems (such as QwBeamLine or QwDriftChamber)
+    inherit from, depending on what functionality they need to have.  Some
+    subsystems (such as QwScanner) inherit from both base subsystems.
+
+    This global inheritance structure is represented in the following graph:
+    \dot
+    digraph example {
+      node [shape=box, fontname=Helvetica, fontsize=10];
+      VQwSubsystem [ label="VQwSubsystem" URL="\ref VQwSubsystem"];
+      VQwSubsystemParity [ label="VQwSubsystemParity" URL="\ref VQwSubsystemParity"];
+      VQwSubsystemTracking [ label="VQwSubsystemTracking" URL="\ref VQwSubsystemTracking"];
+      QwBeamLine [ label="QwBeamLine" URL="\ref QwBeamLine"];
+      QwScanner [ label="QwScanner" URL="\ref QwScanner"];
+      QwDriftChamber [ label="QwDriftChamber" URL="\ref QwDriftChamber"];
+      QwDriftChamberHDC [ label="QwDriftChamberHDC" URL="\ref QwDriftChamberHDC"];
+      QwDriftChamberVDC [ label="QwDriftChamberVDC" URL="\ref QwDriftChamberVDC"];
+      VQwSubsystem -> VQwSubsystemParity;
+      VQwSubsystem -> VQwSubsystemTracking;
+      VQwSubsystemParity -> QwBeamLine;
+      VQwSubsystemParity -> QwScanner;
+      VQwSubsystemTracking -> QwScanner;
+      VQwSubsystemTracking -> QwDriftChamber;
+      QwDriftChamber -> QwDriftChamberHDC;
+      QwDriftChamber -> QwDriftChamberVDC;
+    }
+    \enddot
+
+    The GUI front-end QwGUIMain is relatively independent from the other
+    components in the Qweak analysis framework.
+
+ \section tutorial Tutorial on using the Qweak analysis framework
+
+ In this section we will put tutorials for the different components of the
+ Qweak analysis framework.  They are organized according to the two main
+ types of analysis.
+
+ For the Qweak tracking analysis the following pages are available:
+ - \subpage tutorial_tracking
+ - \subpage examples_tracking
+
+*//*-------------------------------------------------------------------------*/
+
+
+/*------------------------------------------------------------------------*//*!
+
+    \page doxygen Information about the doxygen documentation
+
+    The documentation for the Qweak analysis framework is generated with
+    doxygen (http://www.doxygen.org). General information about the
+    analysis package is added here by the people who are actually
+    writing the code. The file that generates this overview is called
+    "PackageInfo.dox" and can be found in the '$QWANALYSIS' directory.
+    Specific documentation about the code should be added as comments
+    to the source code, in the doxygen format. The doxygen configuration
+    file can be found in the same directory and can be edited to
+    incorporate additional documentation features if needed. In addition
+    to the usual source code extensions, the file is currently configured
+    to include all documented "*.txt", "*.in", and "*.map" files in the
+    directories starting with and downstream of '$QWANALYSIS'.
+
+    If you are new to doxygen and would like a quick reference card to
+    the tags that can be used in the documentation, take a look at
+    http://www.digilife.be/quickreferences/QRC/Doxygen%20Quick%20Reference.pdf
+
+*//*-------------------------------------------------------------------------*/

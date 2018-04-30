@@ -1,0 +1,26 @@
+if [ $ROOTSYS ]
+then
+  the_root_version=`${ROOTSYS}/bin/root-config --version`
+  x=`echo $the_root_version | awk 'BEGIN {RS="/"};{print $0}' | grep '\.' | sed -e 's/\.//'`
+ if [ "$x" -lt "301" ]
+  then
+    echo
+    echo \*\*\*\*\* WARNING \*\*\*\*\*
+    echo Current version of software ROOT $the_root_version is insufficient
+    echo Change definition of ROOTSYS environment variable or upgrade the software
+    echo to version 3.01/02 or later
+    echo
+    return
+  else
+    echo Current version of software ROOT $the_root_version is OK
+    if [ "$x" -le "301" ]
+     then
+       y=`echo $the_root_version | sed -e 's/\.//' | sed -e 's/\///'`
+       if [ "$y" -lt "30106" ]
+        then
+         echo but older than 3.01/06
+       fi
+    fi
+  fi
+fi
+
