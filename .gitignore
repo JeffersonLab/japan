@@ -35,3 +35,8 @@
 build
 output
 Doxygen/html
+
+# output
+*.tar.gz
+*.tar
+
