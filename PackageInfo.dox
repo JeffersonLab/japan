@@ -18,7 +18,7 @@
     The Qweak analyzer framework consists of several components:
     - \ref QwAnalysis includes general analysis classes used by all packages listed below.
     - QwParity includes all instrumentation classes for parity analysis.
-    - \ref QwTracking includes all classes for tracking analysis.
+    - QwTracking includes all classes for tracking analysis.
     - QwGUIMain includes all classes for the analysis GUI front-end.
 
 
@@ -64,9 +64,6 @@
  Qweak analysis framework.  They are organized according to the two main
  types of analysis.
 
- For the Qweak tracking analysis the following pages are available:
- - \subpage tutorial_tracking
- - \subpage examples_tracking
 
 *//*-------------------------------------------------------------------------*/
 
