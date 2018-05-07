@@ -28,7 +28,7 @@ QwOptions gQwOptions;
 // Qweak headers
 #include "QwLog.h"
 #include "QwParameterFile.h"
-#include "QwSVNVersion.h"
+#include "gitinfo.hh"
 
 // Qweak objects with default options
 #include "QwSubsystemArray.h"
