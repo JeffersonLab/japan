@@ -87,8 +87,9 @@ Int_t main(Int_t argc, Char_t* argv[])
   eventbuffer.ProcessOptions(gQwOptions);
 
   ///  Create the database connection
+#ifdef __USE_DATABASE__
   QwParityDB database(gQwOptions);
-
+#endif
 
   //  QwPromptSummary promptsummary;
 
@@ -139,7 +140,9 @@ Int_t main(Int_t argc, Char_t* argv[])
 
 
     //  Initialize the database connection.
+#ifdef __USE_DATABASE__
     database.SetupOneRun(eventbuffer);
+#endif
 
     //  Open the ROOT file (close when scope ends)
     QwRootFile *treerootfile  = NULL;
@@ -169,9 +172,11 @@ Int_t main(Int_t argc, Char_t* argv[])
       historootfile->WriteParamFileList("mapfiles", detectors);
     }
 
+#ifdef __USE_DATABASE__
     if (database.AllowsWriteAccess()) {
       database.FillParameterFiles(detectors);
     }
+#endif
 
     //  Construct histograms
     historootfile->ConstructHistograms("mps_histo", ringoutput);
@@ -200,7 +205,9 @@ Int_t main(Int_t argc, Char_t* argv[])
 
 
     //  Load the blinder seed from the database for this runlet.
+#ifdef __USE_DATABASE__
     helicitypattern.UpdateBlinder(&database);
+#endif
 
     //  Find the first EPICS event and try to initialize
     //  the blinder.
@@ -399,6 +406,8 @@ Int_t main(Int_t argc, Char_t* argv[])
       helicitypattern.WritePromptSummary(&promptsummary);
       promptsummary.PrintCSV();
     }
+
+#ifdef __USE_DATABASE__
     //  Read from the database
     database.SetupOneRun(eventbuffer);
 
@@ -410,7 +419,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       running_regression.FillDB(&database,"asymmetry");
       ringoutput.FillDB_MPS(&database, "optics");
     }
-    
+#endif    
   
     //epicsevent.WriteEPICSStringValues();
 

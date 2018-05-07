@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "VQwSystem.h"
-#include "QwHitContainer.h"
+//#include "QwHitContainer.h"
 
 class VQwDataserver : public VQwSystem {
 
@@ -20,11 +20,13 @@ class VQwDataserver : public VQwSystem {
       std::cout << "Error: Not implemented!" << std::endl;
       return;
     };
+    /*
     // TODO (wdc) I don't want this to depend on QwHitContainer...
     virtual QwHitContainer* GetHitList() {
       std::cout << "Error: Not implemented!" << std::endl;
       return 0;
     };
+    */
 
 };
 
