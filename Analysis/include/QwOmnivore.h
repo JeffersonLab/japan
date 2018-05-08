@@ -2,7 +2,7 @@
 #define QWOMNIVORE_H
 
 #include "VQwSubsystemParity.h"
-#include "VQwSubsystemTracking.h"
+//#include "VQwSubsystemTracking.h"
 
 //#include "QwHitContainer.h"
 //#include "QwDetectorInfo.h"

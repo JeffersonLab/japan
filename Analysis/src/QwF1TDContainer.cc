@@ -777,7 +777,8 @@ QwF1TDContainer::QwF1TDContainer()
   fError2DHist = new TH2F;
   fError2DHist -> SetBins(3,0,3,2,0,2);
 
-  fError2DHist -> SetBit(TH1::kCanRebin);
+  //FIXME: this is no longer supported in rt6: do we need this functionality?
+  //fError2DHist -> SetBit(TH1::kCanRebin);
   fError2DHist -> SetStats(0);
 
   fNQwF1TDCs = 0;

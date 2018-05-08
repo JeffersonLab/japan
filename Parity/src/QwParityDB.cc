@@ -6,7 +6,7 @@
  * \date   2010-01-07
  */
 
-
+#ifdef __USE_DATABASE__
 #define EXPAND_QWPARITYSSQLS_STATICS
 //#define MYSQLPP_SSQLS_NO_STATICS
 #include "QwParitySSQLS.h"
@@ -896,4 +896,4 @@ void QwParityDB::ProcessAdditionalOptions(QwOptions &options)
   return;
 }
 
-
+#endif // #ifdef __USE_DATABASE__

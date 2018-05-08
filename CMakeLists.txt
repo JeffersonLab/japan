@@ -127,21 +127,20 @@ message("No QwAnalysis dictionaries needed for ROOT ${ROOT_VERSION}.")
 endif()
 
 
-# Add target of QwSVNVersion.h
+# Add target of QwGitVersion.h
 add_custom_command(
-  OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/include/QwSVNVersion.h.does_not_exist
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bin/qwsvnversion.sh ${CMAKE_CURRENT_BINARY_DIR}/include/QwSVNVersion.h
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMENT "Getting QwSVNVersion information"
+  OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh.does_not_exist
+  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bin/pullgitinfo.py ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMENT "Getting Git information"
   )
 add_custom_command(
-  OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/include/QwSVNVersion.h
+  OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh
   COMMAND echo -n
-  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/include/QwSVNVersion.h.does_not_exist
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh.does_not_exist
   )
 set_property(
   SOURCE ${CMAKE_SOURCE_DIR}/Analysis/src/QwOptions.cc ${CMAKE_SOURCE_DIR}/Analysis/src/QwRunCondition.cc
-  APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/include/QwSVNVersion.h
+  APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh
   )
 
 # Link the evio library
@@ -149,7 +148,7 @@ add_library(evio SHARED ${my_evio_sources})
 target_link_libraries(evio)
 
 # Link the ROOT libraries
-add_library(QwAnalysis SHARED ${CMAKE_CURRENT_BINARY_DIR}/include/QwSVNVersion.h ${my_project_sources} ${my_project_headers})
+add_library(QwAnalysis SHARED ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh ${my_project_sources} ${my_project_headers})
 target_link_libraries(QwAnalysis
   evio ${ROOT_LIBRARIES} ${MYSQLPP_LIBRARIES} ${Boost_LIBRARIES})
 

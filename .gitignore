@@ -40,3 +40,5 @@ Doxygen/html
 *.tar.gz
 *.tar
 
+#tmp files
+*~
