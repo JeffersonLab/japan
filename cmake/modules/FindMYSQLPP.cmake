@@ -1,3 +1,5 @@
+MESSAGE("-- Looking for MySQL and MySQL++ libraries.")
+
 FIND_PATH(MYSQLPP_INCLUDE_PATH mysql++.h
   /usr/include/mysql++/
   /usr/local/Cellar/mysql++/3.2.3_1/include/mysql++/
@@ -32,6 +34,12 @@ IF(MYSQLPP_FIND_REQUIRED)
   IF(MYSQLPP_FOUND)
   ELSE(MYSQLPP_FOUND)
     MESSAGE(FATAL_ERROR "Could not find mysqlpp")
+  ENDIF(MYSQLPP_FOUND)
+ELSE(MYSQLPP_FIND_REQUIRED)
+  ##  MySQL++ is not required, but we need to know if we found it.
+  IF(MYSQLPP_FOUND)
+  ELSE(MYSQLPP_FOUND)
+    MESSAGE("--   Could not find MySQL++; database support is DISABLED.")
   ENDIF(MYSQLPP_FOUND)
 ENDIF(MYSQLPP_FIND_REQUIRED)
 
