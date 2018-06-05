@@ -92,7 +92,9 @@ set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lNew -lGui -lMinuit2)
 find_package(MYSQLPP)
 IF(MYSQLPP_FOUND)
   include_directories(${MYSQLPP_INCLUDE_DIR})
-  add_definitions(-D__USE_DATABASE__)
+  ## KLUDGE:  For now, do not define the __USE_DATABASE__ flag, because we're still missing some of the database support files. --- P.King, 05jun2018
+  message("--   The \"__USE_DATABASE__\" flag is commented out in CMakeLists.txt; database support is DISABLED.")
+  #  add_definitions(-D__USE_DATABASE__)
   list(APPEND my_project_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwDatabase.cc
     )
