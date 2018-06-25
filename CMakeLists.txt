@@ -38,10 +38,39 @@ file(GLOB my_project_headers
   ${CMAKE_CURRENT_BINARY_DIR}/include/QwSVNVersion.h
   )
 file(GLOB my_project_sources
-  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/*.cc
+  ###  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/*.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/Parity/src/*.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/Tracking/src/*.cc
   )
+list(APPEND my_project_sources
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/MQwCodaControlEvent.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/MQwF1TDC.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/MQwMockable.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/MQwV775TDC.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwColor.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwEPICSEvent.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwEventBuffer.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwF1TDContainer.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwHistogramHelper.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwLog.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwOmnivore.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwOptions.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwParameterFile.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwPMT_Channel.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwPromptSummary.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwRint.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwRootFile.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwRunCondition.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwScaler_Channel.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwSIS3320_Accumulator.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwSIS3320_LogicalAccumulator.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwSIS3320_Samples.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwSubsystemArray.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwTypes.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwVQWK_Channel.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/VQwHardwareChannel.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/VQwSubsystem.cc
+)
 
 # Put all evio files in my_project_sources (exclude THaEtClient)
 file(GLOB my_evio_headers
@@ -60,8 +89,18 @@ include_directories(${ROOT_INCLUDE_DIR})
 set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lNew -lGui -lMinuit2)
 
 # Load MYSQLPP
-find_package(MYSQLPP REQUIRED)
-include_directories(${MYSQLPP_INCLUDE_DIR})
+find_package(MYSQLPP)
+IF(MYSQLPP_FOUND)
+  include_directories(${MYSQLPP_INCLUDE_DIR})
+  ## KLUDGE:  For now, do not define the __USE_DATABASE__ flag, because we're still missing some of the database support files. --- P.King, 05jun2018
+  message("--   The \"__USE_DATABASE__\" flag is commented out in CMakeLists.txt; database support is DISABLED.")
+  #  add_definitions(-D__USE_DATABASE__)
+  list(APPEND my_project_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwDatabase.cc
+    )
+ELSE(MYSQLPP_FOUND)
+  SET(MYSQLPP_LIBRARIES "")
+endif(MYSQLPP_FOUND)
 
 # Find Boost libraries
 # There seems to be a bug starting in version 2.8.4 of CMake's boost
