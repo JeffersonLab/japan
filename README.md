@@ -25,7 +25,7 @@ Prerequisites: boost, root
 Compiles on linux machines but has issues on Macs (see https://github.com/JeffersonLab/japan/issues/2).
 
 ### To make modifications
-Create a branch for the issue/improvement you are trying to add:
+Create a branch (see https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging for more details on branching) for the issue/improvement you are trying to add:
  ```
  git checkout -b issueName
  ```
