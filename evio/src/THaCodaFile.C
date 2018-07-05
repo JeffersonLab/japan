@@ -252,7 +252,7 @@ Finish:
 
 
 
-void THaCodaFile::staterr(TString tried_to, int status) {
+void THaCodaFile::staterr(TString tried_to, long status) {
 // staterr gives the non-expert user a reasonable clue
 // of what the status returns from evio mean.
 // Note: severe errors can cause job to exit(0)

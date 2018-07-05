@@ -54,7 +54,7 @@ private:
   THaCodaFile& operator=(const THaCodaFile &fn);
   void init(TString fname);
   void initFilter();
-  void staterr(TString tried_to, int status);  // Can cause job to exit(0)
+  void staterr(TString tried_to,long status);  // Can cause job to exit(0)
   int ffirst;
   int max_to_filt;
   EVFILE *handle;
