@@ -1,5 +1,13 @@
 # Just Another Parity ANalyzer
 
+## Doxygen
+Doxygen output can be found at: http://hallaweb.jlab.org/parity/prex/japan/Doxygen/html. This will get updated from time to time. 
+
+You can also generated your own locally (with your latest changes) by installing doxygen on your system and running:
+```
+  doxygen Doxyfile
+```
+
 ## Workflow
 ### To get repo:
   ```
