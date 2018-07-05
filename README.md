@@ -9,6 +9,8 @@ You can also generated your own locally (with your latest changes) by installing
 ```
 
 ## Workflow
+To get the repository from a remote you "clone" -> once you have the repository you "pull" to get changes from the remote repository locally -> to change branches locally you "checkout" to the other branch  -> you "commit" your changes to the local repository -> you propagate your local commits to the remote repository by a "push" 
+
 ### To get repository
 Use this if you plan to do work and want to propagate changes to the repository for others to see:
 ```
