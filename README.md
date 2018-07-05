@@ -9,19 +9,18 @@ You can also generated your own locally (with your latest changes) by installing
 ```
 
 ## Workflow
-### To get repo:
-  ```
+### To get repository
+Use this if you plan to do work and want to propagate changes to the repository for others to see:
+```
   git clone git@github.com:JeffersonLab/japan
-  ```
+```
 
 Are you getting an error? Do you need access to the repository? Contact cipriangal, paulmking or kpaschke.
 
-Alternately just get a copy:
+Alternately just get a copy that you just want to run (without making changes to the repository):
   ```
   git clone https://github.com/JeffersonLab/japan
   ```
-  
-And if you want to push something back to the repository create a pull request. 
 
 ### Building the code
 Prerequisites: boost, root
