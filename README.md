@@ -33,6 +33,14 @@ Prerequisites: boost, root
   ```
 Compiles on linux machines but has issues on Macs (see https://github.com/JeffersonLab/japan/issues/2).
 
+#### XCode
+If you want to use XCode on mac use:
+```
+mkdir buildXcode
+cd buildXcode
+cmake -G Xcode ../
+```
+
 ### To make modifications
 Before starting work make sure you have the latest changes from the remote repository:
 ```
