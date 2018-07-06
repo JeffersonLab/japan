@@ -4,6 +4,10 @@ cmake_minimum_required(VERSION 2.8.4 FATAL_ERROR)
 # Name of this project
 project(QwAnalysis)
 
+#  Install in the 
+set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR})
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+
 message(STATUS "System name ${CMAKE_SYSTEM_NAME}")
 #MAC specific variable
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -182,14 +186,17 @@ set_property(
   APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh
   )
 
+
 # Link the evio library
 add_library(evio SHARED ${my_evio_sources})
 target_link_libraries(evio)
+install(TARGETS evio DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Link the ROOT libraries
 add_library(QwAnalysis SHARED ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh ${my_project_sources} ${my_project_headers})
 target_link_libraries(QwAnalysis
   evio ${ROOT_LIBRARIES} ${MYSQLPP_LIBRARIES} ${Boost_LIBRARIES})
+install(TARGETS QwAnalysis DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
 
 
 # Add the target executables
@@ -206,5 +213,16 @@ foreach(file ${exefiles})
     ${filelower}
     ${ROOT_LIBRARIES} ${MYSQLPP_LIBRARIES} ${Boost_LIBRARIES} QwAnalysis evio
     )
+  install(TARGETS ${filelower} DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
 endforeach()
 
+# uninstall target
+if(NOT TARGET uninstall)
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+        IMMEDIATE @ONLY)
+
+    add_custom_target(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+endif()
