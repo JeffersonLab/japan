@@ -117,7 +117,7 @@ link_directories(${Boost_LIBRARY_DIR})
 add_definitions(-std=c++11)
 
 # Create dictionaries for headers that contain "ClassDef" if ROOT version < 5.90
-if(ROOT_VERSION VERSION_LESS 5.90)
+#### if(ROOT_VERSION VERSION_LESS 5.90)
 message("Generating evio dictionaries for ROOT ${ROOT_VERSION}...")
 foreach(file ${my_evio_headers})
   # Find the header files that have uncommented ClassDef lines
@@ -127,14 +127,17 @@ foreach(file ${my_evio_headers})
     get_filename_component(file_path ${file} PATH)
     get_filename_component(file_name ${file} NAME_WE)
     # Add dictionary target with possible LinkDef file
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dictionary)
-    set(dict ${CMAKE_CURRENT_BINARY_DIR}/dictionary/${file_name}Dict)
+    set(dict ${CMAKE_CURRENT_BINARY_DIR}/${file_name}Dict)
     ROOT_GENERATE_DICTIONARY(
       ${dict}
       ${file}
       OPTIONS -p)
     # Add dictionary to evio sources
     set(my_evio_sources ${my_evio_sources} ${dict}.cxx)
+    # Add pcm file to list
+    if(ROOT_VERSION VERSION_GREATER 5.90)
+    set(pcmfiles ${pcmfiles} ${dict}_rdict.pcm)
+    endif()
   endif()
 endforeach()
 message("Generating QwAnalysis dictionaries for ROOT ${ROOT_VERSION}...")
@@ -146,8 +149,7 @@ foreach(file ${my_project_headers})
     get_filename_component(file_path ${file} PATH)
     get_filename_component(file_name ${file} NAME_WE)
     # Add dictionary target with possible LinkDef file
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dictionary)
-    set(dict ${CMAKE_CURRENT_BINARY_DIR}/dictionary/${file_name}Dict)
+    set(dict ${CMAKE_CURRENT_BINARY_DIR}/${file_name}Dict)
     set(linkdef ${file_path}/${file_name}LinkDef.h)
     if(EXISTS ${linkdef})
       ROOT_GENERATE_DICTIONARY(
@@ -163,11 +165,15 @@ foreach(file ${my_project_headers})
     endif()
     # Add dictionary to project sources
     set(my_project_sources ${my_project_sources} ${dict}.cxx)
+    # Add pcm file to list
+    if(ROOT_VERSION VERSION_GREATER 5.90)
+    set(pcmfiles ${pcmfiles} ${dict}_rdict.pcm)
+    endif()
   endif()
 endforeach()
-else()
-message("No QwAnalysis dictionaries needed for ROOT ${ROOT_VERSION}.")
-endif()
+####else()
+####message("No QwAnalysis dictionaries needed for ROOT ${ROOT_VERSION}.")
+####endif()
 
 
 # Add target of QwGitVersion.h
@@ -186,7 +192,6 @@ set_property(
   APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh
   )
 
-
 # Link the evio library
 add_library(evio SHARED ${my_evio_sources})
 target_link_libraries(evio)
@@ -198,6 +203,8 @@ target_link_libraries(QwAnalysis
   evio ${ROOT_LIBRARIES} ${MYSQLPP_LIBRARIES} ${Boost_LIBRARIES})
 install(TARGETS QwAnalysis DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
 
+# Install pcm files into lib
+install(FILES ${pcmfiles} DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 
 # Add the target executables
 file(GLOB exefiles
