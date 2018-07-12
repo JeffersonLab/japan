@@ -109,7 +109,8 @@ Int_t main(Int_t argc, Char_t* argv[])
     ///  Create an EPICS event
     QwEPICSEvent epicsevent;
     epicsevent.ProcessOptions(gQwOptions);
-    epicsevent.LoadChannelMap("EpicsTable.map");
+    //epicsevent.LoadChannelMap("EpicsTable.map");  /* KLUDGE, 20180710:  Do not give the EPICS system a channel map */
+
 
     ///  Load the detectors from file
     QwSubsystemArrayParity detectors(gQwOptions);
