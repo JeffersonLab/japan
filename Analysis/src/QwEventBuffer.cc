@@ -57,7 +57,7 @@ QwEventBuffer::QwEventBuffer()
   signal(SIGTERM, sigint_handler);// kill in shell // 15
   //  signal(SIGTSTP, sigint_handler);// ctrl+z // 20
 
-  fDataDirectory = getenv("QW_DATA");
+  fDataDirectory = getenv_safe("QW_DATA");
   if (fDataDirectory.Length() == 0){
     QwError << "ERROR:  Can't get the data directory in the QwEventBuffer creator."
 	    << QwLog::endl;

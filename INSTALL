@@ -16,35 +16,27 @@ are:
 
 	* MySQL.
 
-This package has been tested to compile with gcc-3.2.3 and gcc-3.4.6.
+This package has been tested to compile with gcc-4.8.5.
 If you encounter compilation problems please send me a message describing
 what problems you encountered, and what compiler you were using.
 
 
-CONFIGURATION:
-Just after receiving this package, please run "./SetupFiles/make_SET_ME_UP".
-This script will generate a file called "SetupFiles/SET_ME_UP.csh" which
-must be sourced to properly configure the environment variables required 
-to compile and run QwAnalysis.
-
-You may also modify the SET_ME_UP.csh file by hand to reset compiler or
-package versions if you desire.
-
-
 COMPILATION:
-This package has been written to use gmake.
+This package has been written to use cmake, and has been tested with
+cmake-2.8.12.2.
 
 To compile the standard executables, do:
-	gmake
-from the base directory.
+	mkdir build
+	cd build
+	cmake ../
+	make
+The executables will be left in the "build" subdirectory.
 
-To change the executables, do for example:
-	gmake config "EXES=qwanalysis qwparity_test"
-	gmake
-if you were trying to compile a new type of executable.  The configuration
-will remain until the next time you do a full clean ("gmake distclean").
-Doing a regular clean ("gmake clean") will not remove the hidden configuration
-files.
+You may also run "make install" from the build directory, to put the
+executables in "bin/" and the libraries in "lib/".
+
+A target "make uninstall" will remove the installed executables and
+libraries from "bin/" and "lib/".
 
 
 PACKAGE LAYOUT:
@@ -62,9 +54,8 @@ as corresponding to an executable.  If you add a new file in a "main"
 subdirectory, you can enable compilation of it using the "gmake config"
 step outlined above.
 All files in the src directories are interpreted as the source files.
-Only those source files on which depends one or more of the executables
-will be compiled and linked into the library.  This enables easy
-addition or modification of file dependencies.
+The source files to be compiled are explicitly listed in the CMakeLists.txt
+file.  This enables easy addition or modification of file dependencies.
 
 
 
@@ -92,14 +83,7 @@ There are several subdirectories within the package:
 			include
 			main
 			prminputs
-	Tracking
-		This directory contains the classes specific to the
-		Qweak tracking analysis.
-		Subdirectories are:
-			src
-			include
-			main
-			prminputs
+
 	bin
 	lib
 		These will contain the executable and shared library 
