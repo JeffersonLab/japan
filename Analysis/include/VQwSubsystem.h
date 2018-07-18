@@ -72,7 +72,8 @@ class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms {
   : MQwHistograms(orig),
     fPublishList(orig.fPublishList),
     fROC_IDs(orig.fROC_IDs),
-    fBank_IDs(orig.fBank_IDs)
+    fBank_IDs(orig.fBank_IDs),
+    fMarkerWords(orig.fMarkerWords)
   {
     fSystemName = orig.fSystemName;
     fIsDataLoaded = orig.fIsDataLoaded;
@@ -298,12 +299,25 @@ class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms {
    */
   Int_t RegisterSubbank(const BankID_t bank_id);
 
+  Int_t RegisterMarkerWord(const UInt_t markerword);
+
+  void RegisterRocBankMarker(QwParameterFile &mapstr);
+
   Int_t GetSubbankIndex() const { return GetSubbankIndex(fCurrentROC_ID, fCurrentBank_ID); }
   Int_t GetSubbankIndex(const ROCID_t roc_id, const BankID_t bank_id) const;
   void  SetDataLoaded(Bool_t flag){fIsDataLoaded = flag;};
 
-
-
+ public:
+  void GetMarkerWordList(const ROCID_t roc_id, const BankID_t bank_id, std::vector<UInt_t> &marker)const{
+    Int_t rocindex  = FindIndex(fROC_IDs, roc_id);
+    if (rocindex>=0){
+      Int_t bankindex = FindIndex(fBank_IDs[rocindex],bank_id);
+      if (bankindex>=0 && fMarkerWords.at(rocindex).at(bankindex).size()>0){
+	std::vector<UInt_t> m = fMarkerWords.at(rocindex).at(bankindex);
+	marker.insert(marker.end(), m.begin(), m.end());
+      }
+    }
+  }
 
  protected:
   template < class T >
@@ -332,12 +346,15 @@ class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms {
  protected:
 
   ROCID_t  fCurrentROC_ID; ///< ROC ID that is currently being processed
-  BankID_t fCurrentBank_ID; ///< Bank ID that is currently being processed
+  BankID_t fCurrentBank_ID; ///< Bank ID (and Marker word) that is currently being processed; 
 
   /// Vector of ROC IDs associated with this subsystem
   std::vector<ROCID_t> fROC_IDs;
   /// Vector of Bank IDs per ROC ID associated with this subsystem
   std::vector< std::vector<BankID_t> > fBank_IDs;
+  /// Vector of marker words per ROC & subbank associated with this subsystem
+  std::vector< std::vector< std::vector<UInt_t> > > fMarkerWords;
+
 
   /// Vector of pointers to subsystem arrays that contain this subsystem
   std::vector<QwSubsystemArray*> fArrays;

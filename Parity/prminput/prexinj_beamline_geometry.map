@@ -1,0 +1,58 @@
+!**************************************************************************
+! Geometry information for the BPMs in injector beamline.
+!**************************************************************************
+!
+! X/Yoffset - The difference in the ideal position and the surveyed position of a BPM in X/Y axis.
+!
+! Z offset  - The location of the BPM in the hallC beamline (alog Z axis) from the begining of the beamline
+!             to the center of the device/ origin of device coordinate system.
+!
+! BSEN scaling factor - Bpm SENsitivity scaling factor is the ratio of general BSEN = 18.81 adc counts/mm 
+!                       seen in most of the BPMs in the injector and the actual BSEN of a BPM. 
+!                       Almost all the BPMs in the injector beamline except 1I02,1I04,1I06,0I01,0I01A.0I02,0I02A,0I05,0I07 
+!                       who has BSEN=13.7 adc counts/mm
+!                       So we use this factor to apply such changes.
+!
+! AlphaX/Y  - Relative gains of the individual XM,YM pairs compared to XP,YP pairs.
+! 
+! The units of the offsets are in millemeters to be comparable with the units of the anaysis results.
+!
+! BSEN, ALPHAX and ALPHA Y were obtained from EPICS.
+!
+! For BPMs that don't have factors or offsets given in the list below, default values will
+! be assigned. 
+!   default  offset (X/Y/Z) = 0.0
+!   default BSEN scaling factor = 18.81
+!   default AlphaX/AlphaY = 1.0
+!
+! device type, device_name, Xoffset, Yoffset, Zoffset, BSEN scaling factor, AlpaX, AlpaY
+!
+	
+ bpmstripline,   QWK_1I02,   0.0,  0.0,        0.0,  	0.734,  1.085410,  0.977843
+ bpmstripline,   QWK_1I04,   0.0,  0.0,        0.0,  	0.734,  0.959589,  0.955868
+ bpmstripline,   QWK_1I06,   0.0,  0.0,        0.0,  	0.734,  1.052820,  0.964797
+ bpmstripline,   QWK_0I01,   0.0,  0.0,        0.0,  	0.734,  1.006630,  0.923753
+ bpmstripline,   QWK_0I01A,  0.0,  0.0,        0.0,  	0.734,  1.053700,  1.032170
+ bpmstripline,   QWK_0I02,   0.0,  0.0,        0.0,  	0.734,  0.985505,  0.900560
+ bpmstripline,   QWK_0I02A,  0.0,  0.0,        0.0,  	0.734,  1.015710,  1.053130
+ bpmstripline,   QWK_0I05,   0.0,  0.0,        0.0,  	0.734,  1.278300,  0.976040
+ bpmstripline,   QWK_0I07,   0.0,  0.0,        0.0,  	0.734,  0.983711,  1.075580
+ bpmstripline,   QWK_0L01,   0.0,  0.0,        0.0,  	1.0,    0.998108,  0.961697
+ bpmstripline,   QWK_0L02,   0.0,  0.0,        0.0,  	1.0,    0.995747,  1.002760
+ bpmstripline,   QWK_0L03,   0.0,  0.0,        0.0,  	1.0,    0.922851,  0.938417
+ bpmstripline,   QWK_0L04,   0.0,  0.0,        0.0,  	1.0,    1.009110,  0.952050
+ bpmstripline,   QWK_0L05,   0.0,  0.0,        0.0,  	1.0,    1.084810,  0.997621
+ bpmstripline,   QWK_0L06,   0.0,  0.0,        0.0,  	1.0,    1.002530,  1.080990
+ bpmstripline,   QWK_0L07,   0.0,  0.0,        0.0,  	1.0,    1.059450,  0.980722
+ bpmstripline,   QWK_0L08,   0.0,  0.0,        0.0,  	1.0,    0.949430,  1.037000
+ bpmstripline,   QWK_0L09,   0.0,  0.0,        0.0,  	1.0,    0.993488,  1.002960
+ bpmstripline,   QWK_0L10,   0.0,  0.0,        0.0,  	1.0,    0.981602,  1.008690
+ bpmstripline,   QWK_0R01,   0.0,  0.0,        0.0,  	1.0,    1.049370,  0.942922
+ bpmstripline,   QWK_0R02,   0.0,  0.0,        0.0,  	1.0,    1.084550,  1.081500
+ bpmstripline,   QWK_0R03,   0.0,  0.0,        0.0,  	1.0,    0.966298,  0.982757
+ bpmstripline,   QWK_0R04,   0.0,  0.0,        0.0,  	1.0,    1.065620,  1.079380
+ bpmstripline,   QWK_0R05,   0.0,  0.0,        0.0,  	1.0,    0.949244,  0.995147
+ bpmstripline,   QWK_0R06,   0.0,  0.0,        0.0,  	1.0,    0.987571,  1.006590
+ bpmstripline,   QWK_0R07,   0.0,  0.0,        0.0,  	1.0,    1.041250,  0.914155
+
+!END

@@ -20,6 +20,8 @@
 #include "MQwCodaControlEvent.h"
 #include "QwParameterFile.h"
 
+#include <unordered_map>
+
 class QwOptions;
 class QwEPICSEvent;
 class VQwSubsystem;
@@ -207,9 +209,9 @@ class QwEventBuffer: public MQwCodaControlEvent{
 
   const TString&  DataFile(const UInt_t run, const Short_t seg);
 
-  void SetEventLength(const ULong_t tmplength) {fEvtLength = tmplength;};
-  void SetEventType(const UInt_t tmptype) {fEvtType = tmptype;};
-  void SetWordsSoFar(const ULong_t tmpwords) {fWordsSoFar = tmpwords;};
+  //  void SetEventLength(const ULong_t tmplength) {fEvtLength = tmplength;};
+  //  void SetEventType(const UInt_t tmptype) {fEvtType = tmptype;};
+  //  void SetWordsSoFar(const ULong_t tmpwords) {fWordsSoFar = tmpwords;};
 
 
 
@@ -245,13 +247,24 @@ class QwEventBuffer: public MQwCodaControlEvent{
   Double_t fCleanParameter[3]; ///< Scan data/clean data from the green monster
 
   UInt_t fFragLength;
-  UInt_t fSubbankTag;
+  BankID_t fSubbankTag;
   UInt_t fSubbankType;
   UInt_t fSubbankNum;
-  UInt_t fROC;
+  ROCID_t fROC;
 
   TStopwatch fRunTimer;      ///<  Timer used for runlet processing loop
   TStopwatch fStopwatch;     ///<  Timer used for internal timing
+
+ protected:
+  ///  Methods and data members needed to find marker words
+  typedef ULong64_t RocBankLabel_t;
+  std::unordered_map<RocBankLabel_t, std::vector<UInt_t> > fMarkerList;
+  std::unordered_map<RocBankLabel_t, std::vector<UInt_t> > fOffsetList;
+
+  Int_t CheckForMarkerWords(QwSubsystemArray &subsystems);
+  RocBankLabel_t fThisRocBankLabel;
+  UInt_t FindMarkerWord(UInt_t markerID, UInt_t* buffer, UInt_t num_words);
+  UInt_t GetMarkerWord(UInt_t markerID);
 
  protected:
   UInt_t     fNumPhysicsEvents;

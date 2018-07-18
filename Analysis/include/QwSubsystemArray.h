@@ -259,6 +259,9 @@ class QwSubsystemArray:  public std::vector<boost::shared_ptr<VQwSubsystem> > {
  protected:
   void LoadSubsystemsFromParameterFile(QwParameterFile& detectors);
 
+ public:
+  void GetMarkerWordList(const ROCID_t roc_id, const BankID_t bank_id, std::vector<UInt_t>& marker) const;
+
  protected:
   size_t fTreeArrayIndex;  //! Index of this data element in root tree
 

@@ -130,17 +130,9 @@ Int_t QwBeamLine::LoadChannelMap(TString mapfile)
 			*  be relisted for each bank.
 			*/
   while (mapstr.ReadNextLine() && mapstr.SkipSection("PUBLISH")) {
-    UInt_t value = 0;
-    if (mapstr.PopValue("roc",value)) {
-      //      currentrocread=value;
-      RegisterROCNumber(value,0);
-    }
-    if (mapstr.PopValue("bank",value)) {
-      //      currentbankread=value;
-      RegisterSubbank(value);
-      //  Remove the "vqwk_buffer_offset" and "scaler_buffer_offset"
-      //  keywords from the parameter file's listing
-    }
+    RegisterRocBankMarker(mapstr);
+    //  Remove the "vqwk_buffer_offset" and "scaler_buffer_offset"
+    //  keywords from the parameter file's listing
     if (mapstr.ReturnValue("vqwk_buffer_offset",buffer_offset)) {
       QwDebug << "QwBeamLine::LoadChannelMap: "
 	      << "ROC " << fCurrentROC_ID

@@ -167,17 +167,8 @@ Int_t QwMainCerenkovDetector::LoadChannelMap(TString mapfile)
           varname.ToLower();
           UInt_t value = QwParameterFile::GetUInt(varvalue);
 
-          if (varname=="roc")
-            {
-              currentrocread=value;
-              RegisterROCNumber(value,0);
-            }
-          else if (varname=="bank")
-            {
-              currentbankread=value;
-              RegisterSubbank(value);
-            }
-          else if (varname=="sample_size")
+	  RegisterRocBankMarker(mapstr);
+	  if (varname=="sample_size")
             {
               sample_size=value;
             }

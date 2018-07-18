@@ -63,35 +63,20 @@ Int_t QwLumi::LoadChannelMap(TString mapfile)
 
   QwParameterFile mapstr(mapfile.Data());  //Open the file
   fDetectorMaps.insert(mapstr.GetParamFileNameContents());
-  while (mapstr.ReadNextLine())
-    {
+  mapstr.EnableGreediness();
+  mapstr.SetCommentChars("!");
+
+  UInt_t value;
+
+  while (mapstr.ReadNextLine()) {
+      RegisterRocBankMarker(mapstr);
+      if (mapstr.PopValue("sample_size",value)) {
+	fSample_size=value;
+      }
       mapstr.TrimComment('!');   // Remove everything after a '!' character.
       mapstr.TrimWhitespace();   // Get rid of leading and trailing spaces.
       if (mapstr.LineIsEmpty())  continue;
 
-      if (mapstr.HasVariablePair("=",varname,varvalue))
-	{
-	  //  This is a declaration line.  Decode it.
-	  varname.ToLower();
-	  UInt_t value = QwParameterFile::GetUInt(varvalue);
-
-	  if (varname=="roc")
-	    {
-	      currentrocread=value;
-	      RegisterROCNumber(value,0);
-	    }
-	  else if (varname=="bank")
-	    {
-	      currentbankread=value;
-	      RegisterSubbank(value);
-	    }
-	  else if (varname=="sample_size")
-	    {
-	      fSample_size=value;
-	    }
-	}
-      else
-	{
 	  Bool_t lineok=kTRUE;
 	  keyword = "";
 	  keyword2 = "";
@@ -143,9 +128,9 @@ Int_t QwLumi::LoadChannelMap(TString mapfile)
       
       
 	    }  
-	  if(currentsubbankindex!=GetSubbankIndex(currentrocread,currentbankread))
+	  if(currentsubbankindex!=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID))
 	    {
-	      currentsubbankindex=GetSubbankIndex(currentrocread,currentbankread);
+	      currentsubbankindex=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID);
 	    }
 
 
@@ -271,12 +256,7 @@ Int_t QwLumi::LoadChannelMap(TString mapfile)
 
 	  if(lineok)
 	    fLumiDetectorID.push_back(localLumiDetectorID);
-	}
-    }
-
-
-
-
+  } // End of "while (mapstr.ReadNextLine())"
 
   //std::cout<<"linking combined channels"<<std::endl;
 

@@ -52,15 +52,10 @@ Int_t QwMollerDetector::LoadChannelMap(TString mapfile)
       
       varname.ToLower();
       UInt_t value = QwParameterFile::GetUInt(varvalue);
-      if (varname == "roc") {
-        currentrocread=value;
-        RegisterROCNumber(value,0);
-      } else if (varname == "bank") {
-        currentbankread=value;
-        RegisterSubbank(value);
-        if(currentsubbankindex != GetSubbankIndex(currentrocread,currentbankread)){
-          currentsubbankindex = GetSubbankIndex(currentrocread,currentbankread);
-        }
+
+      RegisterRocBankMarker(mapstr);
+      if(currentsubbankindex != GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID)){
+	currentsubbankindex = GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID);
       }
     } else {
       Bool_t lineok = kTRUE;

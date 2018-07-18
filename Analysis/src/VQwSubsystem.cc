@@ -277,10 +277,13 @@ Int_t VQwSubsystem::RegisterROCNumber(const ROCID_t roc_id, const BankID_t bank_
     roc_index = (fROC_IDs.size() - 1);
     std::vector<BankID_t> tmpvec(1,bank_id);
     fBank_IDs.push_back(tmpvec);
+    fMarkerWords.resize(fROC_IDs.size());
+    fMarkerWords.at(roc_index).resize(1);
   } else {
     Int_t bank_index = FindIndex(fBank_IDs[roc_index],bank_id);
     if (bank_index==-1) { // if the bank_id is not registered then register it.
       fBank_IDs[roc_index].push_back(bank_id);
+      fMarkerWords.at(roc_index).resize(fBank_IDs.at(roc_index).size());
     } else {
       //  This subbank in this ROC has already been registered!
       QwError << std::hex << "VQwSubsystem::RegisterROCNumber:  "
@@ -319,6 +322,45 @@ Int_t VQwSubsystem::RegisterSubbank(const BankID_t bank_id)
     fCurrentBank_ID = -1;
   }
   return stat;
+}
+
+
+Int_t VQwSubsystem::RegisterMarkerWord(const UInt_t markerword)
+{
+  static BankID_t bankIDmask = 0xffffffff;
+  Int_t stat = 0;
+  if (fCurrentROC_ID != -1){
+    Int_t roc_index = FindIndex(fROC_IDs, fCurrentROC_ID);
+    Int_t bank_index = FindIndex(fBank_IDs[roc_index],(fCurrentBank_ID&bankIDmask));
+    fMarkerWords.at(roc_index).at(bank_index).push_back(markerword);
+    BankID_t tmpbank = markerword;
+    tmpbank = (tmpbank)<<32 + (fCurrentBank_ID&bankIDmask);
+    RegisterSubbank(tmpbank);
+  } else {
+    //  There is not a ROC registered yet!
+    QwError << std::hex << "VQwSubsystem::RegisterSubbank:  "
+            << "This Marker word (" << markerword << ") "
+            << "does not have an associated ROC!  "
+            << "Add a 'ROC=#' line to the map file."
+            << std::dec << QwLog::endl;
+    stat = ERROR;
+    fCurrentROC_ID  = -1;
+    fCurrentBank_ID = -1;
+  }
+  return stat;
+}
+
+void VQwSubsystem::RegisterRocBankMarker(QwParameterFile &mapstr){
+  UInt_t value = 0;
+  if (mapstr.PopValue("roc",value)) {
+    RegisterROCNumber(value,0);
+  }
+  if (mapstr.PopValue("bank",value)) {
+    RegisterSubbank(value);
+  }
+  if (mapstr.PopValue("markerword",value)) {
+    RegisterMarkerWord(value);
+  }
 }
 
 void VQwSubsystem::PrintInfo() const
