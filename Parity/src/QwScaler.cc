@@ -275,7 +275,7 @@ void QwScaler::ClearEventData()
  * @param num_words Number of words left in buffer
  * @return Number of words read
  */
-Int_t QwScaler::ProcessConfigurationBuffer(UInt_t roc_id, UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwScaler::ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   return 0;
 }
@@ -288,7 +288,7 @@ Int_t QwScaler::ProcessConfigurationBuffer(UInt_t roc_id, UInt_t bank_id, UInt_t
  * @param num_words Number of words left in buffer
  * @return Number of words read
  */
-Int_t QwScaler::ProcessEvBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwScaler::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   // TODO fix :-)
 

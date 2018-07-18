@@ -1159,7 +1159,7 @@ void QwBeamLine::EncodeEventData(std::vector<UInt_t> &buffer)
 }
 
 //*****************************************************************//
-Int_t QwBeamLine::ProcessEvBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwBeamLine::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   Bool_t lkDEBUG=kFALSE;
 
@@ -1596,7 +1596,7 @@ void  QwBeamLine::ProcessEvent()
 
 
 //*****************************************************************//
-Int_t QwBeamLine::ProcessConfigurationBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwBeamLine::ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
 
   return 0;

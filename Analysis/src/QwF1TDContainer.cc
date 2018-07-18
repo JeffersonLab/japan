@@ -1397,7 +1397,7 @@ QwF1TDContainer::GetErrorSummary()
 //   S30 : Slot 30 dataword when the F1 chip has no response within "a reasonable time"
     
 Bool_t 
-QwF1TDContainer::CheckDataIntegrity(const UInt_t roc_id, UInt_t *buffer, UInt_t num_words)
+QwF1TDContainer::CheckDataIntegrity(const ROCID_t roc_id, UInt_t *buffer, UInt_t num_words)
 {
 
  

@@ -168,16 +168,16 @@ class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms {
 
   virtual void  ClearEventData() = 0;
 
-  virtual Int_t ProcessConfigurationBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words) = 0;
+  virtual Int_t ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words) = 0;
 
-  virtual Int_t ProcessEvBuffer(const UInt_t event_type, const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words){
+  virtual Int_t ProcessEvBuffer(const UInt_t event_type, const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words){
     /// TODO:  Subsystems should be changing their ProcessEvBuffer routines to take the event_type as the first
     ///  argument.  But in the meantime, default to just calling the non-event-type-aware ProcessEvBuffer routine.
     if (((0x1 << (event_type - 1)) & this->GetEventTypeMask()) == 0) return 0;
     else return this->ProcessEvBuffer(roc_id, bank_id, buffer, num_words);
   };
   /// TODO:  The non-event-type-aware ProcessEvBuffer routine should be replaced with the event-type-aware version.
-  virtual Int_t ProcessEvBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words) = 0;
+  virtual Int_t ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words) = 0;
 
   virtual void  ProcessEvent() = 0;
   /*! \brief Request processed data from other subsystems for internal
@@ -292,22 +292,33 @@ class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms {
 
   /*! \brief Tell the object that it will decode data from this ROC and sub-bank
    */
-  virtual Int_t RegisterROCNumber(const UInt_t roc_id, const UInt_t bank_id = 0);
+  virtual Int_t RegisterROCNumber(const ROCID_t roc_id, const BankID_t bank_id = 0);
 
   /*! \brief Tell the object that it will decode data from this sub-bank in the ROC currently open for registration
    */
-  Int_t RegisterSubbank(const UInt_t bank_id);
+  Int_t RegisterSubbank(const BankID_t bank_id);
 
   Int_t GetSubbankIndex() const { return GetSubbankIndex(fCurrentROC_ID, fCurrentBank_ID); }
-  Int_t GetSubbankIndex(const UInt_t roc_id, const UInt_t bank_id) const;
+  Int_t GetSubbankIndex(const ROCID_t roc_id, const BankID_t bank_id) const;
   void  SetDataLoaded(Bool_t flag){fIsDataLoaded = flag;};
 
 
 
 
  protected:
-  Int_t FindIndex(const std::vector<UInt_t> &myvec, const UInt_t value) const ;
-
+  template < class T >
+    Int_t FindIndex(const std::vector<T> &myvec, const T value) const
+    {
+      Int_t index = -1;
+      for (size_t i=0 ; i < myvec.size(); i++ ){
+	if (myvec[i]==value){
+	  index=i;
+	  break;
+	}
+      }
+      return index;
+    };
+  
  protected:
 
   TString  fSystemName; ///< Name of this subsystem
@@ -320,13 +331,13 @@ class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms {
   std::map<TString, TString> fDetectorMaps;
  protected:
 
-  Int_t fCurrentROC_ID; ///< ROC ID that is currently being processed
-  Int_t fCurrentBank_ID; ///< Bank ID that is currently being processed
+  ROCID_t  fCurrentROC_ID; ///< ROC ID that is currently being processed
+  BankID_t fCurrentBank_ID; ///< Bank ID that is currently being processed
 
   /// Vector of ROC IDs associated with this subsystem
-  std::vector<UInt_t> fROC_IDs;
+  std::vector<ROCID_t> fROC_IDs;
   /// Vector of Bank IDs per ROC ID associated with this subsystem
-  std::vector< std::vector<UInt_t> > fBank_IDs;
+  std::vector< std::vector<BankID_t> > fBank_IDs;
 
   /// Vector of pointers to subsystem arrays that contain this subsystem
   std::vector<QwSubsystemArray*> fArrays;

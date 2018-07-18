@@ -268,7 +268,7 @@ template < class T > Bool_t QwEventBuffer::FillObjectWithEventData(T &object){
   ///  - Bool_t T::CanUseThisEventType(const UInt_t event_type);
   ///  - Bool_t T::ClearEventData(const UInt_t event_type);
   ///  - Int_t  T::ProcessBuffer(const UInt_t event_type,
-  ///       const UInt_t roc_id, const UInt_t bank_id, 
+  ///       const ROCID_t roc_id, const BankID_t bank_id, 
   ///       const UInt_t banktype, UInt_t* buffer, UInt_t num_words);
   ///
   Bool_t okay = kFALSE;

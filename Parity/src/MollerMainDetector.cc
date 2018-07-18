@@ -713,7 +713,7 @@ void  MollerMainDetector::RandomizeMollerEvent(int helicity /*, const QwBeamChar
  
 }
 
-Int_t MollerMainDetector::ProcessConfigurationBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t MollerMainDetector::ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
 
   /*  Int_t index = GetSubbankIndex(roc_id,bank_id);
@@ -729,7 +729,7 @@ Int_t MollerMainDetector::ProcessConfigurationBuffer(const UInt_t roc_id, const 
 }
 
 
-Int_t MollerMainDetector::ProcessEvBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t MollerMainDetector::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   Bool_t lkDEBUG=kFALSE;
 

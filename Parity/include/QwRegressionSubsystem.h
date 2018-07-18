@@ -114,8 +114,8 @@ class QwRegressionSubsystem: public VQwSubsystemParity,
 	    element->second->ClearEventData();
 	}
       };
-      Int_t ProcessConfigurationBuffer(UInt_t, UInt_t, UInt_t*, UInt_t);
-      Int_t ProcessEvBuffer(UInt_t, UInt_t, UInt_t*, UInt_t);
+      Int_t ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words);
+	Int_t ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words);
       void ProcessEvent(){};
 
       Bool_t ApplySingleEventCuts();

@@ -239,19 +239,7 @@ void VQwSubsystem::ClearAllBankRegistrations()
   fCurrentBank_ID   = -1;
 }
 
-Int_t VQwSubsystem::FindIndex(const std::vector<UInt_t> &myvec, const UInt_t value) const
-{
-  Int_t index = -1;
-  for (size_t i=0 ; i < myvec.size(); i++ ){
-    if (myvec[i]==value){
-      index=i;
-      break;
-    }
-  }
-  return index;
-}
-
-Int_t VQwSubsystem::GetSubbankIndex(const UInt_t roc_id, const UInt_t bank_id) const
+Int_t VQwSubsystem::GetSubbankIndex(const ROCID_t roc_id, const BankID_t bank_id) const
 {
   //  Bool_t lDEBUG=kTRUE;
   Int_t index = -1;
@@ -277,7 +265,7 @@ Int_t VQwSubsystem::GetSubbankIndex(const UInt_t roc_id, const UInt_t bank_id) c
   return index;
 }
 
-Int_t VQwSubsystem::RegisterROCNumber(const UInt_t roc_id, const UInt_t bank_id)
+Int_t VQwSubsystem::RegisterROCNumber(const ROCID_t roc_id, const BankID_t bank_id)
 {
   Int_t stat      = 0;
   Int_t roc_index = 0;
@@ -287,7 +275,7 @@ Int_t VQwSubsystem::RegisterROCNumber(const UInt_t roc_id, const UInt_t bank_id)
   if (roc_index==-1){
     fROC_IDs.push_back(roc_id); // new ROC number is added.
     roc_index = (fROC_IDs.size() - 1);
-    std::vector<UInt_t> tmpvec(1,bank_id);
+    std::vector<BankID_t> tmpvec(1,bank_id);
     fBank_IDs.push_back(tmpvec);
   } else {
     Int_t bank_index = FindIndex(fBank_IDs[roc_index],bank_id);
@@ -313,7 +301,7 @@ Int_t VQwSubsystem::RegisterROCNumber(const UInt_t roc_id, const UInt_t bank_id)
   return stat;
 }
 
-Int_t VQwSubsystem::RegisterSubbank(const UInt_t bank_id)
+Int_t VQwSubsystem::RegisterSubbank(const BankID_t bank_id)
 {
   Int_t stat = 0;
   if (fCurrentROC_ID != -1){

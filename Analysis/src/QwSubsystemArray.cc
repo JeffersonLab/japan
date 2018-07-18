@@ -324,8 +324,8 @@ void  QwSubsystemArray::ClearEventData()
 }
 
 Int_t QwSubsystemArray::ProcessConfigurationBuffer(
-  const UInt_t roc_id,
-  const UInt_t bank_id,
+  const ROCID_t roc_id,
+  const BankID_t bank_id,
   UInt_t* buffer,
   UInt_t num_words)
 {
@@ -338,8 +338,8 @@ Int_t QwSubsystemArray::ProcessConfigurationBuffer(
 
 Int_t QwSubsystemArray::ProcessEvBuffer(
   const UInt_t event_type,
-  const UInt_t roc_id,
-  const UInt_t bank_id,
+  const ROCID_t roc_id,
+  const BankID_t bank_id,
   UInt_t* buffer,
   UInt_t num_words)
 {
