@@ -118,8 +118,7 @@ link_directories(${Boost_LIBRARY_DIR})
 
 add_definitions(-std=c++11)
 
-# Create dictionaries for headers that contain "ClassDef" if ROOT version < 5.90
-#### if(ROOT_VERSION VERSION_LESS 5.90)
+# Create dictionaries for headers that contain "ClassDef"
 message("Generating evio dictionaries for ROOT ${ROOT_VERSION}...")
 foreach(file ${my_evio_headers})
   # Find the header files that have uncommented ClassDef lines
@@ -173,10 +172,6 @@ foreach(file ${my_project_headers})
     endif()
   endif()
 endforeach()
-####else()
-####message("No QwAnalysis dictionaries needed for ROOT ${ROOT_VERSION}.")
-####endif()
-
 
 # Add target of QwGitVersion.h
 add_custom_command(
