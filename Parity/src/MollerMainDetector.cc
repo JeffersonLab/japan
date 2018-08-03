@@ -153,38 +153,22 @@ Int_t MollerMainDetector::LoadChannelMap(TString mapfile)
 
   // Open the file
   QwParameterFile mapstr(mapfile.Data());
-  TString varname, varvalue;
-
   fDetectorMaps.insert(mapstr.GetParamFileNameContents());
+  mapstr.EnableGreediness();
+  mapstr.SetCommentChars("!");
+
+  UInt_t value;
+
   while (mapstr.ReadNextLine())
     {
+      RegisterRocBankMarker(mapstr);
+      if (mapstr.PopValue("sample_size",value)) {
+	sample_size=value;
+      }
       mapstr.TrimComment('!');   // Remove everything after a '!' character.
       mapstr.TrimWhitespace();   // Get rid of leading and trailing spaces.
       if (mapstr.LineIsEmpty())  continue;
 
-      if (mapstr.HasVariablePair("=",varname,varvalue))
-        {
-          //  This is a declaration line.  Decode it.
-          varname.ToLower();
-          UInt_t value = QwParameterFile::GetUInt(varvalue);
-
-          if (varname=="roc")
-            {
-              currentrocread=value;
-              RegisterROCNumber(value,0);
-            }
-          else if (varname=="bank")
-            {
-              currentbankread=value;
-              RegisterSubbank(value);
-            }
-          else if (varname=="sample_size")
-            {
-              sample_size=value;
-            }
-        }
-      else
-        {
           Bool_t  lineok   = kTRUE;
 	  TString keyword  = "";
 	  TString keyword2 = "";
@@ -237,9 +221,9 @@ Int_t MollerMainDetector::LoadChannelMap(TString mapfile)
             }
 
 
-          if (currentsubbankindex!=GetSubbankIndex(currentrocread,currentbankread))
+          if (currentsubbankindex!=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID))
             {
-              currentsubbankindex=GetSubbankIndex(currentrocread,currentbankread);
+              currentsubbankindex=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID);
               wordsofar=0;
             }
 
@@ -333,9 +317,7 @@ Int_t MollerMainDetector::LoadChannelMap(TString mapfile)
 
           if (lineok)
             fMainDetID.push_back(localMainDetID);
-        }
-    }
-
+    } // End of "while (mapstr.ReadNextLine())"
 
   //std::cout<<"linking combined channels"<<std::endl;
 
@@ -398,6 +380,7 @@ Int_t MollerMainDetector::LoadChannelMap(TString mapfile)
   mapstr.RewindToFileStart();
   QwParameterFile *section;
   std::vector<TString> publishinfo;
+  TString varvalue;
   while ((section = mapstr.ReadNextSection(varvalue))) {
     if (varvalue == "PUBLISH") {
       fPublishList.clear();
@@ -713,7 +696,7 @@ void  MollerMainDetector::RandomizeMollerEvent(int helicity /*, const QwBeamChar
  
 }
 
-Int_t MollerMainDetector::ProcessConfigurationBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t MollerMainDetector::ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
 
   /*  Int_t index = GetSubbankIndex(roc_id,bank_id);
@@ -729,7 +712,7 @@ Int_t MollerMainDetector::ProcessConfigurationBuffer(const UInt_t roc_id, const 
 }
 
 
-Int_t MollerMainDetector::ProcessEvBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t MollerMainDetector::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   Bool_t lkDEBUG=kFALSE;
 

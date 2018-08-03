@@ -52,15 +52,10 @@ Int_t QwMollerDetector::LoadChannelMap(TString mapfile)
       
       varname.ToLower();
       UInt_t value = QwParameterFile::GetUInt(varvalue);
-      if (varname == "roc") {
-        currentrocread=value;
-        RegisterROCNumber(value,0);
-      } else if (varname == "bank") {
-        currentbankread=value;
-        RegisterSubbank(value);
-        if(currentsubbankindex != GetSubbankIndex(currentrocread,currentbankread)){
-          currentsubbankindex = GetSubbankIndex(currentrocread,currentbankread);
-        }
+
+      RegisterRocBankMarker(mapstr);
+      if(currentsubbankindex != GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID)){
+	currentsubbankindex = GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID);
       }
     } else {
       Bool_t lineok = kTRUE;
@@ -137,21 +132,22 @@ Int_t QwMollerDetector::LoadInputParameters(TString){ return 0;}
 void QwMollerDetector::ClearEventData(){}
 
 
-Int_t QwMollerDetector::ProcessConfigurationBuffer(UInt_t, UInt_t, UInt_t*, UInt_t){
+Int_t QwMollerDetector::ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
+{
   return 0;
 }
 
-Int_t QwMollerDetector::ProcessConfigurationBuffer(UInt_t ev_type, UInt_t, UInt_t, UInt_t*, UInt_t)
+Int_t QwMollerDetector::ProcessConfigurationBuffer(UInt_t ev_type, const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
  return 0;
 }
 
-Int_t QwMollerDetector::ProcessEvBuffer(UInt_t ev_type, UInt_t roc_id, UInt_t bank_id, UInt_t *buffer, UInt_t num_words)
+Int_t QwMollerDetector::ProcessEvBuffer(UInt_t ev_type, const ROCID_t roc_id, const BankID_t bank_id, UInt_t *buffer, UInt_t num_words)
 {
   return ProcessEvBuffer(roc_id, bank_id, buffer, num_words);
 }
 
-Int_t QwMollerDetector::ProcessEvBuffer(UInt_t roc_id, UInt_t bank_id, UInt_t *buffer, UInt_t num_words)
+Int_t QwMollerDetector::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t *buffer, UInt_t num_words)
 {
   Int_t index = 0; // GetSubbankIndex(roc_id, bank_id);
 

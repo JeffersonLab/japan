@@ -99,9 +99,11 @@ IF(MYSQLPP_FOUND)
   ## KLUDGE:  For now, do not define the __USE_DATABASE__ flag, because we're still missing some of the database support files. --- P.King, 05jun2018
   message("--   The \"__USE_DATABASE__\" flag is commented out in CMakeLists.txt; database support is DISABLED.")
   #  add_definitions(-D__USE_DATABASE__)
-  list(APPEND my_project_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwDatabase.cc
-    )
+  #  list(APPEND my_project_sources
+  #    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwDatabase.cc
+  #    )
+  message("--   Forcing MYSQLPP_LIBRARIES to \"\".")
+  SET(MYSQLPP_LIBRARIES "")
 ELSE(MYSQLPP_FOUND)
   SET(MYSQLPP_LIBRARIES "")
 endif(MYSQLPP_FOUND)
@@ -116,8 +118,7 @@ link_directories(${Boost_LIBRARY_DIR})
 
 add_definitions(-std=c++11)
 
-# Create dictionaries for headers that contain "ClassDef" if ROOT version < 5.90
-#### if(ROOT_VERSION VERSION_LESS 5.90)
+# Create dictionaries for headers that contain "ClassDef"
 message("Generating evio dictionaries for ROOT ${ROOT_VERSION}...")
 foreach(file ${my_evio_headers})
   # Find the header files that have uncommented ClassDef lines
@@ -171,10 +172,6 @@ foreach(file ${my_project_headers})
     endif()
   endif()
 endforeach()
-####else()
-####message("No QwAnalysis dictionaries needed for ROOT ${ROOT_VERSION}.")
-####endif()
-
 
 # Add target of QwGitVersion.h
 add_custom_command(

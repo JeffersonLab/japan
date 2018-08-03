@@ -11,6 +11,7 @@
 #define __MQwV775TDC__
 
 #include "Rtypes.h"
+#include "QwTypes.h"
 #include <cstdlib>
 #include <iostream>
 
@@ -34,7 +35,7 @@ class MQwV775TDC{
   MQwV775TDC();
   ~MQwV775TDC();
 
-  void DecodeTDCWord(UInt_t &word, const UInt_t roc_id=0);
+  void DecodeTDCWord(UInt_t &word, const ROCID_t roc_id=0);
   
   Bool_t IsValidDataword()    {return fV775ValidFlag;};
   Bool_t IsHeaderword()       {return fV775HeaderFlag;};
@@ -54,7 +55,7 @@ class MQwV775TDC{
   };
 
   Double_t SubtractReference(Double_t rawtime, Double_t reftime);
-  Bool_t CheckDataIntegrity(const UInt_t roc_id, UInt_t *buffer, UInt_t num_words);
+  Bool_t CheckDataIntegrity(const ROCID_t roc_id, UInt_t *buffer, UInt_t num_words);
   void   PrintTDCHeader(Bool_t flag) ; 
   void   PrintTDCData(Bool_t flag) ; 
 

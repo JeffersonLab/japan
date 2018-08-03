@@ -81,7 +81,7 @@ MQwF1TDC::MQwF1TDC()
 MQwF1TDC::~MQwF1TDC() { }
 
 
-void MQwF1TDC::DecodeTDCWord(UInt_t &word, const UInt_t roc_id)
+void MQwF1TDC::DecodeTDCWord(UInt_t &word, const ROCID_t roc_id)
 {
 
   fF1ROCNumber  = roc_id;
@@ -290,7 +290,7 @@ void MQwF1TDC::PrintTDCData(Bool_t flag)
 
 
 
-void MQwF1TDC::PrintResolutionLockStatus(const UInt_t roc_id)
+void MQwF1TDC::PrintResolutionLockStatus(const ROCID_t roc_id)
 {
   if (not fF1ResolutionLockFlag) {
     QwWarning << "F1TDC board RESOULTION LOCK FAIL at Ch " 
@@ -302,7 +302,7 @@ void MQwF1TDC::PrintResolutionLockStatus(const UInt_t roc_id)
 
 
 
-void MQwF1TDC::PrintHitFIFOStatus(const UInt_t roc_id)
+void MQwF1TDC::PrintHitFIFOStatus(const ROCID_t roc_id)
 {
   if (fF1HitFIFOFlag) {
     QwWarning << "F1TDC board HIT FIFO FULL at Ch "
@@ -314,7 +314,7 @@ void MQwF1TDC::PrintHitFIFOStatus(const UInt_t roc_id)
 
 
 
-void MQwF1TDC::PrintOutputFIFOStatus(const UInt_t roc_id)
+void MQwF1TDC::PrintOutputFIFOStatus(const ROCID_t roc_id)
 {
   if (fF1OutputFIFOFlag) {
     QwWarning << "F1TDC board OUTPUT FIFO FULL at Ch "
@@ -340,7 +340,7 @@ Bool_t MQwF1TDC::IsValidDataword() const
 }
 
 
-// Bool_t MQwF1TDC::CheckDataIntegrity(const UInt_t roc_id, UInt_t *buffer, UInt_t num_words)
+// Bool_t MQwF1TDC::CheckDataIntegrity(const ROCID_t roc_id, UInt_t *buffer, UInt_t num_words)
 // {
 //   UInt_t reference_trig_time = 0;
 //   UInt_t reference_event_num = 0;

@@ -130,17 +130,9 @@ Int_t QwBeamLine::LoadChannelMap(TString mapfile)
 			*  be relisted for each bank.
 			*/
   while (mapstr.ReadNextLine() && mapstr.SkipSection("PUBLISH")) {
-    UInt_t value = 0;
-    if (mapstr.PopValue("roc",value)) {
-      //      currentrocread=value;
-      RegisterROCNumber(value,0);
-    }
-    if (mapstr.PopValue("bank",value)) {
-      //      currentbankread=value;
-      RegisterSubbank(value);
-      //  Remove the "vqwk_buffer_offset" and "scaler_buffer_offset"
-      //  keywords from the parameter file's listing
-    }
+    RegisterRocBankMarker(mapstr);
+    //  Remove the "vqwk_buffer_offset" and "scaler_buffer_offset"
+    //  keywords from the parameter file's listing
     if (mapstr.ReturnValue("vqwk_buffer_offset",buffer_offset)) {
       QwDebug << "QwBeamLine::LoadChannelMap: "
 	      << "ROC " << fCurrentROC_ID
@@ -1159,7 +1151,7 @@ void QwBeamLine::EncodeEventData(std::vector<UInt_t> &buffer)
 }
 
 //*****************************************************************//
-Int_t QwBeamLine::ProcessEvBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwBeamLine::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   Bool_t lkDEBUG=kFALSE;
 
@@ -1596,7 +1588,7 @@ void  QwBeamLine::ProcessEvent()
 
 
 //*****************************************************************//
-Int_t QwBeamLine::ProcessConfigurationBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwBeamLine::ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
 
   return 0;

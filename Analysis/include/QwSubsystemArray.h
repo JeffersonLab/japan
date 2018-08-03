@@ -124,12 +124,12 @@ class QwSubsystemArray:  public std::vector<boost::shared_ptr<VQwSubsystem> > {
   void  ClearEventData();
 
   /// \brief Process the event buffer for configuration events
-  Int_t ProcessConfigurationBuffer(const UInt_t roc_id, const UInt_t bank_id,
+  Int_t ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id,
 				   UInt_t *buffer, UInt_t num_words);
 
   /// \brief Process the event buffer for events
-  Int_t ProcessEvBuffer(const UInt_t event_type, const UInt_t roc_id,
-			const UInt_t bank_id, UInt_t *buffer,
+  Int_t ProcessEvBuffer(const UInt_t event_type, const ROCID_t roc_id,
+			const BankID_t bank_id, UInt_t *buffer,
 			UInt_t num_words);
 
   /// \brief Randomize the data in this event
@@ -258,6 +258,9 @@ class QwSubsystemArray:  public std::vector<boost::shared_ptr<VQwSubsystem> > {
 
  protected:
   void LoadSubsystemsFromParameterFile(QwParameterFile& detectors);
+
+ public:
+  void GetMarkerWordList(const ROCID_t roc_id, const BankID_t bank_id, std::vector<UInt_t>& marker) const;
 
  protected:
   size_t fTreeArrayIndex;  //! Index of this data element in root tree

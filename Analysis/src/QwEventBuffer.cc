@@ -587,13 +587,21 @@ void QwEventBuffer::DecodeEventIDBank(UInt_t *buffer)
 
   fPhysicsEventFlag = kFALSE;
 
+  QwDebug << "QwEventBuffer::DecodeEventIDBank: " <<  std::hex
+	  << buffer[0] << " "
+	  << buffer[1] << " "
+	  << buffer[2] << " "
+	  << buffer[3] << " "
+	  << buffer[4] << std::dec << " "
+	  << QwLog::endl;
+  
   if ( buffer[0] == 0 ){
     /*****************************************************************
      *  This buffer is empty.                                        *
      *****************************************************************/
-    SetEventLength(1);     //  Pretend that there is one word.
-    SetWordsSoFar(1);      //  Mark that we've read the word already.
-    SetEventType(0);
+    fEvtLength = (1);     //  Pretend that there is one word.
+    fWordsSoFar = (1);      //  Mark that we've read the word already.
+    fEvtType = (0);
     fEvtTag       = 0;
     fBankDataType = 0;
     fIDBankNum    = 0;
@@ -605,7 +613,7 @@ void QwEventBuffer::DecodeEventIDBank(UInt_t *buffer)
      *  This buffer contains data; fill the event ID parameters.     *
      *****************************************************************/
     //  First word is the number of long-words in the buffer.
-    SetEventLength(buffer[0]+1);
+    fEvtLength = (buffer[0]+1);
 
     // Second word contains the event type, for CODA events.
     fEvtTag   = (buffer[1] & 0xFFFF0000) >> 16;  // (bits(31-16));
@@ -615,7 +623,7 @@ void QwEventBuffer::DecodeEventIDBank(UInt_t *buffer)
       //  This is a CODA event bank; the event type is equal to
       //  the event tag.
       local_eventtype = fEvtTag;
-      SetEventType(local_eventtype);
+      fEvtType = (local_eventtype);
       fBankDataType = local_datatype;
 
       // local_eventtype is unsigned int and always positive
@@ -627,14 +635,14 @@ void QwEventBuffer::DecodeEventIDBank(UInt_t *buffer)
         fStatSum   = buffer[6];
 	fPhysicsEventFlag = kTRUE;
         //  Now skip to the first ROC data bank.
-        SetWordsSoFar(7);
+        fWordsSoFar = (7);
       } else {
         //  This is not a physics event, but is still in the CODA
         //  event format.  The first two words have been examined.
         fEvtNumber = 0;
         fEvtClass  = 0;
         fStatSum   = 0;
-        SetWordsSoFar(2);
+        fWordsSoFar = (2);
 	//  Run this event through the Control event processing.
 	//  If it is not a control event, nothing will happen.
 	ProcessControlEvent(fEvtType, &buffer[fWordsSoFar]);
@@ -644,20 +652,26 @@ void QwEventBuffer::DecodeEventIDBank(UInt_t *buffer)
       //  but it still follows the CEBAF common event format.
       //  Arbitrarily set the event type to "fEvtTag".
       //  The first two words have been examined.
-      SetEventType(fEvtTag);
+      fEvtType = (fEvtTag);
+      fBankDataType = local_datatype;
       fEvtNumber = 0;
       fEvtClass  = 0;
       fStatSum   = 0;
-      SetWordsSoFar(2);
+      fWordsSoFar = (2);
     }
   }
-  // std::cout<< Form("Length: %d; Tag: 0x%x; Bank ID num: 0x%x; ",
-  // 		  fEvtLength, fEvtTag, fIDBankNum)
-  // 	  << Form("Evt type: 0x%x; Evt number %d; Evt Class 0x%.8x; ",
-  // 		  fEvtType, fEvtNumber, fEvtClass)
-  // 	  << Form("Status Summary: 0x%.8x; Words so far %d",
-  // 		  fStatSum, fWordsSoFar)
-  // 	   << std::endl;
+  //  Initialize the fragment size to the event size, in case the 
+  //  event is not subbanked.
+  fFragLength = fEvtLength-fWordsSoFar;
+  QwDebug << Form("buffer[0-1] 0x%x 0x%x ; ",
+   		  buffer[0], buffer[1])
+	  << Form("Length: %d; Tag: 0x%x; Bank data type: 0x%x; Bank ID num: 0x%x; ",
+   		  fEvtLength, fEvtTag, fBankDataType, fIDBankNum)
+   	  << Form("Evt type: 0x%x; Evt number %d; Evt Class 0x%.8x; ",
+   		  fEvtType, fEvtNumber, fEvtClass)
+   	  << Form("Status Summary: 0x%.8x; Words so far %d",
+   		  fStatSum, fWordsSoFar)
+	  << QwLog::endl;
 }
 
 
@@ -675,11 +689,14 @@ Bool_t QwEventBuffer::FillSubsystemConfigurationData(QwSubsystemArray &subsystem
 	    << "Found configuration event for ROC"
 	    << rocnum
 	    << QwLog::endl;
-  QwMessage << Form("Evt type: 0x%x; Evt number %d; Evt Class 0x%.8x; ",
-		     fEvtType, fEvtNumber, fEvtClass)
+  QwMessage << Form("Length: %d; Tag: 0x%x; Bank data type: 0x%x; Bank ID num: 0x%x; ",
+		    fEvtLength, fEvtTag, fBankDataType, fIDBankNum)
+	    << Form("Evt type: 0x%x; Evt number %d; Evt Class 0x%.8x; ",
+		    fEvtType, fEvtNumber, fEvtClass)
 	    << QwLog::endl;
   //  Loop through the data buffer in this event.
   UInt_t *localbuff = (UInt_t*)(fEvStream->getEvBuffer());
+  DecodeEventIDBank(localbuff);
   while ((okay = DecodeSubbankHeader(&localbuff[fWordsSoFar]))){
     //  If this bank has further subbanks, restart the loop.
     if (fSubbankType == 0x10) {
@@ -710,6 +727,7 @@ Bool_t QwEventBuffer::FillSubsystemConfigurationData(QwSubsystemArray &subsystem
 	    << "Ending loop: fWordsSoFar=="<<fWordsSoFar
 	    <<QwLog::endl;
   }
+
   return okay;
 }
 
@@ -738,6 +756,8 @@ Bool_t QwEventBuffer::FillSubsystemData(QwSubsystemArray &subsystems)
   if (((0x1 << (fEvtType - 1)) & subsystems.GetEventTypeMask()) == 0) {
     return kTRUE;
   }
+
+  UInt_t offset;
 
   //  Loop through the data buffer in this event.
   while ((okay = DecodeSubbankHeader(&localbuff[fWordsSoFar]))){
@@ -783,9 +803,25 @@ Bool_t QwEventBuffer::FillSubsystemData(QwSubsystemArray &subsystems)
     
     subsystems.SetCleanParameters(fCleanParameter);
 
-    subsystems.ProcessEvBuffer(fEvtType, fROC, fSubbankTag,
-			       &localbuff[fWordsSoFar],
-			       fFragLength);
+    Int_t nmarkers = CheckForMarkerWords(subsystems);
+    if (nmarkers>0) {
+      //  There are markerwords for this ROC/Bank
+      for (size_t i=0; i<nmarkers; i++){
+	offset = FindMarkerWord(i,&localbuff[fWordsSoFar],fFragLength);
+	BankID_t tmpbank = GetMarkerWord(i);
+	tmpbank = (tmpbank)<<32 + fSubbankTag;
+	if (offset != -1){
+	  offset++; //  Skip the marker word
+	  subsystems.ProcessEvBuffer(fEvtType, fROC, tmpbank,
+				     &localbuff[fWordsSoFar+offset],
+				     fFragLength-offset);
+	}
+      }
+    } else {
+      subsystems.ProcessEvBuffer(fEvtType, fROC, fSubbankTag,
+				 &localbuff[fWordsSoFar],
+				 fFragLength);
+    }
     fWordsSoFar += fFragLength;
 //     QwDebug << "QwEventBuffer::FillSubsystemData:  "
 // 	    << "Ending loop: fWordsSoFar=="<<fWordsSoFar
@@ -820,27 +856,27 @@ Bool_t QwEventBuffer::FillEPICSData(QwEPICSEvent &epics)
   UInt_t *localbuff = (UInt_t*)(fEvStream->getEvBuffer());
   if (fBankDataType==0x10){
     while ((okay = DecodeSubbankHeader(&localbuff[fWordsSoFar]))){
-    //  If this bank has further subbanks, restart the loop.
-    if (fSubbankType == 0x10) continue;
-    //  If this bank only contains the word 'NULL' then skip
-    //  this bank.
-    if (fFragLength==1 && localbuff[fWordsSoFar]==kNullDataWord){
+      //  If this bank has further subbanks, restart the loop.
+      if (fSubbankType == 0x10) continue;
+      //  If this bank only contains the word 'NULL' then skip
+      //  this bank.
+      if (fFragLength==1 && localbuff[fWordsSoFar]==kNullDataWord){
+	fWordsSoFar += fFragLength;
+	continue;
+      }
+
+      if (fSubbankType == 0x3){
+	//  This is an ASCII string bank.  Try to decode it and
+	//  pass it to the EPICS class.
+	char* tmpchar = (Char_t*)&localbuff[fWordsSoFar];
+	
+	epics.ExtractEPICSValues(string(tmpchar), GetEventNumber());
+	QwVerbose << "test for GetEventNumber =" << GetEventNumber() << QwLog::endl;// always zero, wrong.
+	
+      }
+
+
       fWordsSoFar += fFragLength;
-      continue;
-    }
-
-    if (fSubbankType == 0x3){
-      //  This is an ASCII string bank.  Try to decode it and
-      //  pass it to the EPICS class.
-      char* tmpchar = (Char_t*)&localbuff[fWordsSoFar];
-
-      epics.ExtractEPICSValues(string(tmpchar), GetEventNumber());
-      QwVerbose << "test for GetEventNumber =" << GetEventNumber() << QwLog::endl;// always zero, wrong.
-
-    }
-
-
-    fWordsSoFar += fFragLength;
 
 //     QwDebug << "QwEventBuffer::FillEPICSData:  "
 // 	    << "Ending loop: fWordsSoFar=="<<fWordsSoFar
@@ -848,24 +884,25 @@ Bool_t QwEventBuffer::FillEPICSData(QwEPICSEvent &epics)
 //     QwMessage<<"\nQwEventBuffer::FillEPICSData: fWordsSoFar = "<<fWordsSoFar<<QwLog::endl;
 
 
-  }
+    }
   } else {
     // Single bank in the event, use event headers.
     if (fBankDataType == 0x3){
       //  This is an ASCII string bank.  Try to decode it and
       //  pass it to the EPICS class.
       Char_t* tmpchar = (Char_t*)&localbuff[fWordsSoFar];
-
+      
       QwError << tmpchar << QwLog::endl;
-
+      
       epics.ExtractEPICSValues(string(tmpchar), GetEventNumber());
-
+      
     }
 
   }
 
   //std::cout<<"\nEpics data coming!! "<<fWordsSoFar<<std::endl;
-
+  QwVerbose << "QwEventBuffer::FillEPICSData:  End of routine"
+	    << QwLog::endl;
   return okay;
 }
 
@@ -880,10 +917,11 @@ Bool_t QwEventBuffer::DecodeSubbankHeader(UInt_t *buffer){
   //      All internal subbank tags MUST be defined to
   //      be greater than 31.
   Bool_t okay = kTRUE;
-  if (fWordsSoFar == fEvtLength){
+  if (fWordsSoFar >= fEvtLength){
     //  We have reached the end of this event.
     okay = kFALSE;
-  } else {
+  } else if (fBankDataType == 0x10) {
+    //  This bank has subbanks, so decode the subbank header.
     fFragLength   = buffer[0] - 1;  // This is the number of words in the data block
     fSubbankTag   = (buffer[1]&0xFFFF0000)>>16; // Bits 16-31
     fSubbankType  = (buffer[1]&0xFF00)>>8;      // Bits 8-15
@@ -903,6 +941,16 @@ Bool_t QwEventBuffer::DecodeSubbankHeader(UInt_t *buffer){
     }
     fWordsSoFar   += 2;
   }
+  QwDebug << "QwEventBuffer::DecodeSubbankHeader: " <<  std::hex
+	  << buffer[0] << " "
+	  << buffer[1] << " "
+	  << buffer[2] << " "
+	  << buffer[3] << " "
+	  << buffer[4] << std::dec << " "
+	  << fWordsSoFar << " "<< fEvtLength
+	  << QwLog::endl;
+  //  There is no final else, because any bank type other than 
+  //  0x10 should just return okay.
   return okay;
 }
 
@@ -1195,4 +1243,48 @@ Int_t QwEventBuffer::CloseETStream()
     status = fEvStream->codaClose();
   }
   return status;
+}
+
+//------------------------------------------------------------
+Int_t QwEventBuffer::CheckForMarkerWords(QwSubsystemArray &subsystems)
+{
+  QwDebug << "QwEventBuffer::GetMarkerWordList:  start function" <<QwLog::endl;
+  fThisRocBankLabel = fROC;
+  fThisRocBankLabel = fThisRocBankLabel<<32;
+  fThisRocBankLabel += fSubbankTag;
+  if (fMarkerList.count(fThisRocBankLabel)==0){
+    std::vector<UInt_t> tmpvec;
+    subsystems.GetMarkerWordList(fROC, fSubbankTag, tmpvec);
+    fMarkerList.emplace(fThisRocBankLabel, tmpvec);
+    fOffsetList.emplace(fThisRocBankLabel, std::vector<UInt_t>(tmpvec.size(),0));
+  }
+  QwDebug << "QwEventBuffer::GetMarkerWordList:  fMarkerList.count(fThisRocBankLabel)==" 
+	  << fMarkerList.count(fThisRocBankLabel) 
+	  << " fMarkerList.at(fThisRocBankLabel).size()==" 
+	  << fMarkerList.at(fThisRocBankLabel).size()
+	  << QwLog::endl;
+  return fMarkerList.at(fThisRocBankLabel).size();
+}
+
+UInt_t QwEventBuffer::GetMarkerWord(UInt_t markerID){
+  return fMarkerList.at(fThisRocBankLabel).at(markerID);
+};
+
+
+UInt_t QwEventBuffer::FindMarkerWord(UInt_t markerindex, UInt_t* buffer, UInt_t num_words){
+  UInt_t markerpos  = fOffsetList.at(fThisRocBankLabel).at(markerindex);
+  UInt_t markerval  = fMarkerList.at(fThisRocBankLabel).at(markerindex);
+  if (markerpos < num_words && buffer[markerpos] == markerval){
+    // The marker word is where it was last time
+    return markerpos;
+  } else {
+    for (size_t i=0; i<num_words; i++){
+      if (buffer[i] == markerval){
+	fOffsetList.at(fThisRocBankLabel).at(markerindex) = i;
+	markerpos = i;
+	break;
+      }
+    }
+  }
+  return markerpos;
 }

@@ -228,14 +228,14 @@ Int_t QwRegressionSubsystem::LoadEventCuts(TString)
   
 }
 
-Int_t QwRegressionSubsystem::ProcessConfigurationBuffer(UInt_t, UInt_t, UInt_t*, UInt_t)
+Int_t QwRegressionSubsystem::ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   Int_t sample = 0;
   return sample;
 }
 
 
-Int_t QwRegressionSubsystem::ProcessEvBuffer(UInt_t, UInt_t, UInt_t*, UInt_t)
+Int_t QwRegressionSubsystem::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   Int_t sample = 0;
   return sample;

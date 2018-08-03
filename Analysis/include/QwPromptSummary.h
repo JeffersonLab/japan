@@ -113,9 +113,7 @@ class PromptSummaryElement :  public TObject
   /* Double_t fAsymmetryWidthError; */
   /* TString  fAsymmetryWidthUnit; */
 
-  #if ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
-    ClassDef(PromptSummaryElement,0);
-  #endif
+  ClassDef(PromptSummaryElement,0);
 
 };
 
@@ -179,9 +177,7 @@ private:
 
   Bool_t  fLocalDebug;
 
-  #if ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
-    ClassDef(QwPromptSummary,0);
-  #endif
+  ClassDef(QwPromptSummary,0);
 
 };
 
