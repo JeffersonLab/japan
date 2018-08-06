@@ -94,9 +94,7 @@ private:
 
     // use ClassDef if using rootcint
     #ifndef STANDALONE
-       #if ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
-          ClassDef(THaEtClient,0)   // ET client connection for online data
-       #endif
+       ClassDef(THaEtClient,0)   // ET client connection for online data
     #endif
 
 };

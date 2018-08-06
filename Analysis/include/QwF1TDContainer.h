@@ -241,9 +241,7 @@ class QwF1TDC :  public TObject
 
   UInt_t GetTotal(UInt_t* error_counter);
 
-  #if ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
-    ClassDef(QwF1TDC,1);
-  #endif
+  ClassDef(QwF1TDC,1);
 
 };
 
@@ -323,7 +321,7 @@ class QwF1TDContainer :  public TObject
   void AddS30(Int_t roc, Int_t slot, Int_t channel);
 
  
-  Bool_t  CheckDataIntegrity(const UInt_t roc_id, UInt_t *buffer, UInt_t num_words);
+  Bool_t  CheckDataIntegrity(const ROCID_t roc_id, UInt_t *buffer, UInt_t num_words);
 
   const MQwF1TDC GetF1TDCDecoder() const {return fF1TDCDecoder;};
   
@@ -377,9 +375,7 @@ private:
 
   Bool_t CheckSlot20Chan30(Int_t slot, Int_t chan);
 
-  #if ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
-    ClassDef(QwF1TDContainer,1);
-  #endif
+  ClassDef(QwF1TDContainer,1);
 
 };
 
@@ -461,9 +457,7 @@ class F1TDCReferenceSignal :  public TObject
 
   void Clear() { fRefTimeArbUnit = (Double_t) fNoRefTimeArbUnit; fFirstHitFlag = false;};
 
-  #if ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
-    ClassDef(F1TDCReferenceSignal,1);
-  #endif
+  ClassDef(F1TDCReferenceSignal,1);
 
 };
 
@@ -506,9 +500,8 @@ class F1TDCReferenceContainer :  public TObject
 private:
 
   TString            fSystemName;
-  #if ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
-    ClassDef(F1TDCReferenceContainer,1);
-  #endif
+
+  ClassDef(F1TDCReferenceContainer,1);
 
 };
 

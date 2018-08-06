@@ -220,7 +220,7 @@ Int_t QwComptonElectronDetector::LoadInputParameters(TString pedestalfile)
  * @return Number of words read
  */
 //*****************************************************************
-Int_t QwComptonElectronDetector::ProcessEvBuffer(UInt_t roc_id, UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwComptonElectronDetector::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   const Int_t numberofWordPerEv = 5;
   UInt_t words_read = 0;
@@ -425,7 +425,7 @@ void  QwComptonElectronDetector::ProcessEvent()
  * @return Number of words read
  */
 //*****************************************************************
-Int_t QwComptonElectronDetector::ProcessConfigurationBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwComptonElectronDetector::ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   // sub-bank 0x207 & 0x208, eDAQinfo for this slave board for all planes and strips
   ///the total number of words in these subbanks was fixed at 8, though the meaning carried by a word has

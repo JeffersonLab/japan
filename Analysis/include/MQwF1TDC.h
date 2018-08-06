@@ -36,7 +36,7 @@ class MQwF1TDC{
 
   friend std::ostream& operator<<(std::ostream& os, const MQwF1TDC &f1tdc);
 
-  void DecodeTDCWord(UInt_t &word, const UInt_t roc_id);
+  void DecodeTDCWord(UInt_t &word, const ROCID_t roc_id);
 
   Bool_t IsValidDataword() const;
   const Bool_t& IsHeaderword()        const {return fF1HeaderFlag;};
@@ -63,7 +63,7 @@ class MQwF1TDC{
   
   /* Double_t SubtractReference(Double_t rawtime, Double_t reftime); */
   /* Double_t ActualTimeDifference(Double_t raw_time, Double_t ref_time); */
-  /* Bool_t CheckDataIntegrity(const UInt_t roc_id, UInt_t *buffer, UInt_t num_words); */
+  /* Bool_t CheckDataIntegrity(const ROCID_t roc_id, UInt_t *buffer, UInt_t num_words); */
   void   PrintTDCHeader(Bool_t flag);
   void   PrintTDCData(Bool_t flag);
   void   Print(Bool_t flag);
@@ -181,9 +181,9 @@ class MQwF1TDC{
   //           MQwV775TDC. I think "IsSlotRegistered()" can do instead of this
   //                   
 
-  void   PrintHitFIFOStatus(const UInt_t roc_id);
-  void   PrintOutputFIFOStatus(const UInt_t roc_id);
-  void   PrintResolutionLockStatus(const UInt_t roc_id);
+  void   PrintHitFIFOStatus(const ROCID_t roc_id);
+  void   PrintOutputFIFOStatus(const ROCID_t roc_id);
+  void   PrintResolutionLockStatus(const ROCID_t roc_id);
 
  
 

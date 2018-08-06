@@ -50,7 +50,7 @@ MQwV775TDC::~MQwV775TDC() { }
 
 // See page 43 at https://qweak.jlab.org/wiki/images/V775.pdf
 
-void MQwV775TDC::DecodeTDCWord(UInt_t &word, const UInt_t roc_id)
+void MQwV775TDC::DecodeTDCWord(UInt_t &word, const ROCID_t roc_id)
 {
   
   
@@ -104,7 +104,7 @@ UInt_t  MQwV775TDC::GetTDCTriggerTime()
 }
 
 
-Bool_t MQwV775TDC::CheckDataIntegrity(const UInt_t roc_id, UInt_t *buffer, UInt_t num_words)
+Bool_t MQwV775TDC::CheckDataIntegrity(const ROCID_t roc_id, UInt_t *buffer, UInt_t num_words)
 {
   // will be investigated later.
   return kFALSE;

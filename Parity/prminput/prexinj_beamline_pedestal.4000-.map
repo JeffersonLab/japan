@@ -1,0 +1,134 @@
+! Pedestal file of run  2205
+! adc sample size  468
+! curent range in calibration  90 to 155
+! fit is linear 
+! date of analysis =Tue Feb 22 19:02:59 2011
+! The pedestal run was taken with F2 cup inserted.
+! Therefore only bpms up to 0i05 have the correct pedestals
+! for this high current calibration.
+bpm0I01Axp  ,   -3646.06,   1.
+bpm0I01Axm  ,   -4068.67,   1.
+bpm0I01Ayp  ,   -3127.05,   1.
+bpm0I01Aym  ,   -2631.79,   1.
+bpm1I04xp   ,   -3939.86,   1.
+bpm1I04xm   ,   -4222.50,   1.
+bpm1I04yp   ,   -2370.04,   1.
+bpm1I04ym   ,   -2259.99,   1.
+bpm1I02xp   ,   -3853.94,   1.
+bpm1I02xm   ,   -4222.28,   1.
+bpm1I02yp   ,   -3967.45,   1.
+bpm1I02ym   ,   -4343.31,   1.
+bpm0I01xp   ,   -3469.19,   1.
+bpm0I01xm   ,   -3187.83,   1.
+bpm0I01yp   ,   -3368.43,   1.
+bpm0I01ym   ,   -3659.07,   1.
+bpm1I06xp   ,   -2863.20,   1.
+bpm1I06xm   ,   -2797.80,   1.
+bpm1I06yp   ,   -3260.17,   1.
+bpm1I06ym   ,   -3282.10,   1.
+bpm0I02xp   ,   -3087.75,   1.
+bpm0I02xm   ,   -2762.77,   1.
+bpm0I02yp   ,   -2642.40,   1.
+bpm0I02ym   ,   -3485.67,   1.
+bpm0I02Axp  ,    1190.23,   1.
+bpm0I02Axm  ,     460.41,   1.
+bpm0I02Ayp  ,    1129.83,   1.
+bpm0I02Aym  ,     414.07,   1.
+bpm0I05xp   ,     138.90,   1.
+bpm0I05xm   ,    1603.09,   1.
+bpm0I05yp   ,     584.87,   1.
+bpm0I05ym   ,    1155.56,   1.
+bpm0I07xp   ,   -1117.61,   1.
+bpm0I07xm   ,    -383.13,   1.
+bpm0I07yp   ,    -304.90,   1.
+bpm0I07ym   ,     247.43,   1.
+bpm0L01xp   ,    -598.90,   1.
+bpm0L01xm   ,    -273.06,   1.
+bpm0L01yp   ,    -997.02,   1.
+bpm0L01ym   ,   -1170.01,   1.
+bpm0L02xp   ,      49.36,   1.
+bpm0L02xm   ,    -303.47,   1.
+bpm0L02yp   ,    -396.25,   1.
+bpm0L02ym   ,    -269.01,   1.
+bpm0L03xp   ,      31.44,   1.
+bpm0L03xm   ,    1274.60,   1.
+bpm0L03yp   ,     442.68,   1.
+bpm0L03ym   ,     492.62,   1.
+
+!!!!!
+bpm2I01xm   ,   -3636.38,   1.
+bpm2I01xp   ,   -3919.71,   1.
+bpm2I01ym   ,   -2898.74,   1.
+bpm2I01yp   ,   -1595.36,   1.
+bpm2I02xm   ,   -4951.91,   1.
+bpm2I02xp   ,   -4540.29,   1.
+bpm2I02ym   ,   -4336.13,   1.
+bpm2I02yp   ,   -4319.98,   1.
+
+
+! The pedestals after this point are for BPMs after FC2,
+! so they are "beam off" pedestals. 
+bpm0l04XP , -141.4 , 1.
+bpm0l04XM , -236.0 , 1.
+bpm0l04YP , -89.2 , 1.
+bpm0l04YM , 28.3 , 1.
+bpm0l05XP , 566.1 , 1.
+bpm0l05XM , 627.5 , 1.
+bpm0l05YP , 713.4 , 1.
+bpm0l05YM , 678.0 , 1.
+bpm0l06XP , -473.4 , 1.
+bpm0l06XM , -223.0 , 1.
+bpm0l06YP , -42.6 , 1.
+bpm0l06YM , 136.5 , 1.
+bpm0l07XP , 594.5 , 1.
+bpm0l07XM , 718.4 , 1.
+bpm0l07YP , -993.1 , 1.
+bpm0l07YM , -927.4 , 1.
+bpm0l08XP , -358.9 , 1.
+bpm0l08XM , -176.4 , 1.
+bpm0l08YP , 359.0 , 1.
+bpm0l08YM , 755.6 , 1.
+bpm0l09XP , -1341.6 , 1.
+bpm0l09XM , -825.5 , 1.
+bpm0l09YP , -576.3 , 1.
+bpm0l09YM , -616.0 , 1.
+bpm0l10XP , 334.3 , 1.
+bpm0l10XM , 366.2 , 1.
+bpm0l10YP , 349.4 , 1.
+bpm0l10YM , 302.5 , 1.
+BPM0r01XP ,        1914.3 , 1.0 
+BPM0r01XM ,        2019.5 , 1.0 
+BPM0r01YP ,       1786.1 , 1.0 
+BPM0r01YM ,       2379.9 , 1.0 
+BPM0r01aXP ,     -1 , 1.0 
+BPM0r01aXM ,     -1 , 1.0 
+BPM0r01aYP ,     -1 , 1.0 
+BPM0r01aYM ,     -1 , 1.0 
+bpm0r03XP , -163.2 , 1.
+bpm0r03XM , -549.4 , 1.
+bpm0r03YP , 325.9 , 1.
+bpm0r03YM , 384.5 , 1.
+bpm0r04XP , 488.1 , 1.
+bpm0r04XM , 442.6 , 1.
+bpm0r04YP , -59.3 , 1.
+bpm0r04YM , 36.6 , 1.
+bpm0r05XP , -236.1 , 1.
+bpm0r05XM , -288.7 , 1.
+bpm0r05YP , -1193.8 , 1.
+bpm0r05YM , -1088.4 , 1.
+bpm0r06XP , 276.8 , 1.
+bpm0r06XM , 701.3 , 1.
+bpm0r06YP , 768.6 , 1.
+bpm0r06YM , 738.3 , 1.
+
+
+
+
+BCM0l02,    -1989.81,   0.00150841
+Batery6 ,	 -2.496e+06     ,  1.0
+Batery7 ,	 -5.735e+06     ,  1.0
+Batext1 ,	 -7.740e+06     ,  1.0
+Batext2 ,	 -3.733e+06     ,  1.0
+PhaseMo ,	  0.0 1         ,
+!END	    		        
+	    

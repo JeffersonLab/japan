@@ -54,9 +54,6 @@ QwScaler::~QwScaler()
  */
 Int_t QwScaler::LoadChannelMap(TString mapfile)
 {
-  Int_t current_roc_id = -1;    // current ROC id
-  Int_t current_bank_id = -1;   // current bank id
-
   // Normalization channel (register default token "1")
   const TString default_norm_channel = "1";
   fName_Map[default_norm_channel] = -1;
@@ -75,7 +72,15 @@ Int_t QwScaler::LoadChannelMap(TString mapfile)
   // Open the file
   QwParameterFile mapstr(mapfile.Data());
   fDetectorMaps.insert(mapstr.GetParamFileNameContents());
+  mapstr.EnableGreediness();
+  mapstr.SetCommentChars("!");
+  mapstr.AddBreakpointKeyword("norm");
+  mapstr.AddBreakpointKeyword("header");
+  mapstr.AddBreakpointKeyword("differential");
+
   while (mapstr.ReadNextLine()) {
+    RegisterRocBankMarker(mapstr);
+
     mapstr.TrimComment();       // Remove everything after a comment character.
     mapstr.TrimWhitespace();    // Get rid of leading and trailing whitespace
     if (mapstr.LineIsEmpty())  continue;
@@ -85,13 +90,7 @@ Int_t QwScaler::LoadChannelMap(TString mapfile)
       // This is a declaration line.  Decode it.
       varname.ToLower();
       UInt_t value = QwParameterFile::GetUInt(varvalue);
-      if (varname == "roc") {
-        current_roc_id = value;
-        RegisterROCNumber(current_roc_id,0);
-      } else if (varname == "bank") {
-        current_bank_id = value;
-        RegisterSubbank(current_bank_id);
-      } else if (varname == "norm") {
+      if (varname == "norm") {
         // Normalization line of format: norm = [ 1 | channel / factor ]
         string dummy = mapstr.GetNextToken("=");
         string channame = mapstr.GetNextToken("/");
@@ -149,7 +148,7 @@ Int_t QwScaler::LoadChannelMap(TString mapfile)
       }
 
       // Register data channel type
-      Int_t subbank = GetSubbankIndex(current_roc_id,current_bank_id);
+      Int_t subbank = GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID);
       if (modnum >= fSubbank_Map[subbank].size())
         fSubbank_Map[subbank].resize(modnum+1);
       if (channum >= fSubbank_Map[subbank].at(modnum).size())
@@ -158,7 +157,7 @@ Int_t QwScaler::LoadChannelMap(TString mapfile)
       if (fSubbank_Map[subbank].at(modnum).at(channum) < 0) {
         QwVerbose << "Registering " << modtype << " " << keyword
                   << std::hex
-                  << " in ROC 0x" << current_roc_id << ", bank 0x" << current_bank_id
+                  << " in ROC 0x" << fCurrentROC_ID << ", bank 0x" << fCurrentBank_ID
                   << std::dec
                   << " at mod " << modnum << ", chan " << channum
                   << QwLog::endl;
@@ -275,7 +274,7 @@ void QwScaler::ClearEventData()
  * @param num_words Number of words left in buffer
  * @return Number of words read
  */
-Int_t QwScaler::ProcessConfigurationBuffer(UInt_t roc_id, UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwScaler::ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   return 0;
 }
@@ -288,7 +287,7 @@ Int_t QwScaler::ProcessConfigurationBuffer(UInt_t roc_id, UInt_t bank_id, UInt_t
  * @param num_words Number of words left in buffer
  * @return Number of words read
  */
-Int_t QwScaler::ProcessEvBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwScaler::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   // TODO fix :-)
 

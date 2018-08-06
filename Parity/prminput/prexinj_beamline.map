@@ -1,0 +1,147 @@
+
+ROC=24
+MarkerWord=0xff902902
+!!!Bank=0x3102
+!same sample size for ADCs in a given bank
+sample_size=464
+!
+!
+! module.type, module.num  chan.num, det.type, det.name, if unrotated then last column ->UNROTATED
+
+
+!ADC0
+!    VQWK, 0, 0,  bpmstripline,  QWK_0I01XP
+!    VQWK, 0, 1,  bpmstripline,  QWK_0I01XM
+!    VQWK, 0, 2,  bpmstripline,  QWK_0I01YP
+!    VQWK, 0, 3,  bpmstripline,  QWK_0I01YM
+!    VQWK, 0, 4,  bpmstripline,  QWK_0I01AXP
+!    VQWK, 0, 5,  bpmstripline,  QWK_0I01AXM
+!    VQWK, 0, 6,  bpmstripline,  QWK_0I01AYP
+!    VQWK, 0, 7,  bpmstripline,  QWK_0I01AYM
+
+!ADC11
+    VQWK, 0, 0,  bpmstripline,  QWK_0R06XP
+    VQWK, 0, 1,  bpmstripline,  QWK_0R06XM
+    VQWK, 0, 2,  bpmstripline,  QWK_0R06YP
+    VQWK, 0, 3,  bpmstripline,  QWK_0R06YM
+    VQWK, 0, 4,  bcm,  QWK_BCM0L02
+    VQWK, 0, 5,  bcm,  QWK_Batery6
+    VQWK, 0, 6,  bcm,  QWK_Batery7
+    VQWK, 0, 7,   bcm,  PhaseMonitor
+
+
+!ADC1
+    VQWK, 1, 0,  bpmstripline,  QWK_1I02XP,   UNROTATED
+    VQWK, 1, 1,  bpmstripline,  QWK_1I02XM,   UNROTATED
+    VQWK, 1, 2,  bpmstripline,  QWK_1I02YP,   UNROTATED
+    VQWK, 1, 3,  bpmstripline,  QWK_1I02YM,   UNROTATED
+    VQWK, 1, 4,  bpmstripline,  QWK_1I04XP,   UNROTATED
+    VQWK, 1, 5,  bpmstripline,  QWK_1I04XM,   UNROTATED
+    VQWK, 1, 6,  bpmstripline,  QWK_1I04YP,   UNROTATED
+    VQWK, 1, 7,  bpmstripline,  QWK_1I04YM,   UNROTATED
+
+
+!ADC2
+    VQWK, 2, 0,  bpmstripline,  QWK_1I06XP,   UNROTATED
+    VQWK, 2, 1,  bpmstripline,  QWK_1I06XM,   UNROTATED
+    VQWK, 2, 2,  bpmstripline,  QWK_1I06YP,   UNROTATED
+    VQWK, 2, 3,  bpmstripline,  QWK_1I06YM,   UNROTATED
+    VQWK, 2, 4,  bpmstripline,  QWK_0I02XP,   UNROTATED
+    VQWK, 2, 5,  bpmstripline,  QWK_0I02XM,   UNROTATED
+    VQWK, 2, 6,  bpmstripline,  QWK_0I02YP,   UNROTATED
+    VQWK, 2, 7,  bpmstripline,  QWK_0I02YM,   UNROTATED
+
+!ADC3
+    VQWK, 3, 0,  bpmstripline,  QWK_0I02AXP,   UNROTATED
+    VQWK, 3, 1,  bpmstripline,  QWK_0I02AXM,   UNROTATED
+    VQWK, 3, 2,  bpmstripline,  QWK_0I02AYP,   UNROTATED
+    VQWK, 3, 3,  bpmstripline,  QWK_0I02AYM,   UNROTATED
+    VQWK, 3, 4,  bpmstripline,  QWK_0I05XP,   UNROTATED
+    VQWK, 3, 5,  bpmstripline,  QWK_0I05XM,   UNROTATED
+    VQWK, 3, 6,  bpmstripline,  QWK_0I05YP,   UNROTATED
+    VQWK, 3, 7,  bpmstripline,  QWK_0I05YM,   UNROTATED
+
+!ADC4
+    VQWK, 4, 0,  bpmstripline,  QWK_0I07XP,   UNROTATED
+    VQWK, 4, 1,  bpmstripline,  QWK_0I07XM,   UNROTATED
+    VQWK, 4, 2,  bpmstripline,  QWK_0I07YP,   UNROTATED
+    VQWK, 4, 3,  bpmstripline,  QWK_0I07YM,   UNROTATED
+    VQWK, 4, 4,  bpmstripline,  QWK_0L01XP
+    VQWK, 4, 5,  bpmstripline,  QWK_0L01XM
+    VQWK, 4, 6,  bpmstripline,  QWK_0L01YP
+    VQWK, 4, 7,  bpmstripline,  QWK_0L01YM
+
+
+!ADC5
+    VQWK, 5, 0,  bpmstripline,  QWK_0L02XP
+    VQWK, 5, 1,  bpmstripline,  QWK_0L02XM
+    VQWK, 5, 2,  bpmstripline,  QWK_0L02YP
+    VQWK, 5, 3,  bpmstripline,  QWK_0L02YM
+    VQWK, 5, 4,  bpmstripline,  QWK_0L03XP
+    VQWK, 5, 5,  bpmstripline,  QWK_0L03XM
+    VQWK, 5, 6,  bpmstripline,  QWK_0L03YP
+    VQWK, 5, 7,  bpmstripline,  QWK_0L03YM
+
+!ADC6
+    VQWK, 6, 0,  bpmstripline,  QWK_0L04XP
+    VQWK, 6, 1,  bpmstripline,  QWK_0L04XM
+    VQWK, 6, 2,  bpmstripline,  QWK_0L04YP
+    VQWK, 6, 3,  bpmstripline,  QWK_0L04YM
+    VQWK, 6, 4,  bpmstripline,  QWK_0L05XP
+    VQWK, 6, 5,  bpmstripline,  QWK_0L05XM
+    VQWK, 6, 6,  bpmstripline,  QWK_0L05YP
+    VQWK, 6, 7,  bpmstripline,  QWK_0L05YM
+
+!ADC7
+    VQWK, 7, 0,  bpmstripline,  QWK_0L06XP
+    VQWK, 7, 1,  bpmstripline,  QWK_0L06XM
+    VQWK, 7, 2,  bpmstripline,  QWK_0L06YP
+    VQWK, 7, 3,  bpmstripline,  QWK_0L06YM
+    VQWK, 7, 4,  bpmstripline,  QWK_0L07XP
+    VQWK, 7, 5,  bpmstripline,  QWK_0L07XM
+    VQWK, 7, 6,  bpmstripline,  QWK_0L07YP
+    VQWK, 7, 7,  bpmstripline,  QWK_0L07YM
+
+!ADC8
+    VQWK, 8, 0,  bpmstripline,  QWK_0L08XP
+    VQWK, 8, 1,  bpmstripline,  QWK_0L08XM
+    VQWK, 8, 2,  bpmstripline,  QWK_0L08YP
+    VQWK, 8, 3,  bpmstripline,  QWK_0L08YM
+    VQWK, 8, 4,  bpmstripline,  QWK_0L09XP
+    VQWK, 8, 5,  bpmstripline,  QWK_0L09XM
+    VQWK, 8, 6,  bpmstripline,  QWK_0L09YP
+    VQWK, 8, 7,  bpmstripline,  QWK_0L09YM
+
+!ADC9
+    VQWK, 9, 0,  bpmstripline,  QWK_0L10XP
+    VQWK, 9, 1,  bpmstripline,  QWK_0L10XM
+    VQWK, 9, 2,  bpmstripline,  QWK_0L10YP
+    VQWK, 9, 3,  bpmstripline,  QWK_0L10YM
+    VQWK, 9, 4,  bpmstripline,  QWK_0R03XP
+    VQWK, 9, 5,  bpmstripline,  QWK_0R03XM
+    VQWK, 9, 6,  bpmstripline,  QWK_0R03YP
+    VQWK, 9, 7,  bpmstripline,  QWK_0R03YM
+
+!ADC10
+    VQWK, 10, 0,  bpmstripline,  QWK_0R04XP
+    VQWK, 10, 1,  bpmstripline,  QWK_0R04XM
+    VQWK, 10, 2,  bpmstripline,  QWK_0R04YP
+    VQWK, 10, 3,  bpmstripline,  QWK_0R04YM
+    VQWK, 10, 4,  bpmstripline,  QWK_0R05XP
+    VQWK, 10, 5,  bpmstripline,  QWK_0R05XM
+    VQWK, 10, 6,  bpmstripline,  QWK_0R05YP
+    VQWK, 10, 7,  bpmstripline,  QWK_0R05YM
+
+!ADC11
+!    VQWK, 11, 0,  bpmstripline,  QWK_0R06XP
+!    VQWK, 11, 1,  bpmstripline,  QWK_0R06XM
+!    VQWK, 11, 2,  bpmstripline,  QWK_0R06YP
+!    VQWK, 11, 3,  bpmstripline,  QWK_0R06YM
+!    VQWK, 11, 4,  bcm,  QWK_BCM0L02
+!    VQWK, 11, 5,  bcm,  QWK_Batery6
+!    VQWK, 11, 6,  bcm,  QWK_Batery7
+!    VQWK, 11, 7,   bcm,  PhaseMonitor
+
+
+[PUBLISH]
+ q_targ, bcm, qwk_bcm0l02, c
