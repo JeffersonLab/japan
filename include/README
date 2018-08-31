@@ -1,0 +1,10 @@
+The files:
+	SCAN_cf_commands.h
+	GreenSock.h
+	cfSock_types.h
+	cfSock.h
+	cfSockCli.h
+should be identical to the versions in the "cfSocket/scan" and 
+"cfSocket/cfSock" libraries used on the remote VME crate.
+As of 12apr2010, they are identical.
+

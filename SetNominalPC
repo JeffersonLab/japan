@@ -1,0 +1,72 @@
+#!/bin/bash
+# Author : Rakitha Beminiwattha
+# 01/16/2012
+# This bash script allows us to read norminal and current values for the PC and RHWP hardware counts
+# To use it,
+# compile using 
+# chmod +x GetGoodPC
+# and then run ./GetGoodPC
+# EPICS names PC [+] C1068_QDAC01PC [-] C1068_QDAC02
+
+# Reads text files,
+# /local/scratch/qweak/Last_good_PC_pos_OUT, 
+# /local/scratch/qweak/Last_good_PC_neg_OUT
+# /local/scratch/qweak/Last_good_PC_pos_IN
+# /local/scratch/qweak/Last_good_PC_neg_IN
+# set updated by the feedback program with last oggd PC values.- Changed by Rakitha 04/15/2011 - rakithab@jlab.org
+RHWP_IN=6478
+RHWP_OUT=349
+
+host_name=${HOSTNAME}
+case "$host_name" in
+     *cdaql5* ) 
+	PC_pos_current="`caget -t C1068_QDAC01`"
+	PC_neg_current="`caget -t C1068_QDAC02`"
+	#Midpoint=$(((PC_pos_current+PC_neg_current)/2))
+	#echo "PC Mid-point  = $Midpoint"
+	IHWP_State="`caget -t IGL1I00DI24_24M`"
+	RHWP="`caget -t psub_pl_ipos`"
+	echo "Current RHWP  = $RHWP"
+	if [ "$IHWP_State" == "OUT " ];then
+	    echo "Current IHWP state is OUT"
+	    echo "Norminal Mid-point  = 40800"
+	    PC_pos_t0_OUT="`cat /local/scratch/qweak/Last_good_PC_pos_OUT`"
+	    PC_neg_t0_OUT="`cat /local/scratch/qweak/Last_good_PC_neg_OUT`"
+	    echo "Norminal PC_pos = $PC_pos_t0_OUT"
+	    echo "Current PC_pos = $PC_pos_current"
+	    echo "Norminal PC_neg = $PC_neg_t0_OUT"
+	    echo "Current PC_neg = $PC_neg_current"
+	    echo "RHWP for IHWP OUT state = $RHWP_OUT"
+	    PC_pos_t0_OUT="`cat /local/scratch/qweak/norminal_PC_OUT`"
+	    PC_neg_t0_OUT="`cat /local/scratch/qweak/norminal_PC_OUT`"
+	    echo "Nominal Mid-point"
+	    caput C1068_QDAC01 $PC_pos_t0_OUT
+	    caput C1068_QDAC02 $PC_neg_t0_OUT
+
+	else
+	    echo "Current IHWP state is IN"	
+	    echo "Norminal Mid-point  = 41215"
+	    PC_pos_t0_IN="`cat /local/scratch/qweak/Last_good_PC_pos_IN`"
+	    PC_neg_t0_IN="`cat /local/scratch/qweak/Last_good_PC_neg_IN`"
+	    echo "Norminal PC_pos = $PC_pos_t0_IN"
+	    echo "Current PC_pos = $PC_pos_current"
+	    echo "Norminal PC_neg = $PC_neg_t0_IN"
+	    echo "Current PC_neg = $PC_neg_current"
+	    echo "RHWP for IHWP IN state = $RHWP_IN"
+	    PC_pos_t0_IN="`cat /local/scratch/qweak/norminal_PC_IN`"
+	    PC_neg_t0_IN="`cat /local/scratch/qweak/norminal_PC_IN`"
+	    echo "Nominal Mid-point"
+	    caput C1068_QDAC01 $PC_pos_t0_IN
+	    caput C1068_QDAC02 $PC_neg_t0_IN
+
+	fi
+	;;
+    * )
+	echo " "
+	echo " "
+	echo "Please go to cdaql5 and re-run FlipPCValues"
+	echo " "
+	echo " "
+#	echo "Please email to rakithab@jlab.org about what you want to do"
+	;;
+esac
