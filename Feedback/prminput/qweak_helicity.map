@@ -1,0 +1,84 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!  input file for decoding the helicity subsystem
+!!  Of note in this file:
+!!  HelicityDecodingMode : will tell which mode of decoding is in use
+!!  			 : for now it can be  InputRegisterMode, UserbitMode
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!Injector data during happex data taking: run 12331, 12354, 12356
+!HelicityDecodingMode=InputRegisterMode
+!PatternPhase=4
+!ROC=23
+!
+! Header=0xfdacf000
+! HAPPEX BMW words
+!SKIP 148
+!WORD, 0,  0, helicitydata,  ha_cleandata
+!WORD, 0,  0, helicitydata,  ha_scandata1
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!INPUT REGISTER MODE!
+HelicityDecodingMode=InputRegisterMode
+
+
+!Need to set PATTERNPHASEOFFSET = 1 (when pattern phase starts with 1) or 0 (when pattern phase starts with 0)
+!default value for PATTERNPHASEOFFSET = 1 is set within the code itself which works fine with regular injector/beamline/parity mock data
+!uncomment below line only if pattern phase start from 0
+!PATTERNPHASEOFFSET=0
+
+!The size of pattern. toggle = 2, quartets = 4, octets = 8.
+PatternPhase=4
+!Helicity bit pattern (lowest bit = earliest window)
+PatternBits=0x69
+
+!Need to set the NumberPatternsDelayed = 0 when using togling mode. Default value is 2.
+!NumberPatternsDelayed=0
+
+!seed size is either 24 bit or 30 bit. default is 30 bit
+!RandSeedBits=24
+
+ROC=0
+Bank=0x6101
+
+!
+! module.type, module.num  chan.num, det.type, det.name
+!
+WORD, 0,  0, helicitydata,  input_register
+WORD, 0,  0, helicitydata,  output_register
+WORD, 0,  0, helicitydata,  MPS_counter
+WORD, 0,  0, helicitydata,  PAT_counter
+WORD, 0,  0, helicitydata,  PAT_phase
+SKIP 9
+WORD, 0,  0, helicitydata,  cleandata
+WORD, 0,  0, helicitydata,  scandata1
+WORD, 0,  0, helicitydata,  scandata2
+SKIP 1
+!END
+! 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!USER BIT MODE
+
+!HelicityDecodingMode= UserbitMode    
+!PatternPhase=4
+!seed size is either 24 bit or 30 bit. default is 24 bit
+!RandSeedBits=24
+!RandSeedBits=30
+!ROC=31
+!Bank=0x3101
+!
+! module.type, module.num  chan.num, det.type, det.name
+! 
+!WORD, 0,  0, helicitydata,  cleandata
+!WORD, 0,  0, helicitydata,  scandata1
+!WORD, 0,  0, helicitydata,  scandata2
+!WORD, 0,  0, helicitydata,  scalerheader
+!WORD, 0,  0, helicitydata,  scalercounter
+!WORD, 0,  0, helicitydata,  userbit 
+!END
+  
