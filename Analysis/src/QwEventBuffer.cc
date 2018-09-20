@@ -147,9 +147,9 @@ void QwEventBuffer::ProcessOptions(QwOptions &options)
     }
     if (fETHostname.Length() == 0 || fETSession.Length() == 0) {
       TString tmp = "";
-      if (fETHostname == NULL)
+      if (fETHostname == NULL || fETHostname.Length() == 0)
 	tmp += " \"HOSTNAME\"";
-      if (fETSession == NULL){
+      if (fETSession == NULL ||  fETSession.Length() == 0){
 	if (tmp.Length() > 0)
 	  tmp += " and";
 	tmp += " ET \"SESSION\"";

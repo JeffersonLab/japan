@@ -116,6 +116,21 @@ find_package(Boost COMPONENTS program_options filesystem system regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIR})
 
+# Find the CODA ET libaries
+find_package(ET)
+IF(ET_FOUND)
+  add_definitions(-D__CODA_ET)
+  include_directories(${ET_INCLUDE_DIR})
+  list(APPEND my_evio_headers
+    ${CMAKE_CURRENT_SOURCE_DIR}/evio/include/THaEtClient.h
+    )
+  list(APPEND my_evio_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/evio/src/THaEtClient.C
+    )
+else(ET_FOUND)
+  SET(ET_LIBRARY "")
+endif(ET_FOUND)
+
 add_definitions(-std=c++11)
 
 # Create dictionaries for headers that contain "ClassDef"
@@ -215,7 +230,7 @@ foreach(file ${exefiles})
   add_executable(${filelower} ${file})
   target_link_libraries(
     ${filelower}
-    ${ROOT_LIBRARIES} ${MYSQLPP_LIBRARIES} ${Boost_LIBRARIES} QwAnalysis evio
+    ${ROOT_LIBRARIES} ${MYSQLPP_LIBRARIES} ${Boost_LIBRARIES} QwAnalysis evio ${ET_LIBRARY}
     )
   install(TARGETS ${filelower} DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
 endforeach()
