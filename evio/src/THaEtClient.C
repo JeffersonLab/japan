@@ -25,12 +25,12 @@ ClassImp(THaEtClient)
 THaEtClient::THaEtClient() {        // Uses default mode=1 and a default server
    initflags();
    int smode = 1;
-   TString defaultcomputer(ADAQS2);
+   TString defaultcomputer(ADAQ3);
    codaOpen(defaultcomputer,smode);
 }
 THaEtClient::THaEtClient(int smode) {      // uses default server (where CODA runs)
    initflags();
-   TString defaultcomputer(ADAQS2);
+   TString defaultcomputer(ADAQ3);
    codaOpen(defaultcomputer,smode);
 }
 
@@ -90,8 +90,12 @@ int THaEtClient::init(TString mystation)
   strcpy(station,mystation.Data());
   et_open_config_init(&openconfig);
   et_open_config_sethost(openconfig, daqhost);
-  et_open_config_setmode(openconfig, ET_HOST_AS_REMOTE);
+  et_open_config_setmode(openconfig, ET_HOST_AS_LOCAL);
   et_open_config_setcast(openconfig, ET_DIRECT);
+  // Not using default port.  Instead ...
+  int port=4444;
+  et_open_config_setport(openconfig, port);
+
   if (CODA_VERBOSE) 
     cout << "THaEtClient::init:  Opening ET..."<<endl<<flush;
   if (et_open(&id, etfile, openconfig) != ET_OK) {
