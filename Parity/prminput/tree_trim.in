@@ -1,0 +1,39 @@
+[HallCBeamLine]
+  <QwBCM>
+        hw_sum
+
+#  <QwBPMStripline>
+#       hw_sum
+
+#  <QwBPMCavity>
+#       hw_sum
+
+
+#  <QwCombinedBPM>
+#       hw_sum
+
+
+#  <QwCombinedBCM>
+#       hw_sum
+
+
+#   <QwEnergyCalculator>
+#       hw_sum
+
+
+[DEVICELIST]
+
+event_number
+actual_pattern_polarity
+delayed_pattern_polarity
+pattern_number
+input_register
+output_register
+ps_counter
+pat_counter
+pat_phase
+cleandata
+scandata1
+scandata2
+CodaEventNumber
+CodaEventType
