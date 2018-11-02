@@ -15,11 +15,6 @@
  *  \date   Tuesday, September 14 23:04:36 EDT 2010
  */
 
-ClassImp(QwF1TDC);
-ClassImp(QwF1TDContainer);
-ClassImp(F1TDCReferenceSignal);
-ClassImp(F1TDCReferenceContainer);
-
 //
 //
 //
@@ -777,7 +772,8 @@ QwF1TDContainer::QwF1TDContainer()
   fError2DHist = new TH2F;
   fError2DHist -> SetBins(3,0,3,2,0,2);
 
-  fError2DHist -> SetBit(TH1::kCanRebin);
+  //FIXME: this is no longer supported in rt6: do we need this functionality?
+  //fError2DHist -> SetBit(TH1::kCanRebin);
   fError2DHist -> SetStats(0);
 
   fNQwF1TDCs = 0;
@@ -1396,7 +1392,7 @@ QwF1TDContainer::GetErrorSummary()
 //   S30 : Slot 30 dataword when the F1 chip has no response within "a reasonable time"
     
 Bool_t 
-QwF1TDContainer::CheckDataIntegrity(const UInt_t roc_id, UInt_t *buffer, UInt_t num_words)
+QwF1TDContainer::CheckDataIntegrity(const ROCID_t roc_id, UInt_t *buffer, UInt_t num_words)
 {
 
  

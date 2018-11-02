@@ -112,7 +112,8 @@ Int_t main(Int_t argc, Char_t* argv[])
     ///  Create an EPICS event
     QwEPICSEvent epicsevent;
     epicsevent.ProcessOptions(gQwOptions);
-    epicsevent.LoadChannelMap("EpicsTable.map");
+    //epicsevent.LoadChannelMap("EpicsTable.map");  /* KLUDGE, 20180710:  Do not give the EPICS system a channel map */
+
 
     ///  Load the detectors from file
     QwSubsystemArrayParity detectors(gQwOptions);
@@ -180,7 +181,6 @@ Int_t main(Int_t argc, Char_t* argv[])
     historootfile->ConstructHistograms("hel_histo", helicitypattern);
     detectors.ShareHistograms(ringoutput);
 
-
     //  Construct tree branches
     treerootfile->ConstructTreeBranches("Mps_Tree", "MPS event data tree", ringoutput);
     treerootfile->ConstructTreeBranches("Hel_Tree", "Helicity event data tree", helicitypattern);
@@ -213,12 +213,12 @@ Int_t main(Int_t argc, Char_t* argv[])
     QwMessage << "Finding first EPICS event" << QwLog::endl;
     while (eventbuffer.GetNextEvent() == CODA_OK) {
       if (eventbuffer.IsEPICSEvent()) {
-	      eventbuffer.FillEPICSData(epicsevent);
-	      if (epicsevent.HasDataLoaded()) {
-	         helicitypattern.UpdateBlinder(epicsevent);
-	         // and break out of this event loop
-	         break;
-	      }
+	eventbuffer.FillEPICSData(epicsevent);
+	if (epicsevent.HasDataLoaded()) {
+	  helicitypattern.UpdateBlinder(epicsevent);
+	  // and break out of this event loop
+	  break;
+	}
       }
     }
     epicsevent.ResetCounters();
@@ -238,13 +238,13 @@ Int_t main(Int_t argc, Char_t* argv[])
       //  Secondly, process EPICS events
       if (eventbuffer.IsEPICSEvent()) {
         eventbuffer.FillEPICSData(epicsevent);
-	      if (epicsevent.HasDataLoaded()){
-	      epicsevent.CalculateRunningValues();
-	      helicitypattern.UpdateBlinder(epicsevent);
+	if (epicsevent.HasDataLoaded()){
+	  epicsevent.CalculateRunningValues();
+	  helicitypattern.UpdateBlinder(epicsevent);
 	
-	      treerootfile->FillTreeBranches(epicsevent);
-	      treerootfile->FillTree("Slow_Tree");
-       	}
+	  treerootfile->FillTreeBranches(epicsevent);
+	  treerootfile->FillTree("Slow_Tree");
+	}
       }
 
 
@@ -262,27 +262,27 @@ Int_t main(Int_t argc, Char_t* argv[])
       // The event pass the event cut constraints
       if (detectors.ApplySingleEventCuts()) {
 	
-	      //	// TEST 
-	      // 	regress_sub.LinearRegression();
+	//	// TEST 
+	// 	regress_sub.LinearRegression();
 
         // Add event to the ring
         eventring.push(detectors);
 
         // Check to see ring is ready
         if (eventring.IsReady()) {
-	        ringoutput = eventring.pop();
-	        ringoutput.IncrementErrorCounters();
+	  ringoutput = eventring.pop();
+	  ringoutput.IncrementErrorCounters();
 
 
-	        // Accumulate the running sum to calculate the event based running average
-	        runningsum.AccumulateRunningSum(ringoutput);
+	  // Accumulate the running sum to calculate the event based running average
+	  runningsum.AccumulateRunningSum(ringoutput);
 
-	        // Fill the histograms
-	        historootfile->FillHistograms(ringoutput);
+	  // Fill the histograms
+	  historootfile->FillHistograms(ringoutput);
 
-	        // Fill mps tree branches
-	        treerootfile->FillTreeBranches(ringoutput);
-	        treerootfile->FillTree("Mps_Tree");
+	  // Fill mps tree branches
+	  treerootfile->FillTreeBranches(ringoutput);
+	  treerootfile->FillTree("Mps_Tree");
 
           // Load the event into the helicity pattern
           helicitypattern.LoadEventData(ringoutput);

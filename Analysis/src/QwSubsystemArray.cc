@@ -324,8 +324,8 @@ void  QwSubsystemArray::ClearEventData()
 }
 
 Int_t QwSubsystemArray::ProcessConfigurationBuffer(
-  const UInt_t roc_id,
-  const UInt_t bank_id,
+  const ROCID_t roc_id,
+  const BankID_t bank_id,
   UInt_t* buffer,
   UInt_t num_words)
 {
@@ -336,10 +336,26 @@ Int_t QwSubsystemArray::ProcessConfigurationBuffer(
   return 0;
 }
 
+///  QwSubsystemArray::GetMarkerWordList should be called once by QwEventBuffer
+///  to build the marker word list as each roc_id and bank_id are reached in
+///  the decoding.
+void  QwSubsystemArray::GetMarkerWordList(
+  const ROCID_t roc_id,
+  const BankID_t bank_id,
+  std::vector<UInt_t>& marker) const
+{
+  if (!empty()){
+    for (const_iterator subsys = begin(); subsys != end(); ++subsys) {
+      (*subsys)->GetMarkerWordList(roc_id, bank_id, marker);
+    }
+  }
+}
+
+
 Int_t QwSubsystemArray::ProcessEvBuffer(
   const UInt_t event_type,
-  const UInt_t roc_id,
-  const UInt_t bank_id,
+  const ROCID_t roc_id,
+  const BankID_t bank_id,
   UInt_t* buffer,
   UInt_t num_words)
 {

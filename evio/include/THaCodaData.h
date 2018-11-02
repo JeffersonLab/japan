@@ -52,9 +52,7 @@ protected:
    int fStatus;                      // Status from CODA calls
 
    #ifndef STANDALONE
-      #if ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
-         ClassDef(THaCodaData,0) // Base class of CODA data (file, ET conn, etc)
-      #endif
+      ClassDef(THaCodaData,0) // Base class of CODA data (file, ET conn, etc)
    #endif
 
 };

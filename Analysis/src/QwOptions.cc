@@ -21,7 +21,6 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
-//#include <TROOT.h>
 
 // Globally defined instance of the options object
 QwOptions gQwOptions;
@@ -29,6 +28,7 @@ QwOptions gQwOptions;
 // Qweak headers
 #include "QwLog.h"
 #include "QwParameterFile.h"
+#include "gitinfo.hh"
 
 // Qweak objects with default options
 #include "QwSubsystemArray.h"
@@ -319,6 +319,7 @@ void QwOptions::Version()
 #endif
 
   QwMessage << "\n Qweak Analysis Framework : " << fArgv[0] << QwLog::endl;
+  QwMessage << " * GIT info: " << gGitInfoStr << QwLog::endl;
   //  QwMessage << " * Revision: " << QWANA_SVN_REVISION << QwLog::endl;
   //  QwMessage << " * URL: " << QWANA_SVN_URL << QwLog::endl;
   //  QwMessage << " * Last Changed Rev: " << QWANA_SVN_LASTCHANGEDREVISION << QwLog::endl;

@@ -98,8 +98,8 @@ class QwIntegratedRaster : public VQwSubsystemParity, public MQwSubsystemCloneab
   };
   void CalculateRunningAverage();
 
-  Int_t ProcessConfigurationBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words);
-  Int_t ProcessEvBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words);
+  Int_t ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words);
+  Int_t ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words);
   void  PrintDetectorID() const;
 
   void  ClearEventData();

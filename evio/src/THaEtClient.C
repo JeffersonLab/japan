@@ -25,12 +25,12 @@ ClassImp(THaEtClient)
 THaEtClient::THaEtClient() {        // Uses default mode=1 and a default server
    initflags();
    int smode = 1;
-   TString defaultcomputer(ADAQS2);
+   TString defaultcomputer(ADAQ3);
    codaOpen(defaultcomputer,smode);
 }
 THaEtClient::THaEtClient(int smode) {      // uses default server (where CODA runs)
    initflags();
-   TString defaultcomputer(ADAQS2);
+   TString defaultcomputer(ADAQ3);
    codaOpen(defaultcomputer,smode);
 }
 
@@ -90,7 +90,12 @@ int THaEtClient::init(TString mystation)
   strcpy(station,mystation.Data());
   et_open_config_init(&openconfig);
   et_open_config_sethost(openconfig, daqhost);
+  et_open_config_setmode(openconfig, ET_HOST_AS_LOCAL);
   et_open_config_setcast(openconfig, ET_DIRECT);
+  // Not using default port.  Instead ...
+  int port=4444;
+  et_open_config_setport(openconfig, port);
+
   if (CODA_VERBOSE) 
     cout << "THaEtClient::init:  Opening ET..."<<endl<<flush;
   if (et_open(&id, etfile, openconfig) != ET_OK) {
@@ -228,7 +233,10 @@ int THaEtClient::codaRead() {
   struct timespec twait;
   int *data, *pdata;
   int i, j, err, status;
-  int lencpy, nbytes, bpi, event_size;
+  int lencpy;
+  size_t  nbytes;
+  const size_t bpi = sizeof(int);
+  int event_size;
   int swapflg;
   
 // rate calculation  
@@ -325,7 +333,6 @@ int THaEtClient::codaRead() {
 // return an event 
   et_event_getdata(evs[nused], (void **) &data);
   et_event_getlength(evs[nused], &nbytes);
-  bpi = sizeof(int)/sizeof(char);
   lencpy = (nbytes < bpi*MAXEVLEN) ? nbytes : bpi*MAXEVLEN;
   memcpy((void *)evbuffer,(void *)data,lencpy);
   nused++;

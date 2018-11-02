@@ -137,9 +137,7 @@ class QwSIS3320_Samples: public TObject {
     size_t fTreeArrayIndex; //!< Index of this data element in tree
     size_t fTreeArrayNumEntries; //!< Number of entries from this data element
 
-#if ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
     ClassDef(QwSIS3320_Samples,1);
-#endif //ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
 };
 
 // Output stream operator<< for the samples

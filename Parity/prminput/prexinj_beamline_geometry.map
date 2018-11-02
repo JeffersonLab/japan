@@ -1,0 +1,57 @@
+!**************************************************************************
+! Geometry information for the BPMs in injector beamline.
+!**************************************************************************
+!
+! X/Yoffset - The difference in the ideal position and the surveyed position of a BPM in X/Y axis.
+!
+! Z offset  - The location of the BPM in the hallC beamline (alog Z axis) from the begining of the beamline
+!             to the center of the device/ origin of device coordinate system.
+!
+! BSEN scaling factor - Bpm SENsitivity scaling factor is the ratio of general BSEN = 18.81 adc counts/mm 
+!                       seen in most of the BPMs in the injector and the actual BSEN of a BPM. 
+!                       Almost all the BPMs in the injector beamline except 1I02,1I04,1I06,0I01,0I01A.0I02,0I02A,0I05,0I07 
+!                       who has BSEN=13.7 adc counts/mm
+!                       So we use this factor to apply such changes.
+!
+! AlphaX/Y  - Relative gains of the individual XM,YM pairs compared to XP,YP pairs.
+! 
+! The units of the offsets are in millemeters to be comparable with the units of the anaysis results.
+!
+! BSEN, ALPHAX and ALPHA Y were obtained from EPICS.
+!
+! For BPMs that don't have factors or offsets given in the list below, default values will
+! be assigned. 
+!   default  offset (X/Y/Z) = 0.0
+!   default BSEN scaling factor = 18.81
+!   default AlphaX/AlphaY = 1.0
+!
+! device type, device_name, Xoffset, Yoffset, Zoffset, BSEN scaling factor, AlpaX, AlpaY
+!
+!!!!!  BSEN scale values adapted from Caryn's pan control.db file, 2018jul26
+!!!!!  0i and 1i BPMS, BSEN scale = 13.7/18.81   = 0.728336
+!!!!!  0L and 0R BPMs, BSEN scale = 18.76/18.81  = 0.99734184
+!!!!!  2i BPMs,        BSEN scale = 25.67 /18.81 = 1.3647
+
+ bpmstripline,   bpm0I01A,   0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
+ bpmstripline,   bpm1I04,    0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
+ bpmstripline,   bpm1I02,    0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
+ bpmstripline,   bpm0I01,    0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
+ bpmstripline,   bpm1I06,    0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
+ bpmstripline,   bpm0I02,    0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
+ bpmstripline,   bpm0I02A,   0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
+ bpmstripline,   bpm0I05,    0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
+ bpmstripline,   bpm0I07,    0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
+ bpmstripline,   bpm0L01,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
+ bpmstripline,   bpm0L02,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
+ bpmstripline,   bpm0L03,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
+ bpmstripline,   bpm0L04,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
+ bpmstripline,   bpm0L05,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
+ bpmstripline,   bpm0L06,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
+ bpmstripline,   bpm0L07,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
+ bpmstripline,   bpm0L08,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
+ bpmstripline,   bpm0L09,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
+ bpmstripline,   bpm0L10,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
+ bpmstripline,   bpm2I02,    0.0,  0.0,        0.0,     1.3647,    1.000000,  1.000000      unrotated
+ bpmstripline,   bpm2I01,    0.0,  0.0,        0.0,     1.3647,    1.000000,  1.000000      unrotated
+
+!END

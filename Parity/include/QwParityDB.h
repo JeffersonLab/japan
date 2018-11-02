@@ -6,6 +6,7 @@
  * \date   2010-01-07
  */
 
+#ifdef __USE_DATABASE__
 #ifndef QWPARITYDB_HH
 #define QWPARITYDB_HH
 
@@ -119,3 +120,5 @@ class QwParityDB: public QwDatabase {
 
 
 #endif
+
+#endif // #ifdef __USE_DATABASE__                                                                                                         

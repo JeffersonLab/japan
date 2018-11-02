@@ -4,25 +4,26 @@ cmake_minimum_required(VERSION 2.8.4 FATAL_ERROR)
 # Name of this project
 project(QwAnalysis)
 
-# Local path for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+#  Install in the 
+set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR})
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
-# C++11 standard if avialable
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-if(COMPILER_SUPPORTS_CXX11)
-        message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has C++11 support.")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-elseif(COMPILER_SUPPORTS_CXX0X)
-        message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has C++0x support.")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-else()
-        message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
+message(STATUS "System name ${CMAKE_SYSTEM_NAME}")
+#MAC specific variable
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(CMAKE_MACOSX_RPATH ON)
+    set(CMAKE_SKIP_BUILD_RPATH FALSE)
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+    list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+    if("${isSystemDir}" STREQUAL "-1")
+        set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    endif()
 endif()
 
-# Remove some compiler warnings
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-warning -Wno-deprecated-declarations -Wno-nonnull-compare")
+# Local path for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 # Add the project include directory
 include_directories(
@@ -135,9 +136,7 @@ file(GLOB my_evio_sources
 # Load ROOT and setup include directory
 find_package(ROOT REQUIRED)
 include_directories(${ROOT_INCLUDE_DIR})
-set(ROOT_LIBRARIES "${ROOT_LIBRARIES} -lMinuit2")
-execute_process(COMMAND "${ROOTSYS}/root-config --cflags" OUTPUT_VARIABLE ROOT_CXX_FLAGS)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS}")
+set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lNew -lGui -lMinuit2)
 
 # Load MYSQLPP
 find_package(MYSQLPP)
@@ -146,10 +145,11 @@ IF(MYSQLPP_FOUND)
   ## KLUDGE:  For now, do not define the __USE_DATABASE__ flag, because we're still missing some of the database support files. --- P.King, 05jun2018
   message("--   The \"__USE_DATABASE__\" flag is commented out in CMakeLists.txt; database support is DISABLED.")
   #  add_definitions(-D__USE_DATABASE__)
-  list(APPEND my_project_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwDatabase.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwDBInterface.cc
-    )
+  #  list(APPEND my_project_sources
+  #    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/QwDatabase.cc
+  #    )
+  message("--   Forcing MYSQLPP_LIBRARIES to \"\".")
+  SET(MYSQLPP_LIBRARIES "")
 ELSE(MYSQLPP_FOUND)
   SET(MYSQLPP_LIBRARIES "")
 endif(MYSQLPP_FOUND)
@@ -162,10 +162,26 @@ find_package(Boost COMPONENTS program_options filesystem system regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIR})
 
+# Find the CODA ET libaries
+find_package(ET)
+IF(ET_FOUND)
+  add_definitions(-D__CODA_ET)
+  include_directories(${ET_INCLUDE_DIR})
+  list(APPEND my_evio_headers
+    ${CMAKE_CURRENT_SOURCE_DIR}/evio/include/THaEtClient.h
+    )
+  list(APPEND my_evio_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/evio/src/THaEtClient.C
+    )
+else(ET_FOUND)
+  SET(ET_LIBRARY "")
+endif(ET_FOUND)
+
+add_definitions(-std=c++11)
+
 # Create dictionaries for headers that contain "ClassDef"
-if(ROOT_VERSION VERSION_LESS 5.90)
-message("Generating QwAnalysis dictionaries for ROOT ${ROOT_VERSION}...")
-foreach(file ${my_evio_headers} ${my_project_headers})
+message("Generating evio dictionaries for ROOT ${ROOT_VERSION}...")
+foreach(file ${my_evio_headers})
   # Find the header files that have uncommented ClassDef lines
   execute_process(COMMAND grep -l "[^/]ClassDef" ${file} OUTPUT_VARIABLE result)
   if(result)
@@ -173,8 +189,29 @@ foreach(file ${my_evio_headers} ${my_project_headers})
     get_filename_component(file_path ${file} PATH)
     get_filename_component(file_name ${file} NAME_WE)
     # Add dictionary target with possible LinkDef file
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dictionary)
-    set(dict ${CMAKE_CURRENT_BINARY_DIR}/dictionary/${file_name}Dict)
+    set(dict ${CMAKE_CURRENT_BINARY_DIR}/${file_name}Dict)
+    ROOT_GENERATE_DICTIONARY(
+      ${dict}
+      ${file}
+      OPTIONS -p)
+    # Add dictionary to evio sources
+    set(my_evio_sources ${my_evio_sources} ${dict}.cxx)
+    # Add pcm file to list
+    if(ROOT_VERSION VERSION_GREATER 5.90)
+    set(pcmfiles ${pcmfiles} ${dict}_rdict.pcm)
+    endif()
+  endif()
+endforeach()
+message("Generating QwAnalysis dictionaries for ROOT ${ROOT_VERSION}...")
+foreach(file ${my_project_headers})
+  # Find the header files that have uncommented ClassDef lines
+  execute_process(COMMAND grep -l "[^/]ClassDef" ${file} OUTPUT_VARIABLE result)
+  if(result)
+    # Get path and filename without extension
+    get_filename_component(file_path ${file} PATH)
+    get_filename_component(file_name ${file} NAME_WE)
+    # Add dictionary target with possible LinkDef file
+    set(dict ${CMAKE_CURRENT_BINARY_DIR}/${file_name}Dict)
     set(linkdef ${file_path}/${file_name}LinkDef.h)
     if(EXISTS ${linkdef})
       ROOT_GENERATE_DICTIONARY(
@@ -196,10 +233,6 @@ foreach(file ${my_evio_headers} ${my_project_headers})
     endif()
   endif()
 endforeach()
-else()
-message("No QwAnalysis dictionaries needed for ROOT ${ROOT_VERSION}.")
-endif()
-
 
 # Add target of QwGitVersion.h
 add_custom_command(
@@ -217,22 +250,16 @@ set_property(
   APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh
   )
 
-# Qweak configure script
-set(QWANALYSIS ${CMAKE_SOURCE_DIR})
-set(QW_BIN ${CMAKE_SOURCE_DIR}/bin)
-set(QW_LIB ${CMAKE_SOURCE_DIR}/lib)
-configure_file(${CMAKE_SOURCE_DIR}/qweak-config.in qweak-config @ONLY)
-
 # Link the evio library
 add_library(evio SHARED ${my_evio_sources})
 target_link_libraries(evio)
-install(TARGETS evio DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+install(TARGETS evio DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Link the ROOT libraries
 add_library(QwAnalysis SHARED ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh ${my_project_sources} ${my_project_headers})
 target_link_libraries(QwAnalysis
   evio ${ROOT_LIBRARIES} ${MYSQLPP_LIBRARIES} ${Boost_LIBRARIES})
-install(TARGETS QwAnalysis DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+install(TARGETS QwAnalysis DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Install pcm files into lib
 install(FILES ${pcmfiles} DESTINATION ${CMAKE_SOURCE_DIR}/lib)
@@ -249,8 +276,18 @@ foreach(file ${exefiles})
   add_executable(${filelower} ${file})
   target_link_libraries(
     ${filelower}
-    ${ROOT_LIBRARIES} ${MYSQLPP_LIBRARIES} ${Boost_LIBRARIES} QwAnalysis evio
+    ${ROOT_LIBRARIES} ${MYSQLPP_LIBRARIES} ${Boost_LIBRARIES} QwAnalysis evio ${ET_LIBRARY}
     )
-  install(TARGETS ${filelower} DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+  install(TARGETS ${filelower} DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
 endforeach()
 
+# uninstall target
+if(NOT TARGET uninstall)
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+        IMMEDIATE @ONLY)
+
+    add_custom_target(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+endif()

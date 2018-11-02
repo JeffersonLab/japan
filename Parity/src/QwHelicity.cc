@@ -43,6 +43,7 @@ QwHelicity::QwHelicity(const TString& name)
 : VQwSubsystem(name),
   VQwSubsystemParity(name),
   fHelicityBitPattern(kDefaultHelicityBitPattern),
+  kPatternCounter(-1), kMpsCounter(-1), kPatternPhase(-1),
   fMinPatternPhase(1), fUsePredictor(kTRUE), fIgnoreHelicity(kFALSE),
   fEventNumberFirst(-1),fPatternNumberFirst(-1),
   fSuppressMPSErrorMsgs(kFALSE)
@@ -82,6 +83,9 @@ QwHelicity::QwHelicity(const QwHelicity& source)
 : VQwSubsystem(source.GetSubsystemName()),
   VQwSubsystemParity(source.GetSubsystemName()),
   fHelicityBitPattern(kDefaultHelicityBitPattern),
+  kPatternCounter(source.kPatternCounter),
+  kMpsCounter(source.kMpsCounter),
+  kPatternPhase(source.kPatternPhase),
   fMinPatternPhase(1), fUsePredictor(kTRUE), fIgnoreHelicity(kFALSE),
   fEventNumberFirst(-1),fPatternNumberFirst(-1),
   fSuppressMPSErrorMsgs(kFALSE)
@@ -383,7 +387,7 @@ void QwHelicity::ClearEventData()
   return;
 }
 
-Int_t QwHelicity::ProcessConfigurationBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwHelicity::ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   //stub function
   // QwError << " this function QwHelicity::ProcessConfigurationBuffer does nothing yet " << QwLog::endl;
@@ -520,41 +524,49 @@ void QwHelicity::ProcessEventUserbitMode()
 void QwHelicity::ProcessEventInputRegisterMode()
 {
   static Bool_t firstpattern = kTRUE;
-  Bool_t fake_the_counters=kFALSE;
+  static Bool_t fake_the_counters=kFALSE;
   UInt_t thisinputregister=fWord[kInputRegister].fValue;
 
-  /**
-     In the Input Register Mode,
-     the event number is obtained straight from the wordkMPSCounter.
-  */
-  fEventNumber=fWord[kMpsCounter].fValue;
-
+  if (firstpattern){
+    //  If any of the special counters are negative or zero, setup to
+    //  generate the counters internally.
+    fake_the_counters |= (kPatternCounter<=0)
+      || ( kMpsCounter<=0) || (kPatternPhase<=0);
+  }
+  
   if (CheckIORegisterMask(thisinputregister,fInputReg_FakeMPS))
     fIgnoreHelicity = kTRUE;
   else 
     fIgnoreHelicity = kFALSE;
 
-  // When we have the minimum phase from the pattern phase word
-  // and the input register minimum phase bit is set
-  // we can select the second pattern as below.
-  if(fWord[kPatternPhase].fValue - fPatternPhaseOffset == 0)
-    if (firstpattern && CheckIORegisterMask(thisinputregister,kInputReg_PatternSync)){
-      firstpattern   = kFALSE;
-    }
-
-  // If firstpattern is still TRUE, we are still searching for the first
-  // pattern of the data stream. So set the pattern number = 0
-  if (firstpattern)
-    fPatternNumber      = -1;
-  else {
-    fPatternNumber      = fWord[kPatternCounter].fValue;
-    fPatternPhaseNumber = fWord[kPatternPhase].fValue - fPatternPhaseOffset + fMinPatternPhase;
-  }
-
-  /** Tf we get junk for the mps and pattern information from the run
-      we can enable fake counters for mps, pattern number and pattern phase to get the job done.
+  /** If we get junk for the mps and pattern information from the run
+      we can enable fake counters for mps, pattern number and pattern
+      phase to get the job done.
   */
-  if (fake_the_counters){
+  if (!fake_the_counters){
+    /**
+       In the Input Register Mode,
+       the event number is obtained straight from the wordkMPSCounter.
+    */
+    fEventNumber=fWord[kMpsCounter].fValue;
+    // When we have the minimum phase from the pattern phase word
+    // and the input register minimum phase bit is set
+    // we can select the second pattern as below.
+    if(fWord[kPatternPhase].fValue - fPatternPhaseOffset == 0)
+      if (firstpattern && CheckIORegisterMask(thisinputregister,kInputReg_PatternSync)){
+	firstpattern   = kFALSE;
+      }
+    
+    // If firstpattern is still TRUE, we are still searching for the first
+    // pattern of the data stream. So set the pattern number = 0
+    if (firstpattern)
+      fPatternNumber      = -1;
+    else {
+      fPatternNumber      = fWord[kPatternCounter].fValue;
+      fPatternPhaseNumber = fWord[kPatternPhase].fValue - fPatternPhaseOffset + fMinPatternPhase;
+    }
+  } else {
+    //  Use internal variables for all the counters.
     fEventNumber = fEventNumberOld+1;
     if (CheckIORegisterMask(thisinputregister,kInputReg_PatternSync)) {
       fPatternPhaseNumber = fMinPatternPhase;
@@ -807,10 +819,8 @@ Int_t QwHelicity::LoadChannelMap(TString mapfile)
 {
   Bool_t ldebug=kFALSE;
 
-  Int_t currentrocread=0;
-  Int_t currentbankread=0;
   Int_t wordsofar=0;
-  Int_t currentsubbankindex=-1;
+  Int_t bankindex=-1;
 
   fPatternPhaseOffset=1;//Phase number offset is set to 1 by default and will be set to 0 if phase number starts from 0
 
@@ -821,172 +831,141 @@ Int_t QwHelicity::LoadChannelMap(TString mapfile)
 
   QwParameterFile mapstr(mapfile.Data());  //Open the file
   fDetectorMaps.insert(mapstr.GetParamFileNameContents());
+  mapstr.EnableGreediness();
+  mapstr.SetCommentChars("!");
 
+  UInt_t value = 0;
+  TString valuestr;
+  
   while (mapstr.ReadNextLine()){
-    mapstr.TrimComment('!');   // Remove everything after a '!' character.
+    RegisterRocBankMarker(mapstr);
+
+    if (mapstr.PopValue("patternphase",value)) {
+      fMaxPatternPhase=value;
+      //QwMessage << " fMaxPatternPhase " << fMaxPatternPhase << QwLog::endl;
+    }
+    if (mapstr.PopValue("patternbits",value)) {
+      SetHelicityBitPattern(value);
+    }
+    if (mapstr.PopValue("fakempsbit",value)) {
+      fInputReg_FakeMPS = value;
+      QwWarning << " fInputReg_FakeMPS 0x" << std::hex << fInputReg_FakeMPS << std::dec << QwLog::endl;
+    }
+    if (mapstr.PopValue("numberpatternsdelayed",value)) {
+      SetHelicityDelay(value);
+    }
+    if (mapstr.PopValue("randseedbits",value)) {
+      if (value==24 || value==30)
+	fRandBits = value;
+    }
+    if (mapstr.PopValue("patternphaseoffset",value)) {
+      fPatternPhaseOffset=value;
+    }
+    if (mapstr.PopValue("helpluseventtype",value)) {
+      kEventTypeHelPlus = value;
+    }
+    if (mapstr.PopValue("helminuseventtype",value)) {
+      kEventTypeHelMinus = value;
+    }
+    if (mapstr.PopValue("helicitydecodingmode",valuestr)) {
+      if (valuestr=="InputRegisterMode") {
+	QwMessage << " **** Input Register Mode **** " << QwLog::endl;
+	fHelicityDecodingMode=kHelInputRegisterMode;
+      } else if (valuestr=="UserbitMode"){
+	QwMessage << " **** Userbit Mode **** " << QwLog::endl;
+	fHelicityDecodingMode=kHelUserbitMode;
+      } else if (valuestr=="HelLocalyMadeUp"){
+	QwMessage << "**** Helicity Locally Made Up ****" << QwLog::endl;
+	fHelicityDecodingMode=kHelLocalyMadeUp;
+      } else if (valuestr=="InputMollerMode") {
+	QwMessage << "**** Input Moller Mode ****" << QwLog::endl;
+	fHelicityDecodingMode=kHelInputMollerMode;
+      } else {
+	QwError  << "The helicity decoding mode read in file " << mapfile
+		 << " is not recognized in function QwHelicity::LoadChannelMap \n"
+		 << " Quiting this execution." << QwLog::endl;
+      }
+    }
+
+    if(bankindex!=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID)) { 
+      bankindex=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID);
+      if (fWordsPerSubbank.size()<bankindex+1){
+	fWordsPerSubbank.resize(bankindex+1,
+				std::pair<Int_t, Int_t>(fWord.size(),fWord.size()));
+      }
+      wordsofar=0;
+    }
     mapstr.TrimWhitespace();   // Get rid of leading and trailing spaces.
     if (mapstr.LineIsEmpty())  continue;
 
-    TString varname, varvalue;
-    if (mapstr.HasVariablePair("=",varname,varvalue)){
-      //  This is a declaration line.  Decode it.
-      varname.ToLower();
-      UInt_t value = QwParameterFile::GetUInt(varvalue);
+    //  Break this line into tokens to process it.
+    TString modtype = mapstr.GetTypedNextToken<TString>();	// module type
+    Int_t modnum = mapstr.GetTypedNextToken<Int_t>();	//slot number
+    /* Int_t channum = */ mapstr.GetTypedNextToken<Int_t>();	//channel number /* unused */
+    TString dettype = mapstr.GetTypedNextToken<TString>();	//type-purpose of the detector
+    dettype.ToLower();
+    TString namech  = mapstr.GetTypedNextToken<TString>();  //name of the detector
+    namech.ToLower();
+    TString keyword = mapstr.GetTypedNextToken<TString>();
+    keyword.ToLower();
+    // Notice that "namech" and "keyword" are now forced to lower-case.
 
-      if (varname=="roc")
-	{
-	  currentrocread=value;
-	  RegisterROCNumber(value,0);
-	  fWordsPerSubbank.push_back( std::pair<Int_t, Int_t>(fWord.size(),fWord.size()));
-	}
-      else if (varname=="bank")
-	{
-	  currentbankread=value;
-	  RegisterSubbank(value);
-	  fWordsPerSubbank.push_back( std::pair<Int_t, Int_t>(fWord.size(),fWord.size()));
-	}
-      else if (varname=="patternphase")
-	{
-	  fMaxPatternPhase=value;
-	  //QwMessage << " fMaxPatternPhase " << fMaxPatternPhase << QwLog::endl;
-	}
-      else if (varname=="patternbits")
-        {
-          SetHelicityBitPattern(value);
-        }
-      else if (varname=="fakempsbit")
-        {
-          fInputReg_FakeMPS = value;
-          QwWarning << " fInputReg_FakeMPS 0x" << std::hex << fInputReg_FakeMPS << std::dec << QwLog::endl;
-        }
-      else if (varname=="numberpatternsdelayed")
-	{
-	  SetHelicityDelay(value);
-	}
-      else if (varname=="randseedbits")
-	{
-	  if (value==24 || value==30)
-	    fRandBits = value;
-	}
-      else if (varname=="patternphaseoffset")
-	{
-	  fPatternPhaseOffset=value;
-	}
-      else if(varname=="helpluseventtype")
-	{
-	  kEventTypeHelPlus = value;
-	}
-      else if(varname=="helminuseventtype")
-	{
-	  kEventTypeHelMinus = value;
-	}
-      else if (varname=="helicitydecodingmode")
-	{
-	  if (varvalue=="InputRegisterMode") {
-	    QwMessage << " **** Input Register Mode **** " << QwLog::endl;
-	    fHelicityDecodingMode=kHelInputRegisterMode;
-	  }
-	  else if (varvalue=="UserbitMode"){
-	    QwMessage << " **** Userbit Mode **** " << QwLog::endl;
-	    fHelicityDecodingMode=kHelUserbitMode;
-	  }
-	  else if (varvalue=="HelLocalyMadeUp"){
-	    QwMessage << "**** Helicity Locally Made Up ****" << QwLog::endl;
-	    fHelicityDecodingMode=kHelLocalyMadeUp;
-	  }
-	  else if (varvalue=="InputMollerMode") {
-	    QwMessage << "**** Input Moller Mode ****" << QwLog::endl;
-	    fHelicityDecodingMode=kHelInputMollerMode;
-	  }
-	  else {
-	    QwError  << "The helicity decoding mode read in file " << mapfile
-		     << " is not recognized in function QwHelicity::LoadChannelMap \n"
-		     << " Quiting this execution." << QwLog::endl;
-	  }
-	}
+    if(modtype=="SKIP"){
+      if (modnum<=0) wordsofar+=1;
+      else           wordsofar+=modnum;
+    } else if(modtype!="WORD"|| dettype!="helicitydata") {
+      QwError << "QwHelicity::LoadChannelMap:  Unknown detector type: "
+	      << dettype  << ", the detector " << namech << " will not be decoded "
+	      << QwLog::endl;
+      continue;
     } else {
-      //  Break this line into tokens to process it.
-      TString modtype = mapstr.GetTypedNextToken<TString>();	// module type
-      Int_t modnum = mapstr.GetTypedNextToken<Int_t>();	//slot number
-      /* Int_t channum = */ mapstr.GetTypedNextToken<Int_t>();	//channel number /* unused */
-      TString dettype = mapstr.GetTypedNextToken<TString>();	//type-purpose of the detector
-      dettype.ToLower();
-      TString namech  = mapstr.GetTypedNextToken<TString>();  //name of the detector
-      namech.ToLower();
-      TString keyword = mapstr.GetTypedNextToken<TString>();
-      keyword.ToLower();
-      // Notice that "namech" and "keyword" are now forced to lower-case.
-
-      if(currentsubbankindex!=GetSubbankIndex(currentrocread,currentbankread))
+      QwWord localword;
+      localword.fSubbankIndex=bankindex;
+      localword.fWordInSubbank=wordsofar;
+      wordsofar+=1;
+      // I assume that one data = one word here. But it is not always the case, for
+      // example the triumf adc gives 6 words per channel
+      localword.fModuleType=modtype;
+      localword.fWordName=namech;
+      localword.fWordType=dettype;
+      fWord.push_back(localword);
+      fWordsPerSubbank.at(bankindex).second = fWord.size();
+      
+      // Notice that "namech" is in lower-case, so these checks
+      // should all be in lower-case
+      switch (fHelicityDecodingMode)
 	{
-	  currentsubbankindex=GetSubbankIndex(currentrocread,currentbankread);
-	  wordsofar=0;
-	}
-
-      if(modtype=="SKIP"){
-	if (modnum<=0) wordsofar+=1;
-	else           wordsofar+=modnum;
-      }
-      else if(modtype!="WORD"|| dettype!="helicitydata")
-	{
-	  QwError << "QwHelicity::LoadChannelMap:  Unknown detector type: "
-		  << dettype  << ", the detector " << namech << " will not be decoded "
-		  << QwLog::endl;
-	  continue;
-	}
-      else
-	{
-	  QwWord localword;
-	  localword.fSubbankIndex=currentsubbankindex;
-	  localword.fWordInSubbank=wordsofar;
-	  wordsofar+=1;
-	  // I assume that one data = one word here. But it is not always the case, for
-	  // example the triumf adc gives 6 words per channel
-	  localword.fModuleType=modtype;
-	  localword.fWordName=namech;
-	  localword.fWordType=dettype;
-	  fWord.push_back(localword);
-	  fWordsPerSubbank[currentsubbankindex].second = fWord.size();
-	  QwDebug << "--" << namech << "--" << fWord.size()-1 << QwLog::endl;
-
-	  // Notice that "namech" is in lower-case, so these checks
-	  // should all be in lower-case
-	  switch (fHelicityDecodingMode)
-	    {
-	    case kHelUserbitMode :
-	      if(namech.Contains("userbit")) kUserbit=fWord.size()-1;
-	      if(namech.Contains("scalercounter")) kScalerCounter=fWord.size()-1;
-	      break;
-	    case kHelInputRegisterMode :
-	      if(namech.Contains("input_register")) kInputRegister= fWord.size()-1;
-	      if(namech.Contains("mps_counter")) kMpsCounter= fWord.size()-1;
-	      if(namech.Contains("pat_counter")) kPatternCounter= fWord.size()-1;
-	      if(namech.Contains("pat_phase")) kPatternPhase= fWord.size()-1;
-	      break;
-	    case kHelInputMollerMode :
-	      if(namech.Contains("mps_counter")) {
-		kMpsCounter= fWord.size()-1;
-	      }
-	      if(namech.Contains("pat_counter")) {
-		kPatternCounter = fWord.size()-1;
-	      }
-	      break;
-	    }
+	case kHelUserbitMode :
+	  if(namech.Contains("userbit")) kUserbit=fWord.size()-1;
+	  if(namech.Contains("scalercounter")) kScalerCounter=fWord.size()-1;
+	  break;
+	case kHelInputRegisterMode :
+	  if(namech.Contains("input_register")) kInputRegister= fWord.size()-1;
+	  if(namech.Contains("mps_counter")) kMpsCounter= fWord.size()-1;
+	  if(namech.Contains("pat_counter")) kPatternCounter= fWord.size()-1;
+	  if(namech.Contains("pat_phase")) kPatternPhase= fWord.size()-1;
+	  break;
+	case kHelInputMollerMode :
+	  if(namech.Contains("mps_counter")) {
+	    kMpsCounter= fWord.size()-1;
+	  }
+	  if(namech.Contains("pat_counter")) {
+	    kPatternCounter = fWord.size()-1;
+	  }
+	  break;
 	}
     }
   }
+  
 
-  if(ldebug)
-    {
-      std::cout << "Done with Load map channel \n";
-      for(size_t i=0;i<fWord.size();i++)
-	fWord[i].PrintID();
-      std::cout << " kUserbit=" << kUserbit << "\n";
-
-    }
+  if(ldebug) {
+    std::cout << "Done with Load map channel \n";
+    for(size_t i=0;i<fWord.size();i++)
+      fWord[i].PrintID();
+    std::cout << " kUserbit=" << kUserbit << "\n";  
+  }
   ldebug=kFALSE;
-
-
+  
   if (fHelicityDecodingMode==kHelInputMollerMode){
     // Check to be sure kEventTypeHelPlus and kEventTypeHelMinus are both defined and not equal
     if (kEventTypeHelPlus != kEventTypeHelMinus
@@ -1008,7 +987,7 @@ Int_t QwHelicity::LoadChannelMap(TString mapfile)
       exit(65);
     }
   }
-
+  
   mapstr.Close(); // Close the file (ifstream)
   return 0;
 }
@@ -1018,7 +997,7 @@ Int_t QwHelicity::LoadEventCuts(TString filename){
   return 0;
 }
 
-Int_t QwHelicity::ProcessEvBuffer(UInt_t event_type, const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwHelicity::ProcessEvBuffer(UInt_t event_type, const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   Bool_t lkDEBUG = kFALSE;
 
@@ -1035,7 +1014,7 @@ Int_t QwHelicity::ProcessEvBuffer(UInt_t event_type, const UInt_t roc_id, const 
 	    << " and subbank " << bank_id
 	    << " number of words=" << num_words << QwLog::endl;
 
-    for(Int_t i=fWordsPerSubbank[index].first; i<fWordsPerSubbank[index].second; i++) {
+    for(Int_t i=fWordsPerSubbank.at(index).first; i<fWordsPerSubbank.at(index).second; i++) {
       if(fWord[i].fWordInSubbank+1<= (Int_t) num_words) {
 	fWord[i].fValue=buffer[fWord[i].fWordInSubbank];
       } else {

@@ -30,3 +30,21 @@
 *.exe
 *.out
 *.app
+
+#  Explicit instances of executables in the "bin" directory
+qwmockdatagenerator
+qwparity
+qwparity_simple
+qwroot
+
+# Directories
+build
+output
+Doxygen/html
+
+# output
+*.tar.gz
+*.tar
+
+#tmp files
+*~

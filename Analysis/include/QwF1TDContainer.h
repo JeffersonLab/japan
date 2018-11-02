@@ -321,7 +321,7 @@ class QwF1TDContainer :  public TObject
   void AddS30(Int_t roc, Int_t slot, Int_t channel);
 
  
-  Bool_t  CheckDataIntegrity(const UInt_t roc_id, UInt_t *buffer, UInt_t num_words);
+  Bool_t  CheckDataIntegrity(const ROCID_t roc_id, UInt_t *buffer, UInt_t num_words);
 
   const MQwF1TDC GetF1TDCDecoder() const {return fF1TDCDecoder;};
   

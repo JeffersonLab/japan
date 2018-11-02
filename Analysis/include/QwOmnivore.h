@@ -2,7 +2,7 @@
 #define QWOMNIVORE_H
 
 #include "VQwSubsystemParity.h"
-#include "VQwSubsystemTracking.h"
+//#include "VQwSubsystemTracking.h"
 
 //#include "QwHitContainer.h"
 //#include "QwDetectorInfo.h"
@@ -60,7 +60,7 @@ class QwOmnivore: public VQwSubsystem_t {
     void  ClearEventData() { };
 
     /// Process the configuration events
-    Int_t ProcessConfigurationBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words) {
+    Int_t ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words) {
       /// Om nom nom nom
       // TODO (wdc) configuration events seem to have num_words = 0xffffffff
       //UInt_t cheeseburger;
@@ -70,13 +70,13 @@ class QwOmnivore: public VQwSubsystem_t {
     };
 
     /// Process the event buffer
-    Int_t ProcessEvBuffer(const UInt_t event_type, const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words) {
+    Int_t ProcessEvBuffer(const UInt_t event_type, const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words) {
       /// TODO:  Subsystems should be changing their ProcessEvBuffer routines to take the event_type as the first
       ///  arguement.  But in the meantime, default to just calling the non-event-type-aware ProcessEvBuffer routine.
       return this->ProcessEvBuffer(roc_id, bank_id, buffer, num_words);
     };
     /// TODO:  The non-event-type-aware ProcessEvBuffer routine should be replaced with the event-type-aware version.
-    Int_t ProcessEvBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words) {
+    Int_t ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words) {
       /// Om nom nom nom
       UInt_t cheeseburger;
       for (UInt_t word = 0; word < num_words; word++)
