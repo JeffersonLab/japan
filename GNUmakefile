@@ -180,8 +180,7 @@ endif
 ROOTCONFIG   := $(ROOTSYS)/bin/root-config
 ## ROOTDEFINE   := $(shell $(ROOTCONFIG) --features | $(SED) 's/\(\s*\)\([a-zA-Z0-9_]*\)/\1-D__ROOT_HAS_\2/g;y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/')
 ROOTCFLAGS   := $(shell $(ROOTCONFIG) --cflags)
-ROOTLIBS     := $(shell $(ROOTCONFIG) --new --libs) -lTreePlayer -lGui 
-#  -lMinuit2  removed from listing
+ROOTLIBS     := $(shell $(ROOTCONFIG) --new --libs) -lTreePlayer -lGui -lMinuit2
         # -lNew : for map file capability
         # -lTreePlayer -lProof : for user loops calling tree
         #                        variables under conditions
@@ -353,7 +352,7 @@ LIBTOOL = $(LD)
 ifeq ($(ARCH),Linux)
 
 CXX            := $(GCC)
-CXXFLAGS       := -Wall -fPIC -std=c++11
+CXXFLAGS       := -Wall -fPIC -Wno-unknown-warning -Wno-misleading-indentation -Wno-deprecated-declarations -Wno-nonnull-compare
 OPTIM          := $(OPTIM)
 LD             = $(GCC)
 LDFLAGS	       = -Wl,-rpath,$(QW_LIB) -Wl,--no-as-needed
@@ -427,6 +426,92 @@ endif
 
 ############################
 ############################
+# Some set-up for the MySQL library
+############################
+############################
+ifndef MYSQL_INC_DIR
+  ifneq ($(strip $(shell $(FIND) /usr/include -maxdepth 1 -name mysql)),/usr/include/mysql)
+    $(warning Install the MySQL client library on your system, or set the environment)
+    $(warning variables MYSQL_INC_DIR and MYSQL_LIB_DIR to the directory with)
+    $(warning the MySQL headers and libraries, respectively.)
+    $(warning See the Qweak Wiki for installation and compilation instructions.)
+    $(warning ->   http://qweak.jlab.org/wiki/index.php/Software)
+    $(warning )
+    $(warning Could not find the MySQL library)
+  else
+    $(info Setting MYSQL_INC_DIR to /usr/include/mysql)
+    MYSQL_INC_DIR = /usr/include/mysql
+    MYSQL_LIB_DIR = /usr/lib/mysql
+  endif
+endif
+ifdef MYSQL_LIB_DIR
+  ifndef MYSQLPP_INC_DIR
+    ifneq ($(strip $(shell $(FIND) /usr/include -maxdepth 1 -name mysql++)),/usr/include/mysql++)
+      ifneq ($(strip $(shell $(FIND) /usr/local/include -maxdepth 1 -name mysql++)),/usr/local/include/mysql++)
+        $(warning Install the MySQL++ library on your system, or set the environment)
+        $(warning variables MYSQLPP_INC_DIR and MYSQLPP_LIB_DIR to the directory with)
+        $(warning the MySQL++ headers and libraries, respectively.)
+        $(warning See the Qweak Wiki for installation and compilation instructions.)
+        $(warning ->   http://qweak.jlab.org/wiki/index.php/Software)
+        $(warning )
+        $(warning Could not find the MySQL++ library)
+      else
+        $(warning Setting MYSQLPP_INC_DIR to /usr/local/include/mysql++)
+        MYSQLPP_INC_DIR = /usr/local/include/mysql++
+        MYSQLPP_LIB_DIR = /usr/local/lib
+      endif
+    else
+      $(info Setting MYSQLPP_INC_DIR to /usr/include/mysql++)
+      MYSQLPP_INC_DIR = /usr/include/mysql++
+      MYSQLPP_LIB_DIR = /usr/lib
+    endif
+  endif
+endif
+ifdef MYSQLPP_LIB_DIR
+$(info Found the mysql libraries)
+MYSQL_INC  = -I${MYSQL_INC_DIR}
+MYSQL_LIBS = -L${MYSQL_LIB_DIR} -lmysqlclient
+MYSQLPP_INC  = -I${MYSQLPP_INC_DIR}
+MYSQLPP_LIBS = -L${MYSQLPP_LIB_DIR} -lmysqlpp
+DEFAULTADD += -D__USE_DATABASE__
+else
+MYSQL_INC  =
+MYSQL_LIBS =
+MYSQLPP_INC  =
+MYSQLPP_LIBS =
+endif
+
+############################
+############################
+# Some set-up for the MySQL++ library
+############################
+############################
+#ifndef MYSQLPP_INC_DIR
+#  ifneq ($(strip $(shell $(FIND) /usr/include -maxdepth 1 -name mysql++)),/usr/include/mysql++)
+#    ifneq ($(strip $(shell $(FIND) /usr/local/include -maxdepth 1 -name mysql++)),/usr/local/include/mysql++)
+#      $(warning Install the MySQL++ library on your system, or set the environment)
+#      $(warning variables MYSQLPP_INC_DIR and MYSQLPP_LIB_DIR to the directory with)
+#      $(warning the MySQL++ headers and libraries, respectively.)
+#      $(warning See the Qweak Wiki for installation and compilation instructions.)
+#      $(warning ->   http://qweak.jlab.org/wiki/index.php/Software)
+#      $(warning )
+#      $(warning Could not find the MySQL++ library)
+#    else
+#      $(warning Setting MYSQLPP_INC_DIR to /usr/local/include/mysql++)
+#      MYSQLPP_INC_DIR = /usr/local/include/mysql++
+#      MYSQLPP_LIB_DIR = /usr/local/lib
+#    endif
+#  else
+#    $(info Setting MYSQLPP_INC_DIR to /usr/include/mysql++)
+#    MYSQLPP_INC_DIR = /usr/include/mysql++
+#    MYSQLPP_LIB_DIR = /usr/lib
+#  endif
+#endif
+
+
+
+############################
+############################
 # A few fixes :
 ############################
 ############################
@@ -456,12 +541,13 @@ endif
 INCFLAGS =  $(patsubst %,-I%,$(sort $(dir $(shell $(FIND) $(QWANALYSIS) | $(GREP) '\$(IncSuf)' | $(SED) '/\$(IncSuf)./d' | $(FILTER_OUT_TRASH) | $(INTO_RELATIVE_PATH) |  $(FILTER_OUT_LIBRARYDIR_DEPS)))))
 # Qw include paths : /SomePath/QwAnalysis/Analysis/include/Foo.h -> -I./Analysis/include/
 
+INCFLAGS += $(MYSQL_INC) $(MYSQLPP_INC)
 INCFLAGS += $(BOOST_INC) -I./
 
 # Necessary for dictionary files where include files are quoted with relative
 # path appended (default behaviour for root-cint)
 
-CPPFLAGS = $(INCFLAGS) $(ROOTCFLAGS) $(CODACFLAGS) $(sort $(DEFAULTADD) $(ADD)) -std=c++11
+CPPFLAGS = $(INCFLAGS) $(ROOTCFLAGS) $(CODACFLAGS) $(sort $(DEFAULTADD) $(ADD))
 # ADD should be contained in DEFAULTADD, but DEFAULTADD may be tempered with...
 
 CXXFLAGS += $(OPTIM) $(DEBUG)
@@ -473,6 +559,7 @@ ifneq ($(CXX),CC)
 endif
 LIBS =  -L$(QW_LIB) -lQw
 LIBS +=  $(ROOTLIBS) $(ROOTGLIBS) $(CODALIBS)
+LIBS +=  $(MYSQL_LIBS) $(MYSQLPP_LIBS)
 LIBS +=  $(BOOST_LIBS) $(LDLIBS)
 
 ############################

@@ -6,7 +6,7 @@
  */
 
 #include "QwRunCondition.h"
-#include "QwSVNVersion.h"
+//#include "QwSVNVersion.h"
 
 const Int_t QwRunCondition::fCharLength = 127;
 
@@ -74,9 +74,9 @@ QwRunCondition::SetArgs(Int_t argc, Char_t* argv[])
   TString svn_revision;
   TString svn_url;
   TString svn_lc_revision;
-  svn_revision    = QWANA_SVN_REVISION;
-  svn_url         = QWANA_SVN_URL;
-  svn_lc_revision = QWANA_SVN_LASTCHANGEDREVISION;
+  //  svn_revision    = QWANA_SVN_REVISION;
+  //  svn_url         = QWANA_SVN_URL;
+  //  svn_lc_revision = QWANA_SVN_LASTCHANGEDREVISION;
 
   // get current ROC flags 
   TString roc_flags;
@@ -97,9 +97,9 @@ QwRunCondition::SetArgs(Int_t argc, Char_t* argv[])
 
   program_name.Insert   (0, "QwAnalyzer Name : ");
   argv_list.Insert      (0, "QwAnalyzer Options : ");
-  svn_revision.Insert   (0, "QwAnalyzer SVN Revision : ");
-  svn_url.Insert        (0, "QwAnalyzer SVN URL : ");
-  svn_lc_revision.Insert(0, "QwAnalyzer SVN Last Changed Revision : ");
+  //  svn_revision.Insert   (0, "QwAnalyzer SVN Revision : ");
+  //  svn_url.Insert        (0, "QwAnalyzer SVN URL : ");
+  //  svn_lc_revision.Insert(0, "QwAnalyzer SVN Last Changed Revision : ");
 
   roc_flags.Insert      (0, "DAQ ROC flags when QwAnalyzer runs : ");
 

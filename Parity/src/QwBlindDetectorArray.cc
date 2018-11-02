@@ -1,11 +1,11 @@
 /**********************************************************\
-* File: MollerMainDetector.cc                          *
+* File: QwBlindDetectorArray.cc                          *
 *                                                          *
 * Author: P. M. King                                       *
 * Time-stamp: <2007-05-08 15:40>                           *
 \**********************************************************/
 
-#include "MollerMainDetector.h"
+#include "QwBlindDetectorArray.h"
 
 // System headers
 #include <sstream>
@@ -21,7 +21,7 @@
 #include "QwPromptSummary.h"
 
 // Register this subsystem with the factory
-RegisterSubsystemFactory(MollerMainDetector);
+RegisterSubsystemFactory(QwBlindDetectorArray);
 
 /**
  * Defines configuration options for QwEventBuffer class using QwOptions
@@ -29,10 +29,10 @@ RegisterSubsystemFactory(MollerMainDetector);
  *
  * @param options Options object
  */
-void MollerMainDetector::DefineOptions(QwOptions &options){
+void QwBlindDetectorArray::DefineOptions(QwOptions &options){
   // Define the execution options
   options.AddOptions()
-    ("MollerMainDetector.normalize",
+    ("QwBlindDetectorArray.normalize",
      po::value<bool>()->default_bool_value(true),
      "Normalize the detectors by beam current");
 }
@@ -40,14 +40,14 @@ void MollerMainDetector::DefineOptions(QwOptions &options){
 
 /*!
  * Loads the configuration options into this instance of
- * MollerMainDetector from the QwOptions object.
+ * QwBlindDetectorArray from the QwOptions object.
  *
  * @param options Options object
  */
-void MollerMainDetector::ProcessOptions(QwOptions &options){
-  bNormalization = options.GetValue<bool>("MollerMainDetector.normalize");
+void QwBlindDetectorArray::ProcessOptions(QwOptions &options){
+  bNormalization = options.GetValue<bool>("QwBlindDetectorArray.normalize");
   if (! bNormalization){
-    QwWarning << "MollerMainDetector::ProcessOptions:  "
+    QwWarning << "QwBlindDetectorArray::ProcessOptions:  "
 	      << "Detector yields WILL NOT be normalized."
 	      << QwLog::endl;
   }
@@ -59,7 +59,7 @@ void MollerMainDetector::ProcessOptions(QwOptions &options){
  * Publish internal values
  * @return
  */
-Bool_t MollerMainDetector::PublishInternalValues() const
+Bool_t QwBlindDetectorArray::PublishInternalValues() const
 {
   // Publish variables
   Bool_t status = kTRUE;
@@ -136,8 +136,34 @@ Bool_t MollerMainDetector::PublishInternalValues() const
 }
 
 
+Bool_t QwBlindDetectorArray::PublishByRequest(TString device_name)
+{
+  Bool_t status = kFALSE;
+  //std::cerr << "#####   device_name==\"" << device_name << "\"" << std::endl;
+  
+  for(size_t i=0;i<fMainDetID.size();i++) {
+    //std::cerr << "fMainDetID[i].fdetectorname==\"" << fMainDetID[i].fdetectorname << "\"" << std::endl;
+    if(device_name.CompareTo(fMainDetID[i].fdetectorname)!=0) continue;
+    
+    if (fMainDetID[i].fTypeID == kQwCombinedPMT){
+      status = PublishInternalValue(device_name, "published-by-request",
+				    fCombinedPMT[fMainDetID[i].fIndex].GetChannel(device_name));
+    } else if (fMainDetID[i].fTypeID == kQwIntegrationPMT) {
+      status = PublishInternalValue(device_name, "published-by-request",
+				    fIntegrationPMT[fMainDetID[i].fIndex].GetChannel(device_name));
+    } else {
+      QwError << "Unknown channel name:  " << device_name << QwLog::endl;
+    }
+    break;
+  }
+  if (!status)  
+    QwError << "QwLumi::PublishByRequest:  Failed to publish channel name:  " << device_name << QwLog::endl;
+  return status;
+}
+
+
 //*****************************************************************//
-Int_t MollerMainDetector::LoadChannelMap(TString mapfile)
+Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
 {
   Bool_t ldebug=kFALSE;
 
@@ -243,7 +269,7 @@ Int_t MollerMainDetector::LoadChannelMap(TString mapfile)
               wordsofar=0;
             }
 
-          MollerMainDetectorID localMainDetID;
+          QwBlindDetectorArrayID localMainDetID;
           localMainDetID.fdetectorname=namech;
           localMainDetID.fmoduletype=modtype;
           localMainDetID.fSubbankIndex=currentsubbankindex;
@@ -264,7 +290,7 @@ Int_t MollerMainDetector::LoadChannelMap(TString mapfile)
             }
           else
             {
-              QwError << "MollerMainDetector::LoadChannelMap:  Unknown module type: "
+              QwError << "QwBlindDetectorArray::LoadChannelMap:  Unknown module type: "
 		      << modtype <<", the detector "<<namech<<" will not be decoded "
 		      << QwLog::endl;
               lineok=kFALSE;
@@ -273,7 +299,7 @@ Int_t MollerMainDetector::LoadChannelMap(TString mapfile)
 
           localMainDetID.fTypeID=GetDetectorTypeID(dettype);
 	  if (localMainDetID.fTypeID==kQwUnknownPMT) {
-	    QwError << "MollerMainDetector::LoadChannelMap:  Unknown detector type: "
+	    QwError << "QwBlindDetectorArray::LoadChannelMap:  Unknown detector type: "
 		    << dettype <<", the detector "<<namech<<" will not be decoded "
 		    << QwLog::endl;
 	    lineok=kFALSE;
@@ -435,7 +461,7 @@ Int_t MollerMainDetector::LoadChannelMap(TString mapfile)
 }
 
 
-Int_t MollerMainDetector::LoadEventCuts(TString filename)
+Int_t QwBlindDetectorArray::LoadEventCuts(TString filename)
 {
   Int_t eventcut_flag = 1;
 
@@ -476,7 +502,7 @@ Int_t MollerMainDetector::LoadEventCuts(TString filename)
 	    varvalue = mapstr.GetTypedNextToken<TString>();//global/local
             varvalue.ToLower();
 	    Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
-	    QwMessage << "MollerMainDetector Error Code passing to QwIntegrationPMT " << GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut) << QwLog::endl;
+	    QwMessage << "QwBlindDetectorArray Error Code passing to QwIntegrationPMT " << GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut) << QwLog::endl;
 
 	    //std::cout<<"*****************************"<<std::endl;
 	    //std::cout<<" Type "<<device_type<<" Name "<<device_name<<" Index ["<<det_index <<"] "<<" device flag "<<check_flag<<std::endl;
@@ -490,7 +516,7 @@ Int_t MollerMainDetector::LoadEventCuts(TString filename)
 	    varvalue = mapstr.GetTypedNextToken<TString>();//global/local
             varvalue.ToLower();
 	    Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
-	    QwMessage << "MollerMainDetector Error Code passing to QwCombinedPMT " << GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut) << QwLog::endl;
+	    QwMessage << "QwBlindDetectorArray Error Code passing to QwCombinedPMT " << GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut) << QwLog::endl;
 
 	    //std::cout<<"*****************************"<<std::endl;
 	    //std::cout<<" Type "<<device_type<<" Name "<<device_name<<" Index ["<<det_index <<"] "<<" device flag "<<check_flag<<std::endl;
@@ -515,7 +541,7 @@ Int_t MollerMainDetector::LoadEventCuts(TString filename)
 
 
 
-Int_t MollerMainDetector::LoadInputParameters(TString pedestalfile)
+Int_t QwBlindDetectorArray::LoadInputParameters(TString pedestalfile)
 {
   Bool_t ldebug=kFALSE;
   TString varname;
@@ -605,13 +631,13 @@ Int_t MollerMainDetector::LoadInputParameters(TString pedestalfile)
 }
 
 
-Bool_t MollerMainDetector::IsGoodEvent()
+Bool_t QwBlindDetectorArray::IsGoodEvent()
 {
   Bool_t test=kTRUE;
   return test;
 }
 
-void MollerMainDetector::ClearEventData()
+void QwBlindDetectorArray::ClearEventData()
 {
   for (size_t i=0;i<fIntegrationPMT.size();i++){
     fIntegrationPMT[i].ClearEventData();
@@ -624,7 +650,7 @@ void MollerMainDetector::ClearEventData()
 
 
 /********************************************************/
-void MollerMainDetector::SetRandomEventParameters(Double_t mean, Double_t sigma)
+void QwBlindDetectorArray::SetRandomEventParameters(Double_t mean, Double_t sigma)
 {
   for (size_t i = 0; i < fMainDetID.size(); i++)
     {
@@ -635,7 +661,7 @@ void MollerMainDetector::SetRandomEventParameters(Double_t mean, Double_t sigma)
 
 }
 
-void MollerMainDetector::SetRandomEventAsymmetry(Double_t asymmetry)
+void QwBlindDetectorArray::SetRandomEventAsymmetry(Double_t asymmetry)
 {
   for (size_t i = 0; i < fMainDetID.size(); i++)
     {
@@ -646,7 +672,7 @@ void MollerMainDetector::SetRandomEventAsymmetry(Double_t asymmetry)
 
 }
 
-void MollerMainDetector::RandomizeEventData(int helicity, double time)
+void QwBlindDetectorArray::RandomizeEventData(int helicity, double time)
 {
   for (size_t i = 0; i < fMainDetID.size(); i++)
     {
@@ -657,7 +683,7 @@ void MollerMainDetector::RandomizeEventData(int helicity, double time)
 
 }
 
-void MollerMainDetector::EncodeEventData(std::vector<UInt_t> &buffer)
+void QwBlindDetectorArray::EncodeEventData(std::vector<UInt_t> &buffer)
 {
   std::vector<UInt_t> elements;
   elements.clear();
@@ -696,7 +722,7 @@ void MollerMainDetector::EncodeEventData(std::vector<UInt_t> &buffer)
     }
 }
 
-void  MollerMainDetector::RandomizeMollerEvent(int helicity /*, const QwBeamCharge& charge, const QwBeamPosition& xpos, const QwBeamPosition& ypos, const QwBeamAngle& xprime, const QwBeamAngle& yprime, const QwBeamEnergy& energy*/)
+void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCharge& charge, const QwBeamPosition& xpos, const QwBeamPosition& ypos, const QwBeamAngle& xprime, const QwBeamAngle& yprime, const QwBeamEnergy& energy*/)
 {
 /*  fTargetCharge.PrintInfo();
   fTargetX.PrintInfo();
@@ -713,7 +739,7 @@ void  MollerMainDetector::RandomizeMollerEvent(int helicity /*, const QwBeamChar
  
 }
 
-Int_t MollerMainDetector::ProcessConfigurationBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwBlindDetectorArray::ProcessConfigurationBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
 
   /*  Int_t index = GetSubbankIndex(roc_id,bank_id);
@@ -729,7 +755,7 @@ Int_t MollerMainDetector::ProcessConfigurationBuffer(const UInt_t roc_id, const 
 }
 
 
-Int_t MollerMainDetector::ProcessEvBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwBlindDetectorArray::ProcessEvBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   Bool_t lkDEBUG=kFALSE;
 
@@ -739,7 +765,7 @@ Int_t MollerMainDetector::ProcessEvBuffer(const UInt_t roc_id, const UInt_t bank
     {
       //  We want to process this ROC.  Begin looping through the data.
       if (lkDEBUG)
-        std::cout << "MollerMainDetector::ProcessEvBuffer:  "
+        std::cout << "QwBlindDetectorArray::ProcessEvBuffer:  "
         << "Begin processing ROC" << roc_id
         << " and subbank "<<bank_id
         << " number of words="<<num_words<<std::endl;
@@ -768,21 +794,21 @@ Int_t MollerMainDetector::ProcessEvBuffer(const UInt_t roc_id, const UInt_t bank
 
 
 
-Bool_t MollerMainDetector::ApplySingleEventCuts()
+Bool_t QwBlindDetectorArray::ApplySingleEventCuts()
 {
   Bool_t status=kTRUE;
   for(size_t i=0;i<fIntegrationPMT.size();i++){
     status &= fIntegrationPMT[i].ApplySingleEventCuts();
-    if(!status && bDEBUG) std::cout<<"******* MollerMainDetector::SingleEventCuts()->IntegrationPMT[ "<<i<<" , "<<fIntegrationPMT[i].GetElementName()<<" ] ******\n"; 
+    if(!status && bDEBUG) std::cout<<"******* QwBlindDetectorArray::SingleEventCuts()->IntegrationPMT[ "<<i<<" , "<<fIntegrationPMT[i].GetElementName()<<" ] ******\n"; 
   }
   for(size_t i=0;i<fCombinedPMT.size();i++){
     status &= fCombinedPMT[i].ApplySingleEventCuts();
-    if(!status && bDEBUG) std::cout<<"******* MollerMainDetector::SingleEventCuts()->CombinedPMT[ "<<i<<" , "<<fCombinedPMT[i].GetElementName()<<" ] ******\n"; 
+    if(!status && bDEBUG) std::cout<<"******* QwBlindDetectorArray::SingleEventCuts()->CombinedPMT[ "<<i<<" , "<<fCombinedPMT[i].GetElementName()<<" ] ******\n"; 
   }
 
 
   if (!status) 
-   fMainDetErrorCount++;//failed  event counter for MollerMainDetector
+   fMainDetErrorCount++;//failed  event counter for QwBlindDetectorArray
 
   return status;
 
@@ -790,7 +816,7 @@ Bool_t MollerMainDetector::ApplySingleEventCuts()
 }
 
 
-UInt_t MollerMainDetector::GetEventcutErrorFlag() //return the error flag
+UInt_t QwBlindDetectorArray::GetEventcutErrorFlag() //return the error flag
 {
   UInt_t ErrorFlag;
   ErrorFlag=0;
@@ -803,7 +829,7 @@ UInt_t MollerMainDetector::GetEventcutErrorFlag() //return the error flag
   return ErrorFlag;
 }
 
-void MollerMainDetector::IncrementErrorCounters()
+void QwBlindDetectorArray::IncrementErrorCounters()
 {
   for(size_t i=0;i<fIntegrationPMT.size();i++){
     fIntegrationPMT[i].IncrementErrorCounters();
@@ -814,9 +840,9 @@ void MollerMainDetector::IncrementErrorCounters()
 }
 
 //inherited from the VQwSubsystemParity; this will display the error summary
-void MollerMainDetector::PrintErrorCounters() const
+void QwBlindDetectorArray::PrintErrorCounters() const
 {
-  QwMessage<<"*********MollerMainDetector Error Summary****************"<<QwLog::endl;
+  QwMessage<<"*********QwBlindDetectorArray Error Summary****************"<<QwLog::endl;
   QwVQWK_Channel::PrintErrorCounterHead();
   for(size_t i=0;i<fIntegrationPMT.size();i++){
     //std::cout<<"  IntegrationPMT ["<<i<<"] "<<std::endl;
@@ -829,10 +855,10 @@ void MollerMainDetector::PrintErrorCounters() const
   QwVQWK_Channel::PrintErrorCounterTail();
 }
 
-void MollerMainDetector::UpdateErrorFlag(const VQwSubsystem *ev_error){
+void QwBlindDetectorArray::UpdateErrorFlag(const VQwSubsystem *ev_error){
   VQwSubsystem* tmp = const_cast<VQwSubsystem*>(ev_error);
   if(Compare(tmp)){
-    const MollerMainDetector* input = dynamic_cast<const MollerMainDetector*> (ev_error);
+    const QwBlindDetectorArray* input = dynamic_cast<const QwBlindDetectorArray*> (ev_error);
 
     for (size_t i=0;i<input->fIntegrationPMT.size();i++)
       this->fIntegrationPMT[i].UpdateErrorFlag(&(input->fIntegrationPMT[i]));
@@ -843,7 +869,7 @@ void MollerMainDetector::UpdateErrorFlag(const VQwSubsystem *ev_error){
 };
 
 
-void  MollerMainDetector::ProcessEvent()
+void  QwBlindDetectorArray::ProcessEvent()
 {
   for (size_t i=0;i<fIntegrationPMT.size();i++)
     fIntegrationPMT[i].ProcessEvent();
@@ -861,9 +887,9 @@ void  MollerMainDetector::ProcessEvent()
 /**
  * Exchange data between subsystems
  */
-void  MollerMainDetector::ExchangeProcessedData()
+void  QwBlindDetectorArray::ExchangeProcessedData()
 {
-  //  QwWarning << "MollerMainDetector::ExchangeProcessedData "<< QwLog::endl;
+  //  QwWarning << "QwBlindDetectorArray::ExchangeProcessedData "<< QwLog::endl;
   bIsExchangedDataValid = kTRUE;
   if (1==1 || bNormalization){
     // Create a list of all variables that we need
@@ -888,12 +914,12 @@ void  MollerMainDetector::ExchangeProcessedData()
     std::vector<VQwDataElement*>::iterator variable_iter;
     for (variable_iter  = variable_list.begin(); variable_iter != variable_list.end(); variable_iter++){
 	VQwDataElement* variable = *variable_iter;
-	//QwWarning << "MollerMainDetector::ExchangeProcessedData for loop "<<variable->GetElementName()<< QwLog::endl;
+	//QwWarning << "QwBlindDetectorArray::ExchangeProcessedData for loop "<<variable->GetElementName()<< QwLog::endl;
 	if (RequestExternalValue(variable->GetElementName(), variable))
 	  {
 	    if (bDEBUG)
 	      dynamic_cast<QwVQWK_Channel*>(variable)->PrintInfo();
-	    //QwWarning << "MollerMainDetector::ExchangeProcessedData Found "<<variable->GetElementName()<< QwLog::endl;
+	    //QwWarning << "QwBlindDetectorArray::ExchangeProcessedData Found "<<variable->GetElementName()<< QwLog::endl;
 	  }
 	else
 	  {
@@ -907,8 +933,8 @@ void  MollerMainDetector::ExchangeProcessedData()
 
     if(RequestExternalValue("q_targ", &fTargetCharge)){
       if (bDEBUG){
-	QwWarning << "MollerMainDetector::ExchangeProcessedData Found "<<fTargetCharge.GetElementName()<< QwLog::endl;
-	//QwWarning <<"****MollerMainDetector****"<< QwLog::endl;
+	QwWarning << "QwBlindDetectorArray::ExchangeProcessedData Found "<<fTargetCharge.GetElementName()<< QwLog::endl;
+	//QwWarning <<"****QwBlindDetectorArray****"<< QwLog::endl;
 	(dynamic_cast<QwVQWK_Channel*>(&fTargetCharge))->PrintInfo();
       }
     }
@@ -921,7 +947,7 @@ void  MollerMainDetector::ExchangeProcessedData()
     if(RequestExternalValue("x_targ", &fTargetX)){
       if (bDEBUG){
 	dynamic_cast<QwVQWK_Channel*>(&fTargetX)->PrintInfo();
-	QwWarning << "MollerMainDetector::ExchangeProcessedData Found "<<fTargetX.GetElementName()<< QwLog::endl;  
+	QwWarning << "QwBlindDetectorArray::ExchangeProcessedData Found "<<fTargetX.GetElementName()<< QwLog::endl;  
       }    
     }else{
       bIsExchangedDataValid = kFALSE;
@@ -932,7 +958,7 @@ void  MollerMainDetector::ExchangeProcessedData()
     if(RequestExternalValue("y_targ", &fTargetY)){
       if (bDEBUG){
 	dynamic_cast<QwVQWK_Channel*>(&fTargetY)->PrintInfo();
-	QwWarning << "MollerMainDetector::ExchangeProcessedData Found "<<fTargetY.GetElementName()<< QwLog::endl;
+	QwWarning << "QwBlindDetectorArray::ExchangeProcessedData Found "<<fTargetY.GetElementName()<< QwLog::endl;
       }
     }else{
       bIsExchangedDataValid = kFALSE;
@@ -943,7 +969,7 @@ void  MollerMainDetector::ExchangeProcessedData()
     if(RequestExternalValue("xp_targ", &fTargetXprime)){
       if (bDEBUG){
 	dynamic_cast<QwVQWK_Channel*>(&fTargetXprime)->PrintInfo();
-	QwWarning << "MollerMainDetector::ExchangeProcessedData Found "<<fTargetXprime.GetElementName()<< QwLog::endl;
+	QwWarning << "QwBlindDetectorArray::ExchangeProcessedData Found "<<fTargetXprime.GetElementName()<< QwLog::endl;
       }
     }else{
       bIsExchangedDataValid = kFALSE;
@@ -954,7 +980,7 @@ void  MollerMainDetector::ExchangeProcessedData()
     if(RequestExternalValue("yp_targ", &fTargetYprime)){
       if (bDEBUG){
 	dynamic_cast<QwVQWK_Channel*>(&fTargetYprime)->PrintInfo();
-	QwWarning << "MollerMainDetector::ExchangeProcessedData Found "<<fTargetYprime.GetElementName()<< QwLog::endl;
+	QwWarning << "QwBlindDetectorArray::ExchangeProcessedData Found "<<fTargetYprime.GetElementName()<< QwLog::endl;
       }
     }else{
       bIsExchangedDataValid = kFALSE;
@@ -965,7 +991,7 @@ void  MollerMainDetector::ExchangeProcessedData()
     if(RequestExternalValue("e_targ", &fTargetEnergy)){
       if (bDEBUG){
 	dynamic_cast<QwVQWK_Channel*>(&fTargetEnergy)->PrintInfo();
-	QwWarning << "MollerMainDetector::ExchangeProcessedData Found "<<fTargetEnergy.GetElementName()<< QwLog::endl;
+	QwWarning << "QwBlindDetectorArray::ExchangeProcessedData Found "<<fTargetEnergy.GetElementName()<< QwLog::endl;
       }
     }else{
       bIsExchangedDataValid = kFALSE;
@@ -982,7 +1008,7 @@ void  MollerMainDetector::ExchangeProcessedData()
 }
 
 
-void  MollerMainDetector::ProcessEvent_2()
+void  QwBlindDetectorArray::ProcessEvent_2()
 {
   if (bIsExchangedDataValid)
     {
@@ -992,7 +1018,7 @@ void  MollerMainDetector::ProcessEvent_2()
           Double_t  pedestal = fTargetCharge.GetPedestal();
           Double_t  calfactor = fTargetCharge.GetCalibrationFactor();
           Double_t  volts = fTargetCharge.GetAverageVolts();
-          std::cout<<"MollerMainDetector::ProcessEvent_2(): processing with exchanged data"<<std::endl;
+          std::cout<<"QwBlindDetectorArray::ProcessEvent_2(): processing with exchanged data"<<std::endl;
           std::cout<<"pedestal, calfactor, average volts = "<<pedestal<<", "<<calfactor<<", "<<volts<<std::endl;
         }
 
@@ -1000,14 +1026,14 @@ void  MollerMainDetector::ProcessEvent_2()
     }
   else
     {
-      QwWarning<<"MollerMainDetector::ProcessEvent_2(): could not get all external values."<<QwLog::endl;
+      QwWarning<<"QwBlindDetectorArray::ProcessEvent_2(): could not get all external values."<<QwLog::endl;
     }
 }
 
 
 
 
-void  MollerMainDetector::ConstructHistograms(TDirectory *folder, TString &prefix)
+void  QwBlindDetectorArray::ConstructHistograms(TDirectory *folder, TString &prefix)
 {
   for (size_t i=0;i<fIntegrationPMT.size();i++)
     fIntegrationPMT[i].ConstructHistograms(folder,prefix);
@@ -1018,7 +1044,7 @@ void  MollerMainDetector::ConstructHistograms(TDirectory *folder, TString &prefi
 }
 
 
-void  MollerMainDetector::FillHistograms()
+void  QwBlindDetectorArray::FillHistograms()
 {
   for (size_t i=0;i<fIntegrationPMT.size();i++)
     fIntegrationPMT[i].FillHistograms();
@@ -1030,7 +1056,7 @@ void  MollerMainDetector::FillHistograms()
 }
 
 
-void MollerMainDetector::ConstructBranchAndVector(TTree *tree, TString & prefix, std::vector <Double_t> &values)
+void QwBlindDetectorArray::ConstructBranchAndVector(TTree *tree, TString & prefix, std::vector <Double_t> &values)
 {
   for (size_t i=0;i<fIntegrationPMT.size();i++)
     fIntegrationPMT[i].ConstructBranchAndVector(tree, prefix, values);
@@ -1041,7 +1067,7 @@ void MollerMainDetector::ConstructBranchAndVector(TTree *tree, TString & prefix,
   return;
 }
 
-void MollerMainDetector::ConstructBranch(TTree *tree, TString & prefix)
+void QwBlindDetectorArray::ConstructBranch(TTree *tree, TString & prefix)
 {
   for (size_t i=0;i<fIntegrationPMT.size();i++)
     fIntegrationPMT[i].ConstructBranch(tree, prefix);
@@ -1052,7 +1078,7 @@ void MollerMainDetector::ConstructBranch(TTree *tree, TString & prefix)
   return;
 }
 
-void MollerMainDetector::ConstructBranch(TTree *tree, TString & prefix, QwParameterFile& trim_file)
+void QwBlindDetectorArray::ConstructBranch(TTree *tree, TString & prefix, QwParameterFile& trim_file)
 {
   TString tmp;
   QwParameterFile* nextmodule;
@@ -1077,7 +1103,7 @@ void MollerMainDetector::ConstructBranch(TTree *tree, TString & prefix, QwParame
   return;
 }
 
-void MollerMainDetector::FillTreeVector(std::vector<Double_t> &values) const
+void QwBlindDetectorArray::FillTreeVector(std::vector<Double_t> &values) const
 {
   for (size_t i=0;i<fIntegrationPMT.size();i++)
     fIntegrationPMT[i].FillTreeVector(values);
@@ -1089,13 +1115,13 @@ void MollerMainDetector::FillTreeVector(std::vector<Double_t> &values) const
 }
 
 
-const QwIntegrationPMT* MollerMainDetector::GetChannel(const TString name) const
+const QwIntegrationPMT* QwBlindDetectorArray::GetChannel(const TString name) const
 {
   return GetIntegrationPMT(name);
 }
 
 
-Bool_t MollerMainDetector::Compare(VQwSubsystem *value)
+Bool_t QwBlindDetectorArray::Compare(VQwSubsystem *value)
 {
   //  std::cout<<" Here in QwLumi::Compare \n";
 
@@ -1108,7 +1134,7 @@ Bool_t MollerMainDetector::Compare(VQwSubsystem *value)
     }
   else
     {
-      MollerMainDetector* input = dynamic_cast<MollerMainDetector*>(value);
+      QwBlindDetectorArray* input = dynamic_cast<QwBlindDetectorArray*>(value);
       if (input->fIntegrationPMT.size()!=fIntegrationPMT.size() ||
           input->fCombinedPMT.size()!=fCombinedPMT.size() )
         {
@@ -1120,13 +1146,13 @@ Bool_t MollerMainDetector::Compare(VQwSubsystem *value)
 }
 
 
-VQwSubsystem&  MollerMainDetector::operator=  (VQwSubsystem *value)
+VQwSubsystem&  QwBlindDetectorArray::operator=  (VQwSubsystem *value)
 {
-  //  std::cout<<" here in MollerMainDetector::operator= \n";
+  //  std::cout<<" here in QwBlindDetectorArray::operator= \n";
   if (Compare(value))
     {
 //      VQwSubsystem::operator=(value);
-      MollerMainDetector* input = dynamic_cast<MollerMainDetector*> (value);
+      QwBlindDetectorArray* input = dynamic_cast<QwBlindDetectorArray*> (value);
 
       for (size_t i=0;i<input->fIntegrationPMT.size();i++)
         this->fIntegrationPMT[i]=input->fIntegrationPMT[i];
@@ -1138,11 +1164,11 @@ VQwSubsystem&  MollerMainDetector::operator=  (VQwSubsystem *value)
 }
 
 
-VQwSubsystem&  MollerMainDetector::operator+=  (VQwSubsystem *value)
+VQwSubsystem&  QwBlindDetectorArray::operator+=  (VQwSubsystem *value)
 {
   if (Compare(value))
     {
-      MollerMainDetector* input= dynamic_cast<MollerMainDetector*>(value) ;
+      QwBlindDetectorArray* input= dynamic_cast<QwBlindDetectorArray*>(value) ;
 
       for (size_t i=0;i<input->fIntegrationPMT.size();i++)
         this->fIntegrationPMT[i]+=input->fIntegrationPMT[i];
@@ -1155,12 +1181,12 @@ VQwSubsystem&  MollerMainDetector::operator+=  (VQwSubsystem *value)
 }
 
 
-VQwSubsystem&  MollerMainDetector::operator-=  (VQwSubsystem *value)
+VQwSubsystem&  QwBlindDetectorArray::operator-=  (VQwSubsystem *value)
 {
 
   if (Compare(value))
     {
-      MollerMainDetector* input= dynamic_cast<MollerMainDetector*>(value);
+      QwBlindDetectorArray* input= dynamic_cast<QwBlindDetectorArray*>(value);
 
       for (size_t i=0;i<input->fIntegrationPMT.size();i++)
         this->fIntegrationPMT[i]-=input->fIntegrationPMT[i];
@@ -1174,7 +1200,7 @@ VQwSubsystem&  MollerMainDetector::operator-=  (VQwSubsystem *value)
 
 
 
-void MollerMainDetector::Sum(VQwSubsystem *value1,VQwSubsystem *value2)
+void QwBlindDetectorArray::Sum(VQwSubsystem *value1,VQwSubsystem *value2)
 {
   if (Compare(value1)&&Compare(value2))
     {
@@ -1183,7 +1209,7 @@ void MollerMainDetector::Sum(VQwSubsystem *value1,VQwSubsystem *value2)
     }
 }
 
-void MollerMainDetector::Difference(VQwSubsystem *value1,VQwSubsystem *value2)
+void QwBlindDetectorArray::Difference(VQwSubsystem *value1,VQwSubsystem *value2)
 {
   if (Compare(value1)&&Compare(value2))
     {
@@ -1192,12 +1218,12 @@ void MollerMainDetector::Difference(VQwSubsystem *value1,VQwSubsystem *value2)
     }
 }
 
-void MollerMainDetector::Ratio(VQwSubsystem  *numer, VQwSubsystem  *denom)
+void QwBlindDetectorArray::Ratio(VQwSubsystem  *numer, VQwSubsystem  *denom)
 {
   if (Compare(numer)&&Compare(denom))
     {
-      MollerMainDetector* innumer= dynamic_cast<MollerMainDetector*>(numer) ;
-      MollerMainDetector* indenom= dynamic_cast<MollerMainDetector*>(denom) ;
+      QwBlindDetectorArray* innumer= dynamic_cast<QwBlindDetectorArray*>(numer) ;
+      QwBlindDetectorArray* indenom= dynamic_cast<QwBlindDetectorArray*>(denom) ;
 
       for (size_t i=0;i<innumer->fIntegrationPMT.size();i++)
         this->fIntegrationPMT[i].Ratio(innumer->fIntegrationPMT[i],indenom->fIntegrationPMT[i]);
@@ -1210,7 +1236,7 @@ void MollerMainDetector::Ratio(VQwSubsystem  *numer, VQwSubsystem  *denom)
 }
 
 
-void MollerMainDetector::Scale(Double_t factor)
+void QwBlindDetectorArray::Scale(Double_t factor)
 {
   for (size_t i=0;i<fIntegrationPMT.size();i++)
     fIntegrationPMT[i].Scale(factor);
@@ -1222,7 +1248,7 @@ void MollerMainDetector::Scale(Double_t factor)
 }
 
 //*****************************************************************//
-void MollerMainDetector::Normalize(VQwDataElement* denom)
+void QwBlindDetectorArray::Normalize(VQwDataElement* denom)
 {
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
     fIntegrationPMT[i].Normalize(denom);
@@ -1232,7 +1258,7 @@ void MollerMainDetector::Normalize(VQwDataElement* denom)
 
 
 
-void MollerMainDetector::CalculateRunningAverage()
+void QwBlindDetectorArray::CalculateRunningAverage()
 {
   for (size_t i=0;i<fIntegrationPMT.size();i++)
     fIntegrationPMT[i].CalculateRunningAverage();
@@ -1243,10 +1269,10 @@ void MollerMainDetector::CalculateRunningAverage()
   return;
 }
 
-void MollerMainDetector::AccumulateRunningSum(VQwSubsystem* value1)
+void QwBlindDetectorArray::AccumulateRunningSum(VQwSubsystem* value1)
 {
   if (Compare(value1)) {
-    MollerMainDetector* value = dynamic_cast<MollerMainDetector*>(value1);
+    QwBlindDetectorArray* value = dynamic_cast<QwBlindDetectorArray*>(value1);
 
     for (size_t i = 0; i < fIntegrationPMT.size(); i++)
       fIntegrationPMT[i].AccumulateRunningSum(value->fIntegrationPMT[i]);
@@ -1255,9 +1281,9 @@ void MollerMainDetector::AccumulateRunningSum(VQwSubsystem* value1)
   }
 }
 
-void MollerMainDetector::DeaccumulateRunningSum(VQwSubsystem* value1){
+void QwBlindDetectorArray::DeaccumulateRunningSum(VQwSubsystem* value1){
   if (Compare(value1)) {
-    MollerMainDetector* value = dynamic_cast<MollerMainDetector*>(value1);
+    QwBlindDetectorArray* value = dynamic_cast<QwBlindDetectorArray*>(value1);
 
     for (size_t i = 0; i < fIntegrationPMT.size(); i++)
       fIntegrationPMT[i].DeaccumulateRunningSum(value->fIntegrationPMT[i]);
@@ -1271,7 +1297,7 @@ void MollerMainDetector::DeaccumulateRunningSum(VQwSubsystem* value1){
  * Blind the asymmetry
  * @param blinder Blinder
  */
-void MollerMainDetector::Blind(const QwBlinder *blinder)
+void QwBlindDetectorArray::Blind(const QwBlinder *blinder)
 {
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
     fIntegrationPMT[i].Blind(blinder);
@@ -1284,14 +1310,14 @@ void MollerMainDetector::Blind(const QwBlinder *blinder)
  * @param blinder Blinder
  * @param subsys Subsystem
  */
-void MollerMainDetector::Blind(const QwBlinder *blinder, const VQwSubsystemParity* subsys)
+void QwBlindDetectorArray::Blind(const QwBlinder *blinder, const VQwSubsystemParity* subsys)
 {
   /// \todo TODO (wdc) At some point we should introduce const-correctness in
   /// the Compare() routine to ensure nothing funny happens.  This const_casting
   /// is just an ugly stop-gap measure.
   if (Compare(const_cast<VQwSubsystemParity*>(subsys))) {
 
-    const MollerMainDetector* yield = dynamic_cast<const MollerMainDetector*>(subsys);
+    const QwBlindDetectorArray* yield = dynamic_cast<const QwBlindDetectorArray*>(subsys);
     if (yield == 0) return;
 
     for (size_t i = 0; i < fIntegrationPMT.size(); i++)
@@ -1301,18 +1327,18 @@ void MollerMainDetector::Blind(const QwBlinder *blinder, const VQwSubsystemParit
   }
 }
 
-EQwPMTInstrumentType MollerMainDetector::GetDetectorTypeID(TString name)
+EQwPMTInstrumentType QwBlindDetectorArray::GetDetectorTypeID(TString name)
 {
   return GetQwPMTInstrumentType(name);
 }
 
 //*****************************************************************//
-Int_t MollerMainDetector::GetDetectorIndex(EQwPMTInstrumentType type_id, TString name)
+Int_t QwBlindDetectorArray::GetDetectorIndex(EQwPMTInstrumentType type_id, TString name)
 {
   Bool_t ldebug=kFALSE;
   if (ldebug)
     {
-      std::cout<<"MollerMainDetector::GetDetectorIndex\n";
+      std::cout<<"QwBlindDetectorArray::GetDetectorIndex\n";
       std::cout<<"type_id=="<<type_id<<" name="<<name<<"\n";
       std::cout<<fMainDetID.size()<<" already registered detector\n";
     }
@@ -1333,7 +1359,7 @@ Int_t MollerMainDetector::GetDetectorIndex(EQwPMTInstrumentType type_id, TString
   return result;
 }
 
-const QwIntegrationPMT* MollerMainDetector::GetIntegrationPMT(const TString name) const
+const QwIntegrationPMT* QwBlindDetectorArray::GetIntegrationPMT(const TString name) const
 {
   TString tmpname = name;
   tmpname.ToLower();
@@ -1348,11 +1374,11 @@ const QwIntegrationPMT* MollerMainDetector::GetIntegrationPMT(const TString name
             }
         }
     }
-  QwMessage << "MollerMainDetector::GetIntegrationPMT: cannot find channel " << tmpname << QwLog::endl;
+  QwMessage << "QwBlindDetectorArray::GetIntegrationPMT: cannot find channel " << tmpname << QwLog::endl;
   return NULL;
 }
 
-const QwCombinedPMT* MollerMainDetector::GetCombinedPMT(const TString name) const
+const QwCombinedPMT* QwBlindDetectorArray::GetCombinedPMT(const TString name) const
 {
   TString tmpname = name;
   tmpname.ToLower();
@@ -1367,11 +1393,11 @@ const QwCombinedPMT* MollerMainDetector::GetCombinedPMT(const TString name) cons
             }
         }
     }
-  QwMessage << "MollerMainDetector::GetCombinedPMT: cannot find channel " << tmpname << QwLog::endl;
+  QwMessage << "QwBlindDetectorArray::GetCombinedPMT: cannot find channel " << tmpname << QwLog::endl;
   return NULL;
 }
 
-void MollerMainDetector::DoNormalization(Double_t factor)
+void QwBlindDetectorArray::DoNormalization(Double_t factor)
 {
   if (bIsExchangedDataValid)
     {
@@ -1387,13 +1413,13 @@ void MollerMainDetector::DoNormalization(Double_t factor)
 }
 
 #ifdef __USE_DATABASE__
-void  MollerMainDetector::FillDB(QwParityDB *db, TString datatype)
+void  QwBlindDetectorArray::FillDB(QwParityDB *db, TString datatype)
 {
   Bool_t local_print_flag = false;
 
   if(local_print_flag) {
     QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
-    QwMessage << "            MollerMainDetector::FillDB                       " << QwLog::endl;
+    QwMessage << "            QwBlindDetectorArray::FillDB                       " << QwLog::endl;
     QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
   }
 
@@ -1449,23 +1475,23 @@ void  MollerMainDetector::FillDB(QwParityDB *db, TString datatype)
     query.execute();
   }
   else {
-    QwMessage << "MollerMainDetector::FillDB :: This is the case when the entrlylist contains nothing in "<< datatype.Data() << QwLog::endl;
+    QwMessage << "QwBlindDetectorArray::FillDB :: This is the case when the entrlylist contains nothing in "<< datatype.Data() << QwLog::endl;
   }
   db->Disconnect();
   return;
 }
 #endif
 
-void  MollerMainDetector::PrintValue() const
+void  QwBlindDetectorArray::PrintValue() const
 {
-  QwMessage << "=== MollerMainDetector: " << GetSubsystemName() << " ===" << QwLog::endl;
+  QwMessage << "=== QwBlindDetectorArray: " << GetSubsystemName() << " ===" << QwLog::endl;
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
     fIntegrationPMT[i].PrintValue();
   for (size_t i = 0; i < fCombinedPMT.size(); i++)
     fCombinedPMT[i].PrintValue();
 }
 
-void  MollerMainDetector::PrintInfo() const
+void  QwBlindDetectorArray::PrintInfo() const
 {
   std::cout<<"Name of the subsystem ="<<fSystemName<<"\n";
 
@@ -1480,7 +1506,7 @@ void  MollerMainDetector::PrintInfo() const
     fCombinedPMT[i].PrintInfo();
 }
 
-void  MollerMainDetector::PrintDetectorID() const
+void  QwBlindDetectorArray::PrintDetectorID() const
 {
   for (size_t i=0;i<fMainDetID.size();i++)
     {
@@ -1494,13 +1520,13 @@ void  MollerMainDetector::PrintDetectorID() const
 
 
 #ifdef __USE_DATABASE__
-void MollerMainDetector::FillErrDB(QwParityDB *db, TString datatype)
+void QwBlindDetectorArray::FillErrDB(QwParityDB *db, TString datatype)
 {
 
   Bool_t local_print_flag = false;
   if(local_print_flag){
     QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
-    QwMessage << "            MollerMainDetectorID::FillErrDB                  " << QwLog::endl;
+    QwMessage << "            QwBlindDetectorArrayID::FillErrDB                  " << QwLog::endl;
     QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
   }
 
@@ -1552,7 +1578,7 @@ void MollerMainDetector::FillErrDB(QwParityDB *db, TString datatype)
     query.execute();
   }
   else {
-    QwMessage << "MollerMainDetector::FillErrDB :: This is the case when the entrlylist contains nothing in "<< datatype.Data() << QwLog::endl;
+    QwMessage << "QwBlindDetectorArray::FillErrDB :: This is the case when the entrlylist contains nothing in "<< datatype.Data() << QwLog::endl;
   }
   db->Disconnect();
 
@@ -1561,13 +1587,13 @@ void MollerMainDetector::FillErrDB(QwParityDB *db, TString datatype)
 #endif
 
 
-void MollerMainDetector::WritePromptSummary(QwPromptSummary *ps, TString type)
+void QwBlindDetectorArray::WritePromptSummary(QwPromptSummary *ps, TString type)
 {
 
   Bool_t local_print_flag = true;
   if(local_print_flag){
     QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
-    QwMessage << "        MollerMainDetectorID::WritePromptSummary()          " << QwLog::endl;
+    QwMessage << "        QwBlindDetectorArrayID::WritePromptSummary()          " << QwLog::endl;
     QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
   }
 
@@ -1578,7 +1604,7 @@ void MollerMainDetector::WritePromptSummary(QwPromptSummary *ps, TString type)
 
 
 
-void  MollerMainDetectorID::Print() const
+void  QwBlindDetectorArrayID::Print() const
 {
 
   std::cout<<std::endl<<"Detector name= "<<fdetectorname<<std::endl;

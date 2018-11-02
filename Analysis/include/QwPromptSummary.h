@@ -113,9 +113,9 @@ class PromptSummaryElement :  public TObject
   /* Double_t fAsymmetryWidthError; */
   /* TString  fAsymmetryWidthUnit; */
 
-  #if ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
-    ClassDef(PromptSummaryElement,0);
-  #endif
+#if ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
+  ClassDef(PromptSummaryElement,0);
+#endif //ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
 
 };
 
@@ -139,8 +139,8 @@ class QwPromptSummary  :  public TObject
   void SetRunletNumber(const Int_t in) {fRunletNumber = in;};
   const Int_t GetRunletNumber() {return fRunletNumber;};
 
-
   void AddElement(PromptSummaryElement *in);
+
   PromptSummaryElement* GetElementByName(TString name);
   
   void FillDataInElement(TString name, 
@@ -154,6 +154,7 @@ class QwPromptSummary  :  public TObject
   //  void Print(const Option_t* options = 0) const;
 
   void FillDoubleDifference(TString type, TString name1, TString name2);
+
 
   Int_t  GetSize()         const {return fNElements;};
   Int_t  Size()            const {return fNElements;};
@@ -179,9 +180,9 @@ private:
 
   Bool_t  fLocalDebug;
 
-  #if ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
-    ClassDef(QwPromptSummary,0);
-  #endif
+#if ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
+  ClassDef(QwPromptSummary,0);
+#endif //ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
 
 };
 

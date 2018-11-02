@@ -60,42 +60,37 @@ Int_t VQwSubsystem::LoadDetectorMaps(QwParameterFile& file)
 	// Beammod      1
 	//              1(6),2(4),3(3),4(1)
 	//              map, param, eventcut, geom
+
 	// Map file definition
 	if (key == "map" ) {
 	  LoadChannelMap(value);
 	  //	  fDetectorMapsNames.push_back(value);
-	  //	  printf("1\n");
 	}
 	// Parameter file definition
 	else if (key == "param" ) {
 	  LoadInputParameters(value); 
 	  // fDetectorMapsNames.push_back(value);
-	  //	  printf("2\n");
 	}
 	// Event cut file definition
 	else if (key == "eventcut") {
 	  LoadEventCuts(value);
 	  // fDetectorMapsNames.push_back(value);
-	  //	  printf("3\n");
 	}
 	// Geometry file definition
 	else if (key == "geom" ) {
 	  LoadGeometryDefinition(value);
 	  // fDetectorMapsNames.push_back(value);
-	  //	  printf("4\n");
 	}
+        // Crosstalk file definition
+        else if (key == "cross" ) {
+          LoadCrosstalkDefinition(value);
+          // fDetectorMapsNames.push_back(value);
+        }
  	//Event type mask
 	else if (key == "mask") {
 	  SetEventTypeMask(file.GetUInt(value));
-	  //	  printf("5\n");
 	}
-	// else {
-	//   printf("whatelse?\n"); // one per subsystem.
-	// }
       }
-      // else {
-      // 	printf("something???\n"); // never...
-      // }
       
     } // end of HasVariablePair
   } // end of while 

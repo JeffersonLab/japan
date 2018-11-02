@@ -13,7 +13,7 @@
  geom  = mock_beamline_geometry.map
 
 
-[MollerMainDetector]
+[QwDetectorArray]
  name  = Main Detector
  map   = mock_moller_maindet_adc.map
  param = mock_moller_maindet_pedestal.map

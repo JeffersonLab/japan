@@ -1,6 +1,6 @@
 FIND_PATH(MYSQLPP_INCLUDE_PATH mysql++.h
+  $ENV{MYSQLPP_INC_DIR}
   /usr/include/mysql++/
-  /group/qweak/QwAnalysis/Linux_CentOS6.5-x86_64/MySQL++/local/include/mysql++/
 )
 
 FIND_PATH(MYSQL_INCLUDE_PATH mysql.h /usr/include/mysql/)
@@ -12,8 +12,8 @@ IF(MYSQL_INCLUDE_PATH AND MYSQLPP_INCLUDE_PATH)
 ENDIF(MYSQL_INCLUDE_PATH AND MYSQLPP_INCLUDE_PATH)
 
 FIND_LIBRARY(MYSQLPP_LIBRARIES mysqlpp
+  $ENV{MYSQLPP_LIB_DIR}
   /usr/lib/mysql++/
-  /group/qweak/QwAnalysis/Linux_CentOS6.5-x86_64/MySQL++/local/lib
 )
 
 IF (MYSQLPP_INCLUDE_DIR AND MYSQLPP_LIBRARIES)

@@ -16,7 +16,11 @@
 #include <typeinfo>
 
 // Third Party Headers
+#ifdef __USE_DATABASE__
+#pragma GCC diagnostic ignored "-Wdeprecated"
 #include <mysql++.h>
+#pragma GCC diagnostic pop
+#endif // __USE_DATABASE__
 
 // ROOT headers
 #include "TString.h"

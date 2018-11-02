@@ -179,7 +179,10 @@ class QwSubsystemArray:  public std::vector<boost::shared_ptr<VQwSubsystem> > {
   VQwHardwareChannel* ReturnInternalValueForFriends(const TString& name) const;
 
   /// Friend with regression class who needs write access to data
-  friend class QwRegression;
+  friend class QwCombiner;
+  // Child of QwCombiner Class
+  friend class QwCorrelator;
+  friend class VQwDataHandler;
 
   /// Published values
   std::map<TString, const VQwHardwareChannel*> fPublishedValuesDataElement;

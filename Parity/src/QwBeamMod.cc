@@ -16,8 +16,10 @@
 #include "QwParameterFile.h"
 #include "QwHistogramHelper.h"
 #define MYSQLPP_SSQLS_NO_STATICS
+#ifdef __USE_DATABASE__
 #include "QwParitySSQLS.h"
 #include "QwParityDB.h"
+#endif // __USE_DATABASE__
 
 // Root plotting headers
 #include "TCanvas.h"
@@ -992,6 +994,7 @@ void  QwModChannelID::Print()
 }
 
 //*****************************************************************
+#ifdef __USE_DATABASE__
 void QwBeamMod::FillDB_MPS(QwParityDB *db, TString datatype)
 {
   Bool_t local_print_flag = false;
@@ -1059,7 +1062,7 @@ void QwBeamMod::FillErrDB(QwParityDB *db, TString datatype)
 {
   return;
 }
-
+#endif // __USE_DATABASE__
 
 void QwBeamMod::WritePromptSummary(QwPromptSummary *ps, TString datatype)
 {

@@ -17,7 +17,7 @@
 #define MYSQLPP_SSQLS_NO_STATICS
 #include "QwParitySSQLS.h"
 #include "QwParityDB.h"
-#endif
+#endif //__USE_DATABASE__
 #include "QwPromptSummary.h"
 
 // Register this subsystem with the factory
@@ -630,7 +630,6 @@ void QwMainCerenkovDetector::EncodeEventData(std::vector<UInt_t> &buffer)
       if (fMainDetID.at(i).fTypeID == kQwIntegrationPMT)
         fIntegrationPMT[fMainDetID.at(i).fIndex].EncodeEventData(elements);
     }
-
 
   // If there is element data, generate the subbank header
   std::vector<UInt_t> subbankheader;
@@ -1397,7 +1396,7 @@ void  QwMainCerenkovDetector::FillDB(QwParityDB *db, TString datatype)
   db->Disconnect();
   return;
 }
-#endif
+#endif //__USE_DATABASE__
 
 void  QwMainCerenkovDetector::PrintValue() const
 {
@@ -1501,7 +1500,7 @@ void QwMainCerenkovDetector::FillErrDB(QwParityDB *db, TString datatype)
 
   return;
 };
-#endif
+#endif //__USE_DATABASE__
 
 
 void QwMainCerenkovDetector::WritePromptSummary(QwPromptSummary *ps, TString type)

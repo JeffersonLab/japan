@@ -43,9 +43,7 @@ class QwControl : public VQwSystem {
     void SetIsFinished (bool finished) { fIsFinished = finished; };
     bool IsFinished () { return fIsFinished; };
 
-  #if ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
     ClassDef(QwControl,1)
-  #endif
 };
 
 #endif // __QwControl_h__

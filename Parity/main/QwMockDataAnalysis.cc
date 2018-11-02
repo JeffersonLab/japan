@@ -22,12 +22,13 @@
 #include "QwBeamLine.h"
 #include "QwOptionsParity.h"
 #include "QwEventBuffer.h"
+#ifdef __USE_DATABASE__
 #include "QwParityDB.h"
+#endif //__USE_DATABAE__
 #include "QwHelicity.h"
 #include "QwHelicityPattern.h"
 #include "QwHistogramHelper.h"
 #include "QwMainCerenkovDetector.h"
-#include "QwLumi.h"
 #include "QwSubsystemArrayParity.h"
 
 
@@ -242,6 +243,7 @@ int main(int argc, char* argv[])
     eventbuffer.CloseDataFile();
     eventbuffer.ReportRunSummary();
 
+#ifdef __USE_DATABASE__
     // Write to database
     if (bDatabase) {
       QwParityDB* qweak_database  = new QwParityDB();
@@ -269,7 +271,7 @@ int main(int argc, char* argv[])
       delete qweak_database; qweak_database = NULL;
 
     } // end of database write
-
+#endif //__USE_DATABASE__
 
   } // end of loop over runs
 

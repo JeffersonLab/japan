@@ -14,8 +14,10 @@
 // Qweak headers
 #include "QwSubsystemArray.h"
 #define MYSQLPP_SSQLS_NO_STATICS
+#ifdef __USE_DATABASE__
 #include "QwParitySSQLS.h"
 #include "QwParityDB.h"
+#endif // __USE_DATABASE__
 #include "QwVQWK_Channel.h"
 
 // Register this subsystem with the factory
@@ -735,6 +737,7 @@ void QwIntegratedRaster::AccumulateRunningSum(VQwSubsystem* value1)
 
 
 //*****************************************************************
+#ifdef __USE_DATABASE__
 void QwIntegratedRaster::FillDB(QwParityDB *db, TString datatype)
 {
 
@@ -844,6 +847,7 @@ void QwIntegratedRaster::FillErrDB(QwParityDB *db, TString datatype)
 
   return;
 };
+#endif //  __USE_DATABASE__
 
 void QwIntegratedRaster::WritePromptSummary(QwPromptSummary *ps, TString type)
 {

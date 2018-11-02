@@ -130,9 +130,11 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
   void ConstructBranch(TTree *tree, TString& prefix, QwParameterFile& trim_file) { };
   void FillTreeVector(std::vector<Double_t> &values) const;
 
+#ifdef __USE_DATABASE__
   void FillDB_MPS(QwParityDB *db, TString datatype);
   void FillDB(QwParityDB *db, TString datatype);
   void FillErrDB(QwParityDB *db, TString datatype);
+#endif // __USE_DATABASE__
   void WritePromptSummary(QwPromptSummary *ps, TString type);
 
   Bool_t Compare(VQwSubsystem *source);

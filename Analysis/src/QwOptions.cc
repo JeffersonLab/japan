@@ -21,6 +21,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+//#include <TROOT.h>
 
 // Globally defined instance of the options object
 QwOptions gQwOptions;
@@ -28,7 +29,6 @@ QwOptions gQwOptions;
 // Qweak headers
 #include "QwLog.h"
 #include "QwParameterFile.h"
-#include "QwSVNVersion.h"
 
 // Qweak objects with default options
 #include "QwSubsystemArray.h"
@@ -77,7 +77,7 @@ void QwOptions::DefineOptions(QwOptions& options)
 #ifdef __USE_DATABASE__
   // Define database options
   QwDatabase::DefineOptions(options);
-#endif
+#endif //__USE_DATABASE__
   // Define ROOT file options
   QwRootFile::DefineOptions(options);
   // Define EPICS event options
@@ -319,9 +319,9 @@ void QwOptions::Version()
 #endif
 
   QwMessage << "\n Qweak Analysis Framework : " << fArgv[0] << QwLog::endl;
-  QwMessage << " * Revision: " << QWANA_SVN_REVISION << QwLog::endl;
-  QwMessage << " * URL: " << QWANA_SVN_URL << QwLog::endl;
-  QwMessage << " * Last Changed Rev: " << QWANA_SVN_LASTCHANGEDREVISION << QwLog::endl;
+  //  QwMessage << " * Revision: " << QWANA_SVN_REVISION << QwLog::endl;
+  //  QwMessage << " * URL: " << QWANA_SVN_URL << QwLog::endl;
+  //  QwMessage << " * Last Changed Rev: " << QWANA_SVN_LASTCHANGEDREVISION << QwLog::endl;
   QwMessage << " * ROOT " << root_version << QwLog::endl;
 }
 

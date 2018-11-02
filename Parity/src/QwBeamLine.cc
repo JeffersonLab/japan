@@ -17,7 +17,7 @@
 #define MYSQLPP_SSQLS_NO_STATICS
 #include "QwParitySSQLS.h"
 #include "QwParityDB.h"
-#endif
+#endif // __USE_DATABASE__
 
 #include "QwPromptSummary.h"
 
@@ -25,7 +25,7 @@
 #ifdef __USE_DATABASE__
 class QwParityDB;
 //class QwDBInterface;
-#endif
+#endif // __USE_DATABASE__
 
 // Register this subsystem with the factory
 RegisterSubsystemFactory(QwBeamLine);
@@ -150,10 +150,6 @@ Int_t QwBeamLine::LoadChannelMap(TString mapfile)
 
     if (mapstr.HasVariablePair("=",varname,varvalue)){ //  This is a declaration line.  Decode it.
       varname.ToLower();
-
-      QwDebug <<  "QwBeamLine::LoadChannelMap: varname="
-	      << varname <<"; value" << varvalue 
-	      << QwLog::endl;
 
       if (varname=="begin"){
 	
@@ -449,10 +445,12 @@ Int_t QwBeamLine::LoadEventCuts(TString  filename)
   // Open the file
   QwParameterFile mapstr(filename.Data());
   fDetectorMaps.insert(mapstr.GetParamFileNameContents());
+  int testval = 0;
   while (mapstr.ReadNextLine()){
+    testval++;
     mapstr.TrimComment('!');   // Remove everything after a '!' character.
     mapstr.TrimWhitespace();   // Get rid of leading and trailing spaces.
-    if (mapstr.LineIsEmpty())  continue;
+    if (mapstr.LineIsEmpty())  {QwMessage << "" << testval << QwLog::endl; continue;}
 
     TString varname, varvalue;
     if (mapstr.HasVariablePair("=",varname,varvalue)){
@@ -1106,12 +1104,11 @@ void QwBeamLine::RandomizeEventData(int helicity, double time)
     }
   }
 }
-//--------------------------------------------------------------------------------------------
+
+
 //*****************************************************************//
 void QwBeamLine::EncodeEventData(std::vector<UInt_t> &buffer)
 {
-  //std::cout << "**************** In QwBeamLine::EncodeEventData ******************" << std::endl;
-
   std::vector<UInt_t> elements;
   elements.clear();
 
@@ -1155,7 +1152,6 @@ void QwBeamLine::EncodeEventData(std::vector<UInt_t> &buffer)
     buffer.insert(buffer.end(), subbankheader.begin(), subbankheader.end());
     buffer.insert(buffer.end(), elements.begin(), elements.end());
   }
-
 }
 
 //*****************************************************************//
@@ -1555,7 +1551,6 @@ void  QwBeamLine::ProcessEvent()
 {
   // Make sure this one comes first! The clocks are needed by
   // other elements.
-
   for(size_t i=0;i<fClock.size();i++)
     fClock[i].get()->ProcessEvent();
 
@@ -2718,8 +2713,8 @@ void  QwBeamLine::CopyTemplatedDataElements(const VQwSubsystem *source)
   }
 }
 
-#ifdef __USE_DATABASE__
 //*****************************************************************//
+#ifdef __USE_DATABASE__
 void QwBeamLine::FillDB(QwParityDB *db, TString datatype)
 {
 
@@ -3111,7 +3106,7 @@ void QwBeamLine::FillErrDB(QwParityDB *db, TString datatype)
   db->Disconnect();
   return;
 }
-#endif
+#endif // __USE_DATABASE__
 
 void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type) 
 {

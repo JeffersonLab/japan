@@ -53,6 +53,7 @@ public:
   };
   VQwScaler_Channel(const VQwScaler_Channel& source)
   : VQwHardwareChannel(source),MQwMockable(source),
+    fValue_Raw_Old(source.fValue_Raw_Old),
     fValue_Raw(source.fValue_Raw),
     fValue(source.fValue),
     fValueM2(source.fValueM2),

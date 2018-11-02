@@ -15,12 +15,10 @@
  *  \date   Tuesday, September 14 23:04:36 EDT 2010
  */
 
-#if ROOT_VERSION_CODE < ROOT_VERSION(5,90,0)
 ClassImp(QwF1TDC);
 ClassImp(QwF1TDContainer);
 ClassImp(F1TDCReferenceSignal);
 ClassImp(F1TDCReferenceContainer);
-#endif
 
 //
 //
@@ -134,6 +132,7 @@ QwF1TDC::QwF1TDC()
 
   fBuffer = new UInt_t[fWordsPerBuffer];
 
+  ResetCounters();
 }
 
 
@@ -187,6 +186,7 @@ QwF1TDC::QwF1TDC(const Int_t roc, const Int_t slot)
 
   fBuffer = new UInt_t[fWordsPerBuffer];
  
+  ResetCounters();
 }
 
 
@@ -1615,7 +1615,7 @@ QwF1TDContainer::CheckDataIntegrity(const UInt_t roc_id, UInt_t *buffer, UInt_t 
 	    xor_setup_flag    = fF1TDCDecoder.IsHeaderXorSetup();
 	    trig_fifo_ok_flag = fF1TDCDecoder.IsNotHeaderTrigFIFO();
 	    event_ok_flag     = ( reference_event_num==fF1TDCDecoder.GetTDCHeaderEventNumber() );
-	    diff_trigger_time = abs( reference_trig_time-fF1TDCDecoder.GetTDCHeaderTriggerTime() );
+	    diff_trigger_time = abs( int(reference_trig_time)-int(fF1TDCDecoder.GetTDCHeaderTriggerTime()) );
 
 	    trig_time_ok_flag = 
 	      (diff_trigger_time == valid_trigger_time_offset[0])  

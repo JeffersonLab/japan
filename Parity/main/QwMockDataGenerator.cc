@@ -20,10 +20,10 @@
 #include "QwHelicity.h"
 #include "QwHelicityPattern.h"
 #include "QwMainCerenkovDetector.h"
-#include "MollerMainDetector.h"
-#include "QwLumi.h"
+#include "QwBlindDetectorArray.h"
 //#include "QwScanner.h"
 #include "QwSubsystemArrayParity.h"
+#include "QwDetectorArray.h"
 
 
 // Number of variables to correlate
@@ -94,8 +94,8 @@ int main(int argc, char* argv[])
 
 //-----------------------------------------------------------------------------------------------
   // Get the main detector channels we want to correlate
-  MollerMainDetector* maindetector =
-    dynamic_cast<MollerMainDetector*>(detectors.GetSubsystemByName("Main Detector"));
+  QwBlindDetectorArray* maindetector =
+    dynamic_cast<QwBlindDetectorArray*>(detectors.GetSubsystemByName("Main Detector"));
   if (! maindetector) QwWarning << "No main detector subsystem defined!" << QwLog::endl;
 
 /*
