@@ -9,12 +9,14 @@
     PATHS /adaqfs/home/apar/et-12.0/src/libsrc/.Linux-x86_64
     #         $ENV{CODA}/${arch}/lib
     #         $ENV{CODA}/${CMAKE_SYSTEM_NAME}/lib
+    NO_DEFAULT_PATH
     DOC "Event Transport (ET) library"
     )
   find_path(ET_INCLUDE_DIR
     NAMES et.h
     PATHS /adaqfs/home/apar/et-12.0/src/libsrc
     #          $ENV{CODA}/common/include
+    NO_DEFAULT_PATH
     DOC "Event Transport (ET) header include directory"
     )
 # endif()
