@@ -32,26 +32,7 @@
 !!!!!  0L and 0R BPMs, BSEN scale = 18.76/18.81  = 0.99734184
 !!!!!  2i BPMs,        BSEN scale = 25.67 /18.81 = 1.3647
 
- bpmstripline,   bpm0I01A,   0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
- bpmstripline,   bpm1I04,    0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
- bpmstripline,   bpm1I02,    0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
- bpmstripline,   bpm0I01,    0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
- bpmstripline,   bpm1I06,    0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
- bpmstripline,   bpm0I02,    0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
- bpmstripline,   bpm0I02A,   0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
- bpmstripline,   bpm0I05,    0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
- bpmstripline,   bpm0I07,    0.0,  0.0,        0.0,     0.728336,  1.000000,  1.000000      unrotated
- bpmstripline,   bpm0L01,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
- bpmstripline,   bpm0L02,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
- bpmstripline,   bpm0L03,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
- bpmstripline,   bpm0L04,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
- bpmstripline,   bpm0L05,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
- bpmstripline,   bpm0L06,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
- bpmstripline,   bpm0L07,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
- bpmstripline,   bpm0L08,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
- bpmstripline,   bpm0L09,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
- bpmstripline,   bpm0L10,    0.0,  0.0,        0.0,     0.99734184  1.000000,  1.000000
- bpmstripline,   bpm2I02,    0.0,  0.0,        0.0,     1.3647,    1.000000,  1.000000      unrotated
- bpmstripline,   bpm2I01,    0.0,  0.0,        0.0,     1.3647,    1.000000,  1.000000      unrotated
+ bpmstripline,   QWK_SEE_1H04D,   0.0,  0.0,        0.0,     1.0,  1.000000  1.000000 
+ bpmstripline,   QWK_SEE_1H04,    0.0,  0.0,        0.0,     1.0,  1.000000  1.000000 
 
 !END

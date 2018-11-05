@@ -12,8 +12,8 @@ sample_size=464
 !ADC0
     VQWK, 0, 0,  bcm,  QWK_0_0
     VQWK, 0, 1,  bcm,  QWK_0_1
-    VQWK, 0, 2,  bcm,  BCM_US
-    VQWK, 0, 3,  bcm,  BCM_DS
+    VQWK, 0, 2,  bcm,  QWK_BCM_US
+    VQWK, 0, 3,  bcm,  QWK_BCM_DS
     VQWK, 0, 4,  bcm,  QWK_0_4
     VQWK, 0, 5,  bcm,  QWK_0_5
     VQWK, 0, 6,  bcm,  QWK_0_6
@@ -40,19 +40,19 @@ sample_size=464
     VQWK, 2, 7,  bpmstripline,  QWK_SEE_1H04_YM,   UNROTATED
 
 !ADC3
-    VQWK, 3, 0,  bpmcav,  QWK_CAV_1H04A_X
-    VQWK, 3, 1,  bpmcav,  QWK_CAV_1H04A_Y
-    VQWK, 3, 2,  bpmcav,  QWK_CAV_1H04A_Q
+    VQWK, 3, 0,  bcm,  QWK_CAV_1H04A_X
+    VQWK, 3, 1,  bcm,  QWK_CAV_1H04A_Y
+    VQWK, 3, 2,  bcm,  QWK_CAV_1H04A_Q
     VQWK, 3, 3,  bcm,  QWK_3_3
-    VQWK, 3, 4,  bpmcav,  QWK_CAV_1H04B_X
-    VQWK, 3, 5,  bpmcav,  QWK_CAV_1H04B_Y
-    VQWK, 3, 6,  bpmcav,  QWK_CAV_1H04B_Q
+    VQWK, 3, 4,  bcm,  QWK_CAV_1H04B_X
+    VQWK, 3, 5,  bcm,  QWK_CAV_1H04B_Y
+    VQWK, 3, 6,  bcm,  QWK_CAV_1H04B_Q
     VQWK, 3, 7,  bcm,  QWK_3_7
 
 !ADC4
-    VQWK, 4, 0,  bpmcav,  QWK_CAV_1H04C_X
-    VQWK, 4, 1,  bpmcav,  QWK_CAV_1H04C_Y
-    VQWK, 4, 2,  bpmcav,  QWK_CAV_1H04C_Q
+    VQWK, 4, 0,  bcm,  QWK_CAV_1H04C_X
+    VQWK, 4, 1,  bcm,  QWK_CAV_1H04C_Y
+    VQWK, 4, 2,  bcm,  QWK_CAV_1H04C_Q
     VQWK, 4, 3,  bcm,  QWK_4_3
     VQWK, 4, 4,  bcm,  QWK_4_4
     VQWK, 4, 5,  bcm,  QWK_4_5
