@@ -10,55 +10,56 @@ sample_size=464
 
 
 !ADC0
-    VQWK, 0, 0,  ble,  q_0_0
-    VQWK, 0, 1,  ble,  q_0_1
-    VQWK, 0, 2,  bcm,  cm_us
-    VQWK, 0, 3,  bcm,  cm_ds
-    VQWK, 0, 4,  ble,  q_0_4
-    VQWK, 0, 5,  ble,  q_0_5
-    VQWK, 0, 6,  ble,  q_0_6
-    VQWK, 0, 7,  ble,  q_0_7
+    VQWK, 0, 0,  bcm,  QWK_0_0
+    VQWK, 0, 1,  bcm,  QWK_0_1
+    VQWK, 0, 2,  bcm,  BCM_US
+    VQWK, 0, 3,  bcm,  BCM_DS
+    VQWK, 0, 4,  bcm,  QWK_0_4
+    VQWK, 0, 5,  bcm,  QWK_0_5
+    VQWK, 0, 6,  bcm,  QWK_0_6
+    VQWK, 0, 7,  bcm,  QWK_0_7
 
 !ADC1
-    VQWK, 1, 0,  bpmsee,  QWK_1I02XP,   UNROTATED
-    VQWK, 1, 1,  bpmsee,  QWK_1I02XM,   UNROTATED
-    VQWK, 1, 2,  bpmsee,  QWK_1I02YP,   UNROTATED
-    VQWK, 1, 3,  bpmsee,  QWK_1I02YM,   UNROTATED
-    VQWK, 1, 4,  ble,  QWK_1I04XP,   UNROTATED
-    VQWK, 1, 5,  ble,  QWK_1I04XM,   UNROTATED
-    VQWK, 1, 6,  ble,  QWK_1I04YP,   UNROTATED
-    VQWK, 1, 7,  ble,  QWK_1I04YM,   UNROTATED
+    VQWK, 1, 0,  bpmstripline,  QWK_SEE_1H04D_XP,   UNROTATED
+    VQWK, 1, 1,  bpmstripline,  QWK_SEE_1H04D_XM,   UNROTATED
+    VQWK, 1, 2,  bpmstripline,  QWK_SEE_1H04D_YP,   UNROTATED
+    VQWK, 1, 3,  bpmstripline,  QWK_SEE_1H04D_YM,   UNROTATED
+    VQWK, 1, 4,  bcm,  QWK_1_4
+    VQWK, 1, 5,  bcm,  QWK_1_5
+    VQWK, 1, 6,  bcm,  QWK_1_6
+    VQWK, 1, 7,  bcm,  QWK_1_7
 
 !ADC2
-    VQWK, 2, 0,  ble,  QWK_1I06XP,   UNROTATED
-    VQWK, 2, 1,  ble,  QWK_1I06XM,   UNROTATED
-    VQWK, 2, 2,  ble,  QWK_1I06YP,   UNROTATED
-    VQWK, 2, 3,  ble,  QWK_1I06YM,   UNROTATED
-    VQWK, 2, 4,  bpmsee,  QWK_0I02XP,   UNROTATED
-    VQWK, 2, 5,  bpmsee,  QWK_0I02XM,   UNROTATED
-    VQWK, 2, 6,  bpmsee,  QWK_0I02YP,   UNROTATED
-    VQWK, 2, 7,  bpmsee,  QWK_0I02YM,   UNROTATED
+    VQWK, 2, 0,  bcm,  QWK_2_0
+    VQWK, 2, 1,  bcm,  QWK_2_1
+    VQWK, 2, 2,  bcm,  QWK_2_2
+    VQWK, 2, 3,  bcm,  QWK_2_3
+    VQWK, 2, 4,  bpmstripline,  QWK_SEE_1H04_XP,   UNROTATED
+    VQWK, 2, 5,  bpmstripline,  QWK_SEE_1H04_XM,   UNROTATED
+    VQWK, 2, 6,  bpmstripline,  QWK_SEE_1H04_YP,   UNROTATED
+    VQWK, 2, 7,  bpmstripline,  QWK_SEE_1H04_YM,   UNROTATED
 
 !ADC3
-    VQWK, 3, 0,  bpmcav,  QWK_0I02AXP,   UNROTATED
-    VQWK, 3, 1,  bpmcav,  QWK_0I02AXM,   UNROTATED
-    VQWK, 3, 2,  bpmcav,  QWK_0I02AYP,   UNROTATED
-    VQWK, 3, 3,  ble,  QWK_0I02AYM,   UNROTATED
-    VQWK, 3, 4,  bpmcav,  QWK_0I05XP,   UNROTATED
-    VQWK, 3, 5,  bpmcav,  QWK_0I05XM,   UNROTATED
-    VQWK, 3, 6,  bpmcav,  QWK_0I05YP,   UNROTATED
-    VQWK, 3, 7,  ble,  QWK_0I05YM,   UNROTATED
+    VQWK, 3, 0,  bpmcav,  QWK_CAV_1H04A_X
+    VQWK, 3, 1,  bpmcav,  QWK_CAV_1H04A_Y
+    VQWK, 3, 2,  bpmcav,  QWK_CAV_1H04A_Q
+    VQWK, 3, 3,  bcm,  QWK_3_3
+    VQWK, 3, 4,  bpmcav,  QWK_CAV_1H04B_X
+    VQWK, 3, 5,  bpmcav,  QWK_CAV_1H04B_Y
+    VQWK, 3, 6,  bpmcav,  QWK_CAV_1H04B_Q
+    VQWK, 3, 7,  bcm,  QWK_3_7
 
 !ADC4
-    VQWK, 4, 0,  bpmcav,  QWK_0I07XP,   UNROTATED
-    VQWK, 4, 1,  bpmcav,  QWK_0I07XM,   UNROTATED
-    VQWK, 4, 2,  bpmcav,  QWK_0I07YP,   UNROTATED
-    VQWK, 4, 3,  ble,  QWK_0I07YM,   UNROTATED
-    VQWK, 4, 4,  ble,  QWK_0L01XP
-    VQWK, 4, 5,  ble,  QWK_0L01XM
-    VQWK, 4, 6,  ble,  QWK_0L01YP
-    VQWK, 4, 7,  ble,  QWK_0L01YM
+    VQWK, 4, 0,  bpmcav,  QWK_CAV_1H04C_X
+    VQWK, 4, 1,  bpmcav,  QWK_CAV_1H04C_Y
+    VQWK, 4, 2,  bpmcav,  QWK_CAV_1H04C_Q
+    VQWK, 4, 3,  bcm,  QWK_4_3
+    VQWK, 4, 4,  bcm,  QWK_4_4
+    VQWK, 4, 5,  bcm,  QWK_4_5
+    VQWK, 4, 6,  bcm,  QWK_4_6
+    VQWK, 4, 7,  bcm,  QWK_4_7
 
 
 [PUBLISH]
+! what is this?
  q_targ, bcm, qwk_bcm0l02, c
