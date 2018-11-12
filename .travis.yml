@@ -10,6 +10,8 @@ before_install:
 - docker run jeffersonlab/japan
 - docker ps -a
 
+script:
+
 after_success:
 - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
 - if [ "$TRAVIS_BRANCH" == "master" ] ; then
