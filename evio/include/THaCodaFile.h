@@ -25,8 +25,6 @@
 #include "TArrayI.h"
 #include <iostream>
 
-using namespace std;
-
 class THaCodaFile : public THaCodaData
 {
 
