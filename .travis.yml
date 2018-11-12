@@ -2,15 +2,8 @@ sudo: required
 services:
 - docker
 
-language: cpp
-compiler: gcc
-
-before_install:
-- docker build -t jeffersonlab/japan .
-- docker run jeffersonlab/japan
-- docker ps -a
-
 script:
+- docker build -t jeffersonlab/japan .
 
 after_success:
 - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
