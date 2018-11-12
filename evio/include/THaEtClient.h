@@ -33,8 +33,6 @@
 #include <netdb.h>
 #include "TString.h"
 
-using namespace std;
-
 // The ET memory file will have this prefix.  The suffix is $SESSION.
 #define ETMEM_PREFIX "/tmp/et_sys_"
 
