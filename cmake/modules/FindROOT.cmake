@@ -49,7 +49,7 @@ endif()
 
 
 include(CMakeParseArguments)
-find_program(ROOTCINT_EXECUTABLE rootcint PATHS $ENV{ROOTSYS}/bin)
+find_program(ROOTCINT_EXECUTABLE rootcint PATHS $ENV{ROOTSYS}/bin NO_DEFAULT_PATH)
 
 #----------------------------------------------------------------------------
 # function ROOT_GENERATE_DICTIONARY( dictionary   
