@@ -38,6 +38,7 @@ qwparity_simple
 qwroot
 
 # Directories
+lib
 build
 output
 Doxygen/html
