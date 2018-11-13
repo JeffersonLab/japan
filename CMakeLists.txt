@@ -31,20 +31,17 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/evio/include
   ${CMAKE_CURRENT_SOURCE_DIR}/Parity/include
   ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/Tracking/include
   )
 
 # Put all QwAnalysis files in my_project_sources
 file(GLOB my_project_headers
   ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/include/*.h
   ${CMAKE_CURRENT_SOURCE_DIR}/Parity/include/*.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/Tracking/include/*.h
   ${CMAKE_CURRENT_BINARY_DIR}/include/QwSVNVersion.h
   )
 file(GLOB my_project_sources
   ###  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/*.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/Parity/src/*.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/Tracking/src/*.cc
   )
 list(APPEND my_project_sources
   ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/MQwCodaControlEvent.cc
@@ -222,7 +219,6 @@ install(FILES ${pcmfiles} DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 file(GLOB exefiles
   ${CMAKE_SOURCE_DIR}/Parity/main/*.cc
   ${CMAKE_SOURCE_DIR}/Analysis/main/*.cc
-  ${CMAKE_SOURCE_DIR}/Tracking/main/*.cc
   )
 foreach(file ${exefiles})
   get_filename_component(filename ${file} NAME_WE)
