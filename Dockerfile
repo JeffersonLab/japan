@@ -1,8 +1,8 @@
-FROM jeffersonlab/jlabce:2.2
+FROM jeffersonlab/jlabce:2.3
 
-ENV JLAB_VERSION=2.2
+ENV JLAB_VERSION=2.3
 ENV JLAB_ROOT=/jlab
-ENV JLAB_SOFTWARE=/jlab/2.2/Linux_CentOS7.5.1804-x86_64-gcc4.8.5
+ENV JLAB_SOFTWARE=/jlab/2.3/Linux_CentOS7.2.1511-x86_64-gcc4.8.5
 
 ENV JAPAN=/usr/local/japan
 
