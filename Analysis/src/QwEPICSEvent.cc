@@ -3,7 +3,7 @@
 // System headers
 #include <iostream>
 #include <fstream>
-#include <math.h>
+#include <cmath>
 
 // ROOT headers
 #include "TObject.h"
