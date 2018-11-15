@@ -26,7 +26,7 @@ HelicityDecodingMode=InputRegisterMode
 ! Set the patternPhase (number of windows in a pattern) for each run range.
 ! If patternPhase!=4, then also set the NumberPatternsDelayed
 ! so the reported helicity is delayed by 8 windows (default 2).
-!NumberPatternsDelayed=4
+NumberPatternsDelayed=8
 PatternPhase=4
 
 
@@ -40,7 +40,7 @@ PATTERNPHASEOFFSET=0
 !seed size is either 24 bit or 30 bit. default is 30 bit
 !RandSeedBits=24
 
-ROC=24
+ROC=23
 MarkerWord=0x00003103
 
 !
