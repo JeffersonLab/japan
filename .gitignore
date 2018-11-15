@@ -39,13 +39,17 @@ qwroot
 
 # Directories
 lib
-build
+*build
+*test*
 output
 Doxygen/html
 
 # output
 *.tar.gz
 *.tar
+*.root
+*.db
+*.txt
 
 #tmp files
 *~
