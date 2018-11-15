@@ -32,7 +32,7 @@
 !!!!!  0L and 0R BPMs, BSEN scale = 18.76/18.81  = 0.99734184
 !!!!!  2i BPMs,        BSEN scale = 25.67 /18.81 = 1.3647
 
- bpmstripline,   QWK_SEE_1H04D,   0.0,  0.0,        0.0,     1.0,  1.000000  1.000000 
- bpmstripline,   QWK_SEE_1H04,    0.0,  0.0,        0.0,     1.0,  1.000000  1.000000 
+  bpmstripline,   bpm4A,   0.0,  0.0,        0.0,     1.0,  1.000000  1.000000 
+  bpmstripline,   bpm4E,   0.0,  0.0,        0.0,     1.0,  1.000000  1.000000 
 
 !END
