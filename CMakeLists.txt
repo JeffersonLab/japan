@@ -4,9 +4,12 @@ cmake_minimum_required(VERSION 2.8.4 FATAL_ERROR)
 # Name of this project
 project(QwAnalysis)
 
-#  Install in the 
-set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR})
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+# Default install path is the source directory
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    message(STATUS "    Install-prefix was at default -> forcing it to the source-dir" )
+    message(STATUS "    Use -DCMAKE_INSTALL_PREFIX=/usr/local to set to something else" )
+    set (CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
+endif()
 
 message(STATUS "System name ${CMAKE_SYSTEM_NAME}")
 #MAC specific variable
@@ -200,6 +203,9 @@ set_property(
   SOURCE ${CMAKE_SOURCE_DIR}/Analysis/src/QwOptions.cc ${CMAKE_SOURCE_DIR}/Analysis/src/QwRunCondition.cc
   APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh
   )
+
+# Set rpath
+list(APPEND CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Link the evio library
 add_library(evio SHARED ${my_evio_sources})
