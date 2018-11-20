@@ -14,7 +14,7 @@
 
 const Bool_t QwADC18_Channel::kDEBUG = kFALSE;
 
-const Int_t  QwADC18_Channel::kWordsPerChannel = 6; // FIXME
+const Int_t  QwADC18_Channel::kWordsPerChannel = 1; // FIXME
 const Int_t  QwADC18_Channel::kMaxChannels     = 8; // FIXME
 
 const Double_t QwADC18_Channel::kTimePerSample = 2.0 * Qw::us; // FIXME
@@ -115,8 +115,8 @@ void QwADC18_Channel::InitializeChannel(TString name, TString datatosave)
 {
   SetElementName(name);
   SetDataToSave(datatosave);
-  SetNumberOfDataWords(6);
-  SetNumberOfSubElements(5);
+  SetNumberOfDataWords(1);
+  SetNumberOfSubElements(1);
 
   kFoundPedestal = 0;
   kFoundGain = 0;
@@ -204,7 +204,8 @@ void QwADC18_Channel::ClearEventData()
   fValue       = 0.0;
   fValueM2     = 0.0;
   fValueError  = 0.0;
-
+  fSequenceNumber   = 0;
+  fNumberOfSamples  = 0;
   fGoodEventCount   = 0;
   fErrorFlag = 0;
 }
@@ -222,13 +223,15 @@ void QwADC18_Channel::RandomizeEventData(int helicity, double time)
     + drift;
 
   fValue     = value;
-  fValue_Raw = Int_t(value / fCalibrationFactor + fPedestal);
+  fSequenceNumber = 0;
+  fNumberOfSamples = fNumberOfSamples_map;
 }
 
 void QwADC18_Channel::SmearByResolution(double resolution)
 {
   fValue = resolution*GetRandomValue();
   fValueM2 = 0.0;
+  fNumberOfSamples = fNumberOfSamples_map;
   SetRawEventData();
 }
 
@@ -240,11 +243,14 @@ void QwADC18_Channel::SetEventData(Double_t value)
 {
   fValue     = value;
   fValue_Raw = (UInt_t)value;
+  fSequenceNumber = 0;
+  fNumberOfSamples = fNumberOfSamples_map;
 }
 
 void QwADC18_Channel::SetRawEventData()
 {
-   fValue_Raw = Int_t(fValue / fCalibrationFactor + fPedestal);
+  fNumberOfSamples = fNumberOfSamples_map;
+  fValue_Raw = Int_t(fValue / fCalibrationFactor + fPedestal) * fNumberOfSamples;
 };
 
 // FIXME here goes the encoding of raw data into CODA blocks
@@ -267,7 +273,23 @@ void QwADC18_Channel::EncodeEventData(std::vector<UInt_t> &buffer)
     //  Fill in with zero.
     localbuf[0] = 0;
   } else {
-    localbuf[0] = ((fValue_Raw << 22) & mask2422x);
+    localbuf[0] |=   mask31x & (0 << 31);
+    localbuf[0] |= mask3029x & (0 << 29);
+    localbuf[0] |= mask2625x & (0 << 25);
+    UInt_t exp_dtype = 1;
+    switch (exp_dtype) {
+      case 0:
+        break;
+      case 1:
+      case 2:
+        localbuf[0] |= mask2422x & (2 << 22);
+        localbuf[0] |=  mask170x & fValue_Raw;
+        break;
+      case 4:
+        break;
+      default:
+        QwError << "QwADC18_Channel::ProcessEvBuffer: Unknown data type" << QwLog::endl;
+    }
   }
 
   for (Int_t i = 0; i < kWordsPerChannel; i++) {
@@ -296,16 +318,58 @@ Int_t QwADC18_Channel::ProcessEvBuffer(UInt_t* buffer, UInt_t num_words_left, UI
     words_read = fNumberOfDataWords;
   } else if (num_words_left >= fNumberOfDataWords) {
 
+    // Read raw 32-bit word
     UInt_t rawd = buffer[0];
 
     // "Actual" values from data word
-    Int_t act_dtype  = (rawd & mask2422x) >> 22;
-    Int_t act_chan   = act_dtype != 4 ? ((rawd & mask3029x) >> 29) : 0;
-    Int_t act_dvalue = (rawd & mask2625x) >> 25;
-    Int_t act_snum   = act_dtype == 1 || act_dtype == 2 ?
-      ((rawd & mask2118x) >> 18) : 0;
+    UInt_t act_dtype  = (rawd & mask2422x) >> 22;
+    UInt_t act_chan   = (act_dtype != 4) ?
+                        ((rawd & mask3029x) >> 29) : 0;
+    UInt_t act_dvalue = (rawd & mask2625x) >> 25;
+    UInt_t act_snum   = (act_dtype == 1 || act_dtype == 2) ?
+                        ((rawd & mask2118x) >> 18) : 0;
 
-    fValue_Raw = act_dvalue; // FIXME ???
+    // Header check
+    if (rawd & mask31x != 0) {
+      QwError << "QwADC18_Channel::ProcessEvBuffer: Received header word" << QwLog::endl;
+      return 0;
+    }
+
+    // Interpret by data type
+    switch(act_dtype) {
+      case 0:
+        static UInt_t prev_dvalue = act_dvalue;
+        if (act_dvalue != prev_dvalue) {
+          QwError << "QwADC18_Channel::ProcessEvBuffer: Number of samples changed" << QwLog::endl;
+        }
+        fValue_Raw = rawd & mask200x;
+        if (rawd & mask21x) fValue_Raw = -((~fValue_Raw & 0x1fffffff) + 1);
+        fNumberOfSamples = (1 << act_dvalue);
+        break;
+      case 1:
+      case 2:
+        if (act_snum != fNumberOfSamples) {
+          QwError << "QwADC18_Channel::ProcessEvBuffer: Divider value non-zero" << QwLog::endl;
+          return 0;
+        }
+        if (act_dvalue != 0) {
+          QwError << "QwADC18_Channel::ProcessEvBuffer: Divider value non-zero" << QwLog::endl;
+          return 0;
+        }
+        fValue_Raw = rawd & mask170x;
+        break;
+      case 4:
+        if (act_dvalue != 0) {
+          QwError << "QwADC18_Channel::ProcessEvBuffer: Divider value non-zero" << QwLog::endl;
+          return 0;
+        }
+        fValue_Raw = rawd & mask150x;
+        break;
+      default:
+        QwError << "QwADC18_Channel::ProcessEvBuffer: Unknown data type" << QwLog::endl;
+        return 0;
+    }
+
     fValue     = fCalibrationFactor * (Double_t(fValue_Raw) - fPedestal);
 
     words_read = fNumberOfDataWords;
@@ -319,7 +383,25 @@ Int_t QwADC18_Channel::ProcessEvBuffer(UInt_t* buffer, UInt_t num_words_left, UI
 
 void QwADC18_Channel::ProcessEvent()
 {
-  // FIXME error checking
+  if (fNumberOfSamples == 0 && fValue_Raw == 0) {
+    //  There isn't valid data for this channel.  Just flag it and move on.
+    fValue = 0.0;
+    fValueM2 = 0.0;
+    fErrorFlag |= kErrorFlag_sample;
+  } else if (fNumberOfSamples == 0) {
+    //  This is probably a more serious problem.
+    QwWarning << "QwADC18_Channel::ProcessEvent:  Channel "
+              << GetElementName()
+              << " has fNumberOfSamples == 0 but has valid data in the value filed."
+              << "Flag this as an error."
+              << QwLog::endl;
+    fValue = 0.0;
+    fValueM2 = 0.0;
+    fErrorFlag |= kErrorFlag_sample;
+  } else {
+    fValue = fCalibrationFactor * ( (Double_t(fValue_Raw) / fNumberOfSamples) - fPedestal );
+    fValueM2 = 0.0; // second moment is zero for single events
+  }
 }
 
 Double_t QwADC18_Channel::GetAverageVolts() const
