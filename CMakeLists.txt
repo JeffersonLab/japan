@@ -91,6 +91,7 @@ file(GLOB my_evio_sources
 find_package(ROOT REQUIRED)
 include_directories(${ROOT_INCLUDE_DIR})
 set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lNew -lGui -lMinuit2)
+list(APPEND CMAKE_INSTALL_RPATH ${ROOT_LIBRARY_DIR})
 
 # Load MYSQLPP
 find_package(MYSQLPP)
@@ -104,6 +105,7 @@ IF(MYSQLPP_FOUND)
   #    )
   message("--   Forcing MYSQLPP_LIBRARIES to \"\".")
   SET(MYSQLPP_LIBRARIES "")
+  list(APPEND CMAKE_INSTALL_RPATH ${MYSQLPP_LIBRARY_DIR})
 ELSE(MYSQLPP_FOUND)
   SET(MYSQLPP_LIBRARIES "")
 endif(MYSQLPP_FOUND)
@@ -115,6 +117,7 @@ SET( Boost_NO_BOOST_CMAKE ON )
 find_package(Boost COMPONENTS program_options filesystem system regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIR})
+list(APPEND CMAKE_INSTALL_RPATH ${Boost_LIBRARY_DIRS})
 
 # Find the CODA ET libaries
 find_package(ET)
