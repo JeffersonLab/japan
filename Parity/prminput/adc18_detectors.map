@@ -1,0 +1,9 @@
+[QwHelicity]
+ name = Helicity Info
+ map  = adc18_qweak_helicity.map
+
+[MainDetector]
+ name  = Main Detector
+ map   = adc18_adc.map
+ param = adc18_pedestal.map
+

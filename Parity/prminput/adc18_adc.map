@@ -1,0 +1,25 @@
+ROC=6
+Bank=0x6110
+sample_size=16680
+
+! module.type, module.num, module.chan, det.type, det.name
+VQWK, 0, 0,  IntegrationPMT,  VQWK0
+VQWK, 0, 1,  IntegrationPMT,  VQWK1
+VQWK, 0, 2,  IntegrationPMT,  VQWK2
+VQWK, 0, 3,  IntegrationPMT,  VQWK3
+VQWK, 0, 4,  IntegrationPMT,  VQWK4
+VQWK, 0, 5,  IntegrationPMT,  VQWK5
+VQWK, 0, 6,  IntegrationPMT,  VQWK6
+VQWK, 0, 7,  IntegrationPMT,  VQWK7
+
+! module.type, module.num, module.chan, det.type, det.name
+ADC18, 0, 0,  IntegrationPMT,  ADC0
+ADC18, 0, 1,  IntegrationPMT,  ADC1
+ADC18, 0, 2,  IntegrationPMT,  ADC2
+ADC18, 0, 3,  IntegrationPMT,  ADC3
+ADC18, 0, 4,  IntegrationPMT,  ADC4
+ADC18, 0, 5,  IntegrationPMT,  ADC5
+ADC18, 0, 6,  IntegrationPMT,  ADC6
+ADC18, 0, 7,  IntegrationPMT,  ADC7
+
+!END

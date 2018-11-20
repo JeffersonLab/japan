@@ -44,9 +44,9 @@ file(GLOB my_project_sources
   Parity/src/*.cc
   )
 list(REMOVE_ITEM my_project_sources
-		 ${PROJECT_SOURCE_DIR}/Analysis/src/QwF1TDContainer.cc
-		 ${PROJECT_SOURCE_DIR}/Analysis/src/QwSIS3320_Samples.cc
-		 )
+  ${PROJECT_SOURCE_DIR}/Analysis/src/QwF1TDContainer.cc
+  ${PROJECT_SOURCE_DIR}/Analysis/src/QwSIS3320_Samples.cc
+  )
 
 file(GLOB my_project_headers
   Analysis/include/*.h
