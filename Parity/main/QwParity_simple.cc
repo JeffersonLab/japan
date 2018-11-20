@@ -44,8 +44,17 @@
 
 Int_t main(Int_t argc, Char_t* argv[])
 {
-  /// without anything, print usage
-  if(argc == 1){
+  ///  Define the command line options
+  DefineOptionsParity(gQwOptions);
+
+  ///  Define additional command line arguments and the configuration filename,
+  ///  and we define the options that can be used in them (using QwOptions).
+  gQwOptions.AddOptions()("single-output-file", po::value<bool>()->default_bool_value(false), "Write a single output file");
+  gQwOptions.AddOptions()("print-errorcounters", po::value<bool>()->default_bool_value(true), "Print summary of error counters");
+  gQwOptions.AddOptions()("write-promptsummary", po::value<bool>()->default_bool_value(false), "Write PromptSummary");
+
+  ///  Without anything, print usage
+  if (argc == 1) {
     gQwOptions.Usage();
     exit(0);
   }
@@ -58,21 +67,13 @@ Int_t main(Int_t argc, Char_t* argv[])
   QwParameterFile::AppendToSearchPath(getenv_safe_string("QWANALYSIS") + "/Parity/prminput");
   QwParameterFile::AppendToSearchPath(getenv_safe_string("QWANALYSIS") + "/Analysis/prminput");
 
-  ///  Then, we set the command line arguments and the configuration filename,
-  ///  and we define the options that can be used in them (using QwOptions).
-  gQwOptions.AddOptions()("single-output-file", po::value<bool>()->default_bool_value(false), "Write a single output file");
-  gQwOptions.AddOptions()("print-errorcounters", po::value<bool>()->default_bool_value(true), "Print summary of error counters");
-  gQwOptions.AddOptions()("write-promptsummary", po::value<bool>()->default_bool_value(false), "Write PromptSummary");
-
   gQwOptions.SetCommandLine(argc, argv);
 #ifdef  __USE_DATABASE__
   gQwOptions.AddConfigFile("qweak_mysql.conf");
 #endif
 
   gQwOptions.ListConfigFiles();
- 
-  ///  Define the command line options
-  DefineOptionsParity(gQwOptions);
+
   /// Load command line options for the histogram/tree helper class
   gQwHists.ProcessOptions(gQwOptions);
   /// Setup screen and file logging
