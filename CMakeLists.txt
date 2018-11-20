@@ -111,12 +111,9 @@ ELSE(MYSQLPP_FOUND)
 endif(MYSQLPP_FOUND)
 
 # Find Boost libraries
-# There seems to be a bug starting in version 2.8.4 of CMake's boost
-# finding process. As such, we'll disable it here and require 2.8.4 or higher
-SET( Boost_NO_BOOST_CMAKE ON )
 find_package(Boost COMPONENTS program_options filesystem system regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
-link_directories(${Boost_LIBRARY_DIR})
+link_directories(${Boost_LIBRARY_DIRS})
 list(APPEND CMAKE_INSTALL_RPATH ${Boost_LIBRARY_DIRS})
 
 # Find the CODA ET libaries
