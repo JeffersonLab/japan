@@ -70,15 +70,6 @@ Int_t QwADC18_Channel::ApplyHWChecks()
       fErrorFlag |= kErrorFlag_sample;
     }
 
-    // Check SW and HW return the same sum
-    bStatus = (GetRawValue() == GetRawSoftwareSum());
-    //fEventIsGood = bStatus;
-    if (!bStatus) {
-      fErrorFlag |= kErrorFlag_SW_HW;
-    }
-
-
-
     //check sequence number
     fSequenceNo_Prev++;
     if (fSequenceNo_Counter==0 || GetSequenceNumber()==0){//starting the data run
@@ -90,36 +81,6 @@ Int_t QwADC18_Channel::ApplyHWChecks()
       fErrorFlag|=kErrorFlag_Sequence;
       if (bDEBUG)       QwWarning<<" QwQWVK_Channel "<<GetElementName()<<" Sequence number previous value = "<<fSequenceNo_Prev<<" Current value= "<< GetSequenceNumber()<<QwLog::endl;
     }
-
-    fSequenceNo_Counter++;
-
-    //Checking for HW_sum is returning same value.
-    if (fPrev_HardwareBlockSum != GetRawHardwareSum()){
-      //std::cout<<" BCM hardware sum is different  "<<std::endl;
-      fPrev_HardwareBlockSum = GetRawHardwareSum();
-      fADC_Same_NumEvt=0;
-    }else
-      fADC_Same_NumEvt++;//hw_sum is same increment the counter
-
-    //check for the hw_sum is giving the same value
-    if (fADC_Same_NumEvt>0){//we have ADC stuck with same value
-      if (bDEBUG) QwWarning<<" BCM hardware sum is same for more than  "<<fADC_Same_NumEvt<<" time consecutively  "<<QwLog::endl;
-      fErrorFlag|=kErrorFlag_SameHW;
-    }
-
-    //check for the hw_sum is zero
-    if (GetRawHardwareSum()==0){
-      fErrorFlag|=kErrorFlag_ZeroHW;
-    }
-    if (!fEventIsGood)    
-      fSequenceNo_Counter=0;//resetting the counter after ApplyHWChecks() a failure
-
-    if ((TMath::Abs(GetRawHardwareSum())*kADC18_VoltsPerBit/fNumberOfSamples) > GetADC18SaturationLimt()){
-      if (bDEBUG) 
-	QwWarning << this->GetElementName()<<" "<<GetRawHardwareSum() << "Saturating ADC18 invoked! " <<TMath::Abs(GetRawHardwareSum())*kADC18_VoltsPerBit/fNumberOfSamples<<" Limit "<<GetADC18SaturationLimt() << QwLog::endl;
-      fErrorFlag|=kErrorFlag_ADC18_Sat; 
-    }
-
   }
   else {
     fGoodEventCount = 1;
@@ -142,8 +103,6 @@ void QwADC18_Channel::IncrementErrorCounters(){
     fErrorCount_SameHW++; //increment the hw error counter
   if ( (kErrorFlag_ZeroHW &  fErrorFlag)==kErrorFlag_ZeroHW)
     fErrorCount_ZeroHW++; //increment the hw error counter
-  if ( (kErrorFlag_ADC18_Sat &  fErrorFlag)==kErrorFlag_ADC18_Sat)
-    fErrorCount_HWSat++; //increment the hw saturation error counter
   if ( ((kErrorFlag_EventCut_L &  fErrorFlag)==kErrorFlag_EventCut_L) 
        || ((kErrorFlag_EventCut_U &  fErrorFlag)==kErrorFlag_EventCut_U)){
     fNumEvtsWithEventCutsRejected++; //increment the event cut error counter
@@ -208,7 +167,6 @@ void QwADC18_Channel::InitializeChannel(TString name, TString datatosave)
   fADC_Same_NumEvt       = 0;
   fSequenceNo_Prev       = 0;
   fSequenceNo_Counter    = 0;
-  fPrev_HardwareBlockSum = 0.0;
 
   fGoodEventCount        = 0;
 
@@ -284,17 +242,32 @@ void QwADC18_Channel::SetEventData(Double_t value)
   fValue_Raw = (UInt_t)value;
 }
 
+void QwADC18_Channel::SetRawEventData()
+{
+   fValue_Raw = Int_t(fValue / fCalibrationFactor + fPedestal);
+};
+
 // FIXME here goes the encoding of raw data into CODA blocks
 void QwADC18_Channel::EncodeEventData(std::vector<UInt_t> &buffer)
 {
+  UInt_t mask31x   = 0x80000000;   // Header bit mask
+  UInt_t mask3029x = 0x60000000;   // Channel number mask
+  UInt_t mask2625x = 0x06000000;   // Divider value mask
+  UInt_t mask2422x = 0x01c00000;   // Data type mask
+  UInt_t mask21x   = 0x00200000;   // Data type 0 value sign mask
+  UInt_t mask200x  = 0x001fffff;   // Data type 0 value field mask
+  UInt_t mask2118x = 0x003c0000;   // Data types 1-2 sample number mask
+  UInt_t mask170x  = 0x0003ffff;   // Data types 1-2 value field mask
+  UInt_t mask150x  = 0x0000ffff;   // Data type 4 value field mask
+
   UInt_t localbuf[kWordsPerChannel] = {0};
 
   if (IsNameEmpty()) {
     //  This channel is not used, but is present in the data stream.
     //  Fill in with zero.
-    localbuf.push_back( 0 );
+    localbuf[0] = 0;
   } else {
-    localbuf.push_back( ((fValue_Raw << data_shift) & data_mask) );
+    localbuf[0] = ((fValue_Raw << 22) & mask2422x);
   }
 
   for (Int_t i = 0; i < kWordsPerChannel; i++) {
@@ -364,7 +337,7 @@ void QwADC18_Channel::PrintInfo() const
   QwMessage<<"fCalibrationFactor= "<<fCalibrationFactor<<QwLog::endl;
   QwMessage<<"fSequenceNumber= "<<fSequenceNumber<<QwLog::endl;
   QwMessage<<"fNumberOfSamples= "<<fNumberOfSamples<<QwLog::endl;
-  QwMessage<<"fValue_raw= "<<fValue_raw<<QwLog::endl;
+  QwMessage<<"fValue_Raw= "<<fValue_Raw<<QwLog::endl;
   QwMessage<<"fValue = "<<std::setprecision(8) <<fValue << QwLog::endl;
 }
 
@@ -419,7 +392,7 @@ void  QwADC18_Channel::FillHistograms()
 	    if (fHistograms[index] != NULL && (fErrorFlag)==0)
 	      fHistograms[index++]->Fill(GetValue());
 	    if (fHistograms[index] != NULL && (fErrorFlag)==0)
-	      fHistograms[index++]->Fill(GetValueRaw());
+	      fHistograms[index++]->Fill(GetRawValue());
 	  }
 	else if(fDataToSave==kDerived)
 	  {
@@ -928,14 +901,14 @@ void QwADC18_Channel::PrintValue() const
             << std::setw(18) << std::left << GetElementName()      << ""
             << std::setw(12) << std::left << GetValue()            << " +/- "
             << std::setw(12) << std::left << GetValueError()       << " sig "
-	    << std::setw(12) << std::left << GetValueSumWidth()    << ""
+	    << std::setw(12) << std::left << GetValueWidth()       << ""
             << std::setw(12) << std::left << fGoodEventCount       << ""
             << QwLog::endl;
 }
 
 std::ostream& operator<< (std::ostream& stream, const QwADC18_Channel& channel)
 {
-  stream << channel.GetHardwareSum();
+  stream << channel.GetValue();
   return stream;
 }
 
@@ -993,13 +966,13 @@ Bool_t QwADC18_Channel::MatchNumberOfSamples(size_t numsamp)
 		<< " had fNumberOfSamples==" << fNumberOfSamples
 		<< " and was supposed to have " << numsamp
 		<< std::endl;
-        PrintChannel();
     }
   }
   return status;
 }
 
-Bool_t QwADC18_Channel::ApplySingleEventCuts(Double_t LL,Double_t UL)//only check to see HW_Sum is within these given limits
+//only check to see HW_Sum is within these given limits
+Bool_t QwADC18_Channel::ApplySingleEventCuts(Double_t LL,Double_t UL)
 {
   Bool_t status = kFALSE;
 
@@ -1105,8 +1078,8 @@ void QwADC18_Channel::ScaledAdd(Double_t scale, const VQwHardwareChannel *value)
     // 	      << QwLog::endl;
     //     PrintValue();
     //     input->PrintValue();
-    this->fValue_raw = 0;
-    this->fValueSum += scale * input->fValueSum;
+    this->fValue_Raw = 0;
+    this->fValue += scale * input->fValue;
     this->fValueM2 = 0.0;
     this->fNumberOfSamples += input->fNumberOfSamples;
     this->fSequenceNumber  =  0;
@@ -1119,7 +1092,6 @@ void QwADC18_Channel::ScaledAdd(Double_t scale, const VQwHardwareChannel *value)
 #ifdef __USE_DATABASE__
 void QwADC18_Channel::AddErrEntriesToList(std::vector<QwErrDBInterface> &row_list)
 {
-
   // TString message;
   // message  = Form("%30s",GetElementName().Data());
   // message += Form("%9d", fErrorCount_HWSat);
@@ -1133,40 +1105,38 @@ void QwADC18_Channel::AddErrEntriesToList(std::vector<QwErrDBInterface> &row_lis
 
   // kErrorFlag_ADC18_Sat   =0x1;    //ADC18 Saturation Cut. Currently saturation limit is set to +/-8.5V
   // kErrorFlag_sample     =0x2;    //If sample size mis-matches with the default value in the map file.
-  // kErrorFlag_SW_HW      =0x4;    //If software sum and hardware sum are not equal.
   // kErrorFlag_Sequence   =0x8;    //If the ADC sequence number is not incrementing properly
   // kErrorFlag_SameHW     =0x10;   //If ADC value keep returning the same value
   // kErrorFlag_ZeroHW     =0x20;   //Check to see ADC is returning zero
-  
 
-  
+
+
   // kErrorFlag_EventCut_L =0x40;   //Flagged if lower limit of the event cut has failed
   // kErrorFlag_EventCut_U =0x80;   //Flagged if upper limit of the event cut has failed
   // >>>>>>  fNumEvtsWithEventCutsRejected
-  
-  
+
   // outside QwADC18_Channel
   // kErrorFlag_BlinderFail = 0x0200;// in Decimal  512 to identify the blinder fail flag
   // kStabilityCutError     = 0x10000000;// in Decimal 2^28 to identify the stability cut failure
-  
+
   // This is my modified mysql DB, Thursday, December  8 16:40:36 EST 2011, jhlee
   // Error code must be matched to MySQL DB
-  // 
+  //
   // mysql> select * from error_code;
   // +---------------+------------------------------+
   // | error_code_id | quantity                     |
   // +---------------+------------------------------+
-  // |             1 | kErrorFlag_ADC18_Sat          | 
-  // |             2 | kErrorFlag_sample            | 
-  // |             3 | kErrorFlag_SW_HW             | 
-  // |             4 | kErrorFlag_Sequence          | 
-  // |             5 | kErrorFlag_SameHW            | 
-  // |             6 | kErrorFlag_ZeroHW            | 
-  // |             7 | kErrorFlag_EventCut_Rejected | 
-  // |             8 | kErrorFlag_EventCut_L        | 
-  // |             9 | kErrorFlag_EventCut_U        | 
-  // |            10 | kErrorFlag_BlinderFail       | 
-  // |            11 | kStabilityCutError           | 
+  // |             1 | kErrorFlag_ADC18_Sat         |
+  // |             2 | kErrorFlag_sample            |
+  // |             3 | kErrorFlag_SW_HW             |
+  // |             4 | kErrorFlag_Sequence          |
+  // |             5 | kErrorFlag_SameHW            |
+  // |             6 | kErrorFlag_ZeroHW            |
+  // |             7 | kErrorFlag_EventCut_Rejected |
+  // |             8 | kErrorFlag_EventCut_L        |
+  // |             9 | kErrorFlag_EventCut_U        |
+  // |            10 | kErrorFlag_BlinderFail       |
+  // |            11 | kStabilityCutError           |
   // +---------------+------------------------------+
   // 11 rows in set (0.00 sec)
 
