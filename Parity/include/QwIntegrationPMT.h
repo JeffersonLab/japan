@@ -15,13 +15,13 @@
 #include <TTree.h>
 
 // Qweak headers
-#include "QwVQWK_Channel.h"
+#include "VQwDataElement.h"
 #include "QwParameterFile.h"
 
 // Forward declarations
 class QwBlinder;
 class QwDBInterface;
-
+class QwErrDBInterface;
 
 /*****************************************************************
 *  Class:
@@ -69,7 +69,7 @@ class QwIntegrationPMT : public VQwDataElement {
   void  InitializeChannel(TString subsystem, TString module, TString name, TString datatosave); 
   void SetElementName(const TString &name) { fElementName = name; fADC.SetElementName(name);};
 
-  const QwVQWK_Channel* GetChannel(const TString name) const {
+  const T* GetChannel(const TString name) const {
     if (fADC.GetElementName() == name) return &fADC;
     else return 0;
   };

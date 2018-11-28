@@ -10,11 +10,11 @@
 // System headers
 #include <stdexcept>
 
-
 // Qweak headers
 #ifdef __USE_DATABASE__
 #include "QwDBInterface.h"
 #endif
+#include "QwVQWK_Channel.h"
 
 /********************************************************/
 template<typename T>
@@ -142,7 +142,7 @@ void QwIntegrationPMT<T>::RandomizeMollerEvent(
         const QwBeamAngle& yprime,
         const QwBeamEnergy& energy)
 {
-  QwVQWK_Channel temp(fADC);
+  T temp(fADC);
   fADC.ClearEventData();
 
   temp.AssignScaledValue(xpos, fCoeff_x);
@@ -167,7 +167,7 @@ void QwIntegrationPMT<T>::RandomizeMollerEvent(
   fADC.Scale(fNormRate*fVoltPerHz);  //  After this Scale function, fADC should be the detector signal in volts.
   fADC.ForceMapfileSampleSize();
   //  Double_t voltage_width = sqrt(fADC.GetValue()*window_length/fVoltPerHz)/(window_length/fVoltPerHz);
-  Double_t voltage_width = sqrt( fADC.GetValue() / (fADC.GetNumberOfSamples()*QwVQWK_Channel::kTimePerSample/Qw::sec/fVoltPerHz) );
+  Double_t voltage_width = sqrt( fADC.GetValue() / (fADC.GetNumberOfSamples()* T::kTimePerSample/Qw::sec/fVoltPerHz) );
   fADC.SmearByResolution(voltage_width);
   fADC.SetRawEventData();
 }
@@ -398,8 +398,8 @@ template<typename T>
 void QwIntegrationPMT<T>::Normalize(VQwDataElement* denom)
 {
   if (fIsNormalizable) {
-    QwVQWK_Channel* denom_ptr = dynamic_cast<QwVQWK_Channel*>(denom);
-    QwVQWK_Channel vqwk_denom(*denom_ptr);
+    T* denom_ptr = dynamic_cast<T*>(denom);
+    T vqwk_denom(*denom_ptr);
     fADC.DivideBy(vqwk_denom);
   }
 }
