@@ -1,4 +1,3 @@
-
 #include "QwCombinedPMT.h"
 
 // System headers
@@ -9,15 +8,18 @@
 #include "QwDBInterface.h"
 #endif
 
-void QwCombinedPMT::Add(QwIntegrationPMT* pmt, Double_t weight  )
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::Add(QwIntegrationPMT<T>* pmt, Double_t weight)
 {
   //std::cout<<"QwCombinedPMT: Got "<<pmt->GetElementName()<<"  and weight ="<<weight<<"\n";
   fElement.push_back(pmt);
   fWeights.push_back(weight);
 }
 
-
-void  QwCombinedPMT::InitializeChannel(TString name, TString datatosave)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::InitializeChannel(TString name, TString datatosave)
 {
   SetElementName(name);
   //SetPedestal(0.);
@@ -31,7 +33,9 @@ void  QwCombinedPMT::InitializeChannel(TString name, TString datatosave)
   return;
 }
 
-void  QwCombinedPMT::InitializeChannel(TString subsystemname, TString name, TString datatosave)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::InitializeChannel(TString subsystemname, TString name, TString datatosave)
 {
   SetElementName(name);
   //SetPedestal(0.);
@@ -46,7 +50,9 @@ void  QwCombinedPMT::InitializeChannel(TString subsystemname, TString name, TStr
   return;
 }
 
-void  QwCombinedPMT::LinkChannel(TString name)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::LinkChannel(TString name)
 {
   Bool_t local_debug = false;
   SetElementName(name);
@@ -58,32 +64,38 @@ void  QwCombinedPMT::LinkChannel(TString name)
   if(local_debug) std::cout<<"linked combined PMT channel "<< GetElementName()<<std::endl;
 }
 
-void QwCombinedPMT::ClearEventData()
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::ClearEventData()
 {
   fSumADC.ClearEventData();
-//  fAvgADC.ClearEventData();
+  //fAvgADC.ClearEventData();
 }
 
-
-void QwCombinedPMT::SetHardwareSum(Double_t hwsum, UInt_t sequencenumber)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::SetHardwareSum(Double_t hwsum, UInt_t sequencenumber)
 {
 
 }
 
-void QwCombinedPMT::SetEventData(Double_t* block, UInt_t sequencenumber)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::SetEventData(Double_t* block, UInt_t sequencenumber)
 {
   fSumADC.SetEventData(block, sequencenumber);
 //  fAvgADC.SetEventData(block, sequencenumber);
 }
 
-void QwCombinedPMT::CalculateSumAndAverage()
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::CalculateSumAndAverage()
 {
-
   Bool_t ldebug = kFALSE;
   Double_t  total_weights=0.0;
 
   fSumADC.ClearEventData();
-  static QwIntegrationPMT tmpADC("tmpADC");
+  static QwIntegrationPMT<T> tmpADC("tmpADC");
 
   for (size_t i=0;i<fElement.size();i++)
     {
@@ -107,7 +119,7 @@ void QwCombinedPMT::CalculateSumAndAverage()
 
   if (ldebug)
     {
-      std::cout<<"QwCombinedPMT::CalculateAverage()"<<std::endl;
+      std::cout<<"QwCombinedPMT<T>::CalculateAverage()"<<std::endl;
 //      fAvgADC.PrintInfo();
       fSumADC.PrintInfo();
 
@@ -125,47 +137,55 @@ void QwCombinedPMT::CalculateSumAndAverage()
 }
 
 /********************************************************/
-Bool_t QwCombinedPMT::ApplyHWChecks()
+template<typename T>
+Bool_t QwCombinedPMT<T>::ApplyHWChecks()
 {
   Bool_t eventokay=kTRUE;
 
- 
   return eventokay;
 }
-/********************************************************/
 
-void QwCombinedPMT::SetSingleEventCuts(UInt_t errorflag, Double_t LL=0, Double_t UL=0, Double_t stability=0){
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::SetSingleEventCuts(
+        UInt_t errorflag,
+        Double_t LL /* = 0 */,  // FIXME this function had default arguments but not allowed
+        Double_t UL /* = 0 */,
+        Double_t stability /* = 0 */)
+{
   //set the unique tag to identify device type (Int.PMT & Comb. PMT)
   //errorflag|=kPMTErrorFlag;
   QwMessage<<"QwCombinedPMT Error Code passing to QwIntegrationPMT "<<errorflag<<QwLog::endl;
   fSumADC.SetSingleEventCuts(errorflag,LL,UL,stability);
-  
 }
 
-
-void  QwCombinedPMT::ProcessEvent()
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::ProcessEvent()
 {
 //Calculate the weigted averages of the hardware sum and each of the four blocks.
   CalculateSumAndAverage();
   //fSumADC.ProcessEvent(); //This is not necessary for combined devices-Rakitha 11-15-2010
-
-  return;
 }
 
-
-void QwCombinedPMT::SetDefaultSampleSize(Int_t sample_size)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::SetDefaultSampleSize(Int_t sample_size)
 {
   fSumADC.SetDefaultSampleSize((size_t)sample_size);
 }
 
-// report number of events failed due to HW and event cut faliure
-void QwCombinedPMT::PrintErrorCounters() const
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::PrintErrorCounters() const
 {
+  // report number of events failed due to HW and event cut faliure
   fSumADC.PrintErrorCounters();
 }
 
 /********************************************************/
-UInt_t QwCombinedPMT::UpdateErrorFlag()
+template<typename T>
+UInt_t QwCombinedPMT<T>::UpdateErrorFlag()
 {
   for (size_t i=0;i<fElement.size();i++) {
     fSumADC.UpdateErrorFlag(fElement[i]);
@@ -174,41 +194,48 @@ UInt_t QwCombinedPMT::UpdateErrorFlag()
 }
 
 /********************************************************/
-void QwCombinedPMT::UpdateErrorFlag(const QwCombinedPMT *ev_error){
+template<typename T>
+void QwCombinedPMT<T>::UpdateErrorFlag(const QwCombinedPMT *ev_error)
+{
   try {
     if(typeid(*ev_error)==typeid(*this)) {
-      // std::cout<<" Here in QwCombinedPMT::UpdateErrorFlag \n";
+      // std::cout<<" Here in QwCombinedPMT<T>::UpdateErrorFlag \n";
       if (this->GetElementName()!="") {
 	fSumADC.UpdateErrorFlag(&(ev_error->fSumADC));
       }
     } else {
-      TString loc="Standard exception from QwCombinedPMT::UpdateErrorFlag :"+
+      TString loc="Standard exception from QwCombinedPMT<T>::UpdateErrorFlag :"+
         ev_error->GetElementName()+" "+this->GetElementName()+" are not of the "
         +"same type";
       throw std::invalid_argument(loc.Data());
     }
   } catch (std::exception& e) {
     std::cerr<< e.what()<<std::endl;
-  }  
-};
-
+  }
+}
 
 /********************************************************/
-Bool_t QwCombinedPMT::ApplySingleEventCuts(){
+template<typename T>
+Bool_t QwCombinedPMT<T>::ApplySingleEventCuts()
+{
   return fSumADC.ApplySingleEventCuts();
 }
 
 /********************************************************/
-
-Int_t QwCombinedPMT::ProcessEvBuffer(UInt_t* buffer, UInt_t word_position_in_buffer, UInt_t subelement)
+template<typename T>
+Int_t QwCombinedPMT<T>::ProcessEvBuffer(
+        UInt_t* buffer,
+        UInt_t word_position_in_buffer,
+        UInt_t subelement)
 {
   return 0;
 }
 
-
-QwCombinedPMT& QwCombinedPMT::operator= (const QwCombinedPMT &value)
+/********************************************************/
+template<typename T>
+QwCombinedPMT<T>& QwCombinedPMT<T>::operator= (const QwCombinedPMT<T> &value)
 {
-  //std::cout<<"Calling QwCombinedPMT::operator="<<std::endl;
+  //std::cout<<"Calling QwCombinedPMT<T>::operator="<<std::endl;
   if ( (GetElementName()!="") && (this->fElement.size()==value.fElement.size()) )
     {
       for (size_t i=0; i<value.fElement.size(); i++)
@@ -235,9 +262,11 @@ QwCombinedPMT& QwCombinedPMT::operator= (const QwCombinedPMT &value)
   return *this;
 }
 
-QwCombinedPMT& QwCombinedPMT::operator+= (const QwCombinedPMT &value)
+/********************************************************/
+template<typename T>
+QwCombinedPMT<T>& QwCombinedPMT<T>::operator+= (const QwCombinedPMT<T> &value)
 {
-  //std::cout<<"Calling QwCombinedPMT::operator+="<<std::endl;
+  //std::cout<<"Calling QwCombinedPMT<T>::operator+="<<std::endl;
   if ( (GetElementName()!="") && (this->fElement.size()==value.fElement.size()) )
     {
       for (size_t i=0; i<value.fElement.size(); i++)
@@ -253,9 +282,11 @@ QwCombinedPMT& QwCombinedPMT::operator+= (const QwCombinedPMT &value)
   return *this;
 }
 
-QwCombinedPMT& QwCombinedPMT::operator-= (const QwCombinedPMT &value)
+/********************************************************/
+template<typename T>
+QwCombinedPMT<T>& QwCombinedPMT<T>::operator-= (const QwCombinedPMT<T> &value)
 {
-  //std::cout<<"Calling QwCombinedPMT::operator-="<<std::endl;
+  //std::cout<<"Calling QwCombinedPMT<T>::operator-="<<std::endl;
   if ( (GetElementName()!="") && (this->fElement.size()==value.fElement.size()) )
     {
       for (size_t i=0; i<value.fElement.size(); i++)
@@ -273,89 +304,113 @@ QwCombinedPMT& QwCombinedPMT::operator-= (const QwCombinedPMT &value)
   return *this;
 }
 
-void QwCombinedPMT::Sum(QwCombinedPMT &value1, QwCombinedPMT &value2)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::Sum(QwCombinedPMT<T> &value1, QwCombinedPMT<T> &value2)
 {
-  //std::cout<<"Calling QwCombinedPMT::Sum"<<std::endl;
+  //std::cout<<"Calling QwCombinedPMT<T>::Sum"<<std::endl;
   this->fSumADC =  value1.fSumADC;
 //  this->fAvgADC =  value1.fAvgADC;
   this->fSumADC += value2.fSumADC;
 //  this->fAvgADC += value2.fAvgADC;
 }
 
-void QwCombinedPMT::AccumulateRunningSum(const QwCombinedPMT& value)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::AccumulateRunningSum(const QwCombinedPMT<T>& value)
 {
   fSumADC.AccumulateRunningSum(value.fSumADC);
 }
 
-void QwCombinedPMT::DeaccumulateRunningSum(QwCombinedPMT& value)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::DeaccumulateRunningSum(QwCombinedPMT<T>& value)
 {
   fSumADC.DeaccumulateRunningSum(value.fSumADC);
 }
 
-
-void QwCombinedPMT::Difference(QwCombinedPMT &value1, QwCombinedPMT &value2)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::Difference(QwCombinedPMT<T> &value1, QwCombinedPMT<T> &value2)
 {
-  //std::cout<<"Calling QwCombinedPMT::Difference="<<std::endl;
+  //std::cout<<"Calling QwCombinedPMT<T>::Difference="<<std::endl;
   this->fSumADC =  value1.fSumADC;
 //  this->fAvgADC =  value1.fAvgADC;
   this->fSumADC -= value2.fSumADC;
 //  this->fAvgADC -= value2.fAvgADC;
 }
 
-void QwCombinedPMT::Ratio(QwCombinedPMT &numer, QwCombinedPMT &denom)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::Ratio(QwCombinedPMT<T> &numer, QwCombinedPMT<T> &denom)
 {
-  //std::cout<<"Calling QwCombinedPMT::Ratio"<<std::endl;
+  //std::cout<<"Calling QwCombinedPMT<T>::Ratio"<<std::endl;
   fSumADC.Ratio(numer.fSumADC,denom.fSumADC);
 //  fAvgADC.Ratio(numer.fAvgADC,denom.fAvgADC);
   return;
 }
 
-void QwCombinedPMT::Scale(Double_t factor)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::Scale(Double_t factor)
 {
   fSumADC.Scale(factor);
 //  fAvgADC.Scale(factor);
   return;
 }
-void QwCombinedPMT::Normalize(VQwDataElement* denom)
+
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::Normalize(VQwDataElement* denom)
 {
   fSumADC.Normalize(denom);
 
   return;
 }
 
-
-void QwCombinedPMT::CalculateRunningAverage()
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::CalculateRunningAverage()
 {
   fSumADC.CalculateRunningAverage();
 //  fAvgADC.CalculateRunningAverage();
 }
 
-void QwCombinedPMT::Blind(const QwBlinder *blinder)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::Blind(const QwBlinder *blinder)
 {
   fSumADC.Blind(blinder);
 //  fAvgADC.Blind(blinder);
 }
 
-void QwCombinedPMT::Blind(const QwBlinder *blinder, const QwCombinedPMT& yield)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::Blind(const QwBlinder *blinder, const QwCombinedPMT<T>& yield)
 {
   fSumADC.Blind(blinder, yield.fSumADC);
 //  fAvgADC.Blind(blinder, yield.fAvgADC);
 }
 
-void QwCombinedPMT::PrintValue() const
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::PrintValue() const
 {
   fSumADC.PrintValue();
 //  fAvgADC.PrintValue();
 }
 
-void QwCombinedPMT::PrintInfo() const
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::PrintInfo() const
 {
   fSumADC.PrintInfo();
 //  fAvgADC.PrintInfo();
 }
 
-
-void  QwCombinedPMT::ConstructHistograms(TDirectory *folder, TString &prefix)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::ConstructHistograms(TDirectory *folder, TString &prefix)
 {
   if (GetElementName()=="")
     {
@@ -372,7 +427,9 @@ void  QwCombinedPMT::ConstructHistograms(TDirectory *folder, TString &prefix)
 
 }
 
-void  QwCombinedPMT::FillHistograms()
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::FillHistograms()
 {
   if (GetElementName()=="")
     {
@@ -383,12 +440,11 @@ void  QwCombinedPMT::FillHistograms()
       fSumADC.FillHistograms();
 //      fAvgADC.FillHistograms();
     }
-
-
-  return;
 }
 
-void  QwCombinedPMT::ConstructBranchAndVector(TTree *tree, TString &prefix, std::vector<Double_t> &values)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::ConstructBranchAndVector(TTree *tree, TString &prefix, std::vector<Double_t> &values)
 {
   if (GetElementName()=="")
     {
@@ -403,7 +459,9 @@ void  QwCombinedPMT::ConstructBranchAndVector(TTree *tree, TString &prefix, std:
   return;
 }
 
-void  QwCombinedPMT::ConstructBranch(TTree *tree, TString &prefix)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::ConstructBranch(TTree *tree, TString &prefix)
 {
   if (GetElementName()=="")
     {
@@ -414,10 +472,11 @@ void  QwCombinedPMT::ConstructBranch(TTree *tree, TString &prefix)
       TString sumprefix =  prefix+"";
       fSumADC.ConstructBranch(tree, sumprefix);
     }
-  return;
 }
 
-void  QwCombinedPMT::ConstructBranch(TTree *tree, TString &prefix, QwParameterFile &modulelist)
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::ConstructBranch(TTree *tree, TString &prefix, QwParameterFile &modulelist)
 {
   TString devicename;
   devicename=GetElementName();
@@ -434,11 +493,11 @@ void  QwCombinedPMT::ConstructBranch(TTree *tree, TString &prefix, QwParameterFi
 	QwMessage <<" Tree leave added to "<<devicename<<QwLog::endl;
       }
     }
-  return;
 }
 
-
-void  QwCombinedPMT::FillTreeVector(std::vector<Double_t> &values) const
+/********************************************************/
+template<typename T>
+void QwCombinedPMT<T>::FillTreeVector(std::vector<Double_t> &values) const
 {
   if (GetElementName()=="") {
     //  This channel is not used, so skip filling the histograms.
@@ -449,14 +508,22 @@ void  QwCombinedPMT::FillTreeVector(std::vector<Double_t> &values) const
 }
 
 #ifdef __USE_DATABASE__
+
 /********************************************************/
-std::vector<QwDBInterface>  QwCombinedPMT::GetDBEntry()
+template<typename T>
+std::vector<QwDBInterface>  QwCombinedPMT<T>::GetDBEntry()
 {
   return fSumADC.GetDBEntry();
 }
 
-std::vector<QwErrDBInterface>  QwCombinedPMT::GetErrDBEntry()
+/********************************************************/
+template<typename T>
+std::vector<QwErrDBInterface>  QwCombinedPMT<T>::GetErrDBEntry()
 {
   return fSumADC.GetErrDBEntry();
 }
+
 #endif
+
+
+template class QwCombinedPMT<QwVQWK_Channel>;

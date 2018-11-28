@@ -29,7 +29,7 @@ class QwMainCerenkovDetector:
     public VQwSubsystemParity,
     public MQwSubsystemCloneable<QwMainCerenkovDetector>
 {
-  friend class QwCombinedPMT;
+  friend class QwCombinedPMT<QwVQWK_Channel>;
   /******************************************************************
    *  Class: QwMainCerenkovDetector
    *
@@ -115,7 +115,7 @@ class QwMainCerenkovDetector:
   //void  FillDB(QwParityDB *db, TString datatype);
   //void  FillErrDB(QwParityDB *db, TString datatype);
 
-  const QwIntegrationPMT* GetChannel(const TString name) const;
+  const QwIntegrationPMT<QwVQWK_Channel>* GetChannel(const TString name) const;
 
   Bool_t Compare(VQwSubsystem* source);
 
@@ -142,8 +142,8 @@ class QwMainCerenkovDetector:
   void DeaccumulateRunningSum(VQwSubsystem* value);
   void CalculateRunningAverage();
 
-  const QwIntegrationPMT* GetIntegrationPMT(const TString name) const;
-  const QwCombinedPMT* GetCombinedPMT(const TString name) const;
+  const QwIntegrationPMT<QwVQWK_Channel>* GetIntegrationPMT(const TString name) const;
+  const QwCombinedPMT<QwVQWK_Channel>* GetCombinedPMT(const TString name) const;
 
   void DoNormalization(Double_t factor=1.0);
 
@@ -171,8 +171,8 @@ class QwMainCerenkovDetector:
  // the detector from fIntegrationPMT vector for given name will be returnd.
  Int_t GetDetectorIndex(EQwPMTInstrumentType TypeID, TString name);
 
-  std::vector <QwIntegrationPMT> fIntegrationPMT;
-  std::vector <QwCombinedPMT> fCombinedPMT;
+  std::vector <QwIntegrationPMT<QwVQWK_Channel> > fIntegrationPMT;
+  std::vector <QwCombinedPMT<QwVQWK_Channel> > fCombinedPMT;
   std::vector <QwMainCerenkovDetectorID> fMainDetID;
 
  protected:

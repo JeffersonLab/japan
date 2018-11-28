@@ -16,6 +16,7 @@
 class QwBlinder;
 class QwDBInterface;
 
+template<typename T>
 class QwCombinedPMT : public VQwDataElement {
 /////
  public:
@@ -50,7 +51,7 @@ class QwCombinedPMT : public VQwDataElement {
     else return 0;
   };
 
-  void Add(QwIntegrationPMT* pmt, Double_t weight);
+  void Add(QwIntegrationPMT<T>* pmt, Double_t weight);
 
   Int_t ProcessEvBuffer(UInt_t* buffer, UInt_t word_position_in_buffer, UInt_t subelement=0);
   void  ClearEventData();
@@ -137,11 +138,11 @@ class QwCombinedPMT : public VQwDataElement {
 
   Bool_t fGoodEvent; /// used to validate sequence number in the IsGoodEvent()
 
-  std::vector <QwIntegrationPMT*> fElement;
+  std::vector <QwIntegrationPMT<T>*> fElement;
   std::vector <Double_t> fWeights;
 
-  QwIntegrationPMT  fSumADC;
-  //QwIntegrationPMT  fAvgADC;
+  QwIntegrationPMT<T> fSumADC;
+  //QwIntegrationPMT<T> fAvgADC;
 
   Int_t fDevice_flag; /// sets the event cut level for the device
                       /// fDevice_flag=1 Event cuts & HW check,

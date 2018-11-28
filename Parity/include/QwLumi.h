@@ -56,7 +56,7 @@ class QwLumiDetectorID{
 ******************************************************************/
 class QwLumi : public VQwSubsystemParity, public MQwSubsystemCloneable<QwLumi> {
   /////  
-  friend class QwCombinedPMT;
+  friend class QwCombinedPMT<QwVQWK_Channel>;
 
  private:
   /// Private default constructor (not implemented, will throw linker error on use)
@@ -146,9 +146,9 @@ class QwLumi : public VQwSubsystemParity, public MQwSubsystemCloneable<QwLumi> {
   void  FillErrDB(QwParityDB *db, TString datatype);
 #endif
  
-  const QwIntegrationPMT* GetChannel(const TString name) const;
-  const QwIntegrationPMT* GetIntegrationPMT(const TString name) const;
-  const QwCombinedPMT* GetCombinedPMT(const TString name) const;
+  const QwIntegrationPMT<QwVQWK_Channel>* GetChannel(const TString name) const;
+  const QwIntegrationPMT<QwVQWK_Channel>* GetIntegrationPMT(const TString name) const;
+  const QwCombinedPMT<QwVQWK_Channel>* GetCombinedPMT(const TString name) const;
 
   Bool_t Compare(VQwSubsystem *source);
 
@@ -168,8 +168,8 @@ class QwLumi : public VQwSubsystemParity, public MQwSubsystemCloneable<QwLumi> {
  //when the type and the name is passed the detector index from appropriate vector will be returned
  //for example if TypeID is IntegrationPMT  then the index of the detector from fIntegrationPMT vector for given name will be returnd.
 
- std::vector <QwIntegrationPMT>      fIntegrationPMT;  
- std::vector <QwCombinedPMT>         fCombinedPMT;
+ std::vector <QwIntegrationPMT<QwVQWK_Channel> > fIntegrationPMT;
+ std::vector <QwCombinedPMT<QwVQWK_Channel> >    fCombinedPMT;
  std::vector <QwSIS3801D24_Channel>  fScalerPMT;
 
  std::vector <QwLumiDetectorID>      fLumiDetectorID;

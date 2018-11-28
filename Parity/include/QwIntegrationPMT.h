@@ -28,10 +28,17 @@ class QwDBInterface;
 ******************************************************************/
 ///
 /// \ingroup QwAnalysis_BL
-class QwIntegrationPMT : public VQwDataElement{
+
+// TODO Additional layer VQwIntegrationPMT between VQwDataElement
+//      and templated QwIntegrationPMT so that the functions can
+//      return VQwIntegrationPMT pointers and don't need specific
+//      casting
+
+template<typename T>
+class QwIntegrationPMT : public VQwDataElement {
 /////
  public:
-  QwIntegrationPMT() { 
+  QwIntegrationPMT() {
     InitializeChannel("","raw");
   };
   QwIntegrationPMT(TString name){
@@ -45,7 +52,7 @@ class QwIntegrationPMT : public VQwDataElement{
   : VQwDataElement(source),
     fPedestal(source.fPedestal),
     fCalibration(source.fCalibration),
-    fTriumf_ADC(source.fTriumf_ADC),
+    fADC(source.fADC),
     fIsBlindable(source.fIsBlindable),
     fIsNormalizable(source.fIsNormalizable)
   { }
@@ -60,10 +67,10 @@ class QwIntegrationPMT : public VQwDataElement{
   void  InitializeChannel(TString subsystem, TString name, TString datatosave); 
   // same purpose as above but this was needed to accormodate combinedPMT. Unlike Beamline combined devices where they have VQWK channels, Combined PMT has integration PMT 
   void  InitializeChannel(TString subsystem, TString module, TString name, TString datatosave); 
-  void SetElementName(const TString &name) { fElementName = name; fTriumf_ADC.SetElementName(name);};
+  void SetElementName(const TString &name) { fElementName = name; fADC.SetElementName(name);};
 
   const QwVQWK_Channel* GetChannel(const TString name) const {
-    if (fTriumf_ADC.GetElementName() == name) return &fTriumf_ADC;
+    if (fADC.GetElementName() == name) return &fADC;
     else return 0;
   };
 
@@ -94,7 +101,7 @@ void RandomizeMollerEvent(int helicity, const QwBeamCharge& charge, const QwBeam
   Bool_t ApplyHWChecks();//Check for harware errors in the devices
   Bool_t ApplySingleEventCuts();//Check for good events by stting limits on the devices readings
   void IncrementErrorCounters(){
-    fTriumf_ADC.IncrementErrorCounters();
+    fADC.IncrementErrorCounters();
   }
   void PrintErrorCounters() const;// report number of events failed due to HW and event cut faliure
   Int_t SetSingleEventCuts(Double_t, Double_t);//set two limts
@@ -102,7 +109,7 @@ void RandomizeMollerEvent(int helicity, const QwBeamCharge& charge, const QwBeam
   void SetSingleEventCuts(UInt_t errorflag, Double_t LL, Double_t UL, Double_t stability);
   void SetDefaultSampleSize(Int_t sample_size);
   UInt_t GetEventcutErrorFlag(){//return the error flag
-    return fTriumf_ADC.GetEventcutErrorFlag();
+    return fADC.GetEventcutErrorFlag();
   }
 
   UInt_t UpdateErrorFlag() {return GetEventcutErrorFlag();};
@@ -110,7 +117,7 @@ void RandomizeMollerEvent(int helicity, const QwBeamCharge& charge, const QwBeam
 
   void SetEventCutMode(Int_t bcuts){
     bEVENTCUTMODE=bcuts;
-    fTriumf_ADC.SetEventCutMode(bcuts);
+    fADC.SetEventCutMode(bcuts);
   }
 
   void SetBlindability(Bool_t isblindable){fIsBlindable=isblindable;};
@@ -125,7 +132,7 @@ void RandomizeMollerEvent(int helicity, const QwBeamCharge& charge, const QwBeam
   void PrintInfo() const;
 
 /*   Double_t GetRawBlockValue(size_t blocknum) */
-/*            {return fTriumf_ADC.GetRawBlockValue(blocknum);}; */
+/*            {return fADC.GetRawBlockValue(blocknum);}; */
 
 
 
@@ -183,7 +190,7 @@ void RandomizeMollerEvent(int helicity, const QwBeamCharge& charge, const QwBeam
 
   Bool_t fGoodEvent;//used to validate sequence number in the IsGoodEvent()
 
-  QwVQWK_Channel fTriumf_ADC;
+  T fADC;
 
   Int_t fDeviceErrorCode;//keep the device HW status using a unique code from the QwVQWK_Channel::fDeviceErrorCode
 
@@ -193,7 +200,5 @@ void RandomizeMollerEvent(int helicity, const QwBeamCharge& charge, const QwBeam
   const static  Bool_t bDEBUG=kFALSE;//debugging display purposes
   Bool_t bEVENTCUTMODE; //global switch to turn event cuts ON/OFF
 };
-
-
 
 #endif

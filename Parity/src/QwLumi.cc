@@ -32,7 +32,7 @@ void QwLumi::DefineOptions(QwOptions &options)
 }
 
 
-//*****************************************************************
+/********************************************************/
 void QwLumi::ProcessOptions(QwOptions &options)
 {
   bNormalization = options.GetValue<bool>("QwLumi.normalize");
@@ -43,7 +43,7 @@ void QwLumi::ProcessOptions(QwOptions &options)
   }
 }
 
-//*****************************************************************
+/********************************************************/
 Int_t QwLumi::LoadChannelMap(TString mapfile)
 {
   Bool_t ldebug=kFALSE;
@@ -52,7 +52,7 @@ Int_t QwLumi::LoadChannelMap(TString mapfile)
   TString modtype, dettype, namech, nameofcombinedchan, keyword, keyword2;
   Int_t modnum = 0;
   Int_t channum = 0;
-  Int_t combinedchans = 0;  
+  Int_t combinedchans = 0;
   std::vector<TString> combinedchannelnames;
   std::vector<Double_t> weight;
   Int_t currentrocread=0;
@@ -189,7 +189,7 @@ Int_t QwLumi::LoadChannelMap(TString mapfile)
 	    {
 	      if(localLumiDetectorID.fTypeID==kQwIntegrationPMT)
 		{
-		  QwIntegrationPMT localIntegrationPMT(GetSubsystemName(),localLumiDetectorID.fdetectorname);
+		  QwIntegrationPMT<QwVQWK_Channel> localIntegrationPMT(GetSubsystemName(),localLumiDetectorID.fdetectorname);
 
 		  //  Force all Lumi PMTs to be not_blindable.
 		  //  This isn't really needed, since the subsystem
@@ -208,7 +208,7 @@ Int_t QwLumi::LoadChannelMap(TString mapfile)
 		}
 	      else if (localLumiDetectorID.fTypeID==kQwCombinedPMT)
 		{
-		  QwCombinedPMT localcombinedPMT(GetSubsystemName(),localLumiDetectorID.fdetectorname);
+		  QwCombinedPMT<QwVQWK_Channel> localcombinedPMT(GetSubsystemName(),localLumiDetectorID.fdetectorname);
 		  //  Force all Lumi PMTs to be not_blindable.
 		  //  This isn't really needed, since the subsystem
 		  //  doesn't call QwCombinedPMT::Blind, but let's
@@ -330,7 +330,7 @@ Int_t QwLumi::LoadChannelMap(TString mapfile)
 }
 
 
-//*****************************************************************
+/********************************************************/
 Int_t QwLumi::LoadEventCuts(TString  filename)
 {
   Int_t eventcut_flag = 1;
@@ -407,7 +407,7 @@ Int_t QwLumi::LoadEventCuts(TString  filename)
   return 0;
 }
 
-//*****************************************************************
+/********************************************************/
 Int_t QwLumi::LoadInputParameters(TString pedestalfile)
 {
   Bool_t ldebug=kFALSE;
@@ -461,21 +461,21 @@ Int_t QwLumi::LoadInputParameters(TString pedestalfile)
   return 0;
 }
 
-//*****************************************************************
+/********************************************************/
 void QwLumi::SetRandomEventParameters(Double_t mean, Double_t sigma)
 {
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
     fIntegrationPMT[i].SetRandomEventParameters(mean, sigma);
 }
 
-//*****************************************************************
+/********************************************************/
 void QwLumi::SetRandomEventAsymmetry(Double_t asymmetry)
 {
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
     fIntegrationPMT[i].SetRandomEventAsymmetry(asymmetry);
 }
 
-//*****************************************************************
+/********************************************************/
 void QwLumi::RandomizeEventData(int helicity, double time)
 {
   // Randomize all QwIntegrationPMT buffers
@@ -483,7 +483,7 @@ void QwLumi::RandomizeEventData(int helicity, double time)
     fIntegrationPMT[i].RandomizeEventData(helicity, time);
 }
 
-//*****************************************************************
+/********************************************************/
 void QwLumi::EncodeEventData(std::vector<UInt_t> &buffer)
 {
   std::vector<UInt_t> elements;
@@ -520,7 +520,7 @@ void QwLumi::EncodeEventData(std::vector<UInt_t> &buffer)
   }
 }
 
-//*****************************************************************
+/********************************************************/
 Int_t QwLumi::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   Bool_t lkDEBUG=kFALSE;
@@ -593,7 +593,7 @@ Int_t QwLumi::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt
   return 0;
 }
 
-//*****************************************************************
+/********************************************************/
 Bool_t QwLumi::ApplySingleEventCuts(){
 
   Bool_t status=kTRUE;
@@ -624,7 +624,7 @@ void QwLumi::IncrementErrorCounters()
   }
 }
 
-//*****************************************************************
+/********************************************************/
 void QwLumi::PrintErrorCounters() const
 {
   //inherited from the VQwSubsystemParity; this will display the error summary
@@ -642,7 +642,7 @@ void QwLumi::PrintErrorCounters() const
 }
 
 
-//*****************************************************************
+/********************************************************/
 UInt_t QwLumi::GetEventcutErrorFlag(){//return the error flag
   UInt_t ErrorFlag;
   ErrorFlag=0;
@@ -669,7 +669,7 @@ void QwLumi::UpdateErrorFlag(const VQwSubsystem *ev_error){
 };
 
 
-//*****************************************************************
+/********************************************************/
 void  QwLumi::ProcessEvent()
 {
   if (! HasDataLoaded()) return;
@@ -764,13 +764,13 @@ Bool_t QwLumi::PublishByRequest(TString device_name)
   return status;
 }
 
-//*****************************************************************
+/********************************************************/
 Int_t QwLumi::ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   return 0;
 }
 
-//*****************************************************************
+/********************************************************/
 Bool_t QwLumi::IsGoodEvent()
 {
   Bool_t test=kTRUE;
@@ -779,7 +779,7 @@ Bool_t QwLumi::IsGoodEvent()
 }
 
 
-//*****************************************************************
+/********************************************************/
 void QwLumi::ClearEventData()
 {
   SetDataLoaded(kFALSE);
@@ -796,7 +796,7 @@ EQwPMTInstrumentType QwLumi::GetDetectorTypeID(TString name)
   return GetQwPMTInstrumentType(name);
 }
 
-//*****************************************************************
+/********************************************************/
 Int_t QwLumi::GetDetectorIndex(EQwPMTInstrumentType type_id, TString name)
 {
   Bool_t ldebug=kFALSE;
@@ -823,18 +823,18 @@ Int_t QwLumi::GetDetectorIndex(EQwPMTInstrumentType type_id, TString name)
   return result;
 }
 
-//*****************************************************************
-const QwIntegrationPMT* QwLumi::GetChannel(const TString name) const
+/********************************************************/
+const QwIntegrationPMT<QwVQWK_Channel>* QwLumi::GetChannel(const TString name) const
 {
   return GetIntegrationPMT(name);
 }
 
 
-//*****************************************************************
-const QwIntegrationPMT* QwLumi::GetIntegrationPMT(const TString name) const
+/********************************************************/
+const QwIntegrationPMT<QwVQWK_Channel>* QwLumi::GetIntegrationPMT(const TString name) const
 {
   if (! fIntegrationPMT.empty()) {
-    for (std::vector<QwIntegrationPMT>::const_iterator IntegrationPMT = fIntegrationPMT.begin(); IntegrationPMT != fIntegrationPMT.end(); ++IntegrationPMT) {
+    for (std::vector<QwIntegrationPMT<QwVQWK_Channel> >::const_iterator IntegrationPMT = fIntegrationPMT.begin(); IntegrationPMT != fIntegrationPMT.end(); ++IntegrationPMT) {
       if (IntegrationPMT->GetElementName() == name) {
         return &(*IntegrationPMT);
       }
@@ -844,7 +844,7 @@ const QwIntegrationPMT* QwLumi::GetIntegrationPMT(const TString name) const
 }
 
 
-const QwCombinedPMT* QwLumi::GetCombinedPMT(const TString name) const
+const QwCombinedPMT<QwVQWK_Channel>* QwLumi::GetCombinedPMT(const TString name) const
 {
   TString tmpname = name;
   tmpname.ToLower();
@@ -866,7 +866,7 @@ const QwCombinedPMT* QwLumi::GetCombinedPMT(const TString name) const
 
 
 
-//*****************************************************************
+/********************************************************/
 VQwSubsystem&  QwLumi::operator=  (VQwSubsystem *value)
 {
   //  std::cout<<" here in QwLumi::operator= \n";
@@ -886,7 +886,7 @@ VQwSubsystem&  QwLumi::operator=  (VQwSubsystem *value)
   return *this;
 }
 
-//*****************************************************************
+/********************************************************/
 VQwSubsystem&  QwLumi::operator+=  (VQwSubsystem *value)
 {
   if (Compare(value))
@@ -903,7 +903,7 @@ VQwSubsystem&  QwLumi::operator+=  (VQwSubsystem *value)
   return *this;
 }
 
-//*****************************************************************
+/********************************************************/
 VQwSubsystem&  QwLumi::operator-=  (VQwSubsystem *value)
 {
 
@@ -921,7 +921,7 @@ VQwSubsystem&  QwLumi::operator-=  (VQwSubsystem *value)
   return *this;
 }
 
-//*****************************************************************
+/********************************************************/
 void  QwLumi::Sum(VQwSubsystem  *value1, VQwSubsystem  *value2)
 {
   if (Compare(value1) && Compare(value2))
@@ -931,7 +931,7 @@ void  QwLumi::Sum(VQwSubsystem  *value1, VQwSubsystem  *value2)
     }
 }
 
-//*****************************************************************
+/********************************************************/
 void  QwLumi::Difference(VQwSubsystem  *value1, VQwSubsystem  *value2)
 {
   if (Compare(value1) && Compare(value2))
@@ -941,7 +941,7 @@ void  QwLumi::Difference(VQwSubsystem  *value1, VQwSubsystem  *value2)
     }
 }
 
-//*****************************************************************
+/********************************************************/
 void QwLumi::Ratio(VQwSubsystem  *numer, VQwSubsystem  *denom)
 {
   if (Compare(numer) && Compare(denom))
@@ -958,7 +958,7 @@ void QwLumi::Ratio(VQwSubsystem  *numer, VQwSubsystem  *denom)
     }
 }
 
-//*****************************************************************
+/********************************************************/
 void QwLumi::Scale(Double_t factor)
 {
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
@@ -969,7 +969,7 @@ void QwLumi::Scale(Double_t factor)
     fScalerPMT[i].Scale(factor);
 }
 
-//*****************************************************************
+/********************************************************/
 void QwLumi::Normalize(VQwDataElement* denom)
 {
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
@@ -981,7 +981,7 @@ void QwLumi::Normalize(VQwDataElement* denom)
 }
 
 
-//*****************************************************************
+/********************************************************/
 Bool_t QwLumi::Compare(VQwSubsystem *value)
 {
   //  std::cout<<" Here in QwLumi::Compare \n";
@@ -1010,7 +1010,7 @@ Bool_t QwLumi::Compare(VQwSubsystem *value)
 }
 
 
-//*****************************************************************
+/********************************************************/
 void  QwLumi::ConstructHistograms(TDirectory *folder, TString &prefix)
 {
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
@@ -1022,7 +1022,7 @@ void  QwLumi::ConstructHistograms(TDirectory *folder, TString &prefix)
 }
 
 
-//*****************************************************************
+/********************************************************/
 void  QwLumi::FillHistograms()
 {
   if (! HasDataLoaded()) return;
@@ -1036,7 +1036,7 @@ void  QwLumi::FillHistograms()
 }
 
 
-//*****************************************************************
+/********************************************************/
 void QwLumi::ConstructBranchAndVector(TTree *tree, TString & prefix, std::vector <Double_t> &values)
 {
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
@@ -1047,7 +1047,7 @@ void QwLumi::ConstructBranchAndVector(TTree *tree, TString & prefix, std::vector
     fScalerPMT[i].ConstructBranchAndVector(tree, prefix, values);
 }
 
-//*****************************************************************
+/********************************************************/
 void QwLumi::ConstructBranch(TTree *tree, TString & prefix)
 {
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
@@ -1058,7 +1058,7 @@ void QwLumi::ConstructBranch(TTree *tree, TString & prefix)
     fScalerPMT[i].ConstructBranch(tree, prefix);
 }
 
-//*****************************************************************
+/********************************************************/
 void QwLumi::ConstructBranch(TTree *tree, TString & prefix, QwParameterFile& trim_file)
 {
   TString tmp;
@@ -1086,7 +1086,7 @@ void QwLumi::ConstructBranch(TTree *tree, TString & prefix, QwParameterFile& tri
   }
 }
 
-//*****************************************************************
+/********************************************************/
 void  QwLumi::FillTreeVector(std::vector<Double_t> &values) const
 {
   if (! HasDataLoaded()) return;
@@ -1100,7 +1100,7 @@ void  QwLumi::FillTreeVector(std::vector<Double_t> &values) const
 }
 
 
-//*****************************************************************
+/********************************************************/
 void  QwLumi::PrintValue() const
 {
   QwMessage << "=== QwLumi: " << GetSubsystemName() << " ===" << QwLog::endl;
@@ -1112,7 +1112,7 @@ void  QwLumi::PrintValue() const
     fScalerPMT[i].PrintValue();
 }
 
-//*****************************************************************
+/********************************************************/
 void  QwLumi::PrintInfo() const
 {
   QwMessage << "Name of the subsystem = " << fSystemName << QwLog::endl;
@@ -1129,7 +1129,7 @@ void  QwLumi::PrintInfo() const
     fScalerPMT[i].PrintInfo();
 }
 
-//*****************************************************************
+/********************************************************/
 void  QwLumi::PrintDetectorID() const
 {
   for (size_t i=0;i<fLumiDetectorID.size();i++)
@@ -1140,7 +1140,7 @@ void  QwLumi::PrintDetectorID() const
     }
 }
 
-//*****************************************************************
+/********************************************************/
 void  QwLumiDetectorID::Print() const
 {
   std::cout<<std::endl<<"Detector name= "<<fdetectorname<<std::endl;
@@ -1155,7 +1155,7 @@ void  QwLumiDetectorID::Print() const
   std::cout<<"==========================================\n";
 }
 
-//*****************************************************************
+/********************************************************/
 void QwLumi::CalculateRunningAverage()
 {
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
@@ -1165,7 +1165,7 @@ void QwLumi::CalculateRunningAverage()
     fCombinedPMT[i].CalculateRunningAverage();
 }
 
-//*****************************************************************
+/********************************************************/
 void QwLumi::AccumulateRunningSum(VQwSubsystem* value1)
 {
   if (Compare(value1)) {
@@ -1221,7 +1221,7 @@ void QwLumi::DoNormalization(Double_t factor)
 
 
 #ifdef __USE_DATABASE__
-//*****************************************************************
+/********************************************************/
 void QwLumi::FillDB(QwParityDB *db, TString datatype)
 {
 

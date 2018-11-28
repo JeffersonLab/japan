@@ -277,7 +277,7 @@ Int_t QwMainCerenkovDetector::LoadChannelMap(TString mapfile)
             {
               if (localMainDetID.fTypeID==kQwIntegrationPMT)
                 {
-                  QwIntegrationPMT localIntegrationPMT(GetSubsystemName(),localMainDetID.fdetectorname);
+                  QwIntegrationPMT<QwVQWK_Channel> localIntegrationPMT(GetSubsystemName(),localMainDetID.fdetectorname);
 		  if (keyword=="not_blindable"
 		      || keyword2=="not_blindable")
 		    localIntegrationPMT.SetBlindability(kFALSE);
@@ -295,7 +295,7 @@ Int_t QwMainCerenkovDetector::LoadChannelMap(TString mapfile)
 
               else if (localMainDetID.fTypeID==kQwCombinedPMT)
                 {
-		  QwCombinedPMT localcombinedPMT(GetSubsystemName(),localMainDetID.fdetectorname);
+		  QwCombinedPMT<QwVQWK_Channel> localcombinedPMT(GetSubsystemName(),localMainDetID.fdetectorname);
 		  if (keyword=="not_normalizable" 
 		      || keyword2=="not_normalizable")
 		    localcombinedPMT.SetNormalizability(kFALSE);
@@ -584,7 +584,6 @@ void QwMainCerenkovDetector::SetRandomEventParameters(Double_t mean, Double_t si
       if (fMainDetID.at(i).fTypeID == kQwIntegrationPMT)
         fIntegrationPMT[fMainDetID.at(i).fIndex].SetRandomEventParameters(mean, sigma);
     }
-
 }
 
 void QwMainCerenkovDetector::SetRandomEventAsymmetry(Double_t asymmetry)
@@ -1023,7 +1022,7 @@ void QwMainCerenkovDetector::FillTreeVector(std::vector<Double_t> &values) const
 }
 
 
-const QwIntegrationPMT* QwMainCerenkovDetector::GetChannel(const TString name) const
+const QwIntegrationPMT<QwVQWK_Channel>* QwMainCerenkovDetector::GetChannel(const TString name) const
 {
   return GetIntegrationPMT(name);
 }
@@ -1267,7 +1266,7 @@ Int_t QwMainCerenkovDetector::GetDetectorIndex(EQwPMTInstrumentType type_id, TSt
   return result;
 }
 
-const QwIntegrationPMT* QwMainCerenkovDetector::GetIntegrationPMT(const TString name) const
+const QwIntegrationPMT<QwVQWK_Channel>* QwMainCerenkovDetector::GetIntegrationPMT(const TString name) const
 {
   TString tmpname = name;
   tmpname.ToLower();
@@ -1286,7 +1285,7 @@ const QwIntegrationPMT* QwMainCerenkovDetector::GetIntegrationPMT(const TString 
   return NULL;
 }
 
-const QwCombinedPMT* QwMainCerenkovDetector::GetCombinedPMT(const TString name) const
+const QwCombinedPMT<QwVQWK_Channel>* QwMainCerenkovDetector::GetCombinedPMT(const TString name) const
 {
   TString tmpname = name;
   tmpname.ToLower();
