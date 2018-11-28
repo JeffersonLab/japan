@@ -21,7 +21,7 @@
 #include "QwCombinedPMT.h"
 #include "QwTypes.h"
 #include "QwScaler_Channel.h"
-
+#include "QwVQWK_Channel.h"
 
 class QwLumiDetectorID{
 

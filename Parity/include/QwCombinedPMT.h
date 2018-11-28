@@ -9,7 +9,7 @@
 #include <TTree.h>
 
 // Qweak headers
-#include "QwVQWK_Channel.h"
+#include "VQwDataElement.h"
 #include "QwIntegrationPMT.h"
 
 // Forward declarations
@@ -46,7 +46,7 @@ class QwCombinedPMT : public VQwDataElement {
   void  InitializeChannel(TString subsystem, TString name, TString datatosave); 
   void  LinkChannel(TString name);
 
-  const QwVQWK_Channel* GetChannel(const TString name) const {
+  const T* GetChannel(const TString name) const {
     if (fSumADC.GetElementName() == name) return fSumADC.GetChannel(name);
     else return 0;
   };

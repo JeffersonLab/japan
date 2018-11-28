@@ -18,7 +18,7 @@
 #include "VQwSubsystemParity.h"
 #include "QwIntegrationPMT.h"
 #include "QwCombinedPMT.h"
-
+#include "QwVQWK_Channel.h"
 
 // Forward declarations
 class QwBlinder;

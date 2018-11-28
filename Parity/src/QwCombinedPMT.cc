@@ -7,6 +7,7 @@
 #ifdef __USE_DATABASE__
 #include "QwDBInterface.h"
 #endif
+#include "QwVQWK_Channel.h"
 
 /********************************************************/
 template<typename T>
