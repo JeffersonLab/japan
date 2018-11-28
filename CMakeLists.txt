@@ -8,6 +8,9 @@ project(QwAnalysis)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR})
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
+message(WARNING "Enabling -fpermissive to get past some temporary issues: don't rely on it!")
+
 message(STATUS "System name ${CMAKE_SYSTEM_NAME}")
 #MAC specific variable
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
