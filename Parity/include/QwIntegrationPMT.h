@@ -77,7 +77,6 @@ class QwIntegrationPMT : public VQwDataElement {
 
 
   void  ClearEventData();
-  void PrintErrorCounters();
 /********************************************************/
 
   void  SetRandomEventDriftParameters(Double_t amplitude, Double_t phase, Double_t frequency);

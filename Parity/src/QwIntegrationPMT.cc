@@ -78,13 +78,6 @@ void QwIntegrationPMT<T>::ClearEventData()
 
 /********************************************************/
 template<typename T>
-void QwIntegrationPMT<T>::PrintErrorCounters()
-{
-  fADC.PrintErrorCounters();
-}
-
-/********************************************************/
-template<typename T>
 void QwIntegrationPMT<T>::UseExternalRandomVariable()
 {
   fADC.UseExternalRandomVariable();

@@ -56,8 +56,6 @@ class QwCombinedPMT : public VQwDataElement {
   Int_t ProcessEvBuffer(UInt_t* buffer, UInt_t word_position_in_buffer, UInt_t subelement=0);
   void  ClearEventData();
 
-  void PrintErrorCounters();
-
   void CalculateSumAndAverage();
 
   void  SetRandomEventParameters(Double_t mean, Double_t sigma);
