@@ -148,10 +148,11 @@ class MollerMainDetector:
 
   void DoNormalization(Double_t factor=1.0);
 
-  Bool_t ApplyHWChecks(){//Check for harware errors in the devices
+  // Check for harware errors in the devices
+  Bool_t ApplyHWChecks(){
     Bool_t status = kTRUE;
-    for (size_t i=0; i<fIntegrationPMT.size(); i++){
-      status &= fIntegrationPMT.at(i).ApplyHWChecks();
+    for (size_t i = 0; i < fIntegrationPMT.size(); i++) {
+      status &= fIntegrationPMT[i].get()->ApplyHWChecks();
     }
     return status;
   };
@@ -172,8 +173,8 @@ class MollerMainDetector:
  // the detector from fIntegrationPMT vector for given name will be returnd.
  Int_t GetDetectorIndex(EQwPMTInstrumentType TypeID, TString name);
 
-  std::vector <QwIntegrationPMT<QwVQWK_Channel> > fIntegrationPMT;
-  std::vector <QwCombinedPMT<QwVQWK_Channel> > fCombinedPMT;
+  std::vector <QwIntegrationPMT_VQWK_ptr> fIntegrationPMT;
+  std::vector <QwCombinedPMT_VQWK_ptr> fCombinedPMT;
   std::vector <MollerMainDetectorID> fMainDetID;
 
 /*

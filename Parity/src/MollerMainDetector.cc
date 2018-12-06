@@ -272,38 +272,41 @@ Int_t MollerMainDetector::LoadChannelMap(TString mapfile)
             {
               if (localMainDetID.fTypeID==kQwIntegrationPMT)
                 {
-                  QwIntegrationPMT<QwVQWK_Channel> localIntegrationPMT(GetSubsystemName(),localMainDetID.fdetectorname);
+                  QwIntegrationPMT_VQWK_ptr pmt(QwIntegrationPMT<QwVQWK_Channel>::Create(GetSubsystemName(),localMainDetID.fdetectorname));
+                  QwIntegrationPMT<QwVQWK_Channel>* localIntegrationPMT = pmt.get();
 		  if (keyword=="not_blindable"
 		      || keyword2=="not_blindable")
-		    localIntegrationPMT.SetBlindability(kFALSE);
+		    localIntegrationPMT->SetBlindability(kFALSE);
 		  else 
-		    localIntegrationPMT.SetBlindability(kTRUE);
+		    localIntegrationPMT->SetBlindability(kTRUE);
 		  if (keyword=="not_normalizable"
 		      || keyword2=="not_normalizable")
-		  	localIntegrationPMT.SetNormalizability(kFALSE);
+		  	localIntegrationPMT->SetNormalizability(kFALSE);
 		  else
-		  	localIntegrationPMT.SetNormalizability(kTRUE);
-		  fIntegrationPMT.push_back(localIntegrationPMT);
-                  fIntegrationPMT[fIntegrationPMT.size()-1].SetDefaultSampleSize(sample_size);
-		  localMainDetID.fIndex=fIntegrationPMT.size()-1;
+		  	localIntegrationPMT->SetNormalizability(kTRUE);
+                  localIntegrationPMT->SetDefaultSampleSize(sample_size);
+
+		  fIntegrationPMT.push_back(pmt);
+		  localMainDetID.fIndex = fIntegrationPMT.size()-1;
                 }
 
               else if (localMainDetID.fTypeID==kQwCombinedPMT)
                 {
-		  QwCombinedPMT<QwVQWK_Channel> localcombinedPMT(GetSubsystemName(),localMainDetID.fdetectorname);
-		  if (keyword=="not_normalizable" 
+                  QwCombinedPMT_VQWK_ptr pmt(QwCombinedPMT<QwVQWK_Channel>::Create(GetSubsystemName(),localMainDetID.fdetectorname));
+                  QwCombinedPMT<QwVQWK_Channel>* localcombinedPMT = pmt.get();
+		  if (keyword=="not_normalizable"
 		      || keyword2=="not_normalizable")
-		    localcombinedPMT.SetNormalizability(kFALSE);
+		    localcombinedPMT->SetNormalizability(kFALSE);
 		  else
-		    localcombinedPMT.SetNormalizability(kTRUE);
-		  if (keyword=="not_blindable" 
-		      || keyword2 =="not_blindable") 
-		    localcombinedPMT.SetBlindability(kFALSE);
-		  else 
-		    localcombinedPMT.SetBlindability(kTRUE);
-                  fCombinedPMT.push_back(localcombinedPMT);
-                  fCombinedPMT[fCombinedPMT.size()-1].SetDefaultSampleSize(sample_size);
-                  localMainDetID.fIndex=fCombinedPMT.size()-1;
+		    localcombinedPMT->SetNormalizability(kTRUE);
+		  if (keyword=="not_blindable"
+		      || keyword2 =="not_blindable")
+		    localcombinedPMT->SetBlindability(kFALSE);
+		  else
+		    localcombinedPMT->SetBlindability(kTRUE);
+                  localcombinedPMT->SetDefaultSampleSize(sample_size);
+                  fCombinedPMT.push_back(pmt);
+                  localMainDetID.fIndex = fCombinedPMT.size()-1;
                 }
             }
 
@@ -361,9 +364,9 @@ Int_t MollerMainDetector::LoadChannelMap(TString mapfile)
                   Int_t ind_pmt = GetDetectorIndex(GetDetectorTypeID("integrationpmt"),
                                                    fMainDetID[i].fCombinedChannelNames[l]);
 
-                  fCombinedPMT[ind].Add(&fIntegrationPMT[ind_pmt],fMainDetID[i].fWeight[l]);
+                  fCombinedPMT[ind]->Add(fIntegrationPMT[ind_pmt].get(), fMainDetID[i].fWeight[l]);
                 }
-              fCombinedPMT[ind].LinkChannel(fMainDetID[i].fdetectorname);
+              fCombinedPMT[ind]->LinkChannel(fMainDetID[i].fdetectorname);
               if (ldebug)
                 std::cout<<"linked a combined channel"<<std::endl;
             }
@@ -465,7 +468,7 @@ Int_t MollerMainDetector::LoadEventCuts(TString filename)
 	    //std::cout<<"*****************************"<<std::endl;
 	    //std::cout<<" Type "<<device_type<<" Name "<<device_name<<" Index ["<<det_index <<"] "<<" device flag "<<check_flag<<std::endl;
 
-	    fIntegrationPMT[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut);
+	    fIntegrationPMT[det_index].get()->SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut);
 	    //std::cout<<"*****************************"<<std::endl;
 
 	  } else if (device_type == GetQwPMTInstrumentTypeName(kQwCombinedPMT)){
@@ -479,7 +482,7 @@ Int_t MollerMainDetector::LoadEventCuts(TString filename)
 	    //std::cout<<"*****************************"<<std::endl;
 	    //std::cout<<" Type "<<device_type<<" Name "<<device_name<<" Index ["<<det_index <<"] "<<" device flag "<<check_flag<<std::endl;
 
-	    fCombinedPMT[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut);
+	    fCombinedPMT[det_index]->SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut);
 	    //std::cout<<"*****************************"<<std::endl;
 	    
 	  }
@@ -488,9 +491,9 @@ Int_t MollerMainDetector::LoadEventCuts(TString filename)
 
     }
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
-    fIntegrationPMT[i].SetEventCutMode(eventcut_flag);
+    fIntegrationPMT[i]->SetEventCutMode(eventcut_flag);
   for (size_t i = 0; i < fCombinedPMT.size(); i++)
-    fCombinedPMT[i].SetEventCutMode(eventcut_flag);
+    fCombinedPMT[i]->SetEventCutMode(eventcut_flag);
 
   fMainDetErrorCount = 0; //set the error counter to zero
   mapstr.Close(); // Close the file (ifstream)
@@ -559,24 +562,24 @@ Int_t MollerMainDetector::LoadInputParameters(TString pedestalfile)
           Bool_t notfound=kTRUE;
 
           if (notfound)
-            for (size_t i=0;i<fIntegrationPMT.size();i++)
-              if (fIntegrationPMT[i].GetElementName()==varname)
+            for (size_t i = 0; i < fIntegrationPMT.size(); i++)
+              if (fIntegrationPMT[i]->GetElementName() == varname)
                 {
-                  fIntegrationPMT[i].SetPedestal(varped);
-                  fIntegrationPMT[i].SetCalibrationFactor(varcal);
+                  fIntegrationPMT[i]->SetPedestal(varped);
+                  fIntegrationPMT[i]->SetCalibrationFactor(varcal);
 
-                  fIntegrationPMT[i].SetNormRate(varnormrate);
-                  fIntegrationPMT[i].SetVoltPerHz(varvoltperhz);
-                  fIntegrationPMT[i].SetAsymmetry(varasym);
-                  fIntegrationPMT[i].SetCoefficientCx(varcx);
-                  fIntegrationPMT[i].SetCoefficientCy(varcy);
-                  fIntegrationPMT[i].SetCoefficientCxp(varcxp);
-                  fIntegrationPMT[i].SetCoefficientCyp(varcyp);
-                  fIntegrationPMT[i].SetCoefficientCe(varce);
+                  fIntegrationPMT[i]->SetNormRate(varnormrate);
+                  fIntegrationPMT[i]->SetVoltPerHz(varvoltperhz);
+                  fIntegrationPMT[i]->SetAsymmetry(varasym);
+                  fIntegrationPMT[i]->SetCoefficientCx(varcx);
+                  fIntegrationPMT[i]->SetCoefficientCy(varcy);
+                  fIntegrationPMT[i]->SetCoefficientCxp(varcxp);
+                  fIntegrationPMT[i]->SetCoefficientCyp(varcyp);
+                  fIntegrationPMT[i]->SetCoefficientCe(varce);
 
-                  i=fIntegrationPMT.size()+1;
-                  notfound=kFALSE;
-                  i=fIntegrationPMT.size()+1;
+                  i = fIntegrationPMT.size()+1;
+                  notfound = kFALSE;
+                  i = fIntegrationPMT.size()+1;
                 }
         }
 
@@ -597,13 +600,11 @@ Bool_t MollerMainDetector::IsGoodEvent()
 
 void MollerMainDetector::ClearEventData()
 {
-  for (size_t i=0;i<fIntegrationPMT.size();i++){
-    fIntegrationPMT[i].ClearEventData();
+  for (size_t i = 0; i < fIntegrationPMT.size(); i++){
+    fIntegrationPMT[i]->ClearEventData();
   }
-  for (size_t i=0;i<fCombinedPMT.size();i++)
-    fCombinedPMT[i].ClearEventData();
-
-  return;
+  for (size_t i = 0; i < fCombinedPMT.size(); i++)
+    fCombinedPMT[i]->ClearEventData();
 }
 
 
@@ -614,7 +615,7 @@ void MollerMainDetector::SetRandomEventParameters(Double_t mean, Double_t sigma)
     {
       // This is a QwIntegrationPMT
       if (fMainDetID.at(i).fTypeID == kQwIntegrationPMT)
-        fIntegrationPMT[fMainDetID.at(i).fIndex].SetRandomEventParameters(mean, sigma);
+        fIntegrationPMT[fMainDetID.at(i).fIndex]->SetRandomEventParameters(mean, sigma);
     }
 
 }
@@ -625,7 +626,7 @@ void MollerMainDetector::SetRandomEventAsymmetry(Double_t asymmetry)
     {
       // This is a QwIntegrationPMT
       if (fMainDetID.at(i).fTypeID == kQwIntegrationPMT)
-        fIntegrationPMT[fMainDetID.at(i).fIndex].SetRandomEventAsymmetry(asymmetry);
+        fIntegrationPMT[fMainDetID.at(i).fIndex]->SetRandomEventAsymmetry(asymmetry);
     }
 
 }
@@ -636,7 +637,7 @@ void MollerMainDetector::RandomizeEventData(int helicity, double time)
     {
       // This is a QwIntegrationPMT
       if (fMainDetID.at(i).fTypeID == kQwIntegrationPMT)
-        fIntegrationPMT[fMainDetID.at(i).fIndex].RandomizeEventData(helicity, time);
+        fIntegrationPMT[fMainDetID.at(i).fIndex]->RandomizeEventData(helicity, time);
     }
 
 }
@@ -651,7 +652,7 @@ void MollerMainDetector::EncodeEventData(std::vector<UInt_t> &buffer)
     {
       // This is a QwIntegrationPMT
       if (fMainDetID.at(i).fTypeID == kQwIntegrationPMT)
-        fIntegrationPMT[fMainDetID.at(i).fIndex].EncodeEventData(elements);
+        fIntegrationPMT[fMainDetID.at(i).fIndex]->EncodeEventData(elements);
     }
 
 
@@ -691,8 +692,8 @@ void  MollerMainDetector::RandomizeMollerEvent(int helicity /*, const QwBeamChar
 
   for (size_t i = 0; i < fMainDetID.size(); i++) 
    {
-     fIntegrationPMT[i].RandomizeMollerEvent(helicity, fTargetCharge, fTargetX, fTargetY, fTargetXprime, fTargetYprime, fTargetEnergy);
-  //   fIntegrationPMT[i].PrintInfo();
+     fIntegrationPMT[i]->RandomizeMollerEvent(helicity, fTargetCharge, fTargetX, fTargetY, fTargetXprime, fTargetYprime, fTargetEnergy);
+  //   fIntegrationPMT[i]->PrintInfo();
    }
  
 }
@@ -705,7 +706,7 @@ Int_t MollerMainDetector::ProcessConfigurationBuffer(const ROCID_t roc_id, const
       //  We want to process the configuration data for this ROC.
       UInt_t words_read = 0;
       for (size_t i = 0; i < fMainDetID.size(); i++) {
-        words_read += fIntegrationPMT[i].ProcessConfigurationBuffer(&(buffer[words_read]),
+        words_read += fIntegrationPMT[i]->ProcessConfigurationBuffer(&(buffer[words_read]),
   							   num_words-words_read);
       }
     }*/
@@ -740,7 +741,7 @@ Int_t MollerMainDetector::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t b
                       std::cout<<"found IntegrationPMT data for "<<fMainDetID[i].fdetectorname<<std::endl;
                       std::cout<<"word left to read in this buffer:"<<num_words-fMainDetID[i].fWordInSubbank<<std::endl;
                     }
-                  fIntegrationPMT[fMainDetID[i].fIndex].ProcessEvBuffer(&(buffer[fMainDetID[i].fWordInSubbank]),
+                  fIntegrationPMT[fMainDetID[i].fIndex]->ProcessEvBuffer(&(buffer[fMainDetID[i].fWordInSubbank]),
                       num_words-fMainDetID[i].fWordInSubbank);
                 }
             }
@@ -755,13 +756,15 @@ Int_t MollerMainDetector::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t b
 Bool_t MollerMainDetector::ApplySingleEventCuts()
 {
   Bool_t status=kTRUE;
-  for(size_t i=0;i<fIntegrationPMT.size();i++){
-    status &= fIntegrationPMT[i].ApplySingleEventCuts();
-    if(!status && bDEBUG) std::cout<<"******* MollerMainDetector::SingleEventCuts()->IntegrationPMT[ "<<i<<" , "<<fIntegrationPMT[i].GetElementName()<<" ] ******\n"; 
+  for(size_t i = 0; i < fIntegrationPMT.size(); i++){
+    status &= fIntegrationPMT[i]->ApplySingleEventCuts();
+    if(!status && bDEBUG)
+      std::cout << "******* MollerMainDetector::SingleEventCuts()->IntegrationPMT[ " << i << " , " << fIntegrationPMT[i]->GetElementName() << " ] ******" << std::endl;
   }
-  for(size_t i=0;i<fCombinedPMT.size();i++){
-    status &= fCombinedPMT[i].ApplySingleEventCuts();
-    if(!status && bDEBUG) std::cout<<"******* MollerMainDetector::SingleEventCuts()->CombinedPMT[ "<<i<<" , "<<fCombinedPMT[i].GetElementName()<<" ] ******\n"; 
+  for(size_t i = 0; i < fCombinedPMT.size(); i++){
+    status &= fCombinedPMT[i]->ApplySingleEventCuts();
+    if(!status && bDEBUG)
+      std::cout << "******* MollerMainDetector::SingleEventCuts()->CombinedPMT[ " << i << " , " << fCombinedPMT[i]->GetElementName() << " ] ******\n"; 
   }
 
 
@@ -778,22 +781,22 @@ UInt_t MollerMainDetector::GetEventcutErrorFlag() //return the error flag
 {
   UInt_t ErrorFlag;
   ErrorFlag=0;
-  for(size_t i=0;i<fIntegrationPMT.size();i++){
-    ErrorFlag |= fIntegrationPMT[i].GetEventcutErrorFlag();
+  for(size_t i = 0; i < fIntegrationPMT.size(); i++) {
+    ErrorFlag |= fIntegrationPMT[i]->GetEventcutErrorFlag();
   }
-  for(size_t i=0;i<fCombinedPMT.size();i++){
-    ErrorFlag |= fCombinedPMT[i].GetEventcutErrorFlag();
+  for(size_t i = 0; i < fCombinedPMT.size(); i++){
+    ErrorFlag |= fCombinedPMT[i]->GetEventcutErrorFlag();
   }
   return ErrorFlag;
 }
 
 void MollerMainDetector::IncrementErrorCounters()
 {
-  for(size_t i=0;i<fIntegrationPMT.size();i++){
-    fIntegrationPMT[i].IncrementErrorCounters();
+  for(size_t i = 0; i < fIntegrationPMT.size(); i++){
+    fIntegrationPMT[i]->IncrementErrorCounters();
   }
-  for(size_t i=0;i<fCombinedPMT.size();i++){
-    fCombinedPMT[i].IncrementErrorCounters();
+  for(size_t i = 0; i < fCombinedPMT.size(); i++){
+    fCombinedPMT[i]->IncrementErrorCounters();
   }
 }
 
@@ -802,13 +805,13 @@ void MollerMainDetector::PrintErrorCounters() const
 {
   QwMessage<<"*********MollerMainDetector Error Summary****************"<<QwLog::endl;
   QwVQWK_Channel::PrintErrorCounterHead();
-  for(size_t i=0;i<fIntegrationPMT.size();i++){
+  for(size_t i = 0; i < fIntegrationPMT.size(); i++){
     //std::cout<<"  IntegrationPMT ["<<i<<"] "<<std::endl;
-    fIntegrationPMT[i].PrintErrorCounters();
+    fIntegrationPMT[i]->PrintErrorCounters();
   }
-  for(size_t i=0;i<fCombinedPMT.size();i++){
+  for(size_t i = 0; i < fCombinedPMT.size(); i++){
     //std::cout<<"  CombinedPMT ["<<i<<"] "<<std::endl;
-    fCombinedPMT[i].PrintErrorCounters();
+    fCombinedPMT[i]->PrintErrorCounters();
   }
   QwVQWK_Channel::PrintErrorCounterTail();
 }
@@ -818,24 +821,24 @@ void MollerMainDetector::UpdateErrorFlag(const VQwSubsystem *ev_error){
   if(Compare(tmp)){
     const MollerMainDetector* input = dynamic_cast<const MollerMainDetector*> (ev_error);
 
-    for (size_t i=0;i<input->fIntegrationPMT.size();i++)
-      this->fIntegrationPMT[i].UpdateErrorFlag(&(input->fIntegrationPMT[i]));
-    
-    for (size_t i=0;i<input->fCombinedPMT.size();i++)
-      this->fCombinedPMT[i].UpdateErrorFlag(&(input->fCombinedPMT[i]));
+    for (size_t i = 0; i < input->fIntegrationPMT.size(); i++)
+      fIntegrationPMT[i]->UpdateErrorFlag(input->fIntegrationPMT[i].get());
+
+    for (size_t i = 0; i < input->fCombinedPMT.size(); i++)
+      fCombinedPMT[i]->UpdateErrorFlag(input->fCombinedPMT[i].get());
   }
 };
 
 
 void  MollerMainDetector::ProcessEvent()
 {
-  for (size_t i=0;i<fIntegrationPMT.size();i++)
-    fIntegrationPMT[i].ProcessEvent();
+  for (size_t i = 0; i < fIntegrationPMT.size(); i++)
+    fIntegrationPMT[i]->ProcessEvent();
 
-  for (size_t i=0;i<fCombinedPMT.size();i++)
+  for (size_t i = 0; i < fCombinedPMT.size(); i++)
     {
       //std::cout<<"Process combination "<<i<<std::endl;
-      fCombinedPMT[i].ProcessEvent();
+      fCombinedPMT[i]->ProcessEvent();
 
     }
 
@@ -993,22 +996,21 @@ void  MollerMainDetector::ProcessEvent_2()
 
 void  MollerMainDetector::ConstructHistograms(TDirectory *folder, TString &prefix)
 {
-  for (size_t i=0;i<fIntegrationPMT.size();i++)
-    fIntegrationPMT[i].ConstructHistograms(folder,prefix);
+  for (size_t i = 0; i < fIntegrationPMT.size(); i++)
+    fIntegrationPMT[i]->ConstructHistograms(folder,prefix);
 
-  for (size_t i=0;i<fCombinedPMT.size();i++)
-    fCombinedPMT[i].ConstructHistograms(folder,prefix);
-  return;
+  for (size_t i = 0; i < fCombinedPMT.size(); i++)
+    fCombinedPMT[i]->ConstructHistograms(folder,prefix);
 }
 
 
 void  MollerMainDetector::FillHistograms()
 {
-  for (size_t i=0;i<fIntegrationPMT.size();i++)
-    fIntegrationPMT[i].FillHistograms();
+  for (size_t i = 0; i < fIntegrationPMT.size(); i++)
+    fIntegrationPMT[i]->FillHistograms();
 
-  for (size_t i=0;i<fCombinedPMT.size();i++)
-    fCombinedPMT[i].FillHistograms();
+  for (size_t i = 0; i < fCombinedPMT.size(); i++)
+    fCombinedPMT[i]->FillHistograms();
 
   return;
 }
@@ -1016,22 +1018,22 @@ void  MollerMainDetector::FillHistograms()
 
 void MollerMainDetector::ConstructBranchAndVector(TTree *tree, TString & prefix, std::vector <Double_t> &values)
 {
-  for (size_t i=0;i<fIntegrationPMT.size();i++)
-    fIntegrationPMT[i].ConstructBranchAndVector(tree, prefix, values);
+  for (size_t i = 0; i < fIntegrationPMT.size();i++)
+    fIntegrationPMT[i]->ConstructBranchAndVector(tree, prefix, values);
 
-  for (size_t i=0;i<fCombinedPMT.size();i++)
-    fCombinedPMT[i].ConstructBranchAndVector(tree, prefix, values);
+  for (size_t i = 0; i < fCombinedPMT.size(); i++)
+    fCombinedPMT[i]->ConstructBranchAndVector(tree, prefix, values);
 
   return;
 }
 
 void MollerMainDetector::ConstructBranch(TTree *tree, TString & prefix)
 {
-  for (size_t i=0;i<fIntegrationPMT.size();i++)
-    fIntegrationPMT[i].ConstructBranch(tree, prefix);
+  for (size_t i = 0; i < fIntegrationPMT.size();i++)
+    fIntegrationPMT[i]->ConstructBranch(tree, prefix);
 
-  for (size_t i=0;i<fCombinedPMT.size();i++)
-    fCombinedPMT[i].ConstructBranch(tree, prefix);
+  for (size_t i = 0; i < fCombinedPMT.size(); i++)
+    fCombinedPMT[i]->ConstructBranch(tree, prefix);
 
   return;
 }
@@ -1044,32 +1046,29 @@ void MollerMainDetector::ConstructBranch(TTree *tree, TString & prefix, QwParame
   tmp="QwIntegrationPMT";
   trim_file.RewindToFileStart();
   if (trim_file.FileHasModuleHeader(tmp)){
-    nextmodule=trim_file.ReadUntilNextModule();//This section contains sub modules and or channels to be included in the tree
-    for (size_t i=0;i<fIntegrationPMT.size();i++)
-
-      fIntegrationPMT[i].ConstructBranch(tree, prefix, *nextmodule);
+    // This section contains sub modules and or channels to be included in the tree
+    nextmodule=trim_file.ReadUntilNextModule();
+    for (size_t i = 0; i < fIntegrationPMT.size(); i++)
+      fIntegrationPMT[i]->ConstructBranch(tree, prefix, *nextmodule);
   }
 
   tmp="QwCombinedPMT";
   trim_file.RewindToFileStart();
    if (trim_file.FileHasModuleHeader(tmp)){
-     nextmodule=trim_file.ReadUntilNextModule();//This section contains sub modules and or channels to be included in the tree
-     for (size_t i=0;i<fCombinedPMT.size();i++)
-       fCombinedPMT[i].ConstructBranch(tree, prefix, *nextmodule );
+     // This section contains sub modules and or channels to be included in the tree
+     nextmodule=trim_file.ReadUntilNextModule();
+     for (size_t i = 0; i < fCombinedPMT.size(); i++)
+       fCombinedPMT[i]->ConstructBranch(tree, prefix, *nextmodule );
    }
-
-  return;
 }
 
 void MollerMainDetector::FillTreeVector(std::vector<Double_t> &values) const
 {
-  for (size_t i=0;i<fIntegrationPMT.size();i++)
-    fIntegrationPMT[i].FillTreeVector(values);
+  for (size_t i = 0; i < fIntegrationPMT.size(); i++)
+    fIntegrationPMT[i]->FillTreeVector(values);
 
-  for (size_t i=0;i<fCombinedPMT.size();i++)
-    fCombinedPMT[i].FillTreeVector(values);
-
-  return;
+  for (size_t i = 0; i < fCombinedPMT.size(); i++)
+    fCombinedPMT[i]->FillTreeVector(values);
 }
 
 
@@ -1093,8 +1092,8 @@ Bool_t MollerMainDetector::Compare(VQwSubsystem *value)
   else
     {
       MollerMainDetector* input = dynamic_cast<MollerMainDetector*>(value);
-      if (input->fIntegrationPMT.size()!=fIntegrationPMT.size() ||
-          input->fCombinedPMT.size()!=fCombinedPMT.size() )
+      if (input->fIntegrationPMT.size() != fIntegrationPMT.size() ||
+          input->fCombinedPMT.size() != fCombinedPMT.size() )
         {
           res=kFALSE;
           //	  std::cout<<" not the same number of channels \n";
@@ -1112,11 +1111,11 @@ VQwSubsystem&  MollerMainDetector::operator=  (VQwSubsystem *value)
 //      VQwSubsystem::operator=(value);
       MollerMainDetector* input = dynamic_cast<MollerMainDetector*> (value);
 
-      for (size_t i=0;i<input->fIntegrationPMT.size();i++)
-        this->fIntegrationPMT[i]=input->fIntegrationPMT[i];
+      for (size_t i = 0; i < input->fIntegrationPMT.size(); i++)
+        *(fIntegrationPMT[i]) = *(input->fIntegrationPMT[i]);
 
-      for (size_t i=0;i<input->fCombinedPMT.size();i++)
-        (this->fCombinedPMT[i])=(input->fCombinedPMT[i]);
+      for (size_t i = 0; i < input->fCombinedPMT.size(); i++)
+        *(fCombinedPMT[i]) = *(input->fCombinedPMT[i]);
     }
   return *this;
 }
@@ -1128,11 +1127,11 @@ VQwSubsystem&  MollerMainDetector::operator+=  (VQwSubsystem *value)
     {
       MollerMainDetector* input= dynamic_cast<MollerMainDetector*>(value) ;
 
-      for (size_t i=0;i<input->fIntegrationPMT.size();i++)
-        this->fIntegrationPMT[i]+=input->fIntegrationPMT[i];
+      for (size_t i = 0; i < input->fIntegrationPMT.size(); i++)
+        *(fIntegrationPMT[i]) += *(input->fIntegrationPMT[i]);
 
-      for (size_t i=0;i<input->fCombinedPMT.size();i++)
-        this->fCombinedPMT[i]+=input->fCombinedPMT[i];
+      for (size_t i = 0; i < input->fCombinedPMT.size(); i++)
+        *(fCombinedPMT[i]) += *(input->fCombinedPMT[i]);
 
     }
   return *this;
@@ -1146,12 +1145,11 @@ VQwSubsystem&  MollerMainDetector::operator-=  (VQwSubsystem *value)
     {
       MollerMainDetector* input= dynamic_cast<MollerMainDetector*>(value);
 
-      for (size_t i=0;i<input->fIntegrationPMT.size();i++)
-        this->fIntegrationPMT[i]-=input->fIntegrationPMT[i];
+      for (size_t i = 0; i < input->fIntegrationPMT.size(); i++)
+        *(fIntegrationPMT[i]) -= *(input->fIntegrationPMT[i]);
 
-      for (size_t i=0;i<input->fCombinedPMT.size();i++)
-        this->fCombinedPMT[i]-=input->fCombinedPMT[i];
-
+      for (size_t i = 0; i < input->fCombinedPMT.size(); i++)
+        *(fCombinedPMT[i]) -= *(input->fCombinedPMT[i]);
     }
   return *this;
 }
@@ -1178,53 +1176,47 @@ void MollerMainDetector::Difference(VQwSubsystem *value1,VQwSubsystem *value2)
 
 void MollerMainDetector::Ratio(VQwSubsystem  *numer, VQwSubsystem  *denom)
 {
-  if (Compare(numer)&&Compare(denom))
+  if (Compare(numer) && Compare(denom))
     {
-      MollerMainDetector* innumer= dynamic_cast<MollerMainDetector*>(numer) ;
-      MollerMainDetector* indenom= dynamic_cast<MollerMainDetector*>(denom) ;
+      MollerMainDetector* innumer = dynamic_cast<MollerMainDetector*>(numer);
+      MollerMainDetector* indenom = dynamic_cast<MollerMainDetector*>(denom);
 
-      for (size_t i=0;i<innumer->fIntegrationPMT.size();i++)
-        this->fIntegrationPMT[i].Ratio(innumer->fIntegrationPMT[i],indenom->fIntegrationPMT[i]);
+      for (size_t i = 0; i < innumer->fIntegrationPMT.size(); i++)
+        fIntegrationPMT[i]->Ratio(*(innumer->fIntegrationPMT[i]), *(indenom->fIntegrationPMT[i]));
 
-      for (size_t i=0;i<innumer->fCombinedPMT.size();i++)
-        this->fCombinedPMT[i].Ratio(innumer->fCombinedPMT[i],indenom->fCombinedPMT[i]);
-
+      for (size_t i = 0; i < innumer->fCombinedPMT.size(); i++)
+        fCombinedPMT[i]->Ratio(*(innumer->fCombinedPMT[i]), *(indenom->fCombinedPMT[i]));
     }
-  return;
 }
 
 
 void MollerMainDetector::Scale(Double_t factor)
 {
-  for (size_t i=0;i<fIntegrationPMT.size();i++)
-    fIntegrationPMT[i].Scale(factor);
+  for (size_t i = 0; i < fIntegrationPMT.size(); i++)
+    fIntegrationPMT[i]->Scale(factor);
 
-  for (size_t i=0;i<fCombinedPMT.size();i++)
-    fCombinedPMT[i].Scale(factor);
-
-  return;
+  for (size_t i = 0; i < fCombinedPMT.size(); i++)
+    fCombinedPMT[i]->Scale(factor);
 }
 
 //*****************************************************************//
 void MollerMainDetector::Normalize(VQwDataElement* denom)
 {
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
-    fIntegrationPMT[i].Normalize(denom);
+    fIntegrationPMT[i]->Normalize(denom);
   for (size_t i = 0; i < fCombinedPMT.size(); i++)
-    fCombinedPMT[i].Normalize(denom);
+    fCombinedPMT[i]->Normalize(denom);
 }
 
 
 
 void MollerMainDetector::CalculateRunningAverage()
 {
-  for (size_t i=0;i<fIntegrationPMT.size();i++)
-    fIntegrationPMT[i].CalculateRunningAverage();
+  for (size_t i = 0; i < fIntegrationPMT.size(); i++)
+    fIntegrationPMT[i]->CalculateRunningAverage();
 
-  for (size_t i=0;i<fCombinedPMT.size();i++)
-    fCombinedPMT[i].CalculateRunningAverage();
-
-  return;
+  for (size_t i = 0; i < fCombinedPMT.size(); i++)
+    fCombinedPMT[i]->CalculateRunningAverage();
 }
 
 void MollerMainDetector::AccumulateRunningSum(VQwSubsystem* value1)
@@ -1233,9 +1225,9 @@ void MollerMainDetector::AccumulateRunningSum(VQwSubsystem* value1)
     MollerMainDetector* value = dynamic_cast<MollerMainDetector*>(value1);
 
     for (size_t i = 0; i < fIntegrationPMT.size(); i++)
-      fIntegrationPMT[i].AccumulateRunningSum(value->fIntegrationPMT[i]);
+      fIntegrationPMT[i]->AccumulateRunningSum(*(value->fIntegrationPMT[i]));
     for (size_t i = 0; i < fCombinedPMT.size(); i++)
-      fCombinedPMT[i].AccumulateRunningSum(value->fCombinedPMT[i]);
+      fCombinedPMT[i]->AccumulateRunningSum(*(value->fCombinedPMT[i]));
   }
 }
 
@@ -1244,12 +1236,11 @@ void MollerMainDetector::DeaccumulateRunningSum(VQwSubsystem* value1){
     MollerMainDetector* value = dynamic_cast<MollerMainDetector*>(value1);
 
     for (size_t i = 0; i < fIntegrationPMT.size(); i++)
-      fIntegrationPMT[i].DeaccumulateRunningSum(value->fIntegrationPMT[i]);
+      fIntegrationPMT[i]->DeaccumulateRunningSum(*(value->fIntegrationPMT[i]));
     for (size_t i = 0; i < fCombinedPMT.size(); i++)
-      fCombinedPMT[i].DeaccumulateRunningSum(value->fCombinedPMT[i]);
-  }  
-};
-
+      fCombinedPMT[i]->DeaccumulateRunningSum(*(value->fCombinedPMT[i]));
+  }
+}
 
 /**
  * Blind the asymmetry
@@ -1258,9 +1249,9 @@ void MollerMainDetector::DeaccumulateRunningSum(VQwSubsystem* value1){
 void MollerMainDetector::Blind(const QwBlinder *blinder)
 {
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
-    fIntegrationPMT[i].Blind(blinder);
+    fIntegrationPMT[i]->Blind(blinder);
   for (size_t i = 0; i < fCombinedPMT.size(); i++)
-    fCombinedPMT[i].Blind(blinder);
+    fCombinedPMT[i]->Blind(blinder);
 }
 
 /**
@@ -1279,9 +1270,9 @@ void MollerMainDetector::Blind(const QwBlinder *blinder, const VQwSubsystemParit
     if (yield == 0) return;
 
     for (size_t i = 0; i < fIntegrationPMT.size(); i++)
-      fIntegrationPMT[i].Blind(blinder, yield->fIntegrationPMT[i]);
+      fIntegrationPMT[i]->Blind(blinder, *(yield->fIntegrationPMT[i]));
     for (size_t i = 0; i < fCombinedPMT.size(); i++)
-      fCombinedPMT[i].Blind(blinder, yield->fCombinedPMT[i]);
+      fCombinedPMT[i]->Blind(blinder, *(yield->fCombinedPMT[i]));
   }
 }
 
@@ -1323,12 +1314,12 @@ const QwIntegrationPMT<QwVQWK_Channel>* MollerMainDetector::GetIntegrationPMT(co
   tmpname.ToLower();
   if (! fIntegrationPMT.empty())
     {
-      for (size_t i=0;i<fIntegrationPMT.size();i++)
+      for (size_t i = 0; i < fIntegrationPMT.size(); i++)
         {
-          if (fIntegrationPMT.at(i).GetElementName() == tmpname)
+          if (fIntegrationPMT[i]->GetElementName() == tmpname)
             {
               //std::cout<<"Get IntegrationPMT "<<tmpname<<std::endl;
-              return &(fIntegrationPMT.at(i));
+              return fIntegrationPMT[i].get();
             }
         }
     }
@@ -1342,12 +1333,12 @@ const QwCombinedPMT<QwVQWK_Channel>* MollerMainDetector::GetCombinedPMT(const TS
   tmpname.ToLower();
   if (! fCombinedPMT.empty())
     {
-      for (size_t i=0;i<fCombinedPMT.size();i++)
+      for (size_t i = 0; i < fCombinedPMT.size(); i++)
         {
-          if (fCombinedPMT.at(i).GetElementName() == tmpname)
+          if (fCombinedPMT[i]->GetElementName() == tmpname)
             {
               //std::cout<<"Get CombinedPMT "<<tmpname<<std::endl;
-              return &(fCombinedPMT.at(i));
+              return fCombinedPMT[i].get();
             }
         }
     }
@@ -1393,9 +1384,9 @@ void  MollerMainDetector::FillDB(QwParityDB *db, TString datatype)
   i = j = 0;
   if(local_print_flag) QwMessage <<  QwColor(Qw::kGreen) << "IntegrationPMT" <<QwLog::endl;
 
-  for(i=0; i<fIntegrationPMT.size(); i++) {
+  for (i = 0; i < fIntegrationPMT.size(); i++) {
     interface.clear();
-    interface = fIntegrationPMT[i].GetDBEntry();
+    interface = fIntegrationPMT[i]->GetDBEntry();
     for(j=0; j<interface.size(); j++) {
       interface.at(j).SetAnalysisID( analysis_id );
       interface.at(j).SetMainDetectorID( db );
@@ -1410,7 +1401,7 @@ void  MollerMainDetector::FillDB(QwParityDB *db, TString datatype)
   for(i=0; i< fCombinedPMT.size(); i++)
     {
       interface.clear();
-      interface = fCombinedPMT[i].GetDBEntry();
+      interface = fCombinedPMT[i]->GetDBEntry();
       for(j=0; j<interface.size(); j++) {
 	interface.at(j).SetAnalysisID( analysis_id );
 	interface.at(j).SetMainDetectorID( db );
@@ -1444,24 +1435,24 @@ void  MollerMainDetector::PrintValue() const
 {
   QwMessage << "=== MollerMainDetector: " << GetSubsystemName() << " ===" << QwLog::endl;
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
-    fIntegrationPMT[i].PrintValue();
+    fIntegrationPMT[i]->PrintValue();
   for (size_t i = 0; i < fCombinedPMT.size(); i++)
-    fCombinedPMT[i].PrintValue();
+    fCombinedPMT[i]->PrintValue();
 }
 
 void  MollerMainDetector::PrintInfo() const
 {
   std::cout<<"Name of the subsystem ="<<fSystemName<<"\n";
 
-  std::cout<<"there are "<<fIntegrationPMT.size()<<" IntegrationPMT \n";
-  std::cout<<"          "<<fCombinedPMT.size()<<" CombinedPMT \n";
+  std::cout<<"there are "<< fIntegrationPMT.size()<<" IntegrationPMT \n";
+  std::cout<<"          "<< fCombinedPMT.size()<<" CombinedPMT \n";
 
   std::cout<<" Printing Running AVG and other channel info"<<std::endl;
 
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
-    fIntegrationPMT[i].PrintInfo();
+    fIntegrationPMT[i]->PrintInfo();
   for (size_t i = 0; i < fCombinedPMT.size(); i++)
-    fCombinedPMT[i].PrintInfo();
+    fCombinedPMT[i]->PrintInfo();
 }
 
 void  MollerMainDetector::PrintDetectorID() const
@@ -1498,9 +1489,9 @@ void MollerMainDetector::FillErrDB(QwParityDB *db, TString datatype)
   i = j = 0;
   if(local_print_flag) QwMessage <<  QwColor(Qw::kGreen) << "IntegrationPMT" <<QwLog::endl;
 
-  for(i=0; i<fIntegrationPMT.size(); i++) {
+  for(i = 0; i < fIntegrationPMT.size(); i++) {
     interface.clear();
-    interface = fIntegrationPMT[i].GetErrDBEntry();
+    interface = fIntegrationPMT[i]->GetErrDBEntry();
     for(j=0; j<interface.size(); j++) {
       interface.at(j).SetAnalysisID     ( analysis_id );
       interface.at(j).SetMainDetectorID ( db );
@@ -1511,10 +1502,10 @@ void MollerMainDetector::FillErrDB(QwParityDB *db, TString datatype)
 
   if(local_print_flag) QwMessage <<  QwColor(Qw::kGreen) << "Combined PMT" <<QwLog::endl;
 
-  for(i=0; i< fCombinedPMT.size(); i++)
+  for(i = 0; i < fCombinedPMT.size(); i++)
     {
       interface.clear();
-      interface = fCombinedPMT[i].GetErrDBEntry();
+      interface = fCombinedPMT[i]->GetErrDBEntry();
       for(j=0; j<interface.size(); j++) {
 	interface.at(j).SetAnalysisID     ( analysis_id );
 	interface.at(j).SetMainDetectorID ( db );
