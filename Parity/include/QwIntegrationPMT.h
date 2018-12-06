@@ -1,27 +1,19 @@
-/**********************************************************\
-* File: QwIntegrationPMT.h                                *
-*                                                         *
-* Author:                                                 *
-* Time-stamp:                                             *
-\**********************************************************/
-
-#ifndef __QwVQWK_IntegrationPMT__
-#define __QwVQWK_IntegrationPMT__
+#ifndef __QwIntegrationPMT__
+#define __QwIntegrationPMT__
 
 // System headers
 #include <vector>
-
-// ROOT headers
-#include <TTree.h>
+#include <boost/shared_ptr.hpp>
 
 // Qweak headers
-#include "VQwDataElement.h"
-#include "QwParameterFile.h"
+#include "VQwPMT.h"
 
 // Forward declarations
+class TTree;
 class QwBlinder;
 class QwDBInterface;
 class QwErrDBInterface;
+class QwParameterFile;
 
 /*****************************************************************
 *  Class:
@@ -38,6 +30,10 @@ template<typename T>
 class QwIntegrationPMT : public VQwDataElement {
 /////
  public:
+  static QwIntegrationPMT<T>* Create(TString subsystemname, TString name) {
+    return new QwIntegrationPMT<T>(subsystemname, name);
+  }
+
   QwIntegrationPMT() {
     InitializeChannel("","raw");
   };
@@ -199,5 +195,7 @@ void RandomizeMollerEvent(int helicity, const QwBeamCharge& charge, const QwBeam
   const static  Bool_t bDEBUG=kFALSE;//debugging display purposes
   Bool_t bEVENTCUTMODE; //global switch to turn event cuts ON/OFF
 };
+
+typedef boost::shared_ptr<QwIntegrationPMT<QwVQWK_Channel> > QwIntegrationPMT_VQWK_ptr;
 
 #endif

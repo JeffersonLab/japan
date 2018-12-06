@@ -1,45 +1,47 @@
-
-#ifndef __QwVQWK_COMBINEDPMT__
-#define __QwVQWK_COMBINEDPMT__
+#ifndef __QwCombinedPMT__
+#define __QwCombinedPMT__
 
 // System headers
 #include <vector>
-
-// ROOT headers
-#include <TTree.h>
+#include <boost/shared_ptr.hpp>
 
 // Qweak headers
-#include "VQwDataElement.h"
 #include "QwIntegrationPMT.h"
 
 // Forward declarations
+class TTree;
 class QwBlinder;
 class QwDBInterface;
+class QwErrDBInterface;
+class QwParameterFile;
 
 template<typename T>
 class QwCombinedPMT : public VQwDataElement {
-/////
- public:
-  QwCombinedPMT(){
-    InitializeChannel("", "derived");
-  };
+  public:
+    static QwCombinedPMT<T>* Create(TString subsystemname, TString name) {
+      return new QwCombinedPMT<T>(subsystemname, name);
+    }
 
-  QwCombinedPMT(TString name){
-    InitializeChannel(name, "derived");
-  };
+    QwCombinedPMT(){
+      InitializeChannel("", "derived");
+    };
 
-  QwCombinedPMT(TString subsystemname, TString name){
-    SetSubsystemName(subsystemname);
-    InitializeChannel(subsystemname, name, "derived");
-  };
-  QwCombinedPMT(const QwCombinedPMT& source)
-  : VQwDataElement(source),
-    fCalibration(source.fCalibration),
-    fElement(source.fElement),
-    fWeights(source.fWeights),
-    fSumADC(source.fSumADC)
-  { }
-  virtual ~QwCombinedPMT() { };
+    QwCombinedPMT(TString name){
+      InitializeChannel(name, "derived");
+    };
+
+    QwCombinedPMT(TString subsystemname, TString name){
+      SetSubsystemName(subsystemname);
+      InitializeChannel(subsystemname, name, "derived");
+    };
+    QwCombinedPMT(const QwCombinedPMT& source)
+    : VQwDataElement(source),
+      fCalibration(source.fCalibration),
+      fElement(source.fElement),
+      fWeights(source.fWeights),
+      fSumADC(source.fSumADC)
+    { }
+    virtual ~QwCombinedPMT() { };
 
   void  InitializeChannel(TString name, TString datatosave);
   // new routine added to update necessary information for tree trimming
@@ -156,5 +158,7 @@ class QwCombinedPMT : public VQwDataElement {
   const static  Bool_t bDEBUG=kFALSE; /// debugging display purposes
 
 };
+
+typedef boost::shared_ptr<QwCombinedPMT<QwVQWK_Channel> > QwCombinedPMT_VQWK_ptr;
 
 #endif
