@@ -19,6 +19,7 @@
 #include "QwParityDB.h"
 #endif
 #include "QwPromptSummary.h"
+#include "QwParameterFile.h"
 
 // Register this subsystem with the factory
 RegisterSubsystemFactory(QwMainCerenkovDetector);

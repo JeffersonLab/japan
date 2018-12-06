@@ -8,6 +8,7 @@
 #include "QwDBInterface.h"
 #endif
 #include "QwVQWK_Channel.h"
+#include "QwParameterFile.h"
 
 /********************************************************/
 template<typename T>
