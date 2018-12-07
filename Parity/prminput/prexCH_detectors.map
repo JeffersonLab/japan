@@ -7,6 +7,6 @@
  eventcut = prexCH_beamline_eventcuts.map
  param    = prexCH_beamline_pedestal.map
 
-![QwHelicity]
-! name = Helicity info
-! map = prexCH_helicity.map
+[QwHelicity]
+ name = Helicity info
+ map = prexCH_helicity.map
