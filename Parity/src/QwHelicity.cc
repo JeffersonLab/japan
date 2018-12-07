@@ -42,6 +42,10 @@ const UInt_t QwHelicity::kInputReg_FakeMPS = 0x8000;
 QwHelicity::QwHelicity(const TString& name)
 : VQwSubsystem(name),
   VQwSubsystemParity(name),
+  fInputReg_HelPlus(kDefaultInputReg_HelPlus),
+  fInputReg_HelMinus(kDefaultInputReg_HelMinus),
+  fInputReg_PatternSync(kDefaultInputReg_PatternSync),
+  fInputReg_PairSync(0),
   fHelicityBitPattern(kDefaultHelicityBitPattern),
   kPatternCounter(-1), kMpsCounter(-1), kPatternPhase(-1),
   fMinPatternPhase(1), fUsePredictor(kTRUE), fIgnoreHelicity(kFALSE),
@@ -82,6 +86,10 @@ QwHelicity::QwHelicity(const TString& name)
 QwHelicity::QwHelicity(const QwHelicity& source)
 : VQwSubsystem(source.GetSubsystemName()),
   VQwSubsystemParity(source.GetSubsystemName()),
+  fInputReg_HelPlus(fInputReg_HelPlus),
+  fInputReg_HelMinus(fInputReg_HelMinus),
+  fInputReg_PatternSync(fInputReg_PatternSync),
+  fInputReg_PairSync(fInputReg_PairSync),
   fHelicityBitPattern(kDefaultHelicityBitPattern),
   kPatternCounter(source.kPatternCounter),
   kMpsCounter(source.kMpsCounter),
@@ -553,7 +561,7 @@ void QwHelicity::ProcessEventInputRegisterMode()
     // and the input register minimum phase bit is set
     // we can select the second pattern as below.
     if(fWord[kPatternPhase].fValue - fPatternPhaseOffset == 0)
-      if (firstpattern && CheckIORegisterMask(thisinputregister,kInputReg_PatternSync)){
+      if (firstpattern && CheckIORegisterMask(thisinputregister,fInputReg_PatternSync)){
 	firstpattern   = kFALSE;
       }
     
@@ -568,7 +576,7 @@ void QwHelicity::ProcessEventInputRegisterMode()
   } else {
     //  Use internal variables for all the counters.
     fEventNumber = fEventNumberOld+1;
-    if (CheckIORegisterMask(thisinputregister,kInputReg_PatternSync)) {
+    if (CheckIORegisterMask(thisinputregister,fInputReg_PatternSync)) {
       fPatternPhaseNumber = fMinPatternPhase;
       fPatternNumber      = fPatternNumberOld + 1;
     } else  {
@@ -589,7 +597,7 @@ void QwHelicity::ProcessEventInputRegisterMode()
     fNumMissedEventBlocks++;
   }
 
-  if (CheckIORegisterMask(thisinputregister,kInputReg_PatternSync) && fPatternPhaseNumber != fMinPatternPhase){
+  if (CheckIORegisterMask(thisinputregister,fInputReg_PatternSync) && fPatternPhaseNumber != fMinPatternPhase){
     //  Quartet bit is set.
     QwError << "QwHelicity::ProcessEvent:  The Multiplet Sync bit is set, but the Pattern Phase is (" 
 	    << fPatternPhaseNumber << ") not "
@@ -603,15 +611,15 @@ void QwHelicity::ProcessEventInputRegisterMode()
      Extract the reported helicity from the input register for each event.
   */
 
-  if (CheckIORegisterMask(thisinputregister,kInputReg_HelPlus)
-      && CheckIORegisterMask(thisinputregister,kInputReg_HelMinus) ){
+  if (CheckIORegisterMask(thisinputregister,fInputReg_HelPlus)
+      && CheckIORegisterMask(thisinputregister,fInputReg_HelMinus) ){
     //  Both helicity bits are set.
     QwError << "QwHelicity::ProcessEvent:  Both the H+ and H- bits are set: thisinputregister==" 
 	    << thisinputregister << QwLog::endl;
     fHelicityReported = kUndefinedHelicity;
     fHelicityBitPlus  = kFALSE;
     fHelicityBitMinus = kFALSE;
-  } else if (CheckIORegisterMask(thisinputregister,kInputReg_HelPlus)){ //  HelPlus bit is set.
+  } else if (CheckIORegisterMask(thisinputregister,fInputReg_HelPlus)){ //  HelPlus bit is set.
     fHelicityReported    |= 1; // Set the InputReg HEL+ bit.
     fHelicityBitPlus  = kTRUE;
     fHelicityBitMinus = kFALSE;
@@ -750,9 +758,9 @@ void QwHelicity::EncodeEventData(std::vector<UInt_t> &buffer)
   }
   case kHelInputRegisterMode: {
     UInt_t input_register = 0x0;
-    if (fHelicityDelayed == 1) input_register |= kInputReg_HelPlus;
-    if (fHelicityDelayed == 0) input_register |= kInputReg_HelMinus; // even the mock data has balanced inputs!
-    if (fPatternPhaseNumber == fMinPatternPhase) input_register |= kInputReg_PatternSync;
+    if (fHelicityDelayed == 1) input_register |= fInputReg_HelPlus;
+    if (fHelicityDelayed == 0) input_register |= fInputReg_HelMinus;
+    if (fPatternPhaseNumber == fMinPatternPhase) input_register |= fInputReg_PatternSync;
 
     // Write the words to the buffer
     localbuffer.push_back(input_register); // input_register
@@ -846,6 +854,22 @@ Int_t QwHelicity::LoadChannelMap(TString mapfile)
     }
     if (mapstr.PopValue("patternbits",value)) {
       SetHelicityBitPattern(value);
+    }
+    if (mapstr.PopValue("inputregmask_helicity",value)) {
+      fInputReg_HelPlus  = value;
+      fInputReg_HelMinus = 0;
+    }
+    if (mapstr.PopValue("inputregmask_helplus",value)) {
+      fInputReg_HelPlus = value;
+    }
+    if (mapstr.PopValue("inputregmask_helminus",value)) {
+      fInputReg_HelMinus = value;
+    }
+    if (mapstr.PopValue("inputregmask_pattsync",value)) {
+      fInputReg_PatternSync = value;
+    }
+    if (mapstr.PopValue("inputregmask_pairsync",value)) {
+      fInputReg_PairSync = value;
     }
     if (mapstr.PopValue("fakempsbit",value)) {
       fInputReg_FakeMPS = value;

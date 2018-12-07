@@ -5,21 +5,6 @@
 !!  			 : for now it can be  InputRegisterMode, UserbitMode
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!Injector data during happex data taking: run 12331, 12354, 12356
-!HelicityDecodingMode=InputRegisterMode
-!PatternPhase=4
-!ROC=23
-!
-! Header=0xfdacf000
-! HAPPEX BMW words
-!SKIP 148
-!WORD, 0,  0, helicitydata,  ha_cleandata
-!WORD, 0,  0, helicitydata,  ha_scandata1
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 !INPUT REGISTER MODE
 HelicityDecodingMode=InputRegisterMode
 
@@ -29,6 +14,10 @@ HelicityDecodingMode=InputRegisterMode
 NumberPatternsDelayed=8
 PatternPhase=4
 
+!!!  Specify the bitmasks for the patternsync, helicity, and  pairsync if needed.
+InputRegMask_PattSync=0x20
+InputRegMask_Helicity=0x40
+InputRegMask_PairSync=0x80
 
 
 !Need to set PATTERNPHASEOFFSET = 1 (when pattern phase starts with 1) or 0 (when pattern phase starts with 0)
@@ -36,16 +25,12 @@ PatternPhase=4
 !uncomment below line only if phase number start from 0
 PATTERNPHASEOFFSET=0
 
-
-!seed size is either 24 bit or 30 bit. default is 30 bit
-!RandSeedBits=24
-
 ROC=23
-MarkerWord=0x00003103
 
 !
 ! module.type, module.num  chan.num, det.type, det.name
 !
+SKIP 2
 WORD, 0,  0, helicitydata,  input_register
 WORD, 0,  0, helicitydata,  output_register
 SKIP 1 ! WORD, 0,  0, helicitydata,  sca_MPS_num
@@ -61,23 +46,3 @@ SKIP 1
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-!USER BIT MODE
-
-!HelicityDecodingMode= UserbitMode    
-!PatternPhase=4
-!seed size is either 24 bit or 30 bit. default is 24 bit
-!RandSeedBits=24
-!RandSeedBits=30
-!ROC=31
-!Bank=0x3101
-!
-! module.type, module.num  chan.num, det.type, det.name
-! 
-!WORD, 0,  0, helicitydata,  cleandata
-!WORD, 0,  0, helicitydata,  scandata1
-!WORD, 0,  0, helicitydata,  scandata2
-!WORD, 0,  0, helicitydata,  scalerheader
-!WORD, 0,  0, helicitydata,  scalercounter
-!WORD, 0,  0, helicitydata,  userbit 
-!END

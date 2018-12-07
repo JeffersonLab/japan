@@ -163,12 +163,16 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
 			    kHelInputMollerMode};
   // this values allow to switch the code between different helicity encoding mode.
 
-  enum InputRegisterBits{kInputReg_HelPlus     = 0x1,
-			 kInputReg_HelMinus    = 0x2,
-			 kInputReg_PatternSync = 0x4};
+  enum InputRegisterBits{kDefaultInputReg_HelPlus     = 0x1,
+			 kDefaultInputReg_HelMinus    = 0x2,
+			 kDefaultInputReg_PatternSync = 0x4};
 
   static const UInt_t kInputReg_FakeMPS;
   UInt_t fInputReg_FakeMPS;
+  UInt_t fInputReg_HelPlus;
+  UInt_t fInputReg_HelMinus;
+  UInt_t fInputReg_PatternSync;
+  UInt_t fInputReg_PairSync;
 
   static const UInt_t kDefaultHelicityBitPattern;
 
@@ -193,6 +197,9 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
   // the scalercounter counts how many events happened since the last reading
   // should be one all the time if not the event is suspicious and not used for analysis
   Int_t kInputRegister, kPatternCounter, kMpsCounter, kPatternPhase;
+
+  //  Mask variables to find helicity & mulitplet sync in the input register
+  Int_t fIOReg_Helicity, fIOReg_PattSync, fIOReg_PairSync;
 
   UInt_t kEventTypeHelPlus, kEventTypeHelMinus;
 
