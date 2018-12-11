@@ -149,7 +149,7 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
 /////
  protected:
   Bool_t CheckIORegisterMask(const UInt_t& ioregister, const UInt_t& mask) const {
-    return ((ioregister & mask) == mask);
+    return ((mask != 0)&&((ioregister & mask) == mask));
   };
 
  protected:
@@ -165,9 +165,9 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
 
   enum InputRegisterBits{kDefaultInputReg_HelPlus     = 0x1,
 			 kDefaultInputReg_HelMinus    = 0x2,
-			 kDefaultInputReg_PatternSync = 0x4};
+			 kDefaultInputReg_PatternSync = 0x4,
+			 kDefaultInputReg_FakeMPS     = 0x8000};
 
-  static const UInt_t kInputReg_FakeMPS;
   UInt_t fInputReg_FakeMPS;
   UInt_t fInputReg_HelPlus;
   UInt_t fInputReg_HelMinus;
@@ -197,9 +197,6 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
   // the scalercounter counts how many events happened since the last reading
   // should be one all the time if not the event is suspicious and not used for analysis
   Int_t kInputRegister, kPatternCounter, kMpsCounter, kPatternPhase;
-
-  //  Mask variables to find helicity & mulitplet sync in the input register
-  Int_t fIOReg_Helicity, fIOReg_PattSync, fIOReg_PairSync;
 
   UInt_t kEventTypeHelPlus, kEventTypeHelMinus;
 

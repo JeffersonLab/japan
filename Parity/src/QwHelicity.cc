@@ -34,9 +34,6 @@ RegisterSubsystemFactory(QwHelicity);
 /// of the bit pattern is the first event of the pattern.
 const UInt_t QwHelicity::kDefaultHelicityBitPattern = 0x69;
 
-/// Default mask for fake MPS latch bit
-const UInt_t QwHelicity::kInputReg_FakeMPS = 0x8000;
-
 //**************************************************//
 /// Constructor with name
 QwHelicity::QwHelicity(const TString& name)
@@ -75,7 +72,7 @@ QwHelicity::QwHelicity(const TString& name)
   fGoodPattern=kFALSE;
   fHelicityDecodingMode=-1;
 
-  fInputReg_FakeMPS = kInputReg_FakeMPS;
+  fInputReg_FakeMPS = kDefaultInputReg_FakeMPS;
 }
 
 //**************************************************//
@@ -854,6 +851,9 @@ Int_t QwHelicity::LoadChannelMap(TString mapfile)
     }
     if (mapstr.PopValue("patternbits",value)) {
       SetHelicityBitPattern(value);
+    }
+    if (mapstr.PopValue("inputregmask_fakemps",value)) {
+      fInputReg_FakeMPS = value;
     }
     if (mapstr.PopValue("inputregmask_helicity",value)) {
       fInputReg_HelPlus  = value;
