@@ -103,6 +103,9 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     ///  Set the current event number for parameter file lookup
     QwParameterFile::SetCurrentRunNumber(run_number);
+    //  Parse the options again, in case there are run-ranged config files
+    gQwOptions.Parse(kTRUE);
+    eventbuffer.ProcessOptions(gQwOptions);
 
     //    if (gQwOptions.GetValue<bool>("write-promptsummary")) {
     QwPromptSummary promptsummary(run_number, eventbuffer.GetSegmentNumber());
