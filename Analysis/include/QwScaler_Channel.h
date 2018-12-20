@@ -152,10 +152,9 @@ public:
   void  ConstructHistograms(TDirectory *folder, TString &prefix);
   void  FillHistograms();
 
-  void  ConstructBranchAndVector(TTree *tree, TString &prefix, std::vector<Double_t> &values);
-
+  virtual void  ConstructBranchAndVector(TTree *tree, TString &prefix, std::vector<Double_t> &values) = 0;
+  virtual void  FillTreeVector(std::vector<Double_t> &values) const = 0;
   void  ConstructBranch(TTree *tree, TString &prefix);
-  void  FillTreeVector(std::vector<Double_t> &values) const;
 
   inline void AccumulateRunningSum(const VQwScaler_Channel& value){
     AccumulateRunningSum(value, value.fGoodEventCount);
@@ -193,6 +192,7 @@ protected:
 protected:
   static const Bool_t kDEBUG;
 
+  UInt_t   fHeader;
   UInt_t   fValue_Raw_Old;
   UInt_t   fValue_Raw;
   Double_t fValue;
@@ -229,6 +229,9 @@ class QwScaler_Channel: public VQwScaler_Channel
   // Implement the templated methods
   void  EncodeEventData(std::vector<UInt_t> &buffer);
   Int_t ProcessEvBuffer(UInt_t* buffer, UInt_t num_words_left, UInt_t index = 0);
+
+  void  ConstructBranchAndVector(TTree *tree, TString &prefix, std::vector<Double_t> &values);
+  void  FillTreeVector(std::vector<Double_t> &values) const;
 
 
 };
