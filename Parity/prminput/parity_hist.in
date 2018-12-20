@@ -453,10 +453,10 @@ yield_qwk_.*		TH1F	1000	-5.0e2	5.0e2		Counts Events
 asym.*_qwk_.*		TH1F	1000	-5.0e2	5.0e2		Counts Events
 diff.*_qwk_.*		TH1F	1000	-5.0e2	5.0e2		Counts Events
 
-sca_.*			TH1F
-yield_sca_.*		TH1F
-asym.*_sca_.*		TH1F
-diff.*_sca_.*		TH1F
+sca.*			TH1F  101
+yield_sca.*		TH1F  101
+asym.*_sca.*		TH1F  101
+diff.*_sca.*		TH1F  101
 
 ###########################################
 #  Adding some fully wildcarded histogram names.
@@ -468,3 +468,4 @@ diff.*_sca_.*		TH1F
 .*_.w			TH1F	1000	-5.0e9	5.0e9		CalibratedCounts Events
 .*_sw-hw_raw		TH1F	1000	-5.0e2	5.0e2		Counts		Events
 
+.*            TH1F  101
