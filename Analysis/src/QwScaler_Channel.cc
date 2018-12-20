@@ -31,6 +31,7 @@ void  VQwScaler_Channel::InitializeChannel(TString name, TString datatosave)
   //  Default mockdata parameters
   SetRandomEventParameters(300.0, 50.0);
 
+  fHeader = 0;
   fValue_Raw_Old = 0;
   fValue_Raw  = 0;
   fValue      = 0.0;
@@ -63,6 +64,7 @@ void VQwScaler_Channel::InitializeChannel(TString subsystem, TString instrumentt
 
 void VQwScaler_Channel::ClearEventData()
 {
+  fHeader      = 0;
   fValue_Raw   = 0;
   fValue       = 0.0;
   fValueM2     = 0.0;
@@ -167,6 +169,7 @@ Int_t QwScaler_Channel<data_mask,data_shift>::ProcessEvBuffer(UInt_t* buffer, UI
     //  Skip over this data.
       words_read = fNumberOfDataWords;
   } else if (num_words_left >= fNumberOfDataWords) {
+    fHeader    = (buffer[0] & ~data_mask);
     fValue_Raw = ((buffer[0] & data_mask) >> data_shift);
     fValue     = fCalibrationFactor * (Double_t(fValue_Raw) - Double_t(fValue_Raw_Old) - fPedestal);
     words_read = fNumberOfDataWords;
@@ -249,7 +252,9 @@ void  VQwScaler_Channel::FillHistograms()
   }
 }
 
-void  VQwScaler_Channel::ConstructBranchAndVector(TTree *tree, TString &prefix, std::vector<Double_t> &values)
+
+template<unsigned int data_mask, unsigned int data_shift>
+void QwScaler_Channel<data_mask,data_shift>::ConstructBranchAndVector(TTree *tree, TString &prefix, std::vector<Double_t> &values)
 {
   if (IsNameEmpty()){
     //  This channel is not used, so skip setting up the tree.
@@ -265,6 +270,10 @@ void  VQwScaler_Channel::ConstructBranchAndVector(TTree *tree, TString &prefix, 
     if(fDataToSave==kRaw){
       values.push_back(0.0);
       list += ":raw/D";
+      if ((~data_mask) != 0){
+	values.push_back(0.0);
+	list += ":header/D"; 
+      }
     }
 
     fTreeArrayNumEntries = values.size() - fTreeArrayIndex;
@@ -284,7 +293,8 @@ void  VQwScaler_Channel::ConstructBranch(TTree *tree, TString &prefix)
   }
 }
 
-void  VQwScaler_Channel::FillTreeVector(std::vector<Double_t> &values) const
+template<unsigned int data_mask, unsigned int data_shift>
+void QwScaler_Channel<data_mask,data_shift>::FillTreeVector(std::vector<Double_t> &values) const
 {
   if (IsNameEmpty()) {
     //  This channel is not used, so skip setting up the tree.
@@ -312,6 +322,10 @@ void  VQwScaler_Channel::FillTreeVector(std::vector<Double_t> &values) const
     values[index++] = this->fErrorFlag;
     if(fDataToSave==kRaw){
       values[index++] = this->fValue_Raw;
+      if ((~data_mask) != 0){
+	values[index++] = this->fHeader;
+      }
+
     }
   }
 }
@@ -383,6 +397,7 @@ VQwScaler_Channel& VQwScaler_Channel::operator=(const VQwScaler_Channel &value)
   if(this == &value) return *this;
   if (!IsNameEmpty()) {
     VQwHardwareChannel::operator=(value);
+    this->fHeader     = value.fHeader;
     this->fValue_Raw  = value.fValue_Raw;
     this->fValue      = value.fValue;
     this->fValueError = value.fValueError;
@@ -429,6 +444,7 @@ VQwScaler_Channel& VQwScaler_Channel::operator*= (const VQwScaler_Channel &value
 {
   if (!IsNameEmpty()){
     this->fValue     *= value.fValue;
+    fHeader           = 0;
     fValue_Raw        = 0;
     this->fValueM2    = 0.0;
     this->fErrorFlag |= (value.fErrorFlag);//error code is ORed.
@@ -511,6 +527,7 @@ void VQwScaler_Channel::Ratio(const VQwScaler_Channel &numer, const VQwScaler_Ch
     *this /= denom;
     
     //  Set the raw values to zero.
+    fHeader    = 0;
     fValue_Raw = 0;
     
     // Remaining variables
@@ -563,6 +580,7 @@ void VQwScaler_Channel::Product(VQwScaler_Channel &numer, VQwScaler_Channel &den
 {
   if (!IsNameEmpty()){
     fValue = numer.fValue * denom.fValue;
+    fHeader    = 0;
     fValue_Raw = 0;
     
     // Remaining variables
