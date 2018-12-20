@@ -617,9 +617,9 @@ void QwRootFile::ConstructTreeBranches(
     tree = new QwRootTree(name, desc, object, prefix);
 
     // Settings only relevant for new trees
-    if (name == "Mps_Tree")
+    if (name == "evt")
       tree->SetPrescaling(fNumMpsEventsToSave, fNumMpsEventsToSkip);
-    else if (name == "Hel_Tree")
+    else if (name == "mul")
       tree->SetPrescaling(fNumHelEventsToSave, fNumHelEventsToSkip);
 
     #if ROOT_VERSION_CODE >= ROOT_VERSION(5,26,00)
