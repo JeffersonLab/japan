@@ -87,9 +87,9 @@ ClassImp(THaCodaFile)
        }
     } else {
       if(CODA_VERBOSE) {
-         cout << "codaRead ERROR: tried to access a file with handle = NULL" << endl;
-         cout << "You need to call codaOpen(filename)" << endl;
-         cout << "or use the constructor with (filename) arg" << endl;
+         std::cout << "codaRead ERROR: tried to access a file with handle = NULL" << std::endl;
+         std::cout << "You need to call codaOpen(filename)" << std::endl;
+         std::cout << "or use the constructor with (filename) arg" << std::endl;
       }
       fStatus = CODA_ERROR;
     }
@@ -104,7 +104,7 @@ ClassImp(THaCodaFile)
        fStatus = evWrite(handle, evbuffer);
        staterr("write",fStatus);
      } else {
-       cout << "codaWrite ERROR: tried to access file with handle = NULL" << endl;
+       std::cout << "codaWrite ERROR: tried to access file with handle = NULL" << std::endl;
        fStatus = CODA_ERROR;
      }
      return fStatus;
@@ -127,19 +127,19 @@ ClassImp(THaCodaFile)
        int i;
        if(output_file == filename) {
 	 if(CODA_VERBOSE) {
-           cout << "filterToFile: ERROR: ";
-           cout << "Input and output files cannot be same " << endl;
-           cout << "This is to protect you against overwriting data" << endl;
+           std::cout << "filterToFile: ERROR: ";
+           std::cout << "Input and output files cannot be same " << std::endl;
+           std::cout << "This is to protect you against overwriting data" << std::endl;
          }
          return CODA_ERROR;
        }
        FILE *fp;
        if ((fp = fopen(output_file.Data(),"r")) != NULL) {
           if(CODA_VERBOSE) {
-  	    cout << "filterToFile:  ERROR:  ";
-            cout << "Output file `" << output_file << "' exists " << endl;
-            cout << "You must remove it by hand first. " << endl;
-            cout << "This forces you to think and not overwrite data." << endl;
+  	    std::cout << "filterToFile:  ERROR:  ";
+            std::cout << "Output file `" << output_file << "' exists " << std::endl;
+            std::cout << "You must remove it by hand first. " << std::endl;
+            std::cout << "This forces you to think and not overwrite data." << std::endl;
 	  }
           fclose(fp);
           return CODA_ERROR;
@@ -153,11 +153,11 @@ ClassImp(THaCodaFile)
            int evnum = rawbuff[4];
            int oktofilt = 1;
            if (CODA_DEBUG) { 
-	     cout << "Input evtype " << dec << evtype;
-             cout << "  evnum " << evnum << endl; 
-             cout << "max_to_filt = " << max_to_filt << endl;
-             cout << "evtype size = " << evtypes[0] << endl;
-             cout << "evlist size = " << evlist[0] << endl;
+	     std::cout << "Input evtype " << std::dec << evtype;
+             std::cout << "  evnum " << evnum << std::endl; 
+             std::cout << "max_to_filt = " << max_to_filt << std::endl;
+             std::cout << "evtype size = " << evtypes[0] << std::endl;
+             std::cout << "evlist size = " << evlist[0] << std::endl;
 	   }
            if ( evtypes[0] > 0 ) {
                oktofilt = 0;
@@ -182,13 +182,13 @@ Cont2:
 	   if (oktofilt) {
              nfilt++;
              if (CODA_DEBUG) {
-	       cout << "Filtering event, nfilt " << dec << nfilt << endl;
+	       std::cout << "Filtering event, nfilt " << std::dec << nfilt << std::endl;
 	     }
 	     fStatus = fout->codaWrite(getEvBuffer());
              if (fStatus != S_SUCCESS) {
 	       if (CODA_VERBOSE) {
-		 cout << "Error in filterToFile ! " << endl;
-                 cout << "codaWrite returned status " << fStatus << endl;
+		 std::cout << "Error in filterToFile ! " << std::endl;
+                 std::cout << "codaWrite returned status " << fStatus << std::endl;
 	       }
                goto Finish;
 	     }
@@ -259,42 +259,42 @@ void THaCodaFile::staterr(TString tried_to, int status) {
 // and the user has to pay attention to why.
     if (status == S_SUCCESS) return;  // everything is fine.
     if (tried_to == "open") {
-       cout << "THaCodaFile: ERROR opening file = " << filename << endl;
-       cout << "Most likely errors are: " << endl;
-       cout << "   1.  You mistyped the name of file ?" << endl;
-       cout << "   2.  The file has length zero ? " << endl;
+       std::cout << "THaCodaFile: ERROR opening file = " << filename << std::endl;
+       std::cout << "Most likely errors are: " << std::endl;
+       std::cout << "   1.  You mistyped the name of file ?" << std::endl;
+       std::cout << "   2.  The file has length zero ? " << std::endl;
     }
     switch (status) {
       case S_EVFILE_TRUNC :
-	 cout << "THaCodaFile ERROR:  Truncated event on file read" << endl;
-         cout << "Evbuffer size is too small.  Job aborted." << endl;
+	 std::cout << "THaCodaFile ERROR:  Truncated event on file read" << std::endl;
+         std::cout << "Evbuffer size is too small.  Job aborted." << std::endl;
          exit(0);  //  If this ever happens, recompile with MAXEVLEN
 	           //  bigger, and mutter under your breath at the author.    
       case S_EVFILE_BADBLOCK : 
-        cout << "Bad block number encountered " << endl;
+        std::cout << "Bad block number encountered " << std::endl;
         break;
       case S_EVFILE_BADHANDLE :
-        cout << "Bad handle (file/stream not open) " << endl;
+        std::cout << "Bad handle (file/stream not open) " << std::endl;
         break;
       case S_EVFILE_ALLOCFAIL : 
-        cout << "Failed to allocate event I/O" << endl;
+        std::cout << "Failed to allocate event I/O" << std::endl;
         break;
       case S_EVFILE_BADFILE :
-        cout << "File format error" << endl;
+        std::cout << "File format error" << std::endl;
         break;
       case S_EVFILE_UNKOPTION :
-        cout << "Unknown option specified" << endl;
+        std::cout << "Unknown option specified" << std::endl;
         break;
       case S_EVFILE_UNXPTDEOF :
-        cout << "Unexpected end of file while reading event" << endl;
+        std::cout << "Unexpected end of file while reading event" << std::endl;
         break;
       case EOF: 
         if(CODA_VERBOSE) {
-          cout << "Normal end of file " << filename << " encountered" << endl;
+          std::cout << "Normal end of file " << filename << " encountered" << std::endl;
 	}
         break;
       default:
-        cout << "Error status  0x" << hex << status << endl;
+        std::cout << "Error status  0x" << std::hex << status << std::endl;
       }
   };
 
