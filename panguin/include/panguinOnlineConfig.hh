@@ -7,10 +7,9 @@
 #include <TString.h>
 #include "TCut.h"
 
-static TString guiDirectory = "panguin";
+static TString guiDirectory = "macros";
 
 class OnlineConfig {
-  //RQ_OBJECT("OnlineConfig");//FIXME cg
   // Class that takes care of the config file
 private:
   TString confFileName;                   // config filename
@@ -30,7 +29,6 @@ private:
   Bool_t fFoundCfg;
   Bool_t fMonitor;
   
-
 public:
   OnlineConfig();
   OnlineConfig(TString);

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <list>
 #include <TMath.h>
+#include <unistd.h>
 //#define DEBUG
 //#define DEBUG2
 //#define NOISY
@@ -37,8 +38,7 @@ OnlineConfig::OnlineConfig(TString anatype)
 
   //  ifstream *fConfFile = new ifstream(confFileName.Data());
   fConfFile = new ifstream(confFileName.Data());
-  if ( ! (*fConfFile) ) {
-    cerr << "OnlineConfig() WARNING: config file " << confFileName.Data()
+  if ( ! (*fConfFile) ) {    cerr << "OnlineConfig() WARNING: config file " << confFileName.Data()
          << " does not exist" << endl;
     cerr << " Checking the " << guiDirectory << " directory" << endl;
     confFileName.Prepend(guiDirectory+"/");
@@ -510,20 +510,33 @@ void OnlineConfig::OverrideRootFile(UInt_t runnumber)
   // Override the ROOT file defined in the cfg file If
   // protorootfile is used, construct filename using it, otherwise
   // uses a helper macro "GetRootFileName.C(UInt_t runnumber)
-
+  cout<< "Root file defined before was: "<<rootfilename<<endl;
   if(!protorootfile.IsNull()) {
-    //     Made more robust for slug number changing length Dalton 2009-09-21
-    //     TString rn = "";
-    //     rn += runnumber;
-    //     protorootfile.ReplaceAll("XXXXX",rn.Data());
     char runnostr[10];
     sprintf(runnostr,"%04i",runnumber);
     protorootfile.ReplaceAll("XXXXX",runnostr);
     rootfilename = protorootfile;
   } else {
-    rootfilename = "";//GetRootFileName(runnumber);//FIXME cg
-  }
+    string fnmRoot="/adaq2/data1/apar/";
+    if(getenv("QW_DATA"))
+      fnmRoot = getenv("QW_DATA");
+    else
+      cout<<"QW_DATA env variable was not found going with default: "<< fnmRoot<<endl;
 
-  cout << "Overridden File name: " << rootfilename << endl;
+    cout << " Looking for file with runnumber "<<runnumber<<" in "<<fnmRoot<<endl;
+    const string daqConfigs[3] = {"CH","INJ","ALL"};
+    int found=0;
+    for(int i=0;i<3;i++){
+      rootfilename = Form("%sparity_%s_%d.root",fnmRoot.c_str(),daqConfigs[i].c_str(),runnumber);
+      if( access( rootfilename.Data(), F_OK ) != -1 ){
+	found++;
+	break;
+      }
+    }
+    if(found)
+      cout<<"\t found file "<< rootfilename<<endl;
+    else
+      cout<<"double check your configurations and files. Quitting"<<endl; //FIXME actually find a way to gracefully quit
+  }
 }
 

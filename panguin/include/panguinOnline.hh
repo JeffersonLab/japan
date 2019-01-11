@@ -91,5 +91,6 @@ public:
   void PrintPages();
   void MyCloseWindow();
   void CloseGUI();
+  ClassDef(OnlineGUI,0);
 };
 #endif //panguinOnline_h

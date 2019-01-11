@@ -36,7 +36,7 @@ endif()
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
 # Load ROOT and setup include directory
-find_package(ROOT REQUIRED)
+find_package(ROOT 6 REQUIRED)
 include_directories(${ROOT_INCLUDE_DIR})
 set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lNew -lGui -lMinuit2)
 
@@ -44,6 +44,8 @@ add_definitions(-std=c++11)
 
 ROOT_GENERATE_DICTIONARY(
     panguinDict                         # path to dictionary to generate
+    include/panguinOnlineConfig.hh
+    include/panguinOnline.hh
     LINKDEF "include/panguinOnlineLinkDef.h"  # ROOT linkDef file
     OPTIONS -p
 )
