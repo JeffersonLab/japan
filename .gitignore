@@ -51,6 +51,8 @@ Doxygen/html
 *.db
 *.txt
 *.png
+*.pdf
+*.ps
 
 #tmp files
 *~
