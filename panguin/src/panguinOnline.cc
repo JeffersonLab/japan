@@ -900,13 +900,14 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
 void OnlineGUI::PrintToFile()
 {
   // Routine to print the current page to a File.
-  //  A file dialog pop's up to request the file name.
+  //  A file dialog pops up to request the file name.
   fCanvas = fEcanvas->GetCanvas();
   gStyle->SetPaperSize(20,24);
   static TString dir("printouts");
   TGFileInfo fi;
   const char *myfiletypes[] = 
     { "All files","*",
+      "Portable Document Format","*.pdf",
       "PostScript files","*.ps",
       "Encapsulated PostScript files","*.eps",
       "GIF files","*.gif",
@@ -989,7 +990,7 @@ void OnlineGUI::PrintPages() {
     filename.Prepend(plotsdir+"/");
     filename += "_pageXXXX.gif";
   }
-  else filename += ".ps";
+  else filename += ".pdf";
 
   TString pagehead = "Summary Plots";
   if(runNumber!=0) {
