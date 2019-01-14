@@ -32,11 +32,10 @@ OnlineConfig::OnlineConfig(TString anatype)
   //  Loads up the configuration file, and stores it's contents for access.
   
   confFileName = anatype;
-  confFileName += ".cfg";
+  //confFileName += ".cfg";//Not sure what this would be needed DELETEME cg
   fMonitor = kFALSE;
   fFoundCfg = kFALSE;
 
-  //  ifstream *fConfFile = new ifstream(confFileName.Data());
   fConfFile = new ifstream(confFileName.Data());
   if ( ! (*fConfFile) ) {    cerr << "OnlineConfig() WARNING: config file " << confFileName.Data()
          << " does not exist" << endl;
