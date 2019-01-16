@@ -55,3 +55,6 @@ Doxygen/html
 #tmp files
 *~
 z_*
+
+# setup files
+SetupFiles/SET_ME_UP.*
