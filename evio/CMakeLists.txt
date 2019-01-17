@@ -23,10 +23,10 @@ IF(ET_FOUND)
   add_definitions(-D__CODA_ET)
   include_directories(${ET_INCLUDE_DIR})
   list(APPEND my_evio_headers
-    include/THaEtClient.h
+    ${PROJECT_SOURCE_DIR}/evio/include/THaEtClient.h
     )
   list(APPEND my_evio_sources
-    src/THaEtClient.C
+    ${PROJECT_SOURCE_DIR}/evio/src/THaEtClient.C
     )
 else(ET_FOUND)
   set(ET_LIBRARY "")

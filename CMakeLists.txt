@@ -61,7 +61,7 @@ IF(MYSQLPP_FOUND)
 ELSE(MYSQLPP_FOUND)
   set(MYSQLPP_LIBRARIES "")
   list(REMOVE_ITEM my_project_sources
-    Analysis/src/QwDatabase.cc
+    ${PROJECT_SOURCE_DIR}/Analysis/src/QwDatabase.cc
   )
 endif(MYSQLPP_FOUND)
 
