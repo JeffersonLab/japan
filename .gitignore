@@ -49,7 +49,6 @@ Doxygen/html
 *.tar
 *.root
 *.db
-*.txt
 *.png
 
 #tmp files
