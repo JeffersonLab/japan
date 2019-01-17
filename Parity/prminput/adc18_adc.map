@@ -1,9 +1,9 @@
 ROC=23
 
 ! module.type, module.num, module.chan, det.type, det.name
-ADC18, 0, 0,  IntegrationPMT,  ADC0
-ADC18, 0, 1,  IntegrationPMT,  ADC1
-ADC18, 0, 2,  IntegrationPMT,  ADC2
-ADC18, 0, 3,  IntegrationPMT,  ADC3
+ADC18, 0, 0,  bcm,  ADC0
+ADC18, 0, 1,  bcm,  ADC1
+ADC18, 0, 2,  bcm,  ADC2
+ADC18, 0, 3,  bcm,  ADC3
 
 !END

@@ -1,5 +1,4 @@
-[MollerMainDetector]
- name  = Main Detector
+[QwBeamLine]
+ name  = Beamline
  map   = adc18_adc.map
  param = adc18_pedestal.map
-
