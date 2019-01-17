@@ -58,8 +58,6 @@ IF(MYSQLPP_FOUND)
   ## KLUDGE:  For now, do not define the __USE_DATABASE__ flag, because we're still missing some of the database support files. --- P.King, 05jun2018
   message(STATUS "  The \"__USE_DATABASE__\" flag is commented out in CMakeLists.txt; database support is DISABLED.")
   #  add_definitions(-D__USE_DATABASE__)
-  message(STATUS "  Forcing MYSQLPP_LIBRARIES to \"\".")
-  set(MYSQLPP_LIBRARIES "")
 ELSE(MYSQLPP_FOUND)
   set(MYSQLPP_LIBRARIES "")
   list(REMOVE_ITEM my_project_sources
