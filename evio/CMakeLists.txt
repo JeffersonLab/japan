@@ -76,10 +76,18 @@ target_compile_options(evio
     ${${PROJECT_NAME_UC}_DIAG_FLAGS_LIST}
   )
 
+if(ET_FOUND)
+target_link_libraries(evio
+  PUBLIC
+    EVIO::ET
+    ROOT::Libraries
+  )
+else()
 target_link_libraries(evio
   PUBLIC
     ROOT::Libraries
   )
+endif()
 
 install(TARGETS evio
   EXPORT ${MAIN_PROJECT_NAME_LC}-exports
