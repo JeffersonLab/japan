@@ -128,9 +128,6 @@ foreach(file ${my_project_headers})
     # Add dictionary target with possible LinkDef file
     set(dict ${CMAKE_CURRENT_BINARY_DIR}/${file_name}Dict)
     set(linkdef ${file_path}/${file_name}LinkDef.h)
-    if(NOT EXISTS ${linkdef})
-      file(TOUCH ${linkdef})
-    endif()
     build_root_dictionary(${file_name} ${file}
       TARGETS ${PROJECT_NAME}
       LINKDEF ${linkdef}
