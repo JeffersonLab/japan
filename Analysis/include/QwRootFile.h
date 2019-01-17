@@ -413,7 +413,8 @@ class QwRootFile {
     void Map()    { if (fRootFile) fRootFile->Map(); }
     void Close()  {
       if (!fMakePermanent) fMakePermanent = HasAnyFilled();
-      if (fMapFile) fMapFile->Close();  if (fRootFile) fRootFile->Close();
+      if (fMapFile) fMapFile->Close();
+      if (fRootFile) fRootFile->Close();
     }
 
     // Wrapped functionality
