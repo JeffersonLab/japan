@@ -106,6 +106,10 @@ void QwEventBuffer::DefineOptions(QwOptions &options)
   options.AddDefaultOptions()
     ("codafile-ext", po::value<string>()->default_value(fDefaultDataFileExtension),
      "extension of the input CODA filename");
+  //  Special flag to allow sub-bank IDs less than 31
+  options.AddDefaultOptions()
+    ("allow-low-subbank-ids", po::value<bool>()->default_bool_value(false),
+     "allow the sub-bank ids to be 31 or less, when using this flag, all ROCs must be sub-banked");
   //  Options specific to the ET clients
   options.AddOptions("ET system options")
     ("ET.hostname", po::value<string>(),
@@ -169,6 +173,8 @@ void QwEventBuffer::ProcessOptions(QwOptions &options)
   fChainDataFiles = options.GetValue<bool>("chainfiles");
   fDataFileStem = options.GetValue<string>("codafile-stem");
   fDataFileExtension = options.GetValue<string>("codafile-ext");
+
+  fAllowLowSubbankIDs = options.GetValue<bool>("allow-low-subbank-ids");
 
   // Open run list file
   if (fRunListFileName.size() > 0) {
@@ -818,6 +824,9 @@ Bool_t QwEventBuffer::FillSubsystemData(QwSubsystemArray &subsystems)
 	}
       }
     } else {
+      QwDebug << "QwEventBuffer::FillSubsystemData:  "
+	      << "fROC=="<<fROC << ", fSubbankTag==" << fSubbankTag
+	      << QwLog::endl;	
       subsystems.ProcessEvBuffer(fEvtType, fROC, fSubbankTag,
 				 &localbuff[fWordsSoFar],
 				 fFragLength);
@@ -926,7 +935,16 @@ Bool_t QwEventBuffer::DecodeSubbankHeader(UInt_t *buffer){
     fSubbankTag   = (buffer[1]&0xFFFF0000)>>16; // Bits 16-31
     fSubbankType  = (buffer[1]&0xFF00)>>8;      // Bits 8-15
     fSubbankNum   = (buffer[1]&0xFF);           // Bits 0-7
-    if (fSubbankTag<=31){
+
+    QwDebug << "QwEventBuffer::DecodeSubbankHeader: "
+	    << "fROC=="<<fROC << ", fSubbankTag==" << fSubbankTag
+	    << ", fSubbankType=="<<fSubbankType << ", fSubbankNum==" <<fSubbankNum
+	    << ", fAllowLowSubbankIDs==" << fAllowLowSubbankIDs
+	    << QwLog::endl;
+
+    if (fSubbankTag<=31 
+	&& ( (fAllowLowSubbankIDs==kFALSE)
+	     || (fAllowLowSubbankIDs==kTRUE && fSubbankType==0x10) ) ){
       //  Subbank tags between 0 and 31 indicate this is
       //  a ROC bank.
       fROC        = fSubbankTag;
@@ -941,7 +959,9 @@ Bool_t QwEventBuffer::DecodeSubbankHeader(UInt_t *buffer){
     }
     fWordsSoFar   += 2;
   }
-  QwDebug << "QwEventBuffer::DecodeSubbankHeader: " <<  std::hex
+  QwDebug << "QwEventBuffer::DecodeSubbankHeader: " 
+	  << "fROC=="<<fROC << ", fSubbankTag==" << fSubbankTag <<": "
+	  <<  std::hex
 	  << buffer[0] << " "
 	  << buffer[1] << " "
 	  << buffer[2] << " "

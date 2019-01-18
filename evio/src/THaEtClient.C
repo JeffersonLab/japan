@@ -25,12 +25,12 @@ ClassImp(THaEtClient)
 THaEtClient::THaEtClient() {        // Uses default mode=1 and a default server
    initflags();
    int smode = 1;
-   TString defaultcomputer(ADAQS2);
+   TString defaultcomputer(ADAQ3);
    codaOpen(defaultcomputer,smode);
 }
 THaEtClient::THaEtClient(int smode) {      // uses default server (where CODA runs)
    initflags();
-   TString defaultcomputer(ADAQS2);
+   TString defaultcomputer(ADAQ3);
    codaOpen(defaultcomputer,smode);
 }
 
@@ -53,7 +53,7 @@ THaEtClient::THaEtClient(TString computer, TString mysession, int smode,
 
 THaEtClient::~THaEtClient() {
    fStatus = codaClose();
-   if (fStatus == CODA_ERROR) cout << "ERROR: closing THaEtClient"<<endl<<flush;
+   if (fStatus == CODA_ERROR) std::cout << "ERROR: closing THaEtClient"<<std::endl<<std::flush;
 };
 
 void THaEtClient::initflags()
@@ -84,27 +84,31 @@ int THaEtClient::init() {
 int THaEtClient::init(TString mystation) 
 {
   if (CODA_VERBOSE) 
-    cout << "THaEtClient::init:  About to initialize ET."<<endl<<flush;
+    std::cout << "THaEtClient::init:  About to initialize ET."<<std::endl<<std::flush;
   char *station;
   station = new char[strlen(mystation.Data()+1)];
   strcpy(station,mystation.Data());
   et_open_config_init(&openconfig);
   et_open_config_sethost(openconfig, daqhost);
-  et_open_config_setmode(openconfig, ET_HOST_AS_REMOTE);
+  et_open_config_setmode(openconfig, ET_HOST_AS_LOCAL);
   et_open_config_setcast(openconfig, ET_DIRECT);
+  // Not using default port.  Instead ...
+  int port=4444;
+  et_open_config_setport(openconfig, port);
+
   if (CODA_VERBOSE) 
-    cout << "THaEtClient::init:  Opening ET..."<<endl<<flush;
+    std::cout << "THaEtClient::init:  Opening ET..."<<std::endl<<std::flush;
   if (et_open(&id, etfile, openconfig) != ET_OK) {
     notopened = 1;
-    cout << "THaEtClient: cannot open ET system"<<endl<<flush;
-    cout << "Likely causes:  "<<endl<<flush;
-    cout << "  1. Incorrect SESSION environment variable (it can also be passed to codaOpen)"<<endl<<flush;
-    cout << "  2. ET not running (CODA not running) on specified computer"<<endl<<flush;
+    std::cout << "THaEtClient: cannot open ET system"<<std::endl<<std::flush;
+    std::cout << "Likely causes:  "<<std::endl<<std::flush;
+    std::cout << "  1. Incorrect SESSION environment variable (it can also be passed to codaOpen)"<<std::endl<<std::flush;
+    std::cout << "  2. ET not running (CODA not running) on specified computer"<<std::endl<<std::flush;
     fStatus = CODA_ERROR;
     return fStatus;
   }
   if (CODA_VERBOSE) 
-    cout << "THaEtClient::init:  about to set ET config"<<endl<<flush;
+    std::cout << "THaEtClient::init:  about to set ET config"<<std::endl<<std::flush;
   et_open_config_destroy(openconfig);
   et_station_config_init(&sconfig);
   et_station_config_setuser(sconfig, ET_STATION_USER_MULTI);
@@ -115,42 +119,42 @@ int THaEtClient::init(TString mystation)
   et_station_config_setblock(sconfig, ET_STATION_NONBLOCKING);
   int status;
   if (CODA_VERBOSE) 
-    cout << "THaEtClient::init:  creating station"<<endl<<flush;
+    std::cout << "THaEtClient::init:  creating station"<<std::endl<<std::flush;
   if ((status = et_station_create(id, &my_stat, station, sconfig)) < ET_OK) {
       if (status == ET_ERROR_EXISTS) {        
           // ok 
       }
       else if (status == ET_ERROR_TOOMANY) {
-        cout << "THaEtClient: too many stations created"<<endl<<flush;
+        std::cout << "THaEtClient: too many stations created"<<std::endl<<std::flush;
 	fStatus = CODA_ERROR;
         return fStatus;
       }
       else if (status == ET_ERROR_REMOTE) {
-        cout << "THaEtClient: memory or improper arg problems"<<endl<<flush;
+        std::cout << "THaEtClient: memory or improper arg problems"<<std::endl<<std::flush;
 	fStatus = CODA_ERROR;
         return fStatus;
       }
       else if (status == ET_ERROR_READ) {
-        cout << "THaEtClient: network reading problem"<<endl<<flush;
+        std::cout << "THaEtClient: network reading problem"<<std::endl<<std::flush;
 	fStatus = CODA_ERROR;
         return fStatus;
       }
       else if (status == ET_ERROR_WRITE) {
-        cout << "THaEtClient: network writing problem"<<endl<<flush;
+        std::cout << "THaEtClient: network writing problem"<<std::endl<<std::flush;
 	fStatus = CODA_ERROR;
         return fStatus;
       }
       else {
-        cout << "THaEtClient: error in station creation"<<endl<<flush;
+        std::cout << "THaEtClient: error in station creation"<<std::endl<<std::flush;
 	fStatus = CODA_ERROR;
         return fStatus;
       }
   }
   et_station_config_destroy(sconfig);
   if (CODA_VERBOSE) 
-    cout << "THaEtClient::init:  attaching station"<<endl<<flush;
+    std::cout << "THaEtClient::init:  attaching station"<<std::endl<<std::flush;
   if (et_station_attach(id, my_stat, &my_att) < 0) {
-    cout << "THaEtClient: error in station attach"<<endl<<flush;
+    std::cout << "THaEtClient: error in station attach"<<std::endl<<std::flush;
     fStatus = CODA_ERROR;
     return fStatus;
   }
@@ -191,32 +195,32 @@ int THaEtClient::codaClose() {
       return fStatus;
     }
   if (my_att == 0) {
-     cout << "ERROR: codaClose: no attachment ?"<<endl<<flush;
+     std::cout << "ERROR: codaClose: no attachment ?"<<std::endl<<std::flush;
      fStatus = CODA_ERROR; 
      return fStatus;
   }
   if (CODA_VERBOSE) 
-    cout << "THaEtClient::codaClose:  detaching station "<<endl<<flush;
+    std::cout << "THaEtClient::codaClose:  detaching station "<<std::endl<<std::flush;
   fStatus = et_station_detach(id, my_att);
   if (fStatus != ET_OK) {
-    cout << "ERROR: codaClose: detaching from ET, status = "<<fStatus<<endl<<flush;
+    std::cout << "ERROR: codaClose: detaching from ET, status = "<<fStatus<<std::endl<<std::flush;
     fStatus = CODA_ERROR;
   }
   if (CODA_VERBOSE) 
-    cout << "THaEtClient::codaClose:  removing station "<<endl<<flush;
+    std::cout << "THaEtClient::codaClose:  removing station "<<std::endl<<std::flush;
   fStatus = et_station_remove(id, my_stat);
   if (fStatus != ET_OK) {
-    cout << "ERROR: codaClose: removing ET station, status = "<<fStatus<<endl<<flush;
+    std::cout << "ERROR: codaClose: removing ET station, status = "<<fStatus<<std::endl<<std::flush;
     fStatus = CODA_ERROR;
   }
   if (CODA_VERBOSE) 
-    cout << "THaEtClient::codaClose:  closing ET "<<endl<<flush;
+    std::cout << "THaEtClient::codaClose:  closing ET "<<std::endl<<std::flush;
   if (et_close(id) != ET_OK) {
-    cout << "ERROR: codaClose: error closing ET"<<endl<<flush;
+    std::cout << "ERROR: codaClose: error closing ET"<<std::endl<<std::flush;
     fStatus = CODA_ERROR;
   }
   if (CODA_VERBOSE) 
-    cout << "THaEtClient::codaClose:  all done "<<endl<<flush;
+    std::cout << "THaEtClient::codaClose:  all done "<<std::endl<<std::flush;
   return fStatus;
 };
 
@@ -246,7 +250,7 @@ int THaEtClient::codaRead() {
     firstread = 0;
     status = init();
     if (status == CODA_ERROR) {
-      cout << "THaEtClient: ERROR: codaRead, cannot connect to CODA"<<endl<<flush;
+      std::cout << "THaEtClient: ERROR: codaRead, cannot connect to CODA"<<std::endl<<std::flush;
       fStatus = CODA_EXIT;
       return fStatus;
     }
@@ -293,10 +297,10 @@ int THaEtClient::codaRead() {
          return fStatus;
       }
       if (CODA_DEBUG) {
-  	 cout<<"\n\n===== Event "<<j<<"  length "<<event_size<<endl<<flush;
+  	 std::cout<<"\n\n===== Event "<<j<<"  length "<<event_size<<std::endl<<std::flush;
 	 pdata = data;
          for (i=0; i < event_size; i++, pdata++) {
-           cout<<"evbuff["<<dec<<i<<"] = "<<*pdata<<" = 0x"<<hex<<*pdata<<endl<<flush;
+           std::cout<<"evbuff["<<std::dec<<i<<"] = "<<*pdata<<" = 0x"<<std::hex<<*pdata<<std::endl<<std::flush;
 	 }
       }
     }
@@ -333,8 +337,8 @@ int THaEtClient::codaRead() {
   memcpy((void *)evbuffer,(void *)data,lencpy);
   nused++;
   if (nbytes > bpi*MAXEVLEN) {
-      cout<<"\nET:codaRead:ERROR:  CODA event truncated"<<endl<<flush;
-      cout<<"-> Byte size exceeds bytes "<<bpi*MAXEVLEN<<endl<<flush;
+      std::cout<<"\nET:codaRead:ERROR:  CODA event truncated"<<std::endl<<std::flush;
+      std::cout<<"-> Byte size exceeds bytes "<<bpi*MAXEVLEN<<std::endl<<std::flush;
       fStatus = CODA_ERROR;
       return fStatus;
   }
@@ -343,9 +347,9 @@ int THaEtClient::codaRead() {
   if (nused >= nread) {
     err = et_events_put(id, my_att, evs, nread);
     if (err < ET_OK) {
-      cout<<"THaEtClient::codaRead: ERROR: calling et_events_put"<<endl<<flush;
-      cout<<"This is potentially very bad !!\n"<<endl<<flush;
-      cout<<"best not continue.... exiting... \n"<<endl<<flush;
+      std::cout<<"THaEtClient::codaRead: ERROR: calling et_events_put"<<std::endl<<std::flush;
+      std::cout<<"This is potentially very bad !!\n"<<std::endl<<std::flush;
+      std::cout<<"best not continue.... exiting... \n"<<std::endl<<std::flush;
       exit(1);
     }
   }
@@ -415,7 +419,7 @@ int THaEtClient::getheartbeat() {
   if(firstread) {
     status = init("hbstation");
     if(status == CODA_ERROR) {
-      cout << "THaEtClient: ERROR: cannot connect to CODA"<<endl<<flush;
+      std::cout << "THaEtClient: ERROR: cannot connect to CODA"<<std::endl<<std::flush;
       firstread=1;
       return 0;
     }
@@ -429,15 +433,15 @@ int THaEtClient::getheartbeat() {
   if(status == ET_OK) {
     return heartbeat;
   } else if (status == ET_ERROR) {    
-    cout << "THaEtClient: ERROR: heartbeat is NULL" << endl;
+    std::cout << "THaEtClient: ERROR: heartbeat is NULL" << std::endl;
     return 0;
   } else if (status == ET_ERROR_READ) {
     firstread=1;
-    cout << "THaEtClient: ERROR: Remote user's network read error" << endl;
+    std::cout << "THaEtClient: ERROR: Remote user's network read error" << std::endl;
     return 0;
   } else if (status == ET_ERROR_WRITE) {
     firstread=1;
-    cout << "THaEtClient: ERROR: Remote user's network write error" << endl;
+    std::cout << "THaEtClient: ERROR: Remote user's network write error" << std::endl;
     return 0;
   }
 

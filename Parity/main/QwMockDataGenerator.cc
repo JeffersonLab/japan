@@ -48,12 +48,14 @@ inline std::string stringify(int i) {
 
 int main(int argc, char* argv[])
 {
-  // First, we set the command line arguments and the configuration filename,
-  // and we define the options that can be used in them (using QwOptions).
-  gQwOptions.SetCommandLine(argc, argv);
-  gQwOptions.SetConfigFile("qwmockdataanalysis.conf");
   // Define the command line options
   DefineOptionsParity(gQwOptions);
+
+  ///  Without anything, print usage
+  if (argc == 1) {
+    gQwOptions.Usage();
+    exit(0);
+  }
 
   // Fill the search paths for the parameter files; this sets a static
   // variable within the QwParameterFile class which will be used by
@@ -62,6 +64,11 @@ int main(int argc, char* argv[])
   QwParameterFile::AppendToSearchPath(getenv_safe_string("QW_PRMINPUT"));
   QwParameterFile::AppendToSearchPath(getenv_safe_string("QWANALYSIS") + "/Analysis/prminput");
   QwParameterFile::AppendToSearchPath(getenv_safe_string("QWANALYSIS") + "/Parity/prminput");
+
+  // Set the command line arguments and the configuration filename,
+  // and we define the options that can be used in them (using QwOptions).
+  gQwOptions.SetCommandLine(argc, argv);
+  gQwOptions.SetConfigFile("qwmockdataanalysis.conf");
 
   // Event buffer
   QwEventBuffer eventbuffer;

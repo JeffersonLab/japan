@@ -33,20 +33,13 @@
 #include <netdb.h>
 #include "TString.h"
 
-using namespace std;
-
 // The ET memory file will have this prefix.  The suffix is $SESSION.
 #define ETMEM_PREFIX "/tmp/et_sys_"
 
 // Hall A computers that run CODA/ET
-#define ADAQL1 "129.57.164.53"
-#define ADAQL2 "129.57.164.59"
-#define ADAQEP "129.57.164.78"
-#define ADAQCP "129.57.164.79"
-#define ADAQS2 "129.57.164.44"
-#define ADAQS2 "129.57.164.44"
-#define ADAQS3 "129.57.164.45"
-
+#define ADAQ1 "129.57.192.102"
+#define ADAQ2 "129.57.192.103"
+#define ADAQ3 "129.57.192.104"
 
 class THaEtClient : public THaCodaData 
 {
@@ -54,7 +47,7 @@ class THaEtClient : public THaCodaData
 public:
 
     THaEtClient();                // Uses defaults
-    THaEtClient(int mode);        // By default, gets data from ADAQS2
+    THaEtClient(int mode);        // By default, gets data from ADAQ3
 // find data on 'computer'.  e.g. computer="129.57.164.44"
     THaEtClient(TString computer, int mode);  
     THaEtClient(TString computer, TString session, int mode);  
