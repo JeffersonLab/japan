@@ -24,6 +24,7 @@ if(NOT ROOT_CONFIG_EXEC)
   find_program(ROOT_CONFIG_EXEC root-config
     HINTS "${ROOTBIN}"
     DOC "ROOT configuration utility program"
+    NO_CMAKE_ENVIRONMENT_PATH 
     )
   unset(ROOTBIN)
 
@@ -122,7 +123,7 @@ set(targetlist)
 list(REMOVE_DUPLICATES ROOT_FIND_COMPONENTS)
 foreach(_lib IN LISTS ROOT_LIB_FLAGS ROOT_FIND_COMPONENTS)
   if(_lib MATCHES "^[A-Z].+")
-    find_library(ROOT_${_lib}_LIBRARY ${_lib} HINTS ${ROOT_LIBRARY_DIR})
+    find_library(ROOT_${_lib}_LIBRARY ${_lib} HINTS ${ROOT_LIBRARY_DIR} NO_CMAKE_ENVIRONMENT_PATH)
     mark_as_advanced(ROOT_${_lib}_LIBRARY)
     if(ROOT_${_lib}_LIBRARY)
       add_library(ROOT::${_lib} SHARED IMPORTED)
@@ -177,6 +178,7 @@ find_program(MK_ROOTDICT mk_rootdict.sh
     ${CMAKE_CURRENT_LIST_DIR}/..
   PATH_SUFFIXES scripts
   DOC "Wrapper script for ROOT dictionary generator"
+  NO_CMAKE_ENVIRONMENT_PATH
   )
 if(NOT MK_ROOTDICT)
   message(FATAL_ERROR
@@ -210,13 +212,13 @@ function(build_root_dictionary dictionary)
 
   if(DEFINED ROOT_VERSION AND DEFINED ROOTSYS)
     if(NOT ${ROOT_VERSION} VERSION_LESS 6)
-      find_program(ROOTCLING rootcling HINTS "${ROOTSYS}/bin")
+      find_program(ROOTCLING rootcling HINTS "${ROOTSYS}/bin" NO_CMAKE_ENVIRONMENT_PATH)
       if(NOT ROOTCLING)
 	message(FATAL_ERROR
 	  "root_generate_dictionary: Cannot find rootcling. Check ROOT installation.")
       endif()
     else()
-      find_program(ROOTCINT rootcint HINTS "${ROOTSYS}/bin")
+      find_program(ROOTCINT rootcint HINTS "${ROOTSYS}/bin" NO_CMAKE_ENVIRONMENT_PATH)
       if(NOT ROOTCINT)
 	message(FATAL_ERROR
 	  "root_generate_dictionary: Cannot find rootcint. Check ROOT installation.")

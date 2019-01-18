@@ -114,6 +114,13 @@ report_build_info()
 add_subdirectory(evio)
 include_directories(evio/include)
 
+find_package(ET)
+IF(ET_FOUND)
+  #  The QwEventBuffer class also needs to see the "__CODA_ET" define,
+  #  not just the EVIO library.
+  add_definitions(-D__CODA_ET)
+ENDIF(ET_FOUND)
+
 #----------------------------------------------------------------------------
 # main dictionaries
 #
