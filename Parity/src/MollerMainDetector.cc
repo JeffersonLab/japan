@@ -158,6 +158,7 @@ Int_t MollerMainDetector::LoadChannelMap(TString mapfile)
   mapstr.SetCommentChars("!");
 
   UInt_t value;
+  size_t vqwk_buffer_offset;
 
   while (mapstr.ReadNextLine())
     {
@@ -165,6 +166,10 @@ Int_t MollerMainDetector::LoadChannelMap(TString mapfile)
       if (mapstr.PopValue("sample_size",value)) {
 	sample_size=value;
       }
+      if (mapstr.PopValue("vqwk_buffer_offset",value)) {
+	vqwk_buffer_offset=value;
+      }
+      
       mapstr.TrimComment('!');   // Remove everything after a '!' character.
       mapstr.TrimWhitespace();   // Get rid of leading and trailing spaces.
       if (mapstr.LineIsEmpty())  continue;
@@ -235,7 +240,7 @@ Int_t MollerMainDetector::LoadChannelMap(TString mapfile)
 
 	  //          localMainDetID.fWordInSubbank=wordsofar;
           if (modtype=="VQWK"){
-	    Int_t offset = QwVQWK_Channel::GetBufferOffset(modnum, channum);
+	    Int_t offset = QwVQWK_Channel::GetBufferOffset(modnum, channum)+vqwk_buffer_offset;
 	    if (offset>=0){
 	      localMainDetID.fWordInSubbank = wordsofar + offset;
 	    }
