@@ -50,6 +50,8 @@ Doxygen/html
 *.root
 *.db
 *.png
+*.pdf
+*.ps
 
 #tmp files
 *~
