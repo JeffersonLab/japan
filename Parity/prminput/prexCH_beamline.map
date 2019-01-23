@@ -1,9 +1,9 @@
 
 ROC=23
-MarkerWord=0xff902902
-!!!Bank=0x3102
+Bank=0x05
+vqwk_buffer_offset = 1
 !same sample size for ADCs in a given bank
-sample_size=464
+sample_size=16564
 !Sample size should be unchanged - ask Paul King
 !
 ! module.type, module.num  chan.num, det.type, det.name, if unrotated then last column ->UNROTATED
@@ -62,4 +62,4 @@ sample_size=464
 
 [PUBLISH]
 ! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
-  q_targ, bcm, BCM_US, c
+  q_targ, bcm, bcm_us, c
