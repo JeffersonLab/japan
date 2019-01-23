@@ -215,6 +215,14 @@ foreach(file ${exefiles})
   )
 endforeach()
 
+#----------------------------------------------------------------------------
+#  Build feedback library and executable
+add_subdirectory(Feedback)
+#add_executable(feedback ${CMAKE_CURRENT_SOURCE_DIR}/Feedback/main/QwFeedback.cc)
+#target_link_libraries(feedback Qwfeedback)
+
+
+
 
 #----------------------------------------------------------------------------
 # uninstall

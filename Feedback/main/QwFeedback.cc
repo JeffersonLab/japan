@@ -35,7 +35,6 @@
 #include "QwFakeHelicity.h"
 #include "QwBeamLine.h"
 #include "QwMainCerenkovDetector.h"
-#include "QwScanner.h"
 #include "QwLumi.h"
 #include "QwBeamMod.h"
 #include "QwVQWK_Channel.h"
@@ -224,12 +223,6 @@ Int_t main(Int_t argc, Char_t* argv[])
 	failed_events_counts++;
       }
 
-      // Burst mode
-      if (eventbuffer.IsEndOfBurst()) {
-        helicitypattern.AccumulateRunningBurstSum();
-        helicitypattern.CalculateBurstAverage();
-        helicitypattern.ClearBurstSum();
-      } 
 
       
 
@@ -246,7 +239,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
 
     //  Print the event cut error summery for each subsystem
-    detectors.GetEventcutErrorCounters();
+    //    detectors.GetEventcutErrorCounters();
 
 
     //  Read from the datebase
