@@ -1,0 +1,19 @@
+# This is an example of a detector definition file.
+
+[QwBeamLine]
+ name = Injector
+ map      = prexOLD_inj_beamline.map
+ geom     = prexinj_beamline_geometry.map
+ eventcut = prexinj_beamline_eventcuts.map
+ param    = prexinj_beamline_pedestal.map
+
+[QwHelicity]
+ name = Helicity info
+ map = prexOLD_inj_helicity.map
+
+[QwBeamLine]
+ name = CountingHouse
+ map      = prexOLD_CH_beamline.map
+ geom     = prexCH_beamline_geometry.map
+ eventcut = prexCH_beamline_eventcuts.map
+ param    = prexCH_beamline_pedestal.map
