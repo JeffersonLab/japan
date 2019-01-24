@@ -18,16 +18,16 @@
 #include "VQwSubsystemParity.h"
 #include "QwIntegrationPMT.h"
 #include "QwCombinedPMT.h"
-#include "QwDetectorArray.h"
-
 
 // Forward declarations
 class QwBlinder;
 class QwBlindDetectorArrayID;
 
 
-class QwBlindDetectorArray: public QwDetectorArray {
-
+class QwBlindDetectorArray:
+    public VQwSubsystemParity,
+    public MQwSubsystemCloneable<QwBlindDetectorArray>
+{
   friend class QwCombinedPMT;
   /******************************************************************
    *  Class: QwBlindDetectorArray
@@ -41,7 +41,7 @@ class QwBlindDetectorArray: public QwDetectorArray {
  public:
   /// Constructor with name
   QwBlindDetectorArray(const TString& name)
-  : QwDetectorArray(name)
+  : VQwSubsystem(name),VQwSubsystemParity(name),bNormalization(kFALSE)
   {
     fTargetCharge.InitializeChannel("q_targ","derived");
     fTargetX.InitializeChannel("x_targ","derived");
@@ -52,7 +52,7 @@ class QwBlindDetectorArray: public QwDetectorArray {
   };
   /// Copy constructor
   QwBlindDetectorArray(const QwBlindDetectorArray& source)
-  : QwDetectorArray(source),
+  : VQwSubsystem(source),VQwSubsystemParity(source),
     fIntegrationPMT(source.fIntegrationPMT),
     fCombinedPMT(source.fCombinedPMT),
     fMainDetID(source.fMainDetID)

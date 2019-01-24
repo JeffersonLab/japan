@@ -228,14 +228,14 @@ Int_t QwCombinerSubsystem::LoadEventCuts(TString)
   
 }
 
-Int_t QwCombinerSubsystem::ProcessConfigurationBuffer(UInt_t, UInt_t, UInt_t*, UInt_t)
+Int_t QwCombinerSubsystem::ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   Int_t sample = 0;
   return sample;
 }
 
 
-Int_t QwCombinerSubsystem::ProcessEvBuffer(UInt_t, UInt_t, UInt_t*, UInt_t)
+Int_t QwCombinerSubsystem::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   Int_t sample = 0;
   return sample;

@@ -182,35 +182,21 @@ Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
   TString varname, varvalue;
 
   fDetectorMaps.insert(mapstr.GetParamFileNameContents());
+  mapstr.EnableGreediness();
+  mapstr.SetCommentChars("!");
+
+  UInt_t value;
+
   while (mapstr.ReadNextLine())
     {
+      RegisterRocBankMarker(mapstr);
+      if (mapstr.PopValue("sample_size",value)) {
+	sample_size=value;
+      }
       mapstr.TrimComment('!');   // Remove everything after a '!' character.
       mapstr.TrimWhitespace();   // Get rid of leading and trailing spaces.
       if (mapstr.LineIsEmpty())  continue;
 
-      if (mapstr.HasVariablePair("=",varname,varvalue))
-        {
-          //  This is a declaration line.  Decode it.
-          varname.ToLower();
-          UInt_t value = QwParameterFile::GetUInt(varvalue);
-
-          if (varname=="roc")
-            {
-              currentrocread=value;
-              RegisterROCNumber(value,0);
-            }
-          else if (varname=="bank")
-            {
-              currentbankread=value;
-              RegisterSubbank(value);
-            }
-          else if (varname=="sample_size")
-            {
-              sample_size=value;
-            }
-        }
-      else
-        {
           Bool_t  lineok   = kTRUE;
 	  TString keyword  = "";
 	  TString keyword2 = "";
@@ -263,9 +249,9 @@ Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
             }
 
 
-          if (currentsubbankindex!=GetSubbankIndex(currentrocread,currentbankread))
+          if (currentsubbankindex!=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID))
             {
-              currentsubbankindex=GetSubbankIndex(currentrocread,currentbankread);
+              currentsubbankindex=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID);
               wordsofar=0;
             }
 
@@ -359,9 +345,7 @@ Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
 
           if (lineok)
             fMainDetID.push_back(localMainDetID);
-        }
-    }
-
+    } // End of "while (mapstr.ReadNextLine())"
 
   //std::cout<<"linking combined channels"<<std::endl;
 
@@ -739,7 +723,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
  
 }
 
-Int_t QwBlindDetectorArray::ProcessConfigurationBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwBlindDetectorArray::ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
 
   /*  Int_t index = GetSubbankIndex(roc_id,bank_id);
@@ -755,7 +739,7 @@ Int_t QwBlindDetectorArray::ProcessConfigurationBuffer(const UInt_t roc_id, cons
 }
 
 
-Int_t QwBlindDetectorArray::ProcessEvBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwBlindDetectorArray::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   Bool_t lkDEBUG=kFALSE;
 

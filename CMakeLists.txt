@@ -38,6 +38,10 @@ file(GLOB my_project_headers
   ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/include/*.h
   ${CMAKE_CURRENT_SOURCE_DIR}/Parity/include/*.h
   )
+list(REMOVE_ITEM my_project_headers
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/include/QwSIS3320_Samples.h
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/include/QwF1TDContainer.h
+)
 file(GLOB my_project_sources
 #  ###  ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/src/*.cc
 #  ${CMAKE_CURRENT_SOURCE_DIR}/Parity/src/*.cc
@@ -82,7 +86,7 @@ list(APPEND my_project_sources
   ${CMAKE_CURRENT_SOURCE_DIR}/Parity/src/QwBCM.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/Parity/src/QwBeamDetectorID.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/Parity/src/QwBeamLine.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/Parity/src/QwBeamMod.cc
+#  ${CMAKE_CURRENT_SOURCE_DIR}/Parity/src/QwBeamMod.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/Parity/src/QwBlinder.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/Parity/src/QwBPMCavity.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/Parity/src/QwBPMStripline.cc

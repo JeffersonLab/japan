@@ -18,7 +18,7 @@ combinedbpm,      bpm_target,     ypos          0.0e-2,       0.0,          1.0e
 combinedbpm,      bpm_target,     xslope        0.0e-6,       0.0,          1.0e-7
 combinedbpm,      bpm_target,     yslope        0.0e-6,       0.0,          1.0e-7
 
-CombinedBPM drifts              	      amplitude (abs), phase shift (rad), frequency (Hz)
+!  CombinedBPM drifts              	      amplitude (abs), phase shift (rad), frequency (Hz)
 combinedbpm,      bpm_target,     xpos      drift     1.0e-2,      0.456,        29.0
 combinedbpm,      bpm_target,     ypos      drift     1.0e-2,      0.456,        37.0
 combinedbpm,      bpm_target,     xslope    drift     3.0e-6,      0.654,        41.0

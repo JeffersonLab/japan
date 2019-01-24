@@ -18,9 +18,6 @@
 #include "QwOptions.h"
 
 // Qweak headers
-//#include "QwMainCerenkovDetector.h"
-#include "MollerMainDetector.h"
-#include "QwLumi.h"
 #include "QwEventRing.h"
 #include "QwHelicity.h"
 #include "QwHelicityPattern.h"
@@ -39,10 +36,7 @@ void DefineOptionsParity(QwOptions& options)
   QwOptions::DefineOptions(options);
 
   /* Define parity options */
-  //  QwMainCerenkovDetector::DefineOptions(options);
   QwDetectorArray::DefineOptions(options);
-  MollerMainDetector::DefineOptions(options);
-  QwLumi::DefineOptions(options);
   QwEventRing::DefineOptions(options);
   QwHelicity::DefineOptions(options);
   QwHelicityPattern::DefineOptions(options);
