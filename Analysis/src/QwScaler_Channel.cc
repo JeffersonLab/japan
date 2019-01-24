@@ -21,6 +21,7 @@ const Bool_t VQwScaler_Channel::kDEBUG = kFALSE;
 void  VQwScaler_Channel::InitializeChannel(TString name, TString datatosave)
 {
   fNormChannelPtr = NULL;
+  fNeedsExternalClock = kFALSE;
   fIsDifferentialScaler = false;
 
   SetElementName(name);

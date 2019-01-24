@@ -906,6 +906,9 @@ void  MollerMainDetector::ExchangeProcessedData()
 	      << fTargetCharge.GetElementName() << QwLog::endl;
     }
     
+    /*  KLUDGE:  comment this out for now, to avoid warnings on apar@adaq analysis.
+     *           This maybe should be shifted into the Randomize function anyway...
+     *           pking; 20190124.
     if(RequestExternalValue("x_targ", &fTargetX)){
       if (bDEBUG){
 	dynamic_cast<QwVQWK_Channel*>(&fTargetX)->PrintInfo();
@@ -960,7 +963,9 @@ void  MollerMainDetector::ExchangeProcessedData()
       QwError << GetSubsystemName() << " could not get external value for "
 	      << fTargetEnergy.GetElementName() << QwLog::endl;
     }
-    
+    ***  End of KLUDGE-20190124
+    */
+
   // Print targetX and targetY and compare them with those from the rootfile, e.g. "Scan()"
   // std::cout << fTargetCharge <<" "<< fTargetX<<" "<< fTargetY<<" "<< fTargetXprime<<" "<< fTargetYprime<<" "<< fTargetEnergy << std::endl;
 
