@@ -54,10 +54,12 @@ IF(EPICS_FOUND)
   PRIVATE
     ${${PROJECT_NAME_UC}_DIAG_FLAGS_LIST}
   )
+message (STATUS "${EPICS_CA_LIBRARY} ${EPICS_CAS_LIBRARY} ${EPICS_COM_LIBRARY} ${EPICS_GDD_LIBRARY}")
 target_link_libraries(QwFeedback
   PUBLIC
     EVIO::ET
     ROOT::Libraries
+    ${PROJECT_NAME}
     ${EPICS_CA_LIBRARY} ${EPICS_CAS_LIBRARY} ${EPICS_COM_LIBRARY} ${EPICS_GDD_LIBRARY}
   )
 
@@ -67,6 +69,37 @@ install(TARGETS QwFeedback
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   )
+
+
+file(GLOB exefiles
+  main/*.cc
+) 
+foreach(file ${exefiles})
+  get_filename_component(filename ${file} NAME_WE)
+  string(TOLOWER ${filename} filelower)
+
+  add_executable(${filelower} ${file})
+
+  target_link_libraries(${filelower}
+    PRIVATE
+      QwFeedback
+      ${PROJECT_NAME}
+  )
+  target_compile_options(${filelower}
+    PUBLIC
+      ${${PROJECT_NAME_UC}_CXX_FLAGS_LIST}
+    PRIVATE
+      ${${PROJECT_NAME_UC}_DIAG_FLAGS_LIST}
+  )
+  if(${CMAKE_SYSTEM_NAME} MATCHES Linux)
+    target_compile_options(${filelower} PUBLIC -fPIC)
+  endif()
+
+  install(TARGETS ${filelower}
+    DESTINATION ${CMAKE_INSTALL_BINDIR}
+  )
+endforeach()
+
 
 install(FILES ${my_feedback_headers} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
