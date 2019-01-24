@@ -42,8 +42,6 @@
 #include "QwLog.h"
 #include "QwHistogramHelper.h"
 
-using namespace std;
-
 // Ugly, should go inside functions, seems undefined for running sum
 Int_t notGood=0,myrun;
 
@@ -177,8 +175,8 @@ Int_t QwComptonElectronDetector::LoadChannelMap(TString mapfile)
 	} // end of switch (dettype)
 	else {
 	  notGood=notGood+1;
-	  cout<<"***found an undefined data type "<<notGood<<" times"<<endl;
-	  cout<<"dettype: "<<dettype<<endl;
+	  std::cout<<"***found an undefined data type "<<notGood<<" times"<<std::endl;
+	  std::cout<<"dettype: "<<dettype<<std::endl;
 	}
       } // end of switch (modtype)
     } // end of if for token line
@@ -1055,14 +1053,14 @@ void  QwComptonElectronDetector::FillTree()
 void  QwComptonElectronDetector::PrintValue() const
 {//!?what does this do?
   string path = getenv_safe_string("QW_TMP") + "/" + "edet_asym";
-  stringstream ss; ss << myrun;
+  std::stringstream ss; ss << myrun;
   string str = ss.str();
   path += "_" + str + ".txt";
 
   static Int_t edet_count = 0;
   edet_count++;
   
-  ofstream myfile;
+  std::ofstream myfile;
   if(edet_count == 1) {
     QwOut << " " << QwLog::endl;
     QwOut << " Address =  " << path << QwLog::endl;
@@ -1071,7 +1069,7 @@ void  QwComptonElectronDetector::PrintValue() const
     myfile.open (path.c_str());
   } 
   else { 
-    myfile.open (path.c_str(),ios::app);
+    myfile.open (path.c_str(),std::ios::app);
   }
   
   Int_t nchan =0;
@@ -1081,7 +1079,7 @@ void  QwComptonElectronDetector::PrintValue() const
   
   for (Int_t j=0; j<StripsPerPlane; j++) {
     myfile <<  j << " " << fGoodEventCount*fStripsRaw[0][j] << " " << fGoodEventCount*fStripsRaw[1][j] << " " <<
-      fGoodEventCount*fStripsRaw[2][j] << " " << fGoodEventCount*fStripsRaw[3][j] << endl;
+      fGoodEventCount*fStripsRaw[2][j] << " " << fGoodEventCount*fStripsRaw[3][j] << std::endl;
   }
   myfile.close();  
   return;

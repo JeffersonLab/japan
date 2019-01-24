@@ -166,6 +166,8 @@ class QwEventBuffer: public MQwCodaControlEvent{
   TString fETSession;
   TString fETStationName;
 
+  Bool_t fAllowLowSubbankIDs;
+
   Bool_t fChainDataFiles;
   std::pair<Int_t, Int_t> fRunRange;
   std::string fRunListFileName;
