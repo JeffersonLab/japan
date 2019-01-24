@@ -10,3 +10,7 @@
 [QwHelicity]
  name = Helicity info
  map = prexCH_helicity.map
+
+[QwScaler]
+  name  = SyncScalers
+  map  = prexCH_scaler.map

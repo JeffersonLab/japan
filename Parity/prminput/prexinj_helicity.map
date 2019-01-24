@@ -29,7 +29,7 @@ InputRegMask_FakeMPS=0   !!!  Do not use a input register bit to indicate a "fak
 ! If patternPhase!=4, then also set the NumberPatternsDelayed
 ! so the reported helicity is delayed by 8 windows (default 2).
 !NumberPatternsDelayed=4
-PatternPhase=8
+PatternPhase=4
 
 
 
