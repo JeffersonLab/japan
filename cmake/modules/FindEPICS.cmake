@@ -6,18 +6,22 @@
 
 find_library(EPICS_CA_LIBRARY ca
   PATHS /adaqfs/apps/epics/lib/linux-x86_64
+  NO_DEFAULT_PATH
   DOC "EPICS CA library"
   )
 find_library(EPICS_CAS_LIBRARY cas
   PATHS /adaqfs/apps/epics/lib/linux-x86_64
+  NO_DEFAULT_PATH
   DOC "EPICS CAS library"
   )
 find_library(EPICS_COM_LIBRARY Com
   PATHS /adaqfs/apps/epics/lib/linux-x86_64
+  NO_DEFAULT_PATH
   DOC "EPICS COM library"
   )
 find_library(EPICS_GDD_LIBRARY gdd
   PATHS /adaqfs/apps/epics/lib/linux-x86_64
+  NO_DEFAULT_PATH
   DOC "EPICS GDD library"
   )
 #  Needs to build this line: -L/adaqfs/apps/epics/lib/linux-x86_64 -lca -lcas -lCom -lgdd 
