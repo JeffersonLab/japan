@@ -215,6 +215,9 @@ foreach(file ${exefiles})
   )
 endforeach()
 
+#----------------------------------------------------------------------------
+#  Build feedback library and executable
+add_subdirectory(Feedback)
 
 #----------------------------------------------------------------------------
 # uninstall
