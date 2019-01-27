@@ -157,7 +157,7 @@ Bool_t QwBlindDetectorArray::PublishByRequest(TString device_name)
     break;
   }
   if (!status)  
-    QwError << "QwLumi::PublishByRequest:  Failed to publish channel name:  " << device_name << QwLog::endl;
+    QwError << "QwBlindDetectorArray::PublishByRequest:  Failed to publish channel name:  " << device_name << QwLog::endl;
   return status;
 }
 
@@ -186,12 +186,16 @@ Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
   mapstr.SetCommentChars("!");
 
   UInt_t value;
+  size_t vqwk_buffer_offset = 0;
 
   while (mapstr.ReadNextLine())
     {
       RegisterRocBankMarker(mapstr);
       if (mapstr.PopValue("sample_size",value)) {
 	sample_size=value;
+      }
+      if (mapstr.PopValue("vqwk_buffer_offset",value)) {
+	vqwk_buffer_offset=value;
       }
       mapstr.TrimComment('!');   // Remove everything after a '!' character.
       mapstr.TrimWhitespace();   // Get rid of leading and trailing spaces.
@@ -263,7 +267,7 @@ Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
 
 	  //          localMainDetID.fWordInSubbank=wordsofar;
           if (modtype=="VQWK"){
-	    Int_t offset = QwVQWK_Channel::GetBufferOffset(modnum, channum);
+	    Int_t offset = QwVQWK_Channel::GetBufferOffset(modnum, channum)+vqwk_buffer_offset;
 	    if (offset>=0){
 	      localMainDetID.fWordInSubbank = wordsofar + offset;
 	    }
@@ -715,6 +719,61 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
   fTargetYprime.PrintInfo();
   fTargetEnergy.PrintInfo();*/
 
+  if(RequestExternalValue("x_targ", &fTargetX)){
+    if (bDEBUG){
+      dynamic_cast<QwVQWK_Channel*>(&fTargetX)->PrintInfo();
+      QwWarning << "QwBlindDetectorArray::RandomizeMollerEvent Found "<<fTargetX.GetElementName()<< QwLog::endl;  
+    }    
+  }else{
+    bIsExchangedDataValid = kFALSE;
+    QwError << GetSubsystemName() << " could not get external value for "
+	    << fTargetX.GetElementName() << QwLog::endl;
+  }
+
+  if(RequestExternalValue("y_targ", &fTargetY)){
+    if (bDEBUG){
+      dynamic_cast<QwVQWK_Channel*>(&fTargetY)->PrintInfo();
+      QwWarning << "QwBlindDetectorArray::RandomizeMollerEvent Found "<<fTargetY.GetElementName()<< QwLog::endl;
+    }
+  }else{
+    bIsExchangedDataValid = kFALSE;
+    QwError << GetSubsystemName() << " could not get external value for "
+	    << fTargetY.GetElementName() << QwLog::endl;
+  }
+
+  if(RequestExternalValue("xp_targ", &fTargetXprime)){
+    if (bDEBUG){
+      dynamic_cast<QwVQWK_Channel*>(&fTargetXprime)->PrintInfo();
+      QwWarning << "QwBlindDetectorArray::RandomizeMollerEvent Found "<<fTargetXprime.GetElementName()<< QwLog::endl;
+    }
+  }else{
+    bIsExchangedDataValid = kFALSE;
+    QwError << GetSubsystemName() << " could not get external value for "
+	    << fTargetXprime.GetElementName() << QwLog::endl;
+  }
+  
+  if(RequestExternalValue("yp_targ", &fTargetYprime)){
+    if (bDEBUG){
+      dynamic_cast<QwVQWK_Channel*>(&fTargetYprime)->PrintInfo();
+      QwWarning << "QwBlindDetectorArray::RandomizeMollerEvent Found "<<fTargetYprime.GetElementName()<< QwLog::endl;
+    }
+  }else{
+    bIsExchangedDataValid = kFALSE;
+    QwError << GetSubsystemName() << " could not get external value for "
+	    << fTargetYprime.GetElementName() << QwLog::endl;
+  }
+  
+  if(RequestExternalValue("e_targ", &fTargetEnergy)){
+    if (bDEBUG){
+      dynamic_cast<QwVQWK_Channel*>(&fTargetEnergy)->PrintInfo();
+      QwWarning << "QwBlindDetectorArray::RandomizeMollerEvent Found "<<fTargetEnergy.GetElementName()<< QwLog::endl;
+    }
+  }else{
+    bIsExchangedDataValid = kFALSE;
+    QwError << GetSubsystemName() << " could not get external value for "
+	    << fTargetEnergy.GetElementName() << QwLog::endl;
+  }
+    
   for (size_t i = 0; i < fMainDetID.size(); i++) 
    {
      fIntegrationPMT[i].RandomizeMollerEvent(helicity, fTargetCharge, fTargetX, fTargetY, fTargetXprime, fTargetYprime, fTargetEnergy);
@@ -928,66 +987,6 @@ void  QwBlindDetectorArray::ExchangeProcessedData()
 	      << fTargetCharge.GetElementName() << QwLog::endl;
     }
     
-    if(RequestExternalValue("x_targ", &fTargetX)){
-      if (bDEBUG){
-	dynamic_cast<QwVQWK_Channel*>(&fTargetX)->PrintInfo();
-	QwWarning << "QwBlindDetectorArray::ExchangeProcessedData Found "<<fTargetX.GetElementName()<< QwLog::endl;  
-      }    
-    }else{
-      bIsExchangedDataValid = kFALSE;
-      QwError << GetSubsystemName() << " could not get external value for "
-	      << fTargetX.GetElementName() << QwLog::endl;
-    }
-
-    if(RequestExternalValue("y_targ", &fTargetY)){
-      if (bDEBUG){
-	dynamic_cast<QwVQWK_Channel*>(&fTargetY)->PrintInfo();
-	QwWarning << "QwBlindDetectorArray::ExchangeProcessedData Found "<<fTargetY.GetElementName()<< QwLog::endl;
-      }
-    }else{
-      bIsExchangedDataValid = kFALSE;
-      QwError << GetSubsystemName() << " could not get external value for "
-	      << fTargetY.GetElementName() << QwLog::endl;
-    }
-
-    if(RequestExternalValue("xp_targ", &fTargetXprime)){
-      if (bDEBUG){
-	dynamic_cast<QwVQWK_Channel*>(&fTargetXprime)->PrintInfo();
-	QwWarning << "QwBlindDetectorArray::ExchangeProcessedData Found "<<fTargetXprime.GetElementName()<< QwLog::endl;
-      }
-    }else{
-      bIsExchangedDataValid = kFALSE;
-      QwError << GetSubsystemName() << " could not get external value for "
-	      << fTargetXprime.GetElementName() << QwLog::endl;
-    }
-
-    if(RequestExternalValue("yp_targ", &fTargetYprime)){
-      if (bDEBUG){
-	dynamic_cast<QwVQWK_Channel*>(&fTargetYprime)->PrintInfo();
-	QwWarning << "QwBlindDetectorArray::ExchangeProcessedData Found "<<fTargetYprime.GetElementName()<< QwLog::endl;
-      }
-    }else{
-      bIsExchangedDataValid = kFALSE;
-      QwError << GetSubsystemName() << " could not get external value for "
-	      << fTargetYprime.GetElementName() << QwLog::endl;
-    }
-
-    if(RequestExternalValue("e_targ", &fTargetEnergy)){
-      if (bDEBUG){
-	dynamic_cast<QwVQWK_Channel*>(&fTargetEnergy)->PrintInfo();
-	QwWarning << "QwBlindDetectorArray::ExchangeProcessedData Found "<<fTargetEnergy.GetElementName()<< QwLog::endl;
-      }
-    }else{
-      bIsExchangedDataValid = kFALSE;
-      QwError << GetSubsystemName() << " could not get external value for "
-	      << fTargetEnergy.GetElementName() << QwLog::endl;
-    }
-    
-  // Print targetX and targetY and compare them with those from the rootfile, e.g. "Scan()"
-  // std::cout << fTargetCharge <<" "<< fTargetX<<" "<< fTargetY<<" "<< fTargetXprime<<" "<< fTargetYprime<<" "<< fTargetEnergy << std::endl;
-
-//  std::cout << "TargetX = " << std::setprecision(15) << fTargetX << "\t TargetY = " << std::setprecision(15) << fTargetY << std::endl;
-    
   }
 }
 
@@ -1107,7 +1106,7 @@ const QwIntegrationPMT* QwBlindDetectorArray::GetChannel(const TString name) con
 
 Bool_t QwBlindDetectorArray::Compare(VQwSubsystem *value)
 {
-  //  std::cout<<" Here in QwLumi::Compare \n";
+  //  std::cout<<" Here in QwBlindDetectorArray::Compare \n";
 
   Bool_t res=kTRUE;
   if (typeid(*value)!=typeid(*this))

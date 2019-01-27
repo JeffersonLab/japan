@@ -26,6 +26,7 @@
 #include "QwCombiner.h"
 #include "QwCorrelator.h"
 #include "QwDetectorArray.h"
+#include "QwBlindDetectorArray.h"
 
 #ifdef __USE_DATABASE__
 #include "QwParityDB.h"
@@ -37,6 +38,7 @@ void DefineOptionsParity(QwOptions& options)
 
   /* Define parity options */
   QwDetectorArray::DefineOptions(options);
+  QwBlindDetectorArray::DefineOptions(options);
   QwEventRing::DefineOptions(options);
   QwHelicity::DefineOptions(options);
   QwHelicityPattern::DefineOptions(options);

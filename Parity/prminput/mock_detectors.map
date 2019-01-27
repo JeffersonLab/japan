@@ -11,10 +11,10 @@
  map   = mock_qweak_beamline.map
  param = mock_qweak_pedestal.map
  geom  = mock_beamline_geometry.map
-
+ eventcut = mock_beamline_eventcuts.map
 
 [QwDetectorArray]
  name  = Main Detector
  map   = mock_moller_maindet_adc.map
  param = mock_moller_maindet_pedestal.map
-
+ eventcut = mock_moller_maindet_eventcuts.map

@@ -124,11 +124,11 @@ Int_t QwBeamLine::LoadChannelMap(TString mapfile)
   mapstr.AddBreakpointKeyword("begin");
   mapstr.AddBreakpointKeyword("end");
 
-  Int_t buffer_offset; /*  Allow some extra words at the start of a bank.
-			*  The buffer_offset value will be reset at the
-			*  start of each ROC or bank declaration, so should
-			*  be relisted for each bank.
-			*/
+  Int_t buffer_offset = 0; /*  Allow some extra words at the start of a bank.
+			    *  The buffer_offset value will be reset at the
+			    *  start of each ROC or bank declaration, so should
+			    *  be relisted for each bank.
+			    */
   while (mapstr.ReadNextLine() && mapstr.SkipSection("PUBLISH")) {
     RegisterRocBankMarker(mapstr);
     //  Remove the "vqwk_buffer_offset" and "scaler_buffer_offset"
@@ -437,12 +437,10 @@ Int_t QwBeamLine::LoadEventCuts(TString  filename)
   // Open the file
   QwParameterFile mapstr(filename.Data());
   fDetectorMaps.insert(mapstr.GetParamFileNameContents());
-  int testval = 0;
   while (mapstr.ReadNextLine()){
-    testval++;
     mapstr.TrimComment('!');   // Remove everything after a '!' character.
     mapstr.TrimWhitespace();   // Get rid of leading and trailing spaces.
-    if (mapstr.LineIsEmpty())  {QwMessage << "" << testval << QwLog::endl; continue;}
+    if (mapstr.LineIsEmpty())  {continue;}
 
     TString varname, varvalue;
     if (mapstr.HasVariablePair("=",varname,varvalue)){
