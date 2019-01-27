@@ -2,7 +2,7 @@ ROC=25
 Bank=0x5
 vqwk_buffer_offset=1
 
-sample_size=16564
+sample_size=8000
 !
 !  Force all channels to be "not_blindable" during testing
 !

@@ -4,7 +4,7 @@ Bank=0x02
 vqwk_buffer_offset=1
 
 !same sample size for ADCs in a given bank
-sample_size=16644
+sample_size=16564
 !
 !
 ! module.type, module.num  chan.num, det.type, det.name
