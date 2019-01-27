@@ -1,5 +1,5 @@
 /**********************************************************\
-* File: MollerMainDetector.h                           *
+* File: QwDetectorArray.h                                  *
 *                                                          *
 * Author: P. M. King                                       *
 * Time-stamp: <2007-05-08 15:40>                           *
@@ -8,8 +8,8 @@
 ///
 /// \ingroup QwAnalysis_ADC
 
-#ifndef __MOLLERMAINDETECTOR__
-#define __MOLLERMAINDETECTOR__
+#ifndef __QWDETECTORARRAY__
+#define __QWDETECTORARRAY__
 
 // System headers
 #include <vector>
@@ -21,27 +21,26 @@
 
 
 // Forward declarations
-class QwBlinder;
-class MollerMainDetectorID;
+class QwDetectorArrayID;
 
 
-class MollerMainDetector:
+class QwDetectorArray:
     public VQwSubsystemParity,
-    public MQwSubsystemCloneable<MollerMainDetector>
+    public MQwSubsystemCloneable<QwDetectorArray>
 {
   friend class QwCombinedPMT;
   /******************************************************************
-   *  Class: MollerMainDetector
+   *  Class: QwDetectorArray
    *
    *
    ******************************************************************/
  private:
   /// Private default constructor (not implemented, will throw linker error on use)
-  MollerMainDetector();
+  QwDetectorArray();
 
  public:
   /// Constructor with name
-  MollerMainDetector(const TString& name)
+  QwDetectorArray(const TString& name)
   : VQwSubsystem(name),VQwSubsystemParity(name),bNormalization(kFALSE)
   {
     fTargetCharge.InitializeChannel("q_targ","derived");
@@ -52,13 +51,14 @@ class MollerMainDetector:
     fTargetEnergy.InitializeChannel("e_targ","derived");
   };
   /// Copy constructor
-  MollerMainDetector(const MollerMainDetector& source)
+  QwDetectorArray(const QwDetectorArray& source)
   : VQwSubsystem(source),VQwSubsystemParity(source),
     fIntegrationPMT(source.fIntegrationPMT),
-    fCombinedPMT(source.fCombinedPMT)
+    fCombinedPMT(source.fCombinedPMT),
+    fMainDetID(source.fMainDetID)
   { }
   /// Virtual destructor
-  virtual ~MollerMainDetector() { };
+  virtual ~QwDetectorArray() { };
 
   /*  Member functions derived from VQwSubsystemParity. */
 
@@ -89,8 +89,8 @@ class MollerMainDetector:
   void  ExchangeProcessedData();
   void  ProcessEvent_2();
 
-
   Bool_t PublishInternalValues() const;
+  Bool_t PublishByRequest(TString device_name);
 
   void  SetRandomEventParameters(Double_t mean, Double_t sigma);
   void  SetRandomEventAsymmetry(Double_t asymmetry);
@@ -119,12 +119,6 @@ class MollerMainDetector:
   const QwIntegrationPMT* GetChannel(const TString name) const;
 
   Bool_t Compare(VQwSubsystem* source);
-
-
-  /// \brief Blind the asymmetry
-  void Blind(const QwBlinder *blinder);
-  /// \brief Blind the difference using the yield
-  void Blind(const QwBlinder *blinder, const VQwSubsystemParity* subsys);
 
 
   VQwSubsystem&  operator=  ( VQwSubsystem *value);
@@ -174,7 +168,7 @@ class MollerMainDetector:
 
   std::vector <QwIntegrationPMT> fIntegrationPMT;
   std::vector <QwCombinedPMT> fCombinedPMT;
-  std::vector <MollerMainDetectorID> fMainDetID;
+  std::vector <QwDetectorArrayID> fMainDetID;
 
 /*
 *	Maybe have an array of QwIntegrationPMT to describe the Sector, Ring, Slice structure?  Maybe hold Ring 5 out and have it described as one list by Sector and slice?
@@ -206,10 +200,10 @@ class MollerMainDetector:
 };
 
 
-class MollerMainDetectorID
+class QwDetectorArrayID
 {
  public:
-  MollerMainDetectorID():fSubbankIndex(-1),fWordInSubbank(-1),
+  QwDetectorArrayID():fSubbankIndex(-1),fWordInSubbank(-1),
     fTypeID(kQwUnknownPMT),fIndex(-1),
     fSubelement(kInvalidSubelementIndex),fmoduletype(""),fdetectorname("")
     {};

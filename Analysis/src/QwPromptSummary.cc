@@ -329,9 +329,10 @@ QwPromptSummary::GetElementByName(TString name)
 	return an_element;
       }
     }
-  
+
   return NULL;
 };
+
 
 TString
 QwPromptSummary::PrintTextSummaryHeader()
@@ -549,7 +550,6 @@ QwPromptSummary::FillDoubleDifference(TString type, TString name1, TString name2
   }
 }
 
-
 void
 QwPromptSummary::PrintCSV()
 {
@@ -579,5 +579,4 @@ QwPromptSummary::PrintTextSummary()
   printf("-----------------------\n");
   return;
 };
-
 

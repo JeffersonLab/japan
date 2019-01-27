@@ -21,8 +21,10 @@
 #define MYSQLPP_SSQLS_NO_STATICS
 #endif
 
+#pragma GCC diagnostic ignored "-Wdeprecated"
 #include "mysql++.h"
 #include "ssqls.h"
+#pragma GCC diagnostic pop
 
 // Exclude from doxygen processing because of numerous warnings
 /// @cond PARITY_SSQLS

@@ -78,8 +78,8 @@ class QwBeamLine : public VQwSubsystemParity, public MQwSubsystemCloneable<QwBea
 
   UInt_t UpdateErrorFlag();//Update and return the error flags
 
-  //update the error flag in the subsystem level from the top level routines related to stability checks. This will uniquely update the errorflag at each channel based on the error flag in the correspondinsize_t GetNumberOfElements() {return fElement.size();};g channel in the ev_error subsystem
-  void   UpdateErrorFlag(const VQwSubsystem *ev_error);
+  //update the error flag in the subsystem level from the top level routines related to stability checks. This will uniquely update the errorflag at each channel based on the error flag in the corresponding channel in the ev_error subsystem
+  void UpdateErrorFlag(const VQwSubsystem *ev_error);
 
   Int_t  ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words);
   Int_t  ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words);

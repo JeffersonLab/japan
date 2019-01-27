@@ -18,33 +18,36 @@
 #include "QwOptions.h"
 
 // Qweak headers
-//#include "QwMainCerenkovDetector.h"
-#include "MollerMainDetector.h"
-#include "QwLumi.h"
 #include "QwEventRing.h"
 #include "QwHelicity.h"
 #include "QwHelicityPattern.h"
-#include "QwRegression.h"
+#include "VQwDataHandler.h"
+#include "LRBCorrector.h"
+#include "QwCombiner.h"
+#include "QwCorrelator.h"
+#include "QwDetectorArray.h"
+#include "QwBlindDetectorArray.h"
+
 #ifdef __USE_DATABASE__
 #include "QwParityDB.h"
-#endif
-
+#endif //__USE_DATABASE__
 void DefineOptionsParity(QwOptions& options)
 {
   /* Define general options */
   QwOptions::DefineOptions(options);
 
   /* Define parity options */
-  //  QwMainCerenkovDetector::DefineOptions(options);
-  MollerMainDetector::DefineOptions(options);
-  QwLumi::DefineOptions(options);
+  QwDetectorArray::DefineOptions(options);
+  QwBlindDetectorArray::DefineOptions(options);
   QwEventRing::DefineOptions(options);
   QwHelicity::DefineOptions(options);
   QwHelicityPattern::DefineOptions(options);
-  QwRegression::DefineOptions(options);
-#ifdef __USE_QwParityDB
+  LRBCorrector::DefineOptions(options);
+  QwCorrelator::DefineOptions(options);
+  QwCombiner::DefineOptions(options);
+  #ifdef __USE_DATABASE__
   QwParityDB::DefineAdditionalOptions(options);
-#endif
+  #endif //__USE_DATABASE__
 }
 
 #endif // QWOPTIONSPARITY_H
