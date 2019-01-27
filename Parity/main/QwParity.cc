@@ -44,7 +44,6 @@
 #include "QwHelicity.h"
 #include "QwFakeHelicity.h"
 #include "QwBeamLine.h"
-#include "QwMainCerenkovDetector.h"
 #include "QwBeamMod.h"
 #include "QwIntegratedRaster.h"
 

@@ -19,7 +19,6 @@
 #include "QwEventBuffer.h"
 #include "QwHelicity.h"
 #include "QwHelicityPattern.h"
-#include "QwMainCerenkovDetector.h"
 #include "QwBlindDetectorArray.h"
 //#include "QwScanner.h"
 #include "QwSubsystemArrayParity.h"
