@@ -34,9 +34,6 @@
 #include "QwHelicity.h"
 #include "QwFakeHelicity.h"
 #include "QwBeamLine.h"
-#include "QwMainCerenkovDetector.h"
-#include "QwLumi.h"
-#include "QwBeamMod.h"
 #include "QwVQWK_Channel.h"
 
 
