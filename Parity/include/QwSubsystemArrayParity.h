@@ -40,6 +40,11 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
 
   public:
 
+    friend class VQwDataHandler;
+    friend class QwCombiner;
+    friend class QwCorrelator;
+    friend class LRBCorrector;
+
     /// Constructor with options
     QwSubsystemArrayParity(QwOptions& options): QwSubsystemArray(options, CanContain),fErrorFlag(0),fErrorFlagTreeIndex(-1) { };
     /// Copy constructor by reference

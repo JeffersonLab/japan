@@ -1,5 +1,5 @@
 /**********************************************************\
-* File: QwMainCerenkovDetector.h                           *
+* File: QwBlindDetectorArray.h                           *
 *                                                          *
 * Author: P. M. King                                       *
 * Time-stamp: <2007-05-08 15:40>                           *
@@ -8,8 +8,8 @@
 ///
 /// \ingroup QwAnalysis_ADC
 
-#ifndef __QWMAINCERENKOVDETECTOR__
-#define __QWMAINCERENKOVDETECTOR__
+#ifndef __QWBLINDDETECTORARRAY__
+#define __QWBLINDDETECTORARRAY__
 
 // System headers
 #include <vector>
@@ -19,29 +19,28 @@
 #include "QwIntegrationPMT.h"
 #include "QwCombinedPMT.h"
 
-
 // Forward declarations
 class QwBlinder;
-class QwMainCerenkovDetectorID;
+class QwBlindDetectorArrayID;
 
 
-class QwMainCerenkovDetector:
+class QwBlindDetectorArray:
     public VQwSubsystemParity,
-    public MQwSubsystemCloneable<QwMainCerenkovDetector>
+    public MQwSubsystemCloneable<QwBlindDetectorArray>
 {
   friend class QwCombinedPMT;
   /******************************************************************
-   *  Class: QwMainCerenkovDetector
+   *  Class: QwBlindDetectorArray
    *
    *
    ******************************************************************/
  private:
   /// Private default constructor (not implemented, will throw linker error on use)
-  QwMainCerenkovDetector();
+  QwBlindDetectorArray();
 
  public:
   /// Constructor with name
-  QwMainCerenkovDetector(const TString& name)
+  QwBlindDetectorArray(const TString& name)
   : VQwSubsystem(name),VQwSubsystemParity(name),bNormalization(kFALSE)
   {
     fTargetCharge.InitializeChannel("q_targ","derived");
@@ -52,13 +51,14 @@ class QwMainCerenkovDetector:
     fTargetEnergy.InitializeChannel("e_targ","derived");
   };
   /// Copy constructor
-  QwMainCerenkovDetector(const QwMainCerenkovDetector& source)
+  QwBlindDetectorArray(const QwBlindDetectorArray& source)
   : VQwSubsystem(source),VQwSubsystemParity(source),
     fIntegrationPMT(source.fIntegrationPMT),
-    fCombinedPMT(source.fCombinedPMT)
+    fCombinedPMT(source.fCombinedPMT),
+    fMainDetID(source.fMainDetID)
   { }
   /// Virtual destructor
-  virtual ~QwMainCerenkovDetector() { };
+  virtual ~QwBlindDetectorArray() { };
 
   /*  Member functions derived from VQwSubsystemParity. */
 
@@ -89,13 +89,14 @@ class QwMainCerenkovDetector:
   void  ExchangeProcessedData();
   void  ProcessEvent_2();
 
-
   Bool_t PublishInternalValues() const;
+  Bool_t PublishByRequest(TString device_name);
 
   void  SetRandomEventParameters(Double_t mean, Double_t sigma);
   void  SetRandomEventAsymmetry(Double_t asymmetry);
   void  RandomizeEventData(int helicity = 0, Double_t time = 0.0);
   void  EncodeEventData(std::vector<UInt_t> &buffer);
+  void  RandomizeMollerEvent(int helicity/*, const QwBeamCharge& charge, const QwBeamPosition& xpos, const QwBeamPosition& ypos, const QwBeamAngle& xprime, const QwBeamAngle& yprime, const QwBeamEnergy& energy*/);
 
   void  ConstructHistograms(TDirectory *folder){
     TString tmpstr("");
@@ -173,7 +174,17 @@ class QwMainCerenkovDetector:
 
   std::vector <QwIntegrationPMT> fIntegrationPMT;
   std::vector <QwCombinedPMT> fCombinedPMT;
-  std::vector <QwMainCerenkovDetectorID> fMainDetID;
+  std::vector <QwBlindDetectorArrayID> fMainDetID;
+
+/*
+*	Maybe have an array of QwIntegrationPMT to describe the Sector, Ring, Slice structure?  Maybe hold Ring 5 out and have it described as one list by Sector and slice?
+	Need a way to define the correlations to all beam parameters for each element.
+	Need a way to define asymmetries for each element.
+	Need a way to create the full event data buffers
+	Start with all channels and modules in a single ROC subbank:  make a mock_moller_adc.map with 28 8-channel modules with names like we discussed
+	Make a new RandomizeEventData which will take the helicity and beam current and beam params, and fill the detector elements as we discussed.
+*/
+
 
  protected:
   QwBeamCharge   fTargetCharge;
@@ -195,10 +206,10 @@ class QwMainCerenkovDetector:
 };
 
 
-class QwMainCerenkovDetectorID
+class QwBlindDetectorArrayID
 {
  public:
-  QwMainCerenkovDetectorID():fSubbankIndex(-1),fWordInSubbank(-1),
+  QwBlindDetectorArrayID():fSubbankIndex(-1),fWordInSubbank(-1),
     fTypeID(kQwUnknownPMT),fIndex(-1),
     fSubelement(kInvalidSubelementIndex),fmoduletype(""),fdetectorname("")
     {};

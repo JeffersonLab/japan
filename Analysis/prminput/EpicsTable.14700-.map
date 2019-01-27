@@ -1,0 +1,721 @@
+! The exclamation mark (!) is for comment in this file.
+!
+! 06-17-2011: added Qtor related 4 variables:  qw:qt_mps_i_target,qw:qt_mps_i_set, qw:qt_mps_i_dcct, Q1HallP
+! 07-08-2010: added "String" in more variables by identifying them using
+! caget epicsVarName (e.g. caget QW_T_miA) in a machine where caget command can be issued.
+!
+! 06-28-2010: first svn commit of this table (rsubedi)
+! Table for epics variables whose values can be stored in a MySQL database.
+! This table has three columns. The first column is the name for an epics
+! variable. The second column at the moment is just a flag to insert epics data
+! in the MySQL database. The third column is related to those epics variables
+! that have only string-value (e.g. the epics varaible for the half wave plate
+! is IGL1I00DI24_24M and has either IN or OUT value).
+!
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  Special keywords
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+NominalWienAngle = 30.0   ! This is the "nominal" Wien launch angle in degrees needed to have the spin pointing FORWARD for H+ when IHWP OUT & the Wien is Flip-Right (or Horizontal-Only)
+BlinderReversalForRunTwo = 1     !  Set this to 1 to use the extra reversal for Run2.  THIS IS NEEDED!
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! NAME          DB_TABLE                TYPE    COMMENT
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+QWTGTPOS	slow_controls_data    	   	!Vertical position of the target
+QWtgt_name	slow_controls_data	String	! Name of the target position
+QWT_miA		slow_controls_data    	   	!Temp A at manifold inlet K Cernox		
+QWT_moA		slow_controls_data    	   	!Temp A at manifold outlet K Cernox		
+QWT_hxiA		slow_controls_data    	   	!Temp A at heat exchanger inlet K Cernox Phytron brake
+QWT_hxoA		slow_controls_data    	   	!Temp A at heat exchanger outlet	K Cernox Phytron home switch
+QWT_piA		slow_controls_data    	   	!Temp A at pump inlet K Cernox	GV open switch
+!			slow_controls_data    	   	!GV closed switch   [something to be added here]
+QWT_miB		slow_controls_data    	   	!Temp B at manifold inlet K Cernox Turbo status *5?
+QWT_moB	  	slow_controls_data    	   	!Temp B at manifold outlet K Cernox CCG *5?
+QWT_hxiB		slow_controls_data    	   	!Temp B at heat exchanger inlet K Cernox Ballast vacuum
+QWT_hxoB		slow_controls_data    	   	!Temp B at heat exchanger outlet	K Cernox
+QWT_piB		slow_controls_data    	   	!Temp B at pump inlet K Cernox
+QWT_ladderA		slow_controls_data    	   	!Temp A on dummy tgt ladder K			
+QWT_USdmA		slow_controls_data    	   	!Temp A on upstream dummy frame K			
+QWT_DSdmA		slow_controls_data    	   	!Temp A on downstream dummy frame K			
+QWT_phytronA		slow_controls_data    	   	!Temp A on Phytron motor	K			
+QWT_tableA		slow_controls_data    	   	!Temp A on Horizontal Motion table K
+QWT_ladderB		slow_controls_data    	   	!Temp B on dummy tgt ladder K			
+QWT_USdmB		slow_controls_data    	   	!Temp B on upstream dummy frame K			
+QWT_DSdmB		slow_controls_data    	   	!Temp B on downstream dummy frame K			
+QWT_phytronB		slow_controls_data    	   	!Temp B on Phytron motor	K			
+QWT_tableB		slow_controls_data    	   	!Temp B on Horizontal Motion table K
+QWT_solidA		slow_controls_data    	   	!Temp A on solid target frame K			
+QWT_solidB		slow_controls_data    	   	!Temp B on solid target frame K			
+QWT_spareA		slow_controls_data    	   	!K			
+QWT_spareB		slow_controls_data    	   	!K			
+QWT_pumpA		slow_controls_data    	   	!Temp A on pump motor house K			
+QWT_pumpB		slow_controls_data    	   	!Temp B on pump motor house K			
+!			slow_controls_data    	   	!K [something to be added here]
+QWT_4kjt		slow_controls_data    	   	!Coolant Temp at outlet of 4K JT valve K	Cernox		
+QWT_4ko		slow_controls_data    	   	!Temp of returning 4K coolant K Cernox
+QWT_15kjt		slow_controls_data    	   	!Coolant Temp at outlet of 15K JT valve K Cernox		
+QWT_15ko		slow_controls_data    	   	!Temp of returning 15K coolant K	Cernox
+QW_Pmp_TachSet		slow_controls_data    	   	!Set value for pump tach	Hz			
+QW_Pmp_VSet		slow_controls_data    	   	!Set value for pump voltage Volts			
+QW_Pmp_I1Set		slow_controls_data    	   	!Set value for pump current phase 1 Amps			
+QW_Pmp_I2Set		slow_controls_data    	   	!Set value for pump current phase 2 Amps			
+QW_Pmp_I3Set		slow_controls_data    	   	!Set value for pump current phase 3 Amps			
+QW_Pmp_TachRead		slow_controls_data    	   	!Read value for pump tach Hz			
+QW_Pmp_VRead		slow_controls_data    	   	!Read value for pump voltage Volts			
+QW_Pmp_I1Read		slow_controls_data    	   	!Read value for pump current phase 1 Amps
+QW_Pmp_I2Read		slow_controls_data    	   	!Read value for pump current phase 2 Amps
+QW_Pmp_I3Read		slow_controls_data    	   	!Read value for pump current phase 3 Amps
+QW_Pmp_Status1		slow_controls_data    	   	!Pump controller status bits				
+QW_Pmp_Status2		slow_controls_data    	   	!Pump controller status bits
+QW_HPH_ISet		slow_controls_data    	   	!High Power Heater set current limit Amps
+QW_HPH_VSet		slow_controls_data    	   	!High Power Heater set voltage Volts			
+QW_HPH_PSet		slow_controls_data    	   	!High Power Heater set (calculated) power Watts
+QW_HPH_IRead		slow_controls_data    	   	!High Power Heater read current Amps			
+QW_HPH_VRead		slow_controls_data    	   	!High Power Heater read voltage Volts			
+QW_HPH_PRead		slow_controls_data    	   	!High Power Heater read power Watts			
+QW_HPH__PID		slow_controls_data    	   	!Pid mode on or off				
+QW_HPH_TSet		slow_controls_data    	   	!HPH set temperature K			
+QW_HPH_TRead		slow_controls_data    	   	!HPH read/current temperature K			
+QW_HPH_Beam_Comp_Switch	slow_controls_data    	   	!HPH beam compensation switch				
+QW_pbeam		slow_controls_data    	   	!Calculated beam power Watts			
+QW_ibeam		slow_controls_data    	   	!Beam current uA			
+QW_HPH_Pmax		slow_controls_data    	   	!Maximum Heater Power W			
+QW_HPH_Pman		slow_controls_data    	   	!smitghg	Manual power setting W			
+QW_HPH_R		slow_controls_data    	   	!Heater resistance Ohms			
+QW_HPH_OnOff		slow_controls_data    	   	!Heater mode				
+QW_HPH_bmcomp1		slow_controls_data    	   	!beam compensation parameter 1 (length) cm
+QW_HPH_bmcomp2		slow_controls_data    	   	!beam compensation parameter 2 (density)	g/cc
+QW_HPH_bmcomp3		slow_controls_data    	   	!beam compensation parameter 3 (dE/dx) MeV/g/cm^2
+QW_HPH_bmcomp4		slow_controls_data    	   	!beam compensation parameter 4 (spare)
+QW_HPH_Prop		slow_controls_data    	   	!PID proportinal gain (typ 600)				
+QW_HPH_Integ		slow_controls_data    	   	!PID integral gain (typ 40)				
+QW_HPH_Deriv		slow_controls_data    	   	!PID derivative gain (typ 0)				
+QW_HPH_Scan		slow_controls_data    	   	!Scan time for PID (typ 1) s			
+QW_HPH_dmin		slow_controls_data    	   	!minimum change in power per scan W			
+QW_HPH_dmax		slow_controls_data    	   	!maximum change in power per scan W			
+QW_JT_4Kset		slow_controls_data    	   	!				
+QW_JT_4KRead		slow_controls_data    	   	!				
+QW_JT_4KStep		slow_controls_data    	   	!4K JT Step size				
+QW_JT_15KSet		slow_controls_data    	   	!				
+QW_JT_15LRead		slow_controls_data    	   	!				
+QW_JT_15KStep		slow_controls_data    	   	!15K JT Step size					
+QW_Phy_ENCSet		slow_controls_data    	   	!Hor. Motion Phytron set stepper position
+QW_Phy_VSet		slow_controls_data    	   	!Hor. Motion Phytron set Voltage	Volts			
+QW_Phy_ISet		slow_controls_data    	   	!Hor. Motion Phytron set current	Amps			
+QW_Phy_BrakeSet		slow_controls_data    	   	!Hor. Motion Phytron set brake value
+QW_Phy_ENCRead		slow_controls_data    	   	!Hor. Motion Phytron read stepper position
+QW_Phy_VRead		slow_controls_data    	   	!Hor. Motion Phytron read Voltage Volts			
+QW_Phy_IRead		slow_controls_data    	   	!Hor. Motion Phytron read current Amps			
+QW_Phy_BrakeRead	slow_controls_data    	   	!Hor. Motion Phytron read brake value
+QW_Phy_Prog		slow_controls_data    	   	!Hor. Motion Phytron program number
+QW_Phy_Out1		slow_controls_data    	   	!Hor. Motion Phytron output word 1
+QW_Phy_Out2		slow_controls_data    	   	!Hor. Motion Phytron output word 2
+QW_Phy_In1		slow_controls_data    	   	!Hor. Motion Phytron input word 1
+QW_Phy_In2		slow_controls_data    	   	!Hor. Motion Phytron input word 2
+QW_Phy_Switches		slow_controls_data    	   	!Hor. Motion Phytron limit switch readback
+QW_Phy_ResPos		slow_controls_data    	   	!Hor. Motion resistive position readout
+QW_EC5_ENCSet		slow_controls_data    	   	!Lifter EC5 set stepper position				
+QW_EC5_VSet		slow_controls_data    	   	!Lifter EC5 set Voltage	Volts			
+QW_EC5_ISet		slow_controls_data    	   	!Lifter EC5 set current	Amps			
+QW_EC5_BrakeSet		slow_controls_data    	   	!Lifter EC5 set brake value				
+QW_EC5_ENCRead		slow_controls_data    	   	!Lifter EC5 read stepper position
+QW_EC5_VRead		slow_controls_data    	   	!Lifter EC5 read Voltage	Volts			
+QW_EC5_IRead		slow_controls_data    	   	!Lifter EC5 read current	Amps			
+QW_EC5_BrakeRead	slow_controls_data    	   	!Lifter EC5 read brake value				
+QW_EC5_Prog		slow_controls_data    	   	!Lifter EC5 program number				
+QW_EC5_Out1		slow_controls_data    	   	!Lifter EC5 output word 1				
+QW_EC5_Out2		slow_controls_data    	   	!Lifter EC5 output word 2				
+QW_EC5_In1		slow_controls_data    	   	!Lifter EC5 input word 1				
+QW_EC5_In2		slow_controls_data    	   	!Lifter EC5 input word 2				
+QW_EC5_Switches		slow_controls_data    	   	!Lifter EC5 limit switch readback
+QW_EC5_AxisStatus	slow_controls_data    	   	!				
+QW_EC5_DriveStatus	slow_controls_data    	   	!			
+QW_EC5_SystemStatus	slow_controls_data    	   	!			
+QW_EC5_ResPos		slow_controls_data    	   	!Lifter EC5 resistive position readout
+QW_PT3			slow_controls_data    	   	!Gas panel pressure transducer PT3 psia			
+QW_PT4			slow_controls_data    	   	!Gas panel pressure transducer PT4 psia			
+QW_PT9			slow_controls_data    	   	!Gas panel pressure transducer PT9 psia			
+QW_PT7			slow_controls_data    	   	!Gas panel pressure transducer PT7 psia			
+QW_PT87			slow_controls_data    	   	!Gas panel pressure transducer PT87 psia			
+QW_PT77			slow_controls_data    	   	!Gas panel pressure transducer PT77 psia			
+QW_PT_Scatt_Chamber	slow_controls_data    	   	!Scattering Chamber Vacuum psia			
+QW_PT_Scatt_Chamber_switch slow_controls_data    	   	!Scattering Chamber vacuum switch psia			
+HC_ValveBox_Pos		slow_controls_data    	   	!Warm return valve position % open			
+HC_ValveBox_Temp	slow_controls_data    	   	!Warm return temp K					
+QW_TgtX0		slow_controls_data    	   	!X (Hor) stepper pos for Tgt 0				
+QW_TgtY0		slow_controls_data    	   	!Y (Ver) stepper pos for Tgt 0				
+QW_TgtX1		slow_controls_data    	   	!				
+QW_TgtY1		slow_controls_data    	   	!				
+QW_TgtX2		slow_controls_data    	   	!				
+QW_TgtY2		slow_controls_data    	   	!				
+QW_TgtX3		slow_controls_data    	   	!				
+QW_TgtY3		slow_controls_data    	   	!				
+QW_TgtX4		slow_controls_data    	   	!				
+QW_TgtY4		slow_controls_data    	   	!				
+QW_TgtX5		slow_controls_data    	   	!				
+QW_TgtY5		slow_controls_data    	   	!				
+QW_TgtX6		slow_controls_data    	   	!				
+QW_TgtY6		slow_controls_data    	   	!				
+QW_TgtX7		slow_controls_data    	   	!				
+QW_TgtY7		slow_controls_data    	   	!				
+QW_TgtX8		slow_controls_data    	   	!				
+QW_TgtY8		slow_controls_data    	   	!				
+QW_TgtX9		slow_controls_data    	   	!				
+QW_TgtY9		slow_controls_data    	   	!				
+QW_TgtX10		slow_controls_data    	   	!				
+QW_TgtY10		slow_controls_data    	   	!				
+QW_TgtX11		slow_controls_data    	   	!				
+QW_TgtY11		slow_controls_data    	   	!				
+QW_TgtX12		slow_controls_data    	   	!				
+QW_TgtY12		slow_controls_data    	   	!				
+QW_TgtX13		slow_controls_data    	   	!				
+QW_TgtY13		slow_controls_data    	   	!				
+QW_TgtX14		slow_controls_data    	   	!				
+QW_TgtY14		slow_controls_data    	   	!				
+QW_TgtX15		slow_controls_data    	   	!				
+QW_TgtY15		slow_controls_data    	   	!				
+QW_TgtX16		slow_controls_data    	   	!				
+QW_TgtY16		slow_controls_data    	   	!				
+QW_TgtX17		slow_controls_data    	   	!				
+QW_TgtY17		slow_controls_data    	   	!				
+QW_TgtX18		slow_controls_data    	   	!				
+QW_TgtY18		slow_controls_data    	   	!				
+QW_TgtX19		slow_controls_data    	   	!				
+QW_TgtY19		slow_controls_data    	   	!				
+QW_TgtX20		slow_controls_data    	   	!				
+QW_TgtY20		slow_controls_data    	   	!				
+QW_TgtX21		slow_controls_data    	   	!				
+QW_TgtY21		slow_controls_data    	   	!				
+QW_TgtX22		slow_controls_data    	   	!				
+QW_TgtY22		slow_controls_data    	   	!				
+QW_TgtX23		slow_controls_data    	   	!				
+QW_TgtY23		slow_controls_data    	   	!				
+QW_TgtX24		slow_controls_data    	   	!				
+QW_TgtY24		slow_controls_data    	   	!				
+QW_TgtX25		slow_controls_data    	   	!				
+QW_TgtY25		slow_controls_data    	   	!				
+QW_TgtX26		slow_controls_data    	   	!				
+QW_TgtY26		slow_controls_data    	   	!				
+QW_Tgt_Raster0		slow_controls_data    	   	!Raster requirement for Tgt 0				
+QW_Tgt_CurLim0		slow_controls_data    	   	!Beam Current Limit for Tgt 0				
+QW_Tgt_Raster1		slow_controls_data    	   	!				
+QW_Tgt_CurLim1		slow_controls_data    	   	!				
+QW_Tgt_Raster2		slow_controls_data    	   	!				
+QW_Tgt_CurLim2		slow_controls_data    	   	!				
+QW_Tgt_Raster3		slow_controls_data    	   	!				
+QW_Tgt_CurLim3		slow_controls_data    	   	!				
+QW_Tgt_Raster4		slow_controls_data    	   	!				
+QW_Tgt_CurLim4		slow_controls_data    	   	!				
+QW_Tgt_Raster5		slow_controls_data    	   	!				
+QW_Tgt_CurLim5		slow_controls_data    	   	!				
+QW_Tgt_Raster6		slow_controls_data    	   	!				
+QW_Tgt_CurLim6		slow_controls_data    	   	!				
+QW_Tgt_Raster7		slow_controls_data    	   	!				
+QW_Tgt_CurLim7		slow_controls_data    	   	!				
+QW_Tgt_Raster8		slow_controls_data    	   	!				
+QW_Tgt_CurLim8		slow_controls_data    	   	!				
+QW_Tgt_Raster9		slow_controls_data    	   	!				
+QW_Tgt_CurLim9		slow_controls_data    	   	!				
+QW_Tgt_Raster10		slow_controls_data    	   	!				
+QW_Tgt_CurLim10		slow_controls_data    	   	!			
+QW_Tgt_Raster11		slow_controls_data    	   	!				
+QW_Tgt_CurLim11		slow_controls_data    	   	!				
+QW_Tgt_Raster12		slow_controls_data    	   	!				
+QW_Tgt_CurLim12		slow_controls_data    	   	!				
+QW_Tgt_Raster13		slow_controls_data    	   	!				
+QW_Tgt_CurLim13		slow_controls_data    	   	!				
+QW_Tgt_Raster14		slow_controls_data    	   	!				
+QW_Tgt_CurLim14		slow_controls_data    	   	!				
+QW_Tgt_Raster15		slow_controls_data    	   	!				
+QW_Tgt_CurLim15		slow_controls_data    	   	!				
+QW_Tgt_Raster16		slow_controls_data    	   	!				
+QW_Tgt_CurLim16		slow_controls_data    	   	!				
+QW_Tgt_Raster17		slow_controls_data    	   	!				
+QW_Tgt_CurLim17		slow_controls_data    	   	!				
+QW_Tgt_Raster18		slow_controls_data    	   	!				
+QW_Tgt_CurLim18		slow_controls_data    	   	!				
+QW_Tgt_Raster19		slow_controls_data    	   	!				
+QW_Tgt_CurLim19		slow_controls_data    	   	!				
+QW_Tgt_Raster20		slow_controls_data    	   	!				
+QW_Tgt_CurLim20		slow_controls_data    	   	!				
+QW_Tgt_Raster21		slow_controls_data    	   	!				
+QW_Tgt_CurLim21		slow_controls_data    	   	!				
+QW_Tgt_Raster22		slow_controls_data    	   	!				
+QW_Tgt_CurLim22		slow_controls_data    	   	!				
+QW_Tgt_Raster23		slow_controls_data    	   	!				
+QW_Tgt_CurLim23		slow_controls_data    	   	!				
+QW_Tgt_Raster24		slow_controls_data    	   	!				
+QW_Tgt_CurLim24		slow_controls_data    	   	!				
+QW_Tgt_Raster25		slow_controls_data    	   	!				
+QW_Tgt_CurLim25		slow_controls_data    	   	!				
+QW_Tgt_Raster26		slow_controls_data    	   	!				
+QW_Tgt_CurLim26		slow_controls_data    	   	!					
+QW_ResEncX		slow_controls_data    	   	!ADC value of horizontal resistive encoder
+QW_ResEncY		slow_controls_data    	   	!ADC value of vertical resistive encoder	
+QW_ResEnc_TgtX0		slow_controls_data    	   	!Resistive Encoder X (Hor) for Tgt 0
+QW_ResEnc_TgtY0		slow_controls_data    	   	!Resistive Encoder Y (Ver) for Tgt 0
+QW_ResEnc_TgtX1		slow_controls_data    	   	!				
+QW_ResEnc_TgtY1		slow_controls_data    	   	!				
+QW_ResEnc_TgtX2		slow_controls_data    	   	!				
+QW_ResEnc_TgtY2		slow_controls_data    	   	!				
+QW_ResEnc_TgtX3		slow_controls_data    	   	!				
+QW_ResEnc_TgtY3		slow_controls_data    	   	!				
+QW_ResEnc_TgtX4		slow_controls_data    	   	!				
+QW_ResEnc_TgtY4		slow_controls_data    	   	!				
+QW_ResEnc_TgtX5		slow_controls_data    	   	!				
+QW_ResEnc_TgtY5		slow_controls_data    	   	!				
+QW_ResEnc_TgtX6		slow_controls_data    	   	!				
+QW_ResEnc_TgtY6		slow_controls_data    	   	!				
+QW_ResEnc_TgtX7		slow_controls_data    	   	!				
+QW_ResEnc_TgtY7		slow_controls_data    	   	!				
+QW_ResEnc_TgtX8		slow_controls_data    	   	!				
+QW_ResEnc_TgtY8		slow_controls_data    	   	!				
+QW_ResEnc_TgtX9		slow_controls_data    	   	!				
+QW_ResEnc_TgtY9		slow_controls_data    	   	!				
+QW_ResEnc_TgtX10	slow_controls_data    	   	!				
+QW_ResEnc_TgtY10	slow_controls_data    	   	!				
+QW_ResEnc_TgtX11	slow_controls_data    	   	!				
+QW_ResEnc_TgtY11	slow_controls_data    	   	!				
+QW_ResEnc_TgtX12	slow_controls_data    	   	!			
+QW_ResEnc_TgtY12	slow_controls_data    	   	!			
+QW_ResEnc_TgtX13	slow_controls_data    	   	!			
+QW_ResEnc_TgtY13	slow_controls_data    	   	!			
+QW_ResEnc_TgtX14	slow_controls_data    	   	!			
+QW_ResEnc_TgtY14	slow_controls_data    	   	!			
+QW_ResEnc_TgtX15	slow_controls_data    	   	!			
+QW_ResEnc_TgtY15	slow_controls_data    	   	!			
+QW_ResEnc_TgtX16	slow_controls_data    	   	!			
+QW_ResEnc_TgtY16	slow_controls_data    	   	!			
+QW_ResEnc_TgtX17	slow_controls_data    	   	!			
+QW_ResEnc_TgtY17	slow_controls_data    	   	!			
+QW_ResEnc_TgtX18	slow_controls_data    	   	!			
+QW_ResEnc_TgtY18	slow_controls_data    	   	!			
+QW_ResEnc_TgtX19	slow_controls_data    	   	!			
+QW_ResEnc_TgtY19	slow_controls_data    	   	!			
+QW_ResEnc_TgtX20	slow_controls_data    	   	!			
+QW_ResEnc_TgtY20	slow_controls_data    	   	!			
+QW_ResEnc_TgtX21	slow_controls_data    	   	!			
+QW_ResEnc_TgtY21	slow_controls_data    	   	!			
+QW_ResEnc_TgtX22	slow_controls_data    	   	!			
+QW_ResEnc_TgtY22	slow_controls_data    	   	!			
+QW_ResEnc_TgtX23	slow_controls_data    	   	!			
+QW_ResEnc_TgtY23	slow_controls_data    	   	!			
+QW_ResEnc_TgtX24	slow_controls_data    	   	!			
+QW_ResEnc_TgtY24	slow_controls_data    	   	!			
+QW_ResEnc_TgtX25	slow_controls_data    	   	!			
+QW_ResEnc_TgtY25	slow_controls_data    	   	!			
+QW_ResEnc_TgtX26	slow_controls_data    	   	!			
+QW_ResEnc_TgtY26	slow_controls_data    	   	!			
+CFI6731C		slow_controls_data    	   	!15k Flow g/s			
+CTD673			slow_controls_data    	   	!15K Supply temp at ESR K			
+CPI673			slow_controls_data    	   	!15K Supply pressure at ESR atm			
+CTD9541			slow_controls_data    	   	!20K return temp at ESR K			
+CPI9541			slow_controls_data    	   	!20K return pressure at ESR atm			
+haCryo_15K_Total_F	slow_controls_data    	   	!sum of Hall A and Hall C 15K flows g/s			
+CFI60DLP		slow_controls_data    	   	!"dirty flowrate" at ESR (warm return) g/s
+CTD6614			slow_controls_data    	   	!Hall A 15K supply temp K
+CFI6711C		slow_controls_data    	   	!4k Flow	g/s			
+CTD671SC		slow_controls_data    	   	!4K Supply temp at ESR K			
+CPI671SC		slow_controls_data    	   	!4K Supply pressure at ESR atm			
+CTD672			slow_controls_data    	   	!5K return temp at ESR K			
+CPI672			slow_controls_data    	   	!5K return pressure at ESR atm	
+QWBCM1			slow_controls_data    	   	!Beam current in Hall C uA			
+QWBCM2			slow_controls_data    	   	!Beam current in Hall C uA			
+QWBCM3			slow_controls_data    	   	!Beam current in Hall C uA			
+QWBCM4			slow_controls_data    	   	!Beam current in Hall C uA			
+QWGV_Status		slow_controls_data    	   	!Status bits of the gate valves
+QWHPHIset		slow_controls_data    	   	!Max Heater Current Set				
+QWHPHIDACset		slow_controls_data    	   	!Max Current DAC Set				
+QWHPHVDACset		slow_controls_data    	   	!Voltage DAC Set						
+QWHPHManual		slow_controls_data    	   	!Manual power setting					
+QWHPHAuto		slow_controls_data    	   	!auto power setting					
+QWHPHheat_pid.ORBV	slow_controls_data    	   	!Cur Pos				
+QWHPHheat_pid.OVAL	slow_controls_data    	   	!Cur Out				
+QWHPHheat_pid.CVAL	slow_controls_data    	   	!Cur Inp				
+QWHPHheat.pidS		slow_controls_data    	   	!Output				
+QWHPHheat_pid_VAL	slow_controls_data    	   	!Set Value					
+QWHPHmode_bypass.VAL	slow_controls_data    	   	!Heater mode					
+QWheat_tot		slow_controls_data    	   	!Total Power				
+QWbeam_heat		slow_controls_data    	   	!Beam Power				
+!
+! The following list of injector/source related Epics variables was provided by Riad Suleiman.
+!
+VWienAngle              slow_controls_data    	   	!Vertical Wien Angle 	
+MWF1I04.BDL	     	slow_controls_data    	   	!Vertical Wien BDL (G-cm)
+IGL1I00OD16_4	     	polarized_source    	   	String !Vertical Wien HV Polarity (on/off)
+IGL1I00DAC6	     	slow_controls_data    	   	!Vertical Wien Electrode Voltage
+Phi_FG		     	slow_controls_data    	   	!Solenoids Angle (Phi_FG)
+MFG1I04A.BDL	     	slow_controls_data    	   	!First Solenoid BDL (G-cm)
+MFG1I04B.BDL	     	slow_controls_data    	   	!Second Solenoid BDL (G-cm)
+HWienAngle	     	slow_controls_data    	   	!Horizontal Wien Angle
+MWF0I02.BDL	     	slow_controls_data    	   	!Horizontal Wien BDL (G-cm)
+IGL1I00OD16_9	     	slow_controls_data    	   	!Horizontal Wien HV Polarity 
+IGL1I00DAC5	     	slow_controls_data    	   	!Horizontal Wien Electrode Voltage
+psub_aa_pos	     	slow_controls_data    	   	!Hall A Laser Attenuator (Hall A Laser Attenuator Setting) --
+IGL1I00OD16_16	     	polarized_source   	   	String !IHWP: Insertible Beam Half-wave plate Set(off=out)
+IGL1I00DI24_24M	    	polarized_source    	   	String	!Beam Half-wave plate Read(off=out) () --
+psub_pl_pos	     	slow_controls_data    	   	!Rotating waveplate (Rotatable Half Wave Plate Setting) --
+IGLdac3:ao_7	     	slow_controls_data    	   	!IA Cell Setpoint  Hall A  				
+IGL1I00AI20	     	slow_controls_data    	   	!IA Cell Setpoint  Hall B
+IGLdac3:ao_4	     	slow_controls_data    	   	!IA Cell Setpoint  Hall C 
+IGLdac3:ao_5	     	slow_controls_data    	   	!PZT X Setpoint  Hall A
+IGLdac3:ao_6	     	slow_controls_data    	   	!PZT Y Setpoint  Hall A 
+IGLdac3:ao_0	     	slow_controls_data    	   	!PZT X Setpoint  Common  (X PZT Voltage ) --
+IGLdac3:ao_1	     	slow_controls_data    	   	!PZT Y Setpoint  Common  (Y PZT Voltage V) --
+IGLdac2:G2Ch3Pos     	slow_controls_data    	   	!Gun2: PC (PITA) POS
+IGLdac2:G2Ch4Neg     	slow_controls_data    	   	!Gun2: PC (PITA) NEG 
+IGL1I00OD16_8	     	polarized_source    	   	String !Pockels Cell ON/OFF
+cdipc_xpos	     	slow_controls_data    	   	!Pockels Cell X Stage 
+cdipc_ypos	     	slow_controls_data    	   	!Pockels Cell Y Stage 
+psub_cx_pos	     	slow_controls_data    	   	!Wafer X Stage         (X laser position on cathode) --
+psub_cy_pos	     	slow_controls_data    	   	!Wafer Y Stage         (Y laser position on cathode) --
+SMRPOSA		     	slow_controls_data    	   	!Hall A Slit Position (Hall A Chopper Slit Readback) -- 
+HELCLOCKs	     	slow_controls_data    	   	!Helicity Clock Set (result: Free Clock)
+HELDELAYs	     	polarized_source    	   	String !Helicity Delay Set  (result: 8 windows)
+HELPATTERNs	     	polarized_source    	   	String !Helicity Pattern Set (has a value such as Quartet) 
+HELCLOCKd	    	slow_controls_data    	   	!Helicity Clock Read (result: Free Clock)
+HELTSETTLEd	     	slow_controls_data    	   	!Helicity Settle Read 
+HELTSTABLEd	     	slow_controls_data    	   	!Helicity Stable Read 
+HELDELAYd	     	polarized_source    	   	String !Helicity Delay Read   (result: 8 windows)
+HELPATTERNd	     	polarized_source    	   	String !Helicity Pattern Read (has a value such as Quartet) 
+HELFREQ		     	slow_controls_data    	   	!Helicity Frequency 
+!
+! The following list is already in the MySql database
+!
+HC:qint_period  	slow_controls_data    	   	!Charge asymmetry sampling period 
+laser_a_wavelength  	slow_controls_data    	   	!Hall A laser wavelength nm
+HC:0L03_WSUM	  	slow_controls_data    	   	!0L03 Charge Asymmetry 4 Wire Sum
+!
+! psub_cx_pos 		slow_controls_data    	   	!laser position on cathode [already in Riad's list above]
+!
+SMRPOSB  	 	slow_controls_data    	   	!Hall B Chopper Slit Readback
+R00PGSET		slow_controls_data    	   	!Prebuncher Setting
+IGLdac2:scale_6.A	slow_controls_data    	   	!Hall B TACO Voltage  V 
+IGL1I00AI27 		slow_controls_data    	   	!Hall A IA Voltage  V
+laser_c_wavelength	slow_controls_data    	   	!Hall C laser wavelength	nm
+HC:1I04_XDIF		slow_controls_data    	   	!1I04 X Difference
+IGL1I00AI17		slow_controls_data    	   	!Dummy Helicity Pockels Cell Voltage V
+HC:0L02_DWSUM		slow_controls_data    	   	!Error on 0L02 Charge Asymmetry 4 Wire Sum
+HC:DX_DIF		slow_controls_data    	   	!dX on X Position Difference to MCC
+SMRPOSC			slow_controls_data    	   	!Hall C Chopper Slit Readback
+R00PGMEST 		slow_controls_data    	   	!Prebuncher Setting  dB
+HC:1I04_DXDIF		slow_controls_data    	   	!Error on 1I04 X Difference
+HC:Q_ASY   		slow_controls_data    	   	!Charge Asymmetry to MCC ppm
+HC:1I04_DWSUM		slow_controls_data    	   	!Error on 1I04 Charge Asymmetry 4 Wire Sum 
+WienAngle		slow_controls_data    	   	!Wien Filter Angle Setting  degrees
+itov2out 		slow_controls_data    	   	!A2 Slit Setting  
+HC:QPD_XDIF 		slow_controls_data    	   	!QPD X Difference 
+EHCFR_LIPRC		polarized_source    	   	!String		!Master Focus Location:  1=G0, 0=Pivot
+HC:0L02_WSUM 		slow_controls_data    	   	!0L02 Charge Asymmetry 4 Wire Sum
+HC:1I04_DYDIF		slow_controls_data    	   	!Error on 1I04 Y Difference
+hel_mag_status.D	slow_controls_data    	   	!Integrated helicity bit difference 
+IBCxxxxCRCUR4		slow_controls_data    	   	!Hall C MPS BCM Current uA
+scaler_calc1		slow_controls_data    	   	!Hall B Beam Current (Faraday Cup) nA
+!
+!psub_cy_pos		slow_controls_data    	   	!Y laser position on cathode [already in Riad's list above]
+!
+itov5out		slow_controls_data    	   	!A3 Slit Setting
+IGL1I00DAC3		slow_controls_data    	   	!Hall B Seed Level
+osc_jitter		slow_controls_data    	   	!Hall A Laser Phase Jitter
+HC:QPD_DWSUM		slow_controls_data    	   	!Error on QPD Charge Asymmetry 4 Wire Sum
+IGL1I00AI24		slow_controls_data    	   	!IA Voltage V
+HC:P_ONOFF          	polarized_source    	   	String		!enable/disable position feedback (ON/OFF)
+HC:QPD_WSUM		slow_controls_data    	   	!QPD Charge Asymmetry 4 Wire Sum
+itov7out		slow_controls_data    	   	!A4 Slit Setting
+HC:0L03_DXDIF		slow_controls_data    	   	!Error on 0L03 X Difference
+hallb_transmission	slow_controls_data    	   	!Hall B Independent Transmission %
+!
+!SMRPOSA		slow_controls_data    	   	!Hall A Chopper Slit Readback [already in Riad's list above]
+!
+HC:0L03_YDIF		slow_controls_data    	   	!0L03 Y Difference
+HC:IBCM_DQASY		slow_controls_data    	   	!Error on Injector BCM Charge Asymmetry
+HC:1I06_DWSUM		slow_controls_data    	   	!Error on 1I06 Charge Asymmetry 4 Wire Sum
+HC:X_DIF 		slow_controls_data    	   	!X Position Difference to MCC
+HC:0I05_YDIF		slow_controls_data    	   	!0I05 Y Difference
+IGL1I00DAC2		slow_controls_data    	   	!Hall B Control Level
+HC:1I06_DXDIF		slow_controls_data    	   	!Error on 1I06 X Difference
+HC:0I05_DWSUM		slow_controls_data    	   	!Error on 0I05 Charge Asymmetry 4 Wire Sum
+HC:QPD_DYDIF		slow_controls_data    	   	!Error on QPD Y Difference
+HC:1I06_WSUM		slow_controls_data    	   	!1I06 Charge Asymmetry 4 Wire Sum
+psub_ab_pos		slow_controls_data    	   	!Hall B Laser Attenuator Setting
+HC:0I05_DYDIF		slow_controls_data    	   	!Error on 0I05 Y Difference
+!
+!psub_pl_pos		slow_controls_data    	   	!Rotatable Half Wave Plate Setting [already in Riad's list above]
+!
+hallc_photocurrent	slow_controls_data    	   	!Hall C photocurrent  uA
+HC:0L02_DYDIF		slow_controls_data    	   	!Error on 0L02 Y Difference 
+hac_bcm_average		slow_controls_data    	   	!Hall A (?) BCM Current	uA
+ISL0I04DT		polarized_source    	   	!Master Slit Setting (string value: IN)
+IPM2C24A.IENG		slow_controls_data    	   	!Hall B Beam Current (2C24A)
+IBCxxxxCRCUR2		slow_controls_data    	   	!Hall A MPS BCM Current uA
+HC:0I05_XDIF		slow_controls_data    	   	!0I05 X Difference 
+HC:1I02_DYDIF		slow_controls_data    	   	!Error on 1I02 Y Difference
+HC:1I02_DXDIF		slow_controls_data    	   	!Error on 1I02 X Difference
+IGL1I00AI25		slow_controls_data    	   	!Hall A X PZT Voltage V
+HC:QPD_YDIF		slow_controls_data    	   	!QPD Y Difference
+HC:DY_DIF		slow_controls_data    	   	!dY on Y Position Difference to MCC
+HC:QPD_DXDIF		slow_controls_data    	   	!Error on QPD X Difference
+IGL1I00AI8		slow_controls_data    	   	!Gun 2 PITA Voltage Negative V
+itov1out		slow_controls_data    	   	!A1 Slit Setting
+qe_halla		slow_controls_data    	   	!Hall A Quantum Efficiency %
+HC:1I02_DWSUM		slow_controls_data    	   	!Error on 1I02 Charge Asymmetry 4 Wire Sum
+hallb_photocurrent	slow_controls_data    	   	!Hall B photocurrent  uA
+HC:0L02_XDIF		slow_controls_data    	   	!0L02 X Difference
+HC:1I02_WSUM		slow_controls_data    	   	!1I02 Charge Asymmetry 4 Wire Sum
+hallc_transmission	slow_controls_data    	   	!Hall C Independent Transmission %
+HC:IBCM_QASY 		slow_controls_data    	   	!Injector BCM Charge Asymmetry
+!
+IGL1I00AI23 		slow_controls_data    	   	!G0 Y PZT Voltage V [still exists]
+IGL1I00AI22		slow_controls_data    	   	!G0 X PZT Voltage V [still exists]
+!
+!IGLdac3:ao_1		slow_controls_data    	   	!Y PZT Voltage V [already in Riad's list above]
+!IGLdac3:ao_0		slow_controls_data    	   	!X PZT Voltage   [already in Riad's list above]
+!
+HC:Y_DIF 		slow_controls_data    	   	!Y Position Difference to MCC 
+qe_hallb		slow_controls_data    	   	!Hall B Quantum Efficiency %
+IGL1I00AI26		slow_controls_data    	   	!Hall A Y PZT Voltage  V
+laser_b_wavelength	slow_controls_data    	   	!Hall B laser wavelength nm
+!
+!psub_aa_pos		slow_controls_data    	   	!Hall A Laser Attenuator Setting [already in Riad's list above]
+!
+HC:1I06_YDIF		slow_controls_data    	   	!1I06 Y Difference
+HC:1I02_YDIF		slow_controls_data    	   	!1I02 Y Difference
+HC:DQ_ASY		slow_controls_data    	   	!Charge Asymmetry Uncertainty ppm
+HC:0L02_YDIF		slow_controls_data    	   	!0L02 Y Difference
+IBCxxxxCLOSS 		slow_controls_data    	   	!Machine Energy Loss
+psub_ac_pos		slow_controls_data    	   	!Hall C Laser Attenuator Setting	
+IGL1I00AI7		slow_controls_data    	   	!Gun 2 PITA Voltage Positive V
+HC:1I04_YDIF		slow_controls_data    	   	!1I04 Y Difference
+qe_hallc		slow_controls_data    	   	!Hall C Quantum Efficiency %
+HC:0L03_DYDIF		slow_controls_data    	   	!Error on 0L03 Y Difference
+HC:0L03_DWSUM		slow_controls_data    	   	!Error on 0L03 Charge Asymmetry 4 Wire Sum
+HC:0L03_XDIF		slow_controls_data    	   	!0L03 X Difference
+halla_photocurrent	slow_controls_data    	   	!Hall A photocurrent uA
+HC:1I06_XDIF		slow_controls_data    	   	!1I06 X Difference
+IGL1I00PStrans		slow_controls_data    	   	!Injector transmission
+HC:pint_period 		slow_controls_data    	   	!Position difference sampling period
+HC:0L02_DXDIF		slow_controls_data    	   	!Error on 0L02 X Difference
+osc2_jitter 		slow_controls_data    	   	!Hall C Laser Phase Jitter
+halla_transmission	slow_controls_data    	   	!Hall A Independent Transmission %
+HC:1I04_WSUM		slow_controls_data    	   	!1I04 Charge Asymmetry 4 Wire Sum
+HC:1I06_DYDIF 		slow_controls_data    	   	!Error on 1I06 Y Difference  
+HC:1I02_XDIF		slow_controls_data    	   	!1I02 X Difference  
+HC:0I05_WSUM 		slow_controls_data    	   	!0I05 Charge Asymmetry 4 Wire Sum 
+HC:bcm_threshold	slow_controls_data    	   	!BCM threshold cut for charge feedback uA
+ibcm1			slow_controls_data    	   	!Hall C Beam Current (monitor 1): careful, this is also in target epics	
+ibcm2			slow_controls_data    	   	!Hall C Beam Current (monitor 2): careful, this is also in target epics
+HC:bcm_select		polarized_source    	   	!String		! (result: BCM2)
+!		
+!IGL1I00DI24_24M	slow_controls_data    	   	![already in Riad's list above]		
+!
+EHCFR_LIXWidth		slow_controls_data    	   	!
+EHCFR_LIYWidth		slow_controls_data    	   	!
+EHCFR_ENERGY		slow_controls_data    	   	!	
+!	
+!IGL1I00DI24_24M    	slow_controls_data    	   	![This was repeated, see by 4 variables above]  
+!
+HC:0I05_DXIF		slow_controls_data    	   	!Error on 0I05 X Difference
+!
+!Epics variables from Hall C beamline BPM and BCM for their auto-gains
+!
+IPM3C17.XIFG		slow_controls_data    	   	!stripline bpm x position auto-gain
+IPM3C17.YIFG		slow_controls_data    	   	!		stripline bpm y position auto-gain	
+IBC3C17.XIFG		slow_controls_data    	   	!bcm x position auto-gain	
+IBC3C17.YIFG		slow_controls_data    	   	!bcm y position auto-gain
+IPM3C18.XIFG		slow_controls_data    	   	!
+IPM3C18.YIFG		slow_controls_data    	   	!
+IPM3C19.XIFG		slow_controls_data    	   	!
+IPM3C19.YIFG		slow_controls_data    	   	!
+IPM3P01.XIFG		slow_controls_data    	   	!
+IPM3P01.YIFG		slow_controls_data    	   	!
+IPM3P02A.XIFG		slow_controls_data    	   	!
+IPM3P02A.YIFG		slow_controls_data    	   	!
+IPM3P03A.XIFG		slow_controls_data    	   	!
+IPM3P03A.YIFG		slow_controls_data    	   	!
+IPM3P02B.XIFG		slow_controls_data    	   	!
+IPM3P02B.YIFG		slow_controls_data    	   	!
+IPM3C20.XIFG		slow_controls_data    	   	!
+IPM3C20.YIFG		slow_controls_data    	   	!
+IPM3C21.XIFG		slow_controls_data    	   	!
+IPM3C21.YIFG		slow_controls_data    	   	!
+IPM3H02.XIFG		slow_controls_data    	   	!
+IPM3H02.YIFG		slow_controls_data    	   	!
+IPM3H04.XIFG		slow_controls_data    	   	!
+IPM3H04.YIFG		slow_controls_data    	   	!
+!
+IPM3H04H		slow_controls_data    	   	!cavity bpm horizontal
+IPM3H04V		slow_controls_data    	   	!cavity bpm vertical
+IBC3H04			slow_controls_data    	   	!cavity bcm 
+IBC3H05			slow_controls_data    	   	!hall C bcm (i.e., ibcm1)
+IBC3H05A		slow_controls_data    	   	!hall C bcm (i.e., ibcm2)
+!
+IPM3H07A.XIFG		slow_controls_data    	   	!
+IPM3H07A.YIFG		slow_controls_data    	   	!
+IPM3H07B.XIFG		slow_controls_data    	   	!
+IPM3H07B.YIFG		slow_controls_data    	   	!
+IPM3H07C.XIFG		slow_controls_data    	   	!
+IPM3H07C.YIFG		slow_controls_data    	   	!
+IPM3H09.XIFG		slow_controls_data    	   	!
+IPM3H09.YIFG		slow_controls_data    	   	!
+!
+IPM3H09AH		slow_controls_data    	   	!	
+IPM3H09AV		slow_controls_data    	   	!	
+IBC3H09			slow_controls_data    	   	!	
+!
+IPM3H09B.XIFG		slow_controls_data    	   	!	
+IPM3H09B.YIFG		slow_controls_data    	   	!	
+!
+!Epics variables from Hall C beamline BPM and BCM for their X and Y positions
+!
+IPM3C17.XPOS		slow_controls_data    	   	!stripline bpm x position 
+IPM3C17.YPOS		slow_controls_data    	   	!stripline bpm y position 	
+IBC3C17.XPOS		slow_controls_data    	   	!bcm x position 	
+IBC3C17.YPOS		slow_controls_data    	   	!bcm y position 
+IPM3C18.XPOS		slow_controls_data    	   	!
+IPM3C18.YPOS		slow_controls_data    	   	!
+IPM3C19.XPOS		slow_controls_data    	   	!
+IPM3C19.YPOS		slow_controls_data    	   	!
+IPM3P01.XPOS		slow_controls_data    	   	!
+IPM3P01.YPOS		slow_controls_data    	   	!
+IPM3P02A.XPOS		slow_controls_data    	   	!
+IPM3P02A.YPOS		slow_controls_data    	   	!
+IPM3P03A.XPOS		slow_controls_data    	   	!
+IPM3P03A.YPOS		slow_controls_data    	   	!
+IPM3P02B.XPOS		slow_controls_data    	   	!
+IPM3P02B.YPOS		slow_controls_data    	   	!
+IPM3C20.XPOS		slow_controls_data    	   	!
+IPM3C20.YPOS		slow_controls_data    	   	!
+IPM3C21.XPOS		slow_controls_data    	   	!
+IPM3C21.YPOS		slow_controls_data    	   	!
+IPM3H02.XPOS		slow_controls_data    	   	!
+IPM3H02.YPOS		slow_controls_data    	   	!
+IPM3H04.XPOS		slow_controls_data    	   	!
+IPM3H04.YPOS		slow_controls_data    	   	!
+!
+IPM3H07A.XPOS		slow_controls_data    	   	!
+IPM3H07A.YPOS		slow_controls_data    	   	!
+IPM3H07B.XPOS		slow_controls_data    	   	!
+IPM3H07B.YPOS		slow_controls_data    	   	!
+IPM3H07C.XPOS		slow_controls_data    	   	!
+IPM3H07C.YPOS		slow_controls_data    	   	!
+IPM3H09.XPOS		slow_controls_data    	   	!
+IPM3H09.YPOS		slow_controls_data    	   	!	
+!
+IPM3H09B.XPOS		slow_controls_data    	   	!	
+IPM3H09B.YPOS		slow_controls_data    	   	!	
+!
+!Epics variables from Hall C beamline BPM and BCM for their X and Y position offsets
+!
+IPM3C17.XSOF		slow_controls_data    	   	!stripline bpm x position offset
+IPM3C17.YSOF		slow_controls_data    	   	!		stripline bpm y position offset	
+IBC3C17.XSOF		slow_controls_data    	   	!bcm x position offset	
+IBC3C17.YSOF		slow_controls_data    	   	!bcm y position offset
+IPM3C18.XSOF		slow_controls_data    	   	!
+IPM3C18.YSOF		slow_controls_data    	   	!
+IPM3C19.XSOF		slow_controls_data    	   	!
+IPM3C19.YSOF		slow_controls_data    	   	!
+IPM3P01.XSOF		slow_controls_data    	   	!
+IPM3P01.YSOF		slow_controls_data    	   	!
+IPM3P02A.XSOF		slow_controls_data    	   	!
+IPM3P02A.YSOF		slow_controls_data    	   	!
+IPM3P03A.XSOF		slow_controls_data    	   	!
+IPM3P03A.YSOF		slow_controls_data    	   	!
+IPM3P02B.XSOF		slow_controls_data    	   	!
+IPM3P02B.YSOF		slow_controls_data    	   	!
+IPM3C20.XSOF		slow_controls_data    	   	!
+IPM3C20.YSOF		slow_controls_data    	   	!
+IPM3C21.XSOF		slow_controls_data    	   	!
+IPM3C21.YSOF		slow_controls_data    	   	!
+IPM3H02.XSOF		slow_controls_data    	   	!
+IPM3H02.YSOF		slow_controls_data    	   	!
+IPM3H04.XSOF		slow_controls_data    	   	!
+IPM3H04.YSOF		slow_controls_data    	   	!
+!
+IPM3H07A.XSOF		slow_controls_data    	   	!
+IPM3H07A.YSOF		slow_controls_data    	   	!
+IPM3H07B.XSOF		slow_controls_data    	   	!
+IPM3H07B.YSOF		slow_controls_data    	   	!
+IPM3H07C.XSOF		slow_controls_data    	   	!
+IPM3H07C.YSOF		slow_controls_data    	   	!
+IPM3H09.XSOF		slow_controls_data    	   	!
+IPM3H09.YSOF		slow_controls_data    	   	!
+!
+IPM3H09B.XSOF		slow_controls_data    	   	!	
+IPM3H09B.YSOF		slow_controls_data    	   	!	
+!
+! Miscellaneous epics variables:
+HC:Q_ONOFF		polarized_source    	   	!String		!Charge feedback (ON/OFF)
+! Epics variables for Compton missing.
+!
+! Fast Feedback (copied from G0 epics.dictionary)
+!
+FB_A:FB_On        	polarized_source    	   	!String	!fast feedback Hall A status (result: OFF)
+FB_C:FB_On        	polarized_source    	   	!String	!fast feedback Hall C status (result: OFF)
+FB_C:status:mbbi2.B7 	slow_controls_data     	   	!1 or 0	!fast feedback Hall C status flag
+FB_C:use_RF         	polarized_source    	   	!String	!fast energy lock Hall C status (result: RF OFF)
+FB_A:use_RF         	polarized_source    	   	!String	!fast energy lock Hall A status (result: RF ON)
+FB_A:status:mbbi2.B7    slow_controls_data 		!1 or 0	!fast feedback Hall A status flag
+!
+! Hall C Moller information (copied from G0 epics.dictionary)
+!
+OXSS_RDF		slow_controls_data    	   	!Leads Field
+OXSS_MGFD		slow_controls_data    	   	!Persistent Field (T)
+TARGPOS			slow_controls_data    	   	!Target position X
+COLPOS1			slow_controls_data    	   	!Collimator Block 1
+COLPOS2			slow_controls_data    	   	!Collimator Block 2
+COLPOS3			slow_controls_data    	   	!Collimator Block 3
+COLPOS4			slow_controls_data    	   	!Collimator Block 4
+COLPOS5			slow_controls_data    	   	!Collimator Block 5
+COLPOS6			slow_controls_data    	   	!Collimator Block 6
+COLPOS7			slow_controls_data    	   	!Collimator Block 7
+!MHCMQ2SETI		slow_controls_data    	   	!Supply Set (A)
+!MHCMQ2IRBCK		slow_controls_data    	   	!Current ReadBack (A)
+!MQE3M02.S		slow_controls_data    	   	!Current Set (A)
+!The "result" indicates the result obtained from caget command.
+
+! Added Qtor related 4 variables: qw:qt_mps_i_target,qw:qt_mps_i_set, qw:qt_mps_i_dcct, Q1HallP
+
+qw:qt_mps_i_target      slow_controls_data              ! Qtor target curret
+qw:qt_mps_i_set		slow_controls_data              ! Qtor set current
+qw:qt_mps_i_dcct	slow_controls_data              ! Qtor DCCT
+Q1HallP			slow_controls_data              ! Qtor magnetic field read by Hall Probe 1
+!
+!
+!  
+!
+FB_C:CORR:C1_value.B    slow_controls_data              ! FFB corrector magnet 1 value
+FB_C:CORR:C2_value.B    slow_controls_data              ! FFB corrector magnet 2 value
+FB_C:CORR:C3_value.B    slow_controls_data              ! FFB corrector magnet 3 value
+FB_C:CORR:C4_value.B    slow_controls_data              ! FFB corrector magnet 4 value
+IBC1H04CRCUR2           slow_controls_data                 ! Hall A MPS BCM Current uA
+IBC3H00CRCUR4           slow_controls_data                 ! Hall C MPS BCM Current uA
+IFY0I06I                slow_controls_data                 ! PolCup position: FC1 (is/is not) inserted
+IFY0I06R                slow_controls_data                 ! PolCup position: FC1 (is/is not) retracted
+IFY0L03I                slow_controls_data                 ! PolCup position: FC2 (is/is not) inserted
+IFY0L03R                slow_controls_data                 ! PolCup position: FC2 (is/is not) retracted
+IFY1I07I                slow_controls_data                 ! PolCup position: PolCup (is/is not) inserted
+IFY1I07R                slow_controls_data                 ! PolCup position: PolCup (is/is not) retracted
+IOCSE14:PassSel;r       slow_controls_data               !String ! IOCSE14 Auto Select  
+IOCSE14:SEEGainMod;r    slow_controls_data               !String ! IOCSE14 Auto Gain 
+IOCSE14:SEEProcMod;r    slow_controls_data               !String ! IOCSE14 SEE Norm Ops
+IOCSE17:PassSel;r       slow_controls_data               !String ! IOCSE17 Auto Select  
+IOCSE17:SEEGainMod;r    slow_controls_data               !String ! IOCSE17 Auto Gain  
+IOCSE17:SEEProcMod;r    slow_controls_data               !String ! IOCSE17 SEE Norm Ops  
+IOCSE18:PassSel;r       slow_controls_data               !String ! IOCSE18 Auto Select 
+IOCSE18:SEEGainMod;r    slow_controls_data               !String ! IOCSE18 Auto Gain 
+IOCSE18:SEEProcMod;r    slow_controls_data               !String ! IOCSE18 SEE Norm Ops 
+IOCSE20:PassSel;r       slow_controls_data               !String ! IOCSE20 Auto Select
+IOCSE20:SEEGainMod;r    slow_controls_data               !String ! IOCSE20 Auto Gain  
+IOCSE20:SEEProcMod;r    slow_controls_data               !String ! IOCSE20 SEE Norm Ops 
+VCG3H09BTr              slow_controls_data               ! Scattering Chamber Vacuum psia
+qw:exitwindow           slow_controls_data               ! Exit window temp (C)
+rad45_p1                slow_controls_data               ! Gamma radiation monitor in Qweak detector shieldhouse
+rad45_p2                slow_controls_data               ! Neutron radiation monitor in Qweak detector shieldhouse
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  Composite slow control variables
+!    These are variables for which there is not an actual EPICS variable,
+!    but a value is generated internally by the QwEPICSEvent class.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+WienMode        	slow_controls_data	String	 !  This will indicate the spin direction in the hall as defined by the Wien setting + precession
+

@@ -43,10 +43,19 @@ file(GLOB my_project_sources
   Analysis/src/*.cc
   Parity/src/*.cc
   )
+list(REMOVE_ITEM my_project_sources
+		 ${PROJECT_SOURCE_DIR}/Analysis/src/QwF1TDContainer.cc
+		 ${PROJECT_SOURCE_DIR}/Analysis/src/QwSIS3320_Samples.cc
+		 )
+
 file(GLOB my_project_headers
   Analysis/include/*.h
   Parity/include/*.h
   )
+list(REMOVE_ITEM my_project_headers
+	    	 ${PROJECT_SOURCE_DIR}/Analysis/include/QwF1TDContainer.h
+		 ${PROJECT_SOURCE_DIR}/Analysis/include/QwSIS3320_Samples.h
+		 )
 
 #----------------------------------------------------------------------------
 # MYSQLPP

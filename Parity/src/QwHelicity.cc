@@ -19,7 +19,7 @@
 #define MYSQLPP_SSQLS_NO_STATICS
 #include "QwParitySSQLS.h"
 #include "QwParityDB.h"
-#endif
+#endif // __USE_DATABASE__
 #include "QwLog.h"
 
 extern QwHistogramHelper gQwHists;
@@ -1475,7 +1475,7 @@ void  QwHelicity::FillErrDB(QwParityDB *db, TString type)
 {
   return;
 }
-#endif
+#endif // __USE_DATABASE__
 
 
 UInt_t QwHelicity::GetRandbit(UInt_t& ranseed){

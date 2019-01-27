@@ -1,5 +1,5 @@
 /*
- * QwRegressionSubsystem.h
+ * QwCombinerSubsystem.h
  *
  *  Created on: Aug 11, 2011
  *      Author: meeker
@@ -16,46 +16,46 @@
 #include "QwOptions.h"
 #include "VQwSubsystemParity.h"
 #include "QwSubsystemArrayParity.h"
-#include "QwRegression.h"
+#include "QwCombiner.h"
 
 class QwParameterFile;
 
 /**
- * \class QwRegressionSubsystem
+ * \class QwCombinerSubsystem
  *
  * \brief
  *
  */
 
-class QwRegressionSubsystem: public VQwSubsystemParity, 
-  public MQwSubsystemCloneable<QwRegressionSubsystem>,
-  public QwRegression
+class QwCombinerSubsystem: public VQwSubsystemParity, 
+  public MQwSubsystemCloneable<QwCombinerSubsystem>,
+  public QwCombiner
 {
   
   public:
       // Constructors
       /// \brief Constructor with just name.
-      /// (use gQwOptions to initialize the QwRegression baseclass)
-      QwRegressionSubsystem(TString name)
-      : VQwSubsystem(name), VQwSubsystemParity(name), QwRegression(gQwOptions) { }
+      /// (use gQwOptions to initialize the QwCombiner baseclass)
+      QwCombinerSubsystem(TString name)
+      : VQwSubsystem(name), VQwSubsystemParity(name), QwCombiner(gQwOptions) { }
       /// \brief Constructor with only options
-      QwRegressionSubsystem(QwOptions &options, TString name)
-      : VQwSubsystem(name), VQwSubsystemParity(name), QwRegression(options) { }
+      QwCombinerSubsystem(QwOptions &options, TString name)
+      : VQwSubsystem(name), VQwSubsystemParity(name), QwCombiner(options) { }
       /// \brief Constructor with single event
-      QwRegressionSubsystem(QwOptions &options, QwSubsystemArrayParity& event, TString name)
-      : VQwSubsystem(name), VQwSubsystemParity(name), QwRegression(options, event)
-      { QwMessage << "Constructing QwRegressionSubsystem" << QwLog::endl; }
+      QwCombinerSubsystem(QwOptions &options, QwSubsystemArrayParity& event, TString name)
+      : VQwSubsystem(name), VQwSubsystemParity(name), QwCombiner(options, event)
+      { QwMessage << "Constructing QwCombinerSubsystem" << QwLog::endl; }
 
       // Copy Constructor
-      QwRegressionSubsystem(const QwRegressionSubsystem &source)
-      : VQwSubsystem(source), VQwSubsystemParity(source), QwRegression(source) { }
+      QwCombinerSubsystem(const QwCombinerSubsystem &source)
+      : VQwSubsystem(source), VQwSubsystemParity(source), QwCombiner(source) { }
 	
       // Destructor 
-      ~QwRegressionSubsystem();
+      ~QwCombinerSubsystem();
 
       boost::shared_ptr<VQwSubsystem> GetSharedPointerToStaticObject();
 
-      void ProcessOptions(QwOptions &options){QwRegression::ProcessOptions(options);};
+      void ProcessOptions(QwOptions &options){QwCombiner::ProcessOptions(options);};
 
       /// \brief Update the running sums
       void AccumulateRunningSum(VQwSubsystem* input);
@@ -66,7 +66,7 @@ class QwRegressionSubsystem: public VQwSubsystemParity,
       void PrintValue() const;
 
       void LinearRegression(){
-	QwRegression::LinearRegression(QwRegression::kRegTypeMps);
+        QwCombiner::LinearRegression(QwCombiner::kRegTypeMps);
       }
 
 
@@ -82,10 +82,10 @@ class QwRegressionSubsystem: public VQwSubsystemParity,
       void Scale(Double_t value);
 
       void ConstructBranchAndVector(TTree *tree, TString& prefix, std::vector <Double_t> &values){
-	QwRegression::ConstructBranchAndVector(tree,prefix,values);
+        QwCombiner::ConstructBranchAndVector(tree,prefix,values);
       }
       void FillTreeVector(std::vector<Double_t> &values) const{
-	QwRegression::FillTreeVector(values);
+        QwCombiner::FillTreeVector(values);
       }
 
       void ConstructHistograms(TDirectory *folder, TString &prefix);
@@ -97,22 +97,30 @@ class QwRegressionSubsystem: public VQwSubsystemParity,
 
 
 
-      //update the error flag in the subsystem level from the top level routines related to stability checks. This will uniquely update the errorflag at each channel based on the error flag in the corresponding channel in the ev_error subsystem
+      //update the error flag in the subsystem level from the top level routines related to stability checks
+      // This will uniquely update the errorflag at each channel based on the error flag in the corresponding channel in the ev_error subsystem
       void UpdateErrorFlag(const VQwSubsystem *ev_error);
 
 
       /// \brief Derived functions
-	// not sure if there should be empty definition, no definition or defined 
+      // not sure if there should be empty definition, no definition or defined 
       Int_t LoadChannelMap(TString);
       Int_t LoadInputParameters(TString);
       Int_t LoadEventCuts(TString);
       void ClearEventData(){
-	PairIterator element;
-	for (element = fDependentVar.begin();
-	     element != fDependentVar.end(); ++element) {
-	  if (element->second != NULL)
-	    element->second->ClearEventData();
-	}
+        for (size_t i = 0; i < fOutputVar.size(); ++i) {
+          if (fOutputVar.at(i) != NULL) {
+            fOutputVar.at(i)->ClearEventData();
+          }
+        }
+        /*
+        Iterator_HdwChan element;
+        for (element = fOutputVar.begin(); element != fOutputVar.end(); ++element) {
+          if (*element != NULL) {
+            (*element)->ClearEventData();
+          }
+        }
+        */
       };
       Int_t ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words);
 	Int_t ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words);
@@ -130,12 +138,12 @@ class QwRegressionSubsystem: public VQwSubsystemParity,
       * Default Constructor 
       * 
       * Error: tries to call default constructors of base class, 
-      * 	QwRegression() is private
+      * 	QwCombiner() is private
       */
-   //   QwRegressionSubsystem() {};     
+   //   QwCombinerSubsystem() {};     
 
       
-}; // class QwRegressionSubsystem
+}; // class QwCombinerSubsystem
 
 
 #endif // __QWREGRESSIONSUBSYSTEM__

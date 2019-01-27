@@ -138,7 +138,7 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
 #ifdef __USE_DATABASE__
   void  FillDB(QwParityDB *db, TString type);
   void  FillErrDB(QwParityDB *db, TString datatype);
-#endif
+#endif // __USE_DATABASE__
 
   void  Print() const;
 

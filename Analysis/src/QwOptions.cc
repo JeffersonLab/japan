@@ -77,7 +77,7 @@ void QwOptions::DefineOptions(QwOptions& options)
 #ifdef __USE_DATABASE__
   // Define database options
   QwDatabase::DefineOptions(options);
-#endif
+#endif //__USE_DATABASE__
   // Define ROOT file options
   QwRootFile::DefineOptions(options);
   // Define EPICS event options
