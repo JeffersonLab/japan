@@ -319,7 +319,7 @@ void QwOptions::Version()
 #endif
 
   QwMessage << "\n Qweak Analysis Framework : " << fArgv[0] << QwLog::endl;
-  QwMessage << " * GIT info: " << gGitInfoStr << QwLog::endl;
+  QwMessage << " * GIT info: " << gGitInfo << QwLog::endl;
   //  QwMessage << " * Revision: " << QWANA_SVN_REVISION << QwLog::endl;
   //  QwMessage << " * URL: " << QWANA_SVN_URL << QwLog::endl;
   //  QwMessage << " * Last Changed Rev: " << QWANA_SVN_LASTCHANGEDREVISION << QwLog::endl;
