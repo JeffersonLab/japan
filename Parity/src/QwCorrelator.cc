@@ -49,10 +49,10 @@ QwCorrelator::QwCorrelator(QwOptions &options, QwHelicityPattern& helicitypatter
     vector<TString> fIndependentName_t;
     vector<TString> fDependentName_t;
  
-    for (int i = 0; i < fIndependentName.size(); ++i) {
+    for (size_t i = 0; i < fIndependentName.size(); ++i) {
       fIndependentName_t.push_back(TString(fIndependentName.at(i)));
     }
-    for (int i = 0; i < fDependentName.size(); ++i) {
+    for (size_t i = 0; i < fDependentName.size(); ++i) {
       fDependentName_t.push_back(TString(fDependentName.at(i)));
     }
  
@@ -75,12 +75,12 @@ void QwCorrelator::FillCorrelator() {
 
   UInt_t error;
 
-  for (Int_t i = 0; i < fDependentVar.size(); ++i) {
+  for (size_t i = 0; i < fDependentVar.size(); ++i) {
     error |= fDependentVar.at(i)->GetErrorCode();
     fDependentValues.at(i) = (fDependentVar[i]->GetValue());
     //QwMessage << "Loading DV " << fDependentVar.at(i) << " into fDependentValues." << QwLog::endl;
   }
-  for (Int_t i = 0; i < fIndependentVar.size(); ++i) {
+  for (size_t i = 0; i < fIndependentVar.size(); ++i) {
     error |= fIndependentVar.at(i)->GetErrorCode();
     fIndependentValues.at(i) = (fIndependentVar[i]->GetValue());
     //QwMessage << "Loading IV " << fIndependentVar.at(i) << " into fIndependentValues." << QwLog::endl;

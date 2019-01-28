@@ -115,7 +115,7 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile) {
   //    Loop over # of dep variables
   //      Push-back the sensitiivity, IV type and IVnames into their respective vectors for each DV
 
-  for (size_t i = 0; i < dvnames->GetXaxis()->GetNbins(); ++i){
+  for (Int_t i = 0; i < dvnames->GetXaxis()->GetNbins(); ++i){
     type_name_dv = ParseRegressionVariable(dvnames->GetXaxis()->GetBinLabel(i+1));
     fDependentType.push_back(type_name_dv.first);
     fDependentName.push_back(type_name_dv.second);
@@ -123,11 +123,11 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile) {
 
   fSensitivity.resize(fDependentType.size());
 
-  for (size_t i = 0; i < ivnames->GetXaxis()->GetNbins(); ++i) {
+  for (Int_t i = 0; i < ivnames->GetXaxis()->GetNbins(); ++i) {
     type_name_iv = ParseRegressionVariable(ivnames->GetXaxis()->GetBinLabel(i+1));
     fIndependentType.push_back(type_name_iv.first);
     fIndependentName.push_back(type_name_iv.second);
-    for (size_t j = 0; j < dvnames->GetXaxis()->GetNbins(); ++j) {
+    for (Int_t j = 0; j < dvnames->GetXaxis()->GetNbins(); ++j) {
       fSensitivity[j].push_back(-1.0*(*alphasM)(i,j));
     }
   }
