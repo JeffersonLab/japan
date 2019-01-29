@@ -4,6 +4,10 @@ cmake_minimum_required(VERSION 2.8.4 FATAL_ERROR)
 # Name of this project
 project(panguin)
 
+# Install in GNU-style directory layout  (copied from japan/CMakeLists.txt)
+include(GNUInstallDirs)
+
+
 message(STATUS "System name ${CMAKE_SYSTEM_NAME}")
 #MAC specific variable
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -36,21 +40,24 @@ endif()
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
 # Load ROOT and setup include directory
-find_package(ROOT 6 REQUIRED)
+find_package(ROOT 6 REQUIRED New Gui Minuit2)
 include_directories(${ROOT_INCLUDE_DIR})
-set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lNew -lGui -lMinuit2)
 
 add_definitions(-std=c++11)
 
-ROOT_GENERATE_DICTIONARY(
-    panguinDict                         # path to dictionary to generate
-    include/panguinOnlineConfig.hh
-    include/panguinOnline.hh
-    LINKDEF "include/panguinOnlineLinkDef.h"  # ROOT linkDef file
+
+build_root_dictionary(
+    panguin                         # path to dictionary to generate
+    ${PROJECT_SOURCE_DIR}/include/panguinOnlineConfig.hh
+    ${PROJECT_SOURCE_DIR}/include/panguinOnline.hh
+    TARGETS panguin
+    LINKDEF "${PROJECT_SOURCE_DIR}/include/panguinOnlineLinkDef.h"  # ROOT linkDef file
     OPTIONS -p
 )
 
+
 include_directories(${PROJECT_SOURCE_DIR}/include)
+
 
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
@@ -66,7 +73,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 #
 add_library(panguin-lib SHARED ${sources} ${headers} panguinDict.cxx)
 set_target_properties(panguin-lib PROPERTIES OUTPUT_NAME panguin)
-target_link_libraries(panguin-lib ${ROOT_LIBRARIES})
+target_link_libraries(panguin-lib PUBLIC  ROOT::Libraries)
 
 add_executable(panguin-bin panguin.cc)
 set_target_properties(panguin-bin PROPERTIES OUTPUT_NAME panguin)
