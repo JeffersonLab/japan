@@ -215,13 +215,8 @@ endfunction()
 #              check the state of git before every build. If the state has
 #              changed, then a file is configured.
 function(SetupGitMonitoring)
-    add_custom_target(check_git_repository
-        ALL
-        DEPENDS ${PRE_CONFIGURE_FILE}
-        BYPRODUCTS ${POST_CONFIGURE_FILE}
-        COMMENT "Checking the git repository for changes..."
-        COMMAND
-            ${CMAKE_COMMAND}
+    message(STATUS "Adding check_git_repository target...")
+    set(CMD ${CMAKE_COMMAND}
             -D_BUILD_TIME_CHECK_GIT=TRUE
             -DGIT_WORKING_DIR=${GIT_WORKING_DIR}
             -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
@@ -229,6 +224,13 @@ function(SetupGitMonitoring)
             -DPRE_CONFIGURE_FILE=${PRE_CONFIGURE_FILE}
             -DPOST_CONFIGURE_FILE=${POST_CONFIGURE_FILE}
             -P "${CMAKE_CURRENT_LIST_FILE}")
+    add_custom_target(check_git_repository
+        ALL
+        DEPENDS ${PRE_CONFIGURE_FILE}
+        BYPRODUCTS ${POST_CONFIGURE_FILE}
+        COMMENT "Checking the git repository for changes..."
+        COMMAND ${CMD})
+    execute_process(COMMAND ${CMD})
 endfunction()
 
 
@@ -242,7 +244,10 @@ function(Main)
         # If so, run the change action.
         CheckGit("${GIT_WORKING_DIR}" did_change state)
         if(did_change)
+            message(STATUS "Git status has changed")
             GitStateChangedAction("${state}")
+        else()
+            message(STATUS "Git status unchanged")
         endif()
     else()
         # Executes at configure time.
