@@ -93,9 +93,14 @@ config_add_dependency(ROOT ${minimum_root_version})
 # gitinfo.cc
 #
 set(PRE_CONFIGURE_FILE ${PROJECT_SOURCE_DIR}/cmake/templates/gitinfo.cc.in)
-set(POST_CONFIGURE_FILE ${CMAKE_CURRENT_BINARY_DIR}/gitinfo.cc)
+set(POST_CONFIGURE_FILE ${CMAKE_BINARY_DIR}/gitinfo.cc)
 include(CMakeGitInfo)
-set(my_project_sources ${my_project_sources} ${POST_CONFIGURE_FILE})
+set_source_files_properties(
+  ${PROJECT_SOURCE_DIR}/Analysis/src/QwOptions.cc
+  ${PROJECT_SOURCE_DIR}/Analysis/src/QwRunCondition.cc
+  PROPERTIES OBJECTS_DEPEND ${POST_CONFIGURE_FILE}
+  )
+list(APPEND my_project_sources ${POST_CONFIGURE_FILE})
 
 
 #----------------------------------------------------------------------------
