@@ -188,7 +188,8 @@ QwPromptSummary::QwPromptSummary(Int_t run_number, Int_t runlet_number)
 
 QwPromptSummary::~QwPromptSummary()
 {
-  if(fElementList) delete fElementList; fElementList = NULL;
+  if(fElementList) delete fElementList;
+  fElementList = NULL;
 };
 
 
