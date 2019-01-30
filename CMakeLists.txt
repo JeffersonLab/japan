@@ -148,6 +148,7 @@ endforeach()
 # main library
 #
 add_library(${PROJECT_NAME} SHARED ${my_project_sources} ${my_project_headers})
+add_dependencies(${PROJECT_NAME} check_git_repository)
 
 target_include_directories(${PROJECT_NAME}
   PUBLIC

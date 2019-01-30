@@ -225,7 +225,6 @@ function(SetupGitMonitoring)
             -DPOST_CONFIGURE_FILE=${POST_CONFIGURE_FILE}
             -P "${CMAKE_CURRENT_LIST_FILE}")
     add_custom_target(check_git_repository
-        ALL
         DEPENDS ${PRE_CONFIGURE_FILE}
         BYPRODUCTS ${POST_CONFIGURE_FILE}
         COMMENT "Checking the git repository for changes..."
