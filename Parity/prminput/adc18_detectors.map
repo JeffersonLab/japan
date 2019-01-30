@@ -1,4 +1,4 @@
 [QwBeamLine]
- name  = Beamline
- map   = adc18_adc.map
- param = adc18_pedestal.map
+name  = Beamline
+map   = adc18_beamline.map
+param = adc18_pedestal.map

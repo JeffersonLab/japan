@@ -9,6 +9,7 @@
 
 // Qweak headers
 #include "QwVQWK_Channel.h"
+#include "QwADC18_Channel.h"
 #include "QwScaler_Channel.h"
 #include "QwBPMStripline.h"
 #include "QwQPD.h"
@@ -41,12 +42,17 @@ QwBeamDetectorID::QwBeamDetectorID(Int_t subbankid,
   fChannelName.ToLower();
 
   Int_t offset;
-  if(fmoduletype=="VQWK"){
+  if (fmoduletype == "VQWK") {
     fWordInSubbank = QwVQWK_Channel::GetBufferOffset(modnum, channum);
     if (paramfile.ReturnValue("vqwk_buffer_offset",offset)) {
       fWordInSubbank += offset;
     }
-  } else if(fmoduletype=="SCALER") {
+  } else if (fmoduletype == "ADC18") {
+    fWordInSubbank = QwADC18_Channel::GetBufferOffset(modnum, channum);
+    if (paramfile.ReturnValue("adc18_buffer_offset",offset)) {
+      fWordInSubbank += offset;
+    }
+  } else if (fmoduletype == "SCALER") {
     fWordInSubbank = VQwScaler_Channel::GetBufferOffset(modnum, channum);
     if (paramfile.ReturnValue("scaler_buffer_offset",offset)) {
       fWordInSubbank += offset;
@@ -55,7 +61,7 @@ QwBeamDetectorID::QwBeamDetectorID(Int_t subbankid,
     fWordInSubbank = -1;
   }
   fTypeID = GetQwBeamInstrumentType(fdetectortype);
-  
+
   size_t namesize = fChannelName.Sizeof();
   switch (fTypeID){
   case kQwBPMStripline:
@@ -84,7 +90,6 @@ QwBeamDetectorID::QwBeamDetectorID(Int_t subbankid,
     fSubelement = 0;
     break;
   }
-  
 }
 
 QwBeamDetectorID::QwBeamDetectorID(const QwBeamDetectorID& input)

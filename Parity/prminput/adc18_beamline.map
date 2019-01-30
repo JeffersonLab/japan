@@ -1,5 +1,7 @@
 ROC=23
 
+sample_size=16564
+
 ! module.type, module.num, module.chan, det.type, det.name
 ADC18, 0, 0,  bcm,  ADC0
 ADC18, 0, 1,  bcm,  ADC1
