@@ -359,11 +359,12 @@ Int_t QwSubsystemArray::ProcessEvBuffer(
   UInt_t* buffer,
   UInt_t num_words)
 {
-  if (!empty())
+  if (!empty()) {
     SetDataLoaded(kTRUE);
-    for (iterator subsys = begin(); subsys != end(); ++subsys){
+    for (iterator subsys = begin(); subsys != end(); ++subsys) {
       (*subsys)->ProcessEvBuffer(event_type, roc_id, bank_id, buffer, num_words);
     }
+  }
   return 0;
 }
 
