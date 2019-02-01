@@ -4,6 +4,7 @@ ROC=23
 adc18_buffer_offset=36
 
 ! module.type, module.num, module.chan, det.type, det.name
+ADC18, 0, -1,  bcm, DAC0
 ADC18, 0, 0,  bcm,  ADC00
 ADC18, 0, 1,  bcm,  ADC01
 ADC18, 0, 2,  bcm,  ADC02
