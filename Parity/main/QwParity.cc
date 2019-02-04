@@ -90,7 +90,7 @@ Int_t main(Int_t argc, Char_t* argv[])
   eventbuffer.ProcessOptions(gQwOptions);
 
   ///  Create the database connection
-#ifdef __USE_DATABASE__
+  #ifdef __USE_DATABASE__
   QwParityDB database(gQwOptions);
   #endif //__USE_DATABASE__
 
