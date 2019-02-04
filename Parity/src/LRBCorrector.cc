@@ -46,7 +46,7 @@ LRBCorrector::LRBCorrector(QwOptions &options, QwHelicityPattern& helicitypatter
   ParseSeparator = "_";
   fEnableCorrection = false;
   ProcessOptions(options);
-  LoadChannelMap(fRegressionMapFile);
+  LoadChannelMap(fCorrectorMapFile);
   fHelicityPattern = &helicitypattern;
   QwSubsystemArrayParity& asym = helicitypattern.fAsymmetry;
   QwSubsystemArrayParity& diff = helicitypattern.fDifference;
@@ -64,7 +64,7 @@ void LRBCorrector::DefineOptions(QwOptions &options)
     ("enable-lrbcorrection", po::value<bool>()->zero_tokens()->default_value(false),
      "enable lrb correction");
   options.AddOptions("LRBCorrector")
-    ("lrbregression-map", po::value<std::string>()->default_value("regression_new.map"),
+    ("lrbcorrector-map", po::value<std::string>()->default_value("corrector_new.map"),
      "variables and sensitivities for lrb correction");
 }
 
@@ -75,7 +75,7 @@ void LRBCorrector::DefineOptions(QwOptions &options)
 void LRBCorrector::ProcessOptions(QwOptions &options)
 {
   fEnableCorrection = options.GetValue<bool>("enable-lrbcorrection");
-  fRegressionMapFile = options.GetValue<std::string>("lrbregression-map");
+  fCorrectorMapFile = options.GetValue<std::string>("lrbcorrector-map");
   outPath = options.GetValue<std::string>("slope-file-path");
 }
 
@@ -88,9 +88,9 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile) {
   }
 
   string TmpFilePath = run_label.Data();
-  fRegressionMapFile = "blueR" + TmpFilePath + "new.slope.root";
+  fCorrectorMapFile = "blueR" + TmpFilePath + "new.slope.root";
   string MapFilePath = outPath + "/";
-  string tmp = MapFilePath + fRegressionMapFile;
+  string tmp = MapFilePath + fCorrectorMapFile;
   TString corFileName(tmp.c_str());
   QwMessage << "Trying to open " << corFileName << QwLog::endl;
   TFile*  corFile=new TFile(corFileName);
@@ -108,15 +108,15 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile) {
   TH1 *ivnames = (TH1 *) corFile->Get("IVname");
   assert(ivnames);
 
-  pair<EQwRegType, string> type_name_dv;
-  pair<EQwRegType, string> type_name_iv;
+  pair<EQwHandleType, string> type_name_dv;
+  pair<EQwHandleType, string> type_name_iv;
 
   //  Loop through ivnames to get IV type and name
   //    Loop over # of dep variables
   //      Push-back the sensitiivity, IV type and IVnames into their respective vectors for each DV
 
   for (Int_t i = 0; i < dvnames->GetXaxis()->GetNbins(); ++i){
-    type_name_dv = ParseRegressionVariable(dvnames->GetXaxis()->GetBinLabel(i+1));
+    type_name_dv = ParseHandledVariable(dvnames->GetXaxis()->GetBinLabel(i+1));
     fDependentType.push_back(type_name_dv.first);
     fDependentName.push_back(type_name_dv.second);
   }
@@ -124,7 +124,7 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile) {
   fSensitivity.resize(fDependentType.size());
 
   for (Int_t i = 0; i < ivnames->GetXaxis()->GetNbins(); ++i) {
-    type_name_iv = ParseRegressionVariable(ivnames->GetXaxis()->GetBinLabel(i+1));
+    type_name_iv = ParseHandledVariable(ivnames->GetXaxis()->GetBinLabel(i+1));
     fIndependentType.push_back(type_name_iv.first);
     fIndependentName.push_back(type_name_iv.second);
     for (Int_t j = 0; j < dvnames->GetXaxis()->GetNbins(); ++j) {
@@ -155,14 +155,14 @@ Int_t LRBCorrector::ConnectChannels(
     //          << "; fInpedententName[" << iv << "] = " << fIndependentName.at(iv)
     //          << QwLog::endl;
     switch (fIndependentType.at(iv)) {
-      case kRegTypeAsym:
+      case kHandleTypeAsym:
         iv_ptr = asym.ReturnInternalValue(fIndependentName.at(iv));
         break;
-      case kRegTypeDiff:
+      case kHandleTypeDiff:
         iv_ptr = diff.ReturnInternalValue(fIndependentName.at(iv));
         break;
       default:
-        QwWarning << "Independent variable for regression has unknown type."
+        QwWarning << "Independent variable for corrector has unknown type."
                   << QwLog::endl;
         break;
     }
@@ -184,9 +184,9 @@ void LRBCorrector::CalcOneOutput(const VQwHardwareChannel* dv, VQwHardwareChanne
                                   vector< const VQwHardwareChannel* > &ivs,
                                   vector< Double_t > &sens) {
   
-  // if second is NULL, can't do regression
+  // if second is NULL, can't do corrector
   if (output == NULL){
-    QwError<<"Second is value is NULL, unable to calculate regression."<<QwLog::endl;
+    QwError<<"Second is value is NULL, unable to calculate corrector."<<QwLog::endl;
     return;
   }
   // For correct type (asym, diff, mps)
@@ -209,19 +209,9 @@ void LRBCorrector::CalcOneOutput(const VQwHardwareChannel* dv, VQwHardwareChanne
 
 
 void LRBCorrector::ProcessData() {
-  
-  for (size_t i = 0; i < fDependentVar.size(); ++i) {
-    CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar, fSensitivity[i]);
-  }
-  
-}
-
-
-void LRBCorrector::LinearRegression(EQwRegType type)
-{
-  // Return if regression is not enabled
+  // Return if correction is not enabled
   if (! fEnableCorrection){
-    QwDebug << "Regression is not enabled!" << QwLog::endl;
+    QwDebug << "LRB Correction is not enabled!" << QwLog::endl;
     return;
   }
   // Get error flag from QwHelicityPattern
@@ -230,9 +220,12 @@ void LRBCorrector::LinearRegression(EQwRegType type)
   } else if (fSubsystemArray != NULL){
     fErrorFlag = fSubsystemArray->GetEventcutErrorFlag();
   } else {
-    QwError << "LRBCorrector::LinearRegression: Can't set fErrorFlag" << QwLog::endl;
+    QwError << "LRBCorrector::ProcessData: Can't set fErrorFlag" << QwLog::endl;
     fErrorFlag = 0;
   }
   
-  ProcessData();
+  for (size_t i = 0; i < fDependentVar.size(); ++i) {
+    CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar, fSensitivity[i]);
+  }
+  
 }

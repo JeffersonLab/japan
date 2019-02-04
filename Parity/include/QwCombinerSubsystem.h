@@ -6,8 +6,8 @@
  */
 
 
-#ifndef __QWREGRESSIONSUBSYSTEM__
-#define __QWREGRESSIONSUBSYSTEM__
+#ifndef __QWCOMBINERSUBSYSTEM__
+#define __QWCOMBINERSUBSYSTEM__
 
 // Boost headers
 #include <boost/shared_ptr.hpp>
@@ -65,10 +65,9 @@ class QwCombinerSubsystem: public VQwSubsystemParity,
       /// \brief Print values for all channels
       void PrintValue() const;
 
-      void LinearRegression(){
-        QwCombiner::LinearRegression(QwCombiner::kRegTypeMps);
+      void ProcessData(){
+        QwCombiner::ProcessData();
       }
-
 
       /// \brief Overloaded Operators
       VQwSubsystem& operator=  (VQwSubsystem *value);
@@ -146,5 +145,5 @@ class QwCombinerSubsystem: public VQwSubsystemParity,
 }; // class QwCombinerSubsystem
 
 
-#endif // __QWREGRESSIONSUBSYSTEM__
+#endif // __QWCOMBINERSUBSYSTEM__
 

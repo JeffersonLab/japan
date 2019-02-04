@@ -13,7 +13,6 @@
 // Parent Class
 #include "LRBCorrector.h"
 
-//Formerly QwRegression
 class QwCombiner : public LRBCorrector {
 
   public:
@@ -54,9 +53,6 @@ class QwCombiner : public LRBCorrector {
     Int_t ConnectChannels(QwSubsystemArrayParity& asym,
 			  QwSubsystemArrayParity& diff);
 
-    /// \brief Linear regression
-    void LinearRegression(EQwRegType type);
-
     void ProcessData();
   
   protected:
@@ -64,8 +60,8 @@ class QwCombiner : public LRBCorrector {
     /// Default constructor (Protected for child class access)
     QwCombiner() { };
 
-    /// List of channels to use in the regression
-    std::vector< std::vector< EQwRegType > > fIndependentType;
+    /// List of channels to use in the combiner
+    std::vector< std::vector< EQwHandleType > > fIndependentType;
     std::vector< std::vector< std::string > > fIndependentName;
 
     // std::vector< std::pair< VQwHardwareChannel*, VQwHardwareChannel*> > fDependentVar;
@@ -75,11 +71,11 @@ class QwCombiner : public LRBCorrector {
 
 }; // class QwCombiner
 
-inline std::ostream& operator<< (std::ostream& stream, const QwCombiner::EQwRegType& i) {
+inline std::ostream& operator<< (std::ostream& stream, const QwCombiner::EQwHandleType& i) {
   switch (i){
-  case QwCombiner::kRegTypeMps:  stream << "mps"; break;
-  case QwCombiner::kRegTypeAsym: stream << "asym"; break;
-  case QwCombiner::kRegTypeDiff: stream << "diff"; break;
+  case QwCombiner::kHandleTypeMps:  stream << "mps"; break;
+  case QwCombiner::kHandleTypeAsym: stream << "asym"; break;
+  case QwCombiner::kHandleTypeDiff: stream << "diff"; break;
   default:           stream << "Unknown";
   }
   return stream;

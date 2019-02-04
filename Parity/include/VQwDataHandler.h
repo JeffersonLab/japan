@@ -5,7 +5,8 @@ Created by: Michael Vallee
 Email: mv836315@ohio.edu
 
 Description:  This is the header file to the VQwDataHandler class.  This
-              class acts as a base class to all regression based classes.
+              class acts as a base class to all classes which need
+              to access data from multiple subsystems
 
 Last Modified: August 1, 2018 1:39 PM
 *****************************************************************************/
@@ -24,8 +25,8 @@ class VQwDataHandler {
 
   public:
     
-    enum EQwRegType {
-      kRegTypeUnknown=0, kRegTypeMps, kRegTypeAsym, kRegTypeDiff
+    enum EQwHandleType {
+      kHandleTypeUnknown=0, kHandleTypeMps, kHandleTypeAsym, kHandleTypeDiff
     };
     
     typedef std::vector< VQwHardwareChannel* >::iterator Iterator_HdwChan;
@@ -58,7 +59,7 @@ class VQwDataHandler {
     virtual Int_t LoadChannelMap(const std::string& mapfile) = 0;
     Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
     
-    std::pair<EQwRegType,std::string> ParseRegressionVariable(const std::string& variable);
+    std::pair<EQwHandleType,std::string> ParseHandledVariable(const std::string& variable);
 
     //Bool_t PublishInternalValue(const TString &name, const TString &desc, const VQwHardwareChannel *value) const;
     //Bool_t PublishByRequest(TString device_name);
@@ -71,7 +72,7 @@ class VQwDataHandler {
 
     std::string fCorrelatorMapFile;
 
-    std::vector< EQwRegType > fDependentType;
+    std::vector< EQwHandleType > fDependentType;
     std::vector< std::string > fDependentName;
 
     std::vector< const VQwHardwareChannel* > fDependentVar;
@@ -80,7 +81,7 @@ class VQwDataHandler {
     std::vector< VQwHardwareChannel* > fOutputVar;
     std::vector< Double_t > fOutputValues;
 
-    std::string ParseSeparator;  // Used as space between tokens in ParseRegressionVariable
+    std::string ParseSeparator;  // Used as space between tokens in ParseHandledVariable
 
 };
 

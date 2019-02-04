@@ -19,7 +19,6 @@ Last Modified: August 1, 2018 1:41 PM
 #include "VQwDataHandler.h"
 
 
-//Formerly LRBRegression
 class LRBCorrector : public VQwDataHandler {
   
   public:
@@ -41,8 +40,6 @@ class LRBCorrector : public VQwDataHandler {
 
     void ProcessData();
 
-    void LinearRegression(EQwRegType type);
-    
   protected:
     
     LRBCorrector() { }
@@ -56,10 +53,10 @@ class LRBCorrector : public VQwDataHandler {
     /// Helicity pattern pointer
     QwHelicityPattern* fHelicityPattern;
 
-    /// Regression dependent and independent variable map
-    std::string fRegressionMapFile;
+    /// Corrector dependent and independent variable map
+    std::string fCorrectorMapFile;
 
-    std::vector< EQwRegType > fIndependentType;
+    std::vector< EQwHandleType > fIndependentType;
     std::vector< std::string > fIndependentName;
     
     std::vector< const VQwHardwareChannel* > fIndependentVar;

@@ -110,9 +110,9 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
     fLastPatternNumber(0),
     fLastPhaseNumber(0),
     correlator(gQwOptions,*this, run),
-    regress_from_LRB(gQwOptions,*this, run),
-    regression(gQwOptions,*this),
-    running_regression(regression)
+    lrbcorrector(gQwOptions,*this, run),
+    combiner(gQwOptions,*this),
+    running_combiner(combiner)
 {
   // Retrieve the helicity subsystem to query for
   std::vector<VQwSubsystem*> subsys_helicity = event.GetSubsystemByType("QwHelicity");
@@ -863,9 +863,9 @@ void QwHelicityPattern::Print() const
 
 void QwHelicityPattern::ProcessDataHandlerEntry() {
 
-	regression.LinearRegression(QwCombiner::kRegTypeAsym);
-	running_regression.AccumulateRunningSum(regression);
-  regress_from_LRB.LinearRegression(QwCombiner::kRegTypeAsym);
+  combiner.ProcessData();//(QwCombiner::kHandleTypeAsym);
+  running_combiner.AccumulateRunningSum(combiner);
+  lrbcorrector.ProcessData();//(QwCombiner::kHandleTypeAsym);
   correlator.FillCorrelator();
 
 }
@@ -873,8 +873,8 @@ void QwHelicityPattern::ProcessDataHandlerEntry() {
 void QwHelicityPattern::FinishDataHandler() {
 
   correlator.CalcCorrelations();
-  running_regression.CalculateRunningAverage();
-  running_regression.PrintValue();
+  running_combiner.CalculateRunningAverage();
+  running_combiner.PrintValue();
 
 }
 

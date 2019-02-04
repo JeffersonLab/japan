@@ -38,7 +38,7 @@ QwCorrelator::QwCorrelator(QwOptions &options, QwHelicityPattern& helicitypatter
   ParseSeparator = "_";
   fEnableCorrelation = false;
   ProcessOptions(options);
-  init("blueReg.conf");
+  LoadChannelMap(fCorrelatorMapFile);
   corA.SetDisableHistogramFlag(fDisableHistos);
   QwSubsystemArrayParity& asym = helicitypattern.fAsymmetry;
   QwSubsystemArrayParity& diff = helicitypattern.fDifference;
@@ -61,13 +61,6 @@ QwCorrelator::QwCorrelator(QwOptions &options, QwHelicityPattern& helicitypatter
   }
   
 }
-
-void QwCorrelator::init(const std::string configFName) {
-	
-  LoadChannelMap(configFName);
-
-}
-
 
 void QwCorrelator::FillCorrelator() {
 
@@ -123,8 +116,8 @@ void QwCorrelator::DefineOptions(QwOptions &options) {
     ("enable-correlator", po::value<bool>()->zero_tokens()->default_value(false),
      "enables correlator");
   options.AddOptions("Correlator")
-    ("correlator-map", po::value<std::string>()->default_value("regression.map"),
-     "variables and sensitivities for regression");
+    ("correlator-map", po::value<std::string>()->default_value("blueReg.conf"),
+     "variables and sensitivities for correlator");
   
   options.AddOptions("Correlator")
     ("slope-file-path", po::value<std::string>()->default_value("."),
@@ -156,14 +149,14 @@ void QwCorrelator::ProcessOptions(QwOptions &options) {
  */
 Int_t QwCorrelator::LoadChannelMap(const std::string& mapfile)
 {
-  // Return if regression is not enabled
+  // Return if correlator is not enabled
   if (! fEnableCorrelation) return 0;
 
   // Open the file
   QwParameterFile map(mapfile);
 
   // Read the sections of dependent variables
-  std::pair<EQwRegType,std::string> type_name;
+  std::pair<EQwHandleType,std::string> type_name;
 
   // Add independent variables and sensitivities
   while (map.ReadNextLine()) {
@@ -175,7 +168,7 @@ Int_t QwCorrelator::LoadChannelMap(const std::string& mapfile)
     string primary_token = map.GetNextToken(" ");
     string current_token = map.GetNextToken(" ");
     // Parse current token into independent variable type and name
-    type_name = ParseRegressionVariable(current_token);
+    type_name = ParseHandledVariable(current_token);
 
     if (primary_token == "iv") {
       fIndependentType.push_back(type_name.first);
@@ -209,7 +202,7 @@ Int_t QwCorrelator::LoadChannelMap(const std::string& mapfile)
 
 Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff) {
 	
-	// Return if regression is not enabled
+	// Return if correlator is not enabled
   if (! fEnableCorrelation) return 0;
 
   /// Fill vector of pointers to the relevant data elements
@@ -222,23 +215,23 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
     string name = "";
     string reg = "reg_";
     
-    if (fDependentType.at(dv)==kRegTypeMps){
+    if (fDependentType.at(dv)==kHandleTypeMps){
       //  Quietly ignore the MPS type when we're connecting the asym & diff
       continue;
     } else if(fDependentName.at(dv).at(0) == '@' ){
       name = fDependentName.at(dv).substr(1,fDependentName.at(dv).length());
     }else{
       switch (fDependentType.at(dv)) {
-        case kRegTypeAsym:
+        case kHandleTypeAsym:
           dv_ptr = asym.ReturnInternalValueForFriends(fDependentName.at(dv));
           break;
-        case kRegTypeDiff:
+        case kHandleTypeDiff:
           dv_ptr = diff.ReturnInternalValueForFriends(fDependentName.at(dv));
           break;
         default:
           QwWarning << "QwCombiner::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
 	          	      << fDependentName.at(dv)
-		                << ", for asym/diff regression does not have proper type, type=="
+		                << ", for asym/diff correlator does not have proper type, type=="
 		                << fDependentType.at(dv) << "."<< QwLog::endl;
           break;
         }
@@ -278,14 +271,14 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
     // Get the independent variables
     const VQwHardwareChannel* iv_ptr = 0;
     switch (fIndependentType.at(iv)) {
-      case kRegTypeAsym:
+      case kHandleTypeAsym:
         iv_ptr = asym.ReturnInternalValue(fIndependentName.at(iv));
         break;
-      case kRegTypeDiff:
+      case kHandleTypeDiff:
         iv_ptr = diff.ReturnInternalValue(fIndependentName.at(iv));
         break;
       default:
-        QwWarning << "Independent variable for regression has unknown type."
+        QwWarning << "Independent variable for correlator has unknown type."
                   << QwLog::endl;
         break;
     }
@@ -293,7 +286,7 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
       //QwMessage << " iv: " << fIndependentName.at(iv) << QwLog::endl;
       fIndependentVar.push_back(iv_ptr);
     } else {
-      QwWarning << "Independent variable " << fIndependentName.at(iv) << " for regression of could not be found."
+      QwWarning << "Independent variable " << fIndependentName.at(iv) << " for correlator could not be found."
                 << QwLog::endl;
     }
       

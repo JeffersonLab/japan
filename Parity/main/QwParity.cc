@@ -123,10 +123,10 @@ Int_t main(Int_t argc, Char_t* argv[])
     detectors.ProcessOptions(gQwOptions);
     detectors.ListPublishedValues();
 
-    /// Create event-based linear regression subsystem
-    //    TString name = "MpsRegression";
-    //    QwCombinerSubsystem regress_sub(gQwOptions, detectors, name);
-    //    detectors.push_back(regress_sub.GetSharedPointerToStaticObject());
+    /// Create event-based correction subsystem
+    //    TString name = "EvtCorrector";
+    //    QwCombinerSubsystem corrector_sub(gQwOptions, detectors, name);
+    //    detectors.push_back(corrector_sub.GetSharedPointerToStaticObject());
     
     /// Create the helicity pattern
     //    Instead of having run_label in the constructor of helicitypattern, it might
@@ -187,8 +187,8 @@ Int_t main(Int_t argc, Char_t* argv[])
     //  Construct tree branches
     treerootfile->ConstructTreeBranches("Mps_Tree", "MPS event data tree", ringoutput);
     treerootfile->ConstructTreeBranches("Hel_Tree", "Helicity event data tree", helicitypattern);
-    treerootfile->ConstructTreeBranches("Hel_Tree_Reg", "Helicity event data tree (regressed)", helicitypattern.return_regression());
-    treerootfile->ConstructTreeBranches("Hel_Tree_LRB", "Helicity event data tree (regressed)", helicitypattern.return_regress_from_LRB());
+    treerootfile->ConstructTreeBranches("Hel_Tree_Combiner", "Helicity event data tree (combiner)", helicitypattern.return_combiner());
+    treerootfile->ConstructTreeBranches("Hel_Tree_LRB", "Helicity event data tree (LRB combined)", helicitypattern.return_LRBCorrector());
     treerootfile->ConstructTreeBranches("Slow_Tree", "EPICS and slow control tree", epicsevent);
     burstrootfile->ConstructTreeBranches("Burst_Tree", "Burst level data tree", helicitypattern.GetBurstYield(),"yield_");
     burstrootfile->ConstructTreeBranches("Burst_Tree", "Burst level data tree", helicitypattern.GetBurstAsymmetry(),"asym_");
@@ -266,7 +266,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       if (detectors.ApplySingleEventCuts()) {
 	
 	//	// TEST 
-	// 	regress_sub.LinearRegression();
+	// 	combiner_sub.ProcessData();
 
         // Add event to the ring
         eventring.push(detectors);
@@ -322,15 +322,15 @@ Int_t main(Int_t argc, Char_t* argv[])
                 helicitypattern.ClearBurstSum();
               }
 
-              // Linear regression on asymmetries
+              // Process data handlers
               helicitypattern.ProcessDataHandlerEntry();
 
               // Fill regressed tree branches
               
-	            treerootfile->FillTreeBranches(helicitypattern.return_regression());
-	            treerootfile->FillTree("Hel_Tree_Reg");
-              treerootfile->FillTreeBranches(helicitypattern.return_regress_from_LRB());
-	            treerootfile->FillTree("Hel_Tree_LRB");
+	      treerootfile->FillTreeBranches(helicitypattern.return_combiner());
+	      treerootfile->FillTree("Hel_Tree_Combiner");
+              treerootfile->FillTreeBranches(helicitypattern.return_LRBCorrector());
+	      treerootfile->FillTree("Hel_Tree_LRB");
 
               // Clear the data
               helicitypattern.ClearEventData();
@@ -416,7 +416,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       helicitypattern.FillDB(&database);
       helicitypattern.FillErrDB(&database);
       epicsevent.FillDB(&database);
-      helicitypattern.return_running_regression().FillDB(&database,"asymmetry");
+      helicitypattern.return_running_combiner().FillDB(&database,"asymmetry");
       ringoutput.FillDB_MPS(&database, "optics");
     }
     #endif // __USE_DATABASE__    

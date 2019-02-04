@@ -25,7 +25,6 @@ class QwCorrelator : public VQwDataHandler {
 
   public:
 
-		void init(const std::string configFName);
 		void FillCorrelator();
 		void CalcCorrelations();
 
@@ -56,7 +55,7 @@ class QwCorrelator : public VQwDataHandler {
     std::vector< TString > fDependentFull;
     
 	  //  Using the fDependentType and fDependentName from base class, but override the IV arrays
-	  std::vector< EQwRegType > fIndependentType;
+	  std::vector< EQwHandleType > fIndependentType;
     std::vector< std::string > fIndependentName;
 
     std::vector< const VQwHardwareChannel* > fIndependentVar;
