@@ -158,6 +158,8 @@ class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms {
   virtual Int_t LoadInputParameters(TString mapfile) = 0;
   /// Optional geometry definition
   virtual Int_t LoadGeometryDefinition(TString mapfile) { return 0; };
+  /// Optional crosstalk definition
+  virtual Int_t LoadCrosstalkDefinition(TString mapfile) { return 0; };
   /// Optional event cut file
   virtual Int_t LoadEventCuts(TString mapfile) { return 0; };
 

@@ -1,0 +1,54 @@
+!**************************************************************************
+! Geometry information for the BPMs in Hall C beamline.
+!**************************************************************************
+! [Last updated by buddhini on 12-03-2010]
+!
+! 12-02-2010  B.Waidyawansa  Added the correct offset in Z to the target (+11mm->moved downstream). 
+!                            Removed the wrong offser of 14mm in X. It was meant to be the offset for Z not X.
+!                            I got confused. Greg said 14mm offset to Z. Survey doc (http://www.jlab.org/accel/survalign/documents/dthallc/C1340.pdf)
+!                            shows it was 11mm offset to z compared to the old value from the last survey (http://www.jlab.org/accel/survalign/documents/dthallc/C1307.pdf).
+!                            So I used that value instead.
+!
+! 11-12-2010  B.Waidyawansa  Added the new surveyed offsets for the 3 bpms in front of the target from 
+!                            Jays hclog https://hallcweb.jlab.org/hclog/1011_archive/101112150143.html
+!
+! X/Yoffset - The difference in the ideal position and the surveyed position of a BPM in X/Y axis.
+!
+! Z offset  - The location of the BPM in the hallC beamline (alog Z axis) from the begining of the arc
+!             to the center of the device/ origin of device coordinate system.
+!
+! BSEN scaling factor - Bpm SENsitivity scaling factor is the ratio of general BSEN = 18.81 adc counts/mm 
+!                       seen in most of the BPMs in the hall and the actual BSEN of a BPM. 
+!                       Almost all the BPMs in the hallC beamline except 3H08 has BSEN=25.8 adc counts/mm
+!                       So we use this factor to apply such changes.
+!
+! AlphaX/Y  - Relative gains of the individual XM,YM pairs compared to XP,YP pairs.
+! 
+! The units of the offsets are in millemeters to be comparable with the units of the analysis results.
+!
+! The optime based BPM and target offset values for bpms after 3c19 were obtained from Qweak-doc-1203-v3 bu Nuruzzaman.
+! The BSEN, ALPHAX and ALPHAY values and the XSOF and YSOF values for the rest of the bpms were obtained from EPICS.
+!
+! For BPMs that don't have factors or offsets given in the list below, default values will
+! be assigned. 
+!   default  offset (X/Y/Z) = 0.0
+!   default BSEN scaling factor = 18.81
+!   default AlphaX/AlphaY = 1.0
+!
+! device type, device_name,   Xoffset,Yoffset, Zoffset, BSEN scaling factor, AlpaX, AlpaY
+!
+ bpmstripline,   QWK_BPM3C12,   0.736,   -0.202,  75926.1,     1.0,    0.982274,  0.950626,  	
+ bpmstripline,   QWK_BPM3H07A,  0.6823,   0.0892,   138406.0,     1.0,    0.960181,  1.071930, xgain=0.9844,ygain=1.0020
+ bpmstripline,   QWK_BPM3H07B,  0.5896,  -0.1550,   139363.0,     1.0,    1.022240,  1.015710, xgain=0.8410,ygain=0.8710
+ bpmstripline,   QWK_BPM3H07C,  0.6,	  0.0,      140319.0,     1.0,    1.013110,  0.985986,  
+ bpmstripline,   QWK_BPM3H09,   0.865,   -1.0160,   144803.0,     1.0,    1.025930,  0.993640, xgain=0.9762,ygain=0.8710
+
+! The representative bpm for qweak hydrogen target.
+! From the latest survey information on target (http://www.jlab.org/accel/survalign/documents/dthallc/C1340.pdf),
+! the dz offset for the target was reduced 11 mm by moving the target by 11 mm downstream.
+! Therefore I added the new z offset ,11 mm to the ideal z position of the target ( 148739 mm ) to get the correct center of the
+! target w.r.t  bpm coordinates. 	
+
+  combinedbpm,   QWK_TARGET       0.0,      0.0,   148750.0, 	1.0,  	1.0,  1.0, 
+
+!END

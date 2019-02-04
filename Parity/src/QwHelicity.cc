@@ -19,7 +19,7 @@
 #define MYSQLPP_SSQLS_NO_STATICS
 #include "QwParitySSQLS.h"
 #include "QwParityDB.h"
-#endif
+#endif // __USE_DATABASE__
 #include "QwLog.h"
 
 extern QwHistogramHelper gQwHists;
@@ -68,6 +68,7 @@ QwHelicity::QwHelicity(const TString& name)
   fHelicityDelayed=kUndefinedHelicity;
   fHelicityBitPlus=kFALSE;
   fHelicityBitMinus=kFALSE;
+  n_ranbits = 0;
   fGoodHelicity=kFALSE;
   fGoodPattern=kFALSE;
   fHelicityDecodingMode=-1;
@@ -83,11 +84,11 @@ QwHelicity::QwHelicity(const TString& name)
 QwHelicity::QwHelicity(const QwHelicity& source)
 : VQwSubsystem(source.GetSubsystemName()),
   VQwSubsystemParity(source.GetSubsystemName()),
-  fInputReg_HelPlus(fInputReg_HelPlus),
-  fInputReg_HelMinus(fInputReg_HelMinus),
-  fInputReg_PatternSync(fInputReg_PatternSync),
-  fInputReg_PairSync(fInputReg_PairSync),
-  fHelicityBitPattern(kDefaultHelicityBitPattern),
+  fInputReg_HelPlus(source.fInputReg_HelPlus),
+  fInputReg_HelMinus(source.fInputReg_HelMinus),
+  fInputReg_PatternSync(source.fInputReg_PatternSync),
+  fInputReg_PairSync(source.fInputReg_PairSync),
+  fHelicityBitPattern(source.fHelicityBitPattern),
   kPatternCounter(source.kPatternCounter),
   kMpsCounter(source.kMpsCounter),
   kPatternPhase(source.kPatternPhase),
@@ -1474,7 +1475,7 @@ void  QwHelicity::FillErrDB(QwParityDB *db, TString type)
 {
   return;
 }
-#endif
+#endif // __USE_DATABASE__
 
 
 UInt_t QwHelicity::GetRandbit(UInt_t& ranseed){

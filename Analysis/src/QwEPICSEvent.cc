@@ -23,7 +23,7 @@
 #define MYSQLPP_SSQLS_NO_STATICS
 #include "QwParitySSQLS.h"
 #include "QwParityDB.h"
-#endif
+#endif //__USE_DATABASE__
 
 
 /*************************************
@@ -1237,8 +1237,7 @@ void QwEPICSEvent::FillSlowControlsSettings(QwParityDB *db)
   db->Disconnect();
   QwDebug << "Leaving QwEPICSEvent::FillSlowControlsStrings()" << QwLog::endl;
 }
-#endif
-
+#endif //__USE_DATABASE__
 
 TList *QwEPICSEvent::GetEPICSStringValues()
 {

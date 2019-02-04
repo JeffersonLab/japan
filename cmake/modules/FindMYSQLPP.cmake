@@ -1,6 +1,7 @@
 MESSAGE("-- Looking for MySQL and MySQL++ libraries.")
 
 FIND_PATH(MYSQLPP_INCLUDE_PATH mysql++.h
+  $ENV{MYSQLPP_INC_DIR}
   /usr/include/mysql++/
   /usr/local/Cellar/mysql++/3.2.3_1/include/mysql++/
   /group/qweak/QwAnalysis/Linux_CentOS6.5-x86_64/MySQL++/local/include/mysql++/
@@ -19,6 +20,7 @@ IF(MYSQL_INCLUDE_PATH AND MYSQLPP_INCLUDE_PATH)
 ENDIF(MYSQL_INCLUDE_PATH AND MYSQLPP_INCLUDE_PATH)
 
 FIND_LIBRARY(MYSQLPP_LIBRARIES mysqlpp
+  $ENV{MYSQLPP_LIB_DIR}
   /usr/lib/mysql++/
   /usr/local/Cellar/mysql++/3.2.3_1/lib
   /group/qweak/QwAnalysis/Linux_CentOS6.5-x86_64/MySQL++/local/lib

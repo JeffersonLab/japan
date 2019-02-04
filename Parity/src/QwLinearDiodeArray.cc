@@ -329,7 +329,7 @@ void  QwLinearDiodeArray::ProcessEvent()
     std::cout<<" event number= "<<fPhotodiode[0].GetSequenceNumber()<<std::endl;
     for(Int_t i = 0; i<8; i++)
       std::cout<<" pad"<<i<<" ="<<fPhotodiode[i].GetValue()<<std::endl;
-      std::cout<<" mean ="<<fRelPos[0].GetValue()<<std::endl;
+    std::cout<<" mean ="<<fRelPos[0].GetValue()<<std::endl;
     std::cout<<" varaiance ="<<fRelPos[1].GetValue()<<std::endl;
     std::cout<<" total charge ="<<fEffectiveCharge.GetValue()<<std::endl;
 

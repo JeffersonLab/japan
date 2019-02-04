@@ -1,0 +1,140 @@
+!**************************************************************************
+!  QWEAK LUMI MAP
+!**************************************************************************
+!As of 11/10/2011
+!
+ROC=2
+Bank=0x0202
+!same sample size for ADCs in a given bank
+!use 480 for 1kHz
+!use 2000 for 240Hz 
+!sample_size=480
+!sample_size=2000
+!for 960Hz
+sample_size=464  
+
+!
+!
+! module.type, module.num  chan.num, det.type, det.name, if unrotated then last column ->UNROTATED
+
+!ADC4, Slot 12, Serial Number 18, Address 0x84
+  VQWK, 4, 0,  integrationpmt,  QWK_USLUMI1NEG
+  VQWK, 4, 1,  integrationpmt,  QWK_USLUMI1POS
+  VQWK, 4, 2,  integrationpmt,  QWK_USLUMI3NEG
+  VQWK, 4, 3,  integrationpmt,  QWK_USLUMI3POS
+  VQWK, 4, 4,  integrationpmt,  QWK_USLUMI5NEG
+  VQWK, 4, 5,  integrationpmt,  QWK_USLUMI5POS
+  VQWK, 4, 6,  integrationpmt,  QWK_USLUMI7NEG
+  VQWK, 4, 7,  integrationpmt,  QWK_USLUMI7POS
+
+!ADC5, Slot 14, Serial Number 03, Address 0x85
+!  VQWK, 5, 0,  integrationpmt,  QWK_DSLUMI1
+!  VQWK, 5, 1,  integrationpmt,  QWK_DSLUMI2
+!  VQWK, 5, 2,  integrationpmt,  QWK_DSLUMI3
+!  VQWK, 5, 3,  integrationpmt,  QWK_DSLUMI4
+!  VQWK, 5, 4,  integrationpmt,  QWK_DSLUMI5
+!  VQWK, 5, 5,  integrationpmt,  QWK_DSLUMI6
+!  VQWK, 5, 6,  integrationpmt,  QWK_DSLUMI7
+!  VQWK, 5, 7,  integrationpmt,  QWK_DSLUMI8
+
+
+
+!**************************************************************************
+!  QWEAK LUMI SCALERS
+!**************************************************************************
+ROC=0
+Bank=0x6103
+! module.type, scaler.num  word.num, scaler.type, det.name
+! pre august 26, 2010
+!SCALER,2,1,scalerpmt,sca_uslumi7pos
+!SCALER,2,2,scalerpmt,sca_uslumi7neg
+!SCALER,2,3,scalerpmt,sca_uslumi5pos
+!SCALER,2,4,scalerpmt,sca_uslumi5neg
+!SCALER,2,5,scalerpmt,sca_uslumi3pos
+!SCALER,2,6,scalerpmt,sca_uslumi3neg
+!SCALER,2,7,scalerpmt,sca_uslumi1pos
+!SCALER,2,8,scalerpmt,sca_uslumi1neg
+!SCALER,2,9,scalerpmt,sca_dslumi8
+!SCALER,2,10,scalerpmt,sca_dslumi7
+!SCALER,2,11,scalerpmt,sca_dslumi6
+!SCALER,2,12,scalerpmt,sca_dslumi5
+!SCALER,2,13,scalerpmt,sca_dslumi4
+!SCALER,2,14,scalerpmt,sca_dslumi3
+!SCALER,2,15,scalerpmt,sca_dslumi2
+!SCALER,2,16,scalerpmt,sca_dslumi1
+
+!post august 26,2010 sca_ below!
+!SCALER,2,0,scalerpmt,sca_dslumi1
+!SCALER,2,1,scalerpmt,sca_dslumi2
+!SCALER,2,2,scalerpmt,sca_dslumi3
+!SCALER,2,3,scalerpmt,sca_dslumi4
+!SCALER,2,4,scalerpmt,sca_dslumi5
+!SCALER,2,5,scalerpmt,sca_dslumi6
+!SCALER,2,6,scalerpmt,sca_dslumi7
+!SCALER,2,7,scalerpmt,sca_dslumi8
+!SCALER,2,8,scalerpmt,sca_uslumi1neg
+!SCALER,2,9,scalerpmt,sca_uslumi1pos
+!SCALER,2,10,scalerpmt,sca_uslumi3neg
+!SCALER,2,11,scalerpmt,sca_uslumi3pos
+!SCALER,2,12,scalerpmt,sca_uslumi5neg
+!SCALER,2,13,scalerpmt,sca_uslumi5pos
+!SCALER,2,14,scalerpmt,sca_uslumi7neg
+!SCALER,2,15,scalerpmt,sca_uslumi7pos
+
+
+!Bank=0x6103
+! module.type, scaler.num  word.num, scaler.type, det.name
+!SCALER,1,0,scalerpmt,vtf_uslumi1neg
+!SCALER,1,1,scalerpmt,vtf_uslumi1pos
+!SCALER,1,2,scalerpmt,vtf_uslumi3neg
+!SCALER,1,3,scalerpmt,vtf_uslumi3pos
+!SCALER,1,4,scalerpmt,vtf_uslumi5neg
+!SCALER,1,5,scalerpmt,vtf_uslumi5pos
+!SCALER,1,6,scalerpmt,vtf_uslumi7neg
+!SCALER,1,7,scalerpmt,vtf_uslumi7pos
+!SCALER,1,8,scalerpmt,vtf_dslumi1
+!SCALER,1,9,scalerpmt,vtf_dslumi2
+!SCALER,1,10,scalerpmt,vtf_dslumi3
+!SCALER,1,11,scalerpmt,vtf_dslumi4
+!SCALER,1,12,scalerpmt,vtf_dslumi5
+!SCALER,1,13,scalerpmt,vtf_dslumi6
+!SCALER,1,14,scalerpmt,vtf_dslumi7
+!SCALER,1,15,scalerpmt,vtf_dslumi8
+
+
+
+
+! "virtual" channels for PMT combination, it supports any combination of physical channels
+! when naming the DetName, do not use arithmetic and logic operators, such as +,-, &, and so on
+!
+! ModuleType, Chan#, NumberOfCombinedChan's, DetType, DetName, PhysicalChanNames, WeightNumbers,
+!  VPMT, 40,  2, CombinationPMT,  uslumi1_sum,  	 qwk_uslumi1Pos,  qwk_uslumi1Neg, 1.0,  1.0
+!  VPMT, 41,  2, CombinationPMT,  uslumi3_sum,  	 qwk_uslumi3Pos,  qwk_uslumi3Neg, 1.0,  1.0
+!  VPMT, 42,  2, CombinationPMT,  uslumi5_sum,  	 qwk_uslumi5Pos,  qwk_uslumi5Neg, 1.0,  1.0
+!  VPMT, 43,  2, CombinationPMT,  uslumi7_sum,  	 qwk_uslumi7Pos,  qwk_uslumi7Neg, 1.0,  1.0
+!  VPMT, 44,  4, CombinationPMT,  uslumi1_uslumi5_sum,	 qwk_uslumi1Pos,  qwk_uslumi1Neg,  qwk_uslumi5Pos,  qwk_uslumi5Neg, 1.0,  1.0, 1.0,  1.0
+!  VPMT, 45,  4, CombinationPMT,  uslumi3_uslumi7_sum,	 qwk_uslumi3Pos,  qwk_uslumi3Neg,  qwk_uslumi7Pos,  qwk_uslumi7Neg, 1.0,  1.0, 1.0,  1.0
+!  VPMT, 46,  4, CombinationPMT,  uslumi1_uslumi5_diff,	 qwk_uslumi1Pos,  qwk_uslumi1Neg,  qwk_uslumi5Pos,  qwk_uslumi5Neg, 1.0,  1.0, -1.0,  -1.0
+!  VPMT, 47,  4, CombinationPMT,  uslumi3_uslumi7_diff,	 qwk_uslumi3Pos,  qwk_uslumi3Neg,  qwk_uslumi7Pos,  qwk_uslumi7Neg, 1.0,  1.0, -1.0,  -1.0
+  
+VPMT, 48,  8, CombinationPMT,  uslumi_sum,         qwk_uslumi1Pos,  qwk_uslumi1Neg,  qwk_uslumi3Pos,  qwk_uslumi3Neg,  qwk_uslumi5Pos,  qwk_uslumi5Neg,  qwk_uslumi7Pos,  qwk_uslumi7Neg, 1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0
+  
+!VPMT, 48,  6, CombinationPMT,  uslumi_sum,         qwk_uslumi1Pos,  qwk_uslumi1Neg,  qwk_uslumi3Pos,  qwk_uslumi3Neg,  qwk_uslumi5Pos,  qwk_uslumi5Neg,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0
+
+!  VPMT, 49, 2, CombinationPMT, dslumi1_dslumi5_sum, qwk_dslumi1, qwk_dslumi5, 1.0, 1.0
+!  VPMT, 50, 2, CombinationPMT, dslumi2_dslumi6_sum, qwk_dslumi2, qwk_dslumi6, 1.0, 1.0
+!  VPMT, 51, 2, CombinationPMT, dslumi3_dslumi7_sum, qwk_dslumi3, qwk_dslumi7, 1.0, 1.0
+!  VPMT, 52, 2, CombinationPMT, dslumi4_dslumi8_sum, qwk_dslumi4, qwk_dslumi8, 1.0, 1.0
+  
+!  VPMT, 53, 2, CombinationPMT, dslumi1_dslumi5_diff, qwk_dslumi1, qwk_dslumi5, 1.0, -1.0
+!  VPMT, 54, 2, CombinationPMT, dslumi2_dslumi6_diff, qwk_dslumi2, qwk_dslumi6, 1.0, -1.0
+!  VPMT, 55, 2, CombinationPMT, dslumi3_dslumi7_diff, qwk_dslumi3, qwk_dslumi7, 1.0, -1.0
+!  VPMT, 56, 2, CombinationPMT, dslumi4_dslumi8_diff, qwk_dslumi4, qwk_dslumi8, 1.0, -1.0
+  
+!  VPMT, 57, 4, CombinationPMT, dslumi_odd, qwk_dslumi1, qwk_dslumi3, qwk_dslumi5, qwk_dslumi7, 1.0, 1.0, 1.0, 1.0
+!  VPMT, 58, 4, CombinationPMT, dslumi_even, qwk_dslumi2, qwk_dslumi4, qwk_dslumi6, qwk_dslumi8, 1.0, 1.0, 1.0, 1.0
+  
+!  VPMT, 59, 8, CombinationPMT, dslumi_sum, qwk_dslumi1, qwk_dslumi2, qwk_dslumi3, qwk_dslumi4, qwk_dslumi5, qwk_dslumi6, qwk_dslumi7, qwk_dslumi8, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
+
+
+!END

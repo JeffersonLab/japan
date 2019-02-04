@@ -78,16 +78,16 @@ QwRootFile::QwRootFile(const TString& run_label)
 
     fPermanentName = rootfilename
       + Form("/%s%s.root", fRootFileStem.Data(), run_label.Data());
-//    rootfilename += Form("/%s%s.%s.%d.root",
-//			 fRootFileStem.Data(), run_label.Data(),
-//			 hostname.Data(), pid);
-	rootfilename += "/test001.root";
-	std::cerr << rootfilename << std::endl;
+    rootfilename += Form("/%s%s.%s.%d.root",
+			 fRootFileStem.Data(), run_label.Data(),
+			 hostname.Data(), pid);
     fRootFile = new TFile(rootfilename.Data(), "RECREATE", "myfile1");
     if (! fRootFile) {
       QwError << "ROOT file " << rootfilename
               << " could not be opened!" << QwLog::endl;
       return;
+    } else {
+      QwMessage << "Opened temporary rootfile " << rootfilename << QwLog::endl;
     }
 
     TString run_condition_name = Form("%s_condition", run_label.Data());

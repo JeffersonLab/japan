@@ -49,9 +49,13 @@ Doxygen/html
 *.tar
 *.root
 *.db
-*.txt
 *.png
+*.pdf
+*.ps
 
 #tmp files
 *~
 z_*
+
+# setup files
+SetupFiles/SET_ME_UP.*

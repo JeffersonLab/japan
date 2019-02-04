@@ -6,7 +6,8 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ROC=23
-MarkerWord=0xffb0b444
+!!! MarkerWord=0xffb0b444
+Bank=0x1
 
 !INPUT REGISTER MODE
 HelicityDecodingMode=InputRegisterMode
@@ -33,17 +34,8 @@ PATTERNPHASEOFFSET=0
 !
 ! module.type, module.num  chan.num, det.type, det.name
 !
-SKIP 1
+SKIP 2
 WORD, 0,  0, helicitydata,  input_register
-WORD, 0,  0, helicitydata,  output_register
-SKIP 1 ! WORD, 0,  0, helicitydata,  sca_MPS_num
-SKIP 1 ! WORD, 0,  0, helicitydata,  sca_PAT_counter
-SKIP 1 ! WORD, 0,  0, helicitydata,  sca_PAT_phase
-SKIP 3
-WORD, 0,  0, helicitydata,  cleandata
-WORD, 0,  0, helicitydata,  scandata1
-WORD, 0,  0, helicitydata,  scandata2
-SKIP 1
 !END
 ! 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
