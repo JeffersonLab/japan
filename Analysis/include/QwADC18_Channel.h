@@ -10,14 +10,12 @@
 // System headers
 #include <vector>
 
-// ROOT headers
-#include "TTree.h"
-
 // Qweak headers
 #include "VQwHardwareChannel.h"
 #include "MQwMockable.h"
 
 // Forward declarations
+class TTree;
 class QwBlinder;
 class QwParameterFile;
 #ifdef __USE_DATABASE__
@@ -239,7 +237,11 @@ class QwADC18_Channel: public VQwHardwareChannel, public MQwMockable {
   QwADC18_Channel& operator/= (const QwADC18_Channel &value);
 
  private:
+  UInt_t   fDiff_Raw;
+  UInt_t   fBase_Raw;
+  UInt_t   fPeak_Raw;
   UInt_t   fValue_Raw;
+
   Double_t fValue;
   Double_t fValueM2;
   Double_t fValueError;
@@ -252,6 +254,9 @@ class QwADC18_Channel: public VQwHardwareChannel, public MQwMockable {
 
   /// Pointer to the running sum for this channel
   QwADC18_Channel* fRunningSum;
+
+  /// Pointer to the DAC channel for this channel
+  QwADC18_Channel* fDAC;
 
   /*! \name ADC Calibration                    */
   // @{

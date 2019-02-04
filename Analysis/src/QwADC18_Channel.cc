@@ -3,6 +3,9 @@
 // System headers
 #include <stdexcept>
 
+// ROOT headers
+#include <TTree.h>
+
 // Qweak headers
 #include "QwLog.h"
 #include "QwUnits.h"
@@ -201,7 +204,9 @@ void QwADC18_Channel::LoadChannelParameters(QwParameterFile &paramfile){
 
 void QwADC18_Channel::ClearEventData()
 {
-  fValue_Raw   = 0;
+  fDiff_Raw    = 0;
+  fBase_Raw    = 0;
+  fPeak_Raw    = 0;
   fValue       = 0.0;
   fValueM2     = 0.0;
   fValueError  = 0.0;
@@ -243,7 +248,9 @@ void QwADC18_Channel::SmearByResolution(double resolution)
 void QwADC18_Channel::SetEventData(Double_t value)
 {
   fValue     = value;
-  fValue_Raw = (UInt_t)value;
+  fDiff_Raw = (UInt_t) value;
+  fPeak_Raw = (UInt_t) value;
+  fBase_Raw = (UInt_t) 0;
   fSequenceNumber = 0;
   fNumberOfSamples = fNumberOfSamples_map;
 }
@@ -251,7 +258,8 @@ void QwADC18_Channel::SetEventData(Double_t value)
 void QwADC18_Channel::SetRawEventData()
 {
   fNumberOfSamples = fNumberOfSamples_map;
-  fValue_Raw = Int_t(fValue / fCalibrationFactor + fPedestal) * fNumberOfSamples;
+  fDiff_Raw = Int_t(fValue / fCalibrationFactor + fPedestal) * fNumberOfSamples;
+  fPeak_Raw = Int_t(fValue / fCalibrationFactor + fPedestal) * fNumberOfSamples;
 };
 
 // FIXME here goes the encoding of raw data into CODA blocks
@@ -284,7 +292,7 @@ void QwADC18_Channel::EncodeEventData(std::vector<UInt_t> &buffer)
       case 1:
       case 2:
         localbuf[0] |= mask2422x & (2 << 22);
-        localbuf[0] |=  mask170x & fValue_Raw;
+        localbuf[0] |=  mask170x & fPeak_Raw;
         break;
       case 4:
         break;
@@ -318,6 +326,7 @@ Int_t QwADC18_Channel::ProcessDataWord(UInt_t rawd)
                       ((rawd & mask2118x) >> 18) : 0;
 
   // Interpret by data type
+  UInt_t value_raw = 0;
   switch (act_dtype) {
     case 0:
       static UInt_t prev_dvalue = act_dvalue;
@@ -325,9 +334,10 @@ Int_t QwADC18_Channel::ProcessDataWord(UInt_t rawd)
         QwError << "QwADC18_Channel::ProcessEvBuffer: Number of samples changed" << QwLog::endl;
         return 0;
       }
-      fValue_Raw = rawd & mask200x;
-      if (rawd & mask21x) fValue_Raw = -((~fValue_Raw & 0x1fffffff) + 1);
+      value_raw = rawd & mask200x;
+      if (rawd & mask21x) value_raw = -((~value_raw & 0x1fffffff) + 1);
       fNumberOfSamples = (1 << act_dvalue);
+      return value_raw;
       break;
     case 1:
     case 2:
@@ -339,21 +349,19 @@ Int_t QwADC18_Channel::ProcessDataWord(UInt_t rawd)
         QwError << "QwADC18_Channel::ProcessEvBuffer: Divider value non-zero" << QwLog::endl;
         return 0;
       }
-      fValue_Raw = rawd & mask170x;
+      return rawd & mask170x;
       break;
     case 4:
       if (act_dvalue != 0) {
         QwError << "QwADC18_Channel::ProcessEvBuffer: Divider value non-zero" << QwLog::endl;
         return 0;
       }
-      fValue_Raw = rawd & mask150x;
+      return rawd & mask150x;
       break;
     default:
       QwError << "QwADC18_Channel::ProcessEvBuffer: Unknown data type" << QwLog::endl;
       return 0;
   }
-
-  return fValue_Raw;
 }
 
 // FIXME here goes the decoding of raw data from CODA blocks
@@ -387,10 +395,9 @@ Int_t QwADC18_Channel::ProcessEvBuffer(UInt_t* buffer, UInt_t num_words_left, UI
       return kHeaderWordsPerModule;
     }
 
-    fValue_Raw = ProcessDataWord(buffer[0]);
-    fValue_Raw = ProcessDataWord(buffer[1]);
-    fValue_Raw = ProcessDataWord(buffer[2]);
-    fValue     = fCalibrationFactor * (Double_t(fValue_Raw) - fPedestal);
+    fDiff_Raw = ProcessDataWord(buffer[0]);
+    fPeak_Raw = ProcessDataWord(buffer[1]);
+    fBase_Raw = ProcessDataWord(buffer[2]);
 
     words_read = kDataWordsPerChannel;
   } else {
@@ -403,7 +410,7 @@ Int_t QwADC18_Channel::ProcessEvBuffer(UInt_t* buffer, UInt_t num_words_left, UI
 
 void QwADC18_Channel::ProcessEvent()
 {
-  if (fNumberOfSamples == 0 && fValue_Raw == 0) {
+  if (fNumberOfSamples == 0 && fDiff_Raw == 0) {
     //  There isn't valid data for this channel.  Just flag it and move on.
     fValue = 0.0;
     fValueM2 = 0.0;
@@ -419,7 +426,7 @@ void QwADC18_Channel::ProcessEvent()
     fValueM2 = 0.0;
     fErrorFlag |= kErrorFlag_sample;
   } else {
-    fValue = fCalibrationFactor * ( (Double_t(fValue_Raw) / fNumberOfSamples) - fPedestal );
+    fValue = fCalibrationFactor * ( (Double_t(fDiff_Raw) / fNumberOfSamples) - fPedestal );
     fValueM2 = 0.0; // second moment is zero for single events
   }
 }
@@ -439,7 +446,9 @@ void QwADC18_Channel::PrintInfo() const
   QwMessage<<"fCalibrationFactor= "<<fCalibrationFactor<<QwLog::endl;
   QwMessage<<"fSequenceNumber= "<<fSequenceNumber<<QwLog::endl;
   QwMessage<<"fNumberOfSamples= "<<fNumberOfSamples<<QwLog::endl;
-  QwMessage<<"fValue_Raw= "<<fValue_Raw<<QwLog::endl;
+  QwMessage<<"fDiff_Raw= "<<fDiff_Raw<<QwLog::endl;
+  QwMessage<<"fPeak_Raw= "<<fPeak_Raw<<QwLog::endl;
+  QwMessage<<"fBase_Raw= "<<fBase_Raw<<QwLog::endl;
   QwMessage<<"fValue = "<<std::setprecision(8) <<fValue << QwLog::endl;
 }
 
@@ -523,6 +532,12 @@ void  QwADC18_Channel::ConstructBranchAndVector(TTree *tree, TString &prefix, st
     if (fDataToSave == kRaw){
       values.push_back(0.0);
       list += ":raw/D";
+      values.push_back(0.0);
+      list += ":diff/D";
+      values.push_back(0.0);
+      list += ":peak/D";
+      values.push_back(0.0);
+      list += ":base/D";
     }
 
     fTreeArrayNumEntries = values.size() - fTreeArrayIndex;
@@ -570,6 +585,9 @@ void  QwADC18_Channel::FillTreeVector(std::vector<Double_t> &values) const
     values[index++] = this->fErrorFlag;
     if(fDataToSave==kRaw){
       values[index++] = this->fValue_Raw;
+      values[index++] = this->fDiff_Raw;
+      values[index++] = this->fPeak_Raw;
+      values[index++] = this->fBase_Raw;
     }
   }
 }
@@ -581,6 +599,9 @@ QwADC18_Channel& QwADC18_Channel::operator= (const QwADC18_Channel &value)
 
   if (!IsNameEmpty()) {
     VQwHardwareChannel::operator=(value);
+    this->fDiff_Raw   = value.fDiff_Raw;
+    this->fPeak_Raw   = value.fPeak_Raw;
+    this->fBase_Raw   = value.fBase_Raw;
     this->fValue_Raw  = value.fValue_Raw;
     this->fValue      = value.fValue;
     this->fValueError = value.fValueError;
@@ -710,7 +731,9 @@ QwADC18_Channel& QwADC18_Channel::operator*= (const QwADC18_Channel &value)
 {
   if (!IsNameEmpty()){
     this->fValue     *= value.fValue;
-    this->fValue_Raw  = 0;
+    this->fDiff_Raw   = 0;
+    this->fPeak_Raw   = 0;
+    this->fBase_Raw   = 0;
     this->fValueM2    = 0.0;
     this->fErrorFlag |= (value.fErrorFlag);//error code is ORed.
   }
@@ -797,7 +820,9 @@ void QwADC18_Channel::Ratio(const QwADC18_Channel &numer, const QwADC18_Channel 
     *this /= denom;
 
     //  Set the raw values to zero.
-    fValue_Raw = 0;
+    fDiff_Raw = 0;
+    fPeak_Raw = 0;
+    fBase_Raw = 0;
 
     // Remaining variables
     fGoodEventCount  = denom.fGoodEventCount;
@@ -860,7 +885,9 @@ void QwADC18_Channel::Product(const QwADC18_Channel &value1, const QwADC18_Chann
 {
   if (!IsNameEmpty()){
     fValue = value1.fValue * value2.fValue;
-    fValue_Raw = 0;
+    fDiff_Raw = 0;
+    fPeak_Raw = 0;
+    fBase_Raw = 0;
 
     // Remaining variables
     fGoodEventCount  = value2.fGoodEventCount;
@@ -1180,7 +1207,9 @@ void QwADC18_Channel::ScaledAdd(Double_t scale, const VQwHardwareChannel *value)
     // 	      << QwLog::endl;
     //     PrintValue();
     //     input->PrintValue();
-    this->fValue_Raw = 0;
+    this->fDiff_Raw = 0;
+    this->fPeak_Raw = 0;
+    this->fBase_Raw = 0;
     this->fValue += scale * input->fValue;
     this->fValueM2 = 0.0;
     this->fNumberOfSamples += input->fNumberOfSamples;
