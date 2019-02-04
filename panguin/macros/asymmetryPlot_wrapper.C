@@ -29,16 +29,24 @@ void asymmetryPlot_wrapper(std::string channel) {
     // To grab the root tree output we can assume that PANGUIN has successfully opened a root file
     TFile *oldFile = gFile;
     TTree *oldPatternTree = (TTree*)oldFile->Get("Hel_Tree");
-    std::string dir = (std::string)gDirectory->CurrentDirectory()->GetPath();
+	//std::string dir = (std::string)gDirectory->CurrentDirectory()->GetPath();
     // Find out how many entries are in the tree so we can loop over the pattern tree later
     Int_t numEntries = oldPatternTree->GetEntries();
     // Make a new ROOT tree to store the new data in (this is just an academic example)
     TTree *newPatternTree;
     TFile *resultsFile;
+
+	//std::string number = "1111";
+
+	//number = dir.substr(dir.find("_")+1,4).c_str();
+    //std::string outputFile = Form("second_pass_%s_%s.root",number.c_str(),channel.c_str());
     std::string outputFile = Form("second_pass_%s.root",channel.c_str());
+	//gSystem->Exec(Form("CURRENT_RUN=%s"),dir.substr(dir.find("_")+1,4).c_str());
+
     // Check to see if analysis has been run before
-    //gSystem->Exec(Form("./compTest %s %s",dir.c_str(),channel.c_str()));
-    gSystem->Exec(Form("./compTest test.root %s",channel.c_str()));
+	//gSystem->Exec(Form("ln -sf ${QW_ROOTFILES}/prex*%s.root run_%s.root",number.c_str(),number.c_str()));
+    //gSystem->Exec(Form("./compTest run_%s.root %s",number.c_str(),channel.c_str()));
+    gSystem->Exec(Form("./compTest run.root %s",channel.c_str()));
     if(gSystem->AccessPathName(outputFile.c_str())){
         // Write a new root file for output 
         resultsFile = new TFile(outputFile.c_str(),"RECREATE");
@@ -85,5 +93,6 @@ void asymmetryPlot_wrapper(std::string channel) {
     delete newPatternTree;
     resultsFile->Close();
     delete resultsFile;
+	//delete dir;
     gFile=oldFile;
 }

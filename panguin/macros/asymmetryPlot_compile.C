@@ -29,8 +29,9 @@
 
 int main(int argc, char **argv)
 {
-    std::string rootfile = "input.root";
+    std::string rootfile = "run_1033.root";
     std::string channel = "usr";
+    //std::string number = "1111";
     if (argc <= 1 || argc > 3)
     {
         std::cerr << "Usage: ./compTest char*:rootfileName char*:variable" << std::endl;
@@ -46,16 +47,24 @@ int main(int argc, char **argv)
         std::string channelName(argv[2]);
         channel = channelName;
     }
-
-    // To grab the root tree output we can assume that PANGUIN has successfully opened a root file
+	// number = parsed filename, so just the number part.
+	//int first = 0;
+	//int last = 99;
+	//first  = rootfile.find("_");
+	//last   = rootfile.find(".");
+	//number = rootfile.substr(first+1,last-4).c_str();
+	
+	// To grab the root tree output we can assume that PANGUIN has successfully opened a root file
     TFile *oldFile = new TFile(rootfile.c_str(),"READ");
     TTree *oldPatternTree = (TTree*)oldFile->Get("Hel_Tree");
+    TTree *oldEventTree = (TTree*)oldFile->Get("Mps_Tree");
     std::string dir = (std::string)gDirectory->CurrentDirectory()->GetPath();
     // Find out how many entries are in the tree so we can loop over the pattern tree later
     Int_t numEntries = oldPatternTree->GetEntries();
     // Make a new ROOT tree to store the new data in (this is just an academic example)
     TTree *newPatternTree;
     TFile *resultsFile;
+    //std::string outputFile = Form("second_pass_%s_%s.root",number.c_str(),channel.c_str());
     std::string outputFile = Form("second_pass_%s.root",channel.c_str());
     // Check to see if analysis has been run before
     std::ifstream file(outputFile.c_str());
@@ -77,6 +86,7 @@ int main(int argc, char **argv)
         } PATTERNASYMS;
         PATTERNASYMS patternAsyms;
         // Assign that instance to the new ROOT tree's branch location of interest
+        oldPatternTree->SetBranchAddress( Form("asym_%s",channel.c_str()), &patternAsyms );
         oldPatternTree->SetBranchAddress( Form("asym_%s",channel.c_str()), &patternAsyms );
 
         // Make a double to hold the data that is the result of our manipulation
