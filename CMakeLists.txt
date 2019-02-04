@@ -40,20 +40,20 @@ endif()
 # Sources and headers
 #
 file(GLOB my_project_sources
-  Analysis/src/*.cc
-  Parity/src/*.cc
-  )
+		 Analysis/src/*.cc
+		 Parity/src/*.cc
+		 )
 list(REMOVE_ITEM my_project_sources
 		 ${PROJECT_SOURCE_DIR}/Analysis/src/QwF1TDContainer.cc
 		 ${PROJECT_SOURCE_DIR}/Analysis/src/QwSIS3320_Samples.cc
 		 )
 
 file(GLOB my_project_headers
-  Analysis/include/*.h
-  Parity/include/*.h
-  )
+		 Analysis/include/*.h
+		 Parity/include/*.h
+		 )
 list(REMOVE_ITEM my_project_headers
-	    	 ${PROJECT_SOURCE_DIR}/Analysis/include/QwF1TDContainer.h
+		 ${PROJECT_SOURCE_DIR}/Analysis/include/QwF1TDContainer.h
 		 ${PROJECT_SOURCE_DIR}/Analysis/include/QwSIS3320_Samples.h
 		 )
 
@@ -90,22 +90,12 @@ config_add_dependency(ROOT ${minimum_root_version})
 
 
 #----------------------------------------------------------------------------
-# gitinfo.hh
+# gitinfo.cc
 #
-add_custom_command(
-  OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh.does_not_exist
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bin/pullgitinfo.py ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMENT "Getting Git information"
-  )
-add_custom_command(
-  OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh
-  COMMAND echo -n
-  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh.does_not_exist
-  )
-set_property(
-  SOURCE Analysis/src/QwOptions.cc Analysis/src/QwRunCondition.cc
-  APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh
-  )
+set(PRE_CONFIGURE_FILE ${PROJECT_SOURCE_DIR}/cmake/templates/gitinfo.cc.in)
+set(POST_CONFIGURE_FILE ${CMAKE_BINARY_DIR}/gitinfo.cc)
+include(CMakeGitInfo)
+list(APPEND my_project_sources ${POST_CONFIGURE_FILE})
 
 
 #----------------------------------------------------------------------------
@@ -157,8 +147,8 @@ endforeach()
 #----------------------------------------------------------------------------
 # main library
 #
-add_library(${PROJECT_NAME} SHARED ${my_project_sources} ${my_project_headers}
-  ${CMAKE_CURRENT_BINARY_DIR}/include/gitinfo.hh)
+add_library(${PROJECT_NAME} SHARED ${my_project_sources} ${my_project_headers})
+add_dependencies(${PROJECT_NAME} check_git_repository)
 
 target_include_directories(${PROJECT_NAME}
   PUBLIC
