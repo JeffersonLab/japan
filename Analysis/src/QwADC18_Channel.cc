@@ -21,6 +21,18 @@ const Int_t  QwADC18_Channel::kHeaderWordsPerModule = 13;
 const Int_t  QwADC18_Channel::kDataWordsPerChannel  = 3;
 const Int_t  QwADC18_Channel::kMaxChannels          = 4;
 
+const UInt_t QwADC18_Channel::mask31x   = 0x80000000;   // Header bit mask
+const UInt_t QwADC18_Channel::mask3029x = 0x60000000;   // Channel number mask
+const UInt_t QwADC18_Channel::mask2625x = 0x06000000;   // Divider value mask
+const UInt_t QwADC18_Channel::mask2422x = 0x01c00000;   // Data type mask
+const UInt_t QwADC18_Channel::mask21x   = 0x00200000;   // Data type 0 value sign mask
+const UInt_t QwADC18_Channel::mask200x  = 0x001fffff;   // Data type 0 value field mask
+const UInt_t QwADC18_Channel::mask2118x = 0x003c0000;   // Data types 1-2 sample number mask
+const UInt_t QwADC18_Channel::mask170x  = 0x0003ffff;   // Data types 1-2 value field mask
+const UInt_t QwADC18_Channel::mask150x  = 0x0000ffff;   // Data type 4 value field mask
+
+
+
 const Double_t QwADC18_Channel::kTimePerSample = 2.0 * Qw::us; // FIXME
 
 /*!  Conversion factor to translate the average bit count in an ADC
@@ -265,16 +277,6 @@ void QwADC18_Channel::SetRawEventData()
 // FIXME here goes the encoding of raw data into CODA blocks
 void QwADC18_Channel::EncodeEventData(std::vector<UInt_t> &buffer)
 {
-  UInt_t mask31x   = 0x80000000;   // Header bit mask
-  UInt_t mask3029x = 0x60000000;   // Channel number mask
-  UInt_t mask2625x = 0x06000000;   // Divider value mask
-  UInt_t mask2422x = 0x01c00000;   // Data type mask
-  UInt_t mask21x   = 0x00200000;   // Data type 0 value sign mask
-  UInt_t mask200x  = 0x001fffff;   // Data type 0 value field mask
-  UInt_t mask2118x = 0x003c0000;   // Data types 1-2 sample number mask
-  UInt_t mask170x  = 0x0003ffff;   // Data types 1-2 value field mask
-  UInt_t mask150x  = 0x0000ffff;   // Data type 4 value field mask
-
   UInt_t localbuf[kDataWordsPerChannel] = {0};
 
   if (IsNameEmpty()) {
@@ -308,15 +310,6 @@ void QwADC18_Channel::EncodeEventData(std::vector<UInt_t> &buffer)
 
 Int_t QwADC18_Channel::ProcessDataWord(UInt_t rawd)
 {
-  UInt_t mask3029x = 0x60000000;   // Channel number mask
-  UInt_t mask2625x = 0x06000000;   // Divider value mask
-  UInt_t mask2422x = 0x01c00000;   // Data type mask
-  UInt_t mask21x   = 0x00200000;   // Data type 0 value sign mask
-  UInt_t mask200x  = 0x001fffff;   // Data type 0 value field mask
-  UInt_t mask2118x = 0x003c0000;   // Data types 1-2 sample number mask
-  UInt_t mask170x  = 0x0003ffff;   // Data types 1-2 value field mask
-  UInt_t mask150x  = 0x0000ffff;   // Data type 4 value field mask
-
   // "Actual" values from data word
   UInt_t act_dtype  = (rawd & mask2422x) >> 22;
   UInt_t act_chan   = (act_dtype != 4) ?
@@ -377,8 +370,6 @@ Int_t QwADC18_Channel::ProcessEvBuffer(UInt_t* buffer, UInt_t num_words_left, UI
     }
     QwOut << std::dec << std::setfill(' ') << std::setw(0) << QwLog::endl;
   }
-
-  UInt_t mask31x   = 0x80000000;   // Header bit mask
 
   UInt_t words_read = 0;
   if (IsNameEmpty()){

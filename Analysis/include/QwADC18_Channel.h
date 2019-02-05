@@ -252,6 +252,18 @@ class QwADC18_Channel: public VQwHardwareChannel, public MQwMockable {
   static const Int_t  kDataWordsPerChannel; //no.of data words per channel in the CODA buffer
   static const Int_t  kMaxChannels;     //no.of channels per module
 
+ private:
+  static const UInt_t mask31x;   // = 0x80000000;   // Header bit mask
+  static const UInt_t mask3029x; // = 0x60000000;   // Channel number mask
+  static const UInt_t mask2625x; // = 0x06000000;   // Divider value mask
+  static const UInt_t mask2422x; // = 0x01c00000;   // Data type mask
+  static const UInt_t mask21x;   // = 0x00200000;   // Data type 0 value sign mask
+  static const UInt_t mask200x;  // = 0x001fffff;   // Data type 0 value field mask
+  static const UInt_t mask2118x; // = 0x003c0000;   // Data types 1-2 sample number mask
+  static const UInt_t mask170x;  // = 0x0003ffff;   // Data types 1-2 value field mask
+  static const UInt_t mask150x;  // = 0x0000ffff;   // Data type 4 value field mask
+
+
   /// Pointer to the running sum for this channel
   QwADC18_Channel* fRunningSum;
 
