@@ -111,6 +111,7 @@ class QwADC18_Channel: public VQwHardwareChannel, public MQwMockable {
   void  EncodeEventData(std::vector<UInt_t> &buffer);
 
   /// Decode the event data from a CODA buffer
+  Bool_t IsHeaderWord(UInt_t word) const;
   Int_t ProcessDataWord(UInt_t word);
   Int_t ProcessEvBuffer(UInt_t* buffer, UInt_t num_words_left, UInt_t index = 0);
 
@@ -248,7 +249,10 @@ class QwADC18_Channel: public VQwHardwareChannel, public MQwMockable {
 
  private:
   static const Bool_t kDEBUG;
+  static const Int_t  kHeaderWordsPerBank; //no.of header words per bank in the CODA buffer
+  static const Int_t  kFooterWordsPerBank; //no.of footer words per bank in the CODA buffer
   static const Int_t  kHeaderWordsPerModule; //no.of header words per module in the CODA buffer
+  static const Int_t  kFooterWordsPerModule; //no.of footer words per module in the CODA buffer
   static const Int_t  kDataWordsPerChannel; //no.of data words per channel in the CODA buffer
   static const Int_t  kMaxChannels;     //no.of channels per module
 

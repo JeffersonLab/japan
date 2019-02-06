@@ -17,7 +17,10 @@
 
 const Bool_t QwADC18_Channel::kDEBUG = kFALSE;
 
-const Int_t  QwADC18_Channel::kHeaderWordsPerModule = 13;
+const Int_t  QwADC18_Channel::kHeaderWordsPerBank = 1;
+const Int_t  QwADC18_Channel::kFooterWordsPerBank = 1;
+const Int_t  QwADC18_Channel::kHeaderWordsPerModule = 12;
+const Int_t  QwADC18_Channel::kFooterWordsPerModule = 1;
 const Int_t  QwADC18_Channel::kDataWordsPerChannel  = 3;
 const Int_t  QwADC18_Channel::kMaxChannels          = 4;
 
@@ -46,28 +49,38 @@ const Double_t QwADC18_Channel::kADC18_VoltsPerBit = (20./(1<<18)); // FIXME
 /*!  Static member function to return the word offset within a data buffer
  *   given the module number index and the channel number index.
  *   @param moduleindex   Module index within this buffer; counts from zero
- *   @param channelindex  Channel index within this module; counts from zero
+ *   @param channelindex  Channel index within this module; counts from -1 (header)
  *   @return   The number of words offset to the beginning of this
  *             channel's data from the beginning of the ADC18 buffer.
  */
-Int_t QwADC18_Channel::GetBufferOffset(Int_t moduleindex, Int_t channelindex){
-    Int_t offset = -1;
-    if (moduleindex<0 ){
-      QwError << "QwADC18_Channel::GetBufferOffset:  Invalid module index,"
-	      << moduleindex
-	      << ".  Must be zero or greater."
-	      << QwLog::endl;
-    } else if (channelindex<0 || channelindex>kMaxChannels){
-      QwError << "QwADC18_Channel::GetBufferOffset:  Invalid channel index,"
-	      << channelindex
-	      << ".  Must be in range [0," << kMaxChannels << "]."
-	      << QwLog::endl;
+Int_t QwADC18_Channel::GetBufferOffset(Int_t moduleindex, Int_t channelindex)
+{
+  Int_t offset = -1;
+  if (moduleindex<0 ){
+    QwError << "QwADC18_Channel::GetBufferOffset:  Invalid module index,"
+            << moduleindex
+            << ".  Must be zero or greater."
+            << QwLog::endl;
+  } else if (channelindex<-1 || channelindex>kMaxChannels){
+    QwError << "QwADC18_Channel::GetBufferOffset:  Invalid channel index,"
+            << channelindex
+            << ".  Must be in range [-1," << kMaxChannels << "]."
+            << QwLog::endl;
+  } else {
+    if (channelindex == -1) {
+      // Header
+      offset = kHeaderWordsPerBank
+             + moduleindex * (kHeaderWordsPerModule + kMaxChannels * kDataWordsPerChannel + kFooterWordsPerModule);
     } else {
-      offset = moduleindex * (kHeaderWordsPerModule + kMaxChannels * kDataWordsPerChannel)
-             + kHeaderWordsPerModule + channelindex * kDataWordsPerChannel;
+      // Data word
+      offset = kHeaderWordsPerBank
+             + moduleindex * (kHeaderWordsPerModule + kMaxChannels * kDataWordsPerChannel + kFooterWordsPerModule)
+             + kHeaderWordsPerModule
+             + channelindex * kDataWordsPerChannel;
     }
-    return offset;
   }
+  return offset;
+}
 
 
 /********************************************************/
@@ -308,6 +321,11 @@ void QwADC18_Channel::EncodeEventData(std::vector<UInt_t> &buffer)
   }
 }
 
+Bool_t QwADC18_Channel::IsHeaderWord(UInt_t rawd) const
+{
+  return ((rawd & mask31x) != 0);
+}
+
 Int_t QwADC18_Channel::ProcessDataWord(UInt_t rawd)
 {
   // "Actual" values from data word
@@ -321,10 +339,10 @@ Int_t QwADC18_Channel::ProcessDataWord(UInt_t rawd)
   // Interpret by data type
   UInt_t value_raw = 0;
   switch (act_dtype) {
-    case 0:
+    case 0: // Diff word
       static UInt_t prev_dvalue = act_dvalue;
       if (act_dvalue != prev_dvalue) {
-        QwError << "QwADC18_Channel::ProcessEvBuffer: Number of samples changed" << QwLog::endl;
+        QwError << "QwADC18_Channel::ProcessEvBuffer: Number of samples changed " << act_dvalue << " " << prev_dvalue << QwLog::endl;
         return 0;
       }
       value_raw = rawd & mask200x;
@@ -332,27 +350,27 @@ Int_t QwADC18_Channel::ProcessDataWord(UInt_t rawd)
       fNumberOfSamples = (1 << act_dvalue);
       return value_raw;
       break;
-    case 1:
-    case 2:
+    case 1: // Peak word
+    case 2: // Base word
       if (act_snum != fNumberOfSamples) {
-        QwError << "QwADC18_Channel::ProcessEvBuffer: Divider value non-zero" << QwLog::endl;
+        QwError << "QwADC18_Channel::ProcessEvBuffer: Number of samples changed " << act_snum << " " << fNumberOfSamples << QwLog::endl;
         return 0;
       }
       if (act_dvalue != 0) {
-        QwError << "QwADC18_Channel::ProcessEvBuffer: Divider value non-zero" << QwLog::endl;
+        QwError << "QwADC18_Channel::ProcessEvBuffer: Divider value non-zero 0x" << std::hex << rawd << std::dec << QwLog::endl;
         return 0;
       }
       return rawd & mask170x;
       break;
-    case 4:
+    case 4: // DAC word
       if (act_dvalue != 0) {
-        QwError << "QwADC18_Channel::ProcessEvBuffer: Divider value non-zero" << QwLog::endl;
+        QwError << "QwADC18_Channel::ProcessEvBuffer: Divider value non-zero 0x" << std::hex << rawd << std::dec << QwLog::endl;
         return 0;
       }
       return rawd & mask150x;
       break;
     default:
-      QwError << "QwADC18_Channel::ProcessEvBuffer: Unknown data type" << QwLog::endl;
+      QwError << "QwADC18_Channel::ProcessEvBuffer: Unknown data type 0x" << std::hex << rawd << std::dec << QwLog::endl;
       return 0;
   }
 }
@@ -360,8 +378,10 @@ Int_t QwADC18_Channel::ProcessDataWord(UInt_t rawd)
 // FIXME here goes the decoding of raw data from CODA blocks
 Int_t QwADC18_Channel::ProcessEvBuffer(UInt_t* buffer, UInt_t num_words_left, UInt_t index)
 {
+  Bool_t debug = false;
+
   // Print buffer
-  if (false) {
+  if (debug) {
     QwOut << GetElementName() << " : " << QwLog::endl << std::hex;
     Int_t n = 25;
     for (size_t i = 0; i < num_words_left; i++) {
@@ -372,28 +392,68 @@ Int_t QwADC18_Channel::ProcessEvBuffer(UInt_t* buffer, UInt_t num_words_left, UI
   }
 
   UInt_t words_read = 0;
-  if (IsNameEmpty()){
+  if (IsNameEmpty()) {
     //  This channel is not used, but is present in the data stream.
     //  Skip over this data.
     words_read = kDataWordsPerChannel;
   } else if (num_words_left >= fNumberOfDataWords) {
 
-    UInt_t rawd = buffer[0];
+    // Is this a header word?
+    if (IsHeaderWord(buffer[0])) {
 
-    // Header check
-    if ((rawd & mask31x) != 0) {
-      QwError << "QwADC18_Channel::ProcessEvBuffer: Received header word 0x" << std::hex << rawd << " " << (rawd & mask31x) << std::dec << QwLog::endl;
-      return kHeaderWordsPerModule;
+      // Debug output
+      if (debug) {
+        QwOut << " : header " << std::hex;
+        UInt_t n = kHeaderWordsPerModule;
+        for (size_t i = 0; i < n && i < num_words_left; i++) {
+          QwOut << "0x" << std::setfill('0') << std::setw(8) << buffer[i] << " ";
+        }
+        QwOut << std::dec << std::setfill(' ') << std::setw(0) << QwLog::endl;
+      }
+
+      // Check if enough words left
+      if (num_words_left < kHeaderWordsPerModule) {
+        QwError << "QwADC18_Channel::ProcessEvBuffer: Not enough words left!" << QwLog::endl;
+        return num_words_left;
+      }
+
+      // FIXME Catch 0xfa180bad
+
+      // Header word: read DAC value
+      fValue_Raw = ProcessDataWord(buffer[kHeaderWordsPerModule-1]);
+
+      words_read = kHeaderWordsPerModule;
+
+    } else {
+
+      // Debug output
+      if (debug) {
+        QwOut << " : channel " << std::hex;
+        UInt_t n = kDataWordsPerChannel;
+        for (size_t i = 0; i < n && i < num_words_left; i++) {
+          QwOut << "0x" << std::setfill('0') << std::setw(8) << buffer[i] << " ";
+        }
+        QwOut << std::dec << std::setfill(' ') << std::setw(0) << QwLog::endl;
+      }
+
+      // Check if enough words left
+      if (num_words_left < kDataWordsPerChannel) {
+        QwError << "QwADC18_Channel::ProcessEvBuffer: Not enough words left!" << QwLog::endl;
+        return num_words_left;
+      }
+
+      // Data channel words: read diff, peak, base
+      fDiff_Raw = ProcessDataWord(buffer[0]);
+      fPeak_Raw = ProcessDataWord(buffer[1]);
+      fBase_Raw = ProcessDataWord(buffer[2]);
+
+      words_read = kDataWordsPerChannel;
     }
 
-    fDiff_Raw = ProcessDataWord(buffer[0]);
-    fPeak_Raw = ProcessDataWord(buffer[1]);
-    fBase_Raw = ProcessDataWord(buffer[2]);
-
-    words_read = kDataWordsPerChannel;
   } else {
     QwError << "QwADC18_Channel::ProcessEvBuffer: Not enough words!" << QwLog::endl;
   }
+
   return words_read;
 }
 
