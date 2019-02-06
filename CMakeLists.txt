@@ -85,7 +85,7 @@ link_directories(${Boost_LIBRARY_DIR})
 # ROOT
 #
 set(minimum_root_version 6.0)
-find_package(ROOT ${minimum_root_version} REQUIRED)
+find_package(ROOT ${minimum_root_version} REQUIRED New)
 config_add_dependency(ROOT ${minimum_root_version})
 
 
