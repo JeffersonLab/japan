@@ -14,7 +14,6 @@
 # endif
 #endif
 
-
 #include "QwOptions.h"
 
 // System headers
@@ -28,7 +27,6 @@ QwOptions gQwOptions;
 // Qweak headers
 #include "QwLog.h"
 #include "QwParameterFile.h"
-#include "gitinfo.hh"
 
 // Qweak objects with default options
 #include "QwSubsystemArray.h"
@@ -39,6 +37,9 @@ QwOptions gQwOptions;
 #endif
 #include "QwRootFile.h"
 #include "QwHistogramHelper.h"
+
+// External objects
+extern const char* const gGitInfo;
 
 // Initialize the static command line arguments to zero
 int QwOptions::fArgc = 0;
