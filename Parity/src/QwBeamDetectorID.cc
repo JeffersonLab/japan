@@ -33,8 +33,8 @@ QwBeamDetectorID::QwBeamDetectorID(Int_t subbankid,
 {
   Int_t modnum, channum;
   fmoduletype   = paramfile.GetTypedNextToken<TString>();
-  modnum        = paramfile.GetTypedNextToken<UInt_t>();    //slot number
-  channum       = paramfile.GetTypedNextToken<UInt_t>();    //channel number
+  modnum        = paramfile.GetTypedNextToken<Int_t>();    //slot number
+  channum       = paramfile.GetTypedNextToken<Int_t>();    //channel number
   fdetectortype = paramfile.GetTypedNextToken<TString>();  //type-purpose of the detector
   fChannelName  = paramfile.GetTypedNextToken<TString>();  //name of the detector
   fmoduletype.ToUpper();
