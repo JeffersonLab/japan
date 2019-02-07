@@ -3,7 +3,7 @@ ROC=23
 Bank=0x05
 vqwk_buffer_offset = 1
 !same sample size for ADCs in a given bank
-sample_size=1984
+sample_size=16564
 !Sample size should be unchanged - ask Paul King
 !
 ! module.type, module.num  chan.num, det.type, det.name, if unrotated then last column ->UNROTATED
