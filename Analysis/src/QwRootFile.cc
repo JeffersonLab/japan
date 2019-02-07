@@ -257,10 +257,10 @@ void QwRootFile::ProcessOptions(QwOptions &options)
 
   // Options 'disable-mps' and 'disable-hel' for disabling
   // helicity window and helicity pattern output
-  if (options.GetValue<bool>("disable-mps-tree"))  DisableTree("Mps_Tree");
-  if (options.GetValue<bool>("disable-hel-tree"))  DisableTree("Hel_Tree");
-  if (options.GetValue<bool>("disable-burst-tree"))  DisableTree("Burst_Tree");
-  if (options.GetValue<bool>("disable-slow-tree")) DisableTree("Slow_Tree");
+  if (options.GetValue<bool>("disable-mps-tree"))  DisableTree("evt");
+  if (options.GetValue<bool>("disable-hel-tree"))  DisableTree("mul");
+  if (options.GetValue<bool>("disable-burst-tree"))  DisableTree("burst");
+  if (options.GetValue<bool>("disable-slow-tree")) DisableTree("slow");
 
   // Options 'num-accepted-events' and 'num-discarded-events' for
   // prescaling of the tree output
@@ -311,7 +311,7 @@ Bool_t QwRootFile::HasAnyFilled(TDirectory* d) {
     if ( TString(name).Contains("mapfile") ) continue;
     if ( TString(name).Contains("_condition") ) continue;
     //  The EPICS tree doesn't count
-    if ( TString(name).Contains("Slow_Tree") ) continue;
+    if ( TString(name).Contains("slow") ) continue;
 
     // Recursively check subdirectories.
     if (obj->IsA()->InheritsFrom( "TDirectory" ))

@@ -164,13 +164,13 @@ Int_t main(Int_t argc, Char_t* argv[])
     detectors.ShareHistograms(ringoutput);
 
     //  Construct tree branches
-    treerootfile->ConstructTreeBranches("Mps_Tree", "MPS event data tree", ringoutput);
-    treerootfile->ConstructTreeBranches("Hel_Tree", "Helicity event data tree", helicitypattern);
-    // treerootfile->ConstructTreeBranches("Hel_Tree_Reg", "Helicity event data tree (regressed)", regression);
-    // treerootfile->ConstructTreeBranches("Slow_Tree", "EPICS and slow control tree", epicsevent);
-    burstrootfile->ConstructTreeBranches("Burst_Tree", "Burst level data tree", helicitypattern.GetBurstYield(),"yield_");
-    burstrootfile->ConstructTreeBranches("Burst_Tree", "Burst level data tree", helicitypattern.GetBurstAsymmetry(),"asym_");
-    burstrootfile->ConstructTreeBranches("Burst_Tree", "Burst level data tree", helicitypattern.GetBurstDifference(),"diff_");
+    treerootfile->ConstructTreeBranches("evt", "MPS event data tree", ringoutput);
+    treerootfile->ConstructTreeBranches("mul", "Helicity event data tree", helicitypattern);
+    // treerootfile->ConstructTreeBranches("mulc", "Helicity event data tree (corrected)", regression);
+    // treerootfile->ConstructTreeBranches("slow", "EPICS and slow control tree", epicsevent);
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstYield(),"yield_");
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstAsymmetry(),"asym_");
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstDifference(),"diff_");
 
     // Summarize the ROOT file structure
     //treerootfile->PrintTrees();
@@ -219,7 +219,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       // 	  helicitypattern.UpdateBlinder(epicsevent);
 	
       // 	  treerootfile->FillTreeBranches(epicsevent);
-      // 	  treerootfile->FillTree("Slow_Tree");
+      // 	  treerootfile->FillTree("slow");
       // 	}
       // }
 
@@ -260,7 +260,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
 	  // Fill mps tree branches
 	  treerootfile->FillTreeBranches(ringoutput);
-	  treerootfile->FillTree("Mps_Tree");
+	  treerootfile->FillTree("evt");
 
           // Load the event into the helicity pattern
           helicitypattern.LoadEventData(ringoutput);
@@ -280,7 +280,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
               // Fill helicity tree branches
               treerootfile->FillTreeBranches(helicitypattern);
-              treerootfile->FillTree("Hel_Tree");
+              treerootfile->FillTree("mul");
 
               // Burst mode
               if (helicitypattern.IsEndOfBurst()) {
@@ -291,7 +291,7 @@ Int_t main(Int_t argc, Char_t* argv[])
                 burstrootfile->FillTreeBranches(helicitypattern.GetBurstYield());
                 burstrootfile->FillTreeBranches(helicitypattern.GetBurstAsymmetry());
                 burstrootfile->FillTreeBranches(helicitypattern.GetBurstDifference());
-                burstrootfile->FillTree("Burst_Tree");
+                burstrootfile->FillTree("burst");
 
                 // Clear the data
                 helicitypattern.ClearBurstSum();
@@ -301,9 +301,9 @@ Int_t main(Int_t argc, Char_t* argv[])
 	      // regression.LinearRegression(QwRegression::kRegTypeAsym);
 	      // running_regression.AccumulateRunningSum(regression);
 
-              // // Fill regressed tree branches
+              // // Fill corrected tree branches
 	      // treerootfile->FillTreeBranches(regression);
-	      // treerootfile->FillTree("Hel_Tree_Reg");
+	      // treerootfile->FillTree("mulc");
 
               // Clear the data
               helicitypattern.ClearEventData();
