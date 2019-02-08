@@ -15,9 +15,11 @@
 #include "QwLog.h"
 #include "QwParameterFile.h"
 #include "QwHistogramHelper.h"
+#ifdef __USE_DATABASE__
 #define MYSQLPP_SSQLS_NO_STATICS
 #include "QwParitySSQLS.h"
 #include "QwParityDB.h"
+#endif // __USE_DATABASE__
 
 // Root plotting headers
 #include "TCanvas.h"
@@ -347,7 +349,7 @@ Int_t QwBeamMod::LoadInputParameters(TString pedestalfile)
 }
 
 
-Int_t QwBeamMod::ProcessEvBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwBeamMod::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   Bool_t lkDEBUG=kFALSE;
 
@@ -511,7 +513,7 @@ void  QwBeamMod::ProcessEvent_2()
   FillHistograms();
 }
 
-Int_t QwBeamMod::ProcessConfigurationBuffer(const UInt_t roc_id, const UInt_t bank_id, UInt_t* buffer, UInt_t num_words)
+Int_t QwBeamMod::ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
   return 0;
 }
@@ -991,6 +993,8 @@ void  QwModChannelID::Print()
   QwMessage << QwLog::endl;
 }
 
+
+#ifdef __USE_DATABASE__
 //*****************************************************************
 void QwBeamMod::FillDB_MPS(QwParityDB *db, TString datatype)
 {
@@ -1059,7 +1063,7 @@ void QwBeamMod::FillErrDB(QwParityDB *db, TString datatype)
 {
   return;
 }
-
+#endif // __USE_DATABASE__
 
 void QwBeamMod::WritePromptSummary(QwPromptSummary *ps, TString datatype)
 {
