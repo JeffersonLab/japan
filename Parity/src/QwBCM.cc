@@ -17,6 +17,7 @@
 
 //  Qweak types that we want to use in this template
 #include "QwVQWK_Channel.h"
+#include "QwADC18_Channel.h"
 #include "QwScaler_Channel.h"
 
 /********************************************************/
@@ -563,6 +564,7 @@ Double_t QwBCM<T>::GetValueWidth()
   return fBeamCurrent.GetValueWidth();
 }
 
-template class QwBCM<QwVQWK_Channel>; 
-template class QwBCM<QwSIS3801_Channel>; 
-template class QwBCM<QwSIS3801D24_Channel>; 
+template class QwBCM<QwVQWK_Channel>;
+template class QwBCM<QwADC18_Channel>;
+template class QwBCM<QwSIS3801_Channel>;
+template class QwBCM<QwSIS3801D24_Channel>;

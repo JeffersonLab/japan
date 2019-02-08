@@ -1,6 +1,6 @@
 # PANGUIN
 
-Simple program that reads a configuration file and plots from a file. Searches for trees and branch names to find the correct tree. 
+Simple program that reads a configuration file and plots from a file. Searches for trees and branch names to find the correct tree. Plots the result of a macro (n.b. your macro should only make one plot). 
 
 If you have your QW_ROOTFILES env set it will search for a file with the correct run number in that folder assuming the format prexXXX_####.root, where XXX is the configuraiton (for now we have CH, INJ, ALL).
 
