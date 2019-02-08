@@ -25,7 +25,7 @@ void  QwCombinedBPM<T>::InitializeChannel(TString name)
 
   VQwBPM::InitializeChannel(name);
 
-  fEffectiveCharge.InitializeChannel(name+"_EffectiveCharge","derived");
+  fEffectiveCharge.InitializeChannel(name+"WS","derived");
 
   for( Short_t axis=kXAxis;axis<kNumAxes;axis++){
     fAbsPos[axis].InitializeChannel(name+kAxisLabel[axis],"derived");
@@ -62,7 +62,7 @@ void  QwCombinedBPM<T>::InitializeChannel(TString subsystem, TString name)
 
   VQwBPM::InitializeChannel(name);
 
-  fEffectiveCharge.InitializeChannel(subsystem, "QwCombinedBPM", name+"_EffectiveCharge","derived");
+  fEffectiveCharge.InitializeChannel(subsystem, "QwCombinedBPM", name+"WS","derived");
 
   for( Short_t axis=kXAxis;axis<kNumAxes;axis++){
     fAbsPos[axis].InitializeChannel(subsystem, "QwCombinedBPM", name+kAxisLabel[axis],"derived");

@@ -131,7 +131,7 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile) {
       fSensitivity[j].push_back(-1.0*(*alphasM)(i,j));
     }
   }
-  
+
   //printf("opened %s, slopes found, dump:\n",corFile->GetName());
   //alphasM->Print();
   corFile->Close();
