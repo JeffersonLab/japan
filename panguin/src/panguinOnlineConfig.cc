@@ -523,9 +523,9 @@ void OnlineConfig::OverrideRootFile(UInt_t runnumber)
       cout<<"QW_ROOTFILES env variable was not found going with default: "<< fnmRoot<<endl;
 
     cout << " Looking for file with runnumber "<<runnumber<<" in "<<fnmRoot<<endl;
-    const string daqConfigs[3] = {"CH","INJ","ALL"};
+    const string daqConfigs[5] = {"CH","INJ","ALL","_tedf",""};
     int found=0;
-    for(int i=0;i<3;i++){
+    for(int i=0;i<5;i++){
       rootfilename = Form("%sprex%s_%d.root",fnmRoot.c_str(),daqConfigs[i].c_str(),runnumber);
       if( access( rootfilename.Data(), F_OK ) != -1 ){
 	found++;

@@ -1,0 +1,18 @@
+# This is an example of a detector definition file.
+
+![QwBeamLine]
+! name = Injector
+! map      = tedf_beamline.map
+! geom     = tedf_beamline_geometry.map
+! eventcut = tedf_beamline_eventcuts.map
+! param    = tedf_beamline_pedestal.map
+!
+![QwHelicity]
+! name = Helicity info
+! map  = tedf_helicity.map
+!
+[QwBlindDetectorArray]
+  name     = MainDets
+  map      = tedf_maindet.map
+  param    = tedf_maindet_pedestal.map
+  eventcut = tedf_maindet_eventcuts.map

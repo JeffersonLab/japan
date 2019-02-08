@@ -1,0 +1,20 @@
+ROC=04
+Bank=0x5
+vqwk_buffer_offset=1
+
+sample_size=16564
+!
+!  Force all channels to be "not_blindable" during testing
+!
+  VQWK, 0, 0,  IntegrationPMT,  vqwk_04_0ch0  not_blindable
+  VQWK, 0, 1,  IntegrationPMT,  vqwk_04_0ch1  not_blindable
+  VQWK, 0, 2,  IntegrationPMT,  vqwk_04_0ch2  not_blindable
+  VQWK, 0, 3,  IntegrationPMT,  vqwk_04_0ch3  not_blindable
+  VQWK, 0, 4,  IntegrationPMT,  vqwk_04_0ch4  not_blindable
+  VQWK, 0, 5,  IntegrationPMT,  vqwk_04_0ch5  not_blindable
+  VQWK, 0, 6,  IntegrationPMT,  vqwk_04_0ch6  not_blindable
+  VQWK, 0, 7,  IntegrationPMT,  vqwk_04_0ch7  not_blindable
+
+[PUBLISH]
+! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
+  q_targ, IntegrationPMT, vqwk_04_0ch0, c

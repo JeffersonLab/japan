@@ -137,7 +137,7 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
 	    << "Calculate asymmetries based on (+--+) quartets!"
 	    << QwLog::endl;
     fHelicityIsMissing = kTRUE;
-    fPatternSize = 4; // default to quartets
+    fPatternSize = 2; // default to quartets
   }
   QwMessage << "QwHelicity::MaxPatternPhase = " << fPatternSize << QwLog::endl;
 
