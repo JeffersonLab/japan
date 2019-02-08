@@ -1,0 +1,111 @@
+#!/bin/bash
+# Author : Rakitha Beminiwattha
+# 01/16/2012
+# This bash script allows us to read norminal and current values for the PC and RHWP hardware counts
+# To use it,
+# compile using 
+# chmod +x GetGoodPC
+# and then run ./GetGoodPC
+# EPICS names PC [+] C1068_QDAC01PC [-] C1068_QDAC02
+
+# Reads text files,
+# /local/scratch/qweak/Last_good_PC_pos_OUT, 
+# /local/scratch/qweak/Last_good_PC_neg_OUT
+# /local/scratch/qweak/Last_good_PC_pos_IN
+# /local/scratch/qweak/Last_good_PC_neg_IN
+# set updated by the feedback program with last oggd PC values.- Changed by Rakitha 04/15/2011 - rakithab@jlab.org
+#RHWP_IN=391
+#RHWP_OUT=6342
+#RHWP_OUT_IN=7519
+
+#New RHWP for run 2 - 02-16-2012 rakitha (rakithab) from E-log 250
+#conversion from deg to dac is 360 deg -> 8000 dac
+
+#
+#cainfo=/home/EPICS/dvlepics/R3.14.12.1/base/bin/linux-x86/cainfo
+#caget=/home/EPICS/dvlepics/R3.14.12.1/base/bin/linux-x86/caget
+
+RHWP_IN=329
+RHWP_OUT=3496
+RHWP_OUT_IN=7511
+
+IHWP2="`caget -tf0 -w 0.1  IGL1I00DIOFLRD`"
+if [ $IHWP2 -ge 10000 ]; then
+    IHWP2="IN"
+#    echo "IHWP2 $IHWP2"
+else
+    IHWP2="OUT"
+#    echo "IHWP2 $IHWP2"
+fi
+
+host_name=${HOSTNAME}
+case "$host_name" in
+     *cdaql5* ) 
+	PC_pos_current="`caget -tf0 C1068_QDAC01`"
+	PC_neg_current="`caget -tf0 C1068_QDAC02`"
+	Midpoint=$(((PC_pos_current+PC_neg_current)/2))
+	echo "Current PC Mid-point  = $Midpoint"
+	IHWP_State="`caget -t IGL1I00DI24_24M`"
+	RHWP="`caget -t psub_pl_ipos`"
+	echo "Current RHWP  = $RHWP"
+	echo "RHWP"
+	echo "`cainfo psub_pl_ipos | grep Access | cut -c 20-30`"
+	echo "PC DAC status"
+	echo "`cainfo C1068_QDAC01 | grep Access | cut -c 20-30`"
+	echo "`cainfo C1068_QDAC02 | grep Access | cut -c 20-30`"
+#	RHWP_access="`$cainfo psub_pl_ipos | grep Access | cut -c 26-30 `"
+#	if [ "$RHWP_access" != "write" ]; then
+#	    echo "Hall C have no write access to RHWP"
+#	    echo "Please request MCC to set RHWP setting to $RHWP"
+#	    echo "Once RHWP setting is set $RHWP run the script again"
+#	fi
+	if [ "$IHWP_State" == "OUT " ];then
+	    echo "Current IHWP state is OUT"
+	    echo "Nominal Mid-point  = 40800"
+	    if [ "$IHWP2" == "IN" ];then
+		echo "Current IHWP2 state is $IHWP2"		
+		PC_pos_t0_OUT="`cat /local/scratch/qweak/Last_good_PC_pos_OUT_IHWP2_IN`"
+		PC_neg_t0_OUT="`cat /local/scratch/qweak/Last_good_PC_neg_OUT_IHWP2_IN`"
+		echo "RHWP for IHWP OUT state = $RHWP_OUT_IN"
+	    else
+		echo "Current IHWP2 state is $IHWP2"
+		PC_pos_t0_OUT="`cat /local/scratch/qweak/Last_good_PC_pos_OUT`"
+		PC_neg_t0_OUT="`cat /local/scratch/qweak/Last_good_PC_neg_OUT`"
+		echo "RHWP for IHWP OUT state = $RHWP_OUT"
+	    fi
+
+	    echo "Nominal PC_pos = $PC_pos_t0_OUT"
+	    echo "Current PC_pos = $PC_pos_current"
+	    echo "Nominal PC_neg = $PC_neg_t0_OUT"
+	    echo "Current PC_neg = $PC_neg_current"
+
+
+	else
+	    echo "Current IHWP state is IN"	
+	    echo "Nominal Mid-point  = 41215"
+	    if [ "$IHWP2" == "IN" ];then
+		echo "Current IHWP2 state is $IHWP2"
+		PC_pos_t0_IN="`cat /local/scratch/qweak/Last_good_PC_pos_IN_IHWP2_IN`"
+		PC_neg_t0_IN="`cat /local/scratch/qweak/Last_good_PC_neg_IN_IHWP2_IN`"
+	    else
+		echo "Current IHWP2 state is $IHWP2"
+		PC_pos_t0_IN="`cat /local/scratch/qweak/Last_good_PC_pos_IN`"
+		PC_neg_t0_IN="`cat /local/scratch/qweak/Last_good_PC_neg_IN`"
+	    fi
+
+	    echo "Nominal PC_pos = $PC_pos_t0_IN"
+	    echo "Current PC_pos = $PC_pos_current"
+	    echo "Nominal PC_neg = $PC_neg_t0_IN"
+	    echo "Current PC_neg = $PC_neg_current"
+	    echo "RHWP for IHWP IN state = $RHWP_IN"
+	fi
+	;;
+    * )
+	echo " "
+	echo " "
+	echo "Please go to cdaql5 and re-run"
+	echo " "
+	echo " "
+#	echo "Please email to rakithab@jlab.org about what you want to do"
+	;;
+esac

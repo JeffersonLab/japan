@@ -10,7 +10,7 @@
 #include "QwColor.h"
 #include "QwLog.h"
 
-#include <math.h>
+#include <cmath>
 
 
 const UInt_t MQwF1TDC::kF1Mask_SlotNumber           = 0xf8000000;

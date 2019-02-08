@@ -1,0 +1,8 @@
+ROC=23
+bank=0x2
+! module.type  module.num  chan.num, det.type, det.name
+  SIS3801D32, 0,   0, bmwscal, bmwscal
+  SIS3801D32, 0,   2, syncscal, chouse_fr
+  SIS3801D32, 0,   3, syncscal, chouse_f1
+  SIS3801D32, 0,   4, syncscal, chouse_f2
+

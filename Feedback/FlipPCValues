@@ -1,0 +1,177 @@
+#!/bin/bash
+# Author : Rakitha Beminiwattha
+# 02/20/2011
+# This bash script allows us to set the norminal values for the PC hardware counts
+# To use it,
+# compile using 
+# chmod +x FlipPCValues
+# and then run ./FlipPCValues
+# EPICS names PC [+] C1068_QDAC01PC [-] C1068_QDAC02
+
+#cainfo=/home/EPICS/dvlepics/R3.14.12.1/base/bin/linux-x86/cainfo
+#caget=/home/EPICS/dvlepics/R3.14.12.1/base/bin/linux-x86/caget
+#caput=/home/EPICS/dvlepics/R3.14.12.1/base/bin/linux-x86/caput
+
+#1. PITA starting setpoints when IHWP is flipped from the IN-OUT in 8:18am 02/23/2011
+#2. Runs checked OUT - 10810 IN - 10766 -Changed by Rakitha 03/17/2011
+#PC_pos_t0_IN=43766
+#PC_neg_t0_IN=40434
+#RHWP_IN=8250
+#PC_pos_t0_OUT=43000
+#PC_neg_t0_OUT=41150
+#RHWP_OUT=500
+
+#3. Runs checked OUT - 10978 IN - 10969&10981 -Changed by Rakitha 03/30/2011 - rakithab@jlab.org
+#PC_pos_t0_IN=42990
+#PC_neg_t0_IN=41210
+#RHWP_IN=8250
+#PC_pos_t0_OUT=43238 
+#PC_neg_t0_OUT=40962
+#RHWP_OUT=500
+
+#4. Runs checked OUT - 11283 IN - 11286 -Changed by Rakitha 04/11/2011 - rakithab@jlab.org
+PC_pos_t0_IN=43300
+PC_neg_t0_IN=40899
+#RHWP_IN=8250
+PC_pos_t0_OUT=42864 
+PC_neg_t0_OUT=41335
+#RHWP_OUT=500
+
+#New RHWP for run 2 - 11-24-2011 rakitha (rakithab)
+#RHWP IN is 291.5
+#RHWP OUT is 15.7
+#conversion from deg to dac is 360 deg -> 8000 dac
+#RHWP_IN=6478
+#RHWP_OUT=349
+
+
+#New RHWP for run 2 - 02-03-2012 rakitha (rakithab)
+#conversion from deg to dac is 360 deg -> 8000 dac
+
+#RHWP_IN=391
+#RHWP_OUT=6342
+#RHWP_OUT_IN=7519
+
+#New RHWP for run 2 - 02-16-2012 rakitha (rakithab) from E-log 250
+#conversion from deg to dac is 360 deg -> 8000 dac
+
+RHWP_IN=329
+RHWP_OUT=3496
+RHWP_OUT_IN=7511
+
+#Helicity magnet set points
+hel_odd_2_IN=-2
+hel_odd_2_OUT=-3
+hel_odd_2_OUT_IN=-3
+
+
+IHWP2="`caget -tf0 -w 0.1  IGL1I00DIOFLRD`"
+
+if [ $IHWP2 -ge 10000 ]; then
+    IHWP2="IN"
+#    echo "IHWP2 $IHWP2"
+else
+    IHWP2="OUT"
+#    echo "IHWP2 $IHWP2"
+fi
+#conversion for PC V is 2^16 DAC = 2000V 
+
+
+
+
+
+#5. No longer needs above values.
+# Reads text files,
+# /local/scratch/qweak/Last_good_PC_pos_OUT, 
+# /local/scratch/qweak/Last_good_PC_neg_OUT
+# /local/scratch/qweak/Last_good_PC_pos_IN
+# /local/scratch/qweak/Last_good_PC_neg_IN
+# set updated by the feedback program with last oggd PC values.- Changed by Rakitha 04/15/2011 - rakithab@jlab.org
+host_name=${HOSTNAME}
+case "$host_name" in
+     *cdaql5* ) 
+	PC_pos_current="`caget -t C1068_QDAC01`"
+	PC_neg_current="`caget -t C1068_QDAC02`"
+	echo -n "Did you stop the current run in the Qweak, Compton AND Injector DAQ? [y/n] "
+	read yesno
+	if [ ${yesno} = "n" ] ; then
+	    echo "Do it now!  Then run this script again."
+	    exit -1
+	else
+	    echo "Check the IHWP state..."
+	fi
+	
+	IHWP_State="`caget -t IGL1I00DI24_24M`"
+#IHWP_State="IN"
+	echo -n "Did you notice the IHWP state has changed [y/n] "
+	read yesno2
+
+	if [ ${yesno2} = "n" ] ; then
+	    echo "Verify it now!  Then run this script again."
+	    exit -1
+	else
+	    echo "Flipping the PC values..."
+	fi
+	
+	echo "Setting Pockels Cell values "
+	
+	if [ "$IHWP_State" == "OUT " ];then
+	    echo "Current IHWP state is OUT"
+	    if [ "$IHWP2" == "IN" ];then
+		echo "Current IHWP2 state is $IHWP2"		
+		PC_pos_t0_OUT="`cat /local/scratch/qweak/Last_good_PC_pos_OUT_IHWP2_IN`"
+		PC_neg_t0_OUT="`cat /local/scratch/qweak/Last_good_PC_neg_OUT_IHWP2_IN`"
+		echo "RHWP for IHWP OUT state = $RHWP_OUT_IN"
+		caput psub_pl_ipos $RHWP_OUT_IN
+		echo " Helicity magnet setpoint hel_odd_2 = $hel_odd_2_OUT"
+		caput hel_odd_2 $hel_odd_2_OUT
+	    else
+		echo "Current IHWP2 state is $IHWP2"
+		PC_pos_t0_OUT="`cat /local/scratch/qweak/Last_good_PC_pos_OUT`"
+		PC_neg_t0_OUT="`cat /local/scratch/qweak/Last_good_PC_neg_OUT`"
+		echo "RHWP for IHWP OUT state = $RHWP_OUT"
+	        caput psub_pl_ipos $RHWP_OUT
+		echo " Helicity magnet setpoint hel_odd_2 = $hel_odd_2_OUT_IN"
+		caput hel_odd_2 $hel_odd_2_OUT_IN
+	    fi
+	    echo "Norminal PC_pos = $PC_pos_t0_OUT"
+	    echo "Current PC_pos = $PC_pos_current"
+	    echo "Norminal PC_neg = $PC_neg_t0_OUT"
+	    echo "Current PC_neg = $PC_neg_current"
+	    echo "Setting norminal values"	
+	    caput C1068_QDAC01 $PC_pos_t0_OUT
+	    caput C1068_QDAC02 $PC_neg_t0_OUT
+	else
+	    echo "Current IHWP state is IN"
+	    if [ "$IHWP2" == "IN" ];then
+		echo "Current IHWP2 state is $IHWP2"
+		PC_pos_t0_IN="`cat /local/scratch/qweak/Last_good_PC_pos_IN_IHWP2_IN`"
+		PC_neg_t0_IN="`cat /local/scratch/qweak/Last_good_PC_neg_IN_IHWP2_IN`"
+	    else
+		echo "Current IHWP2 state is $IHWP2"
+		PC_pos_t0_IN="`cat /local/scratch/qweak/Last_good_PC_pos_IN`"
+		PC_neg_t0_IN="`cat /local/scratch/qweak/Last_good_PC_neg_IN`"
+		echo " Setting Helicity magnet setpoint hel_odd_2 = $hel_odd_2_IN"
+		caput hel_odd_2 $hel_odd_2_IN
+	    fi
+	    echo "Norminal PC_pos = $PC_pos_t0_IN"
+	    echo "Current PC_pos = $PC_pos_current"
+	    echo "Norminal PC_neg = $PC_neg_t0_IN"
+	    echo "Current PC_neg = $PC_neg_current"
+	    echo "RHWP for IHWP IN state = $RHWP_IN"
+	    echo "Setting norminal values"
+	    caput C1068_QDAC01 $PC_pos_t0_IN
+	    caput C1068_QDAC02 $PC_neg_t0_IN
+	    caput psub_pl_ipos $RHWP_IN
+	fi
+	;;
+    * )
+	echo " "
+	echo " "
+	echo "FlipPCValues is not supposed to be running at $host_name"
+	echo "Please go to cdaql5 and re-run FlipPCValues"
+	echo " "
+	echo " "
+#	echo "Please email to rakithab@jlab.org about what you want to do"
+	;;
+esac

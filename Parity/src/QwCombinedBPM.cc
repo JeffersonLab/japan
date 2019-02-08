@@ -461,12 +461,7 @@ void  QwCombinedBPM<T>::ProcessEvent()
 
   static T  tmpQADC("tmpQADC"), tmpADC("tmpADC");
 
-  //PrintInfo();
-
   this->ClearEventData();
-
-  //PrintInfo();
-
   //check to see if the fixed parameters are calculated
   if(!fixedParamCalculated){
     if(ldebug) std::cout<<"QwCombinedBPM:Calculating fixed parameters..\n";
@@ -549,8 +544,6 @@ void  QwCombinedBPM<T>::ProcessEvent()
       fMinimumChiSquare[axis].PrintInfo();
     }
   }
-
-  //PrintInfo();
 
   return;
 
@@ -844,7 +837,6 @@ VQwBPM& QwCombinedBPM<T>::operator+= (const VQwBPM &value)
   return *this;
 }
 
-
 template<typename T>
 QwCombinedBPM<T>& QwCombinedBPM<T>::operator+= (const QwCombinedBPM<T> &value)
 {
@@ -860,7 +852,6 @@ QwCombinedBPM<T>& QwCombinedBPM<T>::operator+= (const QwCombinedBPM<T> &value)
      }
      return *this;
 }
-
 
 template<typename T>
 VQwBPM& QwCombinedBPM<T>::operator-= (const VQwBPM &value)
@@ -894,7 +885,6 @@ void QwCombinedBPM<T>::Ratio(VQwBPM &numer, VQwBPM &denom)
   Ratio(*dynamic_cast<QwCombinedBPM<T>*>(&numer),
       *dynamic_cast<QwCombinedBPM<T>*>(&denom));
 }
-
 
 template<typename T>
 void QwCombinedBPM<T>::Ratio(QwCombinedBPM<T> &numer,
@@ -932,7 +922,6 @@ void QwCombinedBPM<T>::Scale(Double_t factor)
   return;
 }
 
-
 template<typename T>
 void QwCombinedBPM<T>::CalculateRunningAverage()
 {
@@ -952,7 +941,6 @@ void QwCombinedBPM<T>::AccumulateRunningSum(const VQwBPM& value)
 {
   AccumulateRunningSum(*dynamic_cast<const QwCombinedBPM<T>* >(&value));
 }
-
 
 template<typename T>
 void QwCombinedBPM<T>::AccumulateRunningSum(const QwCombinedBPM<T>& value)

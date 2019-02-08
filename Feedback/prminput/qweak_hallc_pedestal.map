@@ -1,0 +1,154 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! 
+! Filename : qweak_hallc_pedestal.9695-.map 
+!
+! ** HallC BPM pedestals (per sample) obtained using Run 5900 
+!           qwk_bcm1 (is calibrated with Run 5807 Gain Setting 2)
+!
+! ** HallC BCM pedestals and their gains obtained using Run 8370
+!//  8370-8394        BCM calibration RUN 8370 (*)
+!//                   https://hallcweb.jlab.org/hclog/1012_archive/101220200033.html
+!//                   https://hallcweb.jlab.org/hclog/1012_archive/101221120541.html
+!//  8395-8396        BCM gain setting 3
+!//                   https://hallcweb.jlab.org/hclog/1012_archive/101221042257.html
+!//                   only 8395, 8396 is junk
+!//
+!//
+!//  8397-            BCM gain setting 2 
+!//                   https://hallcweb.jlab.org/hclog/1012_archive/101221061819.html
+!//                   https://hallcweb.jlab.org/hclog/1012_archive/101221062342.html
+!//                   https://hallcweb.jlab.org/hclog/1012_archive/101221062621.html  
+
+
+!  For BCM5/6         https://hallcweb.jlab.org/hclog/1101_archive/110120122054.html
+!    8966 -
+!         
+!   Thursday, January 20 13:12:51 EST 2011, jhlee
+!
+!  For BCM1/2/5/6   https://hallcweb.jlab.org/hclog/1101_archive/110125222318.html
+!  		    Wednesday, January 26 09:00:19 EST 2011, jhlee
+!                   Ramesh confirmed the results is the better than run 8966,
+!                   thus, I simply use run 9723 
+!                   Wednesday, January 26 18:33:21 EST 2011, jhlee
+!
+!  For BCM5/6       Friday, February  4 16:10:37 EST 2011,jhlee
+!                   https://hallcweb.jlab.org/hclog/1102_archive/110204144852.html
+!  For BCM1/2/5/6   https://hallcweb.jlab.org/hclog/1111_archive/111126153445.html log-240704
+
+! ** HallC BPM pedestals (per sample) obtained using Run 11956 (qweak_hallc_pedestal.15261-.map)
+!
+! Hall A bcm:ha_bcm   Mon Mar 05 13:28:44 EST 2012 Hclog: 257105 (rakitha - rakithab@jlab.org)
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  device        ,  pedestal ,   gain
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  qwk_bpm3c07XP    ,	4321.91 , 1.0
+  qwk_bpm3c07XM    ,	4270.65 , 1.0
+  qwk_bpm3c07YP    ,	3467.82 , 1.0
+  qwk_bpm3c07YM    ,	4715.08 , 1.0
+  qwk_bpm3c07aXP   ,	4371.05 , 1.0
+  qwk_bpm3c07aXM   ,	3980.77 , 1.0
+  qwk_bpm3c07aYP   ,	3316.36 , 1.0
+  qwk_bpm3c07aYM   ,	3995.29 , 1.0
+  qwk_bpm3c08XP    ,	4936.66 , 1.0
+  qwk_bpm3c08XM    ,	3802.45 , 1.0
+  qwk_bpm3c08YP    ,	4552.01 , 1.0
+  qwk_bpm3c08YM    ,	5647.08 , 1.0
+  qwk_bpm3c11XP    ,	4110.59 , 1.0
+  qwk_bpm3c11XM    ,	4551.41 , 1.0
+  qwk_bpm3c11YP    ,	4504.34 , 1.0
+  qwk_bpm3c11YM    ,	4780.60 , 1.0
+  qwk_bpm3c12XP    ,	4711.27 , 1.0
+  qwk_bpm3c12XM    ,	4718.28 , 1.0
+  qwk_bpm3c12YP    ,	5467.24 , 1.0
+  qwk_bpm3c12YM    ,	6778.53 , 1.0
+  qwk_bpm3c14XP    ,	5608.24 , 1.0
+  qwk_bpm3c14XM    ,	5942.43 , 1.0
+  qwk_bpm3c14YP    ,	5504.66 , 1.0
+  qwk_bpm3c14YM    ,	6342.74 , 1.0
+  qwk_bpm3c16XP    ,	5273.68 , 1.0
+  qwk_bpm3c16XM    ,	5315.81 , 1.0
+  qwk_bpm3c16YP    ,	4312.00 , 1.0
+  qwk_bpm3c16YM    ,	4441.03 , 1.0
+  qwk_bpm3c17XP    ,	4858.54 , 1.0
+  qwk_bpm3c17XM    ,	5152.51 , 1.0
+  qwk_bpm3c17YP    ,	2681.43 , 1.0
+  qwk_bpm3c17YM    ,	3956.57 , 1.0
+  qwk_bpm3c18XP    ,	4435.01 , 1.0
+  qwk_bpm3c18XM    ,	5022.96 , 1.0
+  qwk_bpm3c18YP    ,	5233.13 , 1.0
+  qwk_bpm3c18YM    ,	5192.95 , 1.0
+  qwk_bpm3c19XP    ,	4566.58 , 1.0
+  qwk_bpm3c19XM    ,	4255.30 , 1.0
+  qwk_bpm3c19YP    ,	4943.83 , 1.0
+  qwk_bpm3c19YM    ,	4853.58 , 1.0
+  qwk_bpm3p02aXP   ,	3475.28 , 1.0
+  qwk_bpm3p02aXM   ,	3254.37 , 1.0
+  qwk_bpm3p02aYP   ,	4794.35 , 1.0
+  qwk_bpm3p02aYM   ,	3674.62 , 1.0
+  qwk_bpm3p02bXP   ,	4330.53 , 1.0
+  qwk_bpm3p02bXM   ,	4845.56 , 1.0
+  qwk_bpm3p02bYP   ,	4824.18 , 1.0
+  qwk_bpm3p02bYM   ,	3614.02 , 1.0
+  qwk_bpm3p03aXP   ,	4961.07 , 1.0
+  qwk_bpm3p03aXM   ,	4191.02 , 1.0
+  qwk_bpm3p03aYP   ,	5657.01 , 1.0
+  qwk_bpm3p03aYM   ,	4859.91 , 1.0
+  qwk_bpm3c20XP    ,	4609.54 , 1.0
+  qwk_bpm3c20XM    ,	5574.22 , 1.0
+  qwk_bpm3c20YP    ,	2749.85 , 1.0
+  qwk_bpm3c20YM    ,	2875.62 , 1.0
+  qwk_bpm3c21XP    ,    -726.38 , 1.0
+  qwk_bpm3c21XM    ,    -884.42 , 1.0
+  qwk_bpm3c21YP    ,   -3100.85 , 1.0
+  qwk_bpm3c21YM    ,   -3323.95 , 1.0
+  qwk_bpm3h02XP    ,	2159.46 , 1.0
+  qwk_bpm3h02XM    ,	2811.80 , 1.0
+  qwk_bpm3h02YP    ,	4720.97 , 1.0
+  qwk_bpm3h02YM    ,	3676.43 , 1.0
+  qwk_bpm3h04XP    ,	2756.25 , 1.0
+  qwk_bpm3h04XM    ,	2461.72 , 1.0
+  qwk_bpm3h04YP    ,	3545.75 , 1.0
+  qwk_bpm3h04YM    ,	2479.48 , 1.0
+  qwk_bpm3h07aXP   ,	 297.71 , 1.0
+  qwk_bpm3h07aXM   ,	-971.43 , 1.0
+  qwk_bpm3h07aYP   ,	3126.18 , 1.0
+  qwk_bpm3h07aYM   ,	2611.49 , 1.0
+  qwk_bpm3h07bXP   ,	 -82.80 , 1.0
+  qwk_bpm3h07bXM   ,   -1252.00 , 1.0
+  qwk_bpm3h07bYP   ,   -1404.54 , 1.0
+  qwk_bpm3h07bYM   ,   -1608.96 , 1.0
+  qwk_bpm3h07cXP   ,    -229.37 , 1.0
+  qwk_bpm3h07cXM   ,   -1563.31 , 1.0
+  qwk_bpm3h07cYP   ,	 392.83 , 1.0
+  qwk_bpm3h07cYM   ,	 530.79 , 1.0
+  qwk_bpm3h08XP    ,   -2446.26 , 1.0
+  qwk_bpm3h08XM    ,   -3141.81 , 1.0
+  qwk_bpm3h08YP    ,   -2078.04 , 1.0
+  qwk_bpm3h08YM    ,   -2453.59 , 1.0
+  qwk_bpm3h09XP    ,	4286.37 , 1.0
+  qwk_bpm3h09XM    ,	3540.56 , 1.0
+  qwk_bpm3h09YP    ,	4617.19 , 1.0
+  qwk_bpm3h09YM    ,	3976.35 , 1.0
+  qwk_bpm3h09bXP   ,	2691.17 , 1.0
+  qwk_bpm3h09bXM   ,	3844.96 , 1.0
+  qwk_bpm3h09bYP   ,	5128.03 , 1.0
+  qwk_bpm3h09bYM   ,	4205.27 , 1.0
+
+#updated from the qweak_hallc_pedestal.14417-.map -- rakithab
+
+
+  qwk_bcm1 , -197.599785, +0.004342
+  qwk_bcm2 , -557.273210, +0.004688
+  qwk_bcm5  ,-427.799,      0.00213436
+  qwk_bcm6  ,-409.644,      0.00222752
+  qwk_bcm7  ,-553.898,      0.00214255
+  qwk_bcm8  ,-494.289,      0.00207661
+
+########
+  qwk_linephase        , -382.662 	, 1.0
+  qwk_invert_tstable   , -541.714 	, 1.0
+  sca_habcm, 5335.6, 0.00000121050
+  sca_4mhz         ,    0.0,     0.000000250
+
+

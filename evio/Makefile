@@ -116,15 +116,14 @@ ifeq ($(OSNAME),Linux)
                     -lPhysics -lPostscript -lProof -lRint -lTree -lUnix -lZip
      ROOTGLIBS     = -lGpad -lGui -lGX11 -lX3d
    else
+     ROOTCFLAGS    = $(shell root-config --cflags)
      ROOTLIBS      = $(shell root-config --libs)
      ROOTGLIBS     = $(shell root-config --glibs)
    endif
 
-   ROOTCFLAGS    = $(shell root-config --cflags)
    INCLUDES      = -I$(shell root-config --incdir)
    CXX           = g++
-   CXXFLAGS      = -O2 -Wall -fno-exceptions -fPIC $(INCLUDES)
-   CXXFLAGS     += $(ROOTCFLAGS)
+   CXXFLAGS      = -O2 -Wall -fno-exceptions -fPIC $(ROOTCFLAGS) $(INCLUDES)
    LD            = g++
    LDFLAGS       = 
    SOFLAGS       = -shared

@@ -3,7 +3,7 @@
 // System headers
 #include <iostream>
 #include <fstream>
-#include <math.h>
+#include <cmath>
 
 // ROOT headers
 #include "TObject.h"
@@ -23,7 +23,7 @@
 #define MYSQLPP_SSQLS_NO_STATICS
 #include "QwParitySSQLS.h"
 #include "QwParityDB.h"
-#endif
+#endif //__USE_DATABASE__
 
 
 /*************************************
@@ -1237,8 +1237,7 @@ void QwEPICSEvent::FillSlowControlsSettings(QwParityDB *db)
   db->Disconnect();
   QwDebug << "Leaving QwEPICSEvent::FillSlowControlsStrings()" << QwLog::endl;
 }
-#endif
-
+#endif //__USE_DATABASE__
 
 TList *QwEPICSEvent::GetEPICSStringValues()
 {
@@ -1295,7 +1294,7 @@ void QwEPICSEvent::WriteEPICSStringValues()
 		    << std::endl;
 	}
 	
-	TTree *slow_tree = (TTree*) file->Get("Slow_Tree");
+	TTree *slow_tree = (TTree*) file->Get("slow");
 	
 	for (std::size_t tagindex=0; tagindex<fEPICSVariableList.size(); tagindex++) 
 	  {

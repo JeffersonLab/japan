@@ -6,7 +6,9 @@
  */
 
 #include "QwRunCondition.h"
-#include "gitinfo.hh"
+
+// External objects
+extern const char* const gGitInfo;
 
 const Int_t QwRunCondition::fCharLength = 127;
 
@@ -41,7 +43,7 @@ QwRunCondition::SetArgs(Int_t argc, Char_t* argv[])
 #if ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
   root_version += ", SVN : ";
   root_version += gROOT->GetSvnRevision();
-  root_version += " ";   
+  root_version += " ";
   root_version += gROOT->GetSvnBranch();
 #else // ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
   root_version += ", GIT : ";
@@ -69,11 +71,6 @@ QwRunCondition::SetArgs(Int_t argc, Char_t* argv[])
   TTimeStamp time_stamp;
   TString current_time = time_stamp.AsString("l"); // local time
 
-  // source code information ~ git
-  char gitInfo[__GITMAXINFO_SIZE];
-  gitInfo[0]='\0';
-  strcpy(gitInfo,gGitInfoStr);
-
   // get current ROC flags 
   TString roc_flags;
   // if one of the cdaq cluster AND the user must be a "cdaq", 
@@ -83,7 +80,6 @@ QwRunCondition::SetArgs(Int_t argc, Char_t* argv[])
   else {
     roc_flags = "Invalid, because the system is not cdaqlx and the user is not cdaq.";
   }
-    
 
   // insert some comments at the beginning of strings...
   root_version.Insert   (0, "ROOT Version : ");
@@ -104,7 +100,7 @@ QwRunCondition::SetArgs(Int_t argc, Char_t* argv[])
   this -> Add(user_name);
   this -> Add(argv_list);
   this -> Add(current_time);
-  this -> Add(gitInfo);
+  this -> Add(gGitInfo);
   this -> Add(roc_flags);
 
   return;

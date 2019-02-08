@@ -188,7 +188,8 @@ QwPromptSummary::QwPromptSummary(Int_t run_number, Int_t runlet_number)
 
 QwPromptSummary::~QwPromptSummary()
 {
-  if(fElementList) delete fElementList; fElementList = NULL;
+  if(fElementList) delete fElementList;
+  fElementList = NULL;
 };
 
 
@@ -329,9 +330,10 @@ QwPromptSummary::GetElementByName(TString name)
 	return an_element;
       }
     }
-  
+
   return NULL;
 };
+
 
 TString
 QwPromptSummary::PrintTextSummaryHeader()
@@ -549,7 +551,6 @@ QwPromptSummary::FillDoubleDifference(TString type, TString name1, TString name2
   }
 }
 
-
 void
 QwPromptSummary::PrintCSV()
 {
@@ -579,5 +580,4 @@ QwPromptSummary::PrintTextSummary()
   printf("-----------------------\n");
   return;
 };
-
 

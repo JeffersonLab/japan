@@ -1,0 +1,139 @@
+
+!**************************************************************************
+!  HALL C  BEAMLINE
+!**************************************************************************
+!
+!
+ROC=1
+Bank=0x102
+!same sample size for ADCs in a given bank
+!sample_size=480
+!for 960Hz
+sample_size=464  
+!
+!
+! module.type, module.num  chan.num, det.type, det.name, if unrotated then last column ->UNROTATED
+
+!ADC0, Slot 18, Serial Number 13, Address 0x7B
+!   VQWK, 0, 4,  bcm,  QWK_BCM5
+!   VQWK, 0, 5,  bcm,  QWK_BCM6
+   VQWK, 0, 6,  bcm,  QWK_BCM7 
+   VQWK, 0, 7,  bcm,  QWK_BCM8
+
+
+!ADC1, Slot 4,  Serial Number 26, Address 0x7C
+   VQWK, 1, 4,  bpmstripline,  QWK_BPM3H07AXP
+   VQWK, 1, 5,  bpmstripline,  QWK_BPM3H07AXM
+   VQWK, 1, 6,  bpmstripline,  QWK_BPM3H07AYP
+   VQWK, 1, 7,  bpmstripline,  QWK_BPM3H07AYM
+
+!ADC2, Slot 5,  Serial Number 22, Address 0x7D
+   VQWK, 2, 0,  bpmstripline,  QWK_BPM3H07BXP
+   VQWK, 2, 1,  bpmstripline,  QWK_BPM3H07BXM
+   VQWK, 2, 2,  bpmstripline,  QWK_BPM3H07BYP
+   VQWK, 2, 3,  bpmstripline,  QWK_BPM3H07BYM
+   VQWK, 2, 4,  bpmstripline,  QWK_BPM3H07CXP
+   VQWK, 2, 5,  bpmstripline,  QWK_BPM3H07CXM
+   VQWK, 2, 6,  bpmstripline,  QWK_BPM3H07CYP
+   VQWK, 2, 7,  bpmstripline,  QWK_BPM3H07CYM
+
+!ADC3, Slot 6,  Serial Number 08, Address 0x7E
+   VQWK, 3, 4,  bpmstripline,  QWK_BPM3H09XP
+   VQWK, 3, 5,  bpmstripline,  QWK_BPM3H09XM
+   VQWK, 3, 6,  bpmstripline,  QWK_BPM3H09YP
+   VQWK, 3, 7,  bpmstripline,  QWK_BPM3H09YM
+
+
+!Last updated Nov 23 2011 by Rakitha (rakithab) using Parity/prminput/qweak_hallc_beamline.13337-.map revision-3566
+!ADC4, Slot 7, Address 37, 0x7F
+   VQWK, 4, 6,  bcm,  QWK_BCM2              
+   VQWK, 4, 7,  bcm,  QWK_BCM1    
+
+!Last updated Feb 08 2012 Rakitha (rakithab) using Parity/prminput/qweak_hallc_beamline.15261-.map
+!ADC6, Slot 9,  Serial Number 04, Address 0x81
+   VQWK, 6, 4,  bpmstripline,  QWK_BPM3C12XP
+   VQWK, 6, 5,  bpmstripline,  QWK_BPM3C12XM
+   VQWK, 6, 6,  bpmstripline,  QWK_BPM3C12YP
+   VQWK, 6, 7,  bpmstripline,  QWK_BPM3C12YM
+
+
+!**************************************************************************
+! HALL C BEAMLINE SCALERS
+!**************************************************************************
+ROC=0
+normclock=sca_4MHz
+Bank=0x6103
+
+!
+!! scaler.type, scaler.num  word.num, det.type, det.name
+
+
+   SCALER, 0, 22, bcm, sca_habcm
+   SCALER, 0, 30, clock, sca_4MHz
+
+
+! Enter the device names in order they appear in the beamline.
+!
+begin=combinedbcm
+name=qwk_charge
+!name	   type	 wieght
+! qwk_bcm1,  bcm, 1.0
+qwk_bcm8,  bcm, 1.0	
+
+end=combinedbcm
+
+
+begin=combinedbpm
+name=qwk_target 
+!name           type          q      x          y    
+ QWK_BPM3H07A,  bpmstripline, 1.0,   1.0,   1.0 
+ QWK_BPM3H07B,  bpmstripline, 1.0,   1.0,   1.0
+ QWK_BPM3H07C,  bpmstripline, 1.0,   1.0,   1.0
+ QWK_BPM3H09,   bpmstripline, 1.0,   1.0,   1.0
+end=combinedbpm
+
+
+
+!END
+
+!set of published variables
+!publish name,device_type, device name, property (x-pos,xp-angle,y-pos,yp-angle,c-charge,e-energy change, ef - effective charge)
+
+!Each line must contain,
+!1. publish name
+!2. device type
+!	bcm
+!	bpmstripline
+!	bpmcavity
+!	combobpm
+!	combobcm
+!	comboenergy
+!       scaler
+!3. device name 
+!4. property to publish 
+!	x-pos
+!	xp-angle
+!	y-pos
+!	yp-angle
+!	c-charge
+!	e-energy change
+!	ef-effective charge
+!       sc - scaler channel
+
+[PUBLISH]
+ q_targ, combobcm, qwk_charge, c
+ sca_bcm, bcm, sca_habcm, c
+
+ x_targ, combobpm, qwk_target, x
+ y_targ, combobpm,  qwk_target, y
+ xp_targ, combobpm,  qwk_target, xp
+ yp_targ, combobpm,  qwk_target, yp
+
+ 3c12x, bpmstripline, qwk_bpm3c12, x
+ 3c12y, bpmstripline, qwk_bpm3c12, y
+ 3c12efc, bpmstripline, qwk_bpm3c12, ef
+
+ bcm7, bcm, qwk_bcm7, c
+ bcm8, bcm, qwk_bcm8, c
+
+

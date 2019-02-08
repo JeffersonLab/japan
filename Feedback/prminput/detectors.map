@@ -1,0 +1,18 @@
+# This is an example of a detector definition file.
+
+[QwBeamLine]
+ name = HallCBeamLine
+ map = qweak_hallc_beamline.map
+ geom = qweak_beamline_geometry.map
+ param = qweak_hallc_pedestal.map
+ eventcut = qweak_beamline_eventcuts.in
+
+[QwHelicity]
+ name = Helicity info
+ map = qweak_helicity.map
+
+[QwLumi]
+ name = Lumi Detector
+ map = qweak_lumi.map
+ param = qweak_lumi_pedestal.map
+ eventcut = qweak_lumi_eventcuts.in

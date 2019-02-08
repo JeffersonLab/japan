@@ -116,7 +116,7 @@ class QwBlinder {
     /// Write to the database
     void FillDB(QwParityDB *db, TString datatype);
     void FillErrDB(QwParityDB *db, TString datatype);
-#endif
+#endif // __USE_DATABASE__
 
     /// Modifies the device error code variable passed to it, if the blinder is
     /// not okay.
@@ -275,7 +275,6 @@ class QwBlinder {
     std::vector<UChar_t> GenerateDigest(const TString& input) const;
 
     std::vector<Int_t> fPatternCounters; ///< Counts the number of events in each failure mode
-
 };
 
-#endif
+#endif //__QWBLINDER__

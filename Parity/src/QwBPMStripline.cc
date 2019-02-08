@@ -36,7 +36,7 @@ void  QwBPMStripline<T>::InitializeChannel(TString name)
   for(i=kXAxis;i<kNumAxes;i++)
     fAbsPos[i].InitializeChannel(name+kAxisLabel[i],"derived");
 
-  fEffectiveCharge.InitializeChannel(name+"_EffectiveCharge","derived");
+  fEffectiveCharge.InitializeChannel(name+"WS","derived");
 
   for(i=0;i<4;i++) {
     fWire[i].InitializeChannel(name+subelement[i],"raw");
@@ -70,7 +70,7 @@ void  QwBPMStripline<T>::InitializeChannel(TString subsystem, TString name)
   for(i=kXAxis;i<kNumAxes;i++)
     fAbsPos[i].InitializeChannel(subsystem, "QwBPMStripline", name+kAxisLabel[i],"derived");
 
-  fEffectiveCharge.InitializeChannel(subsystem, "QwBPMStripline", name+"_EffectiveCharge","derived");
+  fEffectiveCharge.InitializeChannel(subsystem, "QwBPMStripline", name+"WS","derived");
 
   for(i=0;i<4;i++) {
     fWire[i].InitializeChannel(subsystem, "QwBPMStripline", name+subelement[i],"raw");
@@ -783,7 +783,8 @@ void  QwBPMStripline<T>::ConstructBranchAndVector(TTree *tree, TString &prefix, 
       for(i=0;i<4;i++) fWire[i].ConstructBranchAndVector(tree,thisprefix,values);
     }
     for(i=kXAxis;i<kNumAxes;i++) {
-      fRelPos[i].ConstructBranchAndVector(tree,thisprefix,values);
+      //  2018dec20, pking:  Do not output the relative positions to Trees
+      //      fRelPos[i].ConstructBranchAndVector(tree,thisprefix,values);
       fAbsPos[i].ConstructBranchAndVector(tree,thisprefix,values);
     }
 
@@ -810,7 +811,8 @@ void  QwBPMStripline<T>::ConstructBranch(TTree *tree, TString &prefix)
       for(i=0;i<4;i++) fWire[i].ConstructBranch(tree,thisprefix);
     }
     for(i=kXAxis;i<kNumAxes;i++) {
-      fRelPos[i].ConstructBranch(tree,thisprefix);
+      //  2018dec20, pking:  Do not output the relative positions to Trees
+      //      fRelPos[i].ConstructBranch(tree,thisprefix);
       fAbsPos[i].ConstructBranch(tree,thisprefix);
     }
 
@@ -851,7 +853,8 @@ void  QwBPMStripline<T>::ConstructBranch(TTree *tree, TString &prefix, QwParamet
 	  for(i=0;i<4;i++) fWire[i].ConstructBranch(tree,thisprefix);
 	}
 	for(i=kXAxis;i<kNumAxes;i++) {
-	  fRelPos[i].ConstructBranch(tree,thisprefix);
+	  //  2018dec20, pking:  Do not output the relative positions to Trees
+	  //	  fRelPos[i].ConstructBranch(tree,thisprefix);
 	  fAbsPos[i].ConstructBranch(tree,thisprefix);
 	}
 
@@ -877,7 +880,8 @@ void  QwBPMStripline<T>::FillTreeVector(std::vector<Double_t> &values) const
       for(i=0;i<4;i++) fWire[i].FillTreeVector(values);
     }
     for(i=kXAxis;i<kNumAxes;i++){
-      fRelPos[i].FillTreeVector(values);
+      //  2018dec20, pking:  Do not output the relative positions to Trees
+      //      fRelPos[i].FillTreeVector(values);
       fAbsPos[i].FillTreeVector(values);
     }
   }

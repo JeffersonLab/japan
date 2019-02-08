@@ -38,13 +38,24 @@ qwparity_simple
 qwroot
 
 # Directories
-build
+lib
+*build
+*test*
 output
 Doxygen/html
 
 # output
 *.tar.gz
 *.tar
+*.root
+*.db
+*.png
+*.pdf
+*.ps
 
 #tmp files
 *~
+z_*
+
+# setup files
+SetupFiles/SET_ME_UP.*

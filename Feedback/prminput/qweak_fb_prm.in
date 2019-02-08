@@ -1,0 +1,169 @@
+#feedback parameters are stored here
+
+#No.of good patterns to accumulate before triggering the feedback algorithm.
+
+#for Hall C PITA
+patterns = 10000
+#for Hall A IA
+HAF_patterns = 20000
+#for position feedback
+PF_patterns = 50000
+
+#The precision of the charge asymmetry in ppm
+#deltaAq = 62
+deltaAq = 20
+
+#optimal IA values in volts
+optimalIA = 5.5
+
+#optimal PC POS in volts
+optimalPCP = 5.1
+
+#optimal PC NEG in volts
+optimalPCN = 5.2
+
+
+
+#Hall C IA Slopes for 4 modes
+
+#source POLOG entry 1543984 (M_Dalton) 
+
+A0 = -4.482e-2
+DeltaA0 = 3.614e-4
+
+A1 = -4.525e-2
+DeltaA1=3.555e-4
+
+A2 = -4.586e-2
+DeltaA2 = 3.482e-4
+
+A3 = -4.553e-2
+
+#Hall A IA Slopes for 4 modes from hclog - 228845
+#for IHWP IN
+#HAA0 = 0.0283573 
+#for IHWP OUT
+#HAA1 = 0.0283573
+
+#HAA2 = 0.0283573
+#HAA3 = 0.0283573
+
+#Hall A IA Slopes for 4 modes from hclog - 257218
+#valid for all  IHWP 1-2
+
+#for IHWP IN
+HAA0 = -0.270058
+#for IHWP OUT
+HAA1 = -0.270058
+
+HAA2 = -0.270058
+HAA3 = -0.270058
+
+#IA hardware counts set-point limits
+
+IA_low = 10000
+IA_up  = 50000
+
+#PITA slopes
+#  From M.Dalton, as of 00:10,23oct2010, use a slope of:  -0.73 ppm/dac-tick
+# 
+#PITASLOPE_OUT = +0.73
+#PITASLOPE_IN = -0.73
+
+#PITA slopes
+#  From M.Dalton, as of ,03Dec2010, 
+#  units are ppm/dac-tick
+#PITASLOPE_OUT = +0.554
+#PITASLOPE_IN = -0.557
+
+#PITA slopes
+#  From John Leacock, as of ,19Dec2010, 
+#  units are ppm/dac-tick
+#PITASLOPE_OUT = -0.996422
+#PITASLOPE_IN = +0.996422
+
+#PITA slopes
+#  From M.Dalton, as of ,06Jan2011, https://cebaf.jlab.org/elog/entry/1560667
+#  units are ppm/dac-tick
+#PITASLOPE_OUT = -0.8588
+#PITASLOPE_IN = +0.8588
+###  Changed to slope of 1.145ppm/DAC based on 4Feb2011 large charge asym measurement
+###  See HCLog 218348.
+#PITASLOPE_OUT = +1.145
+#PITASLOPE_IN  = +1.145
+
+###  See HCLog 224296 07:35:22 on March 17, 2011 - rakithab
+#PITASLOPE_OUT = +0.7749
+###  See HCLog 224663 10:12:08 on March 18, 2011 -  rakithab
+#PITASLOPE_IN = +0.7192
+
+###  See HCLog 227091 on Apr 07, 2011 - rakithab
+#PITASLOPE_OUT = 0.9562
+#PITASLOPE_IN = 0.9790
+
+###  See HCLog 227952 on Apr 12, 2011 - rakithab
+#PITASLOPE_OUT = 0.8698
+#PITASLOPE_IN = 1.0792
+
+
+###  See HCLog 229730 on Apr 23, 2011 - rakithab
+#PITASLOPE_OUT = 0.772325
+#PITASLOPE_IN = 0.833674
+
+### Run 2 ; IHWP IN slope is from the run 1 last setting
+### Run 2 ; IHWP OUT slope is from Mark D. 
+
+#PITASLOPE_OUT = -0.96
+
+#PITASLOPE_IN = 0.833674
+
+### Run 2 ; IHWP IN slope from run 13994
+### Run 2 ; IHWP OUT slope from run 14002
+
+#PITASLOPE_IN = 0.5506
+#PITASLOPE_OUT = -0.8879
+#PITASLOPE_OUT_IN = -0.8879
+
+### Run 2 ; IHWP IN-OUT slope from run 15716
+### Run 2 ; IHWP OUT-OUT slope from run 15712
+### Run 2 ; IHWP OUT-IN slope from run 15786 
+### See HCLOG 252279
+
+#PITASLOPE_IN = 0.8080
+#PITASLOPE_OUT = -1.22794
+#PITASLOPE_OUT_IN = 0.6002
+
+
+### Run 2 ; new IHWP1-2 slopes from Beam E-log 250. All slopes have flipped sign
+
+PITASLOPE_IN = 1.06
+PITASLOPE_OUT = 0.53
+PITASLOPE_OUT_IN = 0.57
+
+
+
+
+
+
+###  PITANEG = 200
+
+#PITA starting setpoints when IHWP is flipped from the IN-OUT in 8:18am 02/23/2011
+# Runs checked OUT - 10207 IN - 10198 - Rakitha 02/23/2011
+PC_pos_t0_IN  = 43570
+PC_neg_t0_IN  = 40650
+PC_pos_t0_OUT = 42970
+PC_neg_t0_OUT = 41230
+
+
+#PC hardware count set-point limits
+#  These should be just inside the low alarm limits on the PC, as
+#  referenced by Riad in OPS Elog 1549310.
+PC_low = 38018
+PC_up  = 48016
+
+#Minimum charge asymmetry at which feedback correction is applied. see QwHelicityCorrelatedFeedback::FeedPITASetPoints()
+MIN_CHARGE_ASYM = 0.005
+
+#To enable correction damping see QwHelicityCorrelatedFeedback::FeedPITASetPoints()
+DAMPING = 0
+

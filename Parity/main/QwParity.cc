@@ -25,23 +25,25 @@
 #include "QwRootFile.h"
 #include "QwOptionsParity.h"
 #include "QwEventBuffer.h"
+#ifdef __USE_DATABASE__
 #include "QwParityDB.h"
+#endif //__USE_DATABASE__
 #include "QwHistogramHelper.h"
 #include "QwSubsystemArrayParity.h"
 #include "QwHelicityPattern.h"
 #include "QwEventRing.h"
 #include "QwEPICSEvent.h"
-#include "QwRegression.h"
-#include "QwRegressionSubsystem.h"
+#include "QwCombiner.h"
+#include "QwCombinerSubsystem.h"
 #include "QwPromptSummary.h"
+#include "QwCorrelator.h"
+#include "LRBCorrector.h"
 
 // Qweak subsystems
 // (for correct dependency generation)
 #include "QwHelicity.h"
 #include "QwFakeHelicity.h"
 #include "QwBeamLine.h"
-#include "QwMainCerenkovDetector.h"
-#include "QwLumi.h"
 #include "QwBeamMod.h"
 #include "QwIntegratedRaster.h"
 
@@ -49,8 +51,17 @@
 
 Int_t main(Int_t argc, Char_t* argv[])
 {
-  /// without anything, print usage
-  if(argc == 1){
+  ///  Define the command line options
+  DefineOptionsParity(gQwOptions);
+
+  ///  Define additional command line arguments and the configuration filename,
+  ///  and we define the options that can be used in them (using QwOptions).
+  gQwOptions.AddOptions()("single-output-file", po::value<bool>()->default_bool_value(false), "Write a single output file");
+  gQwOptions.AddOptions()("print-errorcounters", po::value<bool>()->default_bool_value(true), "Print summary of error counters");
+  gQwOptions.AddOptions()("write-promptsummary", po::value<bool>()->default_bool_value(false), "Write PromptSummary");
+
+  ///  Without anything, print usage
+  if (argc == 1) {
     gQwOptions.Usage();
     exit(0);
   }
@@ -63,19 +74,11 @@ Int_t main(Int_t argc, Char_t* argv[])
   QwParameterFile::AppendToSearchPath(getenv_safe_string("QWANALYSIS") + "/Parity/prminput");
   QwParameterFile::AppendToSearchPath(getenv_safe_string("QWANALYSIS") + "/Analysis/prminput");
 
-  ///  Then, we set the command line arguments and the configuration filename,
-  ///  and we define the options that can be used in them (using QwOptions).
-  gQwOptions.AddOptions()("single-output-file", po::value<bool>()->default_bool_value(false), "Write a single output file");
-  gQwOptions.AddOptions()("print-errorcounters", po::value<bool>()->default_bool_value(true), "Print summary of error counters");
-  gQwOptions.AddOptions()("write-promptsummary", po::value<bool>()->default_bool_value(false), "Write PromptSummary");
-
   gQwOptions.SetCommandLine(argc, argv);
   gQwOptions.AddConfigFile("qweak_mysql.conf");
 
   gQwOptions.ListConfigFiles();
- 
-  ///  Define the command line options
-  DefineOptionsParity(gQwOptions);
+
   /// Load command line options for the histogram/tree helper class
   gQwHists.ProcessOptions(gQwOptions);
   /// Setup screen and file logging
@@ -87,9 +90,9 @@ Int_t main(Int_t argc, Char_t* argv[])
   eventbuffer.ProcessOptions(gQwOptions);
 
   ///  Create the database connection
-#ifdef __USE_DATABASE__
+  #ifdef __USE_DATABASE__
   QwParityDB database(gQwOptions);
-#endif
+  #endif //__USE_DATABASE__
 
   //  QwPromptSummary promptsummary;
 
@@ -99,9 +102,13 @@ Int_t main(Int_t argc, Char_t* argv[])
     ///  Begin processing for the first run
 
     Int_t run_number = eventbuffer.GetRunNumber();
+    TString run_label = eventbuffer.GetRunLabel();
 
     ///  Set the current event number for parameter file lookup
     QwParameterFile::SetCurrentRunNumber(run_number);
+    //  Parse the options again, in case there are run-ranged config files
+    gQwOptions.Parse(kTRUE);
+    eventbuffer.ProcessOptions(gQwOptions);
 
     //    if (gQwOptions.GetValue<bool>("write-promptsummary")) {
     QwPromptSummary promptsummary(run_number, eventbuffer.GetSegmentNumber());
@@ -119,16 +126,14 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     /// Create event-based linear regression subsystem
     //    TString name = "MpsRegression";
-    //    QwRegressionSubsystem regress_sub(gQwOptions, detectors, name);
+    //    QwCombinerSubsystem regress_sub(gQwOptions, detectors, name);
     //    detectors.push_back(regress_sub.GetSharedPointerToStaticObject());
     
-    ///  Create the helicity pattern
-    QwHelicityPattern helicitypattern(detectors);
+    /// Create the helicity pattern
+    //    Instead of having run_label in the constructor of helicitypattern, it might
+    //    make since to have it be an option for use globally
+    QwHelicityPattern helicitypattern(detectors,run_label);
     helicitypattern.ProcessOptions(gQwOptions);
-      
-    ///  Create the asymmetry-based linear regression
-    QwRegression regression(gQwOptions,helicitypattern);
-    QwRegression running_regression(regression);
 
     ///  Create the event ring with the subsystem array
     QwEventRing eventring(gQwOptions,detectors);
@@ -141,16 +146,14 @@ Int_t main(Int_t argc, Char_t* argv[])
 
 
     //  Initialize the database connection.
-#ifdef __USE_DATABASE__
+    #ifdef __USE_DATABASE__
     database.SetupOneRun(eventbuffer);
-#endif
+    #endif // __USE_DATABASE__
 
     //  Open the ROOT file (close when scope ends)
     QwRootFile *treerootfile  = NULL;
     QwRootFile *burstrootfile = NULL;
     QwRootFile *historootfile = NULL;
-    
-    TString run_label = eventbuffer.GetRunLabel();
 
 
     if (gQwOptions.GetValue<bool>("single-output-file")) {
@@ -172,26 +175,25 @@ Int_t main(Int_t argc, Char_t* argv[])
       burstrootfile->WriteParamFileList("mapfiles", detectors);
       historootfile->WriteParamFileList("mapfiles", detectors);
     }
-
-#ifdef __USE_DATABASE__
+    #ifdef __USE_DATABASE__
     if (database.AllowsWriteAccess()) {
       database.FillParameterFiles(detectors);
     }
-#endif
-
+    #endif // __USE_DATABASE__
     //  Construct histograms
     historootfile->ConstructHistograms("mps_histo", ringoutput);
     historootfile->ConstructHistograms("hel_histo", helicitypattern);
     detectors.ShareHistograms(ringoutput);
 
     //  Construct tree branches
-    treerootfile->ConstructTreeBranches("Mps_Tree", "MPS event data tree", ringoutput);
-    treerootfile->ConstructTreeBranches("Hel_Tree", "Helicity event data tree", helicitypattern);
-    treerootfile->ConstructTreeBranches("Hel_Tree_Reg", "Helicity event data tree (regressed)", regression);
-    treerootfile->ConstructTreeBranches("Slow_Tree", "EPICS and slow control tree", epicsevent);
-    burstrootfile->ConstructTreeBranches("Burst_Tree", "Burst level data tree", helicitypattern.GetBurstYield(),"yield_");
-    burstrootfile->ConstructTreeBranches("Burst_Tree", "Burst level data tree", helicitypattern.GetBurstAsymmetry(),"asym_");
-    burstrootfile->ConstructTreeBranches("Burst_Tree", "Burst level data tree", helicitypattern.GetBurstDifference(),"diff_");
+    treerootfile->ConstructTreeBranches("evt", "MPS event data tree", ringoutput);
+    treerootfile->ConstructTreeBranches("mul", "Helicity event data tree", helicitypattern);
+    treerootfile->ConstructTreeBranches("mulc", "Helicity event data tree (corrected)", helicitypattern.return_regression());
+    treerootfile->ConstructTreeBranches("mulc_lrb", "Helicity event data tree (corrected by LinRegBlue)", helicitypattern.return_regress_from_LRB());
+    treerootfile->ConstructTreeBranches("slow", "EPICS and slow control tree", epicsevent);
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstYield(),"yield_");
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstAsymmetry(),"asym_");
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstDifference(),"diff_");
 
     // Summarize the ROOT file structure
     //treerootfile->PrintTrees();
@@ -206,9 +208,9 @@ Int_t main(Int_t argc, Char_t* argv[])
 
 
     //  Load the blinder seed from the database for this runlet.
-#ifdef __USE_DATABASE__
+    #ifdef __USE_DATABASE__
     helicitypattern.UpdateBlinder(&database);
-#endif
+    #endif // __USE_DATABASE__
 
     //  Find the first EPICS event and try to initialize
     //  the blinder.
@@ -245,7 +247,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 	  helicitypattern.UpdateBlinder(epicsevent);
 	
 	  treerootfile->FillTreeBranches(epicsevent);
-	  treerootfile->FillTree("Slow_Tree");
+	  treerootfile->FillTree("slow");
 	}
       }
 
@@ -254,13 +256,11 @@ Int_t main(Int_t argc, Char_t* argv[])
       if (! eventbuffer.IsPhysicsEvent()) continue;
 
 
-
       //  Fill the subsystem objects with their respective data for this event.
       eventbuffer.FillSubsystemData(detectors);
 
       //  Process the subsystem data
       detectors.ProcessEvent();
-
 
 
       // The event pass the event cut constraints
@@ -286,7 +286,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
 	  // Fill mps tree branches
 	  treerootfile->FillTreeBranches(ringoutput);
-	  treerootfile->FillTree("Mps_Tree");
+	  treerootfile->FillTree("evt");
 
           // Load the event into the helicity pattern
           helicitypattern.LoadEventData(ringoutput);
@@ -306,7 +306,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
               // Fill helicity tree branches
               treerootfile->FillTreeBranches(helicitypattern);
-              treerootfile->FillTree("Hel_Tree");
+              treerootfile->FillTree("mul");
 
               // Burst mode
               if (helicitypattern.IsEndOfBurst()) {
@@ -317,19 +317,20 @@ Int_t main(Int_t argc, Char_t* argv[])
                 burstrootfile->FillTreeBranches(helicitypattern.GetBurstYield());
                 burstrootfile->FillTreeBranches(helicitypattern.GetBurstAsymmetry());
                 burstrootfile->FillTreeBranches(helicitypattern.GetBurstDifference());
-                burstrootfile->FillTree("Burst_Tree");
+                burstrootfile->FillTree("burst");
 
                 // Clear the data
                 helicitypattern.ClearBurstSum();
               }
 
               // Linear regression on asymmetries
-	      regression.LinearRegression(QwRegression::kRegTypeAsym);
-	      running_regression.AccumulateRunningSum(regression);
+              helicitypattern.ProcessDataHandlerEntry();
 
-              // Fill regressed tree branches
-	      treerootfile->FillTreeBranches(regression);
-	      treerootfile->FillTree("Hel_Tree_Reg");
+              // Fill corrected tree branches
+	      treerootfile->FillTreeBranches(helicitypattern.return_regression());
+	      treerootfile->FillTree("mulc");
+	      treerootfile->FillTreeBranches(helicitypattern.return_regress_from_LRB());
+	      treerootfile->FillTree("mulc_lrb");
 
               // Clear the data
               helicitypattern.ClearEventData();
@@ -361,8 +362,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       }
     }
 
-    running_regression.CalculateRunningAverage();
-    running_regression.PrintValue();
+    helicitypattern.FinishDataHandler();
 
     // This will calculate running averages over single helicity events
     runningsum.CalculateRunningAverage();
@@ -380,7 +380,7 @@ Int_t main(Int_t argc, Char_t* argv[])
      *                                                               *
      *  Then, we need to delete the histograms here.                 *
      *  If we wait until the subsystem destructors, we get a         *
-     *  segfault; but in addition to that we should delete them     *
+     *  segfault; but in addition to that we should delete them      *
      *  here, in case we run over multiple runs at a time.           */
     if (treerootfile == historootfile) {
       treerootfile->Write(0,TObject::kOverwrite);
@@ -407,9 +407,8 @@ Int_t main(Int_t argc, Char_t* argv[])
       helicitypattern.WritePromptSummary(&promptsummary);
       promptsummary.PrintCSV();
     }
-
-#ifdef __USE_DATABASE__
     //  Read from the database
+    #ifdef __USE_DATABASE__
     database.SetupOneRun(eventbuffer);
 
     // Each subsystem has its own Connect() and Disconnect() functions.
@@ -417,10 +416,10 @@ Int_t main(Int_t argc, Char_t* argv[])
       helicitypattern.FillDB(&database);
       helicitypattern.FillErrDB(&database);
       epicsevent.FillDB(&database);
-      running_regression.FillDB(&database,"asymmetry");
+      helicitypattern.return_running_regression().FillDB(&database,"asymmetry");
       ringoutput.FillDB_MPS(&database, "optics");
     }
-#endif    
+    #endif // __USE_DATABASE__    
   
     //epicsevent.WriteEPICSStringValues();
 

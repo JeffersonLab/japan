@@ -78,16 +78,16 @@ QwRootFile::QwRootFile(const TString& run_label)
 
     fPermanentName = rootfilename
       + Form("/%s%s.root", fRootFileStem.Data(), run_label.Data());
-//    rootfilename += Form("/%s%s.%s.%d.root",
-//			 fRootFileStem.Data(), run_label.Data(),
-//			 hostname.Data(), pid);
-	rootfilename += "/test001.root";
-	std::cerr << rootfilename << std::endl;
+    rootfilename += Form("/%s%s.%s.%d.root",
+			 fRootFileStem.Data(), run_label.Data(),
+			 hostname.Data(), pid);
     fRootFile = new TFile(rootfilename.Data(), "RECREATE", "myfile1");
     if (! fRootFile) {
       QwError << "ROOT file " << rootfilename
               << " could not be opened!" << QwLog::endl;
       return;
+    } else {
+      QwMessage << "Opened temporary rootfile " << rootfilename << QwLog::endl;
     }
 
     TString run_condition_name = Form("%s_condition", run_label.Data());
@@ -257,10 +257,10 @@ void QwRootFile::ProcessOptions(QwOptions &options)
 
   // Options 'disable-mps' and 'disable-hel' for disabling
   // helicity window and helicity pattern output
-  if (options.GetValue<bool>("disable-mps-tree"))  DisableTree("Mps_Tree");
-  if (options.GetValue<bool>("disable-hel-tree"))  DisableTree("Hel_Tree");
-  if (options.GetValue<bool>("disable-burst-tree"))  DisableTree("Burst_Tree");
-  if (options.GetValue<bool>("disable-slow-tree")) DisableTree("Slow_Tree");
+  if (options.GetValue<bool>("disable-mps-tree"))  DisableTree("evt");
+  if (options.GetValue<bool>("disable-hel-tree"))  DisableTree("mul");
+  if (options.GetValue<bool>("disable-burst-tree"))  DisableTree("burst");
+  if (options.GetValue<bool>("disable-slow-tree")) DisableTree("slow");
 
   // Options 'num-accepted-events' and 'num-discarded-events' for
   // prescaling of the tree output
@@ -311,7 +311,7 @@ Bool_t QwRootFile::HasAnyFilled(TDirectory* d) {
     if ( TString(name).Contains("mapfile") ) continue;
     if ( TString(name).Contains("_condition") ) continue;
     //  The EPICS tree doesn't count
-    if ( TString(name).Contains("Slow_Tree") ) continue;
+    if ( TString(name).Contains("slow") ) continue;
 
     // Recursively check subdirectories.
     if (obj->IsA()->InheritsFrom( "TDirectory" ))

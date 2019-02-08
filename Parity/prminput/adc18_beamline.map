@@ -1,0 +1,55 @@
+ROC=23
+
+! ADC18 buffer offset for run 3970 from Bob
+adc18_buffer_offset=36
+
+! module.type, module.num, module.chan, det.type, det.name
+ADC18, 0, -1, bcm,  DAC0
+ADC18, 0, 0,  bcm,  ADC00
+ADC18, 0, 1,  bcm,  ADC01
+ADC18, 0, 2,  bcm,  ADC02
+ADC18, 0, 3,  bcm,  ADC03
+
+ADC18, 1, -1, bcm,  DAC1
+ADC18, 1, 0,  bcm,  ADC10
+ADC18, 1, 1,  bcm,  ADC11
+ADC18, 1, 2,  bcm,  ADC12
+ADC18, 1, 3,  bcm,  ADC13
+
+ADC18, 2, -1, bcm,  DAC2
+ADC18, 2, 0,  bcm,  ADC20
+ADC18, 2, 1,  bcm,  ADC21
+ADC18, 2, 2,  bcm,  ADC22
+ADC18, 2, 3,  bcm,  ADC23
+
+ADC18, 3, -1, bcm,  DAC3
+ADC18, 3, 0,  bcm,  ADC30
+ADC18, 3, 1,  bcm,  ADC31
+ADC18, 3, 2,  bcm,  ADC32
+ADC18, 3, 3,  bcm,  ADC33
+
+ADC18, 4, -1, bcm,  DAC4
+ADC18, 4, 0,  bcm,  ADC40
+ADC18, 4, 1,  bcm,  ADC41
+ADC18, 4, 2,  bcm,  ADC42
+ADC18, 4, 3,  bcm,  ADC43
+
+ADC18, 5, -1, bcm,  DAC5
+ADC18, 5, 0,  bcm,  ADC50
+ADC18, 5, 1,  bcm,  ADC51
+ADC18, 5, 2,  bcm,  ADC52
+ADC18, 5, 3,  bcm,  ADC53
+
+ADC18, 6, -1, bcm,  DAC6
+ADC18, 6, 0,  bcm,  ADC60
+ADC18, 6, 1,  bcm,  ADC61
+ADC18, 6, 2,  bcm,  ADC62
+ADC18, 6, 3,  bcm,  ADC63
+
+ADC18, 7, -1, bcm,  DAC7
+ADC18, 7, 0,  bcm,  ADC70
+ADC18, 7, 1,  bcm,  ADC71
+ADC18, 7, 2,  bcm,  ADC72
+ADC18, 7, 3,  bcm,  ADC73
+
+!END

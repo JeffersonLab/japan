@@ -1,0 +1,12 @@
+! Pedestal file of run  2205
+! adc sample size  468
+! curent range in calibration  90 to 155
+! fit is linear 
+! date of analysis =Tue Feb 22 19:02:59 2011
+! The pedestal run was taken with F2 cup inserted.
+! Therefore only bpms up to 0i05 have the correct pedestals
+! for this high current calibration.
+!----
+!bpm1i02XP , 1204.2 , 1.
+!END	    		        
+	    

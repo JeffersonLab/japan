@@ -1,0 +1,42 @@
+!This file contains LUMI  event cut properties last updated 11/15/2010 based on the run 6297
+
+!Global switch to turn ON and OFF eventcut check
+!Available settings
+!To turn OFF all checks
+!EVENTCUTS = 0 
+!To turn OFF event cuts and perform only HW checks
+!EVENTCUTS = 1
+!To turn do both event cuts and HW checks
+!EVENTCUTS = 2
+!To turn do both event cuts and HW checks and only flag event cut failed events
+EVENTCUTS = 3
+
+!IMPORTANT
+!---------
+!Make sure when puting tabs in the map file entries, always put ", " before inserting a tab. 
+!Otherwise the routine QwParameterFile::GetNextToken(", ") will extract the entry with the tab character.
+
+
+!device_type, device_name, lower limit, upper limit, local(l)/global(g), stability percentage
+ 
+
+!integrationpmt, qwk_uslumi1neg, 0.002053, 1000000, l, 0.01
+!combinationpmt, uslumi3_sum, 0.007625, 1000000, l,0.01 
+
+ 
+
+
+
+
+
+
+!This file contains beamline event cut properties
+
+
+!Comments
+!--------
+!Devices that are not in the list are not subjected event cut checks
+!All devices  will be tested for HW checks.
+!
+!For device_type =bcm only upper and lower limit of the calibrated charge on the ADC HW sum. (QwVQWK_Channel::fHardwareBlockSum)
+

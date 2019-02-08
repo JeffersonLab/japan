@@ -14,7 +14,6 @@
 # endif
 #endif
 
-
 #include "QwOptions.h"
 
 // System headers
@@ -28,7 +27,6 @@ QwOptions gQwOptions;
 // Qweak headers
 #include "QwLog.h"
 #include "QwParameterFile.h"
-#include "gitinfo.hh"
 
 // Qweak objects with default options
 #include "QwSubsystemArray.h"
@@ -39,6 +37,9 @@ QwOptions gQwOptions;
 #endif
 #include "QwRootFile.h"
 #include "QwHistogramHelper.h"
+
+// External objects
+extern const char* const gGitInfo;
 
 // Initialize the static command line arguments to zero
 int QwOptions::fArgc = 0;
@@ -77,7 +78,7 @@ void QwOptions::DefineOptions(QwOptions& options)
 #ifdef __USE_DATABASE__
   // Define database options
   QwDatabase::DefineOptions(options);
-#endif
+#endif //__USE_DATABASE__
   // Define ROOT file options
   QwRootFile::DefineOptions(options);
   // Define EPICS event options
@@ -319,7 +320,7 @@ void QwOptions::Version()
 #endif
 
   QwMessage << "\n Qweak Analysis Framework : " << fArgv[0] << QwLog::endl;
-  QwMessage << " * GIT info: " << gGitInfoStr << QwLog::endl;
+  QwMessage << " * GIT info: " << gGitInfo << QwLog::endl;
   //  QwMessage << " * Revision: " << QWANA_SVN_REVISION << QwLog::endl;
   //  QwMessage << " * URL: " << QWANA_SVN_URL << QwLog::endl;
   //  QwMessage << " * Last Changed Rev: " << QWANA_SVN_LASTCHANGEDREVISION << QwLog::endl;

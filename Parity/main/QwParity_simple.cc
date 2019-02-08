@@ -44,8 +44,17 @@
 
 Int_t main(Int_t argc, Char_t* argv[])
 {
-  /// without anything, print usage
-  if(argc == 1){
+  ///  Define the command line options
+  DefineOptionsParity(gQwOptions);
+
+  ///  Define additional command line arguments and the configuration filename,
+  ///  and we define the options that can be used in them (using QwOptions).
+  gQwOptions.AddOptions()("single-output-file", po::value<bool>()->default_bool_value(false), "Write a single output file");
+  gQwOptions.AddOptions()("print-errorcounters", po::value<bool>()->default_bool_value(true), "Print summary of error counters");
+  gQwOptions.AddOptions()("write-promptsummary", po::value<bool>()->default_bool_value(false), "Write PromptSummary");
+
+  ///  Without anything, print usage
+  if (argc == 1) {
     gQwOptions.Usage();
     exit(0);
   }
@@ -58,21 +67,13 @@ Int_t main(Int_t argc, Char_t* argv[])
   QwParameterFile::AppendToSearchPath(getenv_safe_string("QWANALYSIS") + "/Parity/prminput");
   QwParameterFile::AppendToSearchPath(getenv_safe_string("QWANALYSIS") + "/Analysis/prminput");
 
-  ///  Then, we set the command line arguments and the configuration filename,
-  ///  and we define the options that can be used in them (using QwOptions).
-  gQwOptions.AddOptions()("single-output-file", po::value<bool>()->default_bool_value(false), "Write a single output file");
-  gQwOptions.AddOptions()("print-errorcounters", po::value<bool>()->default_bool_value(true), "Print summary of error counters");
-  gQwOptions.AddOptions()("write-promptsummary", po::value<bool>()->default_bool_value(false), "Write PromptSummary");
-
   gQwOptions.SetCommandLine(argc, argv);
 #ifdef  __USE_DATABASE__
   gQwOptions.AddConfigFile("qweak_mysql.conf");
 #endif
 
   gQwOptions.ListConfigFiles();
- 
-  ///  Define the command line options
-  DefineOptionsParity(gQwOptions);
+
   /// Load command line options for the histogram/tree helper class
   gQwHists.ProcessOptions(gQwOptions);
   /// Setup screen and file logging
@@ -163,13 +164,13 @@ Int_t main(Int_t argc, Char_t* argv[])
     detectors.ShareHistograms(ringoutput);
 
     //  Construct tree branches
-    treerootfile->ConstructTreeBranches("Mps_Tree", "MPS event data tree", ringoutput);
-    treerootfile->ConstructTreeBranches("Hel_Tree", "Helicity event data tree", helicitypattern);
-    // treerootfile->ConstructTreeBranches("Hel_Tree_Reg", "Helicity event data tree (regressed)", regression);
-    // treerootfile->ConstructTreeBranches("Slow_Tree", "EPICS and slow control tree", epicsevent);
-    burstrootfile->ConstructTreeBranches("Burst_Tree", "Burst level data tree", helicitypattern.GetBurstYield(),"yield_");
-    burstrootfile->ConstructTreeBranches("Burst_Tree", "Burst level data tree", helicitypattern.GetBurstAsymmetry(),"asym_");
-    burstrootfile->ConstructTreeBranches("Burst_Tree", "Burst level data tree", helicitypattern.GetBurstDifference(),"diff_");
+    treerootfile->ConstructTreeBranches("evt", "MPS event data tree", ringoutput);
+    treerootfile->ConstructTreeBranches("mul", "Helicity event data tree", helicitypattern);
+    // treerootfile->ConstructTreeBranches("mulc", "Helicity event data tree (corrected)", regression);
+    // treerootfile->ConstructTreeBranches("slow", "EPICS and slow control tree", epicsevent);
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstYield(),"yield_");
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstAsymmetry(),"asym_");
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstDifference(),"diff_");
 
     // Summarize the ROOT file structure
     //treerootfile->PrintTrees();
@@ -218,7 +219,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       // 	  helicitypattern.UpdateBlinder(epicsevent);
 	
       // 	  treerootfile->FillTreeBranches(epicsevent);
-      // 	  treerootfile->FillTree("Slow_Tree");
+      // 	  treerootfile->FillTree("slow");
       // 	}
       // }
 
@@ -259,7 +260,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
 	  // Fill mps tree branches
 	  treerootfile->FillTreeBranches(ringoutput);
-	  treerootfile->FillTree("Mps_Tree");
+	  treerootfile->FillTree("evt");
 
           // Load the event into the helicity pattern
           helicitypattern.LoadEventData(ringoutput);
@@ -279,7 +280,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
               // Fill helicity tree branches
               treerootfile->FillTreeBranches(helicitypattern);
-              treerootfile->FillTree("Hel_Tree");
+              treerootfile->FillTree("mul");
 
               // Burst mode
               if (helicitypattern.IsEndOfBurst()) {
@@ -290,7 +291,7 @@ Int_t main(Int_t argc, Char_t* argv[])
                 burstrootfile->FillTreeBranches(helicitypattern.GetBurstYield());
                 burstrootfile->FillTreeBranches(helicitypattern.GetBurstAsymmetry());
                 burstrootfile->FillTreeBranches(helicitypattern.GetBurstDifference());
-                burstrootfile->FillTree("Burst_Tree");
+                burstrootfile->FillTree("burst");
 
                 // Clear the data
                 helicitypattern.ClearBurstSum();
@@ -300,9 +301,9 @@ Int_t main(Int_t argc, Char_t* argv[])
 	      // regression.LinearRegression(QwRegression::kRegTypeAsym);
 	      // running_regression.AccumulateRunningSum(regression);
 
-              // // Fill regressed tree branches
+              // // Fill corrected tree branches
 	      // treerootfile->FillTreeBranches(regression);
-	      // treerootfile->FillTree("Hel_Tree_Reg");
+	      // treerootfile->FillTree("mulc");
 
               // Clear the data
               helicitypattern.ClearEventData();

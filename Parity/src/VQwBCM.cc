@@ -20,6 +20,7 @@
 
 //  Qweak types that we want to use in this template
 #include "QwVQWK_Channel.h"
+#include "QwADC18_Channel.h"
 #include "QwScaler_Channel.h"
 
 
@@ -36,6 +37,8 @@ VQwBCM* VQwBCM::Create(TString subsystemname, TString name, TString type, TStrin
   // simple), just list out the types of BCM's supported by this code!!!
   if( type == "VQWK") {
     return new QwBCM<QwVQWK_Channel>(subsystemname,name,type);
+  } else if ( type == "ADC18" ) {
+    return new QwBCM<QwADC18_Channel>(subsystemname,name,type,clock);
   } else if ( type == "SIS3801" ) {
     return new QwBCM<QwSIS3801_Channel>(subsystemname,name,type,clock);
   } else if ( type == "SCALER" || type == "SIS3801D24" ) {
@@ -56,6 +59,8 @@ VQwBCM* VQwBCM::Create(const VQwBCM& source)
   // simple), just list out the types of BCM's supported by this code!!!
   if( type == "VQWK") {
     return new QwBCM<QwVQWK_Channel>(dynamic_cast<const QwBCM<QwVQWK_Channel>&>(source));
+  } else if ( type == "ADC18" ) {
+    return new QwBCM<QwADC18_Channel>(dynamic_cast<const QwBCM<QwADC18_Channel>&>(source));
   } else if ( type == "SIS3801" ) {
     return new QwBCM<QwSIS3801_Channel>(dynamic_cast<const QwBCM<QwSIS3801_Channel>&>(source));
   } else if ( type == "SCALER" || type == "SIS3801D24" ) {
@@ -79,7 +84,9 @@ VQwBCM* VQwBCM::CreateCombo(TString subsystemname, TString name, TString type)
   // simple), just list out the types of BCM's supported by this code!!!
   if( type == "VQWK") {
     return new QwCombinedBCM<QwVQWK_Channel>(subsystemname,name,type);
-  } else if ( type == "SIS3801" ) { // Default SCALER channel
+  } else if ( type == "ADC18" ) {
+    return new QwCombinedBCM<QwADC18_Channel>(subsystemname,name,type);
+  } else if ( type == "SIS3801" ) {
     return new QwCombinedBCM<QwSIS3801_Channel>(subsystemname,name,type);
   } else if ( type == "SCALER" || type == "SIS3801D24" ) {
     return new QwCombinedBCM<QwSIS3801D24_Channel>(subsystemname,name,type);
@@ -99,7 +106,9 @@ VQwBCM* VQwBCM::CreateCombo(const VQwBCM& source)
   // simple), just list out the types of BCM's supported by this code!!!
   if( type == "VQWK") {
     return new QwCombinedBCM<QwVQWK_Channel>(dynamic_cast<const QwCombinedBCM<QwVQWK_Channel>&>(source));
-  } else if ( type == "SIS3801" ) { // Default SCALER channel
+  } else if ( type == "ADC18" ) {
+    return new QwCombinedBCM<QwADC18_Channel>(dynamic_cast<const QwCombinedBCM<QwADC18_Channel>&>(source));
+  } else if ( type == "SIS3801" ) {
     return new QwCombinedBCM<QwSIS3801_Channel>(dynamic_cast<const QwCombinedBCM<QwSIS3801_Channel>&>(source));
   } else if ( type == "SCALER" || type == "SIS3801D24" ) {
     return new QwCombinedBCM<QwSIS3801D24_Channel>(dynamic_cast<const QwCombinedBCM<QwSIS3801D24_Channel>&>(source));

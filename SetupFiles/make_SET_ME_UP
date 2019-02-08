@@ -98,6 +98,81 @@ function report_status() {
     fi
 }
 
+###  Try to find MYSQL_INC_DIR and MYSQL_LIB_DIR
+
+search=(
+    /usr/include/mysql
+    /usr/local/include/mysql
+    /opt/local/include/mysql5/mysql
+    )
+export MYSQL_INC_DIR=$(first_path_with_file mysql_version.h "${search[@]}" "${MYSQL_INC_DIR}")
+#report_status MYSQL_INC_DIR ${MYSQL_INC_DIR}
+
+libname=libmysqlclient.so
+[ "$OS" == "Darwin" ] && libname=${libname/.so/.dylib}
+search=(
+    /usr/${lib}/mysql
+    /usr/local/${lib}/mysql
+    /opt/local/${lib}/mysql5/mysql
+    /usr/${lib}
+    /usr/${lib}/x86_64-linux-gnu
+    )
+export MYSQL_LIB_DIR=$(first_path_with_file $libname "${search[@]}" "${MYSQL_LIB_DIR}")
+#report_status MYSQL_LIB_DIR ${MYSQL_LIB_DIR}
+
+#  Check and report failure to find either MySQL directory.
+if [[ -z ${MYSQL_LIB_DIR} || -z ${MYSQL_INC_DIR} ]]; then
+  echo "ERROR:  The MySQL environment variables could not be set."
+  echo "        Please ensure MySQL is installed on the system,"
+  echo "        set the MYSQL_LIB_DIR and MYSQL_INC_DIR "
+  echo "        environment variables, and re-run this program."
+  echo "\n        Database support is not enabled."
+fi
+
+###  Try to find MYSQLPP_INC_DIR and MYSQLPP_LIB_DIR
+if [[ -e /etc/redhat-release && `awk '{printf"%s",$1}' /etc/redhat-release` == "CentOS" ]]; then
+    centos_base_path=/group/qweak/QwAnalysis/Linux_CentOS`sed -r 's/CentOS.* ([0-9]+.[0-9]+).*/\1/' /etc/redhat-release`-x86_64
+    centos_mysqlpp_inc=${centos_base_path}/MySQL++/local/include/mysql++
+    centos_mysqlpp_lib=${centos_base_path}/MySQL++/local/lib
+else
+    centos_mysqlpp_inc=/group/qweak/spayde/local/include/mysql++
+    centos_mysqlpp_lib=/group/qweak/spayde/local/${lib}
+fi
+
+search=(
+    /usr/include/mysql++
+    /usr/local/include/mysql++
+    /opt/local/include/mysql++
+    ${centos_mysqlpp_inc}
+    /group/qweak/spayde/local/include/mysql++
+    )
+export MYSQLPP_INC_DIR=$(first_existing_directory "${search[@]}" "${MYSQLPP_INC_DIR}" )
+#report_status MYSQLPP_INC_DIR ${MYSQLPP_INC_DIR}
+
+libname=libmysqlpp.so
+[ "$OS" == "Darwin" ] && libname=${libname/.so/.dylib}
+search=(
+    /usr/${lib}
+    /usr/${lib}/mysql++
+    /usr/local/${lib}
+    /usr/local/${lib}/mysql++
+    /opt/local/${lib}
+    ${centos_mysqlpp_lib}
+    /group/qweak/spayde/local/${lib}
+    )
+export MYSQLPP_LIB_DIR=$(first_path_with_file $libname "${search[@]}" "${MYSQLPP_LIB_DIR}")
+#report_status MYSQLPP_LIB_DIR ${MYSQLPP_LIB_DIR}
+
+#  Check and report failure to find either MySQL++ directory.
+if [[ -z ${MYSQLPP_LIB_DIR} || -z ${MYSQLPP_INC_DIR} ]]; then
+  echo "ERROR:  The MySQL++ environment variables could not be set."
+  echo "        Please ensure MySQL++ is installed on the system,"
+  echo "        set the MYSQLPP_LIB_DIR and MYSQLPP_INC_DIR "
+  echo "        environment variables, and re-run this program."
+  echo "\n        Database support is not enabled."
+else
+  export __USE_DATABASE__
+fi
 
 
 ###  Try to find boost headers
@@ -109,7 +184,8 @@ search=(
     )
 export BOOST_INC_DIR=$(first_path_with_file $libname "${search[@]}" "${BOOST_INC_DIR}")
 
-libname=libboost_filesystem.a
+libname=libboost_filesystem.so
+[ "$OS" == "Darwin" ] && libname=${libname/.so/.dylib}
 search=(
     /usr/${lib}
     /usr/${lib}/x86_64-linux-gnu
@@ -117,6 +193,16 @@ search=(
     /opt/local/${lib}
     )
 export BOOST_LIB_DIR=$(first_path_with_file $libname "${search[@]}" "${BOOST_LIB_DIR}")
+if [[ -z ${BOOST_LIB_DIR} ]]; then
+libname=libboost_filesystem.so
+search=(
+    /usr/${lib}
+    /usr/${lib}/x86_64-linux-gnu
+    /usr/local/${lib}
+    /opt/local/${lib}
+    )
+export BOOST_LIB_DIR=$(first_path_with_file $libname "${search[@]}" "${BOOST_LIB_DIR}")
+fi
 
 report_status BOOST_INC_DIR ${BOOST_INC_DIR}
 report_status BOOST_LIB_DIR ${BOOST_LIB_DIR}

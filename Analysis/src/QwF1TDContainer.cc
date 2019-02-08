@@ -1609,7 +1609,7 @@ QwF1TDContainer::CheckDataIntegrity(const ROCID_t roc_id, UInt_t *buffer, UInt_t
 	    xor_setup_flag    = fF1TDCDecoder.IsHeaderXorSetup();
 	    trig_fifo_ok_flag = fF1TDCDecoder.IsNotHeaderTrigFIFO();
 	    event_ok_flag     = ( reference_event_num==fF1TDCDecoder.GetTDCHeaderEventNumber() );
-	    diff_trigger_time = abs( reference_trig_time-fF1TDCDecoder.GetTDCHeaderTriggerTime() );
+	    diff_trigger_time = abs( Long_t(reference_trig_time) - Long_t(fF1TDCDecoder.GetTDCHeaderTriggerTime()) );
 
 	    trig_time_ok_flag = 
 	      (diff_trigger_time == valid_trigger_time_offset[0])  

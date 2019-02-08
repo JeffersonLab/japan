@@ -138,7 +138,7 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
 #ifdef __USE_DATABASE__
   void  FillDB(QwParityDB *db, TString type);
   void  FillErrDB(QwParityDB *db, TString datatype);
-#endif
+#endif // __USE_DATABASE__
 
   void  Print() const;
 
@@ -149,7 +149,7 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
 /////
  protected:
   Bool_t CheckIORegisterMask(const UInt_t& ioregister, const UInt_t& mask) const {
-    return ((ioregister & mask) == mask);
+    return ((mask != 0)&&((ioregister & mask) == mask));
   };
 
  protected:
@@ -163,12 +163,16 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
 			    kHelInputMollerMode};
   // this values allow to switch the code between different helicity encoding mode.
 
-  enum InputRegisterBits{kInputReg_HelPlus     = 0x1,
-			 kInputReg_HelMinus    = 0x2,
-			 kInputReg_PatternSync = 0x4};
+  enum InputRegisterBits{kDefaultInputReg_HelPlus     = 0x1,
+			 kDefaultInputReg_HelMinus    = 0x2,
+			 kDefaultInputReg_PatternSync = 0x4,
+			 kDefaultInputReg_FakeMPS     = 0x8000};
 
-  static const UInt_t kInputReg_FakeMPS;
   UInt_t fInputReg_FakeMPS;
+  UInt_t fInputReg_HelPlus;
+  UInt_t fInputReg_HelMinus;
+  UInt_t fInputReg_PatternSync;
+  UInt_t fInputReg_PairSync;
 
   static const UInt_t kDefaultHelicityBitPattern;
 

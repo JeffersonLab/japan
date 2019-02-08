@@ -1,0 +1,17 @@
+sudo: required
+services:
+- docker
+
+script:
+- docker build -t jeffersonlab/japan .
+
+after_success:
+- docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
+- if [ "$TRAVIS_BRANCH" == "master" ] ; then
+    docker tag  jeffersonlab/japan jeffersonlab/japan:latest ; 
+    docker push jeffersonlab/japan:latest ;
+  else
+    docker tag  jeffersonlab/japan jeffersonlab/japan:$TRAVIS_BRANCH ;
+    docker push jeffersonlab/japan:$TRAVIS_BRANCH ;
+  fi
+

@@ -4,6 +4,7 @@
 // System headers
 #include <typeindex>
 #include <unistd.h>
+using std::type_info;
 
 // ROOT headers
 #include "TFile.h"
@@ -38,7 +39,8 @@ class QwRootTree {
 
     /// Constructor with name, and description
     QwRootTree(const std::string& name, const std::string& desc, const std::string& prefix = "")
-    : fName(name),fDesc(desc),fPrefix(prefix),fType("type undefined"),fCurrentEvent(0) {
+    : fName(name),fDesc(desc),fPrefix(prefix),fType("type undefined"),
+      fCurrentEvent(0),fNumEventsCycle(0),fNumEventsToSave(0),fNumEventsToSkip(0) {
       // Construct tree
       ConstructNewTree();
     }
@@ -413,7 +415,8 @@ class QwRootFile {
     void Map()    { if (fRootFile) fRootFile->Map(); }
     void Close()  {
       if (!fMakePermanent) fMakePermanent = HasAnyFilled();
-      if (fMapFile) fMapFile->Close();  if (fRootFile) fRootFile->Close();
+      if (fMapFile) fMapFile->Close();
+      if (fRootFile) fRootFile->Close();
     }
 
     // Wrapped functionality
@@ -617,9 +620,9 @@ void QwRootFile::ConstructTreeBranches(
     tree = new QwRootTree(name, desc, object, prefix);
 
     // Settings only relevant for new trees
-    if (name == "Mps_Tree")
+    if (name == "evt")
       tree->SetPrescaling(fNumMpsEventsToSave, fNumMpsEventsToSkip);
-    else if (name == "Hel_Tree")
+    else if (name == "mul")
       tree->SetPrescaling(fNumHelEventsToSave, fNumHelEventsToSkip);
 
     #if ROOT_VERSION_CODE >= ROOT_VERSION(5,26,00)

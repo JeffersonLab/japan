@@ -19,11 +19,10 @@
 #include "QwEventBuffer.h"
 #include "QwHelicity.h"
 #include "QwHelicityPattern.h"
-#include "QwMainCerenkovDetector.h"
-#include "MollerMainDetector.h"
-#include "QwLumi.h"
+#include "QwBlindDetectorArray.h"
 //#include "QwScanner.h"
 #include "QwSubsystemArrayParity.h"
+#include "QwDetectorArray.h"
 
 
 // Number of variables to correlate
@@ -48,12 +47,14 @@ inline std::string stringify(int i) {
 
 int main(int argc, char* argv[])
 {
-  // First, we set the command line arguments and the configuration filename,
-  // and we define the options that can be used in them (using QwOptions).
-  gQwOptions.SetCommandLine(argc, argv);
-  gQwOptions.SetConfigFile("qwmockdataanalysis.conf");
   // Define the command line options
   DefineOptionsParity(gQwOptions);
+
+  ///  Without anything, print usage
+  if (argc == 1) {
+    gQwOptions.Usage();
+    exit(0);
+  }
 
   // Fill the search paths for the parameter files; this sets a static
   // variable within the QwParameterFile class which will be used by
@@ -62,6 +63,11 @@ int main(int argc, char* argv[])
   QwParameterFile::AppendToSearchPath(getenv_safe_string("QW_PRMINPUT"));
   QwParameterFile::AppendToSearchPath(getenv_safe_string("QWANALYSIS") + "/Analysis/prminput");
   QwParameterFile::AppendToSearchPath(getenv_safe_string("QWANALYSIS") + "/Parity/prminput");
+
+  // Set the command line arguments and the configuration filename,
+  // and we define the options that can be used in them (using QwOptions).
+  gQwOptions.SetCommandLine(argc, argv);
+  gQwOptions.SetConfigFile("qwmockdataanalysis.conf");
 
   // Event buffer
   QwEventBuffer eventbuffer;
@@ -94,8 +100,8 @@ int main(int argc, char* argv[])
 
 //-----------------------------------------------------------------------------------------------
   // Get the main detector channels we want to correlate
-  MollerMainDetector* maindetector =
-    dynamic_cast<MollerMainDetector*>(detectors.GetSubsystemByName("Main Detector"));
+  QwDetectorArray* maindetector =
+    dynamic_cast<QwDetectorArray*>(detectors.GetSubsystemByName("Main Detector"));
   if (! maindetector) QwWarning << "No main detector subsystem defined!" << QwLog::endl;
 
 /*

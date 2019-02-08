@@ -1,0 +1,16 @@
+# This is an example of a detector definition file.
+
+[QwBeamLine]
+ name = CountingHouse
+ map      = prexCH_beamline.map
+ geom     = prexCH_beamline_geometry.map
+ eventcut = prexCH_beamline_eventcuts.map
+ param    = prexCH_beamline_pedestal.map
+
+[QwHelicity]
+ name = Helicity info
+ map = prexCH_helicity.map
+
+[QwScaler]
+  name  = SyncScalers
+  map  = prexCH_scaler.map
