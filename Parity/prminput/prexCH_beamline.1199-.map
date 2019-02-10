@@ -12,10 +12,10 @@ sample_size=16564
 !ADC0
     VQWK, 0, 0,  bcm,  QWK_0_0
     VQWK, 0, 1,  bcm,  QWK_0_1
-    VQWK, 0, 2,  bcm,  BCM_US
-    VQWK, 0, 3,  bcm,  BCM_DS
-    VQWK, 0, 4,  bcm,  QWK_0_4
-    VQWK, 0, 5,  bcm,  QWK_0_5
+    VQWK, 0, 2,  bcm,  BCM_AN_US
+    VQWK, 0, 3,  bcm,  BCM_AN_DS
+    VQWK, 0, 4,  bcm,  BCM_AN_DS3
+    VQWK, 0, 5,  bcm,  BCM_AN_DS10
     VQWK, 0, 6,  bcm,  QWK_0_6
     VQWK, 0, 7,  bcm,  QWK_0_7
 
@@ -62,4 +62,4 @@ sample_size=16564
 
 [PUBLISH]
 ! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
-  q_targ, bcm, bcm_us, c
+  q_targ, bcm, bcm_an_ds3, c
