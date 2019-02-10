@@ -1294,7 +1294,7 @@ void QwEPICSEvent::WriteEPICSStringValues()
 		    << std::endl;
 	}
 	
-	TTree *slow_tree = (TTree*) file->Get("Slow_Tree");
+	TTree *slow_tree = (TTree*) file->Get("slow");
 	
 	for (std::size_t tagindex=0; tagindex<fEPICSVariableList.size(); tagindex++) 
 	  {

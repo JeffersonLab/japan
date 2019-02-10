@@ -6,7 +6,9 @@
  */
 
 #include "QwRunCondition.h"
-#include "gitinfo.hh"
+
+// External objects
+extern const char* const gGitInfo;
 
 const Int_t QwRunCondition::fCharLength = 127;
 

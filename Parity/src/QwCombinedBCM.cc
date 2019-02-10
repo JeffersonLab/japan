@@ -17,6 +17,7 @@
 
 //  Qweak types that we want to use in this template
 #include "QwVQWK_Channel.h"
+#include "QwADC18_Channel.h"
 #include "QwScaler_Channel.h"
 
 
@@ -427,6 +428,7 @@ void  QwCombinedBCM<T>::FillTreeVector(std::vector<Double_t> &values) const
 */
 
 /********************************************************/
-template class QwCombinedBCM<QwVQWK_Channel>; 
-template class QwCombinedBCM<QwSIS3801_Channel>; 
-template class QwCombinedBCM<QwSIS3801D24_Channel>; 
+template class QwCombinedBCM<QwVQWK_Channel>;
+template class QwCombinedBCM<QwADC18_Channel>;
+template class QwCombinedBCM<QwSIS3801_Channel>;
+template class QwCombinedBCM<QwSIS3801D24_Channel>;
