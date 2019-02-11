@@ -66,7 +66,7 @@ void QwCorrelator::FillCorrelator() {
 
   if (! fEnableCorrelation) return;
 
-  UInt_t error;
+  UInt_t error = 0;
 
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     error |= fDependentVar.at(i)->GetErrorCode();
