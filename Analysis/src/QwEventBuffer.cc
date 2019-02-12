@@ -40,11 +40,11 @@ const UInt_t QwEventBuffer::kNullDataWord = 0x4e554c4c;
 
 /// Default constructor
 QwEventBuffer::QwEventBuffer()
-  :    fDataFileStem(fDefaultDataFileStem),
+  :    fRunListFile(NULL),
+       fDataFileStem(fDefaultDataFileStem),
        fDataFileExtension(fDefaultDataFileExtension),
        fEvStreamMode(fEvStreamNull),
        fEvStream(NULL),
-       fRunListFile(NULL),
        fCurrentRun(-1),
        fRunIsSegmented(kFALSE),
        fPhysicsEventFlag(kFALSE),
@@ -815,7 +815,7 @@ Bool_t QwEventBuffer::FillSubsystemData(QwSubsystemArray &subsystems)
       for (size_t i=0; i<nmarkers; i++){
 	offset = FindMarkerWord(i,&localbuff[fWordsSoFar],fFragLength);
 	BankID_t tmpbank = GetMarkerWord(i);
-	tmpbank = (tmpbank)<<32 + fSubbankTag;
+	tmpbank = ((tmpbank)<<32) + fSubbankTag;
 	if (offset != -1){
 	  offset++; //  Skip the marker word
 	  subsystems.ProcessEvBuffer(fEvtType, fROC, tmpbank,

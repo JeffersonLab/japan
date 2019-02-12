@@ -329,7 +329,7 @@ Int_t VQwSubsystem::RegisterMarkerWord(const UInt_t markerword)
     Int_t bank_index = FindIndex(fBank_IDs[roc_index],(fCurrentBank_ID&bankIDmask));
     fMarkerWords.at(roc_index).at(bank_index).push_back(markerword);
     BankID_t tmpbank = markerword;
-    tmpbank = (tmpbank)<<32 + (fCurrentBank_ID&bankIDmask);
+    tmpbank = ((tmpbank)<<32) + (fCurrentBank_ID&bankIDmask);
     RegisterSubbank(tmpbank);
   } else {
     //  There is not a ROC registered yet!

@@ -1533,7 +1533,7 @@ UInt_t QwHelicity::GetRandbit24(UInt_t& ranseed)
 
   if(ranseed & IB24) // if bit 24 of ranseed = 1, then output 1
     {
-      ranseed = ((ranseed^MASK) << 1|IB1);
+      ranseed = (((ranseed^MASK) << 1)|IB1);
       result = 1;
     }
   else
@@ -1600,7 +1600,7 @@ UInt_t QwHelicity::GetRandomSeed(UShort_t* first24randbits)
   b[1] = first24randbits[24]^b[21]^b[22]^b[24];// h24^b22^b24 = b1
 
   ///assign the values in the h aray and into the sead
-  for(size_t i=24;i>=1;i--)  ranseed=ranseed << 1|(b[i]&1);
+  for(size_t i=24;i>=1;i--)  ranseed = (ranseed << 1) | (b[i]&1);
 
   ranseed = ranseed&0xFFFFFF; //put a mask
 
