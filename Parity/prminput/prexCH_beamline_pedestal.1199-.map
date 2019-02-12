@@ -10,3 +10,13 @@ bcm_an_us,    -634.1      0.00306062
 bcm_an_ds,    -810.6      0.00300731
 bcm_an_ds3,   -662.6      0.00088747
 bcm_an_ds10,  -255.9,     0.00031405
+
+! BPMs pedestal calibration from zero gain run 1219, HAPLOG 3606
+  bpm4aXM,	3600.52,	1
+  bpm4aXP,	3311.63,	1
+  bpm4aYM,	-534.502,	1
+  bpm4aYP,	-527.499,	1
+  bpm4eXM,	-1478.97,	1
+  bpm4eXP,	-1324.53,	1
+  bpm4eYM,	-1231.63,	1
+  bpm4eYP,	-1244.23,	1
