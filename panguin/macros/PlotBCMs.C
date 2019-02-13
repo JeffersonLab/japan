@@ -7,7 +7,7 @@ void PlotBCMs(TString type="evt"){
   tPad->Divide(2,2);
   tPad->Draw();
 
-  TString device[4]={"bcm_an_us","bcm_an_ds","bcm_an_ds3","bcm_an_ds10"};
+  TString device[4]={"bcm_dg_us","bcm_an_ds","bcm_an_ds3","bcm_an_ds10"};
 
   TGraph *tGraph[4];
 
