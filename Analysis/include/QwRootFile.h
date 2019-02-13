@@ -411,12 +411,11 @@ class QwRootFile {
     // Wrapped functionality
     void Update() {
       if (fMapFile) {
-        QwMessage << "TMapFile size: "
+        QwMessage << "TMapFile memory resident size: "
                   << ((int*)fMapFile->GetBreakval() - (int*)fMapFile->GetBaseAddr()) *
                      4 / sizeof(int32_t) / 1024 / 1024 << " MiB"
                   << QwLog::endl;
         fMapFile->Update();
-        fMapFile->ls();
       } // not for TFile
     }
     void Print()  { if (fMapFile) fMapFile->Print();  if (fRootFile) fRootFile->Print(); }

@@ -36,7 +36,7 @@ QwRootFile::QwRootFile(const TString& run_label)
 
     mapfilename += "/QwMemMapFile.map";
 
-    fMapFile = TMapFile::Create(mapfilename,"RECREATE", kMaxMapFileSize, "RealTime Producer File");
+    fMapFile = TMapFile::Create(mapfilename,"UPDATE", kMaxMapFileSize, "RealTime Producer File");
 
     if (not fMapFile) {
       QwError << "Memory-mapped file " << mapfilename
@@ -178,7 +178,7 @@ void QwRootFile::DefineOptions(QwOptions &options)
   // Define the memory map option
   options.AddOptions()
     ("enable-mapfile", po::value<bool>()->default_bool_value(false),
-     "enable output to memory-mapped file");
+     "enable output to memory-mapped file\n(likely requires circular-buffer too)");
 
   // Define the histogram and tree options
   options.AddOptions("ROOT output options")
