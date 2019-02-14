@@ -172,7 +172,7 @@ void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value)
 {
   if (value.fErrorFlag==0){
     for (size_t i = 0; i < fOutputVar.size(); i++){
-      this->fOutputVar[i]->AccumulateRunningSum(fOutputVar[i]);
+      this->fOutputVar[i]->AccumulateRunningSum(value.fOutputVar[i]);
     }
   }
 }
