@@ -914,9 +914,12 @@ Int_t QwHelicity::LoadChannelMap(TString mapfile)
 
     if(bankindex!=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID)) { 
       bankindex=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID);
-      if (fWordsPerSubbank.size()<bankindex+1){
-	fWordsPerSubbank.resize(bankindex+1,
-				std::pair<Int_t, Int_t>(fWord.size(),fWord.size()));
+      if ((bankindex+1)>0){
+	UInt_t numbanks = UInt_t(bankindex+1);
+	if (fWordsPerSubbank.size()<numbanks){
+	  fWordsPerSubbank.resize(numbanks,
+				  std::pair<Int_t, Int_t>(fWord.size(),fWord.size()));
+	}
       }
       wordsofar=0;
     }
