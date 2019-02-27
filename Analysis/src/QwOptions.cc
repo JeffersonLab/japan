@@ -143,6 +143,29 @@ void QwOptions::SetCommandLine(int argc, char* argv[], bool default_config_file)
   }
 }
 
+/**
+ * Set the named configuration file as the first (and initially only)
+ * one in the list.
+ * @param configfile Name of the config file, without path
+ */
+void QwOptions::SetConfigFile(const std::string& configfile)
+{
+  fConfigFiles.clear();
+  fConfigFiles.push_back(configfile);
+  fParsed = false;
+};
+
+/**
+ * Add the named configuration file to the list.
+ * @param configfile Name of the config file, without path
+ */
+void QwOptions::AddConfigFile(const std::string& configfile)
+{
+  QwMessage << "Adding user-defined configuration file "
+	    << configfile.c_str() << QwLog::endl;
+  fConfigFiles.push_back(configfile);
+  fParsed = false;
+};
 
 
 /**
