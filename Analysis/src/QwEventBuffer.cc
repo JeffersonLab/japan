@@ -40,11 +40,11 @@ const UInt_t QwEventBuffer::kNullDataWord = 0x4e554c4c;
 
 /// Default constructor
 QwEventBuffer::QwEventBuffer()
-  :    fDataFileStem(fDefaultDataFileStem),
+  :    fRunListFile(NULL),
+       fDataFileStem(fDefaultDataFileStem),
        fDataFileExtension(fDefaultDataFileExtension),
        fEvStreamMode(fEvStreamNull),
        fEvStream(NULL),
-       fRunListFile(NULL),
        fCurrentRun(-1),
        fRunIsSegmented(kFALSE),
        fPhysicsEventFlag(kFALSE),
@@ -90,7 +90,7 @@ void QwEventBuffer::DefineOptions(QwOptions &options)
      "run range in format #[:#]");
   options.AddDefaultOptions()
     ("runlist", po::value<string>()->default_value(""),
-     "run list file example \n[5253]\n 234\n 246\n 256\n 345:456\n 567:789\n [5259]\n [5260]\n 0:10000\n [5261:5270]\n 9000:10000\n- for run 5253 it will analyze three individual events, and two event ranges \n- for run 5259 it will analyze the entire run (all segments) \n- for run 5260 it will analyze the first 10000 events \n- for runs 5261 through 5270 it will analyze the events 9000 through 10000)");
+     "run list file name");
   options.AddDefaultOptions()
     ("event,e", po::value<string>()->default_value("0:"),
      "event range in format #[:#]");
@@ -177,6 +177,23 @@ void QwEventBuffer::ProcessOptions(QwOptions &options)
   fAllowLowSubbankIDs = options.GetValue<bool>("allow-low-subbank-ids");
 
   // Open run list file
+  /* runlist file format example:
+     [5253]
+     234
+     246
+     256
+     345:456
+     567:789
+     [5259]
+     [5260]
+     0:10000
+     [5261:5270]
+     9000:10000
+    - for run 5253 it will analyze three individual events, and two event ranges
+    - for run 5259 it will analyze the entire run (all segments)
+    - for run 5260 it will analyze the first 10000 events
+    - for runs 5261 through 5270 it will analyze the events 9000 through 10000)
+  */
   if (fRunListFileName.size() > 0) {
     fRunListFile = new QwParameterFile(fRunListFileName);
     fEventListFile = 0;
@@ -815,7 +832,7 @@ Bool_t QwEventBuffer::FillSubsystemData(QwSubsystemArray &subsystems)
       for (size_t i=0; i<nmarkers; i++){
 	offset = FindMarkerWord(i,&localbuff[fWordsSoFar],fFragLength);
 	BankID_t tmpbank = GetMarkerWord(i);
-	tmpbank = (tmpbank)<<32 + fSubbankTag;
+	tmpbank = ((tmpbank)<<32) + fSubbankTag;
 	if (offset != -1){
 	  offset++; //  Skip the marker word
 	  subsystems.ProcessEvBuffer(fEvtType, fROC, tmpbank,

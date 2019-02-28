@@ -1,0 +1,43 @@
+/home/wdconinc/qweak/QwScratch/setupfiles is a directory; adding it to the search path
+/home/wdconinc/git/japan/Analysis/prminput is a directory; adding it to the search path
+/home/wdconinc/git/japan/Parity/prminput is a directory; adding it to the search path
+Adding user-defined configuration file qwmockdatagenerator.conf
+[31mWarning: [0mOverriding the default configuration files with user-defined configuration file qwparity_simple.conf
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/qwparity_simple.conf[0m
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_detectors.map[0m
+Loading subsystems from mock_detectors.map.
+Creating subsystem of type QwHelicity with name Helicity Info.
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_qweak_helicity.map[0m
+ **** Input Register Mode **** 
+Creating subsystem of type QwBeamLine with name Injector BeamLine.
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_qweak_beamline.map[0m
+[31mError: At end of processing the combined device [0m
+[31mError: At end of processing the combined device [0m
+[31mError: At end of processing the combined device [0m
+Variables to publish:
+q_targ combobcm bcm_target c
+x_targ combobpm bpm_target x
+y_targ combobpm bpm_target y
+xp_targ combobpm bpm_target xp
+yp_targ combobpm bpm_target yp
+e_targ comboenergy target_energy e
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_qweak_pedestal.map[0m
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_beamline_geometry.map[0m
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_beamline_eventcuts.map[0m
+Creating subsystem of type QwDetectorArray with name Main Detector.
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_moller_maindet_adc.map[0m
+Variables to publish:
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_moller_maindet_pedestal.map[0m
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_moller_maindet_eventcuts.map[0m
+QwHelicity::ProcessOptions
+ fPatternBits 0x69
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_data_parameters.map[0m
+Opening data file:  /home/wdconinc/qweak/QwScratch/data/QwMock_10.log
+Generated 0 events.
+Generated 10000 events.
+Run Number:         10
+Run Type:           0
+End Event Counter:  0
+Run Duration (sec): 3
+Number of Pauses during this run: 0
+Wrote mock data run /home/wdconinc/qweak/QwScratch/data/QwMock_10.log successfully.

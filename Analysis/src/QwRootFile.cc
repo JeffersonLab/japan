@@ -8,8 +8,7 @@
 std::string QwRootFile::fDefaultRootFileStem = "Qweak_";
 
 const Long64_t QwRootFile::kMaxTreeSize = 100000000000LL;
-//const Int_t QwRootFile::kMaxMapFileSize = 0x20000000; // 512 MiB
-const Int_t QwRootFile::kMaxMapFileSize = 0x10000000; // 256 MiB
+const Int_t QwRootFile::kMaxMapFileSize = 0x3fffffff; // 1 GiB
 
 /**
  * Constructor with relative filename
@@ -36,7 +35,7 @@ QwRootFile::QwRootFile(const TString& run_label)
 
     mapfilename += "/QwMemMapFile.map";
 
-    fMapFile = TMapFile::Create(mapfilename,"RECREATE", kMaxMapFileSize, "RealTime Producer File");
+    fMapFile = TMapFile::Create(mapfilename,"UPDATE", kMaxMapFileSize, "RealTime Producer File");
 
     if (not fMapFile) {
       QwError << "Memory-mapped file " << mapfilename
@@ -178,7 +177,7 @@ void QwRootFile::DefineOptions(QwOptions &options)
   // Define the memory map option
   options.AddOptions()
     ("enable-mapfile", po::value<bool>()->default_bool_value(false),
-     "enable output to memory-mapped file");
+     "enable output to memory-mapped file\n(likely requires circular-buffer too)");
 
   // Define the histogram and tree options
   options.AddOptions("ROOT output options")
