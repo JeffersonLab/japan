@@ -181,8 +181,8 @@ Int_t main(Int_t argc, Char_t* argv[])
     }
     #endif // __USE_DATABASE__
     //  Construct histograms
-    historootfile->ConstructHistograms("mps_histo", ringoutput);
-    historootfile->ConstructHistograms("hel_histo", helicitypattern);
+    historootfile->ConstructHistograms("evt_histo", ringoutput);
+    historootfile->ConstructHistograms("mul_histo", helicitypattern);
     detectors.ShareHistograms(ringoutput);
 
     //  Construct tree branches
