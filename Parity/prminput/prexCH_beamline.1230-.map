@@ -16,8 +16,8 @@ sample_size=16564
     VQWK, 0, 3,  bcm,  BCM_AN_DS
     VQWK, 0, 4,  bcm,  BCM_AN_DS3
     VQWK, 0, 5,  bcm,  BCM_AN_DS10
-    VQWK, 0, 6,  bcm,  QWK_0_6
-    VQWK, 0, 7,  bcm,  QWK_0_7
+    VQWK, 0, 6,  bcm,  BCM_DG_US
+    VQWK, 0, 7,  bcm,  BCM_DG_DS
 
 !ADC1
     VQWK, 1, 0,  bpmstripline,  BPM4Exp
