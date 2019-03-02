@@ -516,7 +516,7 @@ void OnlineConfig::OverrideRootFile(UInt_t runnumber)
     protorootfile.ReplaceAll("XXXXX",runnostr);
     rootfilename = protorootfile;
   } else {
-    string fnmRoot="/adaq1/work1/apar/japanOutput/";
+    string fnmRoot="/adaq1/work1/apar/japanOutput";
     if(getenv("QW_ROOTFILES"))
       fnmRoot = getenv("QW_ROOTFILES");
     else
@@ -526,7 +526,7 @@ void OnlineConfig::OverrideRootFile(UInt_t runnumber)
     const string daqConfigs[3] = {"CH","INJ","ALL"};
     int found=0;
     for(int i=0;i<3;i++){
-      rootfilename = Form("%sprex%s_%d.root",fnmRoot.c_str(),daqConfigs[i].c_str(),runnumber);
+      rootfilename = Form("%s/prex%s_%d.root",fnmRoot.c_str(),daqConfigs[i].c_str(),runnumber);
       if( access( rootfilename.Data(), F_OK ) != -1 ){
 	found++;
 	break;
