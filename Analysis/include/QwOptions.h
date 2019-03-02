@@ -189,25 +189,15 @@ class QwOptions {
     void SetCommandLine(int argc, char* argv[], bool default_config_file = true);
 
     /// \brief Set a configuration file
-    void SetConfigFile(const std::string& configfile) {
-      fConfigFiles.clear();
-      fConfigFiles.push_back(configfile);
-      fParsed = false;
-    };
+    void SetConfigFile(const std::string& configfile);
 
     /// \brief Add a configuration file
-    void AddConfigFile(const std::string& configfile) {
-      QwMessage << "Adding user-defined configuration file "
-                << configfile << QwLog::endl;
-      fConfigFiles.push_back(configfile);
-      fParsed = false;
-    };
+    void AddConfigFile(const std::string& configfile);
 
     /// \brief Add some configuration files
     void AddConfigFile(std::vector<std::string> configfiles) {
       for (size_t i = 0; i < configfiles.size(); i++)
-        fConfigFiles.push_back(configfiles.at(i));
-      fParsed = false;
+	AddConfigFile(configfiles.at(i));
     };
 
     /// \brief List the configuration files

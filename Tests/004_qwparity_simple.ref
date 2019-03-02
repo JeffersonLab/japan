@@ -1,0 +1,435 @@
+/home/wdconinc/qweak/QwScratch/setupfiles is a directory; adding it to the search path
+/home/wdconinc/git/japan/Parity/prminput is a directory; adding it to the search path
+/home/wdconinc/git/japan/Analysis/prminput is a directory; adding it to the search path
+Adding user-defined configuration file qwparity_simple.conf
+Config files:
+qwparity_simple.conf
+[31mWarning: [0mOverriding the default configuration files with user-defined configuration file qwparity_simple.conf
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/qwparity_simple.conf[0m
+tree-trim is disabled
+histo-trim is disabled 
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/parity_hist.in[0m
+Opening data file:  /home/wdconinc/qweak/QwScratch/data/QwMock_10.log
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_detectors.map[0m
+Loading subsystems from mock_detectors.map.
+Creating subsystem of type QwHelicity with name Helicity Info.
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_qweak_helicity.map[0m
+ **** Input Register Mode **** 
+Creating subsystem of type QwBeamLine with name Injector BeamLine.
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_qweak_beamline.map[0m
+Error: At end of processing the combined device 
+Error: At end of processing the combined device 
+Error: At end of processing the combined device 
+Variables to publish:
+q_targ combobcm bcm_target c
+x_targ combobpm bpm_target x
+y_targ combobpm bpm_target y
+xp_targ combobpm bpm_target xp
+yp_targ combobpm bpm_target yp
+e_targ comboenergy target_energy e
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_qweak_pedestal.map[0m
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_beamline_geometry.map[0m
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_beamline_eventcuts.map[0m
+Creating subsystem of type QwDetectorArray with name Main Detector.
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_moller_maindet_adc.map[0m
+Variables to publish:
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_moller_maindet_pedestal.map[0m
+Parameter file: [32m/home/wdconinc/git/japan/Parity/prminput/mock_moller_maindet_eventcuts.map[0m
+QwHelicity::ProcessOptions
+ fPatternBits 0x69
+List of published values:
+e_targ: published-value
+q_targ: published-value
+x_targ: published-value
+xp_targ: published-value
+y_targ: published-value
+yp_targ: published-value
+Blinding parameters have been calculated.
+QwBlinder::InitTestValues(): A total of 10 test values have been calculated successfully.
+Warning: enable-lrbcorrection is set to false.  Skipping LoadChannelMap for LRBCorrector
+QwHelicity::MaxPatternPhase = 4
+QwBlinder:  First set target blindability to NotBlindable
+New tree: evt, MPS event data tree
+New tree: mul, Helicity event data tree
+Collecting information (-) from event #0 to generate helicity seed (need 30 bit, so far got 0 bits )
+Collecting information (-) from event #4 to generate helicity seed (need 30 bit, so far got 1 bits )
+Collecting information (-) from event #8 to generate helicity seed (need 30 bit, so far got 2 bits )
+Collecting information (+) from event #12 to generate helicity seed (need 30 bit, so far got 3 bits )
+Collecting information (+) from event #16 to generate helicity seed (need 30 bit, so far got 4 bits )
+Collecting information (-) from event #20 to generate helicity seed (need 30 bit, so far got 5 bits )
+Collecting information (-) from event #24 to generate helicity seed (need 30 bit, so far got 6 bits )
+Collecting information (+) from event #28 to generate helicity seed (need 30 bit, so far got 7 bits )
+Collecting information (+) from event #32 to generate helicity seed (need 30 bit, so far got 8 bits )
+Collecting information (-) from event #36 to generate helicity seed (need 30 bit, so far got 9 bits )
+Collecting information (-) from event #40 to generate helicity seed (need 30 bit, so far got 10 bits )
+Collecting information (+) from event #44 to generate helicity seed (need 30 bit, so far got 11 bits )
+Collecting information (+) from event #48 to generate helicity seed (need 30 bit, so far got 12 bits )
+Collecting information (+) from event #52 to generate helicity seed (need 30 bit, so far got 13 bits )
+Collecting information (-) from event #56 to generate helicity seed (need 30 bit, so far got 14 bits )
+Collecting information (-) from event #60 to generate helicity seed (need 30 bit, so far got 15 bits )
+Collecting information (+) from event #64 to generate helicity seed (need 30 bit, so far got 16 bits )
+Collecting information (+) from event #68 to generate helicity seed (need 30 bit, so far got 17 bits )
+Collecting information (+) from event #72 to generate helicity seed (need 30 bit, so far got 18 bits )
+Collecting information (+) from event #76 to generate helicity seed (need 30 bit, so far got 19 bits )
+Collecting information (+) from event #80 to generate helicity seed (need 30 bit, so far got 20 bits )
+Collecting information (-) from event #84 to generate helicity seed (need 30 bit, so far got 21 bits )
+Collecting information (-) from event #88 to generate helicity seed (need 30 bit, so far got 22 bits )
+Collecting information (+) from event #92 to generate helicity seed (need 30 bit, so far got 23 bits )
+Collecting information (-) from event #96 to generate helicity seed (need 30 bit, so far got 24 bits )
+Collecting information (-) from event #100 to generate helicity seed (need 30 bit, so far got 25 bits )
+Collecting information (-) from event #104 to generate helicity seed (need 30 bit, so far got 26 bits )
+Collecting information (-) from event #108 to generate helicity seed (need 30 bit, so far got 27 bits )
+Collecting information (+) from event #112 to generate helicity seed (need 30 bit, so far got 28 bits )
+Collecting information (+) from event #116 to generate helicity seed (need 30 bit, so far got 29 bits )
+Number of events processed at end of run: 10001
+Root file is /home/wdconinc/qweak/QwScratch/rootfiles/isu_sample_10.root
+ ------------ error counters ------------------ 
+
+*********QwHelicity Error Summary****************
+First helicity gate counter:  -1; last helicity gate counter:  9999
+First pattern counter:  -1; last pattern counter:  2499
+Missed 0 helicity gates in 0 blocks of missed events.
+Number of multiplet-sync-bit errors:  0
+Number of helicity prediction errors: 0
+---------------------------------------------------
+
+*********QwBeamLine Error Summary****************
+---------------------------------------------------------------------------------------------
+                   Device name   HW Sat   Sample    SW_HW Sequence   SameHW   ZeroHW EventCut
+---------------------------------------------------------------------------------------------
+
+                   qwk_bcm0l00        0        0        0        0        8        0        0
+                   qwk_bcm0l01        0        0        0        0        8        0        0
+                   qwk_bcm0l02        0        0        0        0        8        0        0
+                   qwk_bcm0l03        0        0        0        0        8        0        0
+                   qwk_bcm0l04        0        0        0        0        8        0        0
+                   qwk_bcm0l05        0        0        0        0        8        0        0
+                   qwk_bcm0l06        0        0        0        0        8        0        0
+                   qwk_bcm0l07        0        0        0        0        8        0        0
+
+
+                    qwk_0r06XP        0        0        0        0     9999        0        0
+                    qwk_0r06YP        0        0        0        0     9999        0        0
+                  qwk_0r06RelX        0        0        0        0     9999        0        0
+                     qwk_0r06X        0        0        0        0     9999        0        0
+                  qwk_0r06RelY        0        0        0        0     9999        0        0
+                     qwk_0r06Y        0        0        0        0     9999        0        0
+                    qwk_0r06WS        0        0        0        0     9999        0        0
+
+                    qwk_0l06XP        0        0        0        0     9999        0        0
+                    qwk_0l06YM        0        0        0        0     9999        0        0
+                  qwk_0l06RelX        0        0        0        0     9999        0        0
+                     qwk_0l06X        0        0        0        0     9999        0        0
+                  qwk_0l06RelY        0        0        0        0     9999        0        0
+                     qwk_0l06Y        0        0        0        0     9999        0        0
+                    qwk_0l06WS        0        0        0        0     9999        0        0
+
+                    qwk_1c12XM        0        0        0        0     9999        0        0
+                    qwk_1c12YM        0        0        0        0     9999        0        0
+                  qwk_1c12RelX        0        0        0        0     9999        0        0
+                     qwk_1c12X        0        0        0        0     9999        0        0
+                  qwk_1c12RelY        0        0        0        0     9999        0        0
+                     qwk_1c12Y        0        0        0        0     9999        0        0
+                    qwk_1c12WS        0        0        0        0     9999        0        0
+
+                    qwk_1h04XP        0        0        0        0     9999        0        0
+                    qwk_1h04YM        0        0        0        0     9999        0        0
+                  qwk_1h04RelX        0        0        0        0     9999        0        0
+                     qwk_1h04X        0        0        0        0     9999        0        0
+                  qwk_1h04RelY        0        0        0        0     9999        0        0
+                     qwk_1h04Y        0        0        0        0     9999        0        0
+                    qwk_1h04WS        0        0        0        0     9999        0        0
+
+
+
+
+                    bcm_target        0        0        0        0        8        0        0
+
+                   bpm_targetX        0        0        0        0     9999        0        0
+              bpm_targetXSlope        0        0        0        0     9999        0        0
+          bpm_targetXIntercept        0        0        0        0     9999        0        0
+       bpm_targetXMinChiSquare        0        0        0        0     9999        0        0
+                   bpm_targetY        0        0        0        0     9999        0        0
+              bpm_targetYSlope        0        0        0        0     9999        0        0
+          bpm_targetYIntercept        0        0        0        0     9999        0        0
+       bpm_targetYMinChiSquare        0        0        0        0     9999        0        0
+    bpm_target_EffectiveCharge        0        0        0        0     9999        0        0
+
+                 target_energy        0        0        0        0     9999        0        0
+---------------------------------------------------------------------------------------------
+*********QwDetectorArray Error Summary****************
+---------------------------------------------------------------------------------------------
+                   Device name   HW Sat   Sample    SW_HW Sequence   SameHW   ZeroHW EventCut
+---------------------------------------------------------------------------------------------
+                     s1_r1_tr1        0        0        0        0       13        0        0
+                    s1_r1_open        0        0        0        0       10        0        0
+                     s1_r1_tr2        0        0        0        0       16        0        0
+                  s1_r1_closed        0        0        0        0       14        0        0
+                     s1_r2_tr1        0        0        0        0       15        0        0
+                    s1_r2_open        0        0        0        0       21        0        0
+                     s1_r2_tr2        0        0        0        0       11        0        0
+                  s1_r2_closed        0        0        0        0       15        0        0
+                     s1_r3_tr1        0        0        0        0       12        0        0
+                    s1_r3_open        0        0        0        0       12        0        0
+                     s1_r3_tr2        0        0        0        0       13        0        0
+                  s1_r3_closed        0        0        0        0       12        0        0
+                     s1_r4_tr1        0        0        0        0       13        0        0
+                    s1_r4_open        0        0        0        0       14        0        0
+                     s1_r4_tr2        0        0        0        0       12        0        0
+                  s1_r4_closed        0        0        0        0       13        0        0
+                    s1_r5a_tr1        0        0        0        0       16        0        0
+                   s1_r5a_open        0        0        0        0       15        0        0
+                    s1_r5a_tr2        0        0        0        0       12        0        0
+                 s1_r5a_closed        0        0        0        0       12        0        0
+                    s1_r5b_tr1        0        0        0        0       11        0        0
+                   s1_r5b_open        0        0        0        0       14        0        0
+                    s1_r5b_tr2        0        0        0        0       13        0        0
+                 s1_r5b_closed        0        0        0        0       12        0        0
+                    s1_r5c_tr1        0        0        0        0       17        0        0
+                   s1_r5c_open        0        0        0        0       15        0        0
+                    s1_r5c_tr2        0        0        0        0        8        0        0
+                 s1_r5c_closed        0        0        0        0        9        0        0
+                     s1_r6_tr1        0        0        0        0       13        0        0
+                    s1_r6_open        0        0        0        0       13        0        0
+                     s1_r6_tr2        0        0        0        0       12        0        0
+                  s1_r6_closed        0        0        0        0       15        0        0
+                     s2_r1_tr1        0        0        0        0       16        0        0
+                    s2_r1_open        0        0        0        0       14        0        0
+                     s2_r1_tr2        0        0        0        0       15        0        0
+                  s2_r1_closed        0        0        0        0       18        0        0
+                     s2_r2_tr1        0        0        0        0       14        0        0
+                    s2_r2_open        0        0        0        0       13        0        0
+                     s2_r2_tr2        0        0        0        0       16        0        0
+                  s2_r2_closed        0        0        0        0       14        0        0
+                     s2_r3_tr1        0        0        0        0       16        0        0
+                    s2_r3_open        0        0        0        0       14        0        0
+                     s2_r3_tr2        0        0        0        0       12        0        0
+                  s2_r3_closed        0        0        0        0       13        0        0
+                     s2_r4_tr1        0        0        0        0       14        0        0
+                    s2_r4_open        0        0        0        0       16        0        0
+                     s2_r4_tr2        0        0        0        0       16        0        0
+                  s2_r4_closed        0        0        0        0       14        0        0
+                    s2_r5a_tr1        0        0        0        0       14        0        0
+                   s2_r5a_open        0        0        0        0       15        0        0
+                    s2_r5a_tr2        0        0        0        0       16        0        0
+                 s2_r5a_closed        0        0        0        0       13        0        0
+                    s2_r5b_tr1        0        0        0        0       11        0        0
+                   s2_r5b_open        0        0        0        0       17        0        0
+                    s2_r5b_tr2        0        0        0        0       14        0        0
+                 s2_r5b_closed        0        0        0        0       14        0        0
+                    s2_r5c_tr1        0        0        0        0       13        0        0
+                   s2_r5c_open        0        0        0        0       13        0        0
+                    s2_r5c_tr2        0        0        0        0       16        0        0
+                 s2_r5c_closed        0        0        0        0       12        0        0
+                     s2_r6_tr1        0        0        0        0       15        0        0
+                    s2_r6_open        0        0        0        0       16        0        0
+                     s2_r6_tr2        0        0        0        0       17        0        0
+                  s2_r6_closed        0        0        0        0       17        0        0
+                     s3_r1_tr1        0        0        0        0       13        0        0
+                    s3_r1_open        0        0        0        0       14        0        0
+                     s3_r1_tr2        0        0        0        0       10        0        0
+                  s3_r1_closed        0        0        0        0       15        0        0
+                     s3_r2_tr1        0        0        0        0       14        0        0
+                    s3_r2_open        0        0        0        0       16        0        0
+                     s3_r2_tr2        0        0        0        0       17        0        0
+                  s3_r2_closed        0        0        0        0       14        0        0
+                     s3_r3_tr1        0        0        0        0       14        0        0
+                    s3_r3_open        0        0        0        0       15        0        0
+                     s3_r3_tr2        0        0        0        0       16        0        0
+                  s3_r3_closed        0        0        0        0       15        0        0
+                     s3_r4_tr1        0        0        0        0       15        0        0
+                    s3_r4_open        0        0        0        0       14        0        0
+                     s3_r4_tr2        0        0        0        0       17        0        0
+                  s3_r4_closed        0        0        0        0       14        0        0
+                    s3_r5a_tr1        0        0        0        0       15        0        0
+                   s3_r5a_open        0        0        0        0       11        0        0
+                    s3_r5a_tr2        0        0        0        0       15        0        0
+                 s3_r5a_closed        0        0        0        0       19        0        0
+                    s3_r5b_tr1        0        0        0        0       16        0        0
+                   s3_r5b_open        0        0        0        0       14        0        0
+                    s3_r5b_tr2        0        0        0        0       11        0        0
+                 s3_r5b_closed        0        0        0        0       18        0        0
+                    s3_r5c_tr1        0        0        0        0       15        0        0
+                   s3_r5c_open        0        0        0        0       22        0        0
+                    s3_r5c_tr2        0        0        0        0       18        0        0
+                 s3_r5c_closed        0        0        0        0       16        0        0
+                     s3_r6_tr1        0        0        0        0       12        0        0
+                    s3_r6_open        0        0        0        0       18        0        0
+                     s3_r6_tr2        0        0        0        0       16        0        0
+                  s3_r6_closed        0        0        0        0       18        0        0
+                     s4_r1_tr1        0        0        0        0       12        0        0
+                    s4_r1_open        0        0        0        0       13        0        0
+                     s4_r1_tr2        0        0        0        0        9        0        0
+                  s4_r1_closed        0        0        0        0       10        0        0
+                     s4_r2_tr1        0        0        0        0       16        0        0
+                    s4_r2_open        0        0        0        0       15        0        0
+                     s4_r2_tr2        0        0        0        0       15        0        0
+                  s4_r2_closed        0        0        0        0       12        0        0
+                     s4_r3_tr1        0        0        0        0       15        0        0
+                    s4_r3_open        0        0        0        0       13        0        0
+                     s4_r3_tr2        0        0        0        0       12        0        0
+                  s4_r3_closed        0        0        0        0       15        0        0
+                     s4_r4_tr1        0        0        0        0       10        0        0
+                    s4_r4_open        0        0        0        0       12        0        0
+                     s4_r4_tr2        0        0        0        0       15        0        0
+                  s4_r4_closed        0        0        0        0       16        0        0
+                    s4_r5a_tr1        0        0        0        0       16        0        0
+                   s4_r5a_open        0        0        0        0       11        0        0
+                    s4_r5a_tr2        0        0        0        0       12        0        0
+                 s4_r5a_closed        0        0        0        0       12        0        0
+                    s4_r5b_tr1        0        0        0        0       14        0        0
+                   s4_r5b_open        0        0        0        0       12        0        0
+                    s4_r5b_tr2        0        0        0        0       12        0        0
+                 s4_r5b_closed        0        0        0        0       10        0        0
+                    s4_r5c_tr1        0        0        0        0       15        0        0
+                   s4_r5c_open        0        0        0        0       15        0        0
+                    s4_r5c_tr2        0        0        0        0       12        0        0
+                 s4_r5c_closed        0        0        0        0       12        0        0
+                     s4_r6_tr1        0        0        0        0       14        0        0
+                    s4_r6_open        0        0        0        0       13        0        0
+                     s4_r6_tr2        0        0        0        0       14        0        0
+                  s4_r6_closed        0        0        0        0       12        0        0
+                     s5_r1_tr1        0        0        0        0       13        0        0
+                    s5_r1_open        0        0        0        0       14        0        0
+                     s5_r1_tr2        0        0        0        0       22        0        0
+                  s5_r1_closed        0        0        0        0       18        0        0
+                     s5_r2_tr1        0        0        0        0       14        0        0
+                    s5_r2_open        0        0        0        0       12        0        0
+                     s5_r2_tr2        0        0        0        0       17        0        0
+                  s5_r2_closed        0        0        0        0       16        0        0
+                     s5_r3_tr1        0        0        0        0       16        0        0
+                    s5_r3_open        0        0        0        0       14        0        0
+                     s5_r3_tr2        0        0        0        0       17        0        0
+                  s5_r3_closed        0        0        0        0       12        0        0
+                     s5_r4_tr1        0        0        0        0       13        0        0
+                    s5_r4_open        0        0        0        0       14        0        0
+                     s5_r4_tr2        0        0        0        0       11        0        0
+                  s5_r4_closed        0        0        0        0       17        0        0
+                    s5_r5a_tr1        0        0        0        0        9        0        0
+                   s5_r5a_open        0        0        0        0       15        0        0
+                    s5_r5a_tr2        0        0        0        0       18        0        0
+                 s5_r5a_closed        0        0        0        0       12        0        0
+                    s5_r5b_tr1        0        0        0        0       11        0        0
+                   s5_r5b_open        0        0        0        0       16        0        0
+                    s5_r5b_tr2        0        0        0        0       13        0        0
+                 s5_r5b_closed        0        0        0        0       16        0        0
+                    s5_r5c_tr1        0        0        0        0       10        0        0
+                   s5_r5c_open        0        0        0        0       16        0        0
+                    s5_r5c_tr2        0        0        0        0       14        0        0
+                 s5_r5c_closed        0        0        0        0       11        0        0
+                     s5_r6_tr1        0        0        0        0       11        0        0
+                    s5_r6_open        0        0        0        0       15        0        0
+                     s5_r6_tr2        0        0        0        0       17        0        0
+                  s5_r6_closed        0        0        0        0       15        0        0
+                     s6_r1_tr1        0        0        0        0       13        0        0
+                    s6_r1_open        0        0        0        0       12        0        0
+                     s6_r1_tr2        0        0        0        0       14        0        0
+                  s6_r1_closed        0        0        0        0       17        0        0
+                     s6_r2_tr1        0        0        0        0       13        0        0
+                    s6_r2_open        0        0        0        0       13        0        0
+                     s6_r2_tr2        0        0        0        0       15        0        0
+                  s6_r2_closed        0        0        0        0       15        0        0
+                     s6_r3_tr1        0        0        0        0       13        0        0
+                    s6_r3_open        0        0        0        0       12        0        0
+                     s6_r3_tr2        0        0        0        0       13        0        0
+                  s6_r3_closed        0        0        0        0       14        0        0
+                     s6_r4_tr1        0        0        0        0       12        0        0
+                    s6_r4_open        0        0        0        0       13        0        0
+                     s6_r4_tr2        0        0        0        0       15        0        0
+                  s6_r4_closed        0        0        0        0       14        0        0
+                    s6_r5a_tr1        0        0        0        0       14        0        0
+                   s6_r5a_open        0        0        0        0       10        0        0
+                    s6_r5a_tr2        0        0        0        0       15        0        0
+                 s6_r5a_closed        0        0        0        0       22        0        0
+                    s6_r5b_tr1        0        0        0        0       11        0        0
+                   s6_r5b_open        0        0        0        0       14        0        0
+                    s6_r5b_tr2        0        0        0        0       17        0        0
+                 s6_r5b_closed        0        0        0        0       17        0        0
+                    s6_r5c_tr1        0        0        0        0       18        0        0
+                   s6_r5c_open        0        0        0        0       14        0        0
+                    s6_r5c_tr2        0        0        0        0       14        0        0
+                 s6_r5c_closed        0        0        0        0       14        0        0
+                     s6_r6_tr1        0        0        0        0       16        0        0
+                    s6_r6_open        0        0        0        0       13        0        0
+                     s6_r6_tr2        0        0        0        0       13        0        0
+                  s6_r6_closed        0        0        0        0       12        0        0
+                     s7_r1_tr1        0        0        0        0       14        0        0
+                    s7_r1_open        0        0        0        0       17        0        0
+                     s7_r1_tr2        0        0        0        0       15        0        0
+                  s7_r1_closed        0        0        0        0       14        0        0
+                     s7_r2_tr1        0        0        0        0       12        0        0
+                    s7_r2_open        0        0        0        0       14        0        0
+                     s7_r2_tr2        0        0        0        0       18        0        0
+                  s7_r2_closed        0        0        0        0       14        0        0
+                     s7_r3_tr1        0        0        0        0       12        0        0
+                    s7_r3_open        0        0        0        0       10        0        0
+                     s7_r3_tr2        0        0        0        0       11        0        0
+                  s7_r3_closed        0        0        0        0       13        0        0
+                     s7_r4_tr1        0        0        0        0       14        0        0
+                    s7_r4_open        0        0        0        0       16        0        0
+                     s7_r4_tr2        0        0        0        0       16        0        0
+                  s7_r4_closed        0        0        0        0       11        0        0
+                    s7_r5a_tr1        0        0        0        0       14        0        0
+                   s7_r5a_open        0        0        0        0       11        0        0
+                    s7_r5a_tr2        0        0        0        0       14        0        0
+                 s7_r5a_closed        0        0        0        0       15        0        0
+                    s7_r5b_tr1        0        0        0        0       15        0        0
+                   s7_r5b_open        0        0        0        0       16        0        0
+                    s7_r5b_tr2        0        0        0        0       13        0        0
+                 s7_r5b_closed        0        0        0        0       11        0        0
+                    s7_r5c_tr1        0        0        0        0       21        0        0
+                   s7_r5c_open        0        0        0        0       16        0        0
+                    s7_r5c_tr2        0        0        0        0       10        0        0
+                 s7_r5c_closed        0        0        0        0       17        0        0
+                     s7_r6_tr1        0        0        0        0       12        0        0
+                    s7_r6_open        0        0        0        0       16        0        0
+                     s7_r6_tr2        0        0        0        0       12        0        0
+                  s7_r6_closed        0        0        0        0       11        0        0
+---------------------------------------------------------------------------------------------
+Warning: Starting CloseStream.
+Run Number:         10
+Run Type:           0
+End Event Counter:  0
+Run Duration (sec): n/a
+Number of Pauses during this run: 0
+
+Analysis of run 10
+10000 physics events were processed
+
+destructor QwkRegBlueCorrelator=input
+destructor QwkRegBlueCorrelator done
+QwBlinder::PrintFinalValues():  Begin summary
+================================================
+Blinder Passed Patterns
+	Patterns with blinding disabled: 0
+	Patterns on a non-blindable target: 2471
+	Patterns with transverse beam: 0
+	Patterns on blindable target with beam present: 0
+Blinder Failed Patterns
+	Patterns with unknown target position: 0
+	Patterns with changed target position: 0
+	Patterns with an undefined Wien setting: 0
+	Patterns with a changed Wien setting: 0
+	Patterns with an undefined IHWP setting: 0
+	Patterns with a changed IHWP setting: 0
+	Patterns on blindable target with no beam: 0
+	Patterns with other blinding failure: 0
+================================================
+The blinding parameters checksum for seed ID 0 is:
+97b0bed785d0a063d21343abfd3504e0
+================================================
+The test results are:
+   Index  Original value   Blinded value   Orig.-Unblind value
+       0      [CENSORED]     544.773 ppb               epsilon
+       1      [CENSORED]    -433.088 ppb               epsilon
+       2      [CENSORED]     416.474 ppb               epsilon
+       3      [CENSORED]    -643.277 ppb               epsilon
+       4      [CENSORED]    -386.498 ppb               epsilon
+       5      [CENSORED]    -344.967 ppb               epsilon
+       6      [CENSORED]    -417.540 ppb               epsilon
+       7      [CENSORED]    -511.812 ppb               epsilon
+       8      [CENSORED]    -836.650 ppb               epsilon
+       9      [CENSORED]     550.060 ppb               epsilon
+================================================
+QwBlinder::PrintFinalValues():  End of summary
+I have done everything I can do...

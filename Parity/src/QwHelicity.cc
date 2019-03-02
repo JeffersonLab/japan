@@ -914,9 +914,12 @@ Int_t QwHelicity::LoadChannelMap(TString mapfile)
 
     if(bankindex!=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID)) { 
       bankindex=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID);
-      if (fWordsPerSubbank.size()<bankindex+1){
-	fWordsPerSubbank.resize(bankindex+1,
-				std::pair<Int_t, Int_t>(fWord.size(),fWord.size()));
+      if ((bankindex+1)>0){
+	UInt_t numbanks = UInt_t(bankindex+1);
+	if (fWordsPerSubbank.size()<numbanks){
+	  fWordsPerSubbank.resize(numbanks,
+				  std::pair<Int_t, Int_t>(fWord.size(),fWord.size()));
+	}
       }
       wordsofar=0;
     }
@@ -1533,7 +1536,7 @@ UInt_t QwHelicity::GetRandbit24(UInt_t& ranseed)
 
   if(ranseed & IB24) // if bit 24 of ranseed = 1, then output 1
     {
-      ranseed = ((ranseed^MASK) << 1|IB1);
+      ranseed = (((ranseed^MASK) << 1)|IB1);
       result = 1;
     }
   else
@@ -1600,7 +1603,7 @@ UInt_t QwHelicity::GetRandomSeed(UShort_t* first24randbits)
   b[1] = first24randbits[24]^b[21]^b[22]^b[24];// h24^b22^b24 = b1
 
   ///assign the values in the h aray and into the sead
-  for(size_t i=24;i>=1;i--)  ranseed=ranseed << 1|(b[i]&1);
+  for(size_t i=24;i>=1;i--)  ranseed = (ranseed << 1) | (b[i]&1);
 
   ranseed = ranseed&0xFFFFFF; //put a mask
 

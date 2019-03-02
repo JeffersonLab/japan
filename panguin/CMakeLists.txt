@@ -40,7 +40,7 @@ endif()
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
 # Load ROOT and setup include directory
-find_package(ROOT 6 REQUIRED New Gui Minuit2)
+find_package(ROOT 6 REQUIRED Gui Minuit2)
 include_directories(${ROOT_INCLUDE_DIR})
 
 add_definitions(-std=c++11)
