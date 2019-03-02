@@ -61,7 +61,7 @@ QwOptions::QwOptions()
   AddDefaultOptions()("help,h", "print this help message");
   AddDefaultOptions()("version,V", "print the version string");
   AddDefaultOptions()("config,c", po::value<std::string>(), "read ONLY this config file\n(will override default config files)");
-  AddDefaultOptions()("add-config,a", po::value<std::vector<std::string> >(), "read ALSO this config file\n(will keep the default config files)");
+  AddDefaultOptions()("add-config,a", po::value<std::vector<std::string> >()->composing(), "read ALSO this config file\n(will keep the default config files)");
 }
 
 /**
@@ -143,7 +143,41 @@ void QwOptions::SetCommandLine(int argc, char* argv[], bool default_config_file)
   }
 }
 
+/**
+ * Set the named configuration file as the first (and initially only)
+ * one in the list.
+ * @param configfile Name of the config file, without path
+ */
+void QwOptions::SetConfigFile(const std::string& configfile)
+{
+  QwWarning << "Overriding the default configuration files with "
+	    << "user-defined configuration file "
+	    << configfile.c_str() << QwLog::endl;
+  fConfigFiles.clear();
+  fConfigFiles.push_back(configfile);
+  fParsed = false;
+};
 
+/**
+ * Add the named configuration file to the list.
+ * @param configfile Name of the config file, without path
+ */
+void QwOptions::AddConfigFile(const std::string& configfile)
+{
+  Bool_t notfound = kTRUE;
+  for (size_t i = 0; i < fConfigFiles.size(); i++){
+    if (fConfigFiles.at(i) == configfile){
+      notfound=kFALSE;
+      break;
+    }
+  }
+  if (notfound){
+    QwMessage << "Adding user-defined configuration file "
+	      << configfile.c_str() << QwLog::endl;
+    fConfigFiles.push_back(configfile);
+    fParsed = false;
+  }
+};
 
 /**
  * Combine the options of the various option descriptions in one object for
@@ -215,14 +249,10 @@ void QwOptions::ParseCommandLine()
 
   // If a configuration file is specified, load it.
   if (fVariablesMap.count("config") > 0) {
-    QwWarning << "Overriding the default configuration files with "
-	      << "user-defined configuration file "
-              << fVariablesMap["config"].as<std::string>() << QwLog::endl;
     SetConfigFile(fVariablesMap["config"].as<std::string>());
   }
   // If a configuration file is specified, load it.
   if (fVariablesMap.count("add-config") > 0) {
-    QwWarning << "Adding user-defined configuration file " << QwLog::endl;
     AddConfigFile(fVariablesMap["add-config"].as<std::vector<std::string> >());
   }
 }
@@ -281,6 +311,11 @@ void QwOptions::ParseConfigFile()
     }
     // Notify of new options
     po::notify(fVariablesMap);
+    
+    // If a configuration file is specified, load it.
+    if (fVariablesMap.count("add-config") > 0) {
+      AddConfigFile(fVariablesMap["add-config"].as<std::vector<std::string> >());
+    }
   }
 }
 

@@ -126,6 +126,8 @@ class QwEventBuffer: public MQwCodaControlEvent{
   Int_t  GetEvent();
   Int_t  WriteEvent(int* buffer);
 
+  Bool_t IsOnline(){return fOnline;};
+
   Bool_t IsROCConfigurationEvent(){
     return (fEvtType>=0x90 && fEvtType<=0xaf);
   };
