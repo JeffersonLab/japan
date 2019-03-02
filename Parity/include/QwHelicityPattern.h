@@ -41,6 +41,8 @@ class QwHelicityPattern {
  public:
   /// Constructor with subsystem array
   QwHelicityPattern(QwSubsystemArrayParity &event, const TString &run = "0");
+  /// \brief Copy constructor by reference
+  QwHelicityPattern(const QwHelicityPattern& source);
   /// Virtual destructor
   virtual ~QwHelicityPattern() { };
 
@@ -113,7 +115,8 @@ class QwHelicityPattern {
 
   void  AccumulateBurstSum();
   void  AccumulateRunningBurstSum();
-  void  AccumulateRunningSum();
+  void  AccumulateRunningSum(){AccumulateRunningSum(*this);};
+  void  AccumulateRunningSum(QwHelicityPattern &entry);
 
   void  CalculateBurstAverage();
   void  CalculateRunningBurstAverage();
@@ -139,7 +142,7 @@ class QwHelicityPattern {
 
   void  WritePromptSummary(QwPromptSummary *ps);
 
-  Bool_t IsGoodAsymmetry(){ return fPatternIsGood;};
+  Bool_t IsGoodAsymmetry();
   UInt_t GetEventcutErrorFlag() const{
     return fAsymmetry.GetEventcutErrorFlag();
   };
@@ -212,11 +215,6 @@ class QwHelicityPattern {
   // Running sum/average of the yield and asymmetry
   Bool_t fEnableRunningSum;
   Bool_t fPrintRunningSum;
-  QwSubsystemArrayParity fRunningYield;
-  QwSubsystemArrayParity fRunningDifference;
-  QwSubsystemArrayParity fRunningAsymmetry;
-  QwSubsystemArrayParity fRunningAsymmetry1;
-  QwSubsystemArrayParity fRunningAsymmetry2;
 
   Bool_t fEnableDifference;
   QwSubsystemArrayParity fDifference;

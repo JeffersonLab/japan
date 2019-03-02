@@ -143,7 +143,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     ///  Create the running sum
     QwSubsystemArrayParity runningsum(detectors);
-
+    QwHelicityPattern patternsum(helicitypattern);
 
     //  Initialize the database connection.
     #ifdef __USE_DATABASE__
@@ -202,7 +202,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     //  Clear the single-event running sum at the beginning of the runlet
     runningsum.ClearEventData();
-    helicitypattern.ClearRunningSum();
+    patternsum.ClearRunningSum();
     //  Clear the running sum of the burst values at the beginning of the runlet
     helicitypattern.ClearBurstSum();
 
@@ -293,15 +293,9 @@ Int_t main(Int_t argc, Char_t* argv[])
           // Load the event into the helicity pattern
           helicitypattern.LoadEventData(ringoutput);
 
-          // Calculate helicity pattern asymmetry
-          if (helicitypattern.IsCompletePattern()) {
-
-            // Update the blinder if conditions have changed
-            helicitypattern.UpdateBlinder(ringoutput);
-
-            // Calculate the asymmetry
-            helicitypattern.CalculateAsymmetry();
-            if (helicitypattern.IsGoodAsymmetry()) {
+          // Check to see if we can calculate helicity pattern asymmetry, do so, and report if it worked
+          if (helicitypattern.IsGoodAsymmetry()) {
+	    patternsum.AccumulateRunningSum(helicitypattern);
 
               // Fill histograms
               historootfile->FillHistograms(helicitypattern);
@@ -337,9 +331,7 @@ Int_t main(Int_t argc, Char_t* argv[])
               // Clear the data
               helicitypattern.ClearEventData();
 
-            } // helicitypattern.IsGoodAsymmetry()
-
-          } // helicitypattern.IsCompletePattern()
+	  } // helicitypattern.IsGoodAsymmetry()
 
         } // eventring.IsReady()
 
@@ -357,8 +349,8 @@ Int_t main(Int_t argc, Char_t* argv[])
 
 
     // Calculate running averages over helicity patterns
-    if (helicitypattern.IsRunningSumEnabled()) {
-      helicitypattern.CalculateRunningAverage();
+    if (patternsum.IsRunningSumEnabled()) {
+      patternsum.CalculateRunningAverage();
       if (helicitypattern.IsBurstSumEnabled()) {
         helicitypattern.CalculateRunningBurstAverage();
       }
@@ -406,7 +398,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       //      runningsum.WritePromptSummary(&promptsummary, "yield");
       // runningsum.WritePromptSummary(&promptsummary, "asymmetry");
       //      runningsum.WritePromptSummary(&promptsummary, "difference");
-      helicitypattern.WritePromptSummary(&promptsummary);
+      patternsum.WritePromptSummary(&promptsummary);
       promptsummary.PrintCSV();
     }
     //  Read from the database
@@ -415,8 +407,8 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     // Each subsystem has its own Connect() and Disconnect() functions.
     if (database.AllowsWriteAccess()) {
-      helicitypattern.FillDB(&database);
-      helicitypattern.FillErrDB(&database);
+      patternsum.FillDB(&database);
+      patternsum.FillErrDB(&database);
       epicsevent.FillDB(&database);
       helicitypattern.return_running_regression().FillDB(&database,"asymmetry");
       ringoutput.FillDB_MPS(&database, "optics");

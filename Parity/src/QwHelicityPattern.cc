@@ -96,11 +96,6 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
     fRunningBurstAsymmetry(event),
     fEnableRunningSum(kTRUE),     
     fPrintRunningSum(kFALSE),
-    fRunningYield(event), 
-    fRunningDifference(event), 
-    fRunningAsymmetry(event),
-    fRunningAsymmetry1(event), 
-    fRunningAsymmetry2(event),
     fEnableDifference(kFALSE),
     fDifference(event), 
     fAlternateDiff(event),
@@ -175,6 +170,35 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
     }
 
 }
+
+/*****************************************************************/
+QwHelicityPattern::QwHelicityPattern(const QwHelicityPattern &source)
+  : 
+    fYield(source.fYield), 
+    fAsymmetry(source.fAsymmetry),   
+    fEnableAlternateAsym(source.fEnableAlternateAsym), 
+    fAsymmetry1(source.fAsymmetry1), 
+    fAsymmetry2(source.fAsymmetry2),
+    fEnableRunningSum(source.fEnableRunningSum),
+    fPrintRunningSum(source.fPrintRunningSum),
+    fEnableDifference(source.fEnableDifference),
+    fDifference(source.fDifference),
+    fBurstYield(source.fYield), 
+    fBurstDifference(source.fYield),
+    fBurstAsymmetry(source.fYield),
+    fRunningBurstYield(source.fYield), 
+    fRunningBurstDifference(source.fYield), 
+    fRunningBurstAsymmetry(source.fYield),
+    fAlternateDiff(source.fYield),
+    fPositiveHelicitySum(source.fYield), 
+    fNegativeHelicitySum(source.fYield),
+    correlator(gQwOptions,*this, 999999),
+    regress_from_LRB(gQwOptions,*this,999999),
+    regression(gQwOptions,*this),
+    running_regression(regression)
+{
+};
+
 
 
 //*****************************************************************
@@ -280,6 +304,16 @@ void QwHelicityPattern::LoadEventData(QwSubsystemArrayParity &event)
   }
   return;
 }
+
+Bool_t QwHelicityPattern::IsGoodAsymmetry()
+{
+  Bool_t complete_and_good = kFALSE;
+  if (IsCompletePattern()){
+    CalculateAsymmetry();
+    complete_and_good = fPatternIsGood;
+  }
+  return complete_and_good;
+};
 
 //*****************************************************************
 /**
@@ -414,6 +448,8 @@ void  QwHelicityPattern::CalculateAsymmetry()
     
     
     if (! fIgnoreHelicity){
+      // Update the blinder if conditions have changed
+      UpdateBlinder(fYield);
       //  Only blind the difference if we're using the real helicity.
       fBlinder.Blind(fDifference,fYield);
       //  Update the global error code in fDifference, and use it
@@ -475,7 +511,6 @@ void  QwHelicityPattern::CalculateAsymmetry()
 
     // Accumulate the burst and running sums
     if (fEnableBurstSum)   AccumulateBurstSum();
-    if (fEnableRunningSum) AccumulateRunningSum();
     
     if (localdebug) QwDebug << " pattern number =" << fQuartetNumber << QwLog::endl;
   }
@@ -524,21 +559,19 @@ void QwHelicityPattern::ClearEventData()
  */
 void  QwHelicityPattern::ClearRunningSum()
 {
-  if (fEnableRunningSum) {
-    fRunningYield.ClearEventData();
-    fRunningDifference.ClearEventData();
-    fRunningAsymmetry.ClearEventData();
-    // Running alternate asymmetries
-    if (fEnableAlternateAsym) {
-      fRunningAsymmetry1.ClearEventData();
-      fRunningAsymmetry2.ClearEventData();
-    }
-    // Running burst sums
-    if (fEnableBurstSum) {
-      fRunningBurstYield.ClearEventData();
-      fRunningBurstDifference.ClearEventData();
-      fRunningBurstAsymmetry.ClearEventData();
-    }
+  fYield.ClearEventData();
+  fDifference.ClearEventData();
+  fAsymmetry.ClearEventData();
+  // Running alternate asymmetries
+  if (fEnableAlternateAsym) {
+    fAsymmetry1.ClearEventData();
+    fAsymmetry2.ClearEventData();
+  }
+  // Running burst sums
+  if (fEnableBurstSum) {
+    fRunningBurstYield.ClearEventData();
+    fRunningBurstDifference.ClearEventData();
+    fRunningBurstAsymmetry.ClearEventData();
   }
 }
 
@@ -577,18 +610,18 @@ void  QwHelicityPattern::AccumulateBurstSum()
  * Accumulate the running sum by adding this helicity pattern to the
  * running sums of yield, difference and asymmetry.
  */
-void  QwHelicityPattern::AccumulateRunningSum()
+void  QwHelicityPattern::AccumulateRunningSum(QwHelicityPattern &entry)
 {
-  if (fPatternIsGood){
-    fRunningYield.AccumulateRunningSum(fYield);
+  if (entry.fPatternIsGood){
+    fYield.AccumulateRunningSum(entry.fYield);
+    fAsymmetry.AccumulateRunningSum(entry.fAsymmetry);
     if (fEnableDifference){
-      fRunningDifference.AccumulateRunningSum(fDifference);
+      fDifference.AccumulateRunningSum(entry.fDifference);
       // The difference is blinded, so the running difference is also blinded.
     }
-    fRunningAsymmetry.AccumulateRunningSum(fAsymmetry);
     if (fEnableAlternateAsym) {
-      fRunningAsymmetry1.AccumulateRunningSum(fAsymmetry1);
-      fRunningAsymmetry2.AccumulateRunningSum(fAsymmetry2);
+      fAsymmetry1.AccumulateRunningSum(entry.fAsymmetry1);
+      fAsymmetry2.AccumulateRunningSum(entry.fAsymmetry2);
     }
   }
 }
@@ -644,14 +677,14 @@ void  QwHelicityPattern::CalculateRunningBurstAverage()
 //*****************************************************************
 void  QwHelicityPattern::CalculateRunningAverage()
 {
-  fRunningAsymmetry.CalculateRunningAverage();
+  fAsymmetry.CalculateRunningAverage();
   if (fEnableDifference){
-    fRunningDifference.CalculateRunningAverage();
+    fDifference.CalculateRunningAverage();
   }
-  fRunningYield.CalculateRunningAverage();
+  fYield.CalculateRunningAverage();
   if (fEnableAlternateAsym) {
-    fRunningAsymmetry1.CalculateRunningAverage();
-    fRunningAsymmetry2.CalculateRunningAverage();
+    fAsymmetry1.CalculateRunningAverage();
+    fAsymmetry2.CalculateRunningAverage();
   }
   if (fPrintRunningSum) PrintRunningAverage();
 }
@@ -677,18 +710,18 @@ void  QwHelicityPattern::PrintRunningAverage() const
 {
   QwMessage << "QwHelicityPattern::PrintRunningAverage() const " << QwLog::endl;
   //  QwMessage << " Running average of yields     " << QwLog::endl;
-  fRunningYield.PrintValue();
+  fYield.PrintValue();
   //  QwMessage << " Running average of asymmetry  " << QwLog::endl;
-  fRunningAsymmetry.PrintValue();
+  fAsymmetry.PrintValue();
   if (fEnableAlternateAsym) {
     //    QwMessage << " Running average of first half/second half asymmetry  "  << QwLog::endl;
-    fRunningAsymmetry1.PrintValue();
+    fAsymmetry1.PrintValue();
     //    QwMessage << " Running average of even/odd asymmetry  " << QwLog::endl;
-    fRunningAsymmetry2.PrintValue();
+    fAsymmetry2.PrintValue();
   }
   if (fEnableDifference){
     //    QwMessage << " Running average of difference " << QwLog::endl;
-    fRunningDifference.PrintValue();
+    fDifference.PrintValue();
   }
 
 }
@@ -821,14 +854,14 @@ void QwHelicityPattern::FillDB(QwParityDB *db)
 {
   fBlinder.FillDB(db,"");
 
-  fRunningYield.FillDB(db, "yield");
-  fRunningAsymmetry.FillDB(db, "asymmetry");
+  fYield.FillDB(db, "yield");
+  fAsymmetry.FillDB(db, "asymmetry");
   if (fEnableDifference) {
-    fRunningDifference.FillDB(db, "difference");
+    fDifference.FillDB(db, "difference");
   }
   if (fEnableAlternateAsym) {
-    fRunningAsymmetry1.FillDB(db, "asymmetry1");
-    fRunningAsymmetry2.FillDB(db, "asymmetry2");
+    fAsymmetry1.FillDB(db, "asymmetry1");
+    fAsymmetry2.FillDB(db, "asymmetry2");
   }
 }
 
@@ -843,8 +876,8 @@ void QwHelicityPattern::FillErrDB(QwParityDB *db)
 
 void QwHelicityPattern::WritePromptSummary(QwPromptSummary *ps)
 {
-  fRunningYield.WritePromptSummary(ps, "yield");
-  fRunningAsymmetry.WritePromptSummary(ps, "asymmetry");
+  fYield.WritePromptSummary(ps, "yield");
+  fAsymmetry.WritePromptSummary(ps, "asymmetry");
   
   return;
 };
