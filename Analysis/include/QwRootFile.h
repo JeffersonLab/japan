@@ -334,7 +334,7 @@ class QwRootFile {
       // Update regularly
       static Int_t update_count = 0;
       update_count++;
-      if (update_count % fUpdateInterval == 0) Update();
+      if ((fUpdateInterval > 0) && ( update_count % fUpdateInterval == 0)) Update();
       if (! HasDirByType(object)) return;
       // Fill histograms
       object.FillHistograms();

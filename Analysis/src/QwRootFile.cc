@@ -16,7 +16,7 @@ const Int_t QwRootFile::kMaxMapFileSize = 0x3fffffff; // 1 GiB
 QwRootFile::QwRootFile(const TString& run_label)
   : fRootFile(0), fMakePermanent(0),
     fMapFile(0), fEnableMapFile(kFALSE),
-    fUpdateInterval(400)
+    fUpdateInterval(-1)
 {
   // Process the configuration options
   ProcessOptions(gQwOptions);
@@ -215,7 +215,7 @@ void QwRootFile::DefineOptions(QwOptions &options)
     ("num-hel-discarded-events", po::value<int>()->default_value(0),
      "number of discarded consecutive pattern events");
   options.AddOptions("ROOT output options")
-    ("mapfile-update-interval", po::value<int>()->default_value(400),
+    ("mapfile-update-interval", po::value<int>()->default_value(-1),
      "Events between a map file update");
 
   // Define the autoflush and autosave option (default values by ROOT)
