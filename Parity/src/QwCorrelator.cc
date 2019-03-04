@@ -29,6 +29,8 @@ using namespace std;
 #include "QwParityDB.h"
 #endif // __USE_DATABASE__
 
+// Register this handler with the factory
+RegisterHandlerFactory(QwCorrelator);
 
 //******************************************************************************************************************************************************
 

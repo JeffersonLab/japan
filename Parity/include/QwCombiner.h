@@ -11,9 +11,10 @@
 #define QWCOMBINER_H_
 
 // Parent Class
-#include "LRBCorrector.h"
+#include "VQwDataHandler.h"
 
-class QwCombiner : public LRBCorrector {
+class QwCombiner:public VQwDataHandler, public MQwDataHandlerCloneable<QwCombiner>
+{
 
   public:
 
@@ -30,6 +31,10 @@ class QwCombiner : public LRBCorrector {
     QwCombiner(QwOptions &options, QwHelicityPattern& helicitypattern);
     /// \brief Constructor with only options
     QwCombiner(QwOptions &options);
+
+    /// \brief Constructor with name
+    QwCombiner(const string& name){}
+
     /// \brief Copy constructor
     QwCombiner(const QwCombiner &source);
     /// Virtual destructor
@@ -60,14 +65,21 @@ class QwCombiner : public LRBCorrector {
     /// Default constructor (Protected for child class access)
     QwCombiner() { };
 
+    bool fEnableCorrection;
+    /// Corrector dependent and independent variable map
+    std::string fCorrectorMapFile;
+
+   /// Single event pointer
+    QwSubsystemArrayParity* fSubsystemArray;
+    /// Helicity pattern pointer
+    QwHelicityPattern* fHelicityPattern;
+
     /// List of channels to use in the combiner
     std::vector< std::vector< EQwHandleType > > fIndependentType;
     std::vector< std::vector< std::string > > fIndependentName;
-
-    // std::vector< std::pair< VQwHardwareChannel*, VQwHardwareChannel*> > fDependentVar;
-    // std::vector< std::vector< std::pair< Double_t, const VQwHardwareChannel* > > > fIndependentVar;
-    std::vector< std::vector< Double_t > > fSensitivity;
     std::vector< std::vector< const VQwHardwareChannel* > > fIndependentVar;
+    std::vector< std::vector< Double_t > > fSensitivity;
+
 
 }; // class QwCombiner
 

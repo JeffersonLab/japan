@@ -13,7 +13,6 @@
 #include "VQwDataElement.h"
 #include "QwVQWK_Channel.h"
 #include "QwParameterFile.h"
-
 #include "QwHelicityPattern.h"
 
 #define MYSQLPP_SSQLS_NO_STATICS
@@ -21,6 +20,10 @@
 #include "QwParitySSQLS.h"
 #include "QwParityDB.h"
 #endif // __USE_DATABASE__
+
+
+// Register this handler with the factory
+RegisterHandlerFactory(QwCombiner);
 
 
 /** Constructor with single event and helicity pattern

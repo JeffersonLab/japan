@@ -39,6 +39,9 @@ using namespace std;
 
 #include <TMatrixD.h>
 
+// Register this handler with the factory
+RegisterHandlerFactory(LRBCorrector);
+
 
 LRBCorrector::LRBCorrector(QwOptions &options, QwHelicityPattern& helicitypattern, const TString &run) {
   
@@ -178,33 +181,6 @@ Int_t LRBCorrector::ConnectChannels(
   QwMessage << "In LRBCorrector::ConnectChannels; Number of IVs: " << fIndependentVar.size()
             << " Number of DVs: " << fDependentVar.size() << QwLog::endl;
 
-}
-
-void LRBCorrector::CalcOneOutput(const VQwHardwareChannel* dv, VQwHardwareChannel* output,
-                                  vector< const VQwHardwareChannel* > &ivs,
-                                  vector< Double_t > &sens) {
-  
-  // if second is NULL, can't do corrector
-  if (output == NULL){
-    QwError<<"Second is value is NULL, unable to calculate corrector."<<QwLog::endl;
-    return;
-  }
-  // For correct type (asym, diff, mps)
-  // if (fDependentType.at(dv) != type) continue;
-
-  // Clear data in second, if first is NULL
-  if (dv == NULL){
-    output->ClearEventData();
-  }else{
-    // Update second value
-    output->AssignValueFrom(dv);
-  }
-
-  // Add corrections
-  for (size_t iv = 0; iv < ivs.size(); iv++) {
-    output->ScaledAdd(sens.at(iv), ivs.at(iv));
-  }
-  
 }
 
 

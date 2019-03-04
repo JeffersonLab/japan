@@ -40,6 +40,32 @@ VQwDataHandler::~VQwDataHandler() {
 
 }
 
+void VQwDataHandler::CalcOneOutput(const VQwHardwareChannel* dv, VQwHardwareChannel* output,
+                                  vector< const VQwHardwareChannel* > &ivs,
+                                  vector< Double_t > &sens) {
+  
+  // if second is NULL, can't do corrector
+  if (output == NULL){
+    QwError<<"Second is value is NULL, unable to calculate corrector."<<QwLog::endl;
+    return;
+  }
+  // For correct type (asym, diff, mps)
+  // if (fDependentType.at(dv) != type) continue;
+
+  // Clear data in second, if first is NULL
+  if (dv == NULL){
+    output->ClearEventData();
+  }else{
+    // Update second value
+    output->AssignValueFrom(dv);
+  }
+
+  // Add corrections
+  for (size_t iv = 0; iv < ivs.size(); iv++) {
+    output->ScaledAdd(sens.at(iv), ivs.at(iv));
+  }
+  
+}
 
 void VQwDataHandler::ProcessData() {
   

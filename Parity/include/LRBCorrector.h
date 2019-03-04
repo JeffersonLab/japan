@@ -19,11 +19,14 @@ Last Modified: August 1, 2018 1:41 PM
 #include "VQwDataHandler.h"
 
 
-class LRBCorrector : public VQwDataHandler {
+class LRBCorrector : public VQwDataHandler, public MQwDataHandlerCloneable<LRBCorrector>{
   
   public:
     
     LRBCorrector(QwOptions &options, QwHelicityPattern& helicitypattern, const TString &run = "0");
+
+    /// \brief Constructor with name
+    LRBCorrector(const string& name){}
     
     /// \brief Define the configuration options
     void static DefineOptions(QwOptions &options);
@@ -34,10 +37,6 @@ class LRBCorrector : public VQwDataHandler {
 
     Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
     
-    void CalcOneOutput(const VQwHardwareChannel* dv, VQwHardwareChannel* output,
-                       std::vector< const VQwHardwareChannel* > &ivs,
-                       std::vector< Double_t > &sens);
-
     void ProcessData();
 
   protected:

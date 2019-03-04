@@ -21,7 +21,7 @@ Last Modified: August 1, 2018 1:43 PM
 // LinRegBlue Correlator Class
 #include "QwkRegBlueCorrelator.h"
 
-class QwCorrelator : public VQwDataHandler {
+class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCorrelator>{
 
   public:
 
@@ -29,6 +29,10 @@ class QwCorrelator : public VQwDataHandler {
 		void CalcCorrelations();
 
   	QwCorrelator(QwOptions &options, QwHelicityPattern& helicitypattern, const TString &run = "0");
+
+    /// \brief Constructor with name
+ QwCorrelator(const string& name):corA("input"){}
+
   	
   	void readConfig(const char * configFName);
   	

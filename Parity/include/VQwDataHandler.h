@@ -18,10 +18,11 @@ Last Modified: August 1, 2018 1:39 PM
 //#include "QwHelicityPattern.h"
 #include "QwSubsystemArrayParity.h"
 #include "VQwHardwareChannel.h"
+#include "QwFactory.h"
 
 class QwHelicityPattern;
 
-class VQwDataHandler {
+class VQwDataHandler{
 
   public:
     
@@ -36,10 +37,12 @@ class VQwDataHandler {
 
     virtual ~VQwDataHandler();
 
+    TString GetDataHandlerName(){return fName;}
+
     void AccumulateRunningSum(VQwDataHandler &value);
     void CalculateRunningAverage();
     void PrintValue() const;
-    void FillDB(QwParityDB *db, TString datatype);
+    void FillDB(QwParityDB *db, TString datatype){};
 
     // Fill the vector for this subsystem
     void FillTreeVector(std::vector<Double_t> &values) const;
@@ -50,21 +53,28 @@ class VQwDataHandler {
       run_label = x;
     }
 
+    virtual void ProcessOptions(QwOptions &options) = 0;
+
+    virtual Int_t LoadChannelMap(const std::string& mapfile) = 0;
+
   protected:
     
     VQwDataHandler() { }
     
-    virtual void ProcessOptions(QwOptions &options) = 0;
-
-    virtual Int_t LoadChannelMap(const std::string& mapfile) = 0;
     Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
     
     std::pair<EQwHandleType,std::string> ParseHandledVariable(const std::string& variable);
 
+   void CalcOneOutput(const VQwHardwareChannel* dv, VQwHardwareChannel* output,
+                       std::vector< const VQwHardwareChannel* > &ivs,
+                       std::vector< Double_t > &sens);
+
     //Bool_t PublishInternalValue(const TString &name, const TString &desc, const VQwHardwareChannel *value) const;
     //Bool_t PublishByRequest(TString device_name);
 
+ protected:
     //***************[Variables]***************
+   TString fName;
 
     UInt_t fErrorFlag;
 
