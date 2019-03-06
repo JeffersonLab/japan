@@ -24,7 +24,11 @@ const Int_t  QwADC18_Channel::kFooterWordsPerModule = 1;
 const Int_t  QwADC18_Channel::kDataWordsPerChannel  = 3;
 const Int_t  QwADC18_Channel::kMaxChannels          = 4;
 
-const UInt_t QwADC18_Channel::mask31x   = 0x80000000;   // Header bit mask
+const UInt_t QwADC18_Channel::mask31x   = 0x80000000;   // Header mask
+// Header bit masks
+const UInt_t QwADC18_Channel::mask3026x = 0x7c000000;   // Module number mask
+const UInt_t QwADC18_Channel::mask250x  = 0x03ffffff;   // Event number mask
+// Data bit masks
 const UInt_t QwADC18_Channel::mask3029x = 0x60000000;   // Channel number mask
 const UInt_t QwADC18_Channel::mask2625x = 0x06000000;   // Divider value mask
 const UInt_t QwADC18_Channel::mask2422x = 0x01c00000;   // Data type mask
@@ -34,7 +38,8 @@ const UInt_t QwADC18_Channel::mask2118x = 0x003c0000;   // Data types 1-2 sample
 const UInt_t QwADC18_Channel::mask170x  = 0x0003ffff;   // Data types 1-2 value field mask
 const UInt_t QwADC18_Channel::mask150x  = 0x0000ffff;   // Data type 4 value field mask
 
-
+// Header for the block currently being read in
+QwADC18_Channel* QwADC18_Channel::fCurrentHeader = 0;
 
 const Double_t QwADC18_Channel::kTimePerSample = 2.0 * Qw::us; // FIXME
 
@@ -86,32 +91,91 @@ Int_t QwADC18_Channel::GetBufferOffset(Int_t moduleindex, Int_t channelindex)
 /********************************************************/
 Int_t QwADC18_Channel::ApplyHWChecks()
 {
-  Bool_t fEventIsGood=kTRUE;
-  Bool_t bStatus;
-  if (bEVENTCUTMODE>0){//Global switch to ON/OFF event cuts set at the event cut file
+  // Global switch to ON/OFF event cuts set at the event cut file
+  if (bEVENTCUTMODE > 0) {
 
-    if (bDEBUG)
-      QwWarning<<" QwQWVK_Channel "<<GetElementName()<<"  "<<GetNumberOfSamples()<<QwLog::endl;
+    // Inherit error check from the header
+    if (fHeader) {
+      fErrorFlag |= fHeader->fErrorFlag;
+    }
 
-    // Sample size check
-    bStatus = MatchNumberOfSamples(fNumberOfSamples_map);//compare the default sample size with no.of samples read by the module
-    if (!bStatus) {
+    // Sample size
+    if (! MatchNumberOfSamples(fNumberOfSamples_map)) {
       fErrorFlag |= kErrorFlag_sample;
     }
 
-    //check sequence number
+    // Sequence number
     fSequenceNo_Prev++;
-    if (fSequenceNo_Counter==0 || GetSequenceNumber()==0){//starting the data run
-      fSequenceNo_Prev=GetSequenceNumber();
+    if (fSequenceNo_Counter == 0 || GetSequenceNumber() == 0) {
+      // starting the data run
+      fSequenceNo_Prev = GetSequenceNumber();
+    }
+    // we have a sequence number error
+    if (! MatchSequenceNumber(fSequenceNo_Prev)) {
+      fErrorFlag |= kErrorFlag_Sequence;
+      if (bDEBUG)
+        QwWarning << " QwADC18_Channel::ApplyHWChecks " << GetElementName()
+                  << " Sequence number previous value = " << fSequenceNo_Prev
+                  << " Current value = " << GetSequenceNumber() << QwLog::endl;
     }
 
-    if (!MatchSequenceNumber(fSequenceNo_Prev)){//we have a sequence number error
-      fEventIsGood=kFALSE;
-      fErrorFlag|=kErrorFlag_Sequence;
-      if (bDEBUG)       QwWarning<<" QwQWVK_Channel "<<GetElementName()<<" Sequence number previous value = "<<fSequenceNo_Prev<<" Current value= "<< GetSequenceNumber()<<QwLog::endl;
+    // Some checks only for header or data channels
+    if (fHeader == 0) {
+    // Checks specific to header channels
+
+
+    } else {
+    // Checks specific to data channels
+
+      // Check whether the base is returning the same value
+      if (fBase_Raw_Prev != fBase_Raw) {
+        fBase_Raw_Prev = fBase_Raw;
+        fBase_Raw_Same_Count = 0;
+      } else
+        fBase_Raw_Same_Count++;
+      if (fBase_Raw_Same_Count > 1) {
+        if (bDEBUG)
+          QwWarning << "QwADC18_Channel::ApplyHWChecks " << GetElementName()
+                    << "base is the same for more than "
+                    << fBase_Raw_Same_Count << " consecutive events"
+                    << QwLog::endl;
+        fErrorFlag |= kErrorFlag_SameHW;
+      }
+
+      // Check whether the peak is returning the same value
+      if (fPeak_Raw_Prev != fPeak_Raw) {
+        fPeak_Raw_Prev = fPeak_Raw;
+        fPeak_Raw_Same_Count = 0;
+      } else
+        fPeak_Raw_Same_Count++;
+      if (fPeak_Raw_Same_Count > 1) {
+        if (bDEBUG)
+          QwWarning << "QwADC18_Channel::ApplyHWChecks " << GetElementName()
+                    << "peak is the same for more than "
+                    << fPeak_Raw_Same_Count << " consecutive events"
+                    << QwLog::endl;
+        fErrorFlag |= kErrorFlag_SameHW;
+      }
+
+      // Check whether the base or peak are zero
+      if (fBase_Raw == 0) {
+        if (bDEBUG)
+          QwWarning << "QwADC18_Channel::ApplyHWChecks " << GetElementName()
+                    << "base is the exactly zero"
+                    << QwLog::endl;
+        fErrorFlag |= kErrorFlag_ZeroHW;
+      }
+      if (fPeak_Raw == 0) {
+        if (bDEBUG)
+          QwWarning << "QwADC18_Channel::ApplyHWChecks " << GetElementName()
+                    << "peak is the exactly zero"
+                    << QwLog::endl;
+        fErrorFlag |= kErrorFlag_ZeroHW;
+      }
+
     }
-  }
-  else {
+
+  } else {
     fGoodEventCount = 1;
     fErrorFlag = 0;
   }
@@ -121,19 +185,20 @@ Int_t QwADC18_Channel::ApplyHWChecks()
 
 
 /********************************************************/
+// FIXME for ADC18
 void QwADC18_Channel::IncrementErrorCounters(){
-  if ( (kErrorFlag_sample &  fErrorFlag)==kErrorFlag_sample)
+  if ( (kErrorFlag_sample &  fErrorFlag) == kErrorFlag_sample)
     fErrorCount_sample++; //increment the hw error counter
-  if ( (kErrorFlag_SW_HW &  fErrorFlag)==kErrorFlag_SW_HW)
+  if ( (kErrorFlag_SW_HW &  fErrorFlag) == kErrorFlag_SW_HW)
     fErrorCount_SW_HW++; //increment the hw error counter
-  if ( (kErrorFlag_Sequence &  fErrorFlag)==kErrorFlag_Sequence)
+  if ( (kErrorFlag_Sequence &  fErrorFlag) == kErrorFlag_Sequence)
     fErrorCount_Sequence++; //increment the hw error counter
-  if ( (kErrorFlag_SameHW &  fErrorFlag)==kErrorFlag_SameHW)
+  if ( (kErrorFlag_SameHW &  fErrorFlag) == kErrorFlag_SameHW)
     fErrorCount_SameHW++; //increment the hw error counter
-  if ( (kErrorFlag_ZeroHW &  fErrorFlag)==kErrorFlag_ZeroHW)
+  if ( (kErrorFlag_ZeroHW &  fErrorFlag) == kErrorFlag_ZeroHW)
     fErrorCount_ZeroHW++; //increment the hw error counter
-  if ( ((kErrorFlag_EventCut_L &  fErrorFlag)==kErrorFlag_EventCut_L) 
-       || ((kErrorFlag_EventCut_U &  fErrorFlag)==kErrorFlag_EventCut_U)){
+  if ( ((kErrorFlag_EventCut_L &  fErrorFlag) == kErrorFlag_EventCut_L)
+    || ((kErrorFlag_EventCut_U &  fErrorFlag) == kErrorFlag_EventCut_U)) {
     fNumEvtsWithEventCutsRejected++; //increment the event cut error counter
   }
 }
@@ -144,8 +209,8 @@ void QwADC18_Channel::InitializeChannel(TString name, TString datatosave)
 {
   SetElementName(name);
   SetDataToSave(datatosave);
-  SetNumberOfDataWords(1);
-  SetNumberOfSubElements(1);
+  SetNumberOfDataWords(1); // FIXME kNumberOfDataWords?
+  SetNumberOfSubElements(1); // FIXME no subblocks, so 1
 
   kFoundPedestal = 0;
   kFoundGain = 0;
@@ -160,7 +225,7 @@ void QwADC18_Channel::InitializeChannel(TString name, TString datatosave)
 
   fPreviousSequenceNumber = 0;
   fNumberOfSamples_map    = 0;
-  fNumberOfSamples        = 0;
+  fNumberOfSamples        = 1;
 
   // Use internal random variable by default
   fUseExternalRandomVariable = false;
@@ -176,14 +241,15 @@ void QwADC18_Channel::InitializeChannel(TString name, TString datatosave)
   fMockGaussianSigma = 0.0;
 
   // Event cuts
-  fULimit=0;
-  fLLimit=0;
+  fULimit = 0;
+  fLLimit = 0;
   fNumEvtsWithEventCutsRejected = 0;
 
-  fErrorFlag=0;               //Initialize the error flag
-  fErrorConfigFlag=0;         //Initialize the error config. flag
+  // Error flags
+  fErrorFlag = 0;               // Initialize the error flag
+  fErrorConfigFlag = 0;         // Initialize the error config. flag
 
-  //init error counters//
+  // Error counters
   fErrorCount_sample     = 0;
   fErrorCount_SW_HW      = 0;
   fErrorCount_Sequence   = 0;
@@ -193,30 +259,49 @@ void QwADC18_Channel::InitializeChannel(TString name, TString datatosave)
 
   fRunningSum            = 0;
 
-  fADC_Same_NumEvt       = 0;
   fSequenceNo_Prev       = 0;
   fSequenceNo_Counter    = 0;
+
+  fBase_Raw_Prev         = 0;
+  fBase_Raw_Same_Count   = 0;
+  fPeak_Raw_Prev         = 0;
+  fPeak_Raw_Same_Count   = 0;
 
   fGoodEventCount        = 0;
 
   bEVENTCUTMODE          = 0;
 
-  //std::cout<< "name = "<<name<<" error count same _HW = "<<fErrorCount_SameHW <<std::endl;
-  return;
+  // Connect to header channel for raw data
+  if (datatosave == "raw") {
+    if (name.Contains("DAC",TString::kIgnoreCase)) {
+      fHeader = 0;
+      fCurrentHeader = this;
+    } else {
+      fHeader = fCurrentHeader;
+      if (fHeader != 0) {
+        QwMessage << "QwADC18_Channel::InitializeChannel: channel " << GetElementName()
+                  << " connected to header " << fHeader->GetElementName() << QwLog::endl;
+      } else {
+        QwWarning << "QwADC18_Channel::InitializeChannel: channel " << GetElementName()
+                  << " not connected to header, some errors will not be caught." << QwLog::endl;
+      }
+    }
+  }
 }
 
 /********************************************************/
-
-void QwADC18_Channel::InitializeChannel(TString subsystem, TString instrumenttype, TString name, TString datatosave){
-  InitializeChannel(name,datatosave);
+void QwADC18_Channel::InitializeChannel(TString subsystem, TString instrumenttype, TString name, TString datatosave)
+{
+  InitializeChannel(name, datatosave);
   SetSubsystemName(subsystem);
   SetModuleType(instrumenttype);
-  //PrintInfo();
 }
 
-void QwADC18_Channel::LoadChannelParameters(QwParameterFile &paramfile){
+/********************************************************/
+void QwADC18_Channel::LoadChannelParameters(QwParameterFile &paramfile)
+{
   UInt_t value = 0;
-  if (paramfile.ReturnValue("sample_size",value)){
+  if (paramfile.ReturnValue("adc18_sample_size",value)) {
     SetDefaultSampleSize(value);
   } else {
     QwWarning << "ADC18 Channel "
@@ -224,23 +309,27 @@ void QwADC18_Channel::LoadChannelParameters(QwParameterFile &paramfile){
 	      << " cannot set the default sample size."
 	      << QwLog::endl;
   }
-};
+}
 
-
+/********************************************************/
 void QwADC18_Channel::ClearEventData()
 {
   fDiff_Raw    = 0;
+  fDiff_Div    = 1;
   fBase_Raw    = 0;
   fPeak_Raw    = 0;
+  fValue_Raw   = 0.0;
   fValue       = 0.0;
   fValueM2     = 0.0;
   fValueError  = 0.0;
   fSequenceNumber   = 0;
-  fNumberOfSamples  = 0;
+  fNumberOfSamples  = 1;
   fGoodEventCount   = 0;
   fErrorFlag = 0;
 }
 
+/********************************************************/
+// FIXME for ADC18
 void QwADC18_Channel::RandomizeEventData(int helicity, double time)
 {
   // Calculate drift (if time is not specified, it stays constant at zero)
@@ -258,18 +347,20 @@ void QwADC18_Channel::RandomizeEventData(int helicity, double time)
   fNumberOfSamples = fNumberOfSamples_map;
 }
 
+/********************************************************/
+// FIXME for ADC18
 void QwADC18_Channel::SmearByResolution(double resolution)
 {
-  fValue = resolution*GetRandomValue();
+  fValue = resolution * GetRandomValue();
   fValueM2 = 0.0;
   fNumberOfSamples = fNumberOfSamples_map;
   SetRawEventData();
 }
 
+/********************************************************/
 // SetEventData() is used by the mock data generator to turn "model"
 // data values into their equivalent raw data.  It should be used
 // nowhere else.  -- pking, 2010-09-16
-
 void QwADC18_Channel::SetEventData(Double_t value)
 {
   fValue     = value;
@@ -280,6 +371,7 @@ void QwADC18_Channel::SetEventData(Double_t value)
   fNumberOfSamples = fNumberOfSamples_map;
 }
 
+/********************************************************/
 void QwADC18_Channel::SetRawEventData()
 {
   fNumberOfSamples = fNumberOfSamples_map;
@@ -287,6 +379,7 @@ void QwADC18_Channel::SetRawEventData()
   fPeak_Raw = Int_t(fValue / fCalibrationFactor + fPedestal) * fNumberOfSamples;
 };
 
+/********************************************************/
 // FIXME here goes the encoding of raw data into CODA blocks
 void QwADC18_Channel::EncodeEventData(std::vector<UInt_t> &buffer)
 {
@@ -321,74 +414,82 @@ void QwADC18_Channel::EncodeEventData(std::vector<UInt_t> &buffer)
   }
 }
 
-Bool_t QwADC18_Channel::IsHeaderWord(UInt_t rawd) const
+/********************************************************/
+Bool_t QwADC18_Channel::IsHeaderWord(UInt_t word) const
 {
-  return ((rawd & mask31x) != 0);
+  return ((word & mask31x) != 0);
 }
 
-Int_t QwADC18_Channel::ProcessDataWord(UInt_t rawd)
+/********************************************************/
+Bool_t QwADC18_Channel::IsDataWord(UInt_t word) const
 {
-  // "Actual" values from data word
-  UInt_t act_dtype  = (rawd & mask2422x) >> 22;
-  UInt_t act_chan   = (act_dtype != 4) ?
-                      ((rawd & mask3029x) >> 29) : 0;
-  UInt_t act_dvalue = (rawd & mask2625x) >> 25;
-  UInt_t act_snum   = (act_dtype == 1 || act_dtype == 2) ?
-                      ((rawd & mask2118x) >> 18) : 0;
+  return ((word & mask31x) == 0);
+}
 
-  // Interpret by data type
-  UInt_t value_raw = 0;
-  switch (act_dtype) {
-    case 0: // Diff word
-      static UInt_t prev_dvalue = act_dvalue;
-      if (act_dvalue != prev_dvalue) {
-        QwError << "QwADC18_Channel::ProcessEvBuffer: Number of samples changed " << act_dvalue << " " << prev_dvalue << QwLog::endl;
-        return 0;
-      }
-      value_raw = rawd & mask200x;
-      if (rawd & mask21x) value_raw = -((~value_raw & 0x1fffffff) + 1);
-      fNumberOfSamples = (1 << act_dvalue);
-      return value_raw;
-      break;
-    case 1: // Peak word
-    case 2: // Base word
-      if (act_snum != fNumberOfSamples) {
-        QwError << "QwADC18_Channel::ProcessEvBuffer: Number of samples changed " << act_snum << " " << fNumberOfSamples << QwLog::endl;
-        return 0;
-      }
-      if (act_dvalue != 0) {
-        QwError << "QwADC18_Channel::ProcessEvBuffer: Divider value non-zero 0x" << std::hex << rawd << std::dec << QwLog::endl;
-        return 0;
-      }
-      return rawd & mask170x;
-      break;
-    case 4: // DAC word
-      if (act_dvalue != 0) {
-        QwError << "QwADC18_Channel::ProcessEvBuffer: Divider value non-zero 0x" << std::hex << rawd << std::dec << QwLog::endl;
-        return 0;
-      }
-      return rawd & mask150x;
-      break;
-    default:
-      QwError << "QwADC18_Channel::ProcessEvBuffer: Unknown data type 0x" << std::hex << rawd << std::dec << QwLog::endl;
-      return 0;
+/********************************************************/
+UInt_t QwADC18_Channel::ProcessDACWord(UInt_t word) const
+{
+  // Check type
+  UInt_t type = (word & mask2422x) >> 22;
+  // Return zero unless type 4
+  if (type != 4) return 0;
+
+  // Return data fields
+  return word & mask150x;
+}
+
+/********************************************************/
+UInt_t QwADC18_Channel::ProcessPeakBaseWord(UInt_t word) const
+{
+  // Check type
+  UInt_t type = (word & mask2422x) >> 22;
+  // Return zero unless type 1 or 2
+  if (type != 1 && type != 2) return 0;
+
+  // Return data fields
+  return word & mask170x;
+}
+
+/********************************************************/
+std::pair<Int_t,UInt_t> QwADC18_Channel::ProcessDiffDivWord(UInt_t word) const
+{
+  // Check type
+  UInt_t type = (word & mask2422x) >> 22;
+  // Return zero unless type 0
+  if (type != 0) return std::make_pair(0,1);
+
+  // Divider
+  UInt_t divider_exp = (word & mask2625x) >> 25;
+  UInt_t divider = (1 << divider_exp);
+
+  // Change sign
+  Int_t value = word & mask200x;
+  if (word & mask21x) value = -((~value & 0x1fffff) + 1);
+
+  // Return value and divider
+  return std::make_pair(value,divider);
+}
+
+/********************************************************/
+void QwADC18_Channel::PrettyPrintBuffer(UInt_t* buffer, UInt_t length, UInt_t wrap) const
+{
+  QwOut << std::hex;
+  for (size_t i = 0; i < length; i++) {
+    QwOut << "0x" << std::setfill('0') << std::setw(8) << buffer[i] << " ";
+    if ((i % wrap) == (wrap - 1)) QwOut << QwLog::endl;
   }
+  QwOut << std::dec << std::setfill(' ') << std::setw(0) << QwLog::endl;
 }
 
-// FIXME here goes the decoding of raw data from CODA blocks
+/********************************************************/
 Int_t QwADC18_Channel::ProcessEvBuffer(UInt_t* buffer, UInt_t num_words_left, UInt_t index)
 {
-  Bool_t debug = false;
+  Bool_t debug = true;
 
   // Print buffer
   if (debug) {
-    QwOut << GetElementName() << " : " << QwLog::endl << std::hex;
-    Int_t n = 25;
-    for (size_t i = 0; i < num_words_left; i++) {
-      QwOut << "0x" << std::setfill('0') << std::setw(8) << buffer[i] << " ";
-      if (i % n == n - 1) QwOut << QwLog::endl;
-    }
-    QwOut << std::dec << std::setfill(' ') << std::setw(0) << QwLog::endl;
+    QwOut << GetElementName() << ": ";
+    PrettyPrintBuffer(buffer, num_words_left);
   }
 
   UInt_t words_read = 0;
@@ -398,42 +499,69 @@ Int_t QwADC18_Channel::ProcessEvBuffer(UInt_t* buffer, UInt_t num_words_left, UI
     words_read = kDataWordsPerChannel;
   } else if (num_words_left >= fNumberOfDataWords) {
 
-    // Is this a header word?
-    if (IsHeaderWord(buffer[0])) {
+    // Is this a header channel?
+    // Header channels do not have a pointer to another channel as header.
+    if (fHeader == 0) {
+      // This is a header channel
 
       // Debug output
       if (debug) {
-        QwOut << " : header " << std::hex;
-        UInt_t n = kHeaderWordsPerModule;
-        for (size_t i = 0; i < n && i < num_words_left; i++) {
-          QwOut << "0x" << std::setfill('0') << std::setw(8) << buffer[i] << " ";
-        }
-        QwOut << std::dec << std::setfill(' ') << std::setw(0) << QwLog::endl;
+        QwOut << "header ";
+        PrettyPrintBuffer(buffer,kHeaderWordsPerModule);
       }
 
       // Check if enough words left
       if (num_words_left < kHeaderWordsPerModule) {
-        QwError << "QwADC18_Channel::ProcessEvBuffer: Not enough words left!" << QwLog::endl;
+        QwError << "QwADC18_Channel::ProcessEvBuffer: Not enough words left for header word!" << QwLog::endl;
         return num_words_left;
       }
 
-      // FIXME Catch 0xfa180bad
+      // Header word
+      if (! IsHeaderWord(buffer[0])) {
+        QwError << "QwADC18_Channel::ProcessEvBuffer: Expected header word, but got data!" << QwLog::endl;
+        return num_words_left;
+      }
 
-      // Header word: read DAC value
-      fValue_Raw = ProcessDataWord(buffer[kHeaderWordsPerModule-1]);
+      // - 0: module status check
+      fModuleStatus = (buffer[0] == 0xfb0b4000);
+      if (buffer[0] != 0xfb0b4000) {
+        QwWarning << "QwADC18_Channel::ProcessEvBuffer: header has wrong starting word!" << QwLog::endl;
+        return num_words_left;
+      }
+
+      // - 6: CSR
+      fModuleCSR = buffer[6];
+      // - 7: event number
+      fSequenceNumber = buffer[7];
+      // - 8: data block size
+      fModuleStatus &= (buffer[8] == 0xe);
+      if (buffer[8] != 0xe) {
+        QwWarning << "QwADC18_Channel::ProcessEvBuffer: header indicates too few words!" << QwLog::endl;
+        return num_words_left;
+      }
+      // - 9: status
+      fModuleStatus &= (buffer[9] != 0xfa180bad);
+      if (buffer[9] == 0xfa180bad) {
+        QwWarning << "QwADC18_Channel::ProcessEvBuffer: header indicates bad module!" << QwLog::endl;
+        return num_words_left;
+      }
+      // - 10: module and sequence numbers
+      fModuleNumber = (buffer[10] & mask3026x) >> 26;
+      fSequenceNumber = (buffer[10] & mask250x);
+
+      // Data word:
+      // - 11: DAC value
+      fValue_Raw = ProcessDACWord(buffer[11]);
 
       words_read = kHeaderWordsPerModule;
 
     } else {
+      // This is a data channel
 
       // Debug output
       if (debug) {
-        QwOut << " : channel " << std::hex;
-        UInt_t n = kDataWordsPerChannel;
-        for (size_t i = 0; i < n && i < num_words_left; i++) {
-          QwOut << "0x" << std::setfill('0') << std::setw(8) << buffer[i] << " ";
-        }
-        QwOut << std::dec << std::setfill(' ') << std::setw(0) << QwLog::endl;
+        QwOut << "data ";
+        PrettyPrintBuffer(buffer,kDataWordsPerChannel);
       }
 
       // Check if enough words left
@@ -442,10 +570,27 @@ Int_t QwADC18_Channel::ProcessEvBuffer(UInt_t* buffer, UInt_t num_words_left, UI
         return num_words_left;
       }
 
+      // Header status
+      if (fHeader->fModuleStatus == false) {
+        QwWarning << "QwADC18_Channel::ProcessEvBuffer: Header indicates bad module!" << QwLog::endl;
+        return kDataWordsPerChannel;
+      }
+
+      // Data word
+      if (IsHeaderWord(buffer[0])) {
+        QwError << "QwADC18_Channel::ProcessEvBuffer: Expected data word, but got header!" << QwLog::endl;
+        return num_words_left;
+      }
+
       // Data channel words: read diff, peak, base
-      fDiff_Raw = ProcessDataWord(buffer[0]);
-      fPeak_Raw = ProcessDataWord(buffer[1]);
-      fBase_Raw = ProcessDataWord(buffer[2]);
+      std::pair<Int_t,UInt_t> diff = ProcessDiffDivWord(buffer[0]);
+      fDiff_Raw = diff.first;
+      fDiff_Div = diff.second;
+      fPeak_Raw = ProcessPeakBaseWord(buffer[1]);
+      fBase_Raw = ProcessPeakBaseWord(buffer[2]);
+
+      // Divide difference by divider
+      fValue_Raw = fDiff_Raw / fDiff_Div;
 
       words_read = kDataWordsPerChannel;
     }
@@ -458,79 +603,74 @@ Int_t QwADC18_Channel::ProcessEvBuffer(UInt_t* buffer, UInt_t num_words_left, UI
 }
 
 
-
+/********************************************************/
 void QwADC18_Channel::ProcessEvent()
 {
-  if (fNumberOfSamples == 0 && fDiff_Raw == 0) {
+  if (fNumberOfSamples == 0 && fValue_Raw == 0) {
     //  There isn't valid data for this channel.  Just flag it and move on.
-    fValue = 0.0;
-    fValueM2 = 0.0;
-    fErrorFlag |= kErrorFlag_sample;
-  } else if (fNumberOfSamples == 0) {
-    //  This is probably a more serious problem.
-    QwWarning << "QwADC18_Channel::ProcessEvent:  Channel "
-              << GetElementName()
-              << " has fNumberOfSamples == 0 but has valid data in the value filed."
-              << "Flag this as an error."
-              << QwLog::endl;
-    fValue = 0.0;
+    fValue   = 0.0;
     fValueM2 = 0.0;
     fErrorFlag |= kErrorFlag_sample;
   } else {
-    fValue = fCalibrationFactor * ( (Double_t(fDiff_Raw) / fNumberOfSamples) - fPedestal );
+    // This is valid data for this channel
+    fValue   = fCalibrationFactor * ( (Double_t(fValue_Raw) / fNumberOfSamples) - fPedestal );
     fValueM2 = 0.0; // second moment is zero for single events
   }
 }
 
+/********************************************************/
 Double_t QwADC18_Channel::GetAverageVolts() const
+/********************************************************/
 {
   return fValue * kADC18_VoltsPerBit / fNumberOfSamples;
 }
 
+/********************************************************/
 void QwADC18_Channel::PrintInfo() const
 {
-  QwMessage<<"***************************************"<<QwLog::endl;
-  QwMessage<<"Subsystem "<<GetSubsystemName()<<QwLog::endl;
-  QwMessage<<"Beam Instrument Type: "<<GetModuleType()<<QwLog::endl;
-  QwMessage<<"QwADC18 channel: "<<GetElementName()<<QwLog::endl;
-  QwMessage<<"fPedestal= "<< fPedestal<<QwLog::endl;
-  QwMessage<<"fCalibrationFactor= "<<fCalibrationFactor<<QwLog::endl;
-  QwMessage<<"fSequenceNumber= "<<fSequenceNumber<<QwLog::endl;
-  QwMessage<<"fNumberOfSamples= "<<fNumberOfSamples<<QwLog::endl;
-  QwMessage<<"fDiff_Raw= "<<fDiff_Raw<<QwLog::endl;
-  QwMessage<<"fPeak_Raw= "<<fPeak_Raw<<QwLog::endl;
-  QwMessage<<"fBase_Raw= "<<fBase_Raw<<QwLog::endl;
-  QwMessage<<"fValue = "<<std::setprecision(8) <<fValue << QwLog::endl;
+  QwMessage << "***************************************" << QwLog::endl;
+  QwMessage << "Subsystem " << GetSubsystemName() << QwLog::endl;
+  QwMessage << "Beam Instrument Type: " << GetModuleType() << QwLog::endl;
+  QwMessage << "QwADC18 channel: " << GetElementName() << QwLog::endl;
+  QwMessage << "fPedestal= " << fPedestal << QwLog::endl;
+  QwMessage << "fCalibrationFactor = " << fCalibrationFactor << QwLog::endl;
+  QwMessage << "fSequenceNumber = " << fSequenceNumber << QwLog::endl;
+  QwMessage << "fNumberOfSamples = " << fNumberOfSamples << QwLog::endl;
+  QwMessage << "fDiff_Raw = " << fDiff_Raw << QwLog::endl;
+  QwMessage << "fPeak_Raw = " << fPeak_Raw << QwLog::endl;
+  QwMessage << "fBase_Raw = " << fBase_Raw << QwLog::endl;
+  QwMessage << "fVaue_Raw = " << fValue_Raw << QwLog::endl;
+  QwMessage << "fValue = " << std::setprecision(8) << fValue << QwLog::endl;
 }
 
+/********************************************************/
 void  QwADC18_Channel::ConstructHistograms(TDirectory *folder, TString &prefix)
 {
   //  If we have defined a subdirectory in the ROOT file, then change into it.
   if (folder != NULL) folder->cd();
 
-  if (IsNameEmpty()){
+  if (IsNameEmpty()) {
     //  This channel is not used, so skip filling the histograms.
   } else {
     //  Now create the histograms.
     if (prefix == TString("asym_")
-       || prefix == TString("diff_")
-       || prefix == TString("yield_"))
-      fDataToSave=kDerived;
+     || prefix == TString("diff_")
+     || prefix == TString("yield_"))
+      fDataToSave = kDerived;
 
-    TString basename, fullname;
-    basename = prefix + GetElementName();
+    TString basename = prefix + GetElementName();
 
-    if(fDataToSave==kRaw)
+    if (fDataToSave == kRaw)
       {
 	fHistograms.resize(2, NULL);
-	size_t index=0;
+	size_t index = 0;
 	fHistograms[index++] = gQwHists.Construct1DHist(basename);
-	fHistograms[index++] = gQwHists.Construct1DHist(basename+Form("_raw"));
+	fHistograms[index++] = gQwHists.Construct1DHist(basename + Form("_raw"));
       }
-    else if(fDataToSave==kDerived)
+    else if(fDataToSave == kDerived)
       {
 	fHistograms.resize(1, NULL);
-	Int_t index=0;
+	size_t index = 0;
 	fHistograms[index++] = gQwHists.Construct1DHist(basename);
       }
     else
@@ -540,33 +680,35 @@ void  QwADC18_Channel::ConstructHistograms(TDirectory *folder, TString &prefix)
   }
 }
 
+/********************************************************/
 void  QwADC18_Channel::FillHistograms()
 {
-  Int_t index=0;
+  size_t index = 0;
 
   if (IsNameEmpty())
     {
       //  This channel is not used, so skip creating the histograms.
     } else
       {
-	if(fDataToSave==kRaw)
+	if (fDataToSave == kRaw)
 	  {
-	    if (fHistograms[index] != NULL && (fErrorFlag)==0)
+	    if (fHistograms[index] != NULL && (fErrorFlag) == 0)
 	      fHistograms[index++]->Fill(GetValue());
-	    if (fHistograms[index] != NULL && (fErrorFlag)==0)
+	    if (fHistograms[index] != NULL && (fErrorFlag) == 0)
 	      fHistograms[index++]->Fill(GetRawValue());
 	  }
-	else if(fDataToSave==kDerived)
+	else if(fDataToSave == kDerived)
 	  {
-	    if (fHistograms[index] != NULL && (fErrorFlag)==0)
+	    if (fHistograms[index] != NULL && (fErrorFlag) == 0)
 	      fHistograms[index++]->Fill(GetValue());
 	  }
     }
 }
 
+/********************************************************/
 void  QwADC18_Channel::ConstructBranchAndVector(TTree *tree, TString &prefix, std::vector<Double_t> &values)
 {
-  if (IsNameEmpty()){
+  if (IsNameEmpty()) {
     //  This channel is not used, so skip setting up the tree.
   } else {
     TString basename = prefix + GetElementName();
@@ -597,9 +739,10 @@ void  QwADC18_Channel::ConstructBranchAndVector(TTree *tree, TString &prefix, st
   }
 }
 
+/********************************************************/
 void  QwADC18_Channel::ConstructBranch(TTree *tree, TString &prefix)
 {
-  if (IsNameEmpty()){
+  if (IsNameEmpty()) {
     //  This channel is not used, so skip setting up the tree.
   } else {
     TString basename = prefix + GetElementName();
@@ -608,6 +751,7 @@ void  QwADC18_Channel::ConstructBranch(TTree *tree, TString &prefix)
 }
 
 
+/********************************************************/
 void  QwADC18_Channel::FillTreeVector(std::vector<Double_t> &values) const
 {
   if (IsNameEmpty()) {
@@ -634,7 +778,7 @@ void  QwADC18_Channel::FillTreeVector(std::vector<Double_t> &values) const
     size_t index = fTreeArrayIndex;
     values[index++] = this->fValue;
     values[index++] = this->fErrorFlag;
-    if(fDataToSave==kRaw){
+    if (fDataToSave == kRaw) {
       values[index++] = this->fValue_Raw;
       values[index++] = this->fDiff_Raw;
       values[index++] = this->fPeak_Raw;
@@ -644,6 +788,7 @@ void  QwADC18_Channel::FillTreeVector(std::vector<Double_t> &values) const
 }
 
 
+/********************************************************/
 QwADC18_Channel& QwADC18_Channel::operator= (const QwADC18_Channel &value)
 {
   if (this == &value) return *this;
@@ -661,6 +806,7 @@ QwADC18_Channel& QwADC18_Channel::operator= (const QwADC18_Channel &value)
   return *this;
 }
 
+/********************************************************/
 void QwADC18_Channel::AssignScaledValue(const QwADC18_Channel &value,
 				 Double_t scale)
 {
@@ -670,73 +816,83 @@ void QwADC18_Channel::AssignScaledValue(const QwADC18_Channel &value,
     this->fValue      = value.fValue * scale;
     this->fValueError = value.fValueError;
     this->fValueM2    = value.fValueM2 * scale * scale;
-    this->fErrorFlag  = value.fErrorFlag;//error code is updated.
+    this->fErrorFlag  = value.fErrorFlag; // error code is updated.
     this->fGoodEventCount = value.fGoodEventCount;
   }
 }
 
-void QwADC18_Channel::AssignValueFrom(const  VQwDataElement* valueptr)
+/********************************************************/
+void QwADC18_Channel::AssignValueFrom(const VQwDataElement* valueptr)
 {
   const QwADC18_Channel* tmpptr;
   tmpptr = dynamic_cast<const QwADC18_Channel*>(valueptr);
-  if (tmpptr!=NULL){
+  if (tmpptr != NULL) {
     *this = *tmpptr;
   } else {
-    TString loc="Standard exception from QwADC18_Channel::AssignValueFrom = "
-      +valueptr->GetElementName()+" is an incompatable type.";
+    TString loc = "Standard exception from QwADC18_Channel::AssignValueFrom = "
+                + valueptr->GetElementName() + " is an incompatable type.";
     throw std::invalid_argument(loc.Data());
   }
 }
-void QwADC18_Channel::AddValueFrom(const  VQwHardwareChannel* valueptr)
+
+/********************************************************/
+void QwADC18_Channel::AddValueFrom(const VQwHardwareChannel* valueptr)
 {
   const QwADC18_Channel* tmpptr;
   tmpptr = dynamic_cast<const QwADC18_Channel*>(valueptr);
-  if (tmpptr!=NULL){
+  if (tmpptr != NULL){
     *this += *tmpptr;
   } else {
-    TString loc="Standard exception from QwADC18_Channel::AddValueFrom = "
-      +valueptr->GetElementName()+" is an incompatable type.";
+    TString loc = "Standard exception from QwADC18_Channel::AddValueFrom = "
+                + valueptr->GetElementName() + " is an incompatable type.";
     throw std::invalid_argument(loc.Data());
   }
 }
-void QwADC18_Channel::SubtractValueFrom(const  VQwHardwareChannel* valueptr)
+
+/********************************************************/
+void QwADC18_Channel::SubtractValueFrom(const VQwHardwareChannel* valueptr)
 {
   const QwADC18_Channel* tmpptr;
   tmpptr = dynamic_cast<const QwADC18_Channel*>(valueptr);
-  if (tmpptr!=NULL){
+  if (tmpptr != NULL){
     *this -= *tmpptr;
   } else {
-    TString loc="Standard exception from QwADC18_Channel::SubtractValueFrom = "
-      +valueptr->GetElementName()+" is an incompatable type.";
+    TString loc = "Standard exception from QwADC18_Channel::SubtractValueFrom = "
+                + valueptr->GetElementName() + " is an incompatable type.";
     throw std::invalid_argument(loc.Data());
   }
 }
+
+/********************************************************/
 void QwADC18_Channel::MultiplyBy(const VQwHardwareChannel* valueptr)
 {
   const QwADC18_Channel* tmpptr;
   tmpptr = dynamic_cast<const QwADC18_Channel*>(valueptr);
-  if (tmpptr!=NULL){
+  if (tmpptr != NULL){
     *this *= *tmpptr;
   } else {
-    TString loc="Standard exception from QwADC18_Channel::MultiplyBy = "
-      +valueptr->GetElementName()+" is an incompatable type.";
+    TString loc = "Standard exception from QwADC18_Channel::MultiplyBy = "
+                + valueptr->GetElementName() + " is an incompatable type.";
     throw std::invalid_argument(loc.Data());
   }
 }
+
+/********************************************************/
 void QwADC18_Channel::DivideBy(const VQwHardwareChannel* valueptr)
 {
   const QwADC18_Channel* tmpptr;
   tmpptr = dynamic_cast<const QwADC18_Channel*>(valueptr);
-  if (tmpptr!=NULL){
+  if (tmpptr != NULL){
     *this /= *tmpptr;
   } else {
-    TString loc="Standard exception from QwADC18_Channel::DivideBy = "
-      +valueptr->GetElementName()+" is an incompatable type.";
+    TString loc = "Standard exception from QwADC18_Channel::DivideBy = "
+                + valueptr->GetElementName() + " is an incompatable type.";
     throw std::invalid_argument(loc.Data());
   }
 }
 
 
+/********************************************************/
 const QwADC18_Channel QwADC18_Channel::operator+ (const QwADC18_Channel &value) const
 {
   QwADC18_Channel result = *this;
@@ -744,16 +900,18 @@ const QwADC18_Channel QwADC18_Channel::operator+ (const QwADC18_Channel &value) 
   return result;
 }
 
+/********************************************************/
 QwADC18_Channel& QwADC18_Channel::operator+= (const QwADC18_Channel &value)
 {
   if (!IsNameEmpty()) {
     this->fValue           += value.fValue;
     this->fValueM2          = 0.0;
-    this->fErrorFlag       |= value.fErrorFlag;//error code is ORed.
+    this->fErrorFlag       |= value.fErrorFlag; // error code is ORed.
   }
   return *this;
 }
 
+/********************************************************/
 const QwADC18_Channel QwADC18_Channel::operator- (const QwADC18_Channel &value) const
 {
   QwADC18_Channel result = *this;
@@ -761,16 +919,18 @@ const QwADC18_Channel QwADC18_Channel::operator- (const QwADC18_Channel &value) 
   return result;
 }
 
+/********************************************************/
 QwADC18_Channel& QwADC18_Channel::operator-= (const QwADC18_Channel &value)
 {
   if (!IsNameEmpty()){
     this->fValue           -= value.fValue;
     this->fValueM2          = 0.0;
-    this->fErrorFlag       |= (value.fErrorFlag);//error code is ORed.
+    this->fErrorFlag       |= (value.fErrorFlag); // error code is ORed.
   }
   return *this;
 }
 
+/********************************************************/
 const QwADC18_Channel QwADC18_Channel::operator* (const QwADC18_Channel &value) const
 {
   QwADC18_Channel result = *this;
@@ -778,92 +938,96 @@ const QwADC18_Channel QwADC18_Channel::operator* (const QwADC18_Channel &value) 
   return result;
 }
 
+/********************************************************/
 QwADC18_Channel& QwADC18_Channel::operator*= (const QwADC18_Channel &value)
 {
   if (!IsNameEmpty()){
     this->fValue     *= value.fValue;
-    this->fDiff_Raw   = 0;
-    this->fPeak_Raw   = 0;
-    this->fBase_Raw   = 0;
     this->fValueM2    = 0.0;
-    this->fErrorFlag |= (value.fErrorFlag);//error code is ORed.
+    this->fErrorFlag |= (value.fErrorFlag); // error code is ORed.
   }
   return *this;
 }
 
+/********************************************************/
 VQwHardwareChannel& QwADC18_Channel::operator+=(const VQwHardwareChannel *source)
 {
   const QwADC18_Channel* tmpptr;
   tmpptr = dynamic_cast<const QwADC18_Channel*>(source);
-  if (tmpptr!=NULL){
+  if (tmpptr != NULL){
     *this += *tmpptr;
   } else {
-    TString loc="Standard exception from QwADC18_Channel::operator+= "
-        +source->GetElementName()+" "
-        +this->GetElementName()+" are not of the same type";
-    throw(std::invalid_argument(loc.Data()));
+    TString loc = "Standard exception from QwADC18_Channel::operator+= "
+                + source->GetElementName() + " "
+                + this->GetElementName() + " are not of the same type";
+    throw std::invalid_argument(loc.Data());
   }
   return *this;
 }
 
+/********************************************************/
 VQwHardwareChannel& QwADC18_Channel::operator-=(const VQwHardwareChannel *source)
 {
   const QwADC18_Channel* tmpptr;
   tmpptr = dynamic_cast<const QwADC18_Channel*>(source);
-  if (tmpptr!=NULL){
+  if (tmpptr != NULL){
     *this -= *tmpptr;
   } else {
-    TString loc="Standard exception from QwADC18_Channel::operator-= "
-        +source->GetElementName()+" "
-        +this->GetElementName()+" are not of the same type";
-    throw(std::invalid_argument(loc.Data()));
+    TString loc = "Standard exception from QwADC18_Channel::operator-= "
+                + source->GetElementName() + " "
+                + this->GetElementName() + " are not of the same type";
+    throw std::invalid_argument(loc.Data());
   }
   return *this;
 }
 
+/********************************************************/
 VQwHardwareChannel& QwADC18_Channel::operator*=(const VQwHardwareChannel *source)
 {
   const QwADC18_Channel* tmpptr;
   tmpptr = dynamic_cast<const QwADC18_Channel*>(source);
-  if (tmpptr!=NULL){
+  if (tmpptr != NULL){
     *this *= *tmpptr;
   } else {
-    TString loc="Standard exception from QwADC18_Channel::operator*= "
-        +source->GetElementName()+" "
-        +this->GetElementName()+" are not of the same type";
-    throw(std::invalid_argument(loc.Data()));
+    TString loc = "Standard exception from QwADC18_Channel::operator*= "
+                + source->GetElementName() + " "
+                + this->GetElementName() + " are not of the same type";
+    throw std::invalid_argument(loc.Data());
   }
   return *this;
 }
 
+/********************************************************/
 VQwHardwareChannel& QwADC18_Channel::operator/=(const VQwHardwareChannel *source)
 {
   const QwADC18_Channel* tmpptr;
   tmpptr = dynamic_cast<const QwADC18_Channel*>(source);
-  if (tmpptr!=NULL){
+  if (tmpptr != NULL){
     *this /= *tmpptr;
   } else {
-    TString loc="Standard exception from QwADC18_Channel::operator/= "
-        +source->GetElementName()+" "
-        +this->GetElementName()+" are not of the same type";
-    throw(std::invalid_argument(loc.Data()));
+    TString loc = "Standard exception from QwADC18_Channel::operator/= "
+                + source->GetElementName() + " "
+                + this->GetElementName() + " are not of the same type";
+    throw std::invalid_argument(loc.Data());
   }
   return *this;
 }
 
-
+/********************************************************/
 void QwADC18_Channel::Sum(const QwADC18_Channel &value1, const QwADC18_Channel &value2)
 {
   *this  = value1;
   *this += value2;
 }
 
+/********************************************************/
 void QwADC18_Channel::Difference(const QwADC18_Channel &value1, const QwADC18_Channel &value2)
 {
   *this  = value1;
   *this -= value2;
 }
 
+/********************************************************/
 void QwADC18_Channel::Ratio(const QwADC18_Channel &numer, const QwADC18_Channel &denom)
 {
   if (!IsNameEmpty()) {
@@ -877,10 +1041,11 @@ void QwADC18_Channel::Ratio(const QwADC18_Channel &numer, const QwADC18_Channel 
 
     // Remaining variables
     fGoodEventCount  = denom.fGoodEventCount;
-    fErrorFlag = (numer.fErrorFlag|denom.fErrorFlag);//error code is ORed.
+    fErrorFlag = (numer.fErrorFlag | denom.fErrorFlag); // error code is ORed.
   }
 }
 
+/********************************************************/
 QwADC18_Channel& QwADC18_Channel::operator/= (const QwADC18_Channel &denom)
 {
   //  In this function, leave the "raw" variables untouched.
@@ -903,7 +1068,7 @@ QwADC18_Channel& QwADC18_Channel::operator/= (const QwADC18_Channel &denom)
       fValue   = 0.0;
       fValueM2 = 0.0;
     } else {
-      QwVerbose << "Attempting to divide by zero in " 
+      QwVerbose << "Attempting to divide by zero in "
                 << GetElementName() << QwLog::endl;
       fValue   = 0.0;
       fValueM2 = 0.0;
@@ -922,7 +1087,6 @@ QwADC18_Channel& QwADC18_Channel::operator/= (const QwADC18_Channel &denom)
 }
 
 //--------------------------------------------------------------------------------------------
-
 void QwADC18_Channel::ArcTan(const QwADC18_Channel &value)
 {
   if (!IsNameEmpty()) {
@@ -1137,13 +1301,13 @@ Bool_t QwADC18_Channel::MatchSequenceNumber(size_t seqnum)
 Bool_t QwADC18_Channel::MatchNumberOfSamples(size_t numsamp)
 {
   Bool_t status = kTRUE;
-  if (!IsNameEmpty()){
-    status = (fNumberOfSamples==numsamp);
+  if (!IsNameEmpty()) {
+    status = (fNumberOfSamples == numsamp);
     if (! status){
       if (bDEBUG)
 	QwError << "QwADC18_Channel::MatchNumberOfSamples:  Channel "
 		<< GetElementName()
-		<< " had fNumberOfSamples==" << fNumberOfSamples
+		<< " had fNumberOfSamples ==" << fNumberOfSamples
 		<< " and was supposed to have " << numsamp
 		<< std::endl;
     }
@@ -1216,7 +1380,7 @@ void  QwADC18_Channel::PrintErrorCounterHead()
   message += Form("%9s", "ZeroHW");
   message += Form("%9s", "EventCut");
   QwMessage << "---------------------------------------------------------------------------------------------" << QwLog::endl;
-  QwMessage << message << QwLog::endl; 
+  QwMessage << message << QwLog::endl;
   QwMessage << "---------------------------------------------------------------------------------------------" << QwLog::endl;
 }
 
@@ -1228,7 +1392,11 @@ void  QwADC18_Channel::PrintErrorCounterTail()
 void  QwADC18_Channel::PrintErrorCounters() const
 {
   TString message;
-  if (fErrorCount_sample || fErrorCount_SW_HW || fErrorCount_Sequence || fErrorCount_SameHW || fErrorCount_ZeroHW || fErrorCount_HWSat || fNumEvtsWithEventCutsRejected) {
+  if (true // FIXME
+   || fErrorCount_sample || fErrorCount_SW_HW || fErrorCount_Sequence
+   || fErrorCount_SameHW || fErrorCount_ZeroHW || fErrorCount_HWSat
+   || fNumEvtsWithEventCutsRejected) {
+
     message  = Form("%30s", GetElementName().Data());
     message += Form("%9d", fErrorCount_HWSat);
     message += Form("%9d", fErrorCount_sample);
@@ -1238,7 +1406,7 @@ void  QwADC18_Channel::PrintErrorCounters() const
     message += Form("%9d", fErrorCount_ZeroHW);
     message += Form("%9d", fNumEvtsWithEventCutsRejected);
 
-    if((fDataToSave == kRaw) && (!kFoundPedestal||!kFoundGain)){
+    if ((fDataToSave == kRaw) && (!kFoundPedestal || !kFoundGain)) {
       message += " >>>>> No Pedestal or Gain in map file";
     }
 
@@ -1251,7 +1419,7 @@ void QwADC18_Channel::ScaledAdd(Double_t scale, const VQwHardwareChannel *value)
   const QwADC18_Channel* input = dynamic_cast<const QwADC18_Channel*>(value);
 
   // follows same steps as += but w/ scaling factor
-  if(input!=NULL && !IsNameEmpty()){
+  if (input != NULL && !IsNameEmpty()) {
     //     QwWarning << "Adding " << input->GetElementName()
     // 	      << " to " << GetElementName()
     // 	      << " with scale factor " << scale
@@ -1265,13 +1433,14 @@ void QwADC18_Channel::ScaledAdd(Double_t scale, const VQwHardwareChannel *value)
     this->fValueM2 = 0.0;
     this->fNumberOfSamples += input->fNumberOfSamples;
     this->fSequenceNumber  =  0;
-    this->fErrorFlag       |= (input->fErrorFlag);   
+    this->fErrorFlag       |= (input->fErrorFlag);
   }
   //   QwWarning << "Finsihed with addition"  << QwLog::endl;
   //   PrintValue();
 }
 
 #ifdef __USE_DATABASE__
+
 void QwADC18_Channel::AddErrEntriesToList(std::vector<QwErrDBInterface> &row_list)
 {
   // TString message;
@@ -1285,16 +1454,14 @@ void QwADC18_Channel::AddErrEntriesToList(std::vector<QwErrDBInterface> &row_lis
   // message += Form("%9d", fNumEvtsWithEventCutsRejected);
   // QwMessage << message << QwLog::endl;
 
-  // kErrorFlag_ADC18_Sat   =0x1;    //ADC18 Saturation Cut. Currently saturation limit is set to +/-8.5V
-  // kErrorFlag_sample     =0x2;    //If sample size mis-matches with the default value in the map file.
-  // kErrorFlag_Sequence   =0x8;    //If the ADC sequence number is not incrementing properly
-  // kErrorFlag_SameHW     =0x10;   //If ADC value keep returning the same value
-  // kErrorFlag_ZeroHW     =0x20;   //Check to see ADC is returning zero
+  // kErrorFlag_ADC18_Sat  = 0x1;    //ADC18 Saturation Cut. Currently saturation limit is set to +/-8.5V
+  // kErrorFlag_sample     = 0x2;    //If sample size mis-matches with the default value in the map file.
+  // kErrorFlag_Sequence   = 0x8;    //If the ADC sequence number is not incrementing properly
+  // kErrorFlag_SameHW     = 0x10;   //If ADC value keep returning the same value
+  // kErrorFlag_ZeroHW     = 0x20;   //Check to see ADC is returning zero
 
-
-
-  // kErrorFlag_EventCut_L =0x40;   //Flagged if lower limit of the event cut has failed
-  // kErrorFlag_EventCut_U =0x80;   //Flagged if upper limit of the event cut has failed
+  // kErrorFlag_EventCut_L = 0x40;   //Flagged if lower limit of the event cut has failed
+  // kErrorFlag_EventCut_U = 0x80;   //Flagged if upper limit of the event cut has failed
   // >>>>>>  fNumEvtsWithEventCutsRejected
 
   // outside QwADC18_Channel
@@ -1322,55 +1489,50 @@ void QwADC18_Channel::AddErrEntriesToList(std::vector<QwErrDBInterface> &row_lis
   // +---------------+------------------------------+
   // 11 rows in set (0.00 sec)
 
-
   QwErrDBInterface row;
   TString name    = GetElementName();
-  
+
   row.Reset();
   row.SetDeviceName(name);
-  row.SetErrorCodeId(1); 
+  row.SetErrorCodeId(1);
   row.SetN(fErrorCount_HWSat);
   row_list.push_back(row);
-  
+
   row.Reset();
   row.SetDeviceName(name);
   row.SetErrorCodeId(2);
   row.SetN(fErrorCount_sample);
   row_list.push_back(row);
-  
+
   row.Reset();
   row.SetDeviceName(name);
   row.SetErrorCodeId(3);
   row.SetN(fErrorCount_SW_HW);
   row_list.push_back(row);
-  
-  
+
   row.Reset();
   row.SetDeviceName(name);
   row.SetErrorCodeId(4);
   row.SetN(fErrorCount_Sequence);
   row_list.push_back(row);
-  
-  
+
   row.Reset();
   row.SetDeviceName(name);
-  row.SetErrorCodeId(5); 
+  row.SetErrorCodeId(5);
   row.SetN(fErrorCount_SameHW);
   row_list.push_back(row);
-  
+
   row.Reset();
   row.SetDeviceName(name);
-  row.SetErrorCodeId(6); 
+  row.SetErrorCodeId(6);
   row.SetN(fErrorCount_ZeroHW);
   row_list.push_back(row);
 
-
   row.Reset();
   row.SetDeviceName(name);
-  row.SetErrorCodeId(7); 
+  row.SetErrorCodeId(7);
   row.SetN(fNumEvtsWithEventCutsRejected);
   row_list.push_back(row);
-  return;
-  
 }
+
 #endif

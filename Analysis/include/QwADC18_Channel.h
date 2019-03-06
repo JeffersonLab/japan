@@ -112,8 +112,13 @@ class QwADC18_Channel: public VQwHardwareChannel, public MQwMockable {
 
   /// Decode the event data from a CODA buffer
   Bool_t IsHeaderWord(UInt_t word) const;
-  Int_t ProcessDataWord(UInt_t word);
+  Bool_t IsDataWord(UInt_t word) const;
+  UInt_t ProcessDACWord(UInt_t word) const;
+  UInt_t ProcessPeakBaseWord(UInt_t word) const;
+  std::pair<Int_t,UInt_t> ProcessDiffDivWord(UInt_t word) const;
   Int_t ProcessEvBuffer(UInt_t* buffer, UInt_t num_words_left, UInt_t index = 0);
+
+  void PrettyPrintBuffer(UInt_t* buffer, UInt_t length, UInt_t wrap = 8) const;
 
   /// Process the event data according to pedestal and calibration factor
   void  ProcessEvent();
@@ -159,12 +164,6 @@ class QwADC18_Channel: public VQwHardwareChannel, public MQwMockable {
   inline void DeaccumulateRunningSum(const QwADC18_Channel& value){
     AccumulateRunningSum(value, -1);
   };
-  /*
-  void DeaccumulateRunningSum(VQwHardwareChannel *value){
-    const QwADC18_Channel *tmp_ptr = dynamic_cast<const QwADC18_Channel*>(value);
-    if (tmp_ptr != NULL) DeaccumulateRunningSum(*tmp_ptr);
-  };
-  */
 
   void CalculateRunningAverage();
 
@@ -238,14 +237,32 @@ class QwADC18_Channel: public VQwHardwareChannel, public MQwMockable {
   QwADC18_Channel& operator/= (const QwADC18_Channel &value);
 
  private:
-  UInt_t   fDiff_Raw;
-  UInt_t   fBase_Raw;
-  UInt_t   fPeak_Raw;
-  UInt_t   fValue_Raw;
 
+  // Connection to header
+  static QwADC18_Channel* fCurrentHeader;
+  const QwADC18_Channel* fHeader;
+
+  // Module status
+  Bool_t fModuleStatus;
+  UInt_t fModuleNumber;
+  UInt_t fModuleCSR;
+
+  // Raw quantities
+  Int_t  fDiff_Raw;
+  UInt_t fDiff_Div;
+  UInt_t fBase_Raw;
+  UInt_t fPeak_Raw;
+  // Diff with a divider must be floating point
+  Double_t fValue_Raw; // = fDiff_Raw / fDiff_Div
+
+  // Processed quantities
   Double_t fValue;
   Double_t fValueM2;
   Double_t fValueError;
+
+  // Previous values
+  UInt_t fBase_Raw_Prev, fBase_Raw_Same_Count;
+  UInt_t fPeak_Raw_Prev, fPeak_Raw_Same_Count;
 
  private:
   static const Bool_t kDEBUG;
@@ -258,6 +275,8 @@ class QwADC18_Channel: public VQwHardwareChannel, public MQwMockable {
 
  private:
   static const UInt_t mask31x;   // = 0x80000000;   // Header bit mask
+  static const UInt_t mask3026x; // = 0x7c000000;   // Module number mask
+  static const UInt_t mask250x;  // = 0x03ffffff;   // Event number mask
   static const UInt_t mask3029x; // = 0x60000000;   // Channel number mask
   static const UInt_t mask2625x; // = 0x06000000;   // Divider value mask
   static const UInt_t mask2422x; // = 0x01c00000;   // Data type mask
@@ -270,9 +289,6 @@ class QwADC18_Channel: public VQwHardwareChannel, public MQwMockable {
 
   /// Pointer to the running sum for this channel
   QwADC18_Channel* fRunningSum;
-
-  /// Pointer to the DAC channel for this channel
-  QwADC18_Channel* fDAC;
 
   /*! \name ADC Calibration                    */
   // @{
@@ -287,32 +303,35 @@ class QwADC18_Channel: public VQwHardwareChannel, public MQwMockable {
 
   size_t fSequenceNumber;      ///< Event sequence number for this channel
   size_t fPreviousSequenceNumber; ///< Previous event sequence number for this channel
-  size_t fNumberOfSamples;     ///< Number of samples  read through the module
-  size_t fNumberOfSamples_map; ///< Number of samples in the expected to  read through the module. This value is set in the QwBeamline map file
+  size_t fNumberOfSamples;     ///< Number of samples read by the module
+  size_t fNumberOfSamples_map; ///< Number of samples expected to be read by the module
 
   // Set of error counters for each HW test.
   Int_t fErrorCount_HWSat;    ///< check to see ADC channel is saturated
   Int_t fErrorCount_sample;   ///< for sample size check
-  Int_t fErrorCount_SW_HW;    ///< HW_sum==SW_sum check
+  Int_t fErrorCount_SW_HW;    ///< HW_diff == SW_diff check
+  Int_t fErrorCount_CSR;      ///< Unexpected CSR
+  Int_t fErrorCount_Bad0;     ///< Bad0 data
+  Int_t fErrorCount_Bad1;     ///< Bad1 data
   Int_t fErrorCount_Sequence; ///< sequence number check
-  Int_t fErrorCount_SameHW;   ///< check to see ADC returning same HW value
-  Int_t fErrorCount_ZeroHW;   ///< check to see ADC returning zero
+  Int_t fErrorCount_SameHW;   ///< check to see ADC peak or base returning same HW value
+  Int_t fErrorCount_ZeroHW;   ///< check to see ADC peak or base returning zero
 
-  Int_t fNumEvtsWithEventCutsRejected; ///< Counts the Event cut rejected events 
+
+  Int_t fNumEvtsWithEventCutsRejected; ///< Counts the Event cut rejected events
 
 
 
   Int_t fADC_Same_NumEvt; ///< Keep track of how many events with same ADC value returned
   Int_t fSequenceNo_Prev; ///< Keep the sequence number of the last event
   Int_t fSequenceNo_Counter; ///< Internal counter to keep track of the sequence number
-  Double_t fPrev_HardwareBlockSum; ///< Previous Module-based sum of the four sub-blocks
 
 
 
   Double_t fSaturationABSLimit;///<absolute value of the ADC18 saturation volt
 
 
-  const static Bool_t bDEBUG=kFALSE;///<debugging display purposes
+  const static Bool_t bDEBUG=kTRUE;///<debugging display purposes
 
   ///<For ADC18 data element trimming uses
   Bool_t bHw_sum;
