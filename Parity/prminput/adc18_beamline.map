@@ -2,6 +2,7 @@ ROC=23
 
 ! ADC18 buffer offset for run 3970 from Bob
 adc18_buffer_offset=36
+adc18_sample_size=1
 
 ! module.type, module.num, module.chan, det.type, det.name
 ADC18, 0, -1, bcm,  DAC0

@@ -2,3 +2,5 @@
 name  = Beamline
 map   = adc18_beamline.map
 param = adc18_beamline_pedestal.map
+eventcut = adc18_beamline_eventcuts.map
+
