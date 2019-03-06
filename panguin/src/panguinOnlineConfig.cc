@@ -5,6 +5,8 @@
 #include <list>
 #include <TMath.h>
 #include <unistd.h>
+#include <dirent.h>
+
 //#define DEBUG
 //#define DEBUG2
 //#define NOISY
@@ -516,26 +518,43 @@ void OnlineConfig::OverrideRootFile(UInt_t runnumber)
     protorootfile.ReplaceAll("XXXXX",runnostr);
     rootfilename = protorootfile;
   } else {
-    string fnmRoot="/adaq1/work1/apar/japanOutput/";
+    string fnmRoot="/adaq1/work1/apar/japanOutput";
     if(getenv("QW_ROOTFILES"))
       fnmRoot = getenv("QW_ROOTFILES");
     else
       cout<<"QW_ROOTFILES env variable was not found going with default: "<< fnmRoot<<endl;
 
     cout << " Looking for file with runnumber "<<runnumber<<" in "<<fnmRoot<<endl;
+
+    DIR *dirSearch;
+    struct dirent *entSearch;
     const string daqConfigs[3] = {"CH","INJ","ALL"};
     int found=0;
-    for(int i=0;i<3;i++){
-      rootfilename = Form("%sprex%s_%d.root",fnmRoot.c_str(),daqConfigs[i].c_str(),runnumber);
-      if( access( rootfilename.Data(), F_OK ) != -1 ){
-	found++;
-	break;
+    string partialname = "";
+    if ((dirSearch = opendir (fnmRoot.c_str())) != NULL) {
+      while ((entSearch = readdir (dirSearch)) != NULL) {
+	for(int i=0;i<3;i++){
+	  partialname = Form("prex%s_%d.root",daqConfigs[i].c_str(),runnumber);
+	  if(fMonitor)
+	    partialname = Form("prex%s_%d.adaq3",daqConfigs[i].c_str(),runnumber);
+
+	  std::string fullname = entSearch->d_name;
+	  if(fullname.find(partialname) != std::string::npos){
+	    rootfilename = fnmRoot + "/" + fullname;
+	    found++;
+	  }
+	}
+	if(found) break;
       }
+      closedir (dirSearch);
     }
+
     if(found)
       cout<<"\t found file "<< rootfilename<<endl;
-    else
-      cout<<"double check your configurations and files. Quitting"<<endl; //FIXME actually find a way to gracefully quit
+    else{
+      cout<<"double check your configurations and files. Quitting"<<endl;
+      exit(1);
+    }
   }
 }
 
