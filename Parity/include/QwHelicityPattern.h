@@ -54,6 +54,11 @@ class QwHelicityPattern {
   void  LoadEventData(QwSubsystemArrayParity &event);
   Bool_t HasDataLoaded() const { return fIsDataLoaded; };
 
+  Bool_t PairAsymmetryIsGood();
+  Bool_t NextPairIsComplete();
+  void   CalculatePairAsymmetry();
+  void   ClearPairData(){fPairYield.ClearEventData();fPairDifference.ClearEventData(); fPairAsymmetry.ClearEventData();}
+
   Bool_t IsCompletePattern() const;
 
   Bool_t IsEndOfBurst(){
@@ -112,6 +117,11 @@ class QwHelicityPattern {
   QwSubsystemArrayParity& GetBurstYield()      { return fBurstYield; };
   QwSubsystemArrayParity& GetBurstDifference() { return fBurstDifference; };
   QwSubsystemArrayParity& GetBurstAsymmetry()  { return fBurstAsymmetry; };
+
+  // wish these could be const references, but ConstructBranchAndVector messes with object
+  QwSubsystemArrayParity& GetPairYield()      { return fPairYield; };
+  QwSubsystemArrayParity& GetPairDifference() { return fPairDifference; };
+  QwSubsystemArrayParity& GetPairAsymmetry()  { return fPairAsymmetry; };
 
   void  AccumulateBurstSum();
   void  AccumulateRunningBurstSum();
@@ -201,6 +211,10 @@ class QwHelicityPattern {
   QwSubsystemArrayParity fAsymmetry1;
   QwSubsystemArrayParity fAsymmetry2;
 
+  QwSubsystemArrayParity fPairYield;
+  QwSubsystemArrayParity fPairDifference;
+  QwSubsystemArrayParity fPairAsymmetry;
+
   // Burst sum/difference of the yield and asymmetry
   Int_t fBurstLength;
   Bool_t fEnableBurstSum;
@@ -225,6 +239,9 @@ class QwHelicityPattern {
   Long_t fLastWindowNumber;
   Long_t fLastPatternNumber;
   Int_t  fLastPhaseNumber;
+
+  size_t  fNextPair;
+  Bool_t fPairIsGood;
 
   Bool_t fPatternIsGood;
 

@@ -88,6 +88,9 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
     fAsymmetry2(event),
     fEnableBurstSum(kFALSE),      
     fPrintBurstSum(kFALSE),
+    fPairYield(event), 
+    fPairDifference(event), 
+    fPairAsymmetry(event),
     fBurstYield(event), 
     fBurstDifference(event), 
     fBurstAsymmetry(event),
@@ -104,6 +107,7 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
     fLastWindowNumber(0),
     fLastPatternNumber(0),
     fLastPhaseNumber(0),
+    fNextPair(0),
     correlator(gQwOptions,*this, run),
     regress_from_LRB(gQwOptions,*this, run),
     regression(gQwOptions,*this),
@@ -183,6 +187,9 @@ QwHelicityPattern::QwHelicityPattern(const QwHelicityPattern &source)
     fPrintRunningSum(source.fPrintRunningSum),
     fEnableDifference(source.fEnableDifference),
     fDifference(source.fDifference),
+    fPairYield(source.fYield), 
+    fPairDifference(source.fYield),
+    fPairAsymmetry(source.fYield),
     fBurstYield(source.fYield), 
     fBurstDifference(source.fYield),
     fBurstAsymmetry(source.fYield),
@@ -192,6 +199,7 @@ QwHelicityPattern::QwHelicityPattern(const QwHelicityPattern &source)
     fAlternateDiff(source.fYield),
     fPositiveHelicitySum(source.fYield), 
     fNegativeHelicitySum(source.fYield),
+    fNextPair(source.fNextPair),
     correlator(gQwOptions,*this, 999999),
     regress_from_LRB(gQwOptions,*this,999999),
     regression(gQwOptions,*this),
@@ -304,6 +312,94 @@ void QwHelicityPattern::LoadEventData(QwSubsystemArrayParity &event)
   }
   return;
 }
+
+Bool_t QwHelicityPattern::PairAsymmetryIsGood()
+{
+  Bool_t complete_and_good = kFALSE;
+  if (NextPairIsComplete()){
+    CalculatePairAsymmetry();  /*  Uses the same calculational variables as the pattern */
+    complete_and_good = fPairIsGood;
+  }
+  return complete_and_good;
+};
+
+Bool_t QwHelicityPattern::NextPairIsComplete()
+{
+  Bool_t filled=kFALSE;
+  // Potentially this function could check all possible pairs to see which are complete, if the initial
+  // fNextPair is not complete.  The function must end with fNextPair equal to the index of the lowest pair
+  // that is complete.
+  if (fNextPair<fPatternSize/2){
+    size_t firstevt  = fNextPair*2;
+    size_t secondevt = firstevt + 1;
+    filled = fEventLoaded.at(firstevt) && fEventLoaded.at(secondevt);
+  }
+  return (filled);
+}
+
+void  QwHelicityPattern::CalculatePairAsymmetry()
+{
+
+  Bool_t localdebug=kFALSE;
+
+  if(localdebug)  std::cout<<"Entering QwHelicityPattern::CalculateAsymmetry \n";
+
+  Int_t plushel  = 1;
+  Int_t minushel = 0;
+  Int_t checkhel = 0;
+
+  if (fNextPair<fPatternSize/2){
+    size_t firstevt  = fNextPair*2;
+    size_t secondevt = firstevt + 1;
+    fPairIsGood = kTRUE;
+    fNextPair++;
+
+    fPairYield.Sum(fEvents.at(firstevt), fEvents.at(secondevt));
+    fPairYield.Scale(0.5);
+  
+    if (fIgnoreHelicity){
+      fPairDifference.Difference(fEvents.at(firstevt), fEvents.at(secondevt));
+      fPairDifference.Scale(0.5);
+    } else {
+      if (fHelicity[firstevt] == plushel && fHelicity[firstevt]!=fHelicity[secondevt]) {
+	fPairDifference.Difference(fEvents.at(firstevt), fEvents.at(secondevt));
+	fPairDifference.Scale(0.5);
+      } else if (fHelicity[firstevt] == minushel && fHelicity[firstevt]!=fHelicity[secondevt]) {
+	fPairDifference.Difference(fEvents.at(secondevt),fEvents.at(firstevt));
+	fPairDifference.Scale(0.5);
+      } else {
+	QwDebug << "QwHelicityPattern::CalculatePairAsymmetry:  "
+		<< "Helicity should be "<<plushel<<" or "<<minushel
+		<<" but is "<< fHelicity[firstevt] << " and " << fHelicity[secondevt]
+		<< "; Asymmetry computation aborted!"<<QwLog::endl;
+	fPairIsGood = kFALSE;
+	// there is a different number of plus and minus helicity window.
+	QwError<<" QwHelicityPattern::CalculateAsymmetry == \n"
+	       <<" you do not have the same number of positive and negative \n"
+	       <<" impossible to compute assymetry \n"
+	       <<" dropping every thing -- pattern number ="<<fCurrentPatternNumber<<QwLog::endl;
+	// This is an unknown helicity event.
+      }
+    }
+  }
+
+  if (fPairIsGood){
+    if (! fIgnoreHelicity){
+      //      // Update the blinder if conditions have changed
+      //      UpdateBlinder(fPairYield);
+      //  Only blind the difference if we're using the real helicity.
+      fBlinder.Blind(fPairDifference,fPairYield);
+      //  Update the global error code in fDifference, and use it
+      //  to update the errors in fYield, in case blinder errors
+      //  can propagate to the global error.
+      fPairDifference.UpdateErrorFlag();
+      fPairYield.UpdateErrorFlag(fPairDifference);
+    }
+    fPairAsymmetry.Ratio(fPairDifference,fPairYield);
+    //    fAsymmetry.IncrementErrorCounters();
+  }
+}
+
 
 Bool_t QwHelicityPattern::IsGoodAsymmetry()
 {
@@ -547,6 +643,9 @@ void QwHelicityPattern::ClearEventData()
   fNegativeHelicitySum.ClearEventData();
   fDifference.ClearEventData();
   fAlternateDiff.ClearEventData();
+
+  fPairIsGood = kFALSE;
+  fNextPair   = 0;
 
   fPatternIsGood = kFALSE;
   SetDataLoaded(kFALSE);
