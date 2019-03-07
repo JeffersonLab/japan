@@ -880,7 +880,8 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
     } else if (errcode!=0) {
       if(!command[3].IsNull()) {
 	TH1* thathist = (TH1*)hobj;
-	thathist->SetTitle(command[3]);
+	TString myMD5 = command[3].MD5();
+	thathist->SetNameTitle(myMD5,command[3]);
       }
     } else {
       BadDraw("Empty Histogram");
