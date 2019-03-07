@@ -304,7 +304,9 @@ void OnlineGUI::DoDraw()
   // Draw the histograms.
   for(UInt_t i=0; i<draw_count; i++) {    
     drawcommand = fConfig->GetDrawCommand(current_page,i);
-    fCanvas->cd(i+1);
+	// Create a TVirtualPad to allow for later updating after applying user-set 
+	// title - doesn't work for all sub-pads - Cameron 3/6/2019
+	//TVirtualPad *pd = fCanvas->cd(i+1);
     if (drawcommand[0] == "macro") {
       MacroDraw(drawcommand);
     } else if (IsHistogram(drawcommand[0])) {
@@ -312,6 +314,8 @@ void OnlineGUI::DoDraw()
     } else {
       TreeDraw(drawcommand);
     }
+	// Pad update only works on first pad in panguin page - Cameron 3/6/2019
+	//pd->Update(); 
   }
       
   fCanvas->cd();
@@ -881,6 +885,9 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
       if(!command[3].IsNull()) {
 	TH1* thathist = (TH1*)hobj;
 	thathist->SetTitle(command[3]);
+//  Update the canvas to print the user-set title - doesn't work this way - Cameron 3/6/2019
+//	thathist->Update();
+//	fCanvas->Update();
       }
     } else {
       BadDraw("Empty Histogram");
