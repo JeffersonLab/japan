@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 #include "TTree.h"
-#include "japantypes.hh"
 
 void exampleMacro2(std::string title, std::string draws, std::string cuts,int binsx, double binlowx, double binhighx, int binsy, double binlowy, double binhighy){
   gStyle->SetOptStat(0);
