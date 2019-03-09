@@ -439,20 +439,25 @@ vector <TString> OnlineConfig::GetDrawCommand(UInt_t page, UInt_t nCommand)
 	TString word = sConfFile[index][j];
 	if( (word.BeginsWith("\"")) && (word.EndsWith("\"")) ) {
 	  title = word.ReplaceAll("\"","");
-	  out_command[3] = title;
 	  i = j;
 	  break;
 	} else if(word.BeginsWith("\"")) {
 	  title = word.ReplaceAll("\"","");
 	} else if(word.EndsWith("\"")) {
 	  title += " " + word.ReplaceAll("\"","");
-	  out_command[3] = title;
 	  i = j;
 	  break;
+	} else if (title.Length()==0){
+	  title = word;
 	} else {
+	  //  This case uses neither "i = j;" or "break;", because
+	  //  we want to be able to include all the words in the title.
+	  //  The title will end before the end of the line only if
+	  //  it is delimited by quotes.
 	  title += " " + word;
 	}
       }
+      out_command[3] = title;
     } else if(sConfFile[index][i]=="-tree") {
       out_command[4] = sConfFile[index][i+1];
       i = i+1;

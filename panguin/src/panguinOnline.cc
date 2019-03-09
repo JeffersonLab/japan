@@ -21,6 +21,7 @@
 #include <TText.h>
 #include "TPaveText.h"
 #include <TApplication.h>
+#include "TRegexp.h"
 //#define DEBUG
 //#define DEBUG2
 //#define NOISY
@@ -845,6 +846,17 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
 
   TString var = command[0];
 
+  //  Check to see if we're projecting to a specific histogram
+  TString histoname = command[0](TRegexp(">>.+(?"));
+  if (histoname.Length()>0){
+    histoname.Remove(0,2);
+    Int_t bracketindex = histoname.First("(");
+    if (bracketindex>0) histoname.Remove(bracketindex);
+    //    std::cout << histoname << " "<< command[0](TRegexp(">>.+(?")) <<std::endl;
+  } else {
+    histoname = "htemp";
+  }
+  
   // Combine the cuts (definecuts and specific cuts)
   TCut cut = "";
   TString tempCut;
@@ -874,11 +886,11 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
   if (iTree <= fRootTree.size() ) {
     errcode = fRootTree[iTree]->Draw(var,cut,drawopt,
 				     1000000000,fTreeEntries[iTree]);
-    TObject *hobj = (TObject*)gROOT->FindObject("htemp");
+    TObject *hobj = (TObject*)gROOT->FindObject(histoname);
     if(errcode==-1) {
       BadDraw(var+" not found");
     } else if (errcode!=0) {
-      if(!command[3].IsNull()) {
+      if(!command[3].IsNull() && hobj != NULL) {
 	TH1* thathist = (TH1*)hobj;
 	TString myMD5 = command[3].MD5();
 	thathist->SetNameTitle(myMD5,command[3]);
