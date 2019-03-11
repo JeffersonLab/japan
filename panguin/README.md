@@ -27,6 +27,12 @@ This will read in the configuration files and execute the commands within.
 ```
   This can(should) be used in conjuction with the previous options. It will use your config file (or the default) to print a file called summaryplots.pdf with plots generated from the rootfile it reads. 
 
+### V option
+```
+./build/panguin -v N
+```
+ This will run with a verbosity level of N (higher is more noisy).
+
 
 ## Online monitor
 With the **watchfile** option enabled the GUI will reload the file every 30 s and will redraw the current canvas (for default usage please look at defaultOnline.cfg).
