@@ -9,7 +9,7 @@ using namespace std;
 
 clock_t tStart;
 void Usage();
-void online(TString type="standard",UInt_t run=0,Bool_t printonly=kFALSE);
+void online(TString type="standard",UInt_t run=0,Bool_t printonly=kFALSE, int verbosity=0);
 
 int main(int argc, char **argv){
   tStart = clock();
@@ -18,6 +18,7 @@ int main(int argc, char **argv){
   UInt_t run=0;
   Bool_t printonly=kFALSE;
   Bool_t showedUsage=kFALSE;
+  int verbosity(0);
 
   TApplication theApp("App",&argc,argv,NULL,-1);
 
@@ -34,6 +35,8 @@ int main(int argc, char **argv){
       run = atoi(theApp.Argv(++i));
       cout << " Runnumber: "
 	   << run << endl;
+    } else if (sArg=="-v") {
+      verbosity = atoi(theApp.Argv(++i));
     } else if (sArg=="-P") {
       printonly = kTRUE;
       cout <<  " PrintOnly" << endl;
@@ -47,11 +50,12 @@ int main(int argc, char **argv){
       showedUsage=kTRUE;
     }
   }
+  cout << "Verbosity level set to "<<verbosity<<endl;
 
-  cout<<"Finixhed processing arg. Time passed: "
+  cout<<"Finished processing arg. Time passed: "
       <<(double) ((clock() - tStart)/CLOCKS_PER_SEC)<<" s!"<<endl;
 
-  online(type,run,printonly);
+  online(type,run,printonly,verbosity);
   theApp.Run();
 
   cout<<"Done. Time passed: "
@@ -61,7 +65,7 @@ int main(int argc, char **argv){
 }
 
 
-void online(TString type,UInt_t run,Bool_t printonly){
+void online(TString type,UInt_t run,Bool_t printonly, int ver){
 
   if(printonly) {
     if(!gROOT->IsBatch()) {
@@ -73,7 +77,7 @@ void online(TString type,UInt_t run,Bool_t printonly){
       <<(double) ((clock() - tStart)/CLOCKS_PER_SEC)<<" s!"<<endl;
 
   OnlineConfig *fconfig = new OnlineConfig(type);
-
+  fconfig->SetVerbosity(ver);
   if(!fconfig->ParseConfig()) {
     gApplication->Terminate();
   }
@@ -83,7 +87,7 @@ void online(TString type,UInt_t run,Bool_t printonly){
   cout<<"Finished processing cfg. Init OnlineGUI. Time passed: "
       <<(double) ((clock() - tStart)/CLOCKS_PER_SEC)<<" s!"<<endl;
 
-  new OnlineGUI(*fconfig,printonly);
+  new OnlineGUI(*fconfig,printonly,ver);
 
   cout<<"Finished init OnlineGUI. Time passed: "
       <<(double) ((clock() - tStart)/CLOCKS_PER_SEC)<<" s!"<<endl;
@@ -95,6 +99,7 @@ void Usage(){
   cerr << "Options:" << endl;
   cerr << "  -r : runnumber" << endl;
   cerr << "  -f : configuration file" << endl;
+  cerr << "  -v : verbosity level (>0)" << endl;
   cerr << "  -P : Only Print Summary Plots" << endl;
   cerr << endl;
 }
