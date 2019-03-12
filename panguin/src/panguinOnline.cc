@@ -42,12 +42,14 @@ OnlineGUI::OnlineGUI(OnlineConfig& config, Bool_t printonly=0, int ver=0):
   // Constructor.  Get the config pointer, and make the GUI.
 
   fConfig = &config;
-  int bin2Dx(50), bin2Dy(50);
+  int bin2Dx(0), bin2Dy(0);
   fConfig->Get2DnumberBins(bin2Dx,bin2Dy);    
-  gEnv->SetValue("Hist.Binning.2D.x",bin2Dx);
-  gEnv->SetValue("Hist.Binning.2D.y",bin2Dy);
-  if(fVerbosity>1){
-    cout<<"Set 2D default bins to x, y: "<<bin2Dx<<", "<<bin2Dy<<endl;
+  if(bin2Dx>0 && bin2Dy>0){
+    gEnv->SetValue("Hist.Binning.2D.x",bin2Dx);
+    gEnv->SetValue("Hist.Binning.2D.y",bin2Dy);
+    if(fVerbosity>1){
+      cout<<"Set 2D default bins to x, y: "<<bin2Dx<<", "<<bin2Dy<<endl;
+    }
   }
 
   if(printonly) {
@@ -548,29 +550,18 @@ UInt_t OnlineGUI::GetTreeIndex(TString var) {
     var = first_var;
   }
 
-#ifdef OLD_GETTREEINDEX
-  TObjArray *branchList;
-
-  for(UInt_t i=0; i<fRootTree.size(); i++) {
-    branchList = fRootTree[i]->GetListOfBranches();
-    TIter next(branchList);
-    TBranch *brc;
-
-    while((brc=(TBranch*)next())!=0) {
-      TString found = brc->GetName();
-      if (found == var) {
-	return i;
-      }
-    }
-  }
-#else
+  if(fVerbosity>=3)
+    cout<<__PRETTY_FUNCTION__<<"\t"<<__LINE__<<endl
+	<<"\t looking for variable: "<<var<<endl;
   for(UInt_t iTree=0; iTree<treeVars.size(); iTree++) {
     for(UInt_t ivar=0; ivar<treeVars[iTree].size(); ivar++) {
+      if(fVerbosity>=3)
+	cout<<"Checking tree "<<iTree<<" name:"<<fRootTree[iTree]->GetName()
+	    <<" \t var "<<ivar<<" >> "<<treeVars[iTree][ivar]<<endl;
       if(var == treeVars[iTree][ivar]) return iTree;
     }
   }
 
-#endif
   return fRootTree.size()+1;
 }
 
@@ -870,23 +861,33 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
   UInt_t iTree;
   if(command[4].IsNull()) {
     iTree = GetTreeIndex(var);
+    if(fVerbosity>=2)
+      cout<<"got index from variable "<<iTree<<endl;
   } else {
     iTree = GetTreeIndexFromName(command[4]);
+    if(fVerbosity>=2)
+      cout<<"got index from command "<<iTree<<endl;
   }
   TString drawopt = command[2];
   Int_t errcode=0;
   if(drawopt.IsNull() && var.Contains(":")) drawopt = "box";
   if(drawopt=="scat") drawopt = "";
   if (iTree <= fRootTree.size() ) {
-    errcode = fRootTree[iTree]->Draw(var,cut,drawopt,
-    				     1000000000,fTreeEntries[iTree]);
-    TObject *hobj = (TObject*)gROOT->FindObject("htemp");
-
-    if(fVerbosity>1){
+    if(fVerbosity>=1){
       cout<<__PRETTY_FUNCTION__<<"\t"<<__LINE__<<endl;
       cout<<command[0]<<"\t"<<command[1]<<"\t"<<command[2]<<"\t"<<command[3]
 	  <<"\t"<<command[4]<<endl;
+      if(fVerbosity>=2)
+	cout<<"\tProcessing from tree: "<<iTree<<"\t"<<fRootTree[iTree]->GetTitle()<<"\t"
+	    <<fRootTree[iTree]->GetName()<<endl;
     }
+
+    errcode = fRootTree[iTree]->Draw(var,cut,drawopt);
+    				     //1000000000,fTreeEntries[iTree]);
+    if(fVerbosity>=3)
+      cout<<"Finished drawing with error code "<<errcode<<endl;
+    TObject *hobj = (TObject*)gROOT->FindObject("htemp");
+
     if(errcode==-1) {
       BadDraw(var+" not found");
     } else if (errcode!=0) {
