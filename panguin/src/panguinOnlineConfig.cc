@@ -10,6 +10,7 @@
 using namespace std;
 
 OnlineConfig::OnlineConfig() 
+  :hist2D_nBinsX(0),hist2D_nBinsY(0)
 {
   // Constructor.  Without an argument, will use default "standard" config
   fMonitor = kFALSE;
@@ -18,7 +19,8 @@ OnlineConfig::OnlineConfig()
 }
 
 OnlineConfig::OnlineConfig(TString anatype): 
-  confFileName(anatype),fVerbosity(0)
+  confFileName(anatype),fVerbosity(0),
+  hist2D_nBinsX(0),hist2D_nBinsY(0)
 {
   // Constructor.  Takes the config anatype as the only argument.
   //  Loads up the configuration file, and stores it's contents for access.
