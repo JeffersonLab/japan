@@ -22,9 +22,6 @@
 #include "TPaveText.h"
 #include <TApplication.h>
 #include "TRegexp.h"
-//#define DEBUG
-//#define DEBUG2
-//#define NOISY
 //#define OLDTIMERUPDATE
 
 using namespace std;
@@ -36,10 +33,11 @@ using namespace std;
 //
 //
 
-OnlineGUI::OnlineGUI(OnlineConfig& config, Bool_t printonly):
+OnlineGUI::OnlineGUI(OnlineConfig& config, Bool_t printonly=0, int ver=0):
   runNumber(0),
   timer(0),
-  fFileAlive(kFALSE)
+  fFileAlive(kFALSE),
+  fVerbosity(ver)
 {
   // Constructor.  Get the config pointer, and make the GUI.
 
@@ -239,9 +237,8 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
   // Map main frame
   fMain->MapWindow();
 
-#ifdef DEBUG
-  fMain->Print();
-#endif
+  if(fVerbosity>=1)
+    fMain->Print();
 
   if(fFileAlive) DoDraw();
 
@@ -292,10 +289,9 @@ void OnlineGUI::DoDraw()
 //   Int_t dim = Int_t(round(sqrt(double(draw_count))));
   pair <UInt_t,UInt_t> dim = fConfig->GetPageDim(current_page);
 
-#ifdef DEBUG
-  cout << "Dimensions: " << dim.first << "X" 
-       << dim.second << endl;
-#endif  
+  if(fVerbosity>=1)
+    cout << "Dimensions: " << dim.first << "X" 
+	 << dim.second << endl;
 
   // Create a nice clean canvas.
   fCanvas->Clear();
@@ -392,10 +388,10 @@ Bool_t OnlineGUI::IsHistogram(TString objectname)
 
   for(UInt_t i=0; i<fileObjects.size(); i++) {
     if (fileObjects[i].first.Contains(objectname)) {
-#ifdef DEBUG2
-      cout << fileObjects[i].first << "      "
-	   << fileObjects[i].second << endl;
-#endif
+      if(fVerbosity>=2)
+	cout << fileObjects[i].first << "      "
+	     << fileObjects[i].second << endl;
+
       if(fileObjects[i].second.Contains("TH"))
 	return kTRUE;
     }
@@ -410,9 +406,9 @@ void OnlineGUI::GetFileObjects()
   // Utility to find all of the objects within a File (TTree, TH1F, etc).
   //  The pair stored in the vector is <ObjName, ObjType>
   //  If there's no good keys.. do nothing.
-#ifdef DEBUG
-  cout << "Keys = " << fRootFile->ReadKeys() << endl;
-#endif
+  if(fVerbosity>=1)
+    cout << "Keys = " << fRootFile->ReadKeys() << endl;
+
   if(fRootFile->ReadKeys()==0) {
     fUpdate = kFALSE;
 //     delete fRootFile;
@@ -426,14 +422,15 @@ void OnlineGUI::GetFileObjects()
 
   // Do the search
   while((key=(TKey*)next())!=0) {
-#ifdef DEBUG
-    cout << "Key = " << key << endl;    
-#endif
+    if(fVerbosity>=1)
+      cout << "Key = " << key << endl;    
+
     TString objname = key->GetName();
     TString objtype = key->GetClassName();
-#ifdef DEBUG
-    cout << objname << " " << objtype << endl;
-#endif
+
+    if(fVerbosity>=1)
+      cout << objname << " " << objtype << endl;
+
     fileObjects.push_back(make_pair(objname,objtype));
   }
   fUpdate = kTRUE;
@@ -461,14 +458,15 @@ void OnlineGUI::GetTreeVars()
     }
     treeVars.push_back(currentTree);
   }
-#ifdef DEBUG2
-  for(UInt_t iTree=0; iTree<treeVars.size(); iTree++) {
-  cout << "In Tree " << iTree << ": " << endl;
-    for(UInt_t i=0; i<treeVars[iTree].size(); i++) {
-      cout << treeVars[iTree][i] << endl;
+
+  if(fVerbosity>=2){
+    for(UInt_t iTree=0; iTree<treeVars.size(); iTree++) {
+      cout << "In Tree " << iTree << ": " << endl;
+      for(UInt_t i=0; i<treeVars[iTree].size(); i++) {
+	cout << treeVars[iTree][i] << endl;
+      }
     }
   }
-#endif
 }
 
 
@@ -479,10 +477,11 @@ void OnlineGUI::GetRootTree() {
 
   list <TString> found;
   for(UInt_t i=0; i<fileObjects.size(); i++) {
-#ifdef DEBUG2
-    cout << "Object = " << fileObjects[i].second <<
-      "     Name = " << fileObjects[i].first << endl;
-#endif
+    
+    if(fVerbosity>=2)
+      cout << "Object = " << fileObjects[i].second <<
+	"     Name = " << fileObjects[i].first << endl;
+
     if(fileObjects[i].second.Contains("TTree"))
        found.push_back(fileObjects[i].first);
   }
@@ -611,9 +610,8 @@ void OnlineGUI::DoDrawClear() {
 void OnlineGUI::TimerUpdate() {
   // Called periodically by the timer, if "watchfile" is indicated
   // in the config.  Reloads the ROOT file, and updates the current page.
-#ifdef DEBUG
-  cout << "Update Now" << endl;
-#endif
+  if(fVerbosity>=1)
+    cout << "Update Now" << endl;
 
 #ifdef OLDTIMERUPDATE
   fRootFile = new TFile(fConfig->GetRootFile(),"READ");
@@ -881,19 +879,24 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
   }
   TString drawopt = command[2];
   Int_t errcode=0;
-  if(drawopt.IsNull() && var.Contains(":")) drawopt = "box";
-  if(drawopt=="scat") drawopt = "";
   if (iTree <= fRootTree.size() ) {
     errcode = fRootTree[iTree]->Draw(var,cut,drawopt,
 				     1000000000,fTreeEntries[iTree]);
     TObject *hobj = (TObject*)gROOT->FindObject(histoname);
+
+    if(fVerbosity>1){
+      cout<<__PRETTY_FUNCTION__<<"\t"<<__LINE__<<endl;
+      cout<<command[0]<<"\t"<<command[1]<<"\t"<<command[2]<<"\t"<<command[3]
+	  <<"\t"<<command[4]<<endl;
+    }
     if(errcode==-1) {
       BadDraw(var+" not found");
     } else if (errcode!=0) {
-      if(!command[3].IsNull() && hobj != NULL) {
-	TH1* thathist = (TH1*)hobj;
-	TString myMD5 = command[3].MD5();
-	thathist->SetNameTitle(myMD5,command[3]);
+      if(!command[3].IsNull()) {
+	      TH1* thathist = (TH1*)hobj->Clone(command[3].MD5());
+	      thathist->SetTitle(command[3]);
+	      thathist->DrawCopy();
+	      delete thathist;
       }
     } else {
       BadDraw("Empty Histogram");

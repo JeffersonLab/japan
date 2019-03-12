@@ -7,33 +7,22 @@
 #include <unistd.h>
 #include <dirent.h>
 
-//#define DEBUG
-//#define DEBUG2
-//#define NOISY
-//#define OLDTIMERUPDATE
-
 using namespace std;
-
-///////////////////////////////////////////////////////////////////
-//  Class: OnlineConfig
-//
-//     Utility class that reads in a text file (.cfg) and
-//     stores it's contents.
-//
 
 OnlineConfig::OnlineConfig() 
 {
   // Constructor.  Without an argument, will use default "standard" config
   fMonitor = kFALSE;
+  fVerbosity = 0;
   OnlineConfig("standard");
 }
 
-OnlineConfig::OnlineConfig(TString anatype) 
+OnlineConfig::OnlineConfig(TString anatype): 
+  confFileName(anatype),fVerbosity(0)
 {
   // Constructor.  Takes the config anatype as the only argument.
   //  Loads up the configuration file, and stores it's contents for access.
   
-  confFileName = anatype;
   //confFileName += ".cfg";//Not sure what this would be needed DELETEME cg
   fMonitor = kFALSE;
   fFoundCfg = kFALSE;
@@ -96,15 +85,15 @@ void OnlineConfig::ParseFile()
     sConfFile.push_back(strvect);
   }
 
-#ifdef DEBUG
-  cout << "OnlineConfig::ParseFile()\n";
-  for(UInt_t ii=0; ii<sConfFile.size(); ii++) {
-    cout << "Line " << ii << endl << "  ";
-    for(UInt_t jj=0; jj<sConfFile[ii].size(); jj++) 
-      cout << sConfFile[ii][jj] << " ";
-    cout << endl;
+  if(fVerbosity>=1){
+    cout << "OnlineConfig::ParseFile()\n";
+    for(UInt_t ii=0; ii<sConfFile.size(); ii++) {
+      cout << "Line " << ii << endl << "  ";
+      for(UInt_t jj=0; jj<sConfFile[ii].size(); jj++) 
+	cout << sConfFile[ii][jj] << " ";
+      cout << endl;
+    }
   }
-#endif
 
   cout << "     " << sConfFile.size() << " lines read from " 
        << confFileName << endl;
@@ -227,14 +216,14 @@ Bool_t OnlineConfig::ParseConfig()
 
   }
 
-#ifdef NOISY
-  cout << "OnlineConfig::ParseConfig()\n";
-  for(UInt_t i=0; i<GetPageCount(); i++) {
-    cout << "Page " << i << " (" << GetPageTitle(i) << ")"
-	 << " will draw " << GetDrawCount(i) 
-	 << " histograms." << endl;
+  if(fVerbosity>=3){
+    cout << "OnlineConfig::ParseConfig()\n";
+    for(UInt_t i=0; i<GetPageCount(); i++) {
+      cout << "Page " << i << " (" << GetPageTitle(i) << ")"
+	   << " will draw " << GetDrawCount(i) 
+	   << " histograms." << endl;
+    }
   }
-#endif
 
   cout << "Number of pages defined = " << GetPageCount() << endl;
   cout << "Number of cuts defined = " << cutList.size() << endl;
@@ -286,13 +275,14 @@ Bool_t OnlineConfig::IsLogy(UInt_t page) {
     printf("\nFound a logy!!!\n\n");
     return kTRUE;
   }
-#ifdef DEBUG
-  cout << "OnlineConfig::IsLogy()     " << option << " " << page_index << " " << word_index 
-       << " " << sConfFile[page_index].size() << endl;
-  for (Int_t i= 0; i < sConfFile[page_index].size(); i++) {
-    cout << sConfFile[page_index][i] << " ";
+  if(fVerbosity>=1){
+    cout << "OnlineConfig::IsLogy()     " << option << " " << page_index << " " << word_index 
+	 << " " << sConfFile[page_index].size() << endl;
+    for (Int_t i= 0; i < sConfFile[page_index].size(); i++) {
+      cout << sConfFile[page_index][i] << " ";
+    }
   }
-#endif
+
   return kFALSE;
 
 }
@@ -406,19 +396,21 @@ vector <TString> OnlineConfig::GetDrawCommand(UInt_t page, UInt_t nCommand)
   vector <UInt_t> command_vector = GetDrawIndex(page);
   UInt_t index = command_vector[nCommand];
 
-#ifdef DEBUG
-  cout << "OnlineConfig::GetDrawCommand(" << page << "," 
-       << nCommand << ")" << endl;
-#endif
+  if(fVerbosity > 1){
+    cout<<__PRETTY_FUNCTION__<<"\t"<<__LINE__<<endl;
+    cout << "OnlineConfig::GetDrawCommand(" << page << "," 
+	 << nCommand << ")" << endl;
+  }
+
   for(UInt_t i=0; i<out_command.size(); i++) {
     out_command[i] = "";
   }
-
 
   // First line is the variable
   if(sConfFile[index].size()>=1) {
     out_command[0] = sConfFile[index][0];
   }
+
   if(sConfFile[index].size()>=2) {
     if((sConfFile[index][1] != "-type") &&
        (sConfFile[index][1] != "-title") &&
@@ -462,21 +454,19 @@ vector <TString> OnlineConfig::GetDrawCommand(UInt_t page, UInt_t nCommand)
       out_command[4] = sConfFile[index][i+1];
       i = i+1;
     }
+  }
 
-#ifdef DEBUG
+  if(fVerbosity>=1){
+    cout << sConfFile[index].size() << ": ";
+    for(UInt_t i=0; i<sConfFile[index].size(); i++) {
+      cout << sConfFile[index][i] << " ";
+    }
     cout << endl;
-#endif
+    for(UInt_t i=0; i<out_command.size(); i++) {
+      cout << i << ": " << out_command[i] << endl;
+    }
   }
-#ifdef DEBUG
-  cout << sConfFile[index].size() << ": ";
-  for(UInt_t i=0; i<sConfFile[index].size(); i++) {
-    cout << sConfFile[index][i] << " ";
-  }
-  cout << endl;
-  for(UInt_t i=0; i<out_command.size(); i++) {
-    cout << i << ": " << out_command[i] << endl;
-  }
-#endif
+
   return out_command;
 }
 
