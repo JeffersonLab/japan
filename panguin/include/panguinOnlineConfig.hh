@@ -28,10 +28,12 @@ private:
   std::vector <UInt_t> GetDrawIndex(UInt_t);
   Bool_t fFoundCfg;
   Bool_t fMonitor;
-  
+  int fVerbosity;
+
 public:
   OnlineConfig();
   OnlineConfig(TString);
+  void SetVerbosity(int ver){fVerbosity=ver;}
   Bool_t ParseConfig();
   TString GetRootFile() { return rootfilename; };
   TString GetGoldenFile() { return goldenrootfilename; };
