@@ -29,10 +29,12 @@ private:
   Bool_t fFoundCfg;
   Bool_t fMonitor;
   int fVerbosity;
+  int hist2D_nBinsX,hist2D_nBinsY;
 
 public:
   OnlineConfig();
   OnlineConfig(TString);
+  void Get2DnumberBins(int &nX, int &nY){nX = hist2D_nBinsX; nY = hist2D_nBinsY;}
   void SetVerbosity(int ver){fVerbosity=ver;}
   Bool_t ParseConfig();
   TString GetRootFile() { return rootfilename; };

@@ -129,13 +129,18 @@ Bool_t OnlineConfig::ParseConfig()
     if(sConfFile[i][0] == "watchfile") {
       fMonitor = kTRUE;
     }
+    if(sConfFile[i][0] == "2DbinsX") {
+      hist2D_nBinsX = atoi(sConfFile[i][1]);
+    }
+    if(sConfFile[i][0] == "2DbinsY") {
+      hist2D_nBinsY = atoi(sConfFile[i][1]);
+    }
     if(sConfFile[i][0] == "definecut") {
       if(sConfFile[i].size()>3) {
 	cerr << "cut command has too many arguments" << endl;
 	continue;
       }
       TCut tempCut(sConfFile[i][1],sConfFile[i][2]);
-      //      cutList.push_back(make_pair(sConfFile[i][1],sConfFile[i][2]));
       cutList.push_back(tempCut);
     }
     if(sConfFile[i][0] == "rootfile") {

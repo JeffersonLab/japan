@@ -21,6 +21,7 @@
 #include <TText.h>
 #include "TPaveText.h"
 #include <TApplication.h>
+#include "TEnv.h"
 //#define OLDTIMERUPDATE
 
 using namespace std;
@@ -41,6 +42,13 @@ OnlineGUI::OnlineGUI(OnlineConfig& config, Bool_t printonly=0, int ver=0):
   // Constructor.  Get the config pointer, and make the GUI.
 
   fConfig = &config;
+  int bin2Dx(50), bin2Dy(50);
+  fConfig->Get2DnumberBins(bin2Dx,bin2Dy);    
+  gEnv->SetValue("Hist.Binning.2D.x",bin2Dx);
+  gEnv->SetValue("Hist.Binning.2D.y",bin2Dy);
+  if(fVerbosity>1){
+    cout<<"Set 2D default bins to x, y: "<<bin2Dx<<", "<<bin2Dy<<endl;
+  }
 
   if(printonly) {
     fPrintOnly=kTRUE;
@@ -871,7 +879,7 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
   if(drawopt=="scat") drawopt = "";
   if (iTree <= fRootTree.size() ) {
     errcode = fRootTree[iTree]->Draw(var,cut,drawopt,
-				     1000000000,fTreeEntries[iTree]);
+    				     1000000000,fTreeEntries[iTree]);
     TObject *hobj = (TObject*)gROOT->FindObject("htemp");
 
     if(fVerbosity>1){
