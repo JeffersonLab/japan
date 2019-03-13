@@ -10,7 +10,8 @@
 using namespace std;
 
 OnlineConfig::OnlineConfig() 
-  :hist2D_nBinsX(0),hist2D_nBinsY(0)
+  :hist2D_nBinsX(0),hist2D_nBinsY(0), 
+   fPlotFormat(""),fRunNumber(0)
 {
   // Constructor.  Without an argument, will use default "standard" config
   fMonitor = kFALSE;
@@ -20,7 +21,8 @@ OnlineConfig::OnlineConfig()
 
 OnlineConfig::OnlineConfig(TString anatype): 
   confFileName(anatype),fVerbosity(0),
-  hist2D_nBinsX(0),hist2D_nBinsY(0)
+  hist2D_nBinsX(0),hist2D_nBinsY(0), 
+  fPlotFormat(""),fRunNumber(0)
 {
   // Constructor.  Takes the config anatype as the only argument.
   //  Loads up the configuration file, and stores it's contents for access.
@@ -159,6 +161,8 @@ Bool_t OnlineConfig::ParseConfig()
 	continue;
       }
       rootfilename = sConfFile[i][1];
+      TString temp = sConfFile[i][1](sConfFile[i][1].Last('_')+1,sConfFile[i][1].Length());
+      fRunNumber = atoi(temp(0,temp.Last('.')).Data());
     }
     if(sConfFile[i][0] == "goldenrootfile") {
       if(sConfFile[i].size() != 2) {
@@ -219,6 +223,15 @@ Bool_t OnlineConfig::ParseConfig()
 	continue;
       }
       plotsdir = sConfFile[i][1];
+    }
+    if(sConfFile[i][0] == "plotFormat") {
+      if(sConfFile[i].size() != 2) {
+	cerr << "WARNING: plotsdir command does not have the "
+	     << "correct number of arguments (needs 1)"
+	     << endl;
+	continue;
+      }
+      fPlotFormat = sConfFile[i][1];
     }
 
   }
@@ -514,6 +527,8 @@ void OnlineConfig::OverrideRootFile(UInt_t runnumber)
     sprintf(runnostr,"%04i",runnumber);
     protorootfile.ReplaceAll("XXXXX",runnostr);
     rootfilename = protorootfile;
+    TString temp = rootfilename(rootfilename.Last('_')+1,rootfilename.Length());
+    fRunNumber = atoi(temp(0,temp.Last('.')).Data());
   } else {
     string fnmRoot="/adaq1/work1/apar/japanOutput";
     if(getenv("QW_ROOTFILES"))
@@ -546,9 +561,10 @@ void OnlineConfig::OverrideRootFile(UInt_t runnumber)
       closedir (dirSearch);
     }
 
-    if(found)
+    if(found){
       cout<<"\t found file "<< rootfilename<<endl;
-    else{
+      fRunNumber = runnumber;
+    }else{
       cout<<"double check your configurations and files. Quitting"<<endl;
       exit(1);
     }

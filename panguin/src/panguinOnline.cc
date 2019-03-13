@@ -78,7 +78,7 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
     }
   } else {
     fFileAlive = kTRUE;
-    //ObtainRunNumber();//FIXME CG
+    runNumber = fConfig->GetRunNumber();
     // Open the Root Trees.  Give a warning if it's not there..
     GetFileObjects();
     GetRootTree();
@@ -625,7 +625,7 @@ void OnlineGUI::TimerUpdate() {
   }
 
   // Update the runnumber
-  //ObtainRunNumber();//FIXME CG
+  runNumber = fConfig -> GetRunNumber();
   if(runNumber != 0) {
     TString rnBuff = "Run #";
     rnBuff += runNumber;
@@ -730,7 +730,7 @@ Int_t OnlineGUI::OpenRootFile() {
   }
 
   // Update the runnumber
-  //ObtainRunNumber();//FIXME cg
+  runNumber = fConfig->GetRunNumber();
   if(runNumber != 0) {
     TString rnBuff = "Run #";
     rnBuff += runNumber;
@@ -980,10 +980,15 @@ void OnlineGUI::PrintPages() {
   TLatex *lt = new TLatex();
 
   TString plotsdir = fConfig->GetPlotsDir();
-  Bool_t useGIF = kFALSE;
-  if(!plotsdir.IsNull()) useGIF = kTRUE;
+  if(plotsdir.IsNull()) plotsdir=".";
 
-  TString filename = "summaryplots";
+  Bool_t pagePrint = kFALSE;
+  TString printFormat = fConfig->GetPlotFormat();
+  if(printFormat.IsNull()) printFormat="pdf";
+  if(printFormat!="pdf") pagePrint = kTRUE;
+
+  TString filename = "summaryPlots";
+  runNumber = fConfig->GetRunNumber();
   if(runNumber!=0) {
     filename += "_";
     filename += runNumber;
@@ -991,11 +996,13 @@ void OnlineGUI::PrintPages() {
     printf(" Warning for pretty plots: runNumber = %i\n",runNumber);
   }
 
-  if(useGIF) {
-    filename.Prepend(plotsdir+"/");
-    filename += "_pageXXXX.gif";
-  }
-  else filename += ".pdf";
+  filename.Prepend(plotsdir+"/");
+  if(pagePrint) 
+    filename += "_pageXXXX";
+  TString fConfName = fConfig->GetConfFileName();
+  TString fCfgNm = fConfName(fConfName.Last('/')+1,fConfName.Length());
+  filename += "_" + fCfgNm(0,fCfgNm.Last('.'));
+  filename += "."+printFormat;
 
   TString pagehead = "Summary Plots";
   if(runNumber!=0) {
@@ -1011,7 +1018,7 @@ void OnlineGUI::PrintPages() {
   gStyle->SetPadBorderMode(0);
   gStyle->SetHistLineColor(1);
   gStyle->SetHistFillColor(1);
-  if(!useGIF) fCanvas->Print(filename+"[");
+  if(!pagePrint) fCanvas->Print(filename+"[");
   TString origFilename = filename;
   for(UInt_t i=0; i<fConfig->GetPageCount(); i++) {
     current_page=i;
@@ -1023,7 +1030,7 @@ void OnlineGUI::PrintPages() {
     pagename += fConfig->GetPageTitle(current_page);
     lt->SetTextSize(0.025);
     lt->DrawLatex(0.05,0.98,pagename);
-    if(useGIF) {
+    if(pagePrint) {
       filename = origFilename;
       filename.ReplaceAll("XXXX",Form("%02d",current_page));
       cout << "Printing page " << current_page 
@@ -1031,7 +1038,7 @@ void OnlineGUI::PrintPages() {
     }
     fCanvas->Print(filename);
   }
-  if(!useGIF) fCanvas->Print(filename+"]");
+  if(!pagePrint) fCanvas->Print(filename+"]");
   
   gApplication->Terminate();
 }
