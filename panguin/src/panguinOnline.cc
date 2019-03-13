@@ -21,6 +21,7 @@
 #include <TText.h>
 #include "TPaveText.h"
 #include <TApplication.h>
+#include "TRegexp.h"
 //#define OLDTIMERUPDATE
 
 using namespace std;
@@ -843,6 +844,17 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
 
   TString var = command[0];
 
+  //  Check to see if we're projecting to a specific histogram
+  TString histoname = command[0](TRegexp(">>.+(?"));
+  if (histoname.Length()>0){
+    histoname.Remove(0,2);
+    Int_t bracketindex = histoname.First("(");
+    if (bracketindex>0) histoname.Remove(bracketindex);
+    //    std::cout << histoname << " "<< command[0](TRegexp(">>.+(?")) <<std::endl;
+  } else {
+    histoname = "htemp";
+  }
+  
   // Combine the cuts (definecuts and specific cuts)
   TCut cut = "";
   TString tempCut;
@@ -867,12 +879,10 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
   }
   TString drawopt = command[2];
   Int_t errcode=0;
-  if(drawopt.IsNull() && var.Contains(":")) drawopt = "box";
-  if(drawopt=="scat") drawopt = "";
   if (iTree <= fRootTree.size() ) {
     errcode = fRootTree[iTree]->Draw(var,cut,drawopt,
 				     1000000000,fTreeEntries[iTree]);
-    TObject *hobj = (TObject*)gROOT->FindObject("htemp");
+    TObject *hobj = (TObject*)gROOT->FindObject(histoname);
 
     if(fVerbosity>1){
       cout<<__PRETTY_FUNCTION__<<"\t"<<__LINE__<<endl;
@@ -883,10 +893,10 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
       BadDraw(var+" not found");
     } else if (errcode!=0) {
       if(!command[3].IsNull()) {
-	TH1* thathist = (TH1*)hobj->Clone(command[3].MD5());
-	thathist->SetTitle(command[3]);
-	thathist->DrawCopy();
-	delete thathist;
+	      TH1* thathist = (TH1*)hobj->Clone(command[3].MD5());
+	      thathist->SetTitle(command[3]);
+	      thathist->DrawCopy();
+	      delete thathist;
       }
     } else {
       BadDraw("Empty Histogram");
