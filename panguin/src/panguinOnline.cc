@@ -141,7 +141,7 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
   fTopframe = new TGHorizontalFrame(fMain,200,200);
   fTopframe->SetBackgroundColor(mainguicolor);
   fMain->AddFrame(fTopframe, new TGLayoutHints(kLHintsExpandX 
-                                              | kLHintsExpandY,10,10,10,1));
+					       | kLHintsExpandY,10,10,10,1));
 
   // Create a verticle frame widget with radio buttons
   //  This will hold the page buttons
@@ -159,7 +159,7 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
 
   for (UInt_t i=0; i<fConfig->GetPageCount(); i++) {
     vframe->AddFrame(fRadioPage[i], new TGLayoutHints(kLHintsLeft |
-                                                     kLHintsCenterY,5,5,3,4));
+						      kLHintsCenterY,5,5,3,4));
     fRadioPage[i]->Connect("Pressed()", "OnlineGUI", this, "DoRadio()");
   }
   if(!fConfig->IsMonitor()) {
@@ -274,14 +274,14 @@ void OnlineGUI::DoDraw()
   } else {
     gStyle->SetOptLogy(0);
   }
-//   gStyle->SetTitleH(0.10);
-//   gStyle->SetTitleW(0.40);
+  //   gStyle->SetTitleH(0.10);
+  //   gStyle->SetTitleW(0.40);
   gStyle->SetTitleH(0.10);
   gStyle->SetTitleW(0.60);
   gStyle->SetStatH(0.70);
   gStyle->SetStatW(0.35);
-//   gStyle->SetLabelSize(0.10,"X");
-//   gStyle->SetLabelSize(0.10,"Y");
+  //   gStyle->SetLabelSize(0.10,"X");
+  //   gStyle->SetLabelSize(0.10,"Y");
   gStyle->SetLabelSize(0.05,"X");
   gStyle->SetLabelSize(0.05,"Y");
   gStyle->SetPadLeftMargin(0.14);
@@ -295,7 +295,7 @@ void OnlineGUI::DoDraw()
     gStyle->SetLabelSize(0.08,"X");
     gStyle->SetLabelSize(0.08,"Y");
   }
-//   Int_t dim = Int_t(round(sqrt(double(draw_count))));
+  //   Int_t dim = Int_t(round(sqrt(double(draw_count))));
   pair <UInt_t,UInt_t> dim = fConfig->GetPageDim(current_page);
 
   if(fVerbosity>=1)
@@ -420,9 +420,9 @@ void OnlineGUI::GetFileObjects()
 
   if(fRootFile->ReadKeys()==0) {
     fUpdate = kFALSE;
-//     delete fRootFile;
-//     fRootFile = 0;
-//     CheckRootFile();
+    //     delete fRootFile;
+    //     fRootFile = 0;
+    //     CheckRootFile();
     return;
   }
   fileObjects.clear();
@@ -492,7 +492,7 @@ void OnlineGUI::GetRootTree() {
 	"     Name = " << fileObjects[i].first << endl;
 
     if(fileObjects[i].second.Contains("TTree"))
-       found.push_back(fileObjects[i].first);
+      found.push_back(fileObjects[i].first);
   }
 
   // Remove duplicates, then insert into fRootTree
@@ -683,7 +683,7 @@ void OnlineGUI::BadDraw(TString errMessage) {
   pt->SetTextColor(2);
   pt->AddText(errMessage.Data());
   pt->Draw();
-//   cout << errMessage << endl;
+  //   cout << errMessage << endl;
 
 }
 
@@ -800,16 +800,16 @@ void OnlineGUI::HistDraw(vector <TString> command) {
 	if(mytemp2d->GetEntries()==0) {
 	  BadDraw("Empty Histogram");
 	} else {
-// These are commented out for some reason (specific to DVCS?)
-// 	  if(showGolden) {
-// 	    fGoldenFile->cd();
-// 	    mytemp2d_golden = (TH2D*)gDirectory->Get(command[0]);
-// 	    mytemp2d_golden->SetMarkerColor(2);
-// 	    mytemp2d_golden->Draw();
-	    //mytemp2d->Draw("sames");
-// 	  } else {
+	  // These are commented out for some reason (specific to DVCS?)
+	  // 	  if(showGolden) {
+	  // 	    fGoldenFile->cd();
+	  // 	    mytemp2d_golden = (TH2D*)gDirectory->Get(command[0]);
+	  // 	    mytemp2d_golden->SetMarkerColor(2);
+	  // 	    mytemp2d_golden->Draw();
+	  //mytemp2d->Draw("sames");
+	  // 	  } else {
 	  mytemp2d->Draw();
-// 	  }
+	  // 	  }
 	}
 	break;
       }
@@ -883,7 +883,7 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
     }
 
     errcode = fRootTree[iTree]->Draw(var,cut,drawopt);
-    				     //1000000000,fTreeEntries[iTree]);
+    //1000000000,fTreeEntries[iTree]);
     if(fVerbosity>=3)
       cout<<"Finished drawing with error code "<<errcode<<endl;
     TObject *hobj = (TObject*)gROOT->FindObject("htemp");
@@ -940,7 +940,7 @@ void OnlineGUI::PrintPages() {
   // a postscript file. (good for making sample histograms).
   
   // Open the RootFile
-    //  unless we're watching a file.
+  //  unless we're watching a file.
   fRootFile = new TFile(fConfig->GetRootFile(),"READ");
   if(!fRootFile->IsOpen()) {
     cout << "ERROR:  rootfile: " << fConfig->GetRootFile()
@@ -949,8 +949,6 @@ void OnlineGUI::PrintPages() {
     gApplication->Terminate();
   } else {
     fFileAlive = kTRUE;
-    //ObtainRunNumber();//FIXME cg
-    // Open the Root Trees.  Give a warning if it's not there..
     GetFileObjects();
     GetRootTree();
     GetTreeVars();
@@ -978,15 +976,7 @@ void OnlineGUI::PrintPages() {
     fGoldenFile=NULL;
   }
 
-  // Added this decision to make reasonable aspect ration for web content
-  //  if (confFileName) {
-    fCanvas = new TCanvas("fCanvas","trythis",1000,800);
-    //  } else {
-    // I'm not sure exactly how this works.  But it does.
-    //    fCanvas = new TCanvas("fCanvas","trythis",850,1100);
-    //  }
-//   TCanvas *maincanvas = new TCanvas("maincanvas","whatever",850,1100);
-//   maincanvas->SetCanvas(fCanvas);
+  fCanvas = new TCanvas("fCanvas","trythis",1000,800);
   TLatex *lt = new TLatex();
 
   TString plotsdir = fConfig->GetPlotsDir();
