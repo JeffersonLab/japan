@@ -23,6 +23,7 @@
 #include <TApplication.h>
 #include "TEnv.h"
 #include "TRegexp.h"
+#include "TGraph.h"
 //#define OLDTIMERUPDATE
 
 using namespace std;
@@ -556,7 +557,7 @@ UInt_t OnlineGUI::GetTreeIndex(TString var) {
 	<<"\t looking for variable: "<<var<<endl;
   for(UInt_t iTree=0; iTree<treeVars.size(); iTree++) {
     for(UInt_t ivar=0; ivar<treeVars[iTree].size(); ivar++) {
-      if(fVerbosity>=3)
+      if(fVerbosity>=4)
 	cout<<"Checking tree "<<iTree<<" name:"<<fRootTree[iTree]->GetName()
 	    <<" \t var "<<ivar<<" >> "<<treeVars[iTree][ivar]<<endl;
       if(var == treeVars[iTree][ivar]) return iTree;
@@ -882,6 +883,9 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
       cout<<"got index from command "<<iTree<<endl;
   }
   TString drawopt = command[2];
+
+  if(fVerbosity>=3)
+    cout<<"\tDraw option:"<<drawopt<<" and histo name "<<histoname<<endl;
   Int_t errcode=0;
   if (iTree <= fRootTree.size() ) {
     if(fVerbosity>=1){
@@ -892,20 +896,18 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
 	cout<<"\tProcessing from tree: "<<iTree<<"\t"<<fRootTree[iTree]->GetTitle()<<"\t"
 	    <<fRootTree[iTree]->GetName()<<endl;
     }
-    errcode = fRootTree[iTree]->Draw(var,cut,drawopt,
-				     1000000000,fTreeEntries[iTree]);
+    errcode = fRootTree[iTree]->Draw(var,cut,drawopt);
+
+    TObject *hobj = (TObject*)gROOT->FindObject(histoname);
     if(fVerbosity>=3)
       cout<<"Finished drawing with error code "<<errcode<<endl;
-    TObject *hobj = (TObject*)gROOT->FindObject(histoname);
 
     if(errcode==-1) {
       BadDraw(var+" not found");
     } else if (errcode!=0) {
       if(!command[3].IsNull()) {
-	      TH1* thathist = (TH1*)hobj->Clone(command[3].MD5());
-	      thathist->SetTitle(command[3]);
-	      thathist->DrawCopy();
-	      delete thathist;
+	TH1* thathist = (TH1*)hobj;
+	thathist->SetNameTitle(command[3].MD5(),command[3]);
       }
     } else {
       BadDraw("Empty Histogram");
