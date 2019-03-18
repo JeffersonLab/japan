@@ -188,9 +188,9 @@ Int_t main(Int_t argc, Char_t* argv[])
     //  Construct tree branches
     treerootfile->ConstructTreeBranches("evt", "MPS event data tree", ringoutput);
     treerootfile->ConstructTreeBranches("mul", "Helicity event data tree", helicitypattern);
-    burstrootfile->ConstructTreeBranches("pair", "Pair tree", helicitypattern.GetPairYield(),"yield_");
-    burstrootfile->ConstructTreeBranches("pair", "Pair tree", helicitypattern.GetPairAsymmetry(),"asym_");
-    burstrootfile->ConstructTreeBranches("pair", "Pair tree", helicitypattern.GetPairDifference(),"diff_");
+    burstrootfile->ConstructTreeBranches("pr", "Pair tree", helicitypattern.GetPairYield(),"yield_");
+    burstrootfile->ConstructTreeBranches("pr", "Pair tree", helicitypattern.GetPairAsymmetry(),"asym_");
+    burstrootfile->ConstructTreeBranches("pr", "Pair tree", helicitypattern.GetPairDifference(),"diff_");
     treerootfile->ConstructTreeBranches("mulc", "Helicity event data tree (corrected)", helicitypattern.return_regression());
     treerootfile->ConstructTreeBranches("mulc_lrb", "Helicity event data tree (corrected by LinRegBlue)", helicitypattern.return_regress_from_LRB());
     treerootfile->ConstructTreeBranches("slow", "EPICS and slow control tree", epicsevent);
@@ -301,7 +301,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 	    treerootfile->FillTreeBranches(helicitypattern.GetPairYield());
 	    treerootfile->FillTreeBranches(helicitypattern.GetPairAsymmetry());
 	    treerootfile->FillTreeBranches(helicitypattern.GetPairDifference());
-	    treerootfile->FillTree("pair");
+	    treerootfile->FillTree("pr");
 	    
 	    // Clear the data
 	    helicitypattern.ClearPairData();
