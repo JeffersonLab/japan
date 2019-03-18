@@ -374,7 +374,7 @@ void  QwHelicityPattern::CalculatePairAsymmetry()
 		<< "; Asymmetry computation aborted!"<<QwLog::endl;
 	fPairIsGood = kFALSE;
 	// there is a different number of plus and minus helicity window.
-	QwError<<" QwHelicityPattern::CalculateAsymmetry == \n"
+	QwError<<" QwHelicityPattern::CalculatePairAsymmetry == \n"
 	       <<" you do not have the same number of positive and negative \n"
 	       <<" impossible to compute assymetry \n"
 	       <<" dropping every thing -- pattern number ="<<fCurrentPatternNumber<<QwLog::endl;
