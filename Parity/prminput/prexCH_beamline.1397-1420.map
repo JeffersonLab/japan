@@ -73,4 +73,4 @@ Bank=0x03
 
 [PUBLISH]
 ! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
-  q_targ, bcm, bcm_an_ds3, c
+  q_targ, bcm, bcm_an_us, c
