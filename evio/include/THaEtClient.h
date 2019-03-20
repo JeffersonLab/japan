@@ -18,7 +18,8 @@
 
 #include "THaCodaData.h"
 
-#define ET_CHUNK_SIZE 150
+#define ET_CHUNK_SIZE 5000
+//#define ET_CHUNK_SIZE 150
 #include "et.h"
 #include <iostream>
 #include <stdlib.h>
