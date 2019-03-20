@@ -24,7 +24,8 @@
 #include "TEnv.h"
 #include "TRegexp.h"
 #include "TGraph.h"
-//#define OLDTIMERUPDATE
+
+#define OLDTIMERUPDATE
 
 using namespace std;
 
@@ -611,9 +612,11 @@ void OnlineGUI::TimerUpdate() {
   // Called periodically by the timer, if "watchfile" is indicated
   // in the config.  Reloads the ROOT file, and updates the current page.
   if(fVerbosity>=1)
-    cout << "Update Now" << endl;
+    cout<<__PRETTY_FUNCTION__<<"\t"<<__LINE__<<endl;
 
 #ifdef OLDTIMERUPDATE
+  if(fVerbosity>=2)
+    cout<<"\t rtFile: "<<fRootFile<<"\t"<<fConfig->GetRootFile()<<endl;
   fRootFile = new TFile(fConfig->GetRootFile(),"READ");
   if(fRootFile->IsZombie()) {
     cout << "New run not yet available.  Waiting..." << endl;
