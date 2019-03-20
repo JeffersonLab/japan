@@ -909,8 +909,18 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
       BadDraw(var+" not found");
     } else if (errcode!=0) {
       if(!command[3].IsNull()) {
+        //  Generate a "unique" histogram name based on the MD5 of the drawn variable, cut, drawopt,
+        //  and plot title.
+        //  Makes it less likely to cause a name collision if two plot titles are the same.
+        //  If you draw the exact same plot twice, the histograms will have the same name, but
+        //  since they are exactly the same, you likely won't notice (or it will complain at you).
+        TString tmpstring(var);
+        tmpstring += cut.GetTitle();
+        tmpstring += drawopt;
+        tmpstring += command[3];
+        TString myMD5 = tmpstring.MD5();
 	TH1* thathist = (TH1*)hobj;
-	thathist->SetNameTitle(command[3].MD5(),command[3]);
+	thathist->SetNameTitle(myMD5,command[3]);
       }
     } else {
       BadDraw("Empty Histogram");
