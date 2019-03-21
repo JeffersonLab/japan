@@ -367,11 +367,20 @@ void  QwHelicityPattern::CalculatePairAsymmetry()
       } else if (fHelicity[firstevt] == minushel && fHelicity[firstevt]!=fHelicity[secondevt]) {
 	fPairDifference.Difference(fEvents.at(secondevt),fEvents.at(firstevt));
 	fPairDifference.Scale(0.5);
-      } else {
+      } else if (fHelicity[firstevt] == -9999 || fHelicity[secondevt]==-9999) {
+	checkhel= -9999;
+	// Helicity polarity is undefined.
+	QwDebug<<" QwHelicityPattern::CalculatePairAsymmetry == \n"
+	       <<" undefined local helicity (-9999) \n"
+	       <<" impossible to compute assymetry \n"
+	       <<" dropping every thing -- pattern number ="<<fCurrentPatternNumber<<QwLog::endl;
+	// This is an unknown helicity event.
+	fPairIsGood = kFALSE;
+      }else {
 	QwDebug << "QwHelicityPattern::CalculatePairAsymmetry:  "
-		<< "Helicity should be "<<plushel<<" or "<<minushel
-		<<" but is "<< fHelicity[firstevt] << " and " << fHelicity[secondevt]
-		<< "; Asymmetry computation aborted!"<<QwLog::endl;
+	    << "Helicity should be "<<plushel<<" or "<<minushel
+	    <<" but is "<< fHelicity[firstevt] << " and " << fHelicity[secondevt]
+	    << "; Asymmetry computation aborted!"<<QwLog::endl;
 	fPairIsGood = kFALSE;
 	// there is a different number of plus and minus helicity window.
 	QwError<<" QwHelicityPattern::CalculatePairAsymmetry == \n"
