@@ -388,7 +388,7 @@ void  QwHelicityPattern::CalculatePairAsymmetry()
       //      // Update the blinder if conditions have changed
       //      UpdateBlinder(fPairYield);
       //  Only blind the difference if we're using the real helicity.
-      fBlinder.Blind(fPairDifference,fPairYield);
+      fBlinder.BlindPair(fPairDifference,fPairYield);
       //  Update the global error code in fDifference, and use it
       //  to update the errors in fYield, in case blinder errors
       //  can propagate to the global error.

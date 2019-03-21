@@ -179,6 +179,13 @@ class QwBlinder {
       if (CheckBlindability()!=kNotBlindable)
 	diff.Blind(this);
     };
+    /// Blind the pair asymmetry 
+    /// and only check fBlindingStrategy to avoid  overcounting fPatternCounters
+    void  BlindPair(QwSubsystemArrayParity& diff) {
+      if (fBlindingStrategy!=kDisabled)
+	diff.Blind(this);
+    };
+
     /// Unblind the asymmetry of an array of subsystems
     void  UnBlind(QwSubsystemArrayParity& diff) {
       diff.UnBlind(this);
@@ -189,6 +196,12 @@ class QwBlinder {
       if (CheckBlindability()!=kNotBlindable)
 	diff.Blind(this, yield);
     };
+    /// Blind the pair difference of an array of subsystems
+    void  BlindPair(QwSubsystemArrayParity& diff, const QwSubsystemArrayParity& yield) {
+      if (fBlindingStrategy!=kDisabled)
+	diff.Blind(this, yield);
+    };
+
     /// Unblind the difference of an array of subsystems
     void  UnBlind(QwSubsystemArrayParity& diff, const QwSubsystemArrayParity& yield) {
       diff.UnBlind(this, yield);
