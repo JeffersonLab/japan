@@ -221,7 +221,7 @@ class QwRootTree {
     Int_t fBasketSize;
 
     /// Set maximum tree size
-    void SetMaxTreeSize(Long64_t maxsize = 1900000000) {
+    void SetMaxTreeSize(Long64_t maxsize = 190000000000LL) {
       fMaxTreeSize = maxsize;
       if (fTree) fTree->SetMaxTreeSize(maxsize);
     }
@@ -495,6 +495,7 @@ class QwRootFile {
     Int_t fBasketSize;
     Int_t fAutoFlush;
     Int_t fAutoSave;
+    Long64_t fMaxTreeSize;
 
   
 
@@ -651,7 +652,7 @@ void QwRootFile::ConstructTreeBranches(
     #endif
     tree->SetAutoSave(fAutoSave);
     tree->SetBasketSize(fBasketSize);
-    tree->SetMaxTreeSize(kMaxTreeSize);
+    tree->SetMaxTreeSize(fMaxTreeSize);
 
     if (fCircularBufferSize > 0)
       tree->SetCircular(fCircularBufferSize);

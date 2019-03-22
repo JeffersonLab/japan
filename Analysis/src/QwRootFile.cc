@@ -7,7 +7,7 @@
 
 std::string QwRootFile::fDefaultRootFileStem = "Qweak_";
 
-const Long64_t QwRootFile::kMaxTreeSize = 100000000000LL;
+//const Long64_t QwRootFile::kMaxTreeSize = 100000000000LL;
 const Int_t QwRootFile::kMaxMapFileSize = 0x3fffffff; // 1 GiB
 
 /**
@@ -232,6 +232,9 @@ void QwRootFile::DefineOptions(QwOptions &options)
     ("circular-buffer", po::value<int>()->default_value(0),
      "TTree circular buffer");
   options.AddOptions("ROOT performance options")
+	("max-tree-size", po::value<int>()->default_value(1900000000),
+	 "TFile max size");
+  options.AddOptions("ROOT performance options")
     ("compression-level", po::value<int>()->default_value(1),
      "TFile compression level");
 }
@@ -284,6 +287,7 @@ void QwRootFile::ProcessOptions(QwOptions &options)
               << QwLog::endl;
   }
   fAutoSave  = options.GetValue<int>("autosave");
+  fMaxTreeSize = (Long64_t)options.GetValue<int>("max-tree-size");
   return;
 }
 
