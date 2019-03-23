@@ -15,6 +15,8 @@ class TString;
 //  Types for the ROC_ID and Bank_ID used in decoding and destributing data
 typedef UInt_t    ROCID_t;
 typedef ULong64_t BankID_t; /// Bank ID will combine both bank and marker words
+static const ROCID_t  kNullROCID  = kMaxUInt;
+static const BankID_t kNullBankID = kMaxULong64;
 
 
 // Enumerator types for regions and directions

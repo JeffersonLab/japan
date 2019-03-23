@@ -230,8 +230,8 @@ void VQwSubsystem::ClearAllBankRegistrations()
 {
   fBank_IDs.clear();
   fROC_IDs.clear();
-  fCurrentROC_ID    = -1;
-  fCurrentBank_ID   = -1;
+  fCurrentROC_ID    = kNullROCID;
+  fCurrentBank_ID   = kNullBankID;
 }
 
 Int_t VQwSubsystem::GetSubbankIndex(const ROCID_t roc_id, const BankID_t bank_id) const
@@ -293,8 +293,8 @@ Int_t VQwSubsystem::RegisterROCNumber(const ROCID_t roc_id, const BankID_t bank_
     fCurrentROC_ID    = roc_id;
     fCurrentBank_ID   = bank_id;
   } else {
-    fCurrentROC_ID    = -1;
-    fCurrentBank_ID   = -1;
+    fCurrentROC_ID    = kNullROCID;
+    fCurrentBank_ID   = kNullBankID;
   }
   return stat;
 }
@@ -302,7 +302,7 @@ Int_t VQwSubsystem::RegisterROCNumber(const ROCID_t roc_id, const BankID_t bank_
 Int_t VQwSubsystem::RegisterSubbank(const BankID_t bank_id)
 {
   Int_t stat = 0;
-  if (fCurrentROC_ID != -1){
+  if (fCurrentROC_ID != kNullROCID){
     stat = RegisterROCNumber(fCurrentROC_ID, bank_id);
     fCurrentBank_ID   = bank_id;
   } else {
@@ -313,8 +313,8 @@ Int_t VQwSubsystem::RegisterSubbank(const BankID_t bank_id)
             << "Add a 'ROC=#' line to the map file."
             << std::dec << QwLog::endl;
     stat = ERROR;
-    fCurrentROC_ID  = -1;
-    fCurrentBank_ID = -1;
+    fCurrentROC_ID  = kNullROCID;
+    fCurrentBank_ID = kNullBankID;
   }
   return stat;
 }
@@ -324,12 +324,12 @@ Int_t VQwSubsystem::RegisterMarkerWord(const UInt_t markerword)
 {
   static BankID_t bankIDmask = 0xffffffff;
   Int_t stat = 0;
-  if (fCurrentROC_ID != -1){
+  if (fCurrentROC_ID != kNullROCID){
     Int_t roc_index = FindIndex(fROC_IDs, fCurrentROC_ID);
     Int_t bank_index = FindIndex(fBank_IDs[roc_index],(fCurrentBank_ID&bankIDmask));
     fMarkerWords.at(roc_index).at(bank_index).push_back(markerword);
     BankID_t tmpbank = markerword;
-    tmpbank = (tmpbank)<<32 + (fCurrentBank_ID&bankIDmask);
+    tmpbank = ((tmpbank)<<32) + (fCurrentBank_ID&bankIDmask);
     RegisterSubbank(tmpbank);
   } else {
     //  There is not a ROC registered yet!
@@ -339,8 +339,8 @@ Int_t VQwSubsystem::RegisterMarkerWord(const UInt_t markerword)
             << "Add a 'ROC=#' line to the map file."
             << std::dec << QwLog::endl;
     stat = ERROR;
-    fCurrentROC_ID  = -1;
-    fCurrentBank_ID = -1;
+    fCurrentROC_ID  = kNullROCID;
+    fCurrentBank_ID = kNullBankID;
   }
   return stat;
 }

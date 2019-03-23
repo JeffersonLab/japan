@@ -75,31 +75,39 @@ public:
     Int_t status;
     switch(mode){
     case 0:
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
       status = ca_put(DBR_DOUBLE, fIDHall_C_IA_A0, &value);
       status = ca_pend_io(10);
       status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A0, &value);
       status = ca_pend_io(10);
+#endif
       std::cout << "Hall C IA value A0: " << value << std::endl; 
       break;
     case 1:
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
       status = ca_put(DBR_DOUBLE, fIDHall_C_IA_A1, &value);
       status = ca_pend_io(10);
       status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A1, &value);
       status = ca_pend_io(10);
+#endif
       std::cout << "Hall C IA value A1: " << value << std::endl;      
       break;
     case 2:
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
       status = ca_put(DBR_DOUBLE, fIDHall_C_IA_A2, &value);
       status = ca_pend_io(10);
       status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A2, &value);
       status = ca_pend_io(10);
+#endif
       std::cout << "Hall C IA value A2: " << value << std::endl;
       break;
     case 3:
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
       status = ca_put(DBR_DOUBLE, fIDHall_C_IA_A3, &value);
       status = ca_pend_io(10);
       status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A3, &value);
       status = ca_pend_io(10);
+#endif
       std::cout << "Hall C IA value A3: " << value << std::endl;
       break;
     }
@@ -110,31 +118,39 @@ public:
     Int_t status;
     switch(mode){
     case 0:
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
       status = ca_put(DBR_DOUBLE, fIDHall_A_IA_A0, &value);
       status = ca_pend_io(10);
       status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A0, &value);
       status = ca_pend_io(10);
+#endif
       std::cout << "Hall A IA value A0: " << value << std::endl; 
       break;
     case 1:
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
       status = ca_put(DBR_DOUBLE, fIDHall_A_IA_A1, &value);
       status = ca_pend_io(10);
       status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A1, &value);
       status = ca_pend_io(10);
+#endif
       std::cout << "Hall A IA value A1: " << value << std::endl;      
       break;
     case 2:
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
       status = ca_put(DBR_DOUBLE, fIDHall_A_IA_A2, &value);
       status = ca_pend_io(10);
       status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A2, &value);
       status = ca_pend_io(10);
+#endif
       std::cout << "Hall A IA value A2: " << value << std::endl;
       break;
     case 3:
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
       status = ca_put(DBR_DOUBLE, fIDHall_A_IA_A3, &value);
       status = ca_pend_io(10);
       status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A3, &value);
       status = ca_pend_io(10);
+#endif
       std::cout << "Hall A IA value A3: " << value << std::endl;
       break;
     }
@@ -144,10 +160,12 @@ public:
   void Set_HelicityMagnet(size_t magnet_index, size_t helicity_index, Double_t &value){
     Int_t status;
     if (magnet_index<4 && helicity_index<2){
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
       status = ca_put(DBR_DOUBLE, fIDHelMag[magnet_index][helicity_index], &value);
       status = ca_pend_io(10);
       status = ca_get(DBR_DOUBLE, fIDHelMag[magnet_index][helicity_index], &value);
       status = ca_pend_io(10);
+#endif
       std::cout << "Helicity Magnet, " << fHelMagNames[magnet_index] 
 		<< "," << fHelicityNames[helicity_index] << " setpoint: "
 		<< value << std::endl; 
@@ -236,19 +254,23 @@ public:
   //I removed followup read after eahc ca_put command - rakithab (02-29-2012)
   void Set_Pockels_Cell_plus(Double_t &value){
     Int_t status;
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
     status = ca_put(DBR_DOUBLE, fIDPockels_Cell_plus, &value);
     status = ca_pend_io(10);
     status = ca_put(DBR_DOUBLE, fIDPockels_Cell_plus, &value);
     status = ca_pend_io(10);
+#endif
     std::cout << "Pockels Cell pos HW-count value: " << value << std::endl;
 
   };
   void Set_Pockels_Cell_minus(Double_t &value){
     Int_t status;
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
     status = ca_put(DBR_DOUBLE, fIDPockels_Cell_minus, &value);
     status = ca_pend_io(10);
     status = ca_put(DBR_DOUBLE, fIDPockels_Cell_minus, &value);
     status = ca_pend_io(10);
+#endif
     std::cout << "Pockels Cell minus HW-count value: " << value << std::endl;
   };
 
@@ -268,6 +290,7 @@ public:
 
   void Set_ChargeAsymmetry(Double_t &value, Double_t &value_error, Double_t &value_width){
     Int_t status;
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
     status = ca_put(DBR_DOUBLE,fChargeAsymmetry , &value);
     status = ca_pend_io(10);
     //status = ca_get(DBR_DOUBLE,fChargeAsymmetry , &value);
@@ -280,6 +303,7 @@ public:
     status = ca_pend_io(10);
     //status = ca_get(DBR_DOUBLE,fChargeAsymmetryWidth , &value_width);
     //status = ca_pend_io(10);
+#endif
 
     std::cout << "EPICS Charge asymmetry updated " << value <<" +/- "<<value_error<<" width "<<value_width<< std::endl;
 
@@ -299,6 +323,7 @@ public:
 
   void Set_HAChargeAsymmetry(Double_t &value, Double_t &value_error, Double_t &value_width){
     Int_t status;
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
     status = ca_put(DBR_DOUBLE,fHAChargeAsymmetry , &value);
     status = ca_pend_io(10);
     //status = ca_get(DBR_DOUBLE,fHAChargeAsymmetry , &value);
@@ -311,6 +336,7 @@ public:
     status = ca_pend_io(10);
     //status = ca_get(DBR_DOUBLE,fHAChargeAsymmetryWidth , &value_width);
     //status = ca_pend_io(10);
+#endif
 
     std::cout << "EPICS HA Charge asymmetry updated " << value <<" +/- "<<value_error<<" width "<<value_width<< std::endl;
 
@@ -331,6 +357,7 @@ public:
   void Set_TargetHCDiffereces(Double_t &xvalue, Double_t &xvalue_error, Double_t &xvalue_width,Double_t &xpvalue, Double_t &xpvalue_error, Double_t &xpvalue_width, Double_t &yvalue, Double_t &yvalue_error, Double_t &yvalue_width, Double_t &ypvalue, Double_t &ypvalue_error, Double_t &ypvalue_width){
 
     Int_t status;
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
     status = ca_put(DBR_DOUBLE,fTargetXDiff , &xvalue);
     status = ca_pend_io(10);
     status = ca_put(DBR_DOUBLE,fTargetXDiffError , &xvalue_error);
@@ -358,7 +385,7 @@ public:
     status = ca_pend_io(10);
     status = ca_put(DBR_DOUBLE,fTargetYPDiffWidth , &ypvalue_width);
     status = ca_pend_io(10);
-
+#endif
 
     std::cout << "Target X Diff (um)  " << xvalue <<" +/- "<<xvalue_error<<" width "<<xvalue_width << std::endl;
     std::cout << "Target XP Diff (mrad)  " << xpvalue <<" +/- "<<xpvalue_error<<" width "<<xpvalue_width << std::endl;
@@ -406,6 +433,7 @@ public:
   void Set_3C12HCDiffereces(Double_t &xvalue, Double_t &xvalue_error, Double_t &xvalue_width, Double_t &yvalue, Double_t &yvalue_error, Double_t &yvalue_width, Double_t &yqvalue, Double_t &yqvalue_error, Double_t &yqvalue_width){
 
     Int_t status;
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
     status = ca_put(DBR_DOUBLE,f3C12XDiff , &xvalue);
     status = ca_pend_io(10);
     status = ca_put(DBR_DOUBLE,f3C12XDiffError , &xvalue_error);
@@ -426,11 +454,7 @@ public:
     status = ca_pend_io(10);
     status = ca_put(DBR_DOUBLE,f3C12YQWidth , &yqvalue_width);
     status = ca_pend_io(10);
-
-
-
-
-
+#endif
 
     std::cout << "3C12 X Diff (um)  " << xvalue <<" +/- "<<xvalue_error<<" width "<<xvalue_width << std::endl;
     std::cout << "3C12 Y Diff (mrad)  " << yvalue <<" +/- "<<yvalue_error<<" width "<<yvalue_width << std::endl;
@@ -467,13 +491,14 @@ public:
   
   void Set_BCM78DDAsymmetry(Double_t &value, Double_t &value_error, Double_t &value_width){
     Int_t status;
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
     status = ca_put(DBR_DOUBLE,fBCM8DDAsymmetry , &value);
     status = ca_pend_io(10);
     status = ca_put(DBR_DOUBLE,fBCM8DDAsymmetryError , &value_error);
     status = ca_pend_io(10);
     status = ca_put(DBR_DOUBLE,fBCM8DDAsymmetryWidth , &value_width);
     status = ca_pend_io(10);
-
+#endif
     std::cout << "EPICS BCM78 DD asymmetry updated " << value <<" +/- "<<value_error<<" width "<<value_width<< std::endl;
 
   }
@@ -492,8 +517,10 @@ public:
   
   void Set_BCM8Yield(Double_t &value){
     Int_t status;
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
     status = ca_put(DBR_DOUBLE,fBCM8Yield, &value);
     status = ca_pend_io(10);
+#endif
   }
 
   void Get_BCM8Yield(Double_t &value){
@@ -504,12 +531,14 @@ public:
 
   void Set_USLumiSumAsymmetry(Double_t &value, Double_t &value_error, Double_t &value_width){
     Int_t status;
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
     status = ca_put(DBR_DOUBLE,fUSLumiSumAsymmetry , &value);
     status = ca_pend_io(10);
     status = ca_put(DBR_DOUBLE,fUSLumiSumAsymmetryError , &value_error);
     status = ca_pend_io(10);
     status = ca_put(DBR_DOUBLE,fUSLumiSumAsymmetryWidth , &value_width);
     status = ca_pend_io(10);
+#endif
   }
 
   void Get_USLumiSumAsymmetry(Double_t &value, Double_t &value_error, Double_t &value_width){
@@ -521,12 +550,13 @@ public:
   
   void Set_FeedbackStatus(Double_t value){
     Int_t status;
+#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
     status = ca_put(DBR_DOUBLE, fFeedbackStatus, &value);
     status = ca_pend_io(10);
     status = ca_get(DBR_DOUBLE, fFeedbackStatus, &value);
     status = ca_pend_io(10);
     std::cout << "Feedback status updated " << value << std::endl;
-
+#endif
   };
   
   Double_t Get_FeedbackStatus(){
