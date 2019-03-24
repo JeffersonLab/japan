@@ -110,7 +110,9 @@ class QwBlinder {
 
 
     void  WriteFinalValuesToDB(QwParityDB* db);
-    void  PrintFinalValues();
+    void  PrintCountersValues(std::vector<Int_t> fCounters, TString counter_type);
+    void  PrintFinalValues(Int_t kVerbosity=1);
+
 
 #ifdef __USE_DATABASE__
     /// Write to the database

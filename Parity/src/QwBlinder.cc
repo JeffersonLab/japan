@@ -884,24 +884,15 @@ std::vector<UChar_t> QwBlinder::GenerateDigest(const TString& input) const
 /**
  * Print a summary of the blinding/unblinding test
  */
-void QwBlinder::PrintFinalValues()
+void QwBlinder::PrintFinalValues(Int_t kVerbosity)
 {
   QwMessage << "QwBlinder::PrintFinalValues():  Begin summary"    << QwLog::endl;
   QwMessage << "================================================" << QwLog::endl;
-  QwMessage << "Blinder Passed Patterns"  << QwLog::endl;
-  QwMessage << "\tPatterns with blinding disabled: " << fPatternCounters.at(kBlinderCount_Disabled) << QwLog::endl;
-  QwMessage << "\tPatterns on a non-blindable target: " << fPatternCounters.at(kBlinderCount_NonBlindable) << QwLog::endl;
-  QwMessage << "\tPatterns with transverse beam: " << fPatternCounters.at(kBlinderCount_Transverse) << QwLog::endl;
-  QwMessage << "\tPatterns on blindable target with beam present: " << fPatternCounters.at(kBlinderCount_Blindable) << QwLog::endl;
-  QwMessage << "Blinder Failed Patterns"  << QwLog::endl;
-  QwMessage << "\tPatterns with unknown target position: " << fPatternCounters.at(kBlinderCount_UnknownTarget) << QwLog::endl;
-  QwMessage << "\tPatterns with changed target position: " << fPatternCounters.at(kBlinderCount_ChangedTarget) << QwLog::endl;
-  QwMessage << "\tPatterns with an undefined Wien setting: " << fPatternCounters.at(kBlinderCount_UndefinedWien) << QwLog::endl;
-  QwMessage << "\tPatterns with a changed Wien setting: " << fPatternCounters.at(kBlinderCount_ChangedWien) << QwLog::endl;
-  QwMessage << "\tPatterns with an undefined IHWP setting: " << fPatternCounters.at(kBlinderCount_UndefinedIHWP) << QwLog::endl;
-  QwMessage << "\tPatterns with a changed IHWP setting: " << fPatternCounters.at(kBlinderCount_ChangedIHWP) << QwLog::endl;
-  QwMessage << "\tPatterns on blindable target with no beam: " << fPatternCounters.at(kBlinderCount_NoBeam) << QwLog::endl;
-  QwMessage << "\tPatterns with other blinding failure: " << fPatternCounters.at(kBlinderCount_OtherFailure) << QwLog::endl;
+  PrintCountersValues(fPatternCounters, "Patterns");
+  if(kVerbosity==1){
+    QwMessage << "================================================" << QwLog::endl;
+    PrintCountersValues(fPairCounters, "Pairs");
+  }
   QwMessage << "================================================" << QwLog::endl;
   QwMessage << "The blinding parameters checksum for seed ID "
             << fSeedID << " is:" << QwLog::endl;
@@ -930,6 +921,37 @@ void QwBlinder::PrintFinalValues()
   }
   QwMessage << "================================================" << QwLog::endl;
   QwMessage << "QwBlinder::PrintFinalValues():  End of summary"   << QwLog::endl;
+}
+
+void QwBlinder::PrintCountersValues(std::vector<Int_t> fCounters, TString counter_type)
+{
+  QwMessage << "Blinder Passed " << counter_type  << QwLog::endl;
+  QwMessage << "\t" << counter_type 
+	    << " with blinding disabled: " << fCounters.at(kBlinderCount_Disabled) << QwLog::endl;
+  QwMessage << "\t" << counter_type 
+	    << " on a non-blindable target: " << fCounters.at(kBlinderCount_NonBlindable) << QwLog::endl;
+  QwMessage << "\t" << counter_type
+	    << " with transverse beam: " << fCounters.at(kBlinderCount_Transverse) << QwLog::endl;
+  QwMessage << "\t" << counter_type
+	    << " on blindable target with beam present: " << fCounters.at(kBlinderCount_Blindable) << QwLog::endl;
+  QwMessage << "Blinder Failed " << counter_type  << QwLog::endl;
+  QwMessage << "\t" << counter_type
+	    << " with unknown target position: " << fCounters.at(kBlinderCount_UnknownTarget) << QwLog::endl;
+  QwMessage << "\t" << counter_type 
+	    << " with changed target position: " << fCounters.at(kBlinderCount_ChangedTarget) << QwLog::endl;
+  QwMessage << "\t" << counter_type 
+	    << " with an undefined Wien setting: " << fCounters.at(kBlinderCount_UndefinedWien) << QwLog::endl;
+  QwMessage << "\t" << counter_type
+	    << " with a changed Wien setting: " << fCounters.at(kBlinderCount_ChangedWien) << QwLog::endl;
+  QwMessage << "\t" << counter_type
+	    << " with an undefined IHWP setting: " << fCounters.at(kBlinderCount_UndefinedIHWP) << QwLog::endl;
+  QwMessage << "\t" << counter_type
+	    << " with a changed IHWP setting: " << fCounters.at(kBlinderCount_ChangedIHWP) << QwLog::endl;
+  QwMessage << "\t" << counter_type
+	    << " on blindable target with no beam: " << fCounters.at(kBlinderCount_NoBeam) << QwLog::endl;
+  QwMessage << "\t" << counter_type
+	    << " with other blinding failure: " << fCounters.at(kBlinderCount_OtherFailure) << QwLog::endl;
+
 }
 
 
