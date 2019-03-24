@@ -93,6 +93,7 @@ QwBlinder::QwBlinder(const EQwBlindingStrategy blinding_strategy):
   // Calculate set of test values
   InitTestValues(10);
   fPatternCounters.resize(kBlinderCount_NumCounters);
+  fPairCounters.resize(kBlinderCount_NumCounters);
 }
 
 
@@ -1083,67 +1084,67 @@ void QwBlinder::SetIHWPPolarity(Int_t ihwppolarity)
 }
 
 
-QwBlinder::EQwBlinderStatus QwBlinder::CheckBlindability()
+QwBlinder::EQwBlinderStatus QwBlinder::CheckBlindability(std::vector<Int_t> &fCounters)
 {
   EQwBlinderStatus status = QwBlinder::kBlindableFail;
   if (fBlindingStrategy == kDisabled) {
     status = QwBlinder::kNotBlindable;
-    fPatternCounters.at(kBlinderCount_Disabled)++;
+    fCounters.at(kBlinderCount_Disabled)++;
   } else if (fTargetBlindability == QwBlinder::kIndeterminate) {
     QwDebug  << "QwBlinder::CheckBlindability:  The target blindability is not determined.  "
 	     << "Fail this pattern." << QwLog::endl;
     status = QwBlinder::kBlindableFail;
-    fPatternCounters.at(kBlinderCount_UnknownTarget)++;    
+    fCounters.at(kBlinderCount_UnknownTarget)++;    
   } else if (fTargetBlindability!=fTargetBlindability_firstread
 	     && !fTargetPositionForced) {
     QwDebug << "QwBlinder::CheckBlindability:  The target blindability has changed.  "
 	    << "Fail this pattern." << QwLog::endl;
     status = QwBlinder::kBlindableFail;
-    fPatternCounters.at(kBlinderCount_ChangedTarget)++;
+    fCounters.at(kBlinderCount_ChangedTarget)++;
   } else if (fTargetBlindability==kNotBlindable) {
     //  This isn't a blindable target, so don't do anything.
     status = QwBlinder::kNotBlindable;
-    fPatternCounters.at(kBlinderCount_NonBlindable)++;
+    fCounters.at(kBlinderCount_NonBlindable)++;
   } else if (fTargetBlindability==kBlindable &&
 	     fWienMode != fWienMode_firstread) {
     //  Wien status changed.  Fail
     status = QwBlinder::kBlindableFail;
-    fPatternCounters.at(kBlinderCount_ChangedWien)++;
+    fCounters.at(kBlinderCount_ChangedWien)++;
   } else if (fTargetBlindability==kBlindable &&
 	     fIHWPPolarity != fIHWPPolarity_firstread) {
     //  IHWP status changed.  Fail
     status = QwBlinder::kBlindableFail;
-    fPatternCounters.at(kBlinderCount_ChangedIHWP)++;
+    fCounters.at(kBlinderCount_ChangedIHWP)++;
   } else if (fTargetBlindability==kBlindable &&
 	     fWienMode == kWienIndeterminate) {
     //  Wien status isn't determined.  Fail.
     status = QwBlinder::kBlindableFail;
-    fPatternCounters.at(kBlinderCount_UndefinedWien)++;
+    fCounters.at(kBlinderCount_UndefinedWien)++;
   } else if (fTargetBlindability==kBlindable &&
 	     fIHWPPolarity==0) {
     //  IHWP status isn't determined.  Fail.
     status = QwBlinder::kBlindableFail;
-    fPatternCounters.at(kBlinderCount_UndefinedIHWP)++;
+    fCounters.at(kBlinderCount_UndefinedIHWP)++;
   } else if (fTargetBlindability==kBlindable &&
 	    (fWienMode == kWienVertTrans || fWienMode == kWienHorizTrans)) {
     //  We don't have longitudinal beam, so don't blind.
     status = QwBlinder::kNotBlindable;
-    fPatternCounters.at(kBlinderCount_Transverse)++;
+    fCounters.at(kBlinderCount_Transverse)++;
   } else if (fTargetBlindability==kBlindable 
 	     && fBeamIsPresent) {
     //  This is a blindable target and the beam is sufficent.
     status = QwBlinder::kBlindable;
-    fPatternCounters.at(kBlinderCount_Blindable)++;
+    fCounters.at(kBlinderCount_Blindable)++;
   } else if (fTargetBlindability==kBlindable 
 	     && (! fBeamIsPresent) ) {
     //  This is a blindable target but there is insufficent beam present
     status = QwBlinder::kBlindableFail;
-    fPatternCounters.at(kBlinderCount_NoBeam)++;
+    fCounters.at(kBlinderCount_NoBeam)++;
   } else {
     QwError << "QwBlinder::CheckBlindability:  The pattern blindability is unclear.  "
 	     << "Fail this pattern." << QwLog::endl;
     status = QwBlinder::kBlindableFail;
-    fPatternCounters.at(kBlinderCount_OtherFailure)++;
+    fCounters.at(kBlinderCount_OtherFailure)++;
   }
   //
   fBlinderIsOkay = (status != QwBlinder::kBlindableFail);
