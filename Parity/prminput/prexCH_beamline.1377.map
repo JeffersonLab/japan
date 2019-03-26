@@ -1,0 +1,76 @@
+
+ROC=23
+Bank=0x05
+vqwk_buffer_offset = 1
+!same sample size for ADCs in a given bank
+sample_size=16564
+!Sample size should be unchanged - ask Paul King
+!
+! module.type, module.num  chan.num, det.type, det.name, if unrotated then last column ->UNROTATED
+
+
+!ADC0
+    VQWK, 0, 0,  bcm,  QWK_0_0
+    VQWK, 0, 1,  bcm,  QWK_0_1
+    VQWK, 0, 2,  bcm,  BCM_AN_US
+    VQWK, 0, 3,  bcm,  BCM_AN_DS
+    VQWK, 0, 4,  bcm,  BCM_AN_DS3
+    VQWK, 0, 5,  bcm,  BCM_AN_DS10
+    VQWK, 0, 6,  bcm,  BCM_DG_US
+    VQWK, 0, 7,  bcm,  BCM_DG_DS
+
+!ADC1
+    VQWK, 1, 0,  bpmstripline,  BPM4Exp
+    VQWK, 1, 1,  bpmstripline,  BPM4Exm
+    VQWK, 1, 2,  bpmstripline,  BPM4Eyp
+    VQWK, 1, 3,  bpmstripline,  BPM4Eym
+    VQWK, 1, 4,  bpmstripline,  BPM12xp
+    VQWK, 1, 5,  bpmstripline,  BPM12xm
+    VQWK, 1, 6,  bpmstripline,  BPM12yp
+    VQWK, 1, 7,  bpmstripline,  BPM12ym
+
+!ADC2
+    VQWK, 2, 0,  bpmstripline,  BPM14xp
+    VQWK, 2, 1,  bpmstripline,  BPM14xm
+    VQWK, 2, 2,  bpmstripline,  BPM14yp
+    VQWK, 2, 3,  bpmstripline,  BPM14ym
+    VQWK, 2, 4,  bpmstripline,  BPM4Axp
+    VQWK, 2, 5,  bpmstripline,  BPM4Axm
+    VQWK, 2, 6,  bpmstripline,  BPM4Ayp
+    VQWK, 2, 7,  bpmstripline,  BPM4Aym
+
+!ADC3
+    VQWK, 3, 0,  bcm,  CAV4BX
+    VQWK, 3, 1,  bcm,  CAV4BY
+    VQWK, 3, 2,  bcm,  CAV4BQ
+    VQWK, 3, 3,  bcm,  CAV4CX
+    VQWK, 3, 4,  bcm,  CAV4CY
+    VQWK, 3, 5,  bcm,  CAV4CQ
+    VQWK, 3, 6,  bcm,  QWK_3_6 
+    VQWK, 3, 7,  bcm,  UNSER
+
+!ADC4
+    VQWK, 4, 0,  bcm,  CAV4DX
+    VQWK, 4, 1,  bcm,  CAV4DY
+    VQWK, 4, 2,  bcm,  CAV4DQ
+    VQWK, 4, 3,  bcm,  QWK_4_3
+    VQWK, 4, 4,  bpmstripline,  BPM18xm
+    VQWK, 4, 5,  bpmstripline,  BPM18xp
+    VQWK, 4, 6,  bpmstripline,  BPM18yp
+    VQWK, 4, 7,  bpmstripline,  BPM18ym
+
+Bank=0x03
+!Happex ADC channels start with 3 on the bottom and go up to 0
+!VQWK ADC channels start with 0 on the bottom and go up to 7
+    ADC18,0, 3,  bcm,  ADC18_BPMxm
+    ADC18,0, 2,  bcm,  ADC18_BPMxp
+    ADC18,0, 1,  bcm,  ADC18_BPMym
+    ADC18,0, 0,  bcm,  ADC18_BPMyp
+    ADC18,1, 3,  bcm,  ADC18_CAV4BQ
+    ADC18,1, 2,  bcm,  ADC18_1_2
+    ADC18,1, 1,  bcm,  ADC18_1_1
+    ADC18,1, 0,  bcm,  ADC18_1_0
+
+[PUBLISH]
+! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
+  q_targ, bcm, bcm_an_ds3, c
