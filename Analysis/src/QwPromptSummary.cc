@@ -102,7 +102,7 @@ PromptSummaryElement::GetCSVSummary()
 
 
 void 
-PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, const Double_t a_width)
+PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, const Double_t a_width)    // Fix Me - This function could use some cleaning up. Use maps.
 {
   Double_t asymmetry_ppm = 1e-6;
 
@@ -197,55 +197,45 @@ QwPromptSummary::~QwPromptSummary()
 void 
 QwPromptSummary::SetupElementList()
 {
-  this->AddElement(new PromptSummaryElement("charge"));
-  this->AddElement(new PromptSummaryElement("target_x"));
-  this->AddElement(new PromptSummaryElement("target_y"));
-  this->AddElement(new PromptSummaryElement("angle_x"));
-  this->AddElement(new PromptSummaryElement("angle_y"));
-  this->AddElement(new PromptSummaryElement("energy"));
+ // this->AddElement(new PromptSummaryElement("charge"));
+ // this->AddElement(new PromptSummaryElement("target_x"));
+ // this->AddElement(new PromptSummaryElement("target_y"));
+ // this->AddElement(new PromptSummaryElement("angle_x"));
+ // this->AddElement(new PromptSummaryElement("angle_y"));
+ // this->AddElement(new PromptSummaryElement("energy"));
   
-  this->AddElement(new PromptSummaryElement("bcm1"));
-  this->AddElement(new PromptSummaryElement("bcm2"));
-  this->AddElement(new PromptSummaryElement("bcm5"));
-  this->AddElement(new PromptSummaryElement("bcm6"));
-  this->AddElement(new PromptSummaryElement("bcm7"));
-  this->AddElement(new PromptSummaryElement("bcm8"));
-  this->AddElement(new PromptSummaryElement("bpm3h04_effectivecharge"));
-  this->AddElement(new PromptSummaryElement("bpm3h09_effectivecharge"));
-  this->AddElement(new PromptSummaryElement("3c12x"));
-  this->AddElement(new PromptSummaryElement("3c12y"));
-  this->AddElement(new PromptSummaryElement("3h04x"));
-  this->AddElement(new PromptSummaryElement("3h04y"));
-  this->AddElement(new PromptSummaryElement("3h07cx"));
-  this->AddElement(new PromptSummaryElement("3h07cy"));
-  this->AddElement(new PromptSummaryElement("3h09x"));
-  this->AddElement(new PromptSummaryElement("3h09y"));
-  this->AddElement(new PromptSummaryElement("3h09bx"));
-  this->AddElement(new PromptSummaryElement("3h09by"));
+  this->AddElement(new PromptSummaryElement("bcm_an_us"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds3"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds10"));
+  this->AddElement(new PromptSummaryElement("bcm_dg_us"));
+  this->AddElement(new PromptSummaryElement("bcm_dg_ds"));
+ 
+  this->AddElement(new PromptSummaryElement("bcm_an_us-bcm_an_ds"));
+  this->AddElement(new PromptSummaryElement("bcm_an_us-bcm_an_ds3"));
+  this->AddElement(new PromptSummaryElement("bcm_an_us-bcm_an_ds10"));
+  this->AddElement(new PromptSummaryElement("bcm_an_us-bcm_dg_us"));
+  this->AddElement(new PromptSummaryElement("bcm_an_us-bcm_dg_ds"));
+  
+  this->AddElement(new PromptSummaryElement("bcm_an_ds-bcm_an_ds3"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds-bcm_an_ds10"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds-bcm_dg_us"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds-bcm_dg_ds"));
+  
+  this->AddElement(new PromptSummaryElement("bcm_an_ds3-bcm_an_ds10"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds3-bcm_dg_us"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds3-bcm_dg_ds"));
 
-  this->AddElement(new PromptSummaryElement("bcm1-bcm2"));
-  this->AddElement(new PromptSummaryElement("bcm1-bcm5"));
-  this->AddElement(new PromptSummaryElement("bcm1-bcm6"));
-  this->AddElement(new PromptSummaryElement("bcm2-bcm5"));
-  this->AddElement(new PromptSummaryElement("bcm2-bcm6"));
-  this->AddElement(new PromptSummaryElement("bcm5-bcm6"));
+  
+  this->AddElement(new PromptSummaryElement("bcm_an_ds10-bcm_dg_us"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds10-bcm_dg_ds"));
 
-  this->AddElement(new PromptSummaryElement("bcm1-bcm7"));
-  this->AddElement(new PromptSummaryElement("bcm1-bcm8"));
+  this->AddElement(new PromptSummaryElement("bcm_dg_us-bcm_dg_ds"));
 
-  // this->AddElement(new PromptSummaryElement("bcm2-bcm7"));
-  // this->AddElement(new PromptSummaryElement("bcm2-bcm8"));
-
-  // this->AddElement(new PromptSummaryElement("bcm5-bcm7"));
-  // this->AddElement(new PromptSummaryElement("bcm5-bcm8"));
-  // this->AddElement(new PromptSummaryElement("bcm6-bcm7"));
-  // this->AddElement(new PromptSummaryElement("bcm6-bcm8"));
-
-  this->AddElement(new PromptSummaryElement("bcm5-bcm7"));
-  this->AddElement(new PromptSummaryElement("bcm7-bcm8"));
+  
   
 
-
+/*
 
   this->AddElement(new PromptSummaryElement("MD1"));
   this->AddElement(new PromptSummaryElement("MD2"));
@@ -289,7 +279,7 @@ QwPromptSummary::SetupElementList()
 
   this->AddElement(new PromptSummaryElement("uslumi_sum"));
 
-
+*/
 
 };
 

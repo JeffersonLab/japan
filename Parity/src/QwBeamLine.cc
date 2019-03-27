@@ -3123,22 +3123,9 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
       element_value       = 0.0;
       element_value_err   = 0.0;
       element_value_width = 0.0;
-      
-      if (element_name.Contains("qwk_bcm1")) {
-	local_ps_element = ps-> GetElementByName("bcm1");
-      } else if (element_name.Contains("qwk_bcm2")) {
-	local_ps_element = ps-> GetElementByName("bcm2");
-      } else if (element_name.Contains("qwk_bcm5")) {
-	local_ps_element = ps-> GetElementByName("bcm5");
-      } else if (element_name.Contains("qwk_bcm6")) {
-	local_ps_element = ps-> GetElementByName("bcm6");
-      } else if (element_name.Contains("qwk_bcm7")) {
-	local_ps_element = ps-> GetElementByName("bcm7");
-      } else if (element_name.Contains("qwk_bcm8")) {
-	local_ps_element = ps-> GetElementByName("bcm8");
-      } else {
-	local_ps_element = NULL;
-      }
+
+      local_ps_element=ps->GetElementByName(element_name);
+
       
       if(local_ps_element) {
 	element_value       = fBCM[i].get()->GetValue();
@@ -3154,20 +3141,41 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
       }
     }
   
-  ps->FillDoubleDifference(type, "bcm1", "bcm2");
-  ps->FillDoubleDifference(type, "bcm1", "bcm5");
-  ps->FillDoubleDifference(type, "bcm1", "bcm6");
-  ps->FillDoubleDifference(type, "bcm2", "bcm5");
-  ps->FillDoubleDifference(type, "bcm2", "bcm6");
-  ps->FillDoubleDifference(type, "bcm5", "bcm6");
+    
+    /*------Filling Double Differences ---------*/
+    for (size_t i=0;i<fBCM.size();i++)
+    {
+    	for (size_t j = i+1; j < fBCM.size();  j++) 
+    	{
+		ps->FillDoubleDifference(type,fBCM[i].get()->GetElementName(),fBCM[j].get()->GetElementName());
+	}
+     }     		 
+      /*-----------------------------------------*/
+      
+      
+
+/*
+  ps->FillDoubleDifference(type, "bcm_an_us", "bcm_an_ds");
+  ps->FillDoubleDifference(type, "bcm_an_us", "bcm_an_ds3");
+  ps->FillDoubleDifference(type, "bcm_an_us", "bcm_an_ds10");
+  ps->FillDoubleDifference(type, "bcm_an_us", "bcm_dg_us");
+  ps->FillDoubleDifference(type, "bcm_an_us", "bcm_dg_ds");
   
-  ps->FillDoubleDifference(type, "bcm1", "bcm7");
-  ps->FillDoubleDifference(type, "bcm1", "bcm8");
+  ps->FillDoubleDifference(type, "bcm_an_ds", "bcm_an_ds3");
+  ps->FillDoubleDifference(type, "bcm_an_ds", "bcm_an_ds10");
+  ps->FillDoubleDifference(type, "bcm_an_ds", "bcm_dg_us");
+  ps->FillDoubleDifference(type, "bcm_an_ds", "bcm_dg_ds");
 
-  ps->FillDoubleDifference(type, "bcm5", "bcm7");
-  ps->FillDoubleDifference(type, "bcm7", "bcm8");
+  ps->FillDoubleDifference(type, "bcm_an_ds3", "bcm_an_ds10");
+  ps->FillDoubleDifference(type, "bcm_an_ds3", "bcm_dg_us");
+  ps->FillDoubleDifference(type, "bcm_an_ds3", "bcm_dg_ds");
 
-
+  ps->FillDoubleDifference(type, "bcm_an_ds10", "bcm_dg_us");
+  ps->FillDoubleDifference(type, "bcm_an_ds10", "bcm_dg_ds");
+  
+ 
+  ps->FillDoubleDifference(type, "bcm_dg_us", "bcm_dg_ds");
+*/
 
   // for(size_t i=0; i< fStripline.size(); i++) 
   //   {
