@@ -22,15 +22,15 @@ bcm_an_ds10,  -255.9,     0.00031405
   bpm4eYM,	-1293,	1
   bpm4eYP,	-1168,	1
 
-  bpm10XM,	-3190,	1
-  bpm10XP,	-2872,	1
-  bpm10YM,	-2744,	1
-  bpm10YP,	-2850,	1
+  bpm18XM,	-3190,	1
+  bpm18XP,	-2872,	1
+  bpm18YM,	-2744,	1
+  bpm18YP,	-2850,	1
 
-  bpm12XM,	-3976,	1
-  bpm12XP,	-4184,	1
-  bpm12YM,	-3868,	1
-  bpm12YP,	-3587,	1
+  bpm14XM,	-3976,	1
+  bpm14XP,	-4184,	1
+  bpm14YM,	-3868,	1
+  bpm14YP,	-3587,	1
 
 ! cavity BPMs pedestal calibration from zero gain run 1219
   cav4bq,  -167.527,    1
