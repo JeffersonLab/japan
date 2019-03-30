@@ -232,6 +232,8 @@ QwPromptSummary::SetupElementList()
 
   this->AddElement(new PromptSummaryElement("bcm_dg_us-bcm_dg_ds"));
 
+  this->AddElement(new PromptSummaryElement("bpm4a"));
+
   
   
 
