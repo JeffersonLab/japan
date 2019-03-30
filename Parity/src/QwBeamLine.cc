@@ -3177,35 +3177,50 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
   ps->FillDoubleDifference(type, "bcm_dg_us", "bcm_dg_ds");
 */
 
-  // for(size_t i=0; i< fStripline.size(); i++) 
-  //   {
-  //     element_name        = fStripline[i].get()->GetElementName();
-  //     element_value       = 0.0;
-  //     element_value_err   = 0.0;
-  //     element_value_width = 0.0;
-      
+ 
 
-  //     printf("Strip BPM %d, name %s\n", (Int_t) i, element_name.Data());
-  //     // if (element_name.Contains("qwk_bcm1")) {
-  //     // 	local_ps_element = ps-> GetElementByName("bcm1");
-  //     // } else if (element_name.Contains("qwk_bcm2")) {
-  //     // 	local_ps_element = ps-> GetElementByName("bcm2");
-  //     // } else if (element_name.Contains("qwk_bcm5")) {
-  //     // 	local_ps_element = ps-> GetElementByName("bcm5");
-  //     // } else if (element_name.Contains("qwk_bcm6")) {
-  //     // 	local_ps_element = ps-> GetElementByName("bcm6");
-  //     // } else if (element_name.Contains("qwk_bcm7")) {
-  //     // 	local_ps_element = ps-> GetElementByName("bcm7");
-  //     // } else if (element_name.Contains("qwk_bcm8")) {
-  //     // 	local_ps_element = ps-> GetElementByName("bcm8");
-  //     // } else {
-  //     // 	local_ps_element = NULL;
-  //     // }
-      
-  //   }
+  for(size_t i=0; i< fStripline.size(); i++) 
+     {
+      element_name        = fStripline[i].get()->GetElementName();
+      element_value       = 0.0;
+      element_value_err   = 0.0;
+      element_value_width = 0.0;
 
-  // for(size_t i=0; i< fBPMCombo.size(); i++) 
-  //   {
+      local_ps_element=ps->GetElementByName(element_name);
+
+      
+      if(local_ps_element) {
+	element_value       = ( fStripline[i].get()->GetPublicPosition(VQwBPM::kXAxis))->GetValue();
+	element_value_err   =  (fStripline[i].get()->GetPublicPosition(VQwBPM::kXAxis))->GetValueError();
+	element_value_width = ( fStripline[i].get()->GetPublicPosition(VQwBPM::kXAxis))->GetValueWidth();
+	
+	local_ps_element->Set(type, element_value, element_value_err, element_value_width);
+      }
+      
+      if( local_print_flag && local_ps_element) {
+	printf("Type %12s, Element %32s, value %12.4e error %8.4e  width %12.4e\n", 
+	       type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
+      }
+    }
+/*
+      local_ps_element=ps->GetElementByName(element_name);
+
+      
+      if(local_ps_element) {
+	element_value       = fBPMCombo[i].get()->GetValue();
+	element_value_err   = fBPMCombo[i].get()->GetValueError();
+	element_value_width = fBPMCombo[i].get()->GetValueWidth();
+	
+	local_ps_element->Set(type, element_value, element_value_err, element_value_width);
+      }
+      
+      if( local_print_flag && local_ps_element) {
+	printf("Type %12s, Element %32s, value %12.4e error %8.4e  width %12.4e\n", 
+	       type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
+      }
+ 
+      }
+*/
   //     element_name        = fBPMCombo[i].get()->GetElementName();
   //     element_value       = 0.0;
   //     element_value_err   = 0.0;
