@@ -125,9 +125,7 @@ class VQwBPM : public VQwDataElement {
      return const_cast<VQwBPM*>(this)->GetPosition(axis);
    }
 
-   virtual const VQwHardwareChannel* GetPublicPosition(EBeamPositionMonitorAxis axis) const{
-     return const_cast<VQwBPM*>(this)->GetPosition(axis);
-   } 
+   
  
 
 protected:
