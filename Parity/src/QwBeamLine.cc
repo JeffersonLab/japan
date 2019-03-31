@@ -3101,6 +3101,9 @@ void QwBeamLine::FillErrDB(QwParityDB *db, TString datatype)
 void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type) 
 {
   Bool_t local_print_flag = true;
+  Bool_t local_add_element= type.Contains("yield");
+  Bool_t local_add_these_BCMs= false;
+  Bool_t local_add_these_Striplines= false;
 
   if(local_print_flag) {
     printf("---------------------------------------------------------------\n");
@@ -3154,44 +3157,27 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
       
       
 
-/*
-  ps->FillDoubleDifference(type, "bcm_an_us", "bcm_an_ds");
-  ps->FillDoubleDifference(type, "bcm_an_us", "bcm_an_ds3");
-  ps->FillDoubleDifference(type, "bcm_an_us", "bcm_an_ds10");
-  ps->FillDoubleDifference(type, "bcm_an_us", "bcm_dg_us");
-  ps->FillDoubleDifference(type, "bcm_an_us", "bcm_dg_ds");
+
+  local_ps_element=NULL;
   
-  ps->FillDoubleDifference(type, "bcm_an_ds", "bcm_an_ds3");
-  ps->FillDoubleDifference(type, "bcm_an_ds", "bcm_an_ds10");
-  ps->FillDoubleDifference(type, "bcm_an_ds", "bcm_dg_us");
-  ps->FillDoubleDifference(type, "bcm_an_ds", "bcm_dg_ds");
-
-  ps->FillDoubleDifference(type, "bcm_an_ds3", "bcm_an_ds10");
-  ps->FillDoubleDifference(type, "bcm_an_ds3", "bcm_dg_us");
-  ps->FillDoubleDifference(type, "bcm_an_ds3", "bcm_dg_ds");
-
-  ps->FillDoubleDifference(type, "bcm_an_ds10", "bcm_dg_us");
-  ps->FillDoubleDifference(type, "bcm_an_ds10", "bcm_dg_ds");
-  
- 
-  ps->FillDoubleDifference(type, "bcm_dg_us", "bcm_dg_ds");
-*/
-
- 
-
   for(size_t i=0; i< fStripline.size(); i++) 
      {
-      //element_name        = (fStripline[i].get()->GetPublicPosition(VQwBPM::kXAxis))->GetElementName();
+      
       element_name= GetChannel(kQwBPMStripline, i,"x")->GetElementName();
       element_value       = 0.0;
       element_value_err   = 0.0;
       element_value_width = 0.0;
-     
 
+      local_add_these_Striplines=element_name.Contains("bpm4")||element_name.Contains("bpm8")||element_name.Contains("bpm10")||element_name.Contains("bpm12"); //Fix Me
+
+      if(local_add_element && local_add_these_Striplines){
+      	ps->AddElement(new PromptSummaryElement(element_name));     
+      }
 
       local_ps_element=ps->GetElementByName(element_name);
 
-      
+          
+     
       if(local_ps_element) {
 	element_value       = GetChannel(kQwBPMStripline, i,"x")->GetValue();
 	element_value_err   = GetChannel(kQwBPMStripline, i,"x")->GetValueError();
@@ -3207,31 +3193,7 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
 
     }
 
-/*
-      local_ps_element=ps->GetElementByName(element_name);
-
-      
-      if(local_ps_element) {
-	element_value       = fBPMCombo[i].get()->GetValue();
-	element_value_err   = fBPMCombo[i].get()->GetValueError();
-	element_value_width = fBPMCombo[i].get()->GetValueWidth();
-	
-	local_ps_element->Set(type, element_value, element_value_err, element_value_width);
-      }
-      
-      if( local_print_flag && local_ps_element) {
-	printf("Type %12s, Element %32s, value %12.4e error %8.4e  width %12.4e\n", 
-	       type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
-      }
- 
-      }
-*/
-  //     element_name        = fBPMCombo[i].get()->GetElementName();
-  //     element_value       = 0.0;
-  //     element_value_err   = 0.0;
-  //     element_value_width = 0.0;
-  //     printf("Combo  BPM %d, name %s\n", (Int_t) i, element_name.Data());
-  //   }
-
-  return;
+    
+  
+    return;
 };
