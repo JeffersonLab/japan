@@ -3102,8 +3102,8 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
 {
   Bool_t local_print_flag = true;
   Bool_t local_add_element= type.Contains("yield");
-  Bool_t local_add_these_BCMs= false;
-  Bool_t local_add_these_Striplines= false;
+  
+  
 
   if(local_print_flag) {
     printf("---------------------------------------------------------------\n");
@@ -3111,29 +3111,37 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
     printf("---------------------------------------------------------------\n");
   }
   
+  const VQwHardwareChannel* tmp_channel = 0;
   TString  element_name        = "";
   Double_t element_value       = 0.0;
   Double_t element_value_err   = 0.0;
   Double_t element_value_width = 0.0;
 
   PromptSummaryElement *local_ps_element = NULL;
-
-  //  Double_t asymmetry_ppm = 1e-6;
+  Bool_t local_add_these_elements= false;
 
   for (size_t i = 0; i < fBCM.size();  i++) 
     {
-      element_name        = fBCM[i].get()->GetElementName();
+      tmp_channel=GetChannel(kQwBCM, i,"");	
+      element_name        = tmp_channel->GetElementName();
       element_value       = 0.0;
       element_value_err   = 0.0;
       element_value_width = 0.0;
+
+      local_add_these_elements=element_name.Contains("bcm_an")||element_name.Contains("bcm_dg")||(element_name.Contains("cav4")&& !element_name.Contains("adc")); // Need to change this to add other BCMs in summary
+
+      if(local_add_element && local_add_these_elements){
+      	ps->AddElement(new PromptSummaryElement(element_name));     
+      }
+
 
       local_ps_element=ps->GetElementByName(element_name);
 
       
       if(local_ps_element) {
-	element_value       = fBCM[i].get()->GetValue();
-	element_value_err   = fBCM[i].get()->GetValueError();
-	element_value_width = fBCM[i].get()->GetValueWidth();
+	element_value       = tmp_channel->GetValue();
+	element_value_err   = tmp_channel->GetValueError();
+	element_value_width = tmp_channel->GetValueWidth();
 	
 	local_ps_element->Set(type, element_value, element_value_err, element_value_width);
       }
@@ -3145,32 +3153,23 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
     }
   
     
-    /*------Filling Double Differences ---------*/
-    for (size_t i=0;i<fBCM.size();i++)
-    {
-    	for (size_t j = i+1; j < fBCM.size();  j++) 
-    	{
-		ps->FillDoubleDifference(type,fBCM[i].get()->GetElementName(),fBCM[j].get()->GetElementName());
-	}
-     }     		 
-      /*-----------------------------------------*/
-      
-      
-
-
+  char property[3][6]={"x","y", "ef"};
   local_ps_element=NULL;
+  local_add_these_elements=false;
+  
   
   for(size_t i=0; i< fStripline.size(); i++) 
      {
-      
-      element_name= GetChannel(kQwBPMStripline, i,"x")->GetElementName();
+     for (Int_t j=0;j<3;j++){
+      tmp_channel= GetChannel(kQwBPMStripline, i,property[j]);   
+      element_name= tmp_channel->GetElementName();
       element_value       = 0.0;
       element_value_err   = 0.0;
       element_value_width = 0.0;
 
-      local_add_these_Striplines=element_name.Contains("bpm4")||element_name.Contains("bpm8")||element_name.Contains("bpm10")||element_name.Contains("bpm12"); //Fix Me
+      local_add_these_elements=element_name.Contains("bpm4")||element_name.Contains("bpm8")||element_name.Contains("bpm10")||element_name.Contains("bpm12"); //Need to change this to add other stripline BPMs in summary
 
-      if(local_add_element && local_add_these_Striplines){
+      if(local_add_element && local_add_these_elements){
       	ps->AddElement(new PromptSummaryElement(element_name));     
       }
 
@@ -3179,9 +3178,9 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
           
      
       if(local_ps_element) {
-	element_value       = GetChannel(kQwBPMStripline, i,"x")->GetValue();
-	element_value_err   = GetChannel(kQwBPMStripline, i,"x")->GetValueError();
-	element_value_width = GetChannel(kQwBPMStripline, i,"x")->GetValueWidth();
+	element_value       = tmp_channel->GetValue();
+	element_value_err   = tmp_channel->GetValueError();
+	element_value_width = tmp_channel->GetValueWidth();
 	local_ps_element->Set(type, element_value, element_value_err, element_value_width);
       }
       
@@ -3190,9 +3189,25 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
 	       type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
       }
 
-
+      }
     }
 
+ 
+
+ 
+
+   
+    /*------Filling Double Differences ---------
+    for (size_t i=0;i<fBCM.size();i++)
+    {
+    	for (size_t j = i+1; j < fBCM.size();  j++) 
+    	{
+		ps->FillDoubleDifference(type,fBCM[i].get()->GetElementName(),fBCM[j].get()->GetElementName());
+	}
+     }     		 
+     -----------------------------------------*/
+      
+      
     
   
     return;
