@@ -5,35 +5,41 @@
 ! Unser calibration based on Run 1214 , HAPLOG 3609
 UNSER,   -174.1,     2.066e-2	    
 
-  ! BCM Calibration from 20-30 uA runs 1280,  HAPLOG 3625
-  bcm_an_us,	-300.72,	0.002891 
-  bcm_an_ds,	-543.25,	0.002760 
-  bcm_an_ds3,	-234.02, 0.000809 
-  bcm_an_ds10, -2518.49,	0.000268 
-  bcm_dg_us,	-135.85,	0.003021 
-  bcm_dg_ds,	-587.06,	0.003005 
+  ! BCM Calibration from run 1280~ 20-30 uA (based on UNSER)
+  bcm_an_us, 	 -309.92, 	 0.002889 
+  bcm_an_ds, 	 -553.58, 	 0.002758 
+  bcm_an_ds3, 	 -268.32, 	 0.000808 
+  bcm_an_ds10,  -2589.54,  0.000267 
+  bcm_dg_us, 	 -145.22, 	 0.003020 
+  bcm_dg_ds, 	 -596.17, 	 0.003003 
 
-  ! BPM pedestal from run 1280 current scan with forced gain at ~2300
-  bpm4aXM,	-650.9,	1
-  bpm4aXP,	1000,	1
-  bpm4aYM,	772.7,	1
-  bpm4aYP,	-456.8,	1
+  ! BPM pedestal from run 1280 current scan, 20-30 uA (based on UNSER)
+  ! with 4A and 4E at forced gain 
+  bpm4aXP,	 1317.46,	 1.0 
+  bpm4aXM,	 -412.32,	 1.0 
+  bpm4aYP,	 -128.90,	 1.0 
+  bpm4aYM,	 1074.41,	 1.0 
 
- bpm4eXM,	478.4,	1
- bpm4eXP,	742.2,	1
- bpm4eYM,	672.6,	1
- bpm4eYP,	-128.7,	1
+  bpm4eXP,	 952.60,	 1.0 
+  bpm4eXM,	 721.65,	 1.0 
+  bpm4eYP,	 189.11,	 1.0 
+  bpm4eYM,	 940.38,	 1.0 
 
-! BPM pedestal from run 1245
-  bpm18XM,	-3190,	1
-  bpm18XP,	-2872,	1
-  bpm18YM,	-2744,	1
-  bpm18YP,	-2850,	1
+  ! BPM 12, 14 and 18 were kept at auto-gain mode, 12 XM has no signal
+  bpm12XP,	 3143.56,	 1.0 
 
-  bpm14XM,	-3976,	1
-  bpm14XP,	-4184,	1
-  bpm14YM,	-3868,	1
-  bpm14YP,	-3587,	1
+  bpm12YP,	 4568.11,	 1.0 
+  bpm12YM,	 3316.37,	 1.0 
+
+  bpm14XP,	 244.58,	 1.0 
+  bpm14XM,	 -59.63,	 1.0 
+  bpm14YP,	 396.28,	 1.0 
+  bpm14YM,	 1436.64,	 1.0 
+
+  bpm18XP,	 -1104.84,	 1.0 
+  bpm18XM,	 -2769.28,	 1.0 
+  bpm18YP,	 -2337.71,	 1.0 
+  bpm18YM,	 -1348.61,	 1.0 
 
 ! cavity BPMs pedestal calibration from zero gain run 1219
   cav4bq,  -167.527,    0.00529310

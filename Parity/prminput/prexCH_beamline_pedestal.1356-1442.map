@@ -5,43 +5,43 @@
 ! Unser calibration based on Run 1214 , HAPLOG 3609
 UNSER,   -174.1,     2.066e-2	    
 
-  ! BCM Calibration from run 1404 ~25-35 uA (based on scandata1)
-  bcm_an_us, 	-947.98, 	0.002659 
-  bcm_an_ds, 	-1089.09, 	0.002672 
-  bcm_an_ds3, 	-2241.89, 	0.000781 
-  bcm_dg_us, 	-696.86, 	0.002906 
-  bcm_dg_ds, 	-1126.92, 	0.002889
+  ! BCM Calibration from run 1404 ~25-35 uA (based on UNSER)
+  bcm_an_us,	 -904.92,	 0.002640 
+  bcm_an_ds,	 -1030.41,  0.002664 
+  bcm_an_ds3,	 -2035.91,  0.000778 
+
+  bcm_dg_us,	 -587.72,	 0.002928 
+  bcm_dg_ds,	 -975.56,	 0.002925 
   
   ! ds10x is saturated at this current range, pedestal is copied from 20-30 uA current scan
- bcm_an_ds10,  -1811,     0.0002693
+  bcm_an_ds10,  -2589.54,  0.000267 
 
+  ! BPM pedestal from run 1404 current scan with forced gain at ~25,30,35 (based on UNSER)
 
-  ! BPM pedestal from run 1404 current scan with forced gain at ~25,30,35 (based on scandata1)
+  bpm4aXP,	 2075.24,	 1.0 
+  bpm4aXM,	 1395.64,	 1.0 
+  bpm4aYP,	 2110.10,	 1.0 
+  bpm4aYM,	 1649.55,	 1.0
+ 
+  bpm4eXP,	 2319.63,	 1.0 
+  bpm4eXM,	 1279.70,	 1.0 
+  bpm4eYP,	 2046.49,	 1.0 
+  bpm4eYM,	 1400.97,	 1.0 
 
-  bpm4aXP,	 -56.07,	 1.0 
-  bpm4aXM,	 -225.61,	 1.0 
-  bpm4aYP,	 16.17,		 1.0 
-  bpm4aYM,	 -449.68,	 1.0 
+  bpm12XP,	 4991.23,	 1.0 
 
-  bpm4eXP,	 366.29,	 1.0 
-  bpm4eXM,	 -402.58,	 1.0 
-  bpm4eYP,	 -132.63,	 1.0 
-  bpm4eYM,	 -548.23,	 1.0 
+  bpm12YP,	 4715.93,	 1.0 
+  bpm12YM,	 4015.07,	 1.0 
 
-  bpm12XP,	 2772.13,	 1.0 
-  bpm12XM,	 -338.26,	 1.0 
-  bpm12YP,	 2768.41,	 1.0 
-  bpm12YM,	 2375.63,	 1.0 
+  bpm14XP,	 918.56,	 1.0 
+  bpm14XM,	 1630.44,	 1.0 
+  bpm14YP,	 2626.48,	 1.0 
+  bpm14YM,	 1200.30,	 1.0 
 
-  bpm18XP,	 4134.23,	 1.0 
-  bpm18XM,	 -16.92,	 1.0 
-  bpm18YP,	 1902.80,	 1.0 
-  bpm18YM,	 1140.99,	 1.0 
-
-  bpm14XP,	 -1140.14,	 1.0 
-  bpm14XM,	 -517.90,	 1.0 
-  bpm14YP,	 217.82,	 1.0 
-  bpm14YM,	 -552.81,	 1.0 
+  bpm18XP,	 4653.96,	 1.0 
+  bpm18XM,	 1725.34,	 1.0 
+  bpm18YP,	 4562.50,	 1.0 
+  bpm18YM,	 2182.21,	 1.0 
 
 ! cavity BPMs pedestal calibration from zero gain run 1219
   cav4bq,  -167.527,    0.00529310
