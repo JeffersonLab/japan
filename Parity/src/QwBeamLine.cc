@@ -3136,7 +3136,9 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
       	ps->AddElement(new PromptSummaryElement(element_name));  
         	if(!(element_name.Contains("x")||element_name.Contains("y"))){ //avoiding cavity positions being used in current monitor double differences
 			storedBCMs.push_back(element_name);  
-		} 
+		} else {
+			storedBPMs.push_back(element_name);
+		}
       }
 
 
@@ -3175,7 +3177,8 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
       local_add_these_elements=element_name.Contains("bpm4")||element_name.Contains("bpm8")||element_name.Contains("bpm10")||element_name.Contains("bpm12"); //Need to change this to add other stripline BPMs in summary
 
       if(local_add_element && local_add_these_elements){
-      	ps->AddElement(new PromptSummaryElement(element_name));     
+      	ps->AddElement(new PromptSummaryElement(element_name)); 
+	storedBPMs.push_back(element_name);    
       }
 
       local_ps_element=ps->GetElementByName(element_name);
@@ -3207,12 +3210,35 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
     {
     	for (size_t j = i+1; j < storedBCMs.size();  j++) 
     	{
+	    if(local_add_element){
 	        ps->AddElement(new PromptSummaryElement(Form("%s-%s",storedBCMs[i].Data(),storedBCMs[j].Data())));
-		ps->FillDoubleDifference(type,storedBCMs[i].Data(),storedBCMs[j].Data());
+	    }
+	    ps->FillDoubleDifference(type,storedBCMs[i].Data(),storedBCMs[j].Data());
 		
 	}
      }     		 
      /*-----------------------------------------*/
+
+
+
+    Bool_t local_add_BPM_diff=false;
+    /*------Filling Double Differences ---------*/
+    for (size_t i=0;i<storedBPMs.size();i++)
+    {
+    	for (size_t j = i+1; j < storedBPMs.size();  j++) 
+    	{
+	    local_add_BPM_diff= (storedBPMs[i].Contains("X") && storedBPMs[j].Contains("X"))||(storedBPMs[i].Contains("Y") && storedBPMs[j].Contains("Y"))||(storedBPMs[i].Contains("x") && storedBPMs[j].Contains("x"))||(storedBPMs[i].Contains("y") && storedBPMs[j].Contains("y"))||(storedBPMs[i].Contains("WS") && storedBPMs[j].Contains("WS"));
+	    if(local_add_element && local_add_BPM_diff ){
+	        ps->AddElement(new PromptSummaryElement(Form("%s-%s",storedBPMs[i].Data(),storedBPMs[j].Data())));
+	    }
+	    ps->FillDoubleDifference(type,storedBPMs[i].Data(),storedBPMs[j].Data());
+		
+	}
+     }     		 
+     /*-----------------------------------------*/
+
+
+
       
       
     
