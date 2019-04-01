@@ -3102,6 +3102,8 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
 {
   Bool_t local_print_flag = true;
   Bool_t local_add_element= type.Contains("yield");
+  std::vector<TString> storedBCMs;
+  std::vector<TString> storedBPMs;
   
   
 
@@ -3131,7 +3133,10 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
       local_add_these_elements=element_name.Contains("bcm_an")||element_name.Contains("bcm_dg")||(element_name.Contains("cav4")&& !element_name.Contains("adc")); // Need to change this to add other BCMs in summary
 
       if(local_add_element && local_add_these_elements){
-      	ps->AddElement(new PromptSummaryElement(element_name));     
+      	ps->AddElement(new PromptSummaryElement(element_name));  
+        	if(!(element_name.Contains("x")||element_name.Contains("y"))){ //avoiding cavity positions being used in current monitor double differences
+			storedBCMs.push_back(element_name);  
+		} 
       }
 
 
@@ -3197,15 +3202,17 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
  
 
    
-    /*------Filling Double Differences ---------
-    for (size_t i=0;i<fBCM.size();i++)
+    /*------Filling Double Differences ---------*/
+    for (size_t i=0;i<storedBCMs.size();i++)
     {
-    	for (size_t j = i+1; j < fBCM.size();  j++) 
+    	for (size_t j = i+1; j < storedBCMs.size();  j++) 
     	{
-		ps->FillDoubleDifference(type,fBCM[i].get()->GetElementName(),fBCM[j].get()->GetElementName());
+	        ps->AddElement(new PromptSummaryElement(Form("%s-%s",storedBCMs[i].Data(),storedBCMs[j].Data())));
+		ps->FillDoubleDifference(type,storedBCMs[i].Data(),storedBCMs[j].Data());
+		
 	}
      }     		 
-     -----------------------------------------*/
+     /*-----------------------------------------*/
       
       
     
