@@ -73,6 +73,7 @@ void QwEventRing::push(QwSubsystemArrayParity &event)
 
   if (bEVENT_READY){
     Int_t thisevent = fNextToBeFilled;
+    Int_t prevevent = (thisevent+fRING_SIZE-1)%fRING_SIZE;
     fEvent_Ring[thisevent]=event;//copy the current good event to the ring 
     if (bStability){
       fRollingAvg.AccumulateAllRunningSum(event);
@@ -103,8 +104,7 @@ void QwEventRing::push(QwSubsystemArrayParity &event)
 	//stability cut faliures
 	*/
 	fRollingAvg.UpdateErrorFlag(); //to update the global error code in the fRollingAvg
-	if ( (fRollingAvg.GetEventcutErrorFlag()  && kBeamStabilityError)!=0 )
-	  {
+	if ( fRollingAvg.GetEventcutErrorFlag() != 0 ) {
 	  //  This test really needs to determine in any of the subelements
 	  //  might have a local stability cut failure, instead of just this
 	  //  global stability cut failure.
@@ -113,8 +113,12 @@ void QwEventRing::push(QwSubsystemArrayParity &event)
 	    fEvent_Ring[i].UpdateErrorFlag();
 	  }
 	}
-	
-	//      }
+	if ((fEvent_Ring[thisevent].GetEventcutErrorFlag() & kBCMErrorFlag)!=0 &&
+	    (fEvent_Ring[prevevent].GetEventcutErrorFlag() & kBCMErrorFlag)!=0){
+	  for(Int_t i=0;i<fRING_SIZE;i++){
+	    fEvent_Ring[i].UpdateErrorFlag(kBeamTripError);
+	  }
+	}
     }
     //ring processing is done at a separate location
   }else{
