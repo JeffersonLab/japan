@@ -886,6 +886,12 @@ std::vector<UChar_t> QwBlinder::GenerateDigest(const TString& input) const
  */
 void QwBlinder::PrintFinalValues(Int_t kVerbosity)
 {
+  Int_t total_count = 0;
+  for (size_t i=0; i<kBlinderCount_NumCounters; i++){
+    total_count += fPatternCounters.at(i);
+  }
+  if (total_count<=0) return;
+  
   QwMessage << "QwBlinder::PrintFinalValues():  Begin summary"    << QwLog::endl;
   QwMessage << "================================================" << QwLog::endl;
   PrintCountersValues(fPatternCounters, "Patterns");
