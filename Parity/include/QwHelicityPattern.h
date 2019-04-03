@@ -127,6 +127,7 @@ class QwHelicityPattern {
   void  AccumulateRunningBurstSum();
   void  AccumulateRunningSum(){AccumulateRunningSum(*this);};
   void  AccumulateRunningSum(QwHelicityPattern &entry);
+  void  AccumulatePairRunningSum(QwHelicityPattern &entry);
 
   void  CalculateBurstAverage();
   void  CalculateRunningBurstAverage();
@@ -205,6 +206,7 @@ class QwHelicityPattern {
 
   // Yield and asymmetry of a single helicity pattern
   QwSubsystemArrayParity fYield;
+  QwSubsystemArrayParity fDifference;
   QwSubsystemArrayParity fAsymmetry;
   // Alternate asymmetry calculations
   Bool_t fEnableAlternateAsym;
@@ -231,7 +233,6 @@ class QwHelicityPattern {
   Bool_t fPrintRunningSum;
 
   Bool_t fEnableDifference;
-  QwSubsystemArrayParity fDifference;
   QwSubsystemArrayParity fAlternateDiff;
   QwSubsystemArrayParity fPositiveHelicitySum;
   QwSubsystemArrayParity fNegativeHelicitySum;

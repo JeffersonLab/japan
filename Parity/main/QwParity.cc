@@ -296,6 +296,7 @@ Int_t main(Int_t argc, Char_t* argv[])
           helicitypattern.LoadEventData(ringoutput);
 
 	  if (helicitypattern.PairAsymmetryIsGood()) {
+	    patternsum.AccumulatePairRunningSum(helicitypattern);
 	    // Fill pair tree branches
 	    treerootfile->FillTreeBranches(helicitypattern.GetPairYield());
 	    treerootfile->FillTreeBranches(helicitypattern.GetPairAsymmetry());
