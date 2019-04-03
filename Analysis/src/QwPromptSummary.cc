@@ -97,7 +97,8 @@ PromptSummaryElement::GetTextSummary()
 TString
 PromptSummaryElement::GetCSVSummary()
 {
-  return Form("%s,%e,%e,%e,%e,%e,%e", fElementName.Data(), fYield, fYieldError, fYieldWidth, fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+  return Form("%14s |\t %12.2lf |\t %8.2lf |\t %8.2lf |\t %12.2lf |\t %8.2lf |\t %8.2lf  \n", fElementName.Data(), fYield, fYieldError, fYieldWidth, fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+  //return Form("%s,%e,%e,%e,%e,%e,%e", fElementName.Data(), fYield, fYieldError, fYieldWidth, fAsymDiff, fAsymDiffError, fAsymDiffWidth);
 };
 
 
@@ -197,20 +198,9 @@ QwPromptSummary::~QwPromptSummary()
 void 
 QwPromptSummary::SetupElementList()
 {
- // this->AddElement(new PromptSummaryElement("charge"));
- // this->AddElement(new PromptSummaryElement("target_x"));
- // this->AddElement(new PromptSummaryElement("target_y"));
- // this->AddElement(new PromptSummaryElement("angle_x"));
- // this->AddElement(new PromptSummaryElement("angle_y"));
- // this->AddElement(new PromptSummaryElement("energy"));
+
   
-  this->AddElement(new PromptSummaryElement("bcm_an_us"));
-  this->AddElement(new PromptSummaryElement("bcm_an_ds"));
-  this->AddElement(new PromptSummaryElement("bcm_an_ds3"));
-  this->AddElement(new PromptSummaryElement("bcm_an_ds10"));
-  this->AddElement(new PromptSummaryElement("bcm_dg_us"));
-  this->AddElement(new PromptSummaryElement("bcm_dg_ds"));
- 
+/* 
   this->AddElement(new PromptSummaryElement("bcm_an_us-bcm_an_ds"));
   this->AddElement(new PromptSummaryElement("bcm_an_us-bcm_an_ds3"));
   this->AddElement(new PromptSummaryElement("bcm_an_us-bcm_an_ds10"));
@@ -232,56 +222,7 @@ QwPromptSummary::SetupElementList()
 
   this->AddElement(new PromptSummaryElement("bcm_dg_us-bcm_dg_ds"));
 
-  this->AddElement(new PromptSummaryElement("bpm4a"));
-
-  
-  
-
-/*
-
-  this->AddElement(new PromptSummaryElement("MD1"));
-  this->AddElement(new PromptSummaryElement("MD2"));
-  this->AddElement(new PromptSummaryElement("MD3"));
-  this->AddElement(new PromptSummaryElement("MD4"));
-  this->AddElement(new PromptSummaryElement("MD5"));
-  this->AddElement(new PromptSummaryElement("MD6"));
-  this->AddElement(new PromptSummaryElement("MD7"));
-  this->AddElement(new PromptSummaryElement("MD8"));
-
-  this->AddElement(new PromptSummaryElement("MD1-MD5"));
-  this->AddElement(new PromptSummaryElement("MD2-MD6"));
-  this->AddElement(new PromptSummaryElement("MD3-MD7"));
-  this->AddElement(new PromptSummaryElement("MD4-MD8"));
-
-  this->AddElement(new PromptSummaryElement("MD_AllBars"));
-  this->AddElement(new PromptSummaryElement("MD_EvenBars"));
-  this->AddElement(new PromptSummaryElement("MD_OddBars"));
-
-  this->AddElement(new PromptSummaryElement("MD_Even-Odd"));
-  this->AddElement(new PromptSummaryElement("MD1/5-MD3/7"));
-  this->AddElement(new PromptSummaryElement("MD2/6-MD4/8"));
-
-  this->AddElement(new PromptSummaryElement("dslumi1"));
-  this->AddElement(new PromptSummaryElement("dslumi2"));
-  this->AddElement(new PromptSummaryElement("dslumi3"));
-  this->AddElement(new PromptSummaryElement("dslumi4"));
-  this->AddElement(new PromptSummaryElement("dslumi5"));
-  this->AddElement(new PromptSummaryElement("dslumi6"));
-  this->AddElement(new PromptSummaryElement("dslumi7"));
-  this->AddElement(new PromptSummaryElement("dslumi8"));
-
-  this->AddElement(new PromptSummaryElement("dslumi_even"));
-  this->AddElement(new PromptSummaryElement("dslumi_odd"));
-  this->AddElement(new PromptSummaryElement("dslumi_sum"));
-  
-  this->AddElement(new PromptSummaryElement("uslumi1"));
-  this->AddElement(new PromptSummaryElement("uslumi3"));
-  this->AddElement(new PromptSummaryElement("uslumi5"));
-  this->AddElement(new PromptSummaryElement("uslumi7"));
-
-  this->AddElement(new PromptSummaryElement("uslumi_sum"));
-
-*/
+*/   
 
 };
 
@@ -356,12 +297,13 @@ QwPromptSummary::PrintTextSummaryTailer()
 
 
 TString
-QwPromptSummary::PrintCSVHeader()
+QwPromptSummary::PrintCSVHeader() // Fix Me:Is this function really necessary?
 {
   TString out = "";
   TString filename = "";
-
+  
   filename = Form("summary_%d_%d.txt", fRunNumber, fRunletNumber);
+  
   
   out = "! This csv file is desinged for making plots easily.\n";
   out += "!See ";
@@ -469,8 +411,7 @@ QwPromptSummary::FillDoubleDifference(TString type, TString name1, TString name2
   one_element = this->GetElementByName(name1);
   two_element = this->GetElementByName(name2);
 
-
-  if(one_element and two_element ) {
+  if(one_element && two_element ) {
 
     an_element = this->GetElementByName(name1+"-"+name2);
 
@@ -487,7 +428,8 @@ QwPromptSummary::FillDoubleDifference(TString type, TString name1, TString name2
       Double_t b_err = 0.0;
       Double_t a_wit = 0.0;
       Double_t b_wit = 0.0;
-      
+     
+
       if(type.Contains("yield")) {
 	a     = one_element -> GetYield();
 	b     = two_element -> GetYield();
@@ -504,8 +446,7 @@ QwPromptSummary::FillDoubleDifference(TString type, TString name1, TString name2
 	an_element -> SetYieldError(error_diff);
 	an_element -> SetYieldWidth(width_diff);
 	
-      }
-      else if (type.Contains("asymmetry")) {
+      } else {
 	a     = one_element -> GetAsymmetry();
 	b     = two_element -> GetAsymmetry();
 	a_err = one_element -> GetAsymmetryError();
@@ -520,6 +461,8 @@ QwPromptSummary::FillDoubleDifference(TString type, TString name1, TString name2
 	an_element -> SetAsymmetry(diff);
 	an_element -> SetAsymmetryError(error_diff);
 	an_element -> SetAsymmetryWidth(width_diff);
+        
+	
       }
     
     }
@@ -547,13 +490,20 @@ void
 QwPromptSummary::PrintCSV()
 {
   printf("-----------------------\n");
+  TString filename = "";
+  filename = Form("summary_%d_%d.txt", fRunNumber, fRunletNumber);
+  std::ofstream output;
+  output.open(filename.Data());
+  output<< "Element Name |\t Yield |\t Yield Error |\t Yield Width |\t Asymmetry |\t Asymmetry Error |\t Asymmetry Width\n";
+
   TObjArrayIter next(fElementList);
   TObject* obj = NULL;
   while ( (obj = next()) )
     {
       PromptSummaryElement* an_element = (PromptSummaryElement*) obj;
-      std::cout << an_element -> GetCSVSummary() << std::endl;
+      output << an_element -> GetCSVSummary() << "\n";
     }
+  output.close();
   printf("-----------------------\n");
   return;
 };
