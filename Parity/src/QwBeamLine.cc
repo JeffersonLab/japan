@@ -3100,7 +3100,7 @@ void QwBeamLine::FillErrDB(QwParityDB *db, TString datatype)
 
 void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type) 
 {
-  Bool_t local_print_flag = true;
+  Bool_t local_print_flag = false;
   Bool_t local_add_element= type.Contains("yield");
   
   

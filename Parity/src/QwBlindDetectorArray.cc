@@ -1573,7 +1573,7 @@ void QwBlindDetectorArray::FillErrDB(QwParityDB *db, TString datatype)
 void QwBlindDetectorArray::WritePromptSummary(QwPromptSummary *ps, TString type)
 {
 
-  Bool_t local_print_flag = true;
+  Bool_t local_print_flag = false;
   Bool_t local_add_element= type.Contains("yield");
 
   if(local_print_flag){
