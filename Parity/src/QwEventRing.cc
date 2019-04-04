@@ -1,4 +1,3 @@
-
 #include "QwEventRing.h"
 
 
@@ -73,27 +72,29 @@ void QwEventRing::push(QwSubsystemArrayParity &event)
   
 
   if (bEVENT_READY){
-    fEvent_Ring[fNextToBeFilled]=event;//copy the current good event to the ring 
+    Int_t thisevent = fNextToBeFilled;
+    Int_t prevevent = (thisevent+fRING_SIZE-1)%fRING_SIZE;
+    fEvent_Ring[thisevent]=event;//copy the current good event to the ring 
     if (bStability){
       fRollingAvg.AccumulateAllRunningSum(event);
     }
 
 
-    if (bDEBUG) QwMessage<<" Filled at "<<fNextToBeFilled;//<<"Ring count "<<fRing_Count<<QwLog::endl; 
-    if (bDEBUG_Write) fprintf(out_file," Filled at %d ",fNextToBeFilled);
+    if (bDEBUG) QwMessage<<" Filled at "<<thisevent;//<<"Ring count "<<fRing_Count<<QwLog::endl; 
+    if (bDEBUG_Write) fprintf(out_file," Filled at %d ",thisevent);
 
 
-    fNextToBeFilled=(fNextToBeFilled+1)%fRING_SIZE;
+    fNextToBeFilled=(thisevent+1)%fRING_SIZE;
     
     if(fNextToBeFilled == 0){
       //then we have RING_SIZE events to process
-      if (bDEBUG) QwMessage<<" RING FILLED "<<fNextToBeFilled+1; //<<QwLog::endl; 
+      if (bDEBUG) QwMessage<<" RING FILLED "<<thisevent; //<<QwLog::endl; 
       if (bDEBUG_Write) fprintf(out_file," RING FILLED ");
       bRING_READY=kTRUE;//ring is filled with good multiplets
-      fNextToBeFilled=0;//next event to be filled
-      fNextToBeRead=0;//first element in the ring  
+      fNextToBeFilled=0;//next event to be filled is the first element  
+    }
       //check for current ramps
-      if (bStability){
+    if (bRING_READY && bStability){
 	fRollingAvg.CalculateRunningAverage();
 	/*
 	//The fRollingAvg dose not contain any regular errorcodes since it only accumulate rolling sum for errorflag==0 event.
@@ -103,12 +104,21 @@ void QwEventRing::push(QwSubsystemArrayParity &event)
 	//stability cut faliures
 	*/
 	fRollingAvg.UpdateErrorFlag(); //to update the global error code in the fRollingAvg
-	for(Int_t i=0;i<fRING_SIZE;i++){
-	  fEvent_Ring[i].UpdateErrorFlag(fRollingAvg);
-	  fEvent_Ring[i].UpdateErrorFlag();
+	if ( fRollingAvg.GetEventcutErrorFlag() != 0 ) {
+	  //  This test really needs to determine in any of the subelements
+	  //  might have a local stability cut failure, instead of just this
+	  //  global stability cut failure.
+	  for(Int_t i=0;i<fRING_SIZE;i++){
+	    fEvent_Ring[i].UpdateErrorFlag(fRollingAvg);
+	    fEvent_Ring[i].UpdateErrorFlag();
+	  }
 	}
-	
-      }
+	if ((fEvent_Ring[thisevent].GetEventcutErrorFlag() & kBCMErrorFlag)!=0 &&
+	    (fEvent_Ring[prevevent].GetEventcutErrorFlag() & kBCMErrorFlag)!=0){
+	  for(Int_t i=0;i<fRING_SIZE;i++){
+	    fEvent_Ring[i].UpdateErrorFlag(kBeamTripError);
+	  }
+	}
     }
     //ring processing is done at a separate location
   }else{

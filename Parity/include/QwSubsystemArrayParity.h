@@ -126,6 +126,7 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
     /// \brief update the error flag for each channel in the subsystem array with the corresponding value in the ev_error subsystem array
     void UpdateErrorFlag(const QwSubsystemArrayParity& ev_error);
 
+    void UpdateErrorFlag(UInt_t errflag){fErrorFlag |= errflag;};
 
     /// \brief Print value of all channels
     void PrintValue() const;

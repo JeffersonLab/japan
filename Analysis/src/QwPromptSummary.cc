@@ -97,12 +97,13 @@ PromptSummaryElement::GetTextSummary()
 TString
 PromptSummaryElement::GetCSVSummary()
 {
-  return Form("%s,%e,%e,%e,%e,%e,%e", fElementName.Data(), fYield, fYieldError, fYieldWidth, fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+  return Form("%14s | Yield:  %.2e +/-  %.2e \t Width:  %.2e | Difference/Asymmetry:  %.2e +/-  %.2e \t Width:  %0.2e  \n", fElementName.Data(), fYield, fYieldError, fYieldWidth, fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+  //return Form("%s,%e,%e,%e,%e,%e,%e", fElementName.Data(), fYield, fYieldError, fYieldWidth, fAsymDiff, fAsymDiffError, fAsymDiffWidth);
 };
 
 
 void 
-PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, const Double_t a_width)
+PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, const Double_t a_width)    // Fix Me - This function could use some cleaning up. Use maps.
 {
   Double_t asymmetry_ppm = 1e-6;
 
@@ -197,99 +198,31 @@ QwPromptSummary::~QwPromptSummary()
 void 
 QwPromptSummary::SetupElementList()
 {
-  this->AddElement(new PromptSummaryElement("charge"));
-  this->AddElement(new PromptSummaryElement("target_x"));
-  this->AddElement(new PromptSummaryElement("target_y"));
-  this->AddElement(new PromptSummaryElement("angle_x"));
-  this->AddElement(new PromptSummaryElement("angle_y"));
-  this->AddElement(new PromptSummaryElement("energy"));
+
   
-  this->AddElement(new PromptSummaryElement("bcm1"));
-  this->AddElement(new PromptSummaryElement("bcm2"));
-  this->AddElement(new PromptSummaryElement("bcm5"));
-  this->AddElement(new PromptSummaryElement("bcm6"));
-  this->AddElement(new PromptSummaryElement("bcm7"));
-  this->AddElement(new PromptSummaryElement("bcm8"));
-  this->AddElement(new PromptSummaryElement("bpm3h04_effectivecharge"));
-  this->AddElement(new PromptSummaryElement("bpm3h09_effectivecharge"));
-  this->AddElement(new PromptSummaryElement("3c12x"));
-  this->AddElement(new PromptSummaryElement("3c12y"));
-  this->AddElement(new PromptSummaryElement("3h04x"));
-  this->AddElement(new PromptSummaryElement("3h04y"));
-  this->AddElement(new PromptSummaryElement("3h07cx"));
-  this->AddElement(new PromptSummaryElement("3h07cy"));
-  this->AddElement(new PromptSummaryElement("3h09x"));
-  this->AddElement(new PromptSummaryElement("3h09y"));
-  this->AddElement(new PromptSummaryElement("3h09bx"));
-  this->AddElement(new PromptSummaryElement("3h09by"));
-
-  this->AddElement(new PromptSummaryElement("bcm1-bcm2"));
-  this->AddElement(new PromptSummaryElement("bcm1-bcm5"));
-  this->AddElement(new PromptSummaryElement("bcm1-bcm6"));
-  this->AddElement(new PromptSummaryElement("bcm2-bcm5"));
-  this->AddElement(new PromptSummaryElement("bcm2-bcm6"));
-  this->AddElement(new PromptSummaryElement("bcm5-bcm6"));
-
-  this->AddElement(new PromptSummaryElement("bcm1-bcm7"));
-  this->AddElement(new PromptSummaryElement("bcm1-bcm8"));
-
-  // this->AddElement(new PromptSummaryElement("bcm2-bcm7"));
-  // this->AddElement(new PromptSummaryElement("bcm2-bcm8"));
-
-  // this->AddElement(new PromptSummaryElement("bcm5-bcm7"));
-  // this->AddElement(new PromptSummaryElement("bcm5-bcm8"));
-  // this->AddElement(new PromptSummaryElement("bcm6-bcm7"));
-  // this->AddElement(new PromptSummaryElement("bcm6-bcm8"));
-
-  this->AddElement(new PromptSummaryElement("bcm5-bcm7"));
-  this->AddElement(new PromptSummaryElement("bcm7-bcm8"));
+/* 
+  this->AddElement(new PromptSummaryElement("bcm_an_us-bcm_an_ds"));
+  this->AddElement(new PromptSummaryElement("bcm_an_us-bcm_an_ds3"));
+  this->AddElement(new PromptSummaryElement("bcm_an_us-bcm_an_ds10"));
+  this->AddElement(new PromptSummaryElement("bcm_an_us-bcm_dg_us"));
+  this->AddElement(new PromptSummaryElement("bcm_an_us-bcm_dg_ds"));
   
-
-
-
-  this->AddElement(new PromptSummaryElement("MD1"));
-  this->AddElement(new PromptSummaryElement("MD2"));
-  this->AddElement(new PromptSummaryElement("MD3"));
-  this->AddElement(new PromptSummaryElement("MD4"));
-  this->AddElement(new PromptSummaryElement("MD5"));
-  this->AddElement(new PromptSummaryElement("MD6"));
-  this->AddElement(new PromptSummaryElement("MD7"));
-  this->AddElement(new PromptSummaryElement("MD8"));
-
-  this->AddElement(new PromptSummaryElement("MD1-MD5"));
-  this->AddElement(new PromptSummaryElement("MD2-MD6"));
-  this->AddElement(new PromptSummaryElement("MD3-MD7"));
-  this->AddElement(new PromptSummaryElement("MD4-MD8"));
-
-  this->AddElement(new PromptSummaryElement("MD_AllBars"));
-  this->AddElement(new PromptSummaryElement("MD_EvenBars"));
-  this->AddElement(new PromptSummaryElement("MD_OddBars"));
-
-  this->AddElement(new PromptSummaryElement("MD_Even-Odd"));
-  this->AddElement(new PromptSummaryElement("MD1/5-MD3/7"));
-  this->AddElement(new PromptSummaryElement("MD2/6-MD4/8"));
-
-  this->AddElement(new PromptSummaryElement("dslumi1"));
-  this->AddElement(new PromptSummaryElement("dslumi2"));
-  this->AddElement(new PromptSummaryElement("dslumi3"));
-  this->AddElement(new PromptSummaryElement("dslumi4"));
-  this->AddElement(new PromptSummaryElement("dslumi5"));
-  this->AddElement(new PromptSummaryElement("dslumi6"));
-  this->AddElement(new PromptSummaryElement("dslumi7"));
-  this->AddElement(new PromptSummaryElement("dslumi8"));
-
-  this->AddElement(new PromptSummaryElement("dslumi_even"));
-  this->AddElement(new PromptSummaryElement("dslumi_odd"));
-  this->AddElement(new PromptSummaryElement("dslumi_sum"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds-bcm_an_ds3"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds-bcm_an_ds10"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds-bcm_dg_us"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds-bcm_dg_ds"));
   
-  this->AddElement(new PromptSummaryElement("uslumi1"));
-  this->AddElement(new PromptSummaryElement("uslumi3"));
-  this->AddElement(new PromptSummaryElement("uslumi5"));
-  this->AddElement(new PromptSummaryElement("uslumi7"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds3-bcm_an_ds10"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds3-bcm_dg_us"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds3-bcm_dg_ds"));
 
-  this->AddElement(new PromptSummaryElement("uslumi_sum"));
+  
+  this->AddElement(new PromptSummaryElement("bcm_an_ds10-bcm_dg_us"));
+  this->AddElement(new PromptSummaryElement("bcm_an_ds10-bcm_dg_ds"));
 
+  this->AddElement(new PromptSummaryElement("bcm_dg_us-bcm_dg_ds"));
 
+*/   
 
 };
 
@@ -364,18 +297,21 @@ QwPromptSummary::PrintTextSummaryTailer()
 
 
 TString
-QwPromptSummary::PrintCSVHeader()
+QwPromptSummary::PrintCSVHeader() 
 {
   TString out = "";
-  TString filename = "";
-
-  filename = Form("summary_%d_%d.txt", fRunNumber, fRunletNumber);
+   
   
-  out = "! This csv file is desinged for making plots easily.\n";
-  out += "!See ";
-  out += filename;
-  out += " in http://qweak.jlab.org/textsummaries/ for theirs units\n";
-  out += "!Please contact Jeong Han Lee via jhlee@jlab.org if one has comments or questions.\n";
+  out += Form("Distribution parameters for run %d \n",fRunNumber);
+  out += "===================================================================================\n";
+
+  out += "Please follow the following guidance on units \n";
+  out += "Yields: bcm* (uA), cav*q(uA), cav*x/y(mm-uA?), bpm*WS(?), bpm*(mm), sam*(V/uA?)\n";
+  out += "Asymmetries: bpm*(nm), bpm*WS(?), cav*x/y(?), In general (ppm) \n";
+
+  out += "===================================================================================\n";
+  
+  
 
   return out;
 };
@@ -477,8 +413,7 @@ QwPromptSummary::FillDoubleDifference(TString type, TString name1, TString name2
   one_element = this->GetElementByName(name1);
   two_element = this->GetElementByName(name2);
 
-
-  if(one_element and two_element ) {
+  if(one_element && two_element ) {
 
     an_element = this->GetElementByName(name1+"-"+name2);
 
@@ -495,7 +430,8 @@ QwPromptSummary::FillDoubleDifference(TString type, TString name1, TString name2
       Double_t b_err = 0.0;
       Double_t a_wit = 0.0;
       Double_t b_wit = 0.0;
-      
+     
+
       if(type.Contains("yield")) {
 	a     = one_element -> GetYield();
 	b     = two_element -> GetYield();
@@ -512,8 +448,7 @@ QwPromptSummary::FillDoubleDifference(TString type, TString name1, TString name2
 	an_element -> SetYieldError(error_diff);
 	an_element -> SetYieldWidth(width_diff);
 	
-      }
-      else if (type.Contains("asymmetry")) {
+      } else {
 	a     = one_element -> GetAsymmetry();
 	b     = two_element -> GetAsymmetry();
 	a_err = one_element -> GetAsymmetryError();
@@ -528,6 +463,8 @@ QwPromptSummary::FillDoubleDifference(TString type, TString name1, TString name2
 	an_element -> SetAsymmetry(diff);
 	an_element -> SetAsymmetryError(error_diff);
 	an_element -> SetAsymmetryWidth(width_diff);
+        
+	
       }
     
     }
@@ -555,13 +492,22 @@ void
 QwPromptSummary::PrintCSV()
 {
   printf("-----------------------\n");
+  TString filename = getenv_safe_TString("QW_ROOTFILES"); 
+  filename+=Form("/summary_%d.txt", fRunNumber);
+  TString header= this->PrintCSVHeader();
+  std::ofstream output;
+  output.open(filename.Data());
+  output<< header.Data() << "\n";
+  
+
   TObjArrayIter next(fElementList);
   TObject* obj = NULL;
   while ( (obj = next()) )
     {
       PromptSummaryElement* an_element = (PromptSummaryElement*) obj;
-      std::cout << an_element -> GetCSVSummary() << std::endl;
+      output << an_element -> GetCSVSummary() << "\n";
     }
+  output.close();
   printf("-----------------------\n");
   return;
 };
