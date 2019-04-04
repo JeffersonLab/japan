@@ -1574,14 +1574,57 @@ void QwBlindDetectorArray::WritePromptSummary(QwPromptSummary *ps, TString type)
 {
 
   Bool_t local_print_flag = true;
+  Bool_t local_add_element= type.Contains("yield");
+
   if(local_print_flag){
     QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
     QwMessage << "        QwBlindDetectorArrayID::WritePromptSummary()          " << QwLog::endl;
     QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
   }
 
-  //  ps->PrintCSV();
 
+  const VQwHardwareChannel* tmp_channel = 0;
+  TString  element_name        = "";
+  Double_t element_value       = 0.0;
+  Double_t element_value_err   = 0.0;
+  Double_t element_value_width = 0.0;
+
+  PromptSummaryElement *local_ps_element = NULL;
+  Bool_t local_add_these_elements= false;
+
+  for (size_t i = 0; i < fMainDetID.size();  i++) 
+    {
+      element_name        = fMainDetID[i].fdetectorname;
+      tmp_channel=GetIntegrationPMT(element_name)->GetChannel(element_name);	
+      element_value       = 0.0;
+      element_value_err   = 0.0;
+      element_value_width = 0.0;
+    
+
+      local_add_these_elements=element_name.Contains("u")||element_name.Contains("d")||element_name.Contains("a"); // Need to change this to add other detectors in summary
+
+      if(local_add_element && local_add_these_elements){
+      	ps->AddElement(new PromptSummaryElement(element_name));     
+      }
+
+
+      local_ps_element=ps->GetElementByName(element_name);
+
+      
+      if(local_ps_element) {
+	element_value       = tmp_channel->GetValue();
+	element_value_err   = tmp_channel->GetValueError();
+	element_value_width = tmp_channel->GetValueWidth();
+	
+	local_ps_element->Set(type, element_value, element_value_err, element_value_width);
+      }
+      
+      if( local_print_flag && local_ps_element) {
+	printf("Type %12s, Element %32s, value %12.4e error %8.4e  width %12.4e\n", 
+	       type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
+      }
+    }
+  
   return;
 }
 
