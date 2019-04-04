@@ -3180,7 +3180,8 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
 	if (local_add_element){
       	ps->AddElement(new PromptSummaryElement(element_name)); 
 	}
-	fStoredBPMs.push_back(element_name);    
+	fStoredBPMs.push_back(element_name); 
+	 
       }
 
       local_ps_element=ps->GetElementByName(element_name);
@@ -3195,7 +3196,6 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
       }
       
       if( local_print_flag && local_ps_element) {
-	printf("Debug\n");
 	printf("Type %12s, Element %32s, value %12.4e error %8.4e  width %12.4e\n", 
 	       type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
       }
@@ -3206,7 +3206,7 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
  
 
  
-     printf("The type inside QwBeamLine is %s with\n", type.Data()); 
+    
    
     /*------Filling Double Differences ---------*/
    
@@ -3217,7 +3217,7 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
 	    if(local_add_element){
 	    ps->AddElement(new PromptSummaryElement(Form("%s-%s",(*i).Data(),(*j).Data())));
 	    }
-	    printf("The type inside QwBeamLine is %s \n", type.Data()); 
+	  
 	    ps->FillDoubleDifference(type,(*i),(*j));
 		
 	}
@@ -3231,7 +3231,7 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
     /*------Filling Double Differences ---------*/
     for (auto i=fStoredBPMs.begin(); i!=fStoredBPMs.end(); i++)
     {
-    	for (auto j=fStoredBPMs.begin(); j!=fStoredBPMs.end(); j++) 
+    	for (auto j=i+1; j!=fStoredBPMs.end(); j++) 
     	{
 	    local_add_BPM_diff= ((*i).Contains("X") && (*j).Contains("X"))||((*i).Contains("Y") && (*j).Contains("Y"))||((*i).Contains("x") && (*j).Contains("x"))||((*i).Contains("y") && (*j).Contains("y"))||((*i).Contains("WS") && (*j).Contains("WS"));
 	    if(local_add_element && local_add_BPM_diff ){

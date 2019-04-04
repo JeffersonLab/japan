@@ -1504,6 +1504,7 @@ void QwDetectorArray::WritePromptSummary(QwPromptSummary *ps, TString type)
 
   Bool_t local_print_flag = true;
   Bool_t local_add_element= type.Contains("yield");
+  
 
   if(local_print_flag){
     QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
@@ -1531,8 +1532,11 @@ void QwDetectorArray::WritePromptSummary(QwPromptSummary *ps, TString type)
 
       local_add_these_elements=element_name.Contains("sam"); // Need to change this to add other detectorss in summary
 
-      if(local_add_element && local_add_these_elements){
-      	ps->AddElement(new PromptSummaryElement(element_name));     
+      if(local_add_these_elements){
+	if(local_add_element){
+      	ps->AddElement(new PromptSummaryElement(element_name)); 
+	}
+	fStoredDets.push_back(element_name);    
       }
 
 
@@ -1552,6 +1556,22 @@ void QwDetectorArray::WritePromptSummary(QwPromptSummary *ps, TString type)
 	       type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
       }
     }
+
+	/*------Filling Double Differences ---------*/
+     for (auto i=fStoredDets.begin(); i!=fStoredDets.end(); i++)
+    {
+    	for (auto j = i+1; j!=fStoredDets.end();  j++) 
+    	{
+	    if(local_add_element){
+	    ps->AddElement(new PromptSummaryElement(Form("%s-%s",(*i).Data(),(*j).Data())));
+	    }
+	    
+	    ps->FillDoubleDifference(type,(*i),(*j));
+		
+	}
+     } 
+       		 
+     /*-----------------------------------------*/
   
 
   return;

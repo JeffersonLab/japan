@@ -170,6 +170,9 @@ class QwDetectorArray:
   std::vector <QwCombinedPMT> fCombinedPMT;
   std::vector <QwDetectorArrayID> fMainDetID;
 
+
+  std::vector<TString> fStoredDets;
+
 /*
 *	Maybe have an array of QwIntegrationPMT to describe the Sector, Ring, Slice structure?  Maybe hold Ring 5 out and have it described as one list by Sector and slice?
 	Need a way to define the correlations to all beam parameters for each element.
