@@ -16,7 +16,7 @@
 #include "TString.h"
 
 #include "TROOT.h"
-
+#include "QwOptions.h"
 /**
  *  \class QwPromptSummary
  *  \ingroup QwAnalysis

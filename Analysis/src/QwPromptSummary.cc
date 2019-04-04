@@ -97,7 +97,7 @@ PromptSummaryElement::GetTextSummary()
 TString
 PromptSummaryElement::GetCSVSummary()
 {
-  return Form("%14s |\t %12.2lf |\t %8.2lf |\t %8.2lf |\t %12.2lf |\t %8.2lf |\t %8.2lf  \n", fElementName.Data(), fYield, fYieldError, fYieldWidth, fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+  return Form("%14s | Yield:  %.2e +/-  %.2e \t Width:  %.2e | Difference/Asymmetry:  %.2e +/-  %.2e \t Width:  %0.2e  \n", fElementName.Data(), fYield, fYieldError, fYieldWidth, fAsymDiff, fAsymDiffError, fAsymDiffWidth);
   //return Form("%s,%e,%e,%e,%e,%e,%e", fElementName.Data(), fYield, fYieldError, fYieldWidth, fAsymDiff, fAsymDiffError, fAsymDiffWidth);
 };
 
@@ -297,19 +297,21 @@ QwPromptSummary::PrintTextSummaryTailer()
 
 
 TString
-QwPromptSummary::PrintCSVHeader() // Fix Me:Is this function really necessary?
+QwPromptSummary::PrintCSVHeader() 
 {
   TString out = "";
-  TString filename = "";
+   
   
-  filename = Form("summary_%d_%d.txt", fRunNumber, fRunletNumber);
+  out += Form("Distribution parameters for run %d \n",fRunNumber);
+  out += "===================================================================================\n";
+
+  out += "Please follow the following guidance on units \n";
+  out += "Yields: bcm* (uA), cav*q(uA), cav*x/y(mm-uA?), bpm*WS(?), bpm*(mm), sam*(V/uA?)\n";
+  out += "Asymmetries: bpm*(nm), bpm*WS(?), cav*x/y(?), In general (ppm) \n";
+
+  out += "===================================================================================\n";
   
   
-  out = "! This csv file is desinged for making plots easily.\n";
-  out += "!See ";
-  out += filename;
-  out += " in http://qweak.jlab.org/textsummaries/ for theirs units\n";
-  out += "!Please contact Jeong Han Lee via jhlee@jlab.org if one has comments or questions.\n";
 
   return out;
 };
@@ -490,11 +492,13 @@ void
 QwPromptSummary::PrintCSV()
 {
   printf("-----------------------\n");
-  TString filename = "";
-  filename = Form("summary_%d_%d.txt", fRunNumber, fRunletNumber);
+  TString filename = getenv_safe_TString("QW_ROOTFILES"); 
+  filename+=Form("/summary_%d.txt", fRunNumber);
+  TString header= this->PrintCSVHeader();
   std::ofstream output;
   output.open(filename.Data());
-  output<< "Element Name |\t Yield |\t Yield Error |\t Yield Width |\t Asymmetry |\t Asymmetry Error |\t Asymmetry Width\n";
+  output<< header.Data() << "\n";
+  
 
   TObjArrayIter next(fElementList);
   TObject* obj = NULL;
