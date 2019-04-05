@@ -21,6 +21,11 @@
 #include "QwDataHandlerArray.h"
 #include "VQwDataHandler.h"
 #include "QwOptions.h"
+#include "QwHelicityPattern.h"
+
+#include "QwCorrelator.h"
+#include "QwCombiner.h"
+#include "LRBCorrector.h"
 
 // Forward declarations
 class QwParityDB;
@@ -55,7 +60,7 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
 
   public:
     /// Constructor with options
-    QwDataHandlerArray(QwOptions& options);
+    QwDataHandlerArray(QwOptions& options, QwHelicityPattern& helicitypattern, const TString &run);
     /// Copy constructor by reference
     QwDataHandlerArray(const QwDataHandlerArray& source);
     /// Default destructor
@@ -70,12 +75,14 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
   /// \brief Process configuration options (default behavior)
   void ProcessOptions(QwOptions &options) { ProcessOptionsDataHandlers(options); };
 
-  void LoadDataHandlersFromParameterFile(QwParameterFile& detectors);
+  void LoadDataHandlersFromParameterFile(QwParameterFile& detectors, QwHelicityPattern& helicitypattern, const TString &run);
 
   /// \brief Add the datahandler to this array
   void push_back(VQwDataHandler* handler);
   void push_back(boost::shared_ptr<VQwDataHandler> handler);
-
+  void push_back(QwCorrelator* handler);
+  void push_back(LRBCorrector* handler);
+  void push_back(QwCombiner* handler);
 
     /// \brief Get the handler with the specified name
     VQwDataHandler* GetDataHandlerByName(const TString& name);
@@ -129,13 +136,15 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     /*
     void WritePromptSummary(QwPromptSummary *ps, TString type);
     */
+    
+    void ProcessDataHandlerEntry();
 
+    void FinishDataHandler();
   protected:
   /// Filename of the global detector map
   std::string fDataHandlersMapFile;
   std::vector<std::string> fDataHandlersDisabledByName; ///< List of disabled types
   std::vector<std::string> fDataHandlersDisabledByType; ///< List of disabled names
-
 
     /// Test whether this handler array can contain a particular handler
     static Bool_t CanContain(VQwDataHandler* handler) {

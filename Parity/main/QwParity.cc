@@ -38,6 +38,7 @@
 #include "QwPromptSummary.h"
 #include "QwCorrelator.h"
 #include "LRBCorrector.h"
+#include "QwDataHandlerArray.h"
 
 // Qweak subsystems
 // (for correct dependency generation)
@@ -134,7 +135,10 @@ Int_t main(Int_t argc, Char_t* argv[])
     //    make since to have it be an option for use globally
     QwHelicityPattern helicitypattern(detectors,run_label);
     helicitypattern.ProcessOptions(gQwOptions);
-
+    
+    /// Create the data handler array
+    QwDataHandlerArray datahandlerarray(gQwOptions,helicitypattern,run_label);
+    
     ///  Create the event ring with the subsystem array
     QwEventRing eventring(gQwOptions,detectors);
     //  Make a copy of the detectors object to hold the
@@ -188,8 +192,8 @@ Int_t main(Int_t argc, Char_t* argv[])
     //  Construct tree branches
     treerootfile->ConstructTreeBranches("evt", "MPS event data tree", ringoutput);
     treerootfile->ConstructTreeBranches("mul", "Helicity event data tree", helicitypattern);
-    treerootfile->ConstructTreeBranches("mulc", "Helicity event data tree (corrected)", helicitypattern.return_combiner());
-    treerootfile->ConstructTreeBranches("mulc_lrb", "Helicity event data tree (corrected by LinRegBlue)", helicitypattern.return_LRBCorrector());
+    treerootfile->ConstructTreeBranches("mulc", "Helicity event data tree (corrected)", *(datahandlerarray.GetDataHandlerByName("QwCombiner")));
+    treerootfile->ConstructTreeBranches("mulc_lrb", "Helicity event data tree (corrected by LinRegBlue)", *(datahandlerarray.GetDataHandlerByName("LRBCorrector")));
     treerootfile->ConstructTreeBranches("slow", "EPICS and slow control tree", epicsevent);
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstYield(),"yield_");
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstAsymmetry(),"asym_");
@@ -326,12 +330,12 @@ Int_t main(Int_t argc, Char_t* argv[])
               }
 
               // Process data handlers
-              helicitypattern.ProcessDataHandlerEntry();
+              datahandlerarray.ProcessDataHandlerEntry();
 
               // Fill regressed tree branches
-	      treerootfile->FillTreeBranches(helicitypattern.return_combiner());
+	      treerootfile->FillTreeBranches(*(datahandlerarray.GetDataHandlerByName("QwCombiner")));
 	      treerootfile->FillTree("mulc");
-              treerootfile->FillTreeBranches(helicitypattern.return_LRBCorrector());
+              treerootfile->FillTreeBranches(*(datahandlerarray.GetDataHandlerByName("QwCorrector")));
 	      treerootfile->FillTree("mulc_lrb");
 
               // Clear the data
@@ -364,7 +368,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       }
     }
 
-    helicitypattern.FinishDataHandler();
+    datahandlerarray.FinishDataHandler();
 
     // This will calculate running averages over single helicity events
     runningsum.CalculateRunningAverage();

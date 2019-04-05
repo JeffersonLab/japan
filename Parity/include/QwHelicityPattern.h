@@ -157,7 +157,7 @@ class QwHelicityPattern {
   void ProcessDataHandlerEntry();
   void FinishDataHandler();
 
-  LRBCorrector& return_LRBCorrector() {
+  /*LRBCorrector& return_LRBCorrector() {
     return lrbcorrector;
   }
   QwCombiner& return_combiner() {
@@ -165,7 +165,7 @@ class QwHelicityPattern {
   }
   QwCombiner& return_running_combiner() {
     return running_combiner;
-  }
+  }*/
 
  protected:
   Bool_t fDEBUG;
@@ -232,10 +232,10 @@ class QwHelicityPattern {
 
   TString run_label;
 
-  QwCorrelator correlator;
+  /*QwCorrelator correlator;
   LRBCorrector lrbcorrector;
   QwCombiner combiner;
-  QwCombiner running_combiner;
+  QwCombiner running_combiner;*/
 
   // Flag to indicate that the pattern contains data
   Bool_t fIsDataLoaded;

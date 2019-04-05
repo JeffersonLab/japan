@@ -64,7 +64,7 @@ QwCorrelator::QwCorrelator(QwOptions &options, QwHelicityPattern& helicitypatter
   
 }
 
-void QwCorrelator::FillCorrelator() {
+void QwCorrelator::ProcessData() {
 
   if (! fEnableCorrelation) return;
 

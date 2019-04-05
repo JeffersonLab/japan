@@ -13,17 +13,18 @@
 // Qweak headers
 #include "VQwDataHandler.h"
 #include "QwParameterFile.h"
+#include "QwHelicityPattern.h"
 
 //*****************************************************************//
 /**
  * Create a handler array based on the configuration option 'detectors'
  */
-QwDataHandlerArray::QwDataHandlerArray(QwOptions& options)
+QwDataHandlerArray::QwDataHandlerArray(QwOptions& options, QwHelicityPattern& helicitypattern, const TString &run)
 {
   ProcessOptionsToplevel(options);
   QwParameterFile detectors(fDataHandlersMapFile.c_str());
   QwMessage << "Loading handlers from " << fDataHandlersMapFile << "." << QwLog::endl;
-  LoadDataHandlersFromParameterFile(detectors);
+  LoadDataHandlersFromParameterFile(detectors, helicitypattern, run);
 }
 
 
@@ -65,7 +66,7 @@ QwDataHandlerArray::~QwDataHandlerArray()
  * Fill the handler array with the contents of a map file
  * @param detectors Map file
  */
-void QwDataHandlerArray::LoadDataHandlersFromParameterFile(QwParameterFile& detectors)
+void QwDataHandlerArray::LoadDataHandlersFromParameterFile(QwParameterFile& detectors,  QwHelicityPattern& helicitypattern, const TString &run)
 {
   // This is how this should work
   QwParameterFile* preamble;
@@ -117,7 +118,13 @@ void QwDataHandlerArray::LoadDataHandlersFromParameterFile(QwParameterFile& dete
     // Create handler
     QwMessage << "Creating handler of type " << handler_type << " "
               << "with name " << handler_name << "." << QwLog::endl;
-    /*    VQwDataHandler* handler = 0;
+    //VQwDataHandler* handler = 0;
+    
+    this->push_back(new QwCorrelator(gQwOptions,helicitypattern,run));
+    this->push_back(new LRBCorrector(gQwOptions,helicitypattern,run));
+    this->push_back(new QwCombiner(gQwOptions,helicitypattern));
+    //this->push_back(new QwCombiner* running_combiner(combiner));
+/*
     try {
       handler =
         VQwDataHandlerFactory::Create(handler_type, handler_name);
@@ -191,7 +198,38 @@ void QwDataHandlerArray::push_back(VQwDataHandler* handler)
   }
 }
 
+void QwDataHandlerArray::push_back(QwCombiner* handler)
+{
 
+    boost::shared_ptr<VQwDataHandler> handler_tmp(handler);
+    HandlerPtrs::push_back(handler_tmp);
+
+    // Set the parent of the handler to this array
+    //    handler_tmp->SetParent(this);
+
+}
+
+void QwDataHandlerArray::push_back(QwCorrelator* handler)
+{
+
+    boost::shared_ptr<VQwDataHandler> handler_tmp(handler);
+    HandlerPtrs::push_back(handler_tmp);
+
+    // Set the parent of the handler to this array
+    //    handler_tmp->SetParent(this);
+
+}
+
+void QwDataHandlerArray::push_back(LRBCorrector* handler)
+{
+
+    boost::shared_ptr<VQwDataHandler> handler_tmp(handler);
+    HandlerPtrs::push_back(handler_tmp);
+
+    // Set the parent of the handler to this array
+    //    handler_tmp->SetParent(this);
+
+}
 
 /**
  * Define configuration options for global array
@@ -608,7 +646,28 @@ TList* QwDataHandlerArray::GetParamFileNameList(TString name) const
 
 */
 
+void QwDataHandlerArray::ProcessDataHandlerEntry() {
 
+    for(iterator handler = begin(); handler != end(); ++handler){
+        (*handler)->ProcessData();
+      }
+
+  ///*(this->GetDataHandlerByName("QwCombiner"))->ProcessData();//(QwCombiner::kHandleTypeAsym);
+  //running_combiner.AccumulateRunningSum(combiner);
+  //*(this->GetDataHandlerByName("LRBCorrector"))->ProcessData();//(QwCombiner::kHandleTypeAsym);
+  //*(this->GetDataHandlerByName("QwCorrelator"))->ProcessData();
+
+}
+
+void QwDataHandlerArray::FinishDataHandler() {
+
+  for(iterator handler = begin(); handler != end(); ++handler){
+      (*handler)->CalcCorrelations();
+    }
+  //running_combiner.CalculateRunningAverage();
+  //running_combiner.PrintValue();
+
+}
   
   
   

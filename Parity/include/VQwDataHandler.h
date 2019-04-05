@@ -33,7 +33,11 @@ class VQwDataHandler{
     typedef std::vector< VQwHardwareChannel* >::iterator Iterator_HdwChan;
     typedef std::vector< VQwHardwareChannel* >::const_iterator ConstIterator_HdwChan;
 
-    void ProcessData();
+    virtual void ProcessData();
+
+    virtual void FinishDataHandler(){};
+
+    virtual void CalcCorrelations(){};
 
     virtual ~VQwDataHandler();
 

@@ -25,7 +25,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 
   public:
 
-		void FillCorrelator();
+		void ProcessData();
 		void CalcCorrelations();
 
   	QwCorrelator(QwOptions &options, QwHelicityPattern& helicitypattern, const TString &run = "0");
