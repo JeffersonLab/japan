@@ -45,8 +45,10 @@ std::vector<std::string> QwEPICSEvent::fDefaultAutogainList;
 /*************************************
  *  Constructors/Destructors.
  *************************************/
-QwEPICSEvent::QwEPICSEvent():fBlinderReversalForRunTwo(kFALSE),
-			     fPrecessionReversal(kFALSE),fNominalWienAngle(30.0)
+QwEPICSEvent::QwEPICSEvent():fNumberEPICSVariables(0),
+			     fBlinderReversalForRunTwo(kFALSE),
+			     fPrecessionReversal(kFALSE),
+			     fNominalWienAngle(30.0)
 {
   SetDataLoaded(kFALSE);
   QwEPICSEvent::InitDefaultAutogainList();
