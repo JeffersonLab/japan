@@ -376,6 +376,19 @@ inline std::string QwParameterFile::ConvertValue<std::string>(const std::string&
 }
 
 template <>
+inline bool QwParameterFile::ConvertValue<bool>(const std::string& value) {
+  bool retvalue;
+  std::string str(value);
+  std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+  std::istringstream stream1(str);
+  if (isalpha(str[0]))
+    stream1 >> std::boolalpha >> retvalue;
+  else
+    stream1 >> retvalue;
+  return retvalue;
+}
+
+template <>
 inline TString QwParameterFile::ConvertValue<TString>(const std::string& value) {
   return TString(value.c_str());
 }
