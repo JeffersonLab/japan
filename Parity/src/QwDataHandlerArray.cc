@@ -68,6 +68,10 @@ QwDataHandlerArray::~QwDataHandlerArray()
  */
 void QwDataHandlerArray::LoadDataHandlersFromParameterFile(QwParameterFile& detectors,  QwHelicityPattern& helicitypattern, const TString &run)
 {
+  QwSubsystemArrayParity& yield = helicitypattern.fYield;
+  QwSubsystemArrayParity& asym  = helicitypattern.fAsymmetry;
+  QwSubsystemArrayParity& diff  = helicitypattern.fDifference;
+
   // This is how this should work
   QwParameterFile* preamble;
   preamble = detectors.ReadSectionPreamble();
@@ -118,13 +122,8 @@ void QwDataHandlerArray::LoadDataHandlersFromParameterFile(QwParameterFile& dete
     // Create handler
     QwMessage << "Creating handler of type " << handler_type << " "
               << "with name " << handler_name << "." << QwLog::endl;
-    //VQwDataHandler* handler = 0;
+    VQwDataHandler* handler = 0;
     
-    this->push_back(new QwCorrelator(gQwOptions,helicitypattern,run));
-    this->push_back(new LRBCorrector(gQwOptions,helicitypattern,run));
-    this->push_back(new QwCombiner(gQwOptions,helicitypattern));
-    //this->push_back(new QwCombiner* running_combiner(combiner));
-/*
     try {
       handler =
         VQwDataHandlerFactory::Create(handler_type, handler_name);
@@ -147,12 +146,16 @@ void QwDataHandlerArray::LoadDataHandlersFromParameterFile(QwParameterFile& dete
       delete handler; handler = 0;
       continue;
     }
-    
     // Pass detector maps
+    handler->SetRunLabel(run);
+    handler->SetPointer(&helicitypattern);
     handler->LoadDetectorMaps(*section);
+    handler->LoadChannelMap();
+    handler->ConnectChannels(yield, asym, diff);
+    
     // Add to array
     this->push_back(handler);
-    
+    /*    
     // Instruct the handler to publish variables
     if (handler->PublishInternalValues() == kFALSE) {
       QwError << "Not all variables for " << handler->GetDataHandlerName()
@@ -237,23 +240,23 @@ void QwDataHandlerArray::push_back(LRBCorrector* handler)
  */
 void QwDataHandlerArray::DefineOptions(QwOptions &options)
 {
-  options.AddOptions()("detectors",
-                       po::value<std::string>()->default_value("detectors.map"),
-                       "map file with detectors to include");
+  options.AddOptions()("datahandlers",
+                       po::value<std::string>()->default_value("prex_datahandlers.map"),
+                       "map file with datahandlers to include");
 
   // Versions of boost::program_options below 1.39.0 have a bug in multitoken processing
 #if BOOST_VERSION < 103900
-  options.AddOptions()("disable-by-type",
+  options.AddOptions()("DataHandler.disable-by-type",
                        po::value<std::vector <std::string> >(),
                        "handler types to disable");
-  options.AddOptions()("disable-by-name",
+  options.AddOptions()("DataHandler.disable-by-name",
                        po::value<std::vector <std::string> >(),
                        "handler names to disable");
 #else // BOOST_VERSION >= 103900
-  options.AddOptions()("disable-by-type",
+  options.AddOptions()("DataHandler.disable-by-type",
                        po::value<std::vector <std::string> >()->multitoken(),
                        "handler types to disable");
-  options.AddOptions()("disable-by-name",
+  options.AddOptions()("DataHandler.disable-by-name",
                        po::value<std::vector <std::string> >()->multitoken(),
                        "handler names to disable");
 #endif // BOOST_VERSION
@@ -268,10 +271,10 @@ void QwDataHandlerArray::ProcessOptionsToplevel(QwOptions &options)
 {
   // Filename to use for handler creation (single filename could be expanded
   // to a list)
-  fDataHandlersMapFile = options.GetValue<std::string>("detectors");
+  fDataHandlersMapFile = options.GetValue<std::string>("datahandlers");
   // DataHandlers to disable
-  fDataHandlersDisabledByName = options.GetValueVector<std::string>("disable-by-name");
-  fDataHandlersDisabledByType = options.GetValueVector<std::string>("disable-by-type");
+  fDataHandlersDisabledByName = options.GetValueVector<std::string>("DataHandler.disable-by-name");
+  fDataHandlersDisabledByType = options.GetValueVector<std::string>("DataHandler.disable-by-type");
 }
 
 
@@ -350,12 +353,35 @@ void  QwDataHandlerArray::ClearEventData()
     */
   }
 }
+
+
+
 void  QwDataHandlerArray::ProcessEvent()
 {
   if (!empty()){
     std::for_each(begin(), end(), boost::mem_fn(&VQwDataHandler::ProcessData));
   }
 }
+
+void  QwDataHandlerArray::ConstructTreeBranches(QwRootFile *treerootfile)
+{
+  if (!empty()){
+    for (iterator handler = begin(); handler != end(); ++handler) {
+      handler->get()->ConstructTreeBranches(treerootfile);
+    }
+  }
+}
+
+void  QwDataHandlerArray::FillTreeBranches(QwRootFile *treerootfile)
+{
+  if (!empty()){
+    for (iterator handler = begin(); handler != end(); ++handler) {
+      handler->get()->FillTreeBranches(treerootfile);
+    }
+  }
+}
+
+
 
 //*****************************************************************
 

@@ -26,6 +26,13 @@
 RegisterHandlerFactory(QwCombiner);
 
 
+/// \brief Constructor with name
+QwCombiner::QwCombiner(const string& name):VQwDataHandler(name)
+{
+  ParseSeparator = ":";
+}
+
+
 /** Constructor with single event and helicity pattern
  *
  * @param options Options object
@@ -38,11 +45,10 @@ QwCombiner::QwCombiner(
     QwHelicityPattern& helicitypattern)
 {
   ParseSeparator = ":";
-  fEnableCorrection = false;
   ProcessOptions(options);
   fSubsystemArray = &event;
   fHelicityPattern = &helicitypattern;
-  LoadChannelMap(fCorrectorMapFile);
+  //  LoadChannelMap(fMapFile);
   QwSubsystemArrayParity& asym = helicitypattern.fAsymmetry;
   QwSubsystemArrayParity& diff = helicitypattern.fDifference;
   ConnectChannels(event,asym,diff);
@@ -58,10 +64,9 @@ QwCombiner::QwCombiner(QwOptions &options, QwSubsystemArrayParity& event)
 {
   fHelicityPattern = NULL;
   ParseSeparator = ":";
-  fEnableCorrection = false;
   ProcessOptions(options);
   fSubsystemArray = &event;
-  LoadChannelMap(fCorrectorMapFile);
+  //  LoadChannelMap(fMapFile);
   ConnectChannels(event);
 }
 
@@ -75,9 +80,8 @@ QwCombiner::QwCombiner(QwOptions &options, QwHelicityPattern& helicitypattern)
 {
   fSubsystemArray = NULL;
   ParseSeparator = ":";
-  fEnableCorrection = false;
   ProcessOptions(options);
-  LoadChannelMap(fCorrectorMapFile);
+  //  LoadChannelMap(fMapFile);
   fHelicityPattern = &helicitypattern;
   QwSubsystemArrayParity& asym = helicitypattern.fAsymmetry;
   QwSubsystemArrayParity& diff = helicitypattern.fDifference;
@@ -91,16 +95,14 @@ QwCombiner::QwCombiner(QwOptions &options, QwHelicityPattern& helicitypattern)
  */
 QwCombiner::QwCombiner(QwOptions &options)
 {
-  fEnableCorrection = false;
   ProcessOptions(options);
-  LoadChannelMap(fCorrectorMapFile);
+  //  LoadChannelMap(fMapFile);
 } 
 
 
 QwCombiner::QwCombiner(const QwCombiner &source)
 {
-  fEnableCorrection = source.fEnableCorrection;
-  fCorrectorMapFile = source.fCorrectorMapFile;
+  fMapFile = source.fMapFile;
   fErrorFlag = source.fErrorFlag;
   this->fDependentVar.resize(source.fDependentVar.size());
   fDependentType.resize(source.fDependentVar.size());
@@ -129,26 +131,22 @@ QwCombiner::~QwCombiner()
  * Defines configuration options using QwOptions functionality.
  * @param options Options object
  */
-void QwCombiner::DefineOptions(QwOptions &options)
-{
-  options.AddOptions("Combiner")
-    ("enable-correction", po::value<bool>()->zero_tokens()->default_value(false),
-     "enable correction");
-  options.AddOptions("Combiner")
-    ("combiner-map", po::value<std::string>()->default_value("combiner_new.map"),
-     "variables and sensitivities for correction");
-}
+void QwCombiner::DefineOptions(QwOptions &options){}
 
 /**
  * Process configuration options using QwOptions functionality.
  * @param options Options object
  */
-void QwCombiner::ProcessOptions(QwOptions &options)
-{
-  fEnableCorrection = options.GetValue<bool>("enable-correction");
-  fCorrectorMapFile = options.GetValue<std::string>("combiner-map");
-}
+void QwCombiner::ProcessOptions(QwOptions &options){}
 
+/*  Just use the base class version for now....
+ *
+ * void LoadDetectorMaps(QwParameterFile& file)
+ * {
+ *   VQwDataHandler::LoadDetectorMaps(file);
+ *   file.PopValue("slope-path", outPath);
+ * }
+ */
 
 /** Load the channel map
  *
@@ -158,7 +156,6 @@ void QwCombiner::ProcessOptions(QwOptions &options)
 Int_t QwCombiner::LoadChannelMap(const std::string& mapfile)
 {
   // Return if correctiion is not enabled
-  if (! fEnableCorrection) return 0;
 
   // Open the file
   QwParameterFile map(mapfile);
@@ -231,7 +228,6 @@ Int_t QwCombiner::ConnectChannels(
     QwSubsystemArrayParity& diff)
 {
   // Return if correction is not enabled
-  if (! fEnableCorrection) return 0;
 
   /// Fill vector of pointers to the relevant data elements
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
@@ -337,7 +333,6 @@ Int_t QwCombiner::ConnectChannels(
     QwSubsystemArrayParity& diff)
 {
   // Return if correction is not enabled
-  if (! fEnableCorrection) return 0;
 
   /// Fill vector of pointers to the relevant data elements
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
@@ -439,7 +434,6 @@ Int_t QwCombiner::ConnectChannels(
 Int_t QwCombiner::ConnectChannels(QwSubsystemArrayParity& event)
 {
   // Return if correction is not enabled
-  if (! fEnableCorrection) return 0;
 
   /// Fill vector of pointers to the relevant data elements
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
@@ -516,7 +510,7 @@ Int_t QwCombiner::ConnectChannels(QwSubsystemArrayParity& event)
 
 void QwCombiner::ProcessData() {
   // Return if correction is not enabled
-  if (! fEnableCorrection){
+  if (! true){
     QwDebug << "QwCombiner is not enabled!" << QwLog::endl;
     return;
   }

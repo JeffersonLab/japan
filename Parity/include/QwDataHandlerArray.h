@@ -89,8 +89,12 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
 
     std::vector<VQwDataHandler*> GetDataHandlerByType(const std::string& type);
 
+    void ConstructTreeBranches(QwRootFile *treerootfile);
+
     /// \brief Construct a branch and vector for this handler with a prefix
     void ConstructBranchAndVector(TTree *tree, TString& prefix, std::vector <Double_t> &values);
+
+    void FillTreeBranches(QwRootFile *treerootfile);
     /// \brief Fill the vector for this handler
     void FillTreeVector(std::vector<Double_t>& values) const;
     /// \brief Fill the histograms for this handler

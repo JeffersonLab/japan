@@ -20,6 +20,8 @@ Last Modified: August 1, 2018 1:39 PM
 #include "VQwHardwareChannel.h"
 #include "QwFactory.h"
 
+class QwParameterFile;
+class QwRootFile;
 class QwHelicityPattern;
 
 class VQwDataHandler{
@@ -32,6 +34,18 @@ class VQwDataHandler{
     
     typedef std::vector< VQwHardwareChannel* >::iterator Iterator_HdwChan;
     typedef std::vector< VQwHardwareChannel* >::const_iterator ConstIterator_HdwChan;
+
+    VQwDataHandler(const string& name):fName(name){}
+
+    virtual void LoadDetectorMaps(QwParameterFile& file);
+
+    void SetPointer(QwHelicityPattern *ptr){fHelicityPattern = ptr;};
+    void SetPointer(QwSubsystemArrayParity *ptr){fSubsystemArray = ptr;};
+
+    Int_t ConnectChannels(QwSubsystemArrayParity& yield, QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff){
+      return this->ConnectChannels(asym, diff);
+    }
+
 
     virtual void ProcessData();
 
@@ -48,24 +62,28 @@ class VQwDataHandler{
     void PrintValue() const;
     void FillDB(QwParityDB *db, TString datatype){};
 
+    void ConstructTreeBranches(QwRootFile *treerootfile);
+    void FillTreeBranches(QwRootFile *treerootfile);
+
     // Fill the vector for this subsystem
     void FillTreeVector(std::vector<Double_t> &values) const;
 
     void ConstructBranchAndVector(TTree *tree, TString& prefix, std::vector<Double_t>& values);
 
-    void get_run_label(TString x) {
+    void SetRunLabel(TString x) {
       run_label = x;
     }
 
     virtual void ProcessOptions(QwOptions &options) = 0;
 
+    Int_t LoadChannelMap(){return this->LoadChannelMap(fMapFile);}
     virtual Int_t LoadChannelMap(const std::string& mapfile) = 0;
 
   protected:
     
     VQwDataHandler() { }
     
-    Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
+    virtual Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
     
     std::pair<EQwHandleType,std::string> ParseHandledVariable(const std::string& variable);
 
@@ -77,14 +95,23 @@ class VQwDataHandler{
     //Bool_t PublishByRequest(TString device_name);
 
  protected:
+   //
+   Int_t fPriority; ///  When a datahandler array is processed, handlers with lower priority will be processed before handlers with higher priority
+
     //***************[Variables]***************
    TString fName;
+   std::string fMapFile;
+   std::string fTreeName;
+   std::string fTreeComment;
 
     UInt_t fErrorFlag;
 
     TString run_label;
 
-    std::string fCorrelatorMapFile;
+    /// Single event pointer
+    QwSubsystemArrayParity* fSubsystemArray;
+    /// Helicity pattern pointer
+    QwHelicityPattern* fHelicityPattern;
 
     std::vector< EQwHandleType > fDependentType;
     std::vector< std::string > fDependentName;

@@ -33,7 +33,7 @@ class QwCombiner:public VQwDataHandler, public MQwDataHandlerCloneable<QwCombine
     QwCombiner(QwOptions &options);
 
     /// \brief Constructor with name
-    QwCombiner(const string& name){}
+ QwCombiner(const string& name);
 
     /// \brief Copy constructor
     QwCombiner(const QwCombiner &source);
@@ -64,15 +64,6 @@ class QwCombiner:public VQwDataHandler, public MQwDataHandlerCloneable<QwCombine
   
     /// Default constructor (Protected for child class access)
     QwCombiner() { };
-
-    bool fEnableCorrection;
-    /// Corrector dependent and independent variable map
-    std::string fCorrectorMapFile;
-
-   /// Single event pointer
-    QwSubsystemArrayParity* fSubsystemArray;
-    /// Helicity pattern pointer
-    QwHelicityPattern* fHelicityPattern;
 
     /// List of channels to use in the combiner
     std::vector< std::vector< EQwHandleType > > fIndependentType;

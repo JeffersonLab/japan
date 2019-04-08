@@ -24,15 +24,16 @@ Last Modified: August 1, 2018 1:43 PM
 class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCorrelator>{
 
   public:
-
+  
 		void ProcessData();
 		void CalcCorrelations();
 
   	QwCorrelator(QwOptions &options, QwHelicityPattern& helicitypattern, const TString &run = "0");
 
     /// \brief Constructor with name
- QwCorrelator(const string& name):corA("input"){}
+    QwCorrelator(const string& name);
 
+    void LoadDetectorMaps(QwParameterFile& file);
   	
   	void readConfig(const char * configFName);
   	
@@ -50,10 +51,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 		
 	protected:
 	
-    bool fEnableCorrelation;
     bool fDisableHistos;
-
-		std::string fCorrelatorMapFile;
     
     std::vector< TString > fIndependentFull;
     std::vector< TString > fDependentFull;

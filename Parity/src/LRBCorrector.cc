@@ -42,14 +42,19 @@ using namespace std;
 // Register this handler with the factory
 RegisterHandlerFactory(LRBCorrector);
 
+/// \brief Constructor with name
+LRBCorrector::LRBCorrector(const string& name):VQwDataHandler(name)
+{
+  ParseSeparator = "_";
+}
+
 
 LRBCorrector::LRBCorrector(QwOptions &options, QwHelicityPattern& helicitypattern, const TString &run) {
   
   run_label = run;
   ParseSeparator = "_";
-  fEnableCorrection = false;
   ProcessOptions(options);
-  LoadChannelMap(fCorrectorMapFile);
+  LoadChannelMap(fMapFile);
   fHelicityPattern = &helicitypattern;
   QwSubsystemArrayParity& asym = helicitypattern.fAsymmetry;
   QwSubsystemArrayParity& diff = helicitypattern.fDifference;
@@ -61,39 +66,28 @@ LRBCorrector::LRBCorrector(QwOptions &options, QwHelicityPattern& helicitypatter
  * Defines configuration options using QwOptions functionality.
  * @param options Options object
  */
-void LRBCorrector::DefineOptions(QwOptions &options)
-{
-  options.AddOptions("LRBCorrector")
-    ("enable-lrbcorrection", po::value<bool>()->zero_tokens()->default_value(false),
-     "enable lrb correction");
-  options.AddOptions("LRBCorrector")
-    ("lrbcorrector-map", po::value<std::string>()->default_value("corrector_new.map"),
-     "variables and sensitivities for lrb correction");
-}
+void LRBCorrector::DefineOptions(QwOptions &options){}
 
 /**
  * Process configuration options using QwOptions functionality.
  * @param options Options object
  */
-void LRBCorrector::ProcessOptions(QwOptions &options)
+void LRBCorrector::ProcessOptions(QwOptions &options){}
+
+void LRBCorrector::LoadDetectorMaps(QwParameterFile& file)
 {
-  fEnableCorrection = options.GetValue<bool>("enable-lrbcorrection");
-  fCorrectorMapFile = options.GetValue<std::string>("lrbcorrector-map");
-  outPath = options.GetValue<std::string>("slope-file-path");
+  VQwDataHandler::LoadDetectorMaps(file);
+  file.PopValue("slope-path", outPath);
 }
 
 
-Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile) {
-  
-  if (fEnableCorrection == false) {
-    QwWarning << "enable-lrbcorrection is set to false.  Skipping LoadChannelMap for LRBCorrector" << QwLog::endl;
-    return 0;
-  }
 
+Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
+{
   string TmpFilePath = run_label.Data();
-  fCorrectorMapFile = "blueR" + TmpFilePath + "new.slope.root";
+  fMapFile = "blueR" + TmpFilePath + "new.slope.root";
   string MapFilePath = outPath + "/";
-  string tmp = MapFilePath + fCorrectorMapFile;
+  string tmp = MapFilePath + fMapFile;
   TString corFileName(tmp.c_str());
   QwMessage << "Trying to open " << corFileName << QwLog::endl;
   TFile*  corFile=new TFile(corFileName);
@@ -148,8 +142,6 @@ Int_t LRBCorrector::ConnectChannels(
 {
   VQwDataHandler::ConnectChannels(asym, diff);
 
-  if (fEnableCorrection == false) {return 0;}
-
   // Add independent variables
   for (size_t iv = 0; iv < fIndependentName.size(); iv++) {
     // Get the independent variables
@@ -186,7 +178,7 @@ Int_t LRBCorrector::ConnectChannels(
 
 void LRBCorrector::ProcessData() {
   // Return if correction is not enabled
-  if (! fEnableCorrection){
+  if (! true){
     QwDebug << "LRB Correction is not enabled!" << QwLog::endl;
     return;
   }

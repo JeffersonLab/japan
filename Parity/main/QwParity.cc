@@ -148,7 +148,6 @@ Int_t main(Int_t argc, Char_t* argv[])
     ///  Create the running sum
     QwSubsystemArrayParity runningsum(detectors);
 
-
     //  Initialize the database connection.
     #ifdef __USE_DATABASE__
     database.SetupOneRun(eventbuffer);
@@ -192,9 +191,10 @@ Int_t main(Int_t argc, Char_t* argv[])
     //  Construct tree branches
     treerootfile->ConstructTreeBranches("evt", "MPS event data tree", ringoutput);
     treerootfile->ConstructTreeBranches("mul", "Helicity event data tree", helicitypattern);
-    treerootfile->ConstructTreeBranches("mulc", "Helicity event data tree (corrected)", *(datahandlerarray.GetDataHandlerByName("QwCombiner")));
-    treerootfile->ConstructTreeBranches("mulc_lrb", "Helicity event data tree (corrected by LinRegBlue)", *(datahandlerarray.GetDataHandlerByName("LRBCorrector")));
     treerootfile->ConstructTreeBranches("slow", "EPICS and slow control tree", epicsevent);
+
+    datahandlerarray.ConstructTreeBranches(treerootfile);
+
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstYield(),"yield_");
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstAsymmetry(),"asym_");
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstDifference(),"diff_");
@@ -331,12 +331,9 @@ Int_t main(Int_t argc, Char_t* argv[])
 
               // Process data handlers
               datahandlerarray.ProcessDataHandlerEntry();
-
+	      
               // Fill regressed tree branches
-	      treerootfile->FillTreeBranches(*(datahandlerarray.GetDataHandlerByName("QwCombiner")));
-	      treerootfile->FillTree("mulc");
-              treerootfile->FillTreeBranches(*(datahandlerarray.GetDataHandlerByName("QwCorrector")));
-	      treerootfile->FillTree("mulc_lrb");
+	      datahandlerarray.FillTreeBranches(treerootfile);
 
               // Clear the data
               helicitypattern.ClearEventData();

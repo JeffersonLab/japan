@@ -26,8 +26,10 @@ class LRBCorrector : public VQwDataHandler, public MQwDataHandlerCloneable<LRBCo
     LRBCorrector(QwOptions &options, QwHelicityPattern& helicitypattern, const TString &run = "0");
 
     /// \brief Constructor with name
-    LRBCorrector(const string& name){}
-    
+    LRBCorrector(const string& name);
+
+    void LoadDetectorMaps(QwParameterFile& file);
+
     /// \brief Define the configuration options
     void static DefineOptions(QwOptions &options);
     /// \brief Process the configuration options
@@ -43,17 +45,7 @@ class LRBCorrector : public VQwDataHandler, public MQwDataHandlerCloneable<LRBCo
     
     LRBCorrector() { }
 
-    bool fEnableCorrection;
-
     std::string outPath;
-
-    /// Single event pointer
-    QwSubsystemArrayParity* fSubsystemArray;
-    /// Helicity pattern pointer
-    QwHelicityPattern* fHelicityPattern;
-
-    /// Corrector dependent and independent variable map
-    std::string fCorrectorMapFile;
 
     std::vector< EQwHandleType > fIndependentType;
     std::vector< std::string > fIndependentName;

@@ -20,6 +20,8 @@ using namespace std;
 
 //#include "QwCombiner.h"
 
+#include "QwParameterFile.h"
+#include "QwRootFile.h"
 #include "QwVQWK_Channel.h"
 
 #define MYSQLPP_SSQLS_NO_STATICS
@@ -27,6 +29,7 @@ using namespace std;
 #include "QwParitySSQLS.h"
 #include "QwParityDB.h"
 #endif // __USE_DATABASE__
+
 
 
 VQwDataHandler::~VQwDataHandler() {
@@ -39,6 +42,20 @@ VQwDataHandler::~VQwDataHandler() {
   fOutputVar.clear();
 
 }
+
+void VQwDataHandler::LoadDetectorMaps(QwParameterFile& file){
+  file.RewindToFileStart();
+  file.EnableGreediness();
+  while (file.ReadNextLine()) {
+    QwMessage << file.GetLine() << QwLog::endl;
+  }
+  // Check for and process key-value pairs
+  file.PopValue("map",fMapFile);
+  file.PopValue("priority",fPriority);
+  file.PopValue("tree-name",fTreeName);
+  file.PopValue("tree-comment",fTreeComment);
+}
+
 
 void VQwDataHandler::CalcOneOutput(const VQwHardwareChannel* dv, VQwHardwareChannel* output,
                                   vector< const VQwHardwareChannel* > &ivs,
@@ -168,6 +185,12 @@ pair<VQwDataHandler::EQwHandleType,string> VQwDataHandler::ParseHandledVariable(
   
 }
 
+void VQwDataHandler::ConstructTreeBranches(QwRootFile *treerootfile)
+{
+  if (fTreeName.size()>0){
+    treerootfile->ConstructTreeBranches(fTreeName, fTreeComment, *this);
+  }
+}
 
 void VQwDataHandler::ConstructBranchAndVector(
     TTree *tree,
@@ -176,6 +199,14 @@ void VQwDataHandler::ConstructBranchAndVector(
 {
   for (size_t i = 0; i < fOutputVar.size(); ++i) {
     fOutputVar.at(i)->ConstructBranchAndVector(tree, prefix, values);
+  }
+}
+
+void VQwDataHandler::FillTreeBranches(QwRootFile *treerootfile)
+{
+  if (fTreeName.size()>0){
+    treerootfile->FillTreeBranches(*this);
+    treerootfile->FillTree(fTreeName);
   }
 }
 

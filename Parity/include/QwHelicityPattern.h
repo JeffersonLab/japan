@@ -150,10 +150,6 @@ class QwHelicityPattern {
 
   void  Print() const;
 
-  void get_run_label(TString x) {
-    run_label = x;
-  }
-
   void ProcessDataHandlerEntry();
   void FinishDataHandler();
 
@@ -241,6 +237,7 @@ class QwHelicityPattern {
   Bool_t fIsDataLoaded;
   void SetDataLoaded(Bool_t flag) { fIsDataLoaded = flag; };
 
+  friend class QwDataHandlerArray;
   friend class VQwDataHandler;
   friend class QwCombiner;
   friend class QwCorrelator;
