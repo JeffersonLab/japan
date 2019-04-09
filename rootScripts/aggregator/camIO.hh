@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <string>
 #include <algorithm>
 using namespace std;
 Int_t getRunNumber_h(Int_t runNumber = 0){
@@ -31,7 +33,7 @@ Int_t getNruns_h(Int_t n_runs = -1){
     TString nRuns = gSystem->Getenv("NRUNS");
     n_runs = nRuns.Atoi();
   }
-  if (n_runs<=0){
+  if (n_runs<0){
     Printf("Error: Number of Runs given (%d) invalid, must be an integer > 0 \n Tip: n_runs = 1 means you will only use 1 run, = 2 will TChain a second one on)",n_runs);
     return 0;
   }
@@ -59,8 +61,8 @@ void getAggregateVars_h(TTree * rootTree, std::vector<TString>* aggVars, std::ve
     // Not sure if the line below is so smart...
     aggVars->push_back(found);
     //Printf("In branch %s\n",(const char*)found);
-    oldValues->push_back(-999999.0); // Add the other vectors simulatneously to avoid mis-mapping
-    newValues->push_back(-999999.0);
+    oldValues->push_back(1.0e99); // Add the other vectors simulatneously to avoid mis-mapping
+    newValues->push_back(1.0e99);
   }
 
   for(Int_t iBranch = 0; iBranch < aggVars->size(); iBranch++) {
@@ -71,11 +73,45 @@ void addAggregateVars_h(TString varName, std::vector<TString>* aggVars, std::vec
 
   //Printf("Push back %s",(const char*)varName);
   aggVars->push_back(varName);
-  oldValues->push_back(-999999.0); // Add the other vectors simulatneously to avoid mis-mapping
-  newValues->push_back(-999999.0);
+  oldValues->push_back(1.0e99); // Add the other vectors simulatneously to avoid mis-mapping
+  newValues->push_back(1.0e99);
 }
 
-      
+vector<vector<string>> textFileParse_h(TString fileName, char delim = ',')
+{
+  vector<vector<string> > filearray;   // the 2D array
+  if ( !gSystem->AccessPathName(fileName.Data()) ) {
+    //Printf("Found file name: %s\n",(const char*)fileName);
+    ifstream in(fileName.Data());
+
+    string line;                     // the contents
+    string word;                     // one word at at time
+    vector<string> words;            // array of values for one line only
+
+    filearray.clear();
+    //getline(in,line); // Uncomment to skip header line
+
+    while ( getline(in,line) )    // get next line in file
+    {
+      words.clear();
+      stringstream ss(line);
+
+      while ( getline(ss,word,delim) ){
+        // break line into comma delimitted fields
+        words.push_back(word); 
+      }
+      filearray.push_back(words);  // add the 1D array to the 2D array
+    }
+    in.close();
+    words.clear();
+    return filearray;
+  }
+  else{
+    Printf("File not found: %s",(const char*)fileName);
+    return filearray;
+  }
+}
+
 TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1, TString filenamebase = "Rootfiles/"){
 
   TString filename = "NULL";
@@ -118,6 +154,18 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1,
   //Printf("N Entries: %d",(int)chain->GetEntries());
   return chain;
 }
+
+TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", Int_t runNumber = 0, Int_t nRuns = -1, TString filenamebase = "Rootfiles/"){
+  runNumber = getRunNumber_h(runNumber);
+  nRuns     = getNruns_h(nRuns);
+  TChain  * Chain   = getTree_h(tree, runNumber, nRuns, filenamebase);
+  if (!Chain){
+    return 0;
+  }
+  TLeaf * BranchLeaf  = Chain->GetLeaf(branchleaf);
+  return BranchLeaf;
+}
+
 TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", Int_t runNumber = 0, Int_t nRuns = -1, TString filenamebase = "Rootfiles/"){
   runNumber = getRunNumber_h(runNumber);
   nRuns     = getNruns_h(nRuns);
@@ -184,17 +232,17 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
     //Printf("Making new aggregator tree");
     branchList.push_back("run_number");
     branchList.push_back("n_runs");
-    newValues.push_back( -999999.0); // Vectors have to be initialized, and I don't know how many entries will come, so go for all of them
-    newValues.push_back( -999999.0);
-    tempValues.push_back(-999999.0);
-    oldValues.push_back( -999999.0); 
-    oldValues.push_back( -999999.0); 
-    tempValues.push_back(-999999.0); 
+    newValues.push_back( 1.0e99); // Vectors have to be initialized, and I don't know how many entries will come, so go for all of them
+    newValues.push_back( 1.0e99);
+    tempValues.push_back(1.0e99);
+    oldValues.push_back( 1.0e99); 
+    oldValues.push_back( 1.0e99); 
+    tempValues.push_back(1.0e99); 
   }
   else {
     // Open existing file 
     oldTree = (TTree*) aggregatorFile->Get("agg");
-	  if (!oldTree) {
+    if (!oldTree) {
       Printf("ERROR, tree agg is dead");
     }
     //Printf("Making new aggregator tree");
@@ -205,9 +253,9 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
       TString found = (TString)(((TBranch*)(aggVars->At(b)))->GetName());
       //Printf("In branch %s",(const char*)found);
       branchList.push_back(found);
-      newValues.push_back(-999999.0);
-      oldValues.push_back(-999999.0);
-      tempValues.push_back(-999999.0);
+      newValues.push_back(1.0e99);
+      oldValues.push_back(1.0e99);
+      tempValues.push_back(1.0e99);
     }
     for(Int_t iBranch = 0; iBranch < branchList.size(); iBranch++) {
       //Printf("In branch %d : %s",iBranch,(const char*)branchList[iBranch]);
@@ -224,15 +272,15 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
     //Printf("User adding new branch: %s",(const char*)valueName);
     //addAggregateVars_h(valueName,&branchList,&newValues,&oldValues);
     branchList.push_back(valueName);
-    newValues.push_back(-999999.0);
-    oldValues.push_back(-999999.0);
-    tempValues.push_back(-999999.0);
+    newValues.push_back(1.0e99);
+    oldValues.push_back(1.0e99);
+    tempValues.push_back(1.0e99);
     newBranch = true;
   }
   // Loop over branches and assign their addresses to old and new tree
   for (Int_t k = 0; k < branchList.size(); k++){
     //Printf("Assigning values to be saved, Iteration %d, branch name: %s, manual blank initialization value: %f",k,(const char*) branchList[k],oldValues[k]);
-  	// If this is a new file then generate new branches for old and new
+    // If this is a new file then generate new branches for old and new
   	if (newFile || (newBranch && (branchList[k]==valueName))){
       oldTree->Branch(          branchList[k],&oldValues[k]); // Initialize a new branch, for placeholder purposes
   	}
@@ -315,7 +363,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
 	  	  else {
           //Printf("NOTE: %s branch = %f getting written by user",(const char*) branchList[l],oldValues[l]);
           if (userAddedNewBranch && !editEntry){
-            tempValues[l] = -999999.0; //oldValues[l] has been replaced with the prior entry, and because this new branch has no value in the tree its just that prior value
+            tempValues[l] = 1.0e99; //oldValues[l] has been replaced with the prior entry, and because this new branch has no value in the tree its just that prior value
           }
           else {
             tempValues[l] = oldValues[l];// has been replaced with the prior entry, and because this new branch has no value in the tree its just that prior value
@@ -330,7 +378,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
 	    }
 	    newValues[l] = tempValues[l];
       //Printf("Saving %s = %f, overwriting %f",(const char*)branchList[l],tempValues[l],oldValues[l]);
-      oldValues[l] = -999999.0;
+      oldValues[l] = 1.0e99;
 	  }
     // Reset the triggers for writing
     writeEntry = false; 
@@ -348,4 +396,135 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   }
   //newTree->Scan();
   aggregatorFile->Close();
+}
+
+string replaceStrChar(string str, const string& replace, char ch) {
+
+  // set our locator equal to the first appearance of any character in replace
+  size_t found = str.find_first_of(replace);
+
+  while (found != string::npos) { // While our position in the sting is in range.
+    str[found] = ch; // Change the character at position.
+    found = str.find_first_of(replace, found+1); // Relocate again.
+  }
+
+  return str; // return our new string.
+}
+
+string stripStrChar(string str, const string& replace) {
+
+  // set our locator equal to the first appearance of any character in replace
+  size_t found = str.find_first_of(replace);
+
+  //Printf("Str: %s",str.c_str());
+  while (found != string::npos) { // While our position in the sting is in range.
+    for (int pos = 0; pos<str.size() - found; pos++){
+      str[found+pos] = str[found+pos+1]; // Change the character at position.
+    }
+    //str[str.size()-1]='\0';
+    str = str.substr(0, str.length()-1);
+    found = str.find_first_of(replace, found); // Relocate again.
+  }
+
+  return str; // return our new string.
+}
+
+
+void writePostPanFile_h(Int_t runNumber = 1369, TString filename = "run1369_summary.txt"){
+  runNumber= getRunNumber_h(runNumber);
+  filename = Form("txt_out/run%d_regression_summary.txt",runNumber);
+  char delim = '\t';
+  vector<vector<string>> contents = textFileParse_h(filename,delim);
+  int miniRun = 0;
+  bool header = false;
+  bool print  = false;
+  double data = 1.0e99;
+  string type = "type";
+  string channel = "null";
+  vector <string> manip;
+  vector <double> numbers;
+
+  for (Int_t k = 0; k < contents.size(); k++){
+    //Printf("Contents pre trim: %s",contents[k][0].c_str());
+    contents[k][0]=stripStrChar(contents[k][0]," ");
+    //Printf("Contents post trim: %s",contents[k][0].c_str());
+    if (contents[k][0].substr(0,2)=="--"){
+      //header line
+      if (contents[k][0].substr(0,11)=="--Mini-run:"){
+        string val = contents[k][0].substr(11,contents[k][0].size()-11);
+        //Printf("Mini-run: %s",val.c_str());
+        miniRun=stof(val);
+      }
+      //Printf("Type: %s",contents[k][0].substr(2,7-2).c_str());
+      TString* testType = (TString*)contents[k][0].substr(2,7-2).c_str();;
+      //Printf("Compare: %s",(const char*)testType);
+      if (!strcmp((const char*)testType,"Mini-") || !strcmp((const char*)testType,"Slope") || !strcmp((const char*)testType,"Noise") || !strcmp((const char*)testType,"IVRMS")){
+        print  = false;
+        header = true;
+        manip.clear();
+        numbers.clear();
+        type = contents[k][0].substr(2,7-2);
+        if (!strcmp((const char*)testType,"Mini-")){
+          type = "Regressed";
+        }
+        //Printf("Type %s",type.c_str());
+      }
+      continue;
+    }
+    if (header == true){
+      // These are the column titles
+      print  = true;
+      header = false;
+      for (Int_t j = 0; j < contents[k].size(); j++){
+        contents[k][j]=stripStrChar(contents[k][j]," ");
+        TString* columnTitle = (TString*)contents[k][j].substr(0,contents[k][j].size()).c_str();
+
+        if (strcmp((const char*)columnTitle,"")){ // if compare == true then return value is false and we skip onwards
+          TString* columnTitle;
+          TString* columnCompare = (TString*)contents[k][j].substr(contents[k][j].size()-5,5).c_str();
+          //Printf("ColumnCompare: %s",(const char*)columnCompare);
+          if (!strcmp((const char*)columnCompare,"(ppm)")){
+            columnTitle = (TString*)contents[k][j].substr(0,contents[k][j].size()-5).c_str();
+            //Printf("Saved Truncated Title: %s",(const char*)columnTitle);
+          }
+          else {
+            columnTitle = (TString*)contents[k][j].substr(0,contents[k][j].size()).c_str();
+            //Printf("Title: %s",(const char*)columnTitle);
+          }
+          manip.push_back((const char*)columnTitle);
+        }
+      }
+      continue;
+    }
+    else if (header==false) {
+      // We are in the matrix of data
+      // These are the row titles
+      Int_t offset = 0;
+      channel = contents[k][0];
+      TString* testType2 = (TString*)type.c_str();
+      //if (!strcmp((const char*)testType2,"IVRMS")){
+      //  channel = "IVRMS";
+      //  offset = -1;
+      //}
+      for (Int_t j = 1+offset; j < contents[k].size(); j++){
+        if (strcmp(contents[k][j].c_str()," ")){ // if compare == true then return value is false and we skip onwards
+          // These are the matrix entries
+          // contents[k][j]=stripStrChar(contents[k][j]," "); // atof strips front whitespace and ignores trailing whitespace
+          string val = contents[k][j];
+          //Printf("Number %s",val.c_str());
+          numbers.push_back(stof(val));
+        }
+      }
+      // Add a new row to the data matrix
+    }
+    if (print){
+      // Print one row at a time
+      for (Int_t b = 0; b < manip.size(); b++){
+        writeFile_h(channel+"_"+manip[b]+"_"+type,numbers[b],runNumber,miniRun);
+      }
+      numbers.clear();
+    }
+  }
+
+  contents.clear();
 }
