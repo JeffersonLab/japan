@@ -109,10 +109,6 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
     fLastWindowNumber(0),
     fLastPatternNumber(0),
     fLastPhaseNumber(0)
-    //correlator(gQwOptions,*this, run),
-    //lrbcorrector(gQwOptions,*this, run),
-    //combiner(gQwOptions,*this),
-    //running_combiner(combiner)
 {
   // Retrieve the helicity subsystem to query for
   std::vector<VQwSubsystem*> subsys_helicity = event.GetSubsystemByType("QwHelicity");
@@ -860,25 +856,6 @@ void QwHelicityPattern::Print() const
           << fEventLoaded[i] << ", " << fHelicity[i] << QwLog::endl;
   QwOut << "Is a complete pattern? (n/y:0/1) " << IsCompletePattern() << QwLog::endl;
 }
-
-/*
-void QwHelicityPattern::ProcessDataHandlerEntry() {
-
-  combiner.ProcessData();//(QwCombiner::kHandleTypeAsym);
-  running_combiner.AccumulateRunningSum(combiner);
-  lrbcorrector.ProcessData();//(QwCombiner::kHandleTypeAsym);
-  correlator.FillCorrelator();
-
-}
-
-void QwHelicityPattern::FinishDataHandler() {
-
-  correlator.CalcCorrelations();
-  running_combiner.CalculateRunningAverage();
-  running_combiner.PrintValue();
-
-}*/
-
 
 
 

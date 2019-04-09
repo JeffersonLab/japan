@@ -17,10 +17,6 @@
 #include "QwSubsystemArrayParity.h"
 #include "QwEPICSEvent.h"
 #include "QwBlinder.h"
-//#include "VQwDataHandler.h"
-#include "QwCorrelator.h"
-#include "QwCombiner.h"
-#include "LRBCorrector.h"
 
 // Forward declarations
 class QwHelicity;
@@ -150,19 +146,6 @@ class QwHelicityPattern {
 
   void  Print() const;
 
-  void ProcessDataHandlerEntry();
-  void FinishDataHandler();
-
-  /*LRBCorrector& return_LRBCorrector() {
-    return lrbcorrector;
-  }
-  QwCombiner& return_combiner() {
-    return combiner;
-  }
-  QwCombiner& return_running_combiner() {
-    return running_combiner;
-  }*/
-
  protected:
   Bool_t fDEBUG;
 
@@ -228,21 +211,11 @@ class QwHelicityPattern {
 
   TString run_label;
 
-  /*QwCorrelator correlator;
-  LRBCorrector lrbcorrector;
-  QwCombiner combiner;
-  QwCombiner running_combiner;*/
-
   // Flag to indicate that the pattern contains data
   Bool_t fIsDataLoaded;
   void SetDataLoaded(Bool_t flag) { fIsDataLoaded = flag; };
 
   friend class QwDataHandlerArray;
-  friend class VQwDataHandler;
-  friend class QwCombiner;
-  friend class QwCorrelator;
-  friend class LRBCorrector;
-
 };
 
 
