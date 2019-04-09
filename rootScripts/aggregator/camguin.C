@@ -1,6 +1,7 @@
 #include "camguin.hh"
 using namespace std;
 void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCuts", Int_t overWriteCut = 0, TString histMode = "defaultHist", Int_t runNumber = 0, Int_t nRuns = -1){
+  Printf("Analysis: %s",(const char*) ana);
   if( 
        ana == "Integral" 
     || ana == "integral" 
@@ -15,6 +16,19 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
   else if( 
        ana == "intloop"){
     writeInt_loop_h( tree, branch, leaf, cut, runNumber, nRuns );
+  }
+  else if( 
+       ana == "nevents"
+    || ana == "NeventsCuts"
+    || ana == "eventscuts"
+    || ana == "cutevents"
+    || ana == "cutEvents"
+    || ana == "CutEvents"
+    || ana == "Nevents"
+    || ana == "events"
+    || ana == "Events"
+    || ana == "NEvents"){
+    writeNEvents_Loop_h( tree, branch, runNumber, nRuns );
   }
   else if ( 
        ana == "rms" 
@@ -68,6 +82,7 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     TH1* h1 = getHistogram_h( tree, branch, leaf, cut, overWriteCut, histMode, runNumber, nRuns );
     gROOT->SetBatch(kFALSE);
     h1->Draw();
+    gROOT->SetBatch(kTRUE);
   }
   else if (
        ana == "redraw"
@@ -82,6 +97,12 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     TH1* h1 = getHistogram_h( tree, branch, leaf, cut, overWriteCut, histMode, runNumber, nRuns );
     gROOT->SetBatch(kFALSE);
     h1->Draw();
+    gROOT->SetBatch(kTRUE);
+  }
+  else if (
+      ana == "writePostPan"
+   || ana == "postpan"){
+    writePostPanFile_h(runNumber);
   }
   else
   {

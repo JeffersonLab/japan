@@ -165,36 +165,52 @@ void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_0
   runNumber = getRunNumber_h(runNumber);
   nRuns     = getNruns_h(nRuns);
   TString mean = "mean_" + branch + "_" + leaf;
-  Double_t data_mean = 0.0;
+  TString mean_error = "mean_" + branch + "_" + leaf + "_error";
   TString rms = "rms_" + branch + "_" + leaf;
-  Double_t data_rms = 0.0;
-  data_mean = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetMean();
-  data_rms = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetRMS();
+  TString rms_error = "rms_" + branch + "_" + leaf + "_error";
+  Double_t data_mean = -1e99;
+  Double_t data_mean_error = -1e99;
+  Double_t data_rms = -1e99;
+  Double_t data_rms_error = -1e99;
+  data_mean = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetMean(1);
+  data_mean_error = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetMeanError(1);
+  data_rms = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetRMS(1);
+  data_rms_error = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetRMSError(1);
 
-  //Printf("Run %d mean %s: %f",runNumber,(const char*)mean,data_mean);
-  //Printf("Run %d mean %s: %f",runNumber,(const char*)rms,data_rms);
+  //Printf("Run %d mean %s: %f+-%f",runNumber,(const char*)mean,data_mean,data_mean_error);
+  //Printf("Run %d rms %s: %f+-%f",runNumber,(const char*)rms,data_rms,data_rms_error);
   writeFile_h(mean,data_mean,runNumber,nRuns);
+  writeFile_h(mean_error,data_mean_error,runNumber,nRuns);
   writeFile_h(rms,data_rms,runNumber,nRuns);
+  writeFile_h(rms_error,data_rms_error,runNumber,nRuns);
 }
 
 void writeMean_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
   nRuns     = getNruns_h(nRuns);
   TString mean = "mean_" + branch + "_" + leaf;
-  Double_t data_mean = 0.0;
-  data_mean = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetMean();
+  TString mean_error = "mean_" + branch + "_" + leaf + "_error";
+  Double_t data_mean = -1e99;
+  Double_t data_mean_error = -1e99;
+  data_mean = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetMean(1);
+  data_mean_error = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetMeanError(1);
 
-  //Printf("Run %d mean %s: %f",runNumber,(const char*)mean,data_mean);
+  //Printf("Run %d mean %s: %f+-%f",runNumber,(const char*)mean,data_mean,data_mean_error);
   writeFile_h(mean,data_mean,runNumber,nRuns);
+  writeFile_h(mean_error,data_mean_error,runNumber,nRuns);
 }
 
 void writeRMS_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
   nRuns     = getNruns_h(nRuns);
-  TString  rms = "rms_" + branch + "_" + leaf;
-  Double_t data_rms = 0.0;
-	data_rms = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetRMS();
+  TString rms = "rms_" + branch + "_" + leaf;
+  TString rms_error = "rms_" + branch + "_" + leaf + "_error";
+  Double_t data_rms = -1e99;
+  Double_t data_rms_error = -1e99;
+  data_rms = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetRMS(1);
+  data_rms_error = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetRMSError(1);
 
-  //Printf("Run %d RMS %s: %f",runNumber,(const char*)rms,data_rms);
+  //Printf("Run %d rms %s: %f+-%f",runNumber,(const char*)rms,data_rms,data_rms_error);
   writeFile_h(rms,data_rms,runNumber,nRuns);
+  writeFile_h(rms_error,data_rms_error,runNumber,nRuns);
 }

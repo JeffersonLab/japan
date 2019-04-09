@@ -9,7 +9,8 @@ Example script for how to use environment variables and PANGUIN to execute the C
 
 `source setup_camguin.tcsh`
 
-`./panguin_wrapper -f analyze.cfg -r 1374 -n 3 -P`
+`./panguin_wrapper -f analyze.cfg -r 1374 -n 1 -P`
+`./postpan_wrapper -r 1374`
 
 ## What is happening
 
@@ -25,3 +26,4 @@ The results of analysis methods are written into a re-writable ROOT file "run_ag
 * It can be treated like any other ROOT file, and its contents are all flat, at the same level
 * If an analysis that was done before is not done for a new run, or if a new type of analysis result is generated and not executed on prior runs then placeholder -999999 values are stored
 * All values (including "run_number" and "n_runs") are doubles, so more interesting kinds of information can be stored in high or low bits later if desired
+* The postpan reader uses the file format developed by Tao and prints the contents into individual leaves and is better to run in pure macro form with the postpan wrapper script
