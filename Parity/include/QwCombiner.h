@@ -15,36 +15,18 @@
 
 class QwCombiner:public VQwDataHandler, public MQwDataHandlerCloneable<QwCombiner>
 {
-
-  public:
-
+ public:
     typedef std::vector< VQwHardwareChannel* >::iterator Iterator_HdwChan;
     typedef std::vector< VQwHardwareChannel* >::const_iterator ConstIterator_HdwChan;
 
-  public:
-
-    /// \brief Constructor with single event and helicity pattern
-    QwCombiner(QwOptions &options, QwSubsystemArrayParity& event, QwHelicityPattern& helicitypattern);
-    /// \brief Constructor with single event
-    QwCombiner(QwOptions &options, QwSubsystemArrayParity& event);
-    /// \brief Constructor with helicity pattern
-    QwCombiner(QwOptions &options, QwHelicityPattern& helicitypattern);
-    /// \brief Constructor with only options
-    QwCombiner(QwOptions &options);
-
+ public:
     /// \brief Constructor with name
- QwCombiner(const string& name);
+    QwCombiner(const TString& name);
 
     /// \brief Copy constructor
     QwCombiner(const QwCombiner &source);
     /// Virtual destructor
     virtual ~QwCombiner();
-
-    /// \brief Define the configuration options
-    void static DefineOptions(QwOptions &options);
-    /// \brief Process the configuration options
-    void ProcessOptions(QwOptions &options);
-
 
     /// \brief Load the channels and sensitivities
     Int_t LoadChannelMap(const std::string& mapfile);

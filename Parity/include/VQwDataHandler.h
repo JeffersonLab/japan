@@ -27,7 +27,7 @@ class QwHelicityPattern;
 class VQwDataHandler{
 
   public:
-    
+  
     enum EQwHandleType {
       kHandleTypeUnknown=0, kHandleTypeMps, kHandleTypeAsym, kHandleTypeDiff
     };
@@ -35,7 +35,7 @@ class VQwDataHandler{
     typedef std::vector< VQwHardwareChannel* >::iterator Iterator_HdwChan;
     typedef std::vector< VQwHardwareChannel* >::const_iterator ConstIterator_HdwChan;
 
-    VQwDataHandler(const string& name):fName(name){}
+    VQwDataHandler(const TString& name):fName(name){}
 
     virtual void LoadDetectorMaps(QwParameterFile& file);
 
@@ -45,7 +45,6 @@ class VQwDataHandler{
     Int_t ConnectChannels(QwSubsystemArrayParity& yield, QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff){
       return this->ConnectChannels(asym, diff);
     }
-
 
     virtual void ProcessData();
 
@@ -73,8 +72,6 @@ class VQwDataHandler{
     void SetRunLabel(TString x) {
       run_label = x;
     }
-
-    virtual void ProcessOptions(QwOptions &options) = 0;
 
     Int_t LoadChannelMap(){return this->LoadChannelMap(fMapFile);}
     virtual Int_t LoadChannelMap(const std::string& mapfile) = 0;
@@ -104,27 +101,26 @@ class VQwDataHandler{
    std::string fTreeName;
    std::string fTreeComment;
 
-    UInt_t fErrorFlag;
+   UInt_t fErrorFlag;
 
-    TString run_label;
+   TString run_label;
 
-    /// Single event pointer
-    QwSubsystemArrayParity* fSubsystemArray;
-    /// Helicity pattern pointer
-    QwHelicityPattern* fHelicityPattern;
+   /// Single event pointer
+   QwSubsystemArrayParity* fSubsystemArray;
+   /// Helicity pattern pointer
+   QwHelicityPattern* fHelicityPattern;
 
-    std::vector< EQwHandleType > fDependentType;
-    std::vector< std::string > fDependentName;
+   std::vector< EQwHandleType > fDependentType;
+   std::vector< std::string > fDependentName;
 
-    std::vector< const VQwHardwareChannel* > fDependentVar;
-    std::vector< Double_t > fDependentValues;
+   std::vector< const VQwHardwareChannel* > fDependentVar;
+   std::vector< Double_t > fDependentValues;
 
-    std::vector< VQwHardwareChannel* > fOutputVar;
-    std::vector< Double_t > fOutputValues;
+   std::vector< VQwHardwareChannel* > fOutputVar;
+   std::vector< Double_t > fOutputValues;
 
-    std::string ParseSeparator;  // Used as space between tokens in ParseHandledVariable
+   std::string ParseSeparator;  // Used as space between tokens in ParseHandledVariable
 
 };
-
 
 #endif // VQWDATAHANDLER_H_

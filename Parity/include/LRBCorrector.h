@@ -20,20 +20,11 @@ Last Modified: August 1, 2018 1:41 PM
 
 
 class LRBCorrector : public VQwDataHandler, public MQwDataHandlerCloneable<LRBCorrector>{
-  
-  public:
-    
-    LRBCorrector(QwOptions &options, QwHelicityPattern& helicitypattern, const TString &run = "0");
-
+ public:
     /// \brief Constructor with name
-    LRBCorrector(const string& name);
+    LRBCorrector(const TString& name);
 
     void LoadDetectorMaps(QwParameterFile& file);
-
-    /// \brief Define the configuration options
-    void static DefineOptions(QwOptions &options);
-    /// \brief Process the configuration options
-    void ProcessOptions(QwOptions &options);
 
     Int_t LoadChannelMap(const std::string& mapfile);
 

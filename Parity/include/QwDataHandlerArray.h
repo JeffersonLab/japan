@@ -69,11 +69,7 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
   /// \brief Define configuration options for global array
   static void DefineOptions(QwOptions &options);
   /// \brief Process configuration options for the datahandler array itself
-  void ProcessOptionsToplevel(QwOptions &options);
-  /// \brief Process configuration options for all datahandlers in the array
-  void ProcessOptionsDataHandlers(QwOptions &options);
-  /// \brief Process configuration options (default behavior)
-  void ProcessOptions(QwOptions &options) { ProcessOptionsDataHandlers(options); };
+  void ProcessOptions(QwOptions &options);
 
   void LoadDataHandlersFromParameterFile(QwParameterFile& detectors, QwHelicityPattern& helicitypattern, const TString &run);
 

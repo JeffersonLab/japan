@@ -22,57 +22,46 @@ Last Modified: August 1, 2018 1:43 PM
 #include "QwkRegBlueCorrelator.h"
 
 class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCorrelator>{
+ public:
+  /// \brief Constructor with name
+  QwCorrelator(const TString& name);
 
-  public:
+  void LoadDetectorMaps(QwParameterFile& file);
+
+  Int_t LoadChannelMap(const std::string& mapfile);
+  	
+  void readConfig(const char * configFName);
+  	
+  /// \brief Connect to Channels (asymmetry/difference only)
+  Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
+		
+  void unpackEvent();
+
+  void ProcessData();
+  void CalcCorrelations();
+		
+ protected:
+  bool fDisableHistos;
   
-		void ProcessData();
-		void CalcCorrelations();
-
-  	QwCorrelator(QwOptions &options, QwHelicityPattern& helicitypattern, const TString &run = "0");
-
-    /// \brief Constructor with name
-    QwCorrelator(const string& name);
-
-    void LoadDetectorMaps(QwParameterFile& file);
-  	
-  	void readConfig(const char * configFName);
-  	
- 	  /// \brief Define the configuration options
-    void static DefineOptions(QwOptions &options);
-    /// \brief Process the configuration options
-    void ProcessOptions(QwOptions &options);
-
-    /// \brief Connect to Channels (asymmetry/difference only)
-    Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
-		
-		void unpackEvent();
-		
-		Int_t LoadChannelMap(const std::string& mapfile);
-		
-	protected:
-	
-    bool fDisableHistos;
+  std::vector< TString > fIndependentFull;
+  std::vector< TString > fDependentFull;
     
-    std::vector< TString > fIndependentFull;
-    std::vector< TString > fDependentFull;
-    
-	  //  Using the fDependentType and fDependentName from base class, but override the IV arrays
-	  std::vector< EQwHandleType > fIndependentType;
-    std::vector< std::string > fIndependentName;
+  //  Using the fDependentType and fDependentName from base class, but override the IV arrays
+  std::vector< EQwHandleType > fIndependentType;
+  std::vector< std::string > fIndependentName;
 
-    std::vector< const VQwHardwareChannel* > fIndependentVar;
-    std::vector< Double_t > fIndependentValues;
+  std::vector< const VQwHardwareChannel* > fIndependentVar;
+  std::vector< Double_t > fIndependentValues;
 
-    std::string fAlphaOutputPath;
-    std::string fAliasOutputPath;		
+  std::string fAlphaOutputPath;
+  std::string fAliasOutputPath;		
 
-
-  private:
+ private:
 		
-		//Default Constructor
-		QwCorrelator():corA("input") { };
+  //Default Constructor
+  QwCorrelator():corA("input") { };
 		
-		QwkRegBlueCorrelator corA;
+  QwkRegBlueCorrelator corA;
 		
 };
 

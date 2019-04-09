@@ -21,7 +21,7 @@
  */
 QwDataHandlerArray::QwDataHandlerArray(QwOptions& options, QwHelicityPattern& helicitypattern, const TString &run)
 {
-  ProcessOptionsToplevel(options);
+  ProcessOptions(options);
   QwParameterFile detectors(fDataHandlersMapFile.c_str());
   QwMessage << "Loading handlers from " << fDataHandlersMapFile << "." << QwLog::endl;
   LoadDataHandlersFromParameterFile(detectors, helicitypattern, run);
@@ -267,7 +267,7 @@ void QwDataHandlerArray::DefineOptions(QwOptions &options)
  * Handle configuration options for the handler array itself
  * @param options Options
  */
-void QwDataHandlerArray::ProcessOptionsToplevel(QwOptions &options)
+void QwDataHandlerArray::ProcessOptions(QwOptions &options)
 {
   // Filename to use for handler creation (single filename could be expanded
   // to a list)
@@ -276,21 +276,6 @@ void QwDataHandlerArray::ProcessOptionsToplevel(QwOptions &options)
   fDataHandlersDisabledByName = options.GetValueVector<std::string>("DataHandler.disable-by-name");
   fDataHandlersDisabledByType = options.GetValueVector<std::string>("DataHandler.disable-by-type");
 }
-
-
-/**
- * Handle configuration options for all handlers in the array
- * @param options Options
- */
-void QwDataHandlerArray::ProcessOptionsDataHandlers(QwOptions &options)
-{
-  for (iterator handler_iter = begin(); handler_iter != end(); ++handler_iter) {
-    VQwDataHandler* handler = dynamic_cast<VQwDataHandler*>(handler_iter->get());
-    handler->ProcessOptions(options);
-  }
-}
-
-
 
 /**
  * Get the handler in this array with the spcified name

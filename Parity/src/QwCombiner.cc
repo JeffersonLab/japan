@@ -27,78 +27,10 @@ RegisterHandlerFactory(QwCombiner);
 
 
 /// \brief Constructor with name
-QwCombiner::QwCombiner(const string& name):VQwDataHandler(name)
+QwCombiner::QwCombiner(const TString& name):VQwDataHandler(name)
 {
   ParseSeparator = ":";
 }
-
-
-/** Constructor with single event and helicity pattern
- *
- * @param options Options object
- * @param event Single event
- * @param helicitypattern Helicity pattern
- */
-QwCombiner::QwCombiner(
-    QwOptions &options,
-    QwSubsystemArrayParity& event,
-    QwHelicityPattern& helicitypattern)
-{
-  ParseSeparator = ":";
-  ProcessOptions(options);
-  fSubsystemArray = &event;
-  fHelicityPattern = &helicitypattern;
-  //  LoadChannelMap(fMapFile);
-  QwSubsystemArrayParity& asym = helicitypattern.fAsymmetry;
-  QwSubsystemArrayParity& diff = helicitypattern.fDifference;
-  ConnectChannels(event,asym,diff);
-}
-
-/** Constructor with single event
- * 
- * @param options Options object
- * @param event Single event
- * 
- */
-QwCombiner::QwCombiner(QwOptions &options, QwSubsystemArrayParity& event)
-{
-  fHelicityPattern = NULL;
-  ParseSeparator = ":";
-  ProcessOptions(options);
-  fSubsystemArray = &event;
-  //  LoadChannelMap(fMapFile);
-  ConnectChannels(event);
-}
-
-/** Constructor with only helicity pattern
- * 
- * @param options Obtions object
- * @param helicitypattern Helicity Pattern
- * 
- */
-QwCombiner::QwCombiner(QwOptions &options, QwHelicityPattern& helicitypattern)
-{
-  fSubsystemArray = NULL;
-  ParseSeparator = ":";
-  ProcessOptions(options);
-  //  LoadChannelMap(fMapFile);
-  fHelicityPattern = &helicitypattern;
-  QwSubsystemArrayParity& asym = helicitypattern.fAsymmetry;
-  QwSubsystemArrayParity& diff = helicitypattern.fDifference;
-  ConnectChannels(asym,diff);
-}
-
-/** Constructor with options
- * 
- * @param options Obtions object
- * 
- */
-QwCombiner::QwCombiner(QwOptions &options)
-{
-  ProcessOptions(options);
-  //  LoadChannelMap(fMapFile);
-} 
-
 
 QwCombiner::QwCombiner(const QwCombiner &source)
 {
@@ -127,17 +59,6 @@ QwCombiner::~QwCombiner()
   fOutputVar.clear();
 }
 
-/**
- * Defines configuration options using QwOptions functionality.
- * @param options Options object
- */
-void QwCombiner::DefineOptions(QwOptions &options){}
-
-/**
- * Process configuration options using QwOptions functionality.
- * @param options Options object
- */
-void QwCombiner::ProcessOptions(QwOptions &options){}
 
 /*  Just use the base class version for now....
  *
@@ -509,12 +430,6 @@ Int_t QwCombiner::ConnectChannels(QwSubsystemArrayParity& event)
 }
 
 void QwCombiner::ProcessData() {
-  // Return if correction is not enabled
-  if (! true){
-    QwDebug << "QwCombiner is not enabled!" << QwLog::endl;
-    return;
-  }
-
   // Get error flag from QwHelicityPattern
   if (fHelicityPattern != NULL){
     fErrorFlag = fHelicityPattern->GetEventcutErrorFlag();

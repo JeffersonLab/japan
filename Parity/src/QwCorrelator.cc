@@ -34,7 +34,7 @@ RegisterHandlerFactory(QwCorrelator);
 
 //******************************************************************************************************************************************************
 
-QwCorrelator::QwCorrelator(const string& name):VQwDataHandler(name),
+QwCorrelator::QwCorrelator(const TString& name):VQwDataHandler(name),
 					       fAlphaOutputPath("."),
 					       fAliasOutputPath("."),
 					       fDisableHistos(true),
@@ -42,21 +42,6 @@ QwCorrelator::QwCorrelator(const string& name):VQwDataHandler(name),
 {
   ParseSeparator = "_";
 }
-
-
-QwCorrelator::QwCorrelator(QwOptions &options, QwHelicityPattern& helicitypattern, const TString &run): corA("input") {
-
-  run_label = run;
-  ParseSeparator = "_";
-  ProcessOptions(options);
-  //  LoadChannelMap(fMapFile);
-  //  corA.SetDisableHistogramFlag(fDisableHistos);
-  QwSubsystemArrayParity& asym = helicitypattern.fAsymmetry;
-  QwSubsystemArrayParity& diff = helicitypattern.fDifference;
-  ConnectChannels(asym, diff);
-  
-}
-
 
 void QwCorrelator::LoadDetectorMaps(QwParameterFile& file)
 {
@@ -67,11 +52,8 @@ void QwCorrelator::LoadDetectorMaps(QwParameterFile& file)
   corA.SetDisableHistogramFlag(fDisableHistos);
 }
 
-
-
-void QwCorrelator::ProcessData() {
-
-
+void QwCorrelator::ProcessData()
+{
   UInt_t error = 0;
 
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
@@ -95,10 +77,9 @@ void QwCorrelator::ProcessData() {
 }
 
 
-void QwCorrelator::CalcCorrelations() {
-
-
-	corA.finish();
+void QwCorrelator::CalcCorrelations()
+{
+  corA.finish();
 	
   std::string TmpRunLabel = run_label.Data();
   std::string fSlopeFileName = "blueR" + TmpRunLabel + "new.slope.root";
@@ -114,13 +95,6 @@ void QwCorrelator::CalcCorrelations() {
 
 //******************************************************************************************************************************************************
 
-
-void QwCorrelator::DefineOptions(QwOptions &options){}
-
-
-void QwCorrelator::ProcessOptions(QwOptions &options){}
-
-
 /** Load the channel map
  *
  * @param mapfile Filename of map file
@@ -128,8 +102,6 @@ void QwCorrelator::ProcessOptions(QwOptions &options){}
  */
 Int_t QwCorrelator::LoadChannelMap(const std::string& mapfile)
 {
-  // Return if correlator is not enabled
-
   // Open the file
   QwParameterFile map(mapfile);
 

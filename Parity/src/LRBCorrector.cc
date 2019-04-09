@@ -43,44 +43,16 @@ using namespace std;
 RegisterHandlerFactory(LRBCorrector);
 
 /// \brief Constructor with name
-LRBCorrector::LRBCorrector(const string& name):VQwDataHandler(name)
+LRBCorrector::LRBCorrector(const TString& name):VQwDataHandler(name)
 {
   ParseSeparator = "_";
 }
-
-
-LRBCorrector::LRBCorrector(QwOptions &options, QwHelicityPattern& helicitypattern, const TString &run) {
-  
-  run_label = run;
-  ParseSeparator = "_";
-  ProcessOptions(options);
-  LoadChannelMap(fMapFile);
-  fHelicityPattern = &helicitypattern;
-  QwSubsystemArrayParity& asym = helicitypattern.fAsymmetry;
-  QwSubsystemArrayParity& diff = helicitypattern.fDifference;
-  ConnectChannels(asym,diff);
-  
-}
-
-/**
- * Defines configuration options using QwOptions functionality.
- * @param options Options object
- */
-void LRBCorrector::DefineOptions(QwOptions &options){}
-
-/**
- * Process configuration options using QwOptions functionality.
- * @param options Options object
- */
-void LRBCorrector::ProcessOptions(QwOptions &options){}
 
 void LRBCorrector::LoadDetectorMaps(QwParameterFile& file)
 {
   VQwDataHandler::LoadDetectorMaps(file);
   file.PopValue("slope-path", outPath);
 }
-
-
 
 Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
 {
@@ -177,11 +149,6 @@ Int_t LRBCorrector::ConnectChannels(
 
 
 void LRBCorrector::ProcessData() {
-  // Return if correction is not enabled
-  if (! true){
-    QwDebug << "LRB Correction is not enabled!" << QwLog::endl;
-    return;
-  }
   // Get error flag from QwHelicityPattern
   if (fHelicityPattern != NULL){
     fErrorFlag = fHelicityPattern->GetEventcutErrorFlag();
