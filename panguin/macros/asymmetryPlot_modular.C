@@ -29,12 +29,12 @@ void asymmetryPlot_modular(std::string channel) {
     // Make an instance of the relevant data type's struct
     PATTERNASYMS patternAsyms;
 
-    std::string tree = "Hel_Tree";
+    std::string tree = "mul";
     std::string modifier = "noise";
     std::string description = "Tree of Pattern based noise";
 
     // To grab the root tree output we can assume that PANGUIN has successfully opened a root file
-    TTree *oldPatternTree = (TTree*)gDirectory->Get("Hel_Tree");
+    TTree *oldPatternTree = (TTree*)gDirectory->Get("mul");
     // Assign that instance to the new ROOT tree's branch location of interest
     oldPatternTree->SetBranchAddress( Form("asym_%s",channel.c_str()), &patternAsyms );
     // Make a new ROOT tree to store the new data in (this is just an academic example)

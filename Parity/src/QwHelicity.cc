@@ -1278,6 +1278,10 @@ void  QwHelicity::ConstructBranchAndVector(TTree *tree, TString &prefix, std::ve
     }
   else if(fHistoType==kHelSavePattern)
     {
+      basename = "actual_helicity";    //predicted actual helicity before being delayed.
+      values.push_back(0.0);
+      tree->Branch(basename, &(values.back()), basename+"/D");
+      //
       basename = "actual_pattern_polarity";
       values.push_back(0.0);
       tree->Branch(basename, &(values.back()), basename+"/D");
@@ -1343,6 +1347,9 @@ void  QwHelicity::ConstructBranch(TTree *tree, TString &prefix)
     }
   else if(fHistoType==kHelSavePattern)
     {
+      basename = "actual_helicity";    //predicted actual helicity before being delayed.
+      tree->Branch(basename, &fHelicityActual, basename+"/I");
+      //
       basename = "actual_pattern_polarity";
       tree->Branch(basename, &fActualPatternPolarity, basename+"/I");
       //
@@ -1402,6 +1409,9 @@ void  QwHelicity::ConstructBranch(TTree *tree, TString &prefix, QwParameterFile&
     }
   else if(fHistoType==kHelSavePattern)
     {
+      basename = "actual_helicity";    //predicted actual helicity before being delayed.
+      tree->Branch(basename, &fHelicityActual, basename+"/I");
+      //
       basename = "actual_pattern_polarity";
       tree->Branch(basename, &fActualPatternPolarity, basename+"/I");
       //
@@ -1447,6 +1457,7 @@ void  QwHelicity::FillTreeVector(std::vector<Double_t> &values) const
     }
   else if(fHistoType==kHelSavePattern)
     {
+      values[index++] = fHelicityActual;
       values[index++] = fActualPatternPolarity;
       values[index++] = fPreviousPatternPolarity;
       values[index++] = fDelayedPatternPolarity;

@@ -132,6 +132,10 @@ class QwRootTree {
       }
     }
 
+    Long64_t AutoSave(Option_t *option){
+      return fTree->AutoSave(option);
+    }
+
     /// Fill the tree
     Int_t Fill() {
       fCurrentEvent++;
@@ -330,7 +334,7 @@ class QwRootFile {
       // Update regularly
       static Int_t update_count = 0;
       update_count++;
-      if (update_count % fUpdateInterval == 0) Update();
+      if ((fUpdateInterval > 0) && ( update_count % fUpdateInterval == 0)) Update();
       if (! HasDirByType(object)) return;
       // Fill histograms
       object.FillHistograms();
@@ -416,7 +420,16 @@ class QwRootFile {
                      4 / sizeof(int32_t) / 1024 / 1024 << " MiB"
                   << QwLog::endl;
         fMapFile->Update();
-      } // not for TFile
+      }else{
+	// this option will allow for reading the tree during write
+	Long64_t nBytes(0);
+	for (auto iter = fTreeByName.begin(); iter != fTreeByName.end(); iter++)
+	  nBytes += iter->second.front()->AutoSave("SaveSelf");
+        
+	QwMessage << "TFile saved: "
+                  << nBytes/1000000 << "MB (innacurate number)" //FIXME this calculation is innacurate
+                  << QwLog::endl;
+      }
     }
     void Print()  { if (fMapFile) fMapFile->Print();  if (fRootFile) fRootFile->Print(); }
     void ls()     { if (fMapFile) fMapFile->ls();     if (fRootFile) fRootFile->ls(); }
@@ -640,7 +653,7 @@ void QwRootFile::ConstructTreeBranches(
     tree->SetBasketSize(fBasketSize);
     tree->SetMaxTreeSize(kMaxTreeSize);
 
-    if (fEnableMapFile && fCircularBufferSize > 0)
+    if (fCircularBufferSize > 0)
       tree->SetCircular(fCircularBufferSize);
 
   } else {
