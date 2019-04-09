@@ -24,7 +24,7 @@ class LRBCorrector : public VQwDataHandler, public MQwDataHandlerCloneable<LRBCo
     /// \brief Constructor with name
     LRBCorrector(const TString& name);
 
-    void LoadDetectorMaps(QwParameterFile& file);
+    void ParseConfigFile(QwParameterFile& file);
 
     Int_t LoadChannelMap(const std::string& mapfile);
 

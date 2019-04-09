@@ -43,9 +43,9 @@ QwCorrelator::QwCorrelator(const TString& name):VQwDataHandler(name),
   ParseSeparator = "_";
 }
 
-void QwCorrelator::LoadDetectorMaps(QwParameterFile& file)
+void QwCorrelator::ParseConfigFile(QwParameterFile& file)
 {
-  VQwDataHandler::LoadDetectorMaps(file);
+  VQwDataHandler::ParseConfigFile(file);
   file.PopValue("slope-path", fAlphaOutputPath);
   file.PopValue("alias-path", fAliasOutputPath);
   file.PopValue("disable-histos", fDisableHistos);

@@ -149,7 +149,7 @@ void QwDataHandlerArray::LoadDataHandlersFromParameterFile(QwParameterFile& dete
     // Pass detector maps
     handler->SetRunLabel(run);
     handler->SetPointer(&helicitypattern);
-    handler->LoadDetectorMaps(*section);
+    handler->ParseConfigFile(*section);
     handler->LoadChannelMap();
     handler->ConnectChannels(yield, asym, diff);
     

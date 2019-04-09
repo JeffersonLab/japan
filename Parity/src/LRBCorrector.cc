@@ -48,9 +48,9 @@ LRBCorrector::LRBCorrector(const TString& name):VQwDataHandler(name)
   ParseSeparator = "_";
 }
 
-void LRBCorrector::LoadDetectorMaps(QwParameterFile& file)
+void LRBCorrector::ParseConfigFile(QwParameterFile& file)
 {
-  VQwDataHandler::LoadDetectorMaps(file);
+  VQwDataHandler::ParseConfigFile(file);
   file.PopValue("slope-path", outPath);
 }
 

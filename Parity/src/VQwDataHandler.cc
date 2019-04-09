@@ -43,7 +43,7 @@ VQwDataHandler::~VQwDataHandler() {
 
 }
 
-void VQwDataHandler::LoadDetectorMaps(QwParameterFile& file){
+void VQwDataHandler::ParseConfigFile(QwParameterFile& file){
   file.RewindToFileStart();
   file.EnableGreediness();
   while (file.ReadNextLine()) {

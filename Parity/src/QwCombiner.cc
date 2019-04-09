@@ -62,9 +62,9 @@ QwCombiner::~QwCombiner()
 
 /*  Just use the base class version for now....
  *
- * void LoadDetectorMaps(QwParameterFile& file)
+ * void ParseConfigFile(QwParameterFile& file)
  * {
- *   VQwDataHandler::LoadDetectorMaps(file);
+ *   VQwDataHandler::ParseConfigFile(file);
  *   file.PopValue("slope-path", outPath);
  * }
  */

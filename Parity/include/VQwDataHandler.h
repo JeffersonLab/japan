@@ -37,7 +37,7 @@ class VQwDataHandler{
 
     VQwDataHandler(const TString& name):fName(name){}
 
-    virtual void LoadDetectorMaps(QwParameterFile& file);
+    virtual void ParseConfigFile(QwParameterFile& file);
 
     void SetPointer(QwHelicityPattern *ptr){fHelicityPattern = ptr;};
     void SetPointer(QwSubsystemArrayParity *ptr){fSubsystemArray = ptr;};

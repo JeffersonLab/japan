@@ -26,7 +26,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   /// \brief Constructor with name
   QwCorrelator(const TString& name);
 
-  void LoadDetectorMaps(QwParameterFile& file);
+  void ParseConfigFile(QwParameterFile& file);
 
   Int_t LoadChannelMap(const std::string& mapfile);
   	
