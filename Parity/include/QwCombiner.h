@@ -30,10 +30,7 @@ class QwCombiner:public VQwDataHandler, public MQwDataHandlerCloneable<QwCombine
 
     /// \brief Load the channels and sensitivities
     Int_t LoadChannelMap(const std::string& mapfile);
-    /// \brief Connect to channels
-    Int_t ConnectChannels(QwSubsystemArrayParity& event,
-        QwSubsystemArrayParity& asym,
-        QwSubsystemArrayParity& diff);
+
     /// \brief Connect to Channels (event only)
     Int_t ConnectChannels(QwSubsystemArrayParity& event);
     /// \brief Connect to Channels (asymmetry/difference only)
