@@ -23,10 +23,6 @@
 #include "QwOptions.h"
 #include "QwHelicityPattern.h"
 
-#include "QwCorrelator.h"
-#include "QwCombiner.h"
-#include "LRBCorrector.h"
-
 // Forward declarations
 class QwParityDB;
 class QwPromptSummary;
@@ -76,9 +72,6 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
   /// \brief Add the datahandler to this array
   void push_back(VQwDataHandler* handler);
   void push_back(boost::shared_ptr<VQwDataHandler> handler);
-  void push_back(QwCorrelator* handler);
-  void push_back(LRBCorrector* handler);
-  void push_back(QwCombiner* handler);
 
     /// \brief Get the handler with the specified name
     VQwDataHandler* GetDataHandlerByName(const TString& name);

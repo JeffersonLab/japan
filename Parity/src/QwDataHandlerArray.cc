@@ -201,39 +201,6 @@ void QwDataHandlerArray::push_back(VQwDataHandler* handler)
   }
 }
 
-void QwDataHandlerArray::push_back(QwCombiner* handler)
-{
-
-    boost::shared_ptr<VQwDataHandler> handler_tmp(handler);
-    HandlerPtrs::push_back(handler_tmp);
-
-    // Set the parent of the handler to this array
-    //    handler_tmp->SetParent(this);
-
-}
-
-void QwDataHandlerArray::push_back(QwCorrelator* handler)
-{
-
-    boost::shared_ptr<VQwDataHandler> handler_tmp(handler);
-    HandlerPtrs::push_back(handler_tmp);
-
-    // Set the parent of the handler to this array
-    //    handler_tmp->SetParent(this);
-
-}
-
-void QwDataHandlerArray::push_back(LRBCorrector* handler)
-{
-
-    boost::shared_ptr<VQwDataHandler> handler_tmp(handler);
-    HandlerPtrs::push_back(handler_tmp);
-
-    // Set the parent of the handler to this array
-    //    handler_tmp->SetParent(this);
-
-}
-
 /**
  * Define configuration options for global array
  * @param options Options
