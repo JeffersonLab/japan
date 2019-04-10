@@ -19,12 +19,14 @@
 /**
  * Create a handler array based on the configuration option 'detectors'
  */
-QwDataHandlerArray::QwDataHandlerArray(QwOptions& options, QwHelicityPattern& helicitypattern, const TString &run)
+QwDataHandlerArray::QwDataHandlerArray(QwOptions& options, QwHelicityPattern& helicitypattern, const TString &run):fDataHandlersMapFile("")
 {
   ProcessOptions(options);
-  QwParameterFile detectors(fDataHandlersMapFile.c_str());
-  QwMessage << "Loading handlers from " << fDataHandlersMapFile << "." << QwLog::endl;
-  LoadDataHandlersFromParameterFile(detectors, helicitypattern, run);
+  if (fDataHandlersMapFile != ""){
+    QwParameterFile detectors(fDataHandlersMapFile.c_str());
+    QwMessage << "Loading handlers from " << fDataHandlersMapFile << "." << QwLog::endl;
+    LoadDataHandlersFromParameterFile(detectors, helicitypattern, run);
+  }
 }
 
 
@@ -208,7 +210,7 @@ void QwDataHandlerArray::push_back(VQwDataHandler* handler)
 void QwDataHandlerArray::DefineOptions(QwOptions &options)
 {
   options.AddOptions()("datahandlers",
-                       po::value<std::string>()->default_value("prex_datahandlers.map"),
+                       po::value<std::string>(),
                        "map file with datahandlers to include");
 
   // Versions of boost::program_options below 1.39.0 have a bug in multitoken processing
@@ -238,7 +240,9 @@ void QwDataHandlerArray::ProcessOptions(QwOptions &options)
 {
   // Filename to use for handler creation (single filename could be expanded
   // to a list)
-  fDataHandlersMapFile = options.GetValue<std::string>("datahandlers");
+  if (options.HasValue("datahandlers")){
+    fDataHandlersMapFile = options.GetValue<std::string>("datahandlers");
+  }
   // DataHandlers to disable
   fDataHandlersDisabledByName = options.GetValueVector<std::string>("DataHandler.disable-by-name");
   fDataHandlersDisabledByType = options.GetValueVector<std::string>("DataHandler.disable-by-type");
