@@ -8,8 +8,8 @@
 
 # Double differences
 [asym:@bcmdd_charge_us_ds]
-asym:bcm_us, 1
-asym:bcm_ds, -1
+asym:bcm_an_us, 1
+asym:bcm_an_ds, -1
 
 
 
