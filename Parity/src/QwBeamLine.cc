@@ -1653,7 +1653,7 @@ Bool_t QwBeamLine::PublishByRequest(TString device_name)
   TString name = device_name;
   TString device_prop = "value";
   if (device_name.EndsWith("WS")){
-    name = device_name(0,device_name.Length()-16);
+    name = device_name(0,device_name.Length()-2);
     device_prop = "ef";
   } else if (device_name.EndsWith("XSlope")){
     name = device_name(0,device_name.Length()-6);

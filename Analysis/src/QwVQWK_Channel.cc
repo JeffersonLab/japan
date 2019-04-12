@@ -1493,22 +1493,22 @@ void QwVQWK_Channel::CalculateRunningAverage()
 void QwVQWK_Channel::PrintValue() const
 {
   QwMessage << std::setprecision(8)
-            << std::setw(18) << std::left << GetSubsystemName()    << ""
-            << std::setw(18) << std::left << GetModuleType()       << ""
-            << std::setw(18) << std::left << GetElementName()      << ""
+            << std::setw(18) << std::left << GetSubsystemName()    << " "
+            << std::setw(18) << std::left << GetModuleType()       << " "
+            << std::setw(18) << std::left << GetElementName()      << " "
             << std::setw(12) << std::left << GetHardwareSum()      << " +/- "
             << std::setw(12) << std::left << GetHardwareSumError() << " sig "
-	    << std::setw(12) << std::left << GetHardwareSumWidth() << ""
-            << std::setw(10) << std::left << GetGoodEventCount()   << ""
+	    << std::setw(12) << std::left << GetHardwareSumWidth() << " "
+            << std::setw(10) << std::left << GetGoodEventCount()   << " "
             << std::setw(12) << std::left << GetBlockValue(0)      << " +/- "
-            << std::setw(12) << std::left << GetBlockErrorValue(0) << ""
+            << std::setw(12) << std::left << GetBlockErrorValue(0) << " "
             << std::setw(12) << std::left << GetBlockValue(1)      << " +/- "
-            << std::setw(12) << std::left << GetBlockErrorValue(1) << ""
+            << std::setw(12) << std::left << GetBlockErrorValue(1) << " "
             << std::setw(12) << std::left << GetBlockValue(2)      << " +/- "
-            << std::setw(12) << std::left << GetBlockErrorValue(2) << ""
+            << std::setw(12) << std::left << GetBlockErrorValue(2) << " "
             << std::setw(12) << std::left << GetBlockValue(3)      << " +/- "
-            << std::setw(12) << std::left << GetBlockErrorValue(3) << ""
-            << std::setw(12) << std::left << fGoodEventCount       << ""
+            << std::setw(12) << std::left << GetBlockErrorValue(3) << " "
+            << std::setw(12) << std::left << fGoodEventCount       << " "
             << QwLog::endl;
   /*
     //for Debudding

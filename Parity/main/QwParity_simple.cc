@@ -30,8 +30,6 @@
 #include "QwHelicityPattern.h"
 #include "QwEventRing.h"
 //#include "QwEPICSEvent.h"
-//#include "QwRegression.h"
-//#include "QwRegressionSubsystem.h"
 #include "QwPromptSummary.h"
 
 // Qweak subsystems
@@ -107,19 +105,10 @@ Int_t main(Int_t argc, Char_t* argv[])
     detectors.ProcessOptions(gQwOptions);
     detectors.ListPublishedValues();
 
-    /// Create event-based linear regression subsystem
-    //    TString name = "MpsRegression";
-    //    QwRegressionSubsystem regress_sub(gQwOptions, detectors, name);
-    //    detectors.push_back(regress_sub.GetSharedPointerToStaticObject());
-    
     ///  Create the helicity pattern
     QwHelicityPattern helicitypattern(detectors);
     helicitypattern.ProcessOptions(gQwOptions);
       
-    // ///  Create the asymmetry-based linear regression
-    // QwRegression regression(gQwOptions,helicitypattern);
-    // QwRegression running_regression(regression);
-
     ///  Create the event ring with the subsystem array
     QwEventRing eventring(gQwOptions,detectors);
     //  Make a copy of the detectors object to hold the
@@ -240,9 +229,6 @@ Int_t main(Int_t argc, Char_t* argv[])
       // The event pass the event cut constraints
       if (detectors.ApplySingleEventCuts()) {
 	
-	//	// TEST 
-	// 	regress_sub.LinearRegression();
-
         // Add event to the ring
         eventring.push(detectors);
 
@@ -334,9 +320,6 @@ Int_t main(Int_t argc, Char_t* argv[])
         helicitypattern.CalculateRunningBurstAverage();
       }
     }
-
-    // running_regression.CalculateRunningAverage();
-    // running_regression.PrintValue();
 
     // This will calculate running averages over single helicity events
     runningsum.CalculateRunningAverage();

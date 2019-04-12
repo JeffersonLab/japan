@@ -107,11 +107,7 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
     fLastWindowNumber(0),
     fLastPatternNumber(0),
     fLastPhaseNumber(0),
-    fNextPair(0),
-    correlator(gQwOptions,*this, run),
-    regress_from_LRB(gQwOptions,*this, run),
-    regression(gQwOptions,*this),
-    running_regression(regression)
+    fNextPair(0)
 {
   // Retrieve the helicity subsystem to query for
   std::vector<VQwSubsystem*> subsys_helicity = event.GetSubsystemByType("QwHelicity");
@@ -199,11 +195,7 @@ QwHelicityPattern::QwHelicityPattern(const QwHelicityPattern &source)
     fAlternateDiff(source.fYield),
     fPositiveHelicitySum(source.fYield), 
     fNegativeHelicitySum(source.fYield),
-    fNextPair(source.fNextPair),
-    correlator(gQwOptions,*this, 999999),
-    regress_from_LRB(gQwOptions,*this,999999),
-    regression(gQwOptions,*this),
-    running_regression(regression)
+    fNextPair(source.fNextPair)
 {
 };
 
@@ -1041,24 +1033,6 @@ void QwHelicityPattern::Print() const
           << fEventLoaded[i] << ", " << fHelicity[i] << QwLog::endl;
   QwOut << "Is a complete pattern? (n/y:0/1) " << IsCompletePattern() << QwLog::endl;
 }
-
-void QwHelicityPattern::ProcessDataHandlerEntry() {
-
-	regression.LinearRegression(QwCombiner::kRegTypeAsym);
-	running_regression.AccumulateRunningSum(regression);
-  regress_from_LRB.LinearRegression(QwCombiner::kRegTypeAsym);
-  correlator.FillCorrelator();
-
-}
-
-void QwHelicityPattern::FinishDataHandler() {
-
-  correlator.CalcCorrelations();
-  running_regression.CalculateRunningAverage();
-  running_regression.PrintValue();
-
-}
-
 
 
 

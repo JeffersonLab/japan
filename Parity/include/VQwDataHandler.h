@@ -5,7 +5,8 @@ Created by: Michael Vallee
 Email: mv836315@ohio.edu
 
 Description:  This is the header file to the VQwDataHandler class.  This
-              class acts as a base class to all regression based classes.
+              class acts as a base class to all classes which need
+              to access data from multiple subsystems
 
 Last Modified: August 1, 2018 1:39 PM
 *****************************************************************************/
@@ -17,72 +18,109 @@ Last Modified: August 1, 2018 1:39 PM
 //#include "QwHelicityPattern.h"
 #include "QwSubsystemArrayParity.h"
 #include "VQwHardwareChannel.h"
+#include "QwFactory.h"
 
+class QwParameterFile;
+class QwRootFile;
 class QwHelicityPattern;
 
-class VQwDataHandler {
+class VQwDataHandler{
 
   public:
-    
-    enum EQwRegType {
-      kRegTypeUnknown=0, kRegTypeMps, kRegTypeAsym, kRegTypeDiff
+  
+    enum EQwHandleType {
+      kHandleTypeUnknown=0, kHandleTypeMps, kHandleTypeAsym, kHandleTypeDiff
     };
     
     typedef std::vector< VQwHardwareChannel* >::iterator Iterator_HdwChan;
     typedef std::vector< VQwHardwareChannel* >::const_iterator ConstIterator_HdwChan;
 
-    void ProcessData();
+    VQwDataHandler(const TString& name):fName(name){}
+
+    virtual void ParseConfigFile(QwParameterFile& file);
+
+    void SetPointer(QwHelicityPattern *ptr){fHelicityPattern = ptr;};
+    void SetPointer(QwSubsystemArrayParity *ptr){fSubsystemArray = ptr;};
+
+    Int_t ConnectChannels(QwSubsystemArrayParity& yield, QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff){
+      return this->ConnectChannels(asym, diff);
+    }
+
+    virtual void ProcessData();
+
+    virtual void FinishDataHandler(){};
+
+    virtual void CalcCorrelations(){};
 
     virtual ~VQwDataHandler();
+
+    TString GetDataHandlerName(){return fName;}
 
     void AccumulateRunningSum(VQwDataHandler &value);
     void CalculateRunningAverage();
     void PrintValue() const;
-    void FillDB(QwParityDB *db, TString datatype);
+    void FillDB(QwParityDB *db, TString datatype){};
+
+    void ConstructTreeBranches(QwRootFile *treerootfile);
+    void FillTreeBranches(QwRootFile *treerootfile);
 
     // Fill the vector for this subsystem
     void FillTreeVector(std::vector<Double_t> &values) const;
 
     void ConstructBranchAndVector(TTree *tree, TString& prefix, std::vector<Double_t>& values);
 
-    void get_run_label(TString x) {
+    void SetRunLabel(TString x) {
       run_label = x;
     }
+
+    Int_t LoadChannelMap(){return this->LoadChannelMap(fMapFile);}
+    virtual Int_t LoadChannelMap(const std::string& mapfile) = 0;
 
   protected:
     
     VQwDataHandler() { }
     
-    virtual void ProcessOptions(QwOptions &options) = 0;
-
-    virtual Int_t LoadChannelMap(const std::string& mapfile) = 0;
-    Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
+    virtual Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
     
-    std::pair<EQwRegType,std::string> ParseRegressionVariable(const std::string& variable);
+    std::pair<EQwHandleType,std::string> ParseHandledVariable(const std::string& variable);
+
+   void CalcOneOutput(const VQwHardwareChannel* dv, VQwHardwareChannel* output,
+                       std::vector< const VQwHardwareChannel* > &ivs,
+                       std::vector< Double_t > &sens);
 
     //Bool_t PublishInternalValue(const TString &name, const TString &desc, const VQwHardwareChannel *value) const;
     //Bool_t PublishByRequest(TString device_name);
 
+ protected:
+   //
+   Int_t fPriority; ///  When a datahandler array is processed, handlers with lower priority will be processed before handlers with higher priority
+
     //***************[Variables]***************
+   TString fName;
+   std::string fMapFile;
+   std::string fTreeName;
+   std::string fTreeComment;
 
-    UInt_t fErrorFlag;
+   UInt_t fErrorFlag;
 
-    TString run_label;
+   TString run_label;
 
-    std::string fCorrelatorMapFile;
+   /// Single event pointer
+   QwSubsystemArrayParity* fSubsystemArray;
+   /// Helicity pattern pointer
+   QwHelicityPattern* fHelicityPattern;
 
-    std::vector< EQwRegType > fDependentType;
-    std::vector< std::string > fDependentName;
+   std::vector< EQwHandleType > fDependentType;
+   std::vector< std::string > fDependentName;
 
-    std::vector< const VQwHardwareChannel* > fDependentVar;
-    std::vector< Double_t > fDependentValues;
+   std::vector< const VQwHardwareChannel* > fDependentVar;
+   std::vector< Double_t > fDependentValues;
 
-    std::vector< VQwHardwareChannel* > fOutputVar;
-    std::vector< Double_t > fOutputValues;
+   std::vector< VQwHardwareChannel* > fOutputVar;
+   std::vector< Double_t > fOutputValues;
 
-    std::string ParseSeparator;  // Used as space between tokens in ParseRegressionVariable
+   std::string ParseSeparator;  // Used as space between tokens in ParseHandledVariable
 
 };
-
 
 #endif // VQWDATAHANDLER_H_

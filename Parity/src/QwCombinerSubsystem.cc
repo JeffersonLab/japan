@@ -174,7 +174,7 @@ void QwCombinerSubsystem::ConstructBranch(TTree *tree, TString & prefix, QwParam
   TString tmp;
   QwParameterFile* nextmodule;
   trim_file.RewindToFileStart();
-  tmp="Regression";
+  tmp="Combiner";
   trim_file.RewindToFileStart();
   if (trim_file.FileHasModuleHeader(tmp)){
     nextmodule=trim_file.ReadUntilNextModule();//This section contains sub modules and or channels to be included in the tree

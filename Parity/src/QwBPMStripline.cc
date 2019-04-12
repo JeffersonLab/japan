@@ -1118,8 +1118,8 @@ void QwBPMStripline<T>::FillRawEventData()
       numer.AddChannelOffset(fQwStriplineCalibration);
       denom.AssignScaledValue(rawpos[i],-1.0);
       denom.AddChannelOffset(fQwStriplineCalibration);
-      // tmp2.SetRandomEventParameters(5.0, 0.005);
-      tmp2.SetRandomEventParameters(5.0, 0.0);
+      tmp2.SetRandomEventParameters(5.0, 0.005);
+      // tmp2.SetRandomEventParameters(5.0, 0.0);
       tmp2.RandomizeEventData(helicity, time);
       tmp1.Ratio(numer,denom);
       if (tmp1.GetValue()<1.0){

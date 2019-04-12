@@ -5,8 +5,8 @@ Created by: Michael Vallee
 Email: mv836315@ohio.edu
 
 Description:  This is the implemetation file to the VQwDataHandler class.
-              This class acts as a base class to all regression based
-              classes.
+              This class acts as a base class to all classes which need
+              to access data from multiple subsystems
 
 Last Modified: August 1, 2018 1:39 PM
 *****************************************************************************/
@@ -20,6 +20,8 @@ using namespace std;
 
 //#include "QwCombiner.h"
 
+#include "QwParameterFile.h"
+#include "QwRootFile.h"
 #include "QwVQWK_Channel.h"
 
 #define MYSQLPP_SSQLS_NO_STATICS
@@ -27,6 +29,7 @@ using namespace std;
 #include "QwParitySSQLS.h"
 #include "QwParityDB.h"
 #endif // __USE_DATABASE__
+
 
 
 VQwDataHandler::~VQwDataHandler() {
@@ -40,6 +43,46 @@ VQwDataHandler::~VQwDataHandler() {
 
 }
 
+void VQwDataHandler::ParseConfigFile(QwParameterFile& file){
+  file.RewindToFileStart();
+  file.EnableGreediness();
+  while (file.ReadNextLine()) {
+    QwMessage << file.GetLine() << QwLog::endl;
+  }
+  // Check for and process key-value pairs
+  file.PopValue("map",fMapFile);
+  file.PopValue("priority",fPriority);
+  file.PopValue("tree-name",fTreeName);
+  file.PopValue("tree-comment",fTreeComment);
+}
+
+
+void VQwDataHandler::CalcOneOutput(const VQwHardwareChannel* dv, VQwHardwareChannel* output,
+                                  vector< const VQwHardwareChannel* > &ivs,
+                                  vector< Double_t > &sens) {
+  
+  // if second is NULL, can't do corrector
+  if (output == NULL){
+    QwError<<"Second is value is NULL, unable to calculate corrector."<<QwLog::endl;
+    return;
+  }
+  // For correct type (asym, diff, mps)
+  // if (fDependentType.at(dv) != type) continue;
+
+  // Clear data in second, if first is NULL
+  if (dv == NULL){
+    output->ClearEventData();
+  }else{
+    // Update second value
+    output->AssignValueFrom(dv);
+  }
+
+  // Add corrections
+  for (size_t iv = 0; iv < ivs.size(); iv++) {
+    output->ScaledAdd(sens.at(iv), ivs.at(iv));
+  }
+  
+}
 
 void VQwDataHandler::ProcessData() {
   
@@ -63,32 +106,32 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
     QwVQWK_Channel* new_vqwk = NULL;
     QwVQWK_Channel* vqwk = NULL;
     string name = "";
-    string reg = "reg_";
+    string cor = "cor_";
     
-    if (fDependentType.at(dv)==kRegTypeMps) {
+    if (fDependentType.at(dv)==kHandleTypeMps) {
       //  Quietly ignore the MPS type when we're connecting the asym & diff
       continue;
     } else if(fDependentName.at(dv).at(0) == '@' ) {
       name = fDependentName.at(dv).substr(1,fDependentName.at(dv).length());
     }else{
       switch (fDependentType.at(dv)) {
-        case kRegTypeAsym:
+        case kHandleTypeAsym:
           dv_ptr = asym.ReturnInternalValueForFriends(fDependentName.at(dv));
           break;
-        case kRegTypeDiff:
+        case kHandleTypeDiff:
           dv_ptr = diff.ReturnInternalValueForFriends(fDependentName.at(dv));
           break;
         default:
           QwWarning << "QwCombiner::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
 		                << fDependentName.at(dv)
-		                << ", for asym/diff regression does not have proper type, type=="
+		                << ", for asym/diff processing does not have proper type, type=="
 		                << fDependentType.at(dv) << "."<< QwLog::endl;
           break;
       }
 
       vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
       name = vqwk->GetElementName().Data();
-      name.insert(0, reg);
+      name.insert(0, cor);
       new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
       new_vqwk->SetElementName(name);
     }
@@ -116,32 +159,38 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
 }
 
 
-pair<VQwDataHandler::EQwRegType,string> VQwDataHandler::ParseRegressionVariable(const string& variable) {
+pair<VQwDataHandler::EQwHandleType,string> VQwDataHandler::ParseHandledVariable(const string& variable) {
   
-  pair<EQwRegType,string> type_name;
+  pair<EQwHandleType,string> type_name;
   size_t len = variable.length();
   size_t pos1 = variable.find_first_of(ParseSeparator);
   size_t pos2 = variable.find_first_not_of(ParseSeparator,pos1);
   if (pos1 == string::npos) {
-    type_name.first  = kRegTypeUnknown;
+    type_name.first  = kHandleTypeUnknown;
     type_name.second = variable;
   } else {
     string type = variable.substr(0,pos1);
     string name = variable.substr(pos2,len-pos2);
     if (type == "asym")
-      {type_name.first = kRegTypeAsym;}
+      {type_name.first = kHandleTypeAsym;}
     else if (type == "diff")
-      {type_name.first = kRegTypeDiff;}
+      {type_name.first = kHandleTypeDiff;}
     else if (type == "mps")
-      {type_name.first = kRegTypeMps;}
+      {type_name.first = kHandleTypeMps;}
     else
-      {type_name.first = kRegTypeUnknown;}
+      {type_name.first = kHandleTypeUnknown;}
     type_name.second = name;
   }
   return type_name;
   
 }
 
+void VQwDataHandler::ConstructTreeBranches(QwRootFile *treerootfile)
+{
+  if (fTreeName.size()>0){
+    treerootfile->ConstructTreeBranches(fTreeName, fTreeComment, *this);
+  }
+}
 
 void VQwDataHandler::ConstructBranchAndVector(
     TTree *tree,
@@ -150,6 +199,14 @@ void VQwDataHandler::ConstructBranchAndVector(
 {
   for (size_t i = 0; i < fOutputVar.size(); ++i) {
     fOutputVar.at(i)->ConstructBranchAndVector(tree, prefix, values);
+  }
+}
+
+void VQwDataHandler::FillTreeBranches(QwRootFile *treerootfile)
+{
+  if (fTreeName.size()>0){
+    treerootfile->FillTreeBranches(*this);
+    treerootfile->FillTree(fTreeName);
   }
 }
 
@@ -172,7 +229,7 @@ void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value)
 {
   if (value.fErrorFlag==0){
     for (size_t i = 0; i < fOutputVar.size(); i++){
-      this->fOutputVar[i]->AccumulateRunningSum(fOutputVar[i]);
+      this->fOutputVar[i]->AccumulateRunningSum(value.fOutputVar[i]);
     }
   }
 }

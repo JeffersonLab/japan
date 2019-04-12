@@ -32,7 +32,7 @@ void  QwBPMCavity::InitializeChannel(TString name)
   for(i=kXAxis;i<kNumAxes;i++)
     fAbsPos[i].InitializeChannel(name+"Abs"+kAxisLabel[i],"derived");
 
-  fEffectiveCharge.InitializeChannel(name+"_EffectiveCharge","raw");
+  fEffectiveCharge.InitializeChannel(name+"WS","raw");
 
   for(i=0;i<2;i++) {
     fWire[i].InitializeChannel(name+subelement[i],"raw");
@@ -57,7 +57,7 @@ void  QwBPMCavity::InitializeChannel(TString subsystem, TString name)
   for(i=kXAxis;i<kNumAxes;i++)
     fAbsPos[i].InitializeChannel(subsystem, "QwBPMCavity", name+"Abs"+kAxisLabel[i],"derived");
   
-  fEffectiveCharge.InitializeChannel(subsystem, "QwBPMCavity", name+"_EffectiveCharge","raw");
+  fEffectiveCharge.InitializeChannel(subsystem, "QwBPMCavity", name+"WS","raw");
   
   for(i=0;i<2;i++) {
     fWire[i].InitializeChannel(subsystem, "QwBPMCavity", name+subelement[i],"raw");

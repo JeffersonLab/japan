@@ -38,6 +38,7 @@
 #include "QwPromptSummary.h"
 #include "QwCorrelator.h"
 #include "LRBCorrector.h"
+#include "QwDataHandlerArray.h"
 
 // Qweak subsystems
 // (for correct dependency generation)
@@ -124,17 +125,20 @@ Int_t main(Int_t argc, Char_t* argv[])
     detectors.ProcessOptions(gQwOptions);
     detectors.ListPublishedValues();
 
-    /// Create event-based linear regression subsystem
-    //    TString name = "MpsRegression";
-    //    QwCombinerSubsystem regress_sub(gQwOptions, detectors, name);
-    //    detectors.push_back(regress_sub.GetSharedPointerToStaticObject());
+    /// Create event-based correction subsystem
+    //    TString name = "EvtCorrector";
+    //    QwCombinerSubsystem corrector_sub(gQwOptions, detectors, name);
+    //    detectors.push_back(corrector_sub.GetSharedPointerToStaticObject());
     
     /// Create the helicity pattern
     //    Instead of having run_label in the constructor of helicitypattern, it might
     //    make since to have it be an option for use globally
     QwHelicityPattern helicitypattern(detectors,run_label);
     helicitypattern.ProcessOptions(gQwOptions);
-
+    
+    /// Create the data handler array
+    QwDataHandlerArray datahandlerarray(gQwOptions,helicitypattern,run_label);
+    
     ///  Create the event ring with the subsystem array
     QwEventRing eventring(gQwOptions,detectors);
     //  Make a copy of the detectors object to hold the
@@ -190,9 +194,10 @@ Int_t main(Int_t argc, Char_t* argv[])
     treerootfile->ConstructTreeBranches("mul", "Helicity event data tree", helicitypattern);
     burstrootfile->ConstructTreeBranches("pr", "Pair tree", helicitypattern.GetPairYield(),"yield_");
     burstrootfile->ConstructTreeBranches("pr", "Pair tree", helicitypattern.GetPairAsymmetry(),"asym_");
-    treerootfile->ConstructTreeBranches("mulc", "Helicity event data tree (corrected)", helicitypattern.return_regression());
-    treerootfile->ConstructTreeBranches("mulc_lrb", "Helicity event data tree (corrected by LinRegBlue)", helicitypattern.return_regress_from_LRB());
     treerootfile->ConstructTreeBranches("slow", "EPICS and slow control tree", epicsevent);
+
+    datahandlerarray.ConstructTreeBranches(treerootfile);
+
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstYield(),"yield_");
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstAsymmetry(),"asym_");
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstDifference(),"diff_");
@@ -271,7 +276,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       if (detectors.ApplySingleEventCuts()) {
 	
 	//	// TEST 
-	// 	regress_sub.LinearRegression();
+	// 	combiner_sub.ProcessData();
 
         // Add event to the ring
         eventring.push(detectors);
@@ -332,14 +337,11 @@ Int_t main(Int_t argc, Char_t* argv[])
                 helicitypattern.ClearBurstSum();
               }
 
-              // Linear regression on asymmetries
-              helicitypattern.ProcessDataHandlerEntry();
-
-              // Fill corrected tree branches
-	      treerootfile->FillTreeBranches(helicitypattern.return_regression());
-	      treerootfile->FillTree("mulc");
-	      treerootfile->FillTreeBranches(helicitypattern.return_regress_from_LRB());
-	      treerootfile->FillTree("mulc_lrb");
+              // Process data handlers
+              datahandlerarray.ProcessDataHandlerEntry();
+	      
+              // Fill regressed tree branches
+	      datahandlerarray.FillTreeBranches(treerootfile);
 
               // Clear the data
               helicitypattern.ClearEventData();
@@ -369,7 +371,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       }
     }
 
-    helicitypattern.FinishDataHandler();
+    datahandlerarray.FinishDataHandler();
 
     // This will calculate running averages over single helicity events
     runningsum.CalculateRunningAverage();
@@ -423,7 +425,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       patternsum.FillDB(&database);
       patternsum.FillErrDB(&database);
       epicsevent.FillDB(&database);
-      helicitypattern.return_running_regression().FillDB(&database,"asymmetry");
+      helicitypattern.return_running_combiner().FillDB(&database,"asymmetry");
       ringoutput.FillDB_MPS(&database, "optics");
     }
     #endif // __USE_DATABASE__    
