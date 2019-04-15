@@ -1557,22 +1557,7 @@ void QwDetectorArray::WritePromptSummary(QwPromptSummary *ps, TString type)
       }
     }
 
-	/*------Filling Double Differences ---------*/
-     for (auto i=fStoredDets.begin(); i!=fStoredDets.end(); i++)
-    {
-    	for (auto j = i+1; j!=fStoredDets.end();  j++) 
-    	{
-	    if(local_add_element){
-	    ps->AddElement(new PromptSummaryElement(Form("%s-%s",(*i).Data(),(*j).Data())));
-	    }
-	    
-	    ps->FillDoubleDifference(type,(*i),(*j));
-		
-	}
-     } 
-       		 
-     /*-----------------------------------------*/
-  
+
 
   return;
 }

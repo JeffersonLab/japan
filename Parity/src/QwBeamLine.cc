@@ -3203,50 +3203,7 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
       }
     }
 
- 
-
- 
-    
-   
-    /*------Filling Double Differences ---------*/
-   
-    for (auto i=fStoredBCMs.begin(); i!=fStoredBCMs.end(); i++)
-    {
-    	for (auto j = i+1; j!=fStoredBCMs.end();  j++) 
-    	{
-	    if(local_add_element){
-	    ps->AddElement(new PromptSummaryElement(Form("%s-%s",(*i).Data(),(*j).Data())));
-	    }
-	  
-	    ps->FillDoubleDifference(type,(*i),(*j));
-		
-	}
-     } 
-     		 
-     /*-----------------------------------------*/
-
   
-
-    Bool_t local_add_BPM_diff=false;
-    /*------Filling Double Differences ---------*/
-    for (auto i=fStoredBPMs.begin(); i!=fStoredBPMs.end(); i++)
-    {
-    	for (auto j=i+1; j!=fStoredBPMs.end(); j++) 
-    	{
-	    local_add_BPM_diff= ((*i).Contains("X") && (*j).Contains("X"))||((*i).Contains("Y") && (*j).Contains("Y"))||((*i).Contains("x") && (*j).Contains("x"))||((*i).Contains("y") && (*j).Contains("y"))||((*i).Contains("WS") && (*j).Contains("WS"));
-	    if(local_add_element && local_add_BPM_diff ){
-	        ps->AddElement(new PromptSummaryElement(Form("%s-%s",(*i).Data(),(*j).Data())));
-	    }
-	    ps->FillDoubleDifference(type,(*i),(*j));
-		
-	}
-     }     		 
-     /*-----------------------------------------*/
-
-
-   
-      
-    
   
     return;
 };
