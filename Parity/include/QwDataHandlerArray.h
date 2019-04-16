@@ -126,9 +126,9 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     /// \brief Print value of all channels
     void PrintValue() const;
 
-    /*
+    
     void WritePromptSummary(QwPromptSummary *ps, TString type);
-    */
+    
     
     void ProcessDataHandlerEntry();
 
