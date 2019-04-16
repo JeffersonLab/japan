@@ -10,6 +10,9 @@
 #include <sstream>
 #include <string>
 #include <algorithm>
+#include <TSystem.h>
+#include <TChain.h>
+#include <TFile.h>
 using namespace std;
 Int_t getRunNumber_h(Int_t runNumber = 0){
 // Get environment variable run number

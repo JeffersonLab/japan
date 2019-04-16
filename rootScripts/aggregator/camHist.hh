@@ -1,3 +1,7 @@
+#include <TH1.h>
+#include <TROOT.h>
+#include <TLeaf.h>
+
 using namespace std;
 TH1 * rebinTH1_h(TH1 * h1, TString mode = "manual", Int_t lookAbove = 0, Int_t lookAround = 0, Int_t nBinsX = 0, Int_t sampleFactor = 0, Double_t lowBinValX = 0.0, Double_t highBinValX = 0.0){
 
