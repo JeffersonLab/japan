@@ -12,12 +12,13 @@
  *          manipulating ROOT output.                               *
  *                                                                  *
  *******************************************************************/
+#ifndef __CAMGUIN__
+#define __CAMGUIN__
 #include <iostream>
 #include <string>
 #include <stdlib.h>
 #include <dirent.h>
-#include "camIO.hh"
-#include "camHist.hh"
-#include "camAna.hh"
 using namespace std;
 
+int debug = 0;
+#endif // __CAMGUIN__

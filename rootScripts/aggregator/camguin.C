@@ -1,7 +1,10 @@
 #include "camguin.hh"
+#include "camIO.hh"
+#include "camHist.hh"
+#include "camAna.hh"
 using namespace std;
 void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCuts", Int_t overWriteCut = 0, TString histMode = "defaultHist", Int_t runNumber = 0, Int_t nRuns = -1){
-  Printf("Analysis: %s",(const char*) ana);
+  if (debug>0) Printf("Analysis: %s",(const char*) ana);
   if( 
        ana == "Integral" 
     || ana == "integral" 
@@ -12,10 +15,12 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     || ana == "int"){
     //writeInt_loop_h( tree, branch, leaf, cut, runNumber, nRuns );
     writeInt_leafHist_h( tree, branch, leaf, cut, runNumber, nRuns );
+    if (debug>1) Printf("Done with integral ana");
   }
   else if( 
        ana == "intloop"){
     writeInt_loop_h( tree, branch, leaf, cut, runNumber, nRuns );
+    if (debug>1) Printf("Done with intloop ana");
   }
   else if( 
        ana == "nevents"
@@ -29,6 +34,7 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     || ana == "Events"
     || ana == "NEvents"){
     writeNEvents_Loop_h( tree, branch, runNumber, nRuns );
+    if (debug>1) Printf("Done with nEvents loop ana");
   }
   else if ( 
        ana == "rms" 
@@ -45,6 +51,7 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     || ana == "Sig"
     || ana == "sig"){
     writeRMS_leafHist_h( tree, branch, leaf, cut, overWriteCut, histMode, runNumber, nRuns );
+    if (debug>1) Printf("Done with rms ana");
   }
   else if (
        ana == "Mean"
@@ -55,6 +62,7 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     || ana == "Avg"
     || ana == "avg"){
     writeMean_leafHist_h( tree, branch, leaf, cut, overWriteCut, histMode, runNumber, nRuns );
+    if (debug>1) Printf("Done with mean ana");
   }
   else if (
        ana == "meanrms"
@@ -65,6 +73,7 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     || ana == "mean and rms"
     || ana == "mean&&rms"){
     writeMeanRms_leafHist_h( tree, branch, leaf, cut, overWriteCut, histMode, runNumber, nRuns );
+    if (debug>1) Printf("Done with meanrms ana");
   }
   else if (
        ana == "Display"
@@ -82,7 +91,8 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     TH1* h1 = getHistogram_h( tree, branch, leaf, cut, overWriteCut, histMode, runNumber, nRuns );
     gROOT->SetBatch(kFALSE);
     h1->Draw();
-    gROOT->SetBatch(kTRUE);
+    if (debug>1) Printf("Done with draw ana");
+    //gROOT->SetBatch(kTRUE);
   }
   else if (
        ana == "redraw"
@@ -97,7 +107,8 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     TH1* h1 = getHistogram_h( tree, branch, leaf, cut, overWriteCut, histMode, runNumber, nRuns );
     gROOT->SetBatch(kFALSE);
     h1->Draw();
-    gROOT->SetBatch(kTRUE);
+    if (debug>1) Printf("Done with redraw ana");
+    //gROOT->SetBatch(kTRUE);
   }
   else if (
       ana == "writePostPan"
@@ -108,4 +119,5 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
   {
     Printf("Standard form: ./camguin.C(string \"type of analysis\" (rms), string \"tree\" (mul), string \"branch\" (asym_vqwk_04_0ch0), string \"leaf\" (hw_sum), string \"cuts\" (defaultCuts), int overWriteCut (0, boolean to overwrite default cuts), string \"histMode\" (defaultHist, doesn't rebin), int runNumber ($RUNNUM), int nRuns ($NRUNS))");
   }
+  if (debug>2) Printf("Done with camguin.C");
 }

@@ -1,3 +1,6 @@
+#ifndef __CAMANA__
+#define __CAMANA__
+#include "camguin.hh"
 #include <TLeaf.h>
 using namespace std;
 void writeNEvents_Loop_h(TString tree = "mul", TString branch = "ErrorFlag", Int_t runNumber = 0, Int_t nRuns = -1){
@@ -138,3 +141,4 @@ void writeMean_leafHist_h(TString mode = "default", TString tree = "mul", TStrin
   writeFile_h(rms,data_rms,runNumber,nRuns);
   //writeFile_h("test",1.0,runNumber,nRuns);
 }*/
+#endif // __CAMANA__
