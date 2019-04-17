@@ -24,7 +24,7 @@ class QwParameterFile;
 class QwRootFile;
 class QwHelicityPattern;
 
-class VQwDataHandler{
+class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
   public:
   
@@ -35,7 +35,7 @@ class VQwDataHandler{
     typedef std::vector< VQwHardwareChannel* >::iterator Iterator_HdwChan;
     typedef std::vector< VQwHardwareChannel* >::const_iterator ConstIterator_HdwChan;
 
-    VQwDataHandler(const TString& name):fName(name){}
+    VQwDataHandler(const TString& name):fName(name),fKeepRunningSum(kFALSE){}
 
     virtual void ParseConfigFile(QwParameterFile& file);
 
@@ -56,6 +56,9 @@ class VQwDataHandler{
 
     TString GetDataHandlerName(){return fName;}
 
+    void ClearEventData();
+
+    void AccumulateRunningSum();
     void AccumulateRunningSum(VQwDataHandler &value);
     void CalculateRunningAverage();
     void PrintValue() const;
@@ -101,8 +104,6 @@ class VQwDataHandler{
    std::string fTreeName;
    std::string fTreeComment;
 
-   UInt_t fErrorFlag;
-
    TString run_label;
 
    /// Single event pointer
@@ -121,6 +122,9 @@ class VQwDataHandler{
 
    std::string ParseSeparator;  // Used as space between tokens in ParseHandledVariable
 
+ protected:
+   Bool_t fKeepRunningSum;
+   VQwDataHandler *fRunningsum;
 };
 
 #endif // VQWDATAHANDLER_H_

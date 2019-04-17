@@ -134,12 +134,14 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
       name.insert(0, cor);
       new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
       new_vqwk->SetElementName(name);
+      new_vqwk->SetSubsystemName(fName);
     }
 
     // alias
     if(fDependentName.at(dv).at(0) == '@') {
       //QwMessage << "dv: " << name << QwLog::endl;
       new_vqwk = new QwVQWK_Channel(name, VQwDataElement::kDerived);
+      new_vqwk->SetSubsystemName(fName);
     }
     // defined type
     else if(dv_ptr!=NULL) {
@@ -225,23 +227,35 @@ void VQwDataHandler::FillTreeVector(std::vector<Double_t>& values) const
 }
 
     
+void VQwDataHandler::AccumulateRunningSum()
+{
+  if (fKeepRunningSum){
+    //  Create the running sum object if it doesn't exist.
+    if (fRunningsum == NULL){
+      fRunningsum = this->Clone();
+      fRunningsum->fKeepRunningSum = kFALSE;
+      fRunningsum->ClearEventData();
+    }
+    fRunningsum->AccumulateRunningSum(*this);
+  }
+}
+
 void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value)
 {
-  if (value.fErrorFlag==0){
-    for (size_t i = 0; i < fOutputVar.size(); i++){
-      this->fOutputVar[i]->AccumulateRunningSum(value.fOutputVar[i]);
-    }
+  for (size_t i = 0; i < fOutputVar.size(); i++){
+    this->fOutputVar[i]->AccumulateRunningSum(value.fOutputVar[i]);
   }
 }
 
 
 void VQwDataHandler::CalculateRunningAverage()
 {
-  for(size_t i = 0; i < fOutputVar.size(); i++) {
-    // calling CalculateRunningAverage in scope of VQwHardwareChannel
-    fOutputVar[i]->CalculateRunningAverage();
+  if (fKeepRunningSum && (fRunningsum != NULL)){
+    for(size_t i = 0; i < fRunningsum->fOutputVar.size(); i++) {
+      // calling CalculateRunningAverage in scope of VQwHardwareChannel
+      fRunningsum->fOutputVar[i]->CalculateRunningAverage();
+    }
   }
-  
   return;
 }
 
@@ -251,6 +265,14 @@ void VQwDataHandler::PrintValue() const
   QwMessage<<"=== QwCombiner ==="<<QwLog::endl<<QwLog::endl;
   for(size_t i = 0; i < fOutputVar.size(); i++) {
     fOutputVar[i]->PrintValue();
+  }
+}
+
+
+void VQwDataHandler::ClearEventData()
+{
+  for(size_t i = 0; i < fOutputVar.size(); i++) {
+    fOutputVar[i]->ClearEventData();
   }
 }
 
