@@ -20,5 +20,5 @@
 #include <dirent.h>
 using namespace std;
 
-int debug = 2;
+int debug = 0;
 #endif // __CAMGUIN__
