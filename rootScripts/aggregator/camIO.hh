@@ -1,3 +1,6 @@
+#ifndef __CAMIO__
+#define __CAMIO__
+#include "camguin.hh"
 #include <utility>
 #include <vector>
 #include <TString.h>
@@ -25,7 +28,7 @@ Int_t getRunNumber_h(Int_t runNumber = 0){
     Printf("Error: Run Number given (%d) invalid, must be an integer > 0",runNumber);
     return 0;
   }
-  //Printf("Run number: %d\n",runNumber);
+  if (debug>0) Printf("Run number: %d\n",runNumber);
   return runNumber;
 }
 
@@ -40,7 +43,7 @@ Int_t getNruns_h(Int_t n_runs = -1){
     Printf("Error: Number of Runs given (%d) invalid, must be an integer > 0 \n Tip: n_runs = 1 means you will only use 1 run, = 2 will TChain a second one on)",n_runs);
     return 0;
   }
-  //Printf("Number of Runs: %d\n",n_runs);
+  if (debug>0) Printf("Number of Runs: %d\n",n_runs);
   return n_runs;
 }
 
@@ -54,7 +57,7 @@ void getAggregateVars_h(TTree * rootTree, std::vector<TString>* aggVars, std::ve
   //std::vector<TString> aggVars;
   //aggVars->clear();
 
-  //Printf("Reading tree %s\n",(const char*)rootTree->GetName());
+  if (debug>2) Printf("Reading tree %s\n",(const char*)rootTree->GetName());
   TObjArray *branchList = rootTree->GetListOfBranches();
   TIter next(branchList);
   TBranch *brc;
@@ -63,18 +66,18 @@ void getAggregateVars_h(TTree * rootTree, std::vector<TString>* aggVars, std::ve
     TString found = brc->GetName();
     // Not sure if the line below is so smart...
     aggVars->push_back(found);
-    //Printf("In branch %s\n",(const char*)found);
+    if (debug>1) Printf("In branch %s\n",(const char*)found);
     oldValues->push_back(1.0e99); // Add the other vectors simulatneously to avoid mis-mapping
     newValues->push_back(1.0e99);
   }
 
   for(auto iBranch = aggVars->begin(); iBranch != aggVars->end(); iBranch++) {
-    //Printf("In branch %d : %s\n",iBranch,(const char*)&aggVars[iBranch]);
+    //if (debug>1) Printf("In branch %d : %s\n",iBranch,(const char*)&aggVars[iBranch]);
   }
 }
 void addAggregateVars_h(TString varName, std::vector<TString>* aggVars, std::vector<Double_t>* oldValues, std::vector<Double_t>* newValues){
 
-  //Printf("Push back %s",(const char*)varName);
+  if (debug>1) Printf("Push back %s",(const char*)varName);
   aggVars->push_back(varName);
   oldValues->push_back(1.0e99); // Add the other vectors simulatneously to avoid mis-mapping
   newValues->push_back(1.0e99);
@@ -84,7 +87,7 @@ vector<vector<string>> textFileParse_h(TString fileName, char delim = ',')
 {
   vector<vector<string> > filearray;   // the 2D array
   if ( !gSystem->AccessPathName(fileName.Data()) ) {
-    //Printf("Found file name: %s\n",(const char*)fileName);
+    if (debug>0) Printf("Found file name: %s\n",(const char*)fileName);
     ifstream in(fileName.Data());
 
     string line;                     // the contents
@@ -131,9 +134,9 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1,
     for(Int_t j=0;j<4;j++){
       filenamebase = Form("%s/prex%s_%d.root",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber+i);
       filename     = filenamebase;
-      //Printf("Trying file name: %s\n",(const char*)filenamebase);
+      if (debug>1) Printf("Trying file name: %s\n",(const char*)filenamebase);
       if ( !gSystem->AccessPathName(filename.Data()) ) {
-        //Printf("Found file name: %s\n",(const char*)filenamebase);
+        if (debug>1) Printf("Found file name: %s\n",(const char*)filenamebase);
         foundFile = true;
         j=5; // Exit loop
       }
@@ -144,7 +147,7 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1,
     
     int split = 0;
     while ( !gSystem->AccessPathName(filename.Data()) ) {
-      //Printf("File added to Chain: \"%s\"\n",(const char*)filename);
+      if (debug>0) Printf("File added to Chain: \"%s\"\n",(const char*)filename);
       chain->Add(filename);
       split++;
       filename = filenamebase + "_" + split + ".root";
@@ -154,7 +157,7 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1,
     Printf("Rootfile not found in %s with runs from %d to %d, check your config and rootfiles",(const char*)fileNameBase,runNumber,runNumber+n_runs-1);
     return 0;
   }
-  //Printf("N Entries: %d",(int)chain->GetEntries());
+  if (debug>3) Printf("N Entries: %d",(int)chain->GetEntries());
   return chain;
 }
 
@@ -181,7 +184,7 @@ TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
 }
 
 TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TString leaf = "hw_sum", Int_t runNumber = 0, Int_t nRuns = -1, TString filenamebase = "Rootfiles/"){
-  //Printf("Found leaf: \"%s\"\n",(const char*)(tree+"."+branch+"."+leaf));
+  if (debug >2) Printf("Looking for leaf: \"%s\"\n",(const char*)(tree+"."+branch+"."+leaf));
   runNumber = getRunNumber_h(runNumber);
   nRuns     = getNruns_h(nRuns);
   TChain  * Chain   = getTree_h(tree, runNumber, nRuns, filenamebase);
@@ -191,8 +194,12 @@ TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TSt
   }
   TBranch * Branch  = Chain->GetBranch(branch);
   if (!Branch){
-    Printf("Error, branch %s missing",(const char*)(tree+"_"+branch));
-    return 0;
+    TLeaf * Leaf    = getBranchLeaf_h(tree,leaf,runNumber,nRuns,filenamebase);
+    if (!Leaf){
+      Printf("Error, branch %s missing",(const char*)(tree+"_"+branch));
+      return 0;
+    }
+    return Leaf;
   }
   TLeaf   * Leaf    = Branch->GetLeaf(leaf);
   if (!Leaf){
@@ -232,7 +239,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   if (newFile) {
     // Write a new file
     oldTree = new TTree("agg","Aggregator Tree");
-    //Printf("Making new aggregator tree");
+    if (debug>0) Printf("Making new aggregator tree");
     branchList.push_back("run_number");
     branchList.push_back("n_runs");
     newValues.push_back( 1.0e99); // Vectors have to be initialized, and I don't know how many entries will come, so go for all of them
@@ -248,22 +255,21 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
     if (!oldTree) {
       Printf("ERROR, tree agg is dead");
     }
-    //Printf("Making new aggregator tree");
-    //Printf("Reading tree %s",(const char*)oldTree->GetName());
+    if (debug>0) Printf("Updating tree %s",(const char*)oldTree->GetName());
     TObjArray *aggVars = oldTree->GetListOfBranches();
-    //Printf("N entries = %d",aggVars->GetEntries());
+    if (debug>3) Printf("N entries = %d",aggVars->GetEntries());
     for ( Int_t b = 0; b<aggVars->GetEntries(); b++){
       TString found = (TString)(((TBranch*)(aggVars->At(b)))->GetName());
-      //Printf("In branch %s",(const char*)found);
+      if (debug>2) Printf("In branch %s",(const char*)found);
       branchList.push_back(found);
       newValues.push_back(1.0e99);
       oldValues.push_back(1.0e99);
       tempValues.push_back(1.0e99);
     }
     for(auto iBranch = branchList.begin(); iBranch != branchList.end(); iBranch++) {
-      //Printf("In branch %d : %s",iBranch,(const char*)branchList[iBranch]);
+      //if (debug>2) Printf("In branch %d : %s",iBranch,(const char*)branchList[iBranch]);
     }
-    //Printf("Got agg contents");
+    if (debug>1) Printf("Got agg contents");
   }
 
   // Maybe do this here...
@@ -272,7 +278,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
 
   // Check to see if the value passed by the user to store exists yet, if not add it
   if (!(std::find(branchList.begin(),branchList.end(),valueName)!=branchList.end())){
-    //Printf("User adding new branch: %s",(const char*)valueName);
+    if (debug>1) Printf("User adding new branch: %s",(const char*)valueName);
     //addAggregateVars_h(valueName,&branchList,&newValues,&oldValues);
     branchList.push_back(valueName);
     newValues.push_back(1.0e99);
@@ -282,7 +288,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   }
   // Loop over branches and assign their addresses to old and new tree
   for (size_t k = 0; k < branchList.size(); k++){
-    //Printf("Assigning values to be saved, Iteration %d, branch name: %s, manual blank initialization value: %f",k,(const char*) branchList[k],oldValues[k]);
+    if (debug>2) Printf("Assigning values to be saved, Iteration %zu, branch name: %s, manual blank initialization value: %f",k,(const char*) branchList[k],oldValues[k]);
     // If this is a new file then generate new branches for old and new
   	if (newFile || (newBranch && (branchList[k]==valueName))){
       oldTree->Branch(          branchList[k],&oldValues[k]); // Initialize a new branch, for placeholder purposes
@@ -315,20 +321,20 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   // 3) If copyOldEntry then continue
   //      for all variables copy oldValues[] to newValues[]
 
-  //Printf("Looking at %d entries",numEntries);
+  if (debug>3) Printf("Looking at %d entries",numEntries);
   while (entryN<=numEntries) {
-    //Printf("Examining Entry Number %d",entryN);
+    if (debug>3) Printf("Examining Entry Number %d",entryN);
 	  oldTree->GetEntry(entryN);
 	  //newTree->GetEntry(entryN);
     
 	  // Loop over all branches (FIXME (A) for the "new" user added value maybe initialize it differently?)
 	  // Set the "old" values to placeholder values
     for (size_t l = 0; l < branchList.size(); l++){
-      //Printf("NOTE: Examining branch %s = %f (old value)",(const char*) branchList[l],oldValues[l]);
+      if (debug>2) Printf("NOTE: Examining branch %s = %f (old value)",(const char*) branchList[l],oldValues[l]);
 	    if (userAddedNewEntry && entryN==numEntries) {
 	      // Case 1
 	  	  // We are appending a new value to the end, or initializing an empty new root file
-        //Printf("User adding new value to root file: branch %s, value (new = %f, old = %f) runnumber %d",(const char*)valueName,new_value,oldValues[l],new_runNumber);
+        if (debug>1) Printf("User adding new value to root file: branch %s, value (new = %f, old = %f) runnumber %d",(const char*)valueName,new_value,oldValues[l],new_runNumber);
   		  writeEntry = true;
   	  }
 	    // Check to see if we are on the requested new_runNumber, and if it is unique then behave differently
@@ -336,7 +342,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
 	    	// Case 2
         // We are replacing a prior entry
         // Keep track of it being editted since it could also be a new branch situation
-        //Printf("User editting value in root file: branch %s, value (new = %f, old = %f) runnumber %d",(const char*)valueName,new_value,oldValues[l],new_runNumber);
+        if (debug > 1) Printf("User editting value in root file: branch %s, value (new = %f, old = %f) runnumber %d",(const char*)valueName,new_value,oldValues[l],new_runNumber);
         //
         nRunsCheck = true; // Loop through again and check for nRuns being duplicated too
 	    }
@@ -352,19 +358,19 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
       // If the user is currently writing an entry then assume all other values besides run_number and n_runs are not specified and leave them as oldValues initialization
   	  if (writeEntry){
   	    if ( branchList[l] == "run_number" ) { 
-          //Printf("NOTE: RunNumber %d getting written by user",new_runNumber);
+          if (debug > 3) Printf("NOTE: RunNumber %d getting written by user",new_runNumber);
   	      tempValues[l] = (Double_t)new_runNumber;
   	    }
   	    else if ( branchList[l] == "n_runs" ) {
-          //Printf("NOTE: new_nRuns %d getting written by user",new_nRuns);
+          if (debug > 3) Printf("NOTE: new_nRuns %d getting written by user",new_nRuns);
   	      tempValues[l] = (Double_t)new_nRuns;
   	    }
   	    else if ( branchList[l] == valueName ) {
-          //Printf("NOTE: %s branch = %f getting written by user",(const char*) valueName,new_value);
+          if (debug > 3) Printf("NOTE: %s branch = %f getting written by user",(const char*) valueName,new_value);
           tempValues[l] = (Double_t)new_value;
 	      }
 	  	  else {
-          //Printf("NOTE: %s branch = %f getting written by user",(const char*) branchList[l],oldValues[l]);
+          if (debug > 3) Printf("NOTE: %s branch = %f getting written by user",(const char*) branchList[l],oldValues[l]);
           if (userAddedNewBranch && !editEntry){
             tempValues[l] = 1.0e99; //oldValues[l] has been replaced with the prior entry, and because this new branch has no value in the tree its just that prior value
           }
@@ -372,15 +378,15 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
             tempValues[l] = oldValues[l];// has been replaced with the prior entry, and because this new branch has no value in the tree its just that prior value
           }
   		  }
-        //Printf("Saving new values, Branch name %s, value %f",(const char*)branchList[l],oldValues[l]);
+        if (debug > 2) Printf("Saving new values, Branch name %s, value %f",(const char*)branchList[l],oldValues[l]);
       }
       else {
-        //Printf("Saving old values, Branch name %s, value %f",(const char*)branchList[l],oldValues[l]);
+        if (debug > 2) Printf("Saving old values, Branch name %s, value %f",(const char*)branchList[l],oldValues[l]);
 	      // Otherwise just save the oldValues
         tempValues[l] = oldValues[l];
 	    }
 	    newValues[l] = tempValues[l];
-      //Printf("Saving %s = %f, overwriting %f",(const char*)branchList[l],tempValues[l],oldValues[l]);
+      if (debug > 1) Printf("Saving %s = %f, overwriting %f",(const char*)branchList[l],tempValues[l],oldValues[l]);
       oldValues[l] = 1.0e99;
 	  }
     // Reset the triggers for writing
@@ -397,7 +403,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   else {
     newTree->Write("agg",TObject::kWriteDelete,0);
   }
-  //newTree->Scan();
+  if (debug>0) newTree->Scan();
   aggregatorFile->Close();
 }
 
@@ -419,7 +425,7 @@ string stripStrChar(string str, const string& replace) {
   // set our locator equal to the first appearance of any character in replace
   size_t found = str.find_first_of(replace);
 
-  //Printf("Str: %s",str.c_str());
+  if (debug > 3) Printf("Str: %s",str.c_str());
   while (found != string::npos) { // While our position in the sting is in range.
     for (size_t pos = 0; pos<str.size() - found; pos++){
       str[found+pos] = str[found+pos+1]; // Change the character at position.
@@ -448,19 +454,19 @@ void writePostPanFile_h(Int_t runNumber = 1369, TString filename = "run1369_summ
   vector <double> numbers;
 
   for (size_t k = 0; k < contents.size(); k++){
-    //Printf("Contents pre trim: %s",contents[k][0].c_str());
+    if (debug > 3) Printf("Contents pre trim: %s",contents[k][0].c_str());
     contents[k][0]=stripStrChar(contents[k][0]," ");
-    //Printf("Contents post trim: %s",contents[k][0].c_str());
+    if (debug > 3) Printf("Contents post trim: %s",contents[k][0].c_str());
     if (contents[k][0].substr(0,2)=="--"){
       //header line
       if (contents[k][0].substr(0,11)=="--Mini-run:"){
         string val = contents[k][0].substr(11,contents[k][0].size()-11);
-        //Printf("Mini-run: %s",val.c_str());
+        if (debug > 3) Printf("Mini-run: %s",val.c_str());
         miniRun=stof(val);
       }
-      //Printf("Type: %s",contents[k][0].substr(2,7-2).c_str());
+      if (debug > 3) Printf("Type: %s",contents[k][0].substr(2,7-2).c_str());
       TString* testType = (TString*)contents[k][0].substr(2,7-2).c_str();;
-      //Printf("Compare: %s",(const char*)testType);
+      if (debug > 3) Printf("Compare: %s",(const char*)testType);
       if (!strcmp((const char*)testType,"Mini-") || !strcmp((const char*)testType,"Slope") || !strcmp((const char*)testType,"Noise") || !strcmp((const char*)testType,"IVRMS")){
         print  = false;
         header = true;
@@ -470,7 +476,7 @@ void writePostPanFile_h(Int_t runNumber = 1369, TString filename = "run1369_summ
         if (!strcmp((const char*)testType,"Mini-")){
           type = "Regressed";
         }
-        //Printf("Type %s",type.c_str());
+        if (debug > 3) Printf("Type %s",type.c_str());
       }
       continue;
     }
@@ -485,14 +491,14 @@ void writePostPanFile_h(Int_t runNumber = 1369, TString filename = "run1369_summ
         if (strcmp((const char*)columnTitle,"")){ // if compare == true then return value is false and we skip onwards
           TString* columnTitle;
           TString* columnCompare = (TString*)contents[k][j].substr(contents[k][j].size()-5,5).c_str();
-          //Printf("ColumnCompare: %s",(const char*)columnCompare);
+          if (debug > 3) Printf("ColumnCompare: %s",(const char*)columnCompare);
           if (!strcmp((const char*)columnCompare,"(ppm)")){
             columnTitle = (TString*)contents[k][j].substr(0,contents[k][j].size()-5).c_str();
-            //Printf("Saved Truncated Title: %s",(const char*)columnTitle);
+            if (debug > 3) Printf("Saved Truncated Title: %s",(const char*)columnTitle);
           }
           else {
             columnTitle = (TString*)contents[k][j].substr(0,contents[k][j].size()).c_str();
-            //Printf("Title: %s",(const char*)columnTitle);
+            if (debug > 3) Printf("Title: %s",(const char*)columnTitle);
           }
           manip.push_back((const char*)columnTitle);
         }
@@ -514,7 +520,7 @@ void writePostPanFile_h(Int_t runNumber = 1369, TString filename = "run1369_summ
           // These are the matrix entries
           // contents[k][j]=stripStrChar(contents[k][j]," "); // atof strips front whitespace and ignores trailing whitespace
           string val = contents[k][j];
-          //Printf("Number %s",val.c_str());
+          if (debug > 3) Printf("Number %s",val.c_str());
           numbers.push_back(stof(val));
         }
       }
@@ -531,3 +537,4 @@ void writePostPanFile_h(Int_t runNumber = 1369, TString filename = "run1369_summ
 
   contents.clear();
 }
+#endif // __CAMIO__
