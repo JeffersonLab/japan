@@ -12,13 +12,13 @@ usage()
 
 unset CONFIG RUNNUM NRUNS
 
-while getopts ':r:f:n:h?' c
+while getopts ':r:f:n:h' c
 do
   case $c in
     r) RUNNUM=$OPTARG ;;
     f) CONFIG=$OPTARG ;;
     n) NRUNS=$OPTARG ;;
-    h|?) usage 5 ;;  
+    h) usage 5 ;;  
   esac
 done
 
