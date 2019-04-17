@@ -68,7 +68,7 @@ void getAggregateVars_h(TTree * rootTree, std::vector<TString>* aggVars, std::ve
     newValues->push_back(1.0e99);
   }
 
-  for(Int_t iBranch = 0; iBranch < aggVars->size(); iBranch++) {
+  for(auto iBranch = aggVars->begin(); iBranch != aggVars->end(); iBranch++) {
     //Printf("In branch %d : %s\n",iBranch,(const char*)&aggVars[iBranch]);
   }
 }
@@ -260,7 +260,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
       oldValues.push_back(1.0e99);
       tempValues.push_back(1.0e99);
     }
-    for(Int_t iBranch = 0; iBranch < branchList.size(); iBranch++) {
+    for(auto iBranch = branchList.begin(); iBranch != branchList.end(); iBranch++) {
       //Printf("In branch %d : %s",iBranch,(const char*)branchList[iBranch]);
     }
     //Printf("Got agg contents");
@@ -281,7 +281,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
     newBranch = true;
   }
   // Loop over branches and assign their addresses to old and new tree
-  for (Int_t k = 0; k < branchList.size(); k++){
+  for (size_t k = 0; k < branchList.size(); k++){
     //Printf("Assigning values to be saved, Iteration %d, branch name: %s, manual blank initialization value: %f",k,(const char*) branchList[k],oldValues[k]);
     // If this is a new file then generate new branches for old and new
   	if (newFile || (newBranch && (branchList[k]==valueName))){
@@ -323,7 +323,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
     
 	  // Loop over all branches (FIXME (A) for the "new" user added value maybe initialize it differently?)
 	  // Set the "old" values to placeholder values
-    for (Int_t l = 0; l < branchList.size(); l++){
+    for (size_t l = 0; l < branchList.size(); l++){
       //Printf("NOTE: Examining branch %s = %f (old value)",(const char*) branchList[l],oldValues[l]);
 	    if (userAddedNewEntry && entryN==numEntries) {
 	      // Case 1
@@ -348,7 +348,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
 		    numEntries--;
       }
     }
-    for (Int_t l = 0; l < branchList.size(); l++){
+    for (size_t l = 0; l < branchList.size(); l++){
       // If the user is currently writing an entry then assume all other values besides run_number and n_runs are not specified and leave them as oldValues initialization
   	  if (writeEntry){
   	    if ( branchList[l] == "run_number" ) { 
@@ -421,7 +421,7 @@ string stripStrChar(string str, const string& replace) {
 
   //Printf("Str: %s",str.c_str());
   while (found != string::npos) { // While our position in the sting is in range.
-    for (int pos = 0; pos<str.size() - found; pos++){
+    for (size_t pos = 0; pos<str.size() - found; pos++){
       str[found+pos] = str[found+pos+1]; // Change the character at position.
     }
     //str[str.size()-1]='\0';
@@ -447,7 +447,7 @@ void writePostPanFile_h(Int_t runNumber = 1369, TString filename = "run1369_summ
   vector <string> manip;
   vector <double> numbers;
 
-  for (Int_t k = 0; k < contents.size(); k++){
+  for (size_t k = 0; k < contents.size(); k++){
     //Printf("Contents pre trim: %s",contents[k][0].c_str());
     contents[k][0]=stripStrChar(contents[k][0]," ");
     //Printf("Contents post trim: %s",contents[k][0].c_str());
@@ -478,7 +478,7 @@ void writePostPanFile_h(Int_t runNumber = 1369, TString filename = "run1369_summ
       // These are the column titles
       print  = true;
       header = false;
-      for (Int_t j = 0; j < contents[k].size(); j++){
+      for (size_t j = 0; j < contents[k].size(); j++){
         contents[k][j]=stripStrChar(contents[k][j]," ");
         TString* columnTitle = (TString*)contents[k][j].substr(0,contents[k][j].size()).c_str();
 
@@ -509,7 +509,7 @@ void writePostPanFile_h(Int_t runNumber = 1369, TString filename = "run1369_summ
       //  channel = "IVRMS";
       //  offset = -1;
       //}
-      for (Int_t j = 1+offset; j < contents[k].size(); j++){
+      for (size_t j = 1+offset; j < contents[k].size(); j++){
         if (strcmp(contents[k][j].c_str()," ")){ // if compare == true then return value is false and we skip onwards
           // These are the matrix entries
           // contents[k][j]=stripStrChar(contents[k][j]," "); // atof strips front whitespace and ignores trailing whitespace
@@ -522,7 +522,7 @@ void writePostPanFile_h(Int_t runNumber = 1369, TString filename = "run1369_summ
     }
     if (print){
       // Print one row at a time
-      for (Int_t b = 0; b < manip.size(); b++){
+      for (size_t b = 0; b < manip.size(); b++){
         writeFile_h(channel+"_"+manip[b]+"_"+type,numbers[b],runNumber,miniRun);
       }
       numbers.clear();
