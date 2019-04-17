@@ -130,27 +130,31 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1,
 
   for(Int_t i = 0; i < (n_runs); i++){
 
-    TString daqConfigs[4] = {"CH","INJ","ALL","_tedf"};
-    for(Int_t j=0;j<4;j++){
-      filenamebase = Form("%s/prex%s_%d.root",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber+i);
-      filename     = filenamebase;
-      if (debug>1) Printf("Trying file name: %s\n",(const char*)filenamebase);
-      if ( !gSystem->AccessPathName(filename.Data()) ) {
-        if (debug>1) Printf("Found file name: %s\n",(const char*)filenamebase);
-        foundFile = true;
-        j=5; // Exit loop
+    TString daqConfigs[5] = {"CH","INJ","ALL","_tedf","Respin1"};
+    TString analyses[3] = {".root","_regress_prBLOCK.root","_regress_mul.root"};
+    // FIXME remove this "BLOCK" once there is a non-degeneracy in the tree names between the regress_pr and _mul root file's tree names
+    for(Int_t ana=0;ana<3;ana++){
+      for(Int_t j=0;j<5;j++){
+        filenamebase = Form("%s/prex%s_%d%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber+i,(const char*)analyses[ana]);
+        filename     = filenamebase;
+        if (debug>1) Printf("Trying file name: %s\n",(const char*)filenamebase);
+        if ( !gSystem->AccessPathName(filename.Data()) ) {
+          if (debug>1) Printf("Found file name: %s\n",(const char*)filenamebase);
+          foundFile = true;
+          j=6; // Exit loop
+        }
       }
-    }
-    //filenamebase = getRootFile_h(runNumber+i);
-    filename     = filenamebase;
-    filenamebase.Remove(filenamebase.Last('.'),5);
-    
-    int split = 0;
-    while ( !gSystem->AccessPathName(filename.Data()) ) {
-      if (debug>0) Printf("File added to Chain: \"%s\"\n",(const char*)filename);
-      chain->Add(filename);
-      split++;
-      filename = filenamebase + "_" + split + ".root";
+      //filenamebase = getRootFile_h(runNumber+i);
+      filename     = filenamebase;
+      filenamebase.Remove(filenamebase.Last('.'),5);
+
+      int split = 0;
+      while ( !gSystem->AccessPathName(filename.Data()) ) {
+        if (debug>0) Printf("File added to Chain: \"%s\"\n",(const char*)filename);
+        chain->Add(filename);
+        split++;
+        filename = filenamebase + "_" + split + ".root";
+      }
     }
   }
   if (!foundFile){

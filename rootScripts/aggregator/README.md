@@ -33,3 +33,13 @@ The results of analysis methods are written into a re-writable ROOT file "run_ag
 * If an analysis that was done before is not done for a new run, or if a new type of analysis result is generated and not executed on prior runs then placeholder -999999 values are stored
 * All values (including "run_number" and "n_runs") are doubles, so more interesting kinds of information can be stored in high or low bits later if desired
 * The postpan reader uses the file format developed by Tao and prints the contents into individual leaves and is better to run in pure macro form with the postpan wrapper script
+
+## Specific Cases of the camguin.C master macro in action
+
+
+* To run the post-pan output files do:
+root -L camguin.C'("meanrms","reg","reg_asym_sam2","reg_asym_sam2","1",0,"defaultHist")'
+* To run a standard Japan output file do:
+root -L camguin.C'("meanrms","mul","asym_sam2","hw_sum","defaultCuts",0,"defaultHist")'
+* To store the post-pan output coefficients from the textfiles do:
+root -L camguin.C'("postpan")' 
