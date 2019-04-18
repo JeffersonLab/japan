@@ -146,6 +146,8 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
   std::vector<std::string> fDataHandlersDisabledByName; ///< List of disabled types
   std::vector<std::string> fDataHandlersDisabledByType; ///< List of disabled names
 
+  Bool_t fPrintRunningSum;
+
     /// Test whether this handler array can contain a particular handler
     static Bool_t CanContain(VQwDataHandler* handler) {
       return (dynamic_cast<VQwDataHandler*>(handler) != 0);

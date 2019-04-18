@@ -62,6 +62,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
     void AccumulateRunningSum();
     void AccumulateRunningSum(VQwDataHandler &value);
     void CalculateRunningAverage();
+    void PrintRunningAverage();
     void PrintValue() const;
     void FillDB(QwParityDB *db, TString datatype){};
 
@@ -78,7 +79,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
     }
 
     Int_t LoadChannelMap(){return this->LoadChannelMap(fMapFile);}
-    virtual Int_t LoadChannelMap(const std::string& mapfile){};
+    virtual Int_t LoadChannelMap(const std::string& mapfile){return 0;};
 
   protected:
     

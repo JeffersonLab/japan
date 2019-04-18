@@ -34,10 +34,10 @@ using namespace std;
 VQwDataHandler::VQwDataHandler(const VQwDataHandler &source):
   fPriority(source.fPriority),
   fName(source.fName),
-  fKeepRunningSum(source.fKeepRunningSum),
   fMapFile(source.fMapFile),
   fTreeName(source.fTreeName),
-  fTreeComment(source.fTreeComment)
+  fTreeComment(source.fTreeComment),
+  fKeepRunningSum(source.fKeepRunningSum)
 {
   fDependentVar  = source.fDependentVar;
   fDependentType = source.fDependentType;
@@ -178,6 +178,7 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
       fOutputVar.push_back(new_vqwk);
     }
   }
+  return 0;
 }
 
 
@@ -277,6 +278,13 @@ void VQwDataHandler::CalculateRunningAverage()
     }
   }
   return;
+}
+
+void VQwDataHandler::PrintRunningAverage()
+{
+  if (fKeepRunningSum && (fRunningsum != NULL)){
+    fRunningsum->PrintValue();
+  }
 }
 
 

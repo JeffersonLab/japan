@@ -244,6 +244,9 @@ void QwDataHandlerArray::ProcessOptions(QwOptions &options)
   // DataHandlers to disable
   fDataHandlersDisabledByName = options.GetValueVector<std::string>("DataHandler.disable-by-name");
   fDataHandlersDisabledByType = options.GetValueVector<std::string>("DataHandler.disable-by-type");
+
+  //  Get the globally defined print running sum flag
+  fPrintRunningSum = options.GetValue<bool>("print-runningsum");
 }
 
 /**
@@ -522,6 +525,12 @@ void QwDataHandlerArray::CalculateRunningAverage()
     VQwDataHandler* handler_parity = dynamic_cast<VQwDataHandler*>(handler->get());
     handler_parity->CalculateRunningAverage();
   }
+  if (fPrintRunningSum){
+    for (iterator handler = begin(); handler != end(); ++handler) {
+      VQwDataHandler* handler_parity = dynamic_cast<VQwDataHandler*>(handler->get());
+      handler_parity->PrintRunningAverage();
+    }
+  }
 }
 
 void QwDataHandlerArray::AccumulateRunningSum()
@@ -716,8 +725,8 @@ void QwDataHandlerArray::FinishDataHandler() {
     }
   //running_combiner.CalculateRunningAverage();
   //running_combiner.PrintValue();
-
   this->CalculateRunningAverage();
+  
 }
   
   
