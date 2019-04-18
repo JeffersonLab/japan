@@ -384,6 +384,7 @@ void  QwDataHandlerArray::FillErrDB(QwParityDB *db, TString type)
   return;
 }
 */
+
 void QwDataHandlerArray::WritePromptSummary(QwPromptSummary *ps, TString type)
 {
   for (const_iterator handler = begin(); handler != end(); ++handler) {
@@ -704,29 +705,20 @@ TList* QwDataHandlerArray::GetParamFileNameList(TString name) const
 
 */
 
-void QwDataHandlerArray::ProcessDataHandlerEntry() {
-
-    for(iterator handler = begin(); handler != end(); ++handler){
-        (*handler)->ProcessData();
-      }
-
-    this->AccumulateRunningSum();
-  ///*(this->GetDataHandlerByName("QwCombiner"))->ProcessData();//(QwCombiner::kHandleTypeAsym);
-  //running_combiner.AccumulateRunningSum(combiner);
-  //*(this->GetDataHandlerByName("LRBCorrector"))->ProcessData();//(QwCombiner::kHandleTypeAsym);
-  //*(this->GetDataHandlerByName("QwCorrelator"))->ProcessData();
-
+void QwDataHandlerArray::ProcessDataHandlerEntry()
+{
+  for(iterator handler = begin(); handler != end(); ++handler){
+    (*handler)->ProcessData();
+  }
+  this->AccumulateRunningSum();
 }
 
-void QwDataHandlerArray::FinishDataHandler() {
-
+void QwDataHandlerArray::FinishDataHandler()
+{
   for(iterator handler = begin(); handler != end(); ++handler){
-      (*handler)->CalcCorrelations();
-    }
-  //running_combiner.CalculateRunningAverage();
-  //running_combiner.PrintValue();
-  this->CalculateRunningAverage();
-  
+    (*handler)->CalcCorrelations();
+  }
+  this->CalculateRunningAverage();  
 }
   
   
