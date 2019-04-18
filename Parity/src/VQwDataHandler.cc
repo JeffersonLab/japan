@@ -31,6 +31,26 @@ using namespace std;
 #endif // __USE_DATABASE__
 
 
+VQwDataHandler::VQwDataHandler(const VQwDataHandler &source):
+  fPriority(source.fPriority),
+  fName(source.fName),
+  fKeepRunningSum(source.fKeepRunningSum),
+  fMapFile(source.fMapFile),
+  fTreeName(source.fTreeName),
+  fTreeComment(source.fTreeComment)
+{
+  fDependentVar  = source.fDependentVar;
+  fDependentType = source.fDependentType;
+  fDependentName = source.fDependentName;
+  //  Create new objects for the the outputs.
+  fOutputVar.resize(source.fOutputVar.size());
+  for (size_t i = 0; i < this->fDependentVar.size(); i++) {
+    const QwVQWK_Channel* vqwk = dynamic_cast<const QwVQWK_Channel*>(source.fOutputVar[i]);
+    this->fOutputVar[i] = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
+  }
+
+}
+
 
 VQwDataHandler::~VQwDataHandler() {
   
@@ -262,7 +282,7 @@ void VQwDataHandler::CalculateRunningAverage()
 
 void VQwDataHandler::PrintValue() const
 {
-  QwMessage<<"=== QwCombiner ==="<<QwLog::endl<<QwLog::endl;
+  QwMessage<<"=== "<< fName << " ==="<<QwLog::endl<<QwLog::endl;
   for(size_t i = 0; i < fOutputVar.size(); i++) {
     fOutputVar[i]->PrintValue();
   }

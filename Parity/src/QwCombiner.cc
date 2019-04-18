@@ -33,18 +33,8 @@ QwCombiner::QwCombiner(const TString& name):VQwDataHandler(name)
   fKeepRunningSum = kTRUE;
 }
 
-QwCombiner::QwCombiner(const QwCombiner &source)
+QwCombiner::QwCombiner(const QwCombiner &source):VQwDataHandler(source)
 {
-  fMapFile = source.fMapFile;
-  this->fDependentVar.resize(source.fDependentVar.size());
-  fDependentType.resize(source.fDependentVar.size());
-  fOutputVar.resize(source.fDependentVar.size());
-  for (size_t i = 0; i < this->fDependentVar.size(); i++) {
-    const QwVQWK_Channel* vqwk = dynamic_cast<const QwVQWK_Channel*>(source.fOutputVar[i]);
-    this->fDependentVar[i] = NULL;
-    this->fOutputVar[i] = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
-    fDependentType[i] = source.fDependentType[i];
-  }
 }
 
 /// Destructor
