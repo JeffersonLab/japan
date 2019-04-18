@@ -23,6 +23,7 @@ Last Modified: August 1, 2018 1:39 PM
 class QwParameterFile;
 class QwRootFile;
 class QwHelicityPattern;
+class QwPromptSummary;
 
 class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
@@ -65,6 +66,8 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
     void PrintRunningAverage();
     void PrintValue() const;
     void FillDB(QwParityDB *db, TString datatype){};
+
+    void WritePromptSummary(QwPromptSummary *ps, TString type);
 
     void ConstructTreeBranches(QwRootFile *treerootfile);
     void FillTreeBranches(QwRootFile *treerootfile);
