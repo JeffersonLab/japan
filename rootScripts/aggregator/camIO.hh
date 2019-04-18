@@ -130,7 +130,7 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1,
 
   for(Int_t i = 0; i < (n_runs); i++){
 
-    TString daqConfigs[5] = {"CH","INJ","ALL","_tedf","Respin1"};
+    TString daqConfigs[5] = {"CH","INJ","Respin1","_tedf","ALL"};
     TString analyses[3] = {".root","_regress_prBLOCK.root","_regress_mul.root"};
     // FIXME remove this "BLOCK" once there is a non-degeneracy in the tree names between the regress_pr and _mul root file's tree names
     for(Int_t ana=0;ana<3;ana++){
