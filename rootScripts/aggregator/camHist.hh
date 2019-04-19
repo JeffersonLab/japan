@@ -219,10 +219,16 @@ void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_0
   Double_t data_mean_error = -1e99;
   Double_t data_rms = -1e99;
   Double_t data_rms_error = -1e99;
-  data_mean = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetMean(1);
-  data_mean_error = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetMeanError(1);
-  data_rms = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetRMS(1);
-  data_rms_error = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetRMSError(1);
+  TH1 * hMeanRms = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns);
+  if (hMeanRms==0)
+  {
+    Printf("Error, Histogram failed");
+    return 0;
+  }
+  data_mean = hMeanRms->GetMean(1);
+  data_mean_error = hMeanRms->GetMeanError(1);
+  data_rms = hMeanRms->GetRMS(1);
+  data_rms_error = hMeanRms->GetRMSError(1);
 
   if (debug>1) Printf("Run %d mean %s: %f+-%f",runNumber,(const char*)mean,data_mean,data_mean_error);
   if (debug>1) Printf("Run %d rms %s: %f+-%f",runNumber,(const char*)rms,data_rms,data_rms_error);
@@ -249,8 +255,14 @@ void writeMean_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
   }
   Double_t data_mean = -1e99;
   Double_t data_mean_error = -1e99;
-  data_mean = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetMean(1);
-  data_mean_error = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetMeanError(1);
+  TH1 * hMean = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns);
+  if (hMean==0)
+  {
+    Printf("Error, Histogram failed");
+    return 0;
+  }
+  data_mean = hMean->GetMean(1);
+  data_mean_error = hMean->GetMeanError(1);
 
   if (debug>1) Printf("Run %d mean %s: %f+-%f",runNumber,(const char*)mean,data_mean,data_mean_error);
   writeFile_h(mean,data_mean,runNumber,nRuns);
@@ -274,8 +286,14 @@ void writeRMS_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
   }
   Double_t data_rms = -1e99;
   Double_t data_rms_error = -1e99;
-  data_rms = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetRMS(1);
-  data_rms_error = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->GetRMSError(1);
+  TH1 * hRms = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns);
+  if (hRms==0)
+  {
+    Printf("Error, Histogram failed");
+    return 0;
+  }
+  data_rms = hRms->GetRMS(1);
+  data_rms_error = hRms->GetRMSError(1);
 
   if (debug>1) Printf("Run %d rms %s: %f+-%f",runNumber,(const char*)rms,data_rms,data_rms_error);
   writeFile_h(rms,data_rms,runNumber,nRuns);

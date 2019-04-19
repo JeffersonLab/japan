@@ -28,7 +28,7 @@ Int_t getRunNumber_h(Int_t runNumber = 0){
     Printf("Error: Run Number given (%d) invalid, must be an integer > 0",runNumber);
     return 0;
   }
-  if (debug>0) Printf("Run number: %d\n",runNumber);
+  if (debug>0) Printf("Run number: %d",runNumber);
   return runNumber;
 }
 
@@ -43,7 +43,7 @@ Int_t getNruns_h(Int_t n_runs = -1){
     Printf("Error: Number of Runs given (%d) invalid, must be an integer > 0 \n Tip: n_runs = 1 means you will only use 1 run, = 2 will TChain a second one on)",n_runs);
     return 0;
   }
-  if (debug>0) Printf("Number of Runs: %d\n",n_runs);
+  if (debug>0) Printf("Number of Runs: %d",n_runs);
   return n_runs;
 }
 
@@ -57,7 +57,7 @@ void getAggregateVars_h(TTree * rootTree, std::vector<TString>* aggVars, std::ve
   //std::vector<TString> aggVars;
   //aggVars->clear();
 
-  if (debug>2) Printf("Reading tree %s\n",(const char*)rootTree->GetName());
+  if (debug>2) Printf("Reading tree %s",(const char*)rootTree->GetName());
   TObjArray *branchList = rootTree->GetListOfBranches();
   TIter next(branchList);
   TBranch *brc;
@@ -66,13 +66,13 @@ void getAggregateVars_h(TTree * rootTree, std::vector<TString>* aggVars, std::ve
     TString found = brc->GetName();
     // Not sure if the line below is so smart...
     aggVars->push_back(found);
-    if (debug>1) Printf("In branch %s\n",(const char*)found);
+    if (debug>1) Printf("In branch %s",(const char*)found);
     oldValues->push_back(1.0e99); // Add the other vectors simulatneously to avoid mis-mapping
     newValues->push_back(1.0e99);
   }
 
   for(auto iBranch = aggVars->begin(); iBranch != aggVars->end(); iBranch++) {
-    //if (debug>1) Printf("In branch %d : %s\n",iBranch,(const char*)&aggVars[iBranch]);
+    //if (debug>1) Printf("In branch %d : %s",iBranch,(const char*)&aggVars[iBranch]);
   }
 }
 void addAggregateVars_h(TString varName, std::vector<TString>* aggVars, std::vector<Double_t>* oldValues, std::vector<Double_t>* newValues){
@@ -87,7 +87,7 @@ vector<vector<string>> textFileParse_h(TString fileName, char delim = ',')
 {
   vector<vector<string> > filearray;   // the 2D array
   if ( !gSystem->AccessPathName(fileName.Data()) ) {
-    if (debug>0) Printf("Found file name: %s\n",(const char*)fileName);
+    if (debug>0) Printf("Found file name: %s",(const char*)fileName);
     ifstream in(fileName.Data());
 
     string line;                     // the contents
@@ -130,16 +130,17 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1,
 
   for(Int_t i = 0; i < (n_runs); i++){
 
-    TString daqConfigs[5] = {"CH","INJ","ALL","_tedf","Respin1"};
-    TString analyses[3] = {".root","_regress_prBLOCK.root","_regress_mul.root"};
-    // FIXME remove this "BLOCK" once there is a non-degeneracy in the tree names between the regress_pr and _mul root file's tree names
+    TString daqConfigs[5] = {"prexRespin1","prexCH","prexINJ","prexALL","prex_tedf"}; // Potentially replace this with a config file read in array or map;
+    TString analyses[3] = {".root","_regress_prFIXME.root","_regress_mul.root"};
+    // FIXME remove this "FIXME" once there is a non-degeneracy in the tree names between the regress_pr and _mul root file's tree names
+    if (debug>0) Printf("Looping over candidate rootfile prefixes and suffixes");
     for(Int_t ana=0;ana<3;ana++){
       for(Int_t j=0;j<5;j++){
-        filenamebase = Form("%s/prex%s_%d%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber+i,(const char*)analyses[ana]);
+        filenamebase = Form("%s/%s_%d%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber+i,(const char*)analyses[ana]);
         filename     = filenamebase;
-        if (debug>1) Printf("Trying file name: %s\n",(const char*)filenamebase);
+        if (debug>1) Printf("Trying file name: %s",(const char*)filenamebase);
         if ( !gSystem->AccessPathName(filename.Data()) ) {
-          if (debug>1) Printf("Found file name: %s\n",(const char*)filenamebase);
+          if (debug>1) Printf("Found file name: %s",(const char*)filenamebase);
           foundFile = true;
           j=6; // Exit loop
         }
@@ -150,10 +151,17 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1,
 
       int split = 0;
       while ( !gSystem->AccessPathName(filename.Data()) ) {
-        if (debug>0) Printf("File added to Chain: \"%s\"\n",(const char*)filename);
-        chain->Add(filename);
+        TFile * candidateFile = new TFile(filename.Data(),"READ");
+        if (candidateFile->GetListOfKeys()->Contains(tree)){
+          if (debug>0) Printf("File added to Chain: \"%s\"",(const char*)filename);
+          chain->Add(filename);
+        }
+        else {
+          if (debug>1) Printf("File %s doesn't contain tree: \"%s\"",(const char*)filename,(const char*)tree);
+        }
         split++;
         filename = filenamebase + "_" + split + ".root";
+        candidateFile->Close();
       }
     }
   }
@@ -161,51 +169,55 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1,
     Printf("Rootfile not found in %s with runs from %d to %d, check your config and rootfiles",(const char*)fileNameBase,runNumber,runNumber+n_runs-1);
     return 0;
   }
-  if (debug>3) Printf("N Entries: %d",(int)chain->GetEntries());
+  if (debug>3) Printf("TChain total N Entries: %d",(int)chain->GetEntries());
   return chain;
 }
 
 TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", Int_t runNumber = 0, Int_t nRuns = -1, TString filenamebase = "Rootfiles/"){
   runNumber = getRunNumber_h(runNumber);
   nRuns     = getNruns_h(nRuns);
-  TChain  * Chain   = getTree_h(tree, runNumber, nRuns, filenamebase);
+  TChain  * Chain = getTree_h(tree, runNumber, nRuns, filenamebase);
   if (!Chain){
     return 0;
   }
-  TLeaf * BranchLeaf  = Chain->GetLeaf(branchleaf);
+  TLeaf * BranchLeaf = Chain->GetLeaf(branchleaf);
   return BranchLeaf;
 }
 
 TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", Int_t runNumber = 0, Int_t nRuns = -1, TString filenamebase = "Rootfiles/"){
   runNumber = getRunNumber_h(runNumber);
   nRuns     = getNruns_h(nRuns);
-  TChain  * Chain   = getTree_h(tree, runNumber, nRuns, filenamebase);
+  TChain  * Chain = getTree_h(tree, runNumber, nRuns, filenamebase);
   if (!Chain){
     return 0;
   }
-  TBranch * Branch  = Chain->GetBranch(branch);
+  TBranch * Branch = Chain->GetBranch(branch);
   return Branch;
 }
 
 TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TString leaf = "hw_sum", Int_t runNumber = 0, Int_t nRuns = -1, TString filenamebase = "Rootfiles/"){
-  if (debug >2) Printf("Looking for leaf: \"%s\"\n",(const char*)(tree+"."+branch+"."+leaf));
+  if (debug >2) Printf("Looking for leaf: \"%s\"",(const char*)(tree+"."+branch+"."+leaf));
   runNumber = getRunNumber_h(runNumber);
   nRuns     = getNruns_h(nRuns);
-  TChain  * Chain   = getTree_h(tree, runNumber, nRuns, filenamebase);
+  TChain  * Chain = getTree_h(tree, runNumber, nRuns, filenamebase);
   if (!Chain){
     Printf("Error, tree %s missing",(const char*)(tree));
     return 0;
   }
-  TBranch * Branch  = Chain->GetBranch(branch);
-  if (!Branch){
-    TLeaf * Leaf    = getBranchLeaf_h(tree,leaf,runNumber,nRuns,filenamebase);
+  TBranch * Branch = Chain->GetBranch(branch);
+  if (!Branch){ // If the branch doesn't exist assume the user wants to get a leaf instead
+    TLeaf * Leaf = Chain->GetLeaf(branch);
+    //getBranchLeaf_h(tree,leaf,runNumber,nRuns,filenamebase);
     if (!Leaf){
-      Printf("Error, branch %s missing",(const char*)(tree+"_"+branch));
-      return 0;
+      Leaf = Chain->GetLeaf(leaf); //Try again
+      if (!Leaf){ 
+        Printf("Error, branch %s missing",(const char*)(tree+"_"+branch));
+        return 0;
+      }
     }
     return Leaf;
   }
-  TLeaf   * Leaf    = Branch->GetLeaf(leaf);
+  TLeaf * Leaf = Branch->GetLeaf(leaf);
   if (!Leaf){
     Printf("Error, leaf %s missing",(const char*)(tree+"_"+branch+"_"+leaf));
     return 0;
