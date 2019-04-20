@@ -23,7 +23,7 @@ using namespace std;
 #include "QwParameterFile.h"
 #include "QwRootFile.h"
 #include "QwVQWK_Channel.h"
-
+#include "QwPromptSummary.h"
 
 #define MYSQLPP_SSQLS_NO_STATICS
 #ifdef __USE_DATABASE__
@@ -332,7 +332,7 @@ void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
   for (size_t i = 0; i < fOutputVar.size();  i++) 
     {
       element_name        = fOutputVar[i]->GetElementName(); 
-      tmp_channel=fOutputVar[i];
+      tmp_channel=fRunningsum->fOutputVar[i];
       element_value       = 0.0;
       element_value_err   = 0.0;
       element_value_width = 0.0;
@@ -347,9 +347,9 @@ void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
       local_ps_element=ps->GetElementByName(element_name);
        
       if(local_ps_element) {
-        element_value       = fOutputVar[i]->GetValue();
-        element_value_err   = fOutputVar[i]->GetValueError();
-        element_value_width = fOutputVar[i]->GetValueWidth();
+        element_value       = tmp_channel->GetValue();
+        element_value_err   = tmp_channel->GetValueError();
+        element_value_width = tmp_channel->GetValueWidth();
         
         local_ps_element->Set(type, element_value, element_value_err, element_value_width);
       }
