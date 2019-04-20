@@ -19,6 +19,7 @@ Last Modified: August 1, 2018 1:39 PM
 #include "QwSubsystemArrayParity.h"
 #include "VQwHardwareChannel.h"
 #include "QwFactory.h"
+#include "QwPromptSummary.h"
 
 class QwParameterFile;
 class QwRootFile;
