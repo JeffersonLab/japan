@@ -7,10 +7,37 @@
 #
 
 # Double differences
-[asym:@bcmdd_charge_us_ds]
+[asym:@bcm_an_us_ds_dd]
 asym:bcm_an_us, 1
 asym:bcm_an_ds, -1
 
+[asym:@bcm_an_us_ds3_dd]
+asym:bcm_an_us, 1
+asym:bcm_an_ds3, -1
+
+[asym:@sam_4_8_dd]
+asym:sam4, 1
+asym:sam8, -1
+
+[asym:@sam_4_8_ds]
+asym:sam4, 1
+asym:sam8, 1
+
+[asym:@sam_2_6_dd]
+asym:sam2, 1
+asym:sam6, -1
+
+[asym:@sam_2_6_ds]
+asym:sam2, 1
+asym:sam6, 1
+
+[asym:@bpm_4aX_4eX_dd]
+asym:bpm4aX, 1
+asym:bpm4eX, -1
+
+[asym:@bpm_4aY_4eY_dd]
+asym:bpm4aY, 1
+asym:bpm4eY, -1
 
 
 
