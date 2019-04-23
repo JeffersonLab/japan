@@ -968,7 +968,7 @@ Int_t QwBeamLine::LoadInputParameters(TString pedestalfile)
 	      }	    
 	    for(size_t i=0;i<fCavity.size();i++)
 	      {
-		for(int j=0;j<2;j++)
+		for(size_t j=0;j<QwBPMCavity::kNumElements;j++)
 		  {
 		    TString localname = fCavity[i].GetSubElementName(j);
 		    localname.ToLower();
@@ -1654,6 +1654,9 @@ Bool_t QwBeamLine::PublishByRequest(TString device_name)
   TString device_prop = "value";
   if (device_name.EndsWith("WS")){
     name = device_name(0,device_name.Length()-2);
+    device_prop = "ef";
+  } else if (device_name.EndsWith("Q")){
+    name = device_name(0,device_name.Length()-1);
     device_prop = "ef";
   } else if (device_name.EndsWith("XSlope")){
     name = device_name(0,device_name.Length()-6);
