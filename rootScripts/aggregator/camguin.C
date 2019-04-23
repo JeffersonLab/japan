@@ -2,6 +2,8 @@
 #include "camIO.hh"
 #include "camHist.hh"
 #include "camAna.hh"
+#include "camMatrix.hh"
+#include "regressor/camReg.hh"
 using namespace std;
 void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCuts", Int_t overWriteCut = 0, TString histMode = "defaultHist", Int_t runNumber = 0, Int_t nRuns = -1){
   if (debug>0) Printf("Analysis: %s",(const char*) ana);
@@ -114,6 +116,12 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
       ana == "writePostPan"
    || ana == "postpan"){
     writePostPanFile_h(runNumber);
+  }
+  else if (
+      ana == "regress"
+   || ana == "regressor"
+   || ana == "reg"){
+    regress_h( tree, runNumber, nRuns, "regressor/regressionInput.txt", ' ');
   }
   else
   {
