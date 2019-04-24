@@ -1,9 +1,9 @@
 Global ErrorFlag
 Responding
-asym_sam2 .hw_sum .Device_Error_Code
-asym_sam4 .hw_sum .Device_Error_Code
-asym_sam6 .hw_sum .Device_Error_Code
-asym_sam8 .hw_sum .Device_Error_Code
+asym_sam2 .hw_sum .Device_Error_Code 
+asym_sam4 .hw_sum .Device_Error_Code 
+asym_sam6 .hw_sum .Device_Error_Code 
+asym_sam8 .hw_sum .Device_Error_Code 
 Manipulated
 diff_bpm4aX .hw_sum .Device_Error_Code 0.5 1.0
 diff_bpm4aY .hw_sum .Device_Error_Code 0.5 1.0
@@ -17,4 +17,4 @@ diff_bpm12X .hw_sum .Device_Error_Code 0.2 1.0
 diff_bpm12Y .hw_sum .Device_Error_Code 0.2 1.0
 asym_bcm_an_us .hw_sum .Device_Error_Code 0.7 1.0
 asym_bcm_an_ds .hw_sum .Device_Error_Code 0.5 1.0
-asym_bcm_an_ds_3 .hw_sum .Device_Error_Code 0.5 1.0
+asym_bcm_an_ds3 .hw_sum .Device_Error_Code 0.5 1.0
