@@ -10,7 +10,7 @@ using namespace std;
 void displayVector_h(vector<Double_t> input){
   cout<<"{";
   for (Int_t j = 0; j<input.size(); j++){
-    cout<<" "<<Form("%4.2e",input[j]);
+    cout<<" "<<Form("%5.3e",input[j]);
     if (j<input.size()-1){
       cout<<"\n";
     }
@@ -18,31 +18,36 @@ void displayVector_h(vector<Double_t> input){
   cout<<" }\n";
 }
 
-void displayMatrix_h(vector<vector<Double_t>> input){
-  cout<<"{";
-  for (Int_t j = 0; j<input.size(); j++){
-    cout<<"{";
-    for (Int_t k = 0; k<input[j].size(); k++){
-      //cout<<"\t"<<input[j][k]<<"\t";
-      cout<<" "<<Form("%4.2e",input[j][k])<<" ";
-    }
-    if (j<input.size()-1){
-      cout<<"}\n";
-    }
-  }
-  cout<<"}}\n";
-}
-
-void displaySquareMatrix_h(vector<vector<Double_t>> input, Int_t size = -1){
-  if (size == -1){
+void displayMatrix_h(vector<vector<Double_t>> input, Int_t size = -1){
+  Int_t sizej = size;
+  if (size == -1){ // Default matrix printing, else user set size Square matrix
     size = input.size();
+  }
+  Bool_t triangle = false;
+  if (size == -2){ // Default matrix printing, but only upper triangular part
+    size = input.size();
+    triangle=true;
   }
   cout<<"{";
   for (Int_t j = 0; j<size; j++){
+    if (sizej < 0){
+      sizej = input[j].size();
+    }
     cout<<"{";
-    for (Int_t k = 0; k<size; k++){
-      //cout<<"\t"<<input[j][k]<<"\t";
-      cout<<" "<<Form("%4.2e",input[j][k])<<" ";
+    if (triangle == false){
+      for (Int_t k = 0; k<sizej; k++){
+        cout<<" "<<Form("%5.3e",input[j][k])<<" ";
+      }
+    }
+    else {
+      for (Int_t k = 0; k<sizej; k++){
+        if (k>=j){
+          cout<<" "<<Form("%5.3e",input[j][k])<<" ";
+        }
+        else {
+          cout<<" "<<Form("%5.3e",0.0)<<" ";
+        }
+      }
     }
     if (j<input.size()-1){
       cout<<"}\n";
@@ -54,7 +59,7 @@ void displaySquareMatrix_h(vector<vector<Double_t>> input, Int_t size = -1){
 vector<vector<Double_t>> cofactor_h(vector<vector<Double_t>> input, vector<vector<Double_t>> temp, Int_t inRow, Int_t inColumn, Int_t size){
   if (debug > 2) {
     Printf("Input matrix to be cofactored:");
-    displaySquareMatrix_h(input,size);
+    displayMatrix_h(input,size);
   }
   Int_t i = 0;
   Int_t j = 0;
@@ -73,7 +78,7 @@ vector<vector<Double_t>> cofactor_h(vector<vector<Double_t>> input, vector<vecto
   }
   if (debug > 3) {
     Printf("Temp cofactored matrix:");
-    displaySquareMatrix_h(temp,size);
+    displayMatrix_h(temp,size);
   }
   return temp;
 }
@@ -81,7 +86,7 @@ vector<vector<Double_t>> cofactor_h(vector<vector<Double_t>> input, vector<vecto
 Double_t determinant_h(vector<vector<Double_t>> input, Int_t size){
   if (debug>2) {
     Printf("Matrix to have %dx%d determinant taken:",size,size);
-    displaySquareMatrix_h(input,size);
+    displayMatrix_h(input,size);
   }
   Double_t determinant = 0.0;
   if (size==1){
@@ -99,6 +104,7 @@ Double_t determinant_h(vector<vector<Double_t>> input, Int_t size){
   }
   Int_t sign = 1;                // For sign multiplier
   for (Int_t i = 0 ; i < size ; i++){
+    if (debug > 2) Printf("Determinant computation %f%% done",100.0*i/size); 
     temp=cofactor_h(input,temp,0,i,size);
     determinant+=sign*input[0][i]*determinant_h(temp,size-1);
     sign=-1*sign;
@@ -110,7 +116,7 @@ Double_t determinant_h(vector<vector<Double_t>> input, Int_t size){
 vector<vector<Double_t>> adjoint_h(vector<vector<Double_t>> input, vector<vector<Double_t>> adjoint){
   if (debug > 2) {
     Printf("Matrix to have its adjoint taken:");
-    displaySquareMatrix_h(input);
+    displayMatrix_h(input);
   }
   if (input.size() == 1){
     adjoint[0][0] = input[0][0];
@@ -127,11 +133,12 @@ vector<vector<Double_t>> adjoint_h(vector<vector<Double_t>> input, vector<vector
     temp2.clear();
   }
   for (Int_t j = 0; j<input.size() ; j++){
+    if (debug > 2) Printf("Adjoint computation %f%% done",(100.0*j/input.size())); 
     for (Int_t k = 0; k<input.size() ; k++){
       temp=cofactor_h(input,temp,j,k,input.size());
       if (debug > 3) {
         Printf("Temporary adjointing matrix:");
-        displaySquareMatrix_h(temp,temp.size());
+        displayMatrix_h(temp,temp.size());
       }
       sign = ((j+k)%2==0)? 1: -1;
       adjoint[k][j]=(sign)*(determinant_h(temp,input.size()-1));
@@ -143,7 +150,7 @@ vector<vector<Double_t>> adjoint_h(vector<vector<Double_t>> input, vector<vector
 vector<vector<Double_t>> inverse_h(vector<vector<Double_t>> input, vector<vector<Double_t>> output){
   if (debug > 2) {
     Printf("Matrix to be inverted:");
-    displaySquareMatrix_h(input);
+    displayMatrix_h(input);
   }
   Double_t determinant = determinant_h(input,input.size());
   if (debug > 2) {

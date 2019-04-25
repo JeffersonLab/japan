@@ -3,6 +3,7 @@
 #include "../camguin.hh"
 #include <vector>
 #include <TString.h>
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <TChain.h>
@@ -64,7 +65,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       oldRespondingValues.push_back(0.0); 
       oldRespondingErrorBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][2]);
       oldRespondingErrors.push_back(0.0); 
-      newRegressedBranchList.push_back(textFile[listEntryN][0]);
+      newRegressedBranchList.push_back("reg_"+textFile[listEntryN][0]);
       newRegressedValues.push_back(0.0); 
       nresp++;
     }
@@ -100,6 +101,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
     //oldTree->SetBranchAddress(oldManipulatedDataBranchList[iBranch],&oldManipulatedValues[iBranch]);
     //oldTree->SetBranchAddress(oldManipulatedErrorBranchList[iBranch],&oldManipulatedErrors[iBranch]);
   }
+  oldManipulatedDataBranchList.push_back("PV_Asymmetry");
   for(Int_t iBranch = 0; iBranch < oldRespondingDataBranchList.size(); iBranch++) {
     TTreeReaderValue<Double_t> temp1(oldTreeReader,oldRespondingDataBranchList[iBranch]);
     TTreeReaderValue<Double_t> temp2(oldTreeReader,oldRespondingErrorBranchList[iBranch]);
@@ -122,8 +124,9 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   vector<Double_t> f; // The functional value integrated over all data entries
   vector<Double_t> s; // The sigma value integrated over all data entries
   vector<Double_t> chi2;
+  Double_t chi2sum;
   Double_t fi = 0.0; // The functional value per data entry
-  Double_t si2 = uncertainty*uncertainty;// The total sigma value per data entry
+  Double_t si2 = nmanip*uncertainty*uncertainty;// The total sigma value per data entry
   Double_t si = 0.0; // The total sigma value per data entry
   Double_t chi2i = 0.0;
   vector<Double_t> dfi;   // The first derivative of the functional value per data entry
@@ -172,8 +175,14 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   Int_t errorFlag = 0;
   Int_t numEntries = oldTree->GetEntries();
   if (debug > -1) Printf("Looping over %d entries",numEntries);
+  if (numEntries>5000) numEntries=5000;
+  if (debug > -1) Printf("Looping over %d entries",numEntries);
   Int_t i = 0;
-  while(oldTreeReader.Next()){
+  Int_t iterateAgain = 1;
+  while(iterateAgain){
+  //while(iterateAgain!=0)
+  //while(oldTreeReader.Next() && oldTreeReader.GetCurrentEntry() > (iterateAgain-1)*numEntries && oldTreeReader.GetCurrentEntry() < iterateAgain*numEntries)
+  while(oldTreeReader.Next() && oldTreeReader.GetCurrentEntry()<numEntries){
   //for (int i = 0; i < numEntries; i++)  // Loop over the input file's entries
     //oldTree->GetEntry(i);
     if (oldTreeErrorFlag==0){
@@ -228,8 +237,11 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
         }
       }
       f.push_back(fi);
+      newRegressedValues[fitN] = *oldRespondingValuesReader[fitN] - fi + (parameters[nmanip]*1); // Regressed asymmetry of main detector [fitN]
+      newTree->Fill();
       s.push_back(si);
       chi2.push_back(chi2i);
+      chi2sum+=chi2i;
       for (Int_t j = 0 ; j<nmanip ; j++){ // Loop over fit parameters j
         for (Int_t k = 0; k<nmanip ; k++){ // Loop over fit parameters k
           dsi2[j] += 2*covariance[k][k]*dfi[k]*ddfi[k][j];
@@ -251,53 +263,124 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
         }
       }
       for (Int_t j = 0 ; j<nmanip ; j++){ // Loop over fit parameters j
-        betai[j] += (2*((*oldRespondingValuesReader[fitN]-fi)*(*oldRespondingValuesReader[fitN]-fi)/(si*si*si))*dsi[j])+(2*(*oldRespondingValuesReader[fitN]-fi)*dfi[j]/(si*si));
-        beta[j] += 1e-6*betai[j];
+        betai[j] += (2*(((*oldRespondingValuesReader[fitN]-fi)*(*oldRespondingValuesReader[fitN]-fi)/(si*si*si))*dsi[j])+(2*(*oldRespondingValuesReader[fitN]-fi)*dfi[j]/(si*si)));
+        //betai[j] += (2*(*oldRespondingValuesReader[fitN]-fi)*dfi[j]/(si*si));
+        beta[j] += betai[j];
         for (Int_t k = 0; k<nmanip ; k++){ // Loop over fit parameters k
           alphai[j][k] += 0.5*(4*(dsi[j]*(*oldRespondingValuesReader[fitN]-fi)*dfi[k]/(si*si*si))+(6*(*oldRespondingValuesReader[fitN]-fi)*(*oldRespondingValuesReader[fitN]-fi)*dsi[j]*dsi[k]/(si*si*si*si))+(-2*(*oldRespondingValuesReader[fitN]-fi)*(*oldRespondingValuesReader[fitN]-fi)*ddsi[j][k]/(si*si*si))+(4*(*oldRespondingValuesReader[fitN]-fi)*dsi[k]*dfi[j]/(si*si*si))+(2*(dfi[j]*dfi[k]/(si*si)))+(-2*(*oldRespondingValuesReader[fitN]-fi)*ddfi[j][k]/(si*si)));
-          alpha[j][k] += 1e-6*alphai[j][k];
+          //alphai[j][k] += 0.5*(4*(dsi[j]*(*oldRespondingValuesReader[fitN]-fi)*dfi[k]/(si*si*si))+(2*(dfi[j]*dfi[k]/(si*si)))+(-2*(*oldRespondingValuesReader[fitN]-fi)*ddfi[j][k]/(si*si)));
+          alpha[j][k] += alphai[j][k];
           if (debug > 4) Printf("Beta = %f, Alpha = %f",betai[j],alpha[j][k]);
         }
       }
-      if (debug > -1) Printf("Functional value at event %d = %f, sigma = %f, chi2 = %f",i,fi,si,chi2i);
+      if (debug > 3) Printf("Functional value at event %d = %f, sigma = %f, chi2 = %f",i,fi,si,chi2i);
 
       // End storing values
-      dsi.swap(placeholder);
-      dsi2.swap(placeholder);
-      dfi.swap(placeholder);
-      betai.swap(placeholder);
-      alphai.swap(placeholder2);
-      ddsi.swap(placeholder2);
-      ddsi2.swap(placeholder2);
-      ddfi.swap(placeholder2);
-      dddfi.swap(placeholder3);
+      fill_n(dsi.begin(),nmanip,0.0);
+      fill_n(dsi2.begin(),nmanip,0.0);
+      fill_n(dfi.begin(),nmanip,0.0);
+      fill_n(betai.begin(),nmanip,0.0);
+      fill_n(alphai.begin(),nmanip,placeholder);
+      fill_n(ddsi.begin(),nmanip,placeholder);
+      fill_n(ddsi2.begin(),nmanip,placeholder);
+      fill_n(ddfi.begin(),nmanip,placeholder);
+      fill_n(dddfi.begin(),nmanip,placeholder2);
       errorFlag = 0;
       fi=0.0;
       chi2i=0.0;
       si=0.0;
-      si2=uncertainty*uncertainty;
+      si2=nmanip*uncertainty*uncertainty;
       
       if (debug > 4) Printf("Done entry %d",i);
       i++;
     }
   }
   // invert alpha
-  Printf("Alpha matrix: ");
-  displayMatrix_h(alpha);
-  Printf("Beta vector: ");
-  displayVector_h(beta);
   covariance = inverse_h(alpha,covariance);
   if (covariance[0][0]==-999999.0){
     Printf("Error, uninvertable matrix");
     return;
   }
-  Printf("Covariance matrix: ");
-  displayMatrix_h(covariance);
   // multiply epsilon*beta = a vector
   for (Int_t j = 0 ; j<beta.size(); j++){
     for (Int_t k = 0 ; k<beta.size(); k++){
       delta_parameters[j]+=covariance[j][k]*beta[k];
     }
+  }
+  iterateAgain = 0;
+  if (debug > -1) {
+    Printf("Change in parameter vector from initial guess: ");
+    displayVector_h(delta_parameters);
+    Printf("Original set of parameters: ");
+    displayVector_h(parameters);
+  }
+  for (Int_t j = 0 ; j<parameters.size(); j++){
+    Printf("Relative change in parameter %d = %f",j,(delta_parameters[j]+parameters[j])/parameters[j]);
+    if (abs(abs((parameters[j]+delta_parameters[j])/parameters[j])-1)>0.01){
+      iterateAgain = 1;
+      oldTreeReader.Restart();
+      newTree->Reset();
+      newTree->SetEntries(0);
+    }
+    parameters[j]=parameters[j]+0.3*delta_parameters[j];
+  }
+  if (debug > -1) {
+    Printf("New set of parameters: ");
+    displayVector_h(parameters);
+    Printf("Chi2 = %f, reduced Chi2 = %f",chi2sum,chi2sum/(numEntries-nmanip));
+  }
+  if (iterateAgain == 0){
+    if (debug > 2) {
+      Printf("Alpha matrix: ");
+      displayMatrix_h(alpha,-2);
+      Printf("Beta vector: ");
+      displayVector_h(beta);
+    }
+    TFile *outFile = new TFile("outputReg.root","RECREATE");
+    outFile->cd();
+    // Fill a histogram with yi - fi + last parameter*1 weighted by error on that
+    //gROOT->SetBatch(kTRUE);
+    //gROOT->SetBatch(kFALSE);
+    TCanvas * c1 = new TCanvas();
+    c1->SetLogy();
+    newTree->Draw(Form("%s",(const char*)newRegressedBranchList[fitN]));
+    TH1 *h1 = (TH1*)gROOT->FindObject("htemp");
+    TH1 *h2 = rebinTH1_h(h1,"clean",1,2,1000); // example use case of rebinTH1_h method
+    TString h2_name = h2->GetName();
+    newTree->Draw(Form("%s>>%s",(const char*)newRegressedBranchList[fitN],(const char*)h2_name)); // Manual
+    h2->Write(Form("%s_histogram",(const char*)newRegressedBranchList[fitN]));
+
+    TCanvas * c2 = new TCanvas();
+    c2->SetLogy();
+
+    oldTree->Draw(Form("%s",(const char*)oldRespondingDataBranchList[fitN]));
+    TH1 *h1old = (TH1*)gROOT->FindObject("htemp");
+    TH1 *h2old = rebinTH1_h(h1old,"clean",1,2,1000); // example use case of rebinTH1_h method
+    TString h2old_name = h2old->GetName();
+    oldTree->Draw(Form("%s>>%s",(const char*)oldRespondingDataBranchList[fitN],(const char*)h2old_name)); // Manual
+    h2old->Write(Form("%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
+    if (debug > -1) {
+      Printf("Covariance matrix: ");
+      displayMatrix_h(covariance,-2);
+      for (Int_t j = 0 ; j<parameters.size(); j++){
+        Printf("Parameter %s +- error = %5.3e +- %5.3e",(const char*)oldManipulatedDataBranchList[j],parameters[j],sqrt(covariance[j][j]));
+      }
+      Printf("Regressed reg %s average %5.3e +- %5.3e, std dev %5.3e +- %5.3e",(const char*)oldRespondingDataBranchList[fitN],h2->GetMean(),h2->GetMeanError(),h2->GetRMS(),h2->GetRMSError());
+      Printf("Regressed old %s average %5.3e +- %5.3e, std dev %5.3e +- %5.3e",(const char*)oldRespondingDataBranchList[fitN],h2old->GetMean(),h2old->GetMeanError(),h2old->GetRMS(),h2old->GetRMSError());
+    }
+    newTree->Write("reg"+tree);
+    outFile->Close();
+  }
+  chi2sum = 0;
+
+  // Reset
+  chi2.clear();
+  f.clear();
+  s.clear();
+  fill_n(beta.begin(),nmanip,0.0);
+  fill_n(delta_parameters.begin(),nmanip,0.0);
+  fill_n(alpha.begin(),nmanip,placeholder);
+
   }
   //writeFile_h("test_n_data",n_data,runNumber,nRuns);
 }
