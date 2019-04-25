@@ -5,7 +5,7 @@ A set of methods useful for reading a root tree, doing some analysis, and printi
 
 Example script for how to use environment variables and PANGUIN to execute the CAMGUIN macros on data files
 
-ROOT 5:
+Panguin Interface:
 `source [your copy of setup_japan.tcsh]`
 
 `source setup_camguin.tcsh`
@@ -14,10 +14,9 @@ ROOT 5:
 `./postpan_wrapper -r 1374`
 
 
-ROOT 6:
-  It is possible to run camguin using 
-        root -q -b camguin.C+'(.....)'
-  repeatedly inside a ROOT wrapper script instead of inside a panguin configuration file.
+Using ROOT directly:
+  ./wrapper.sh -r 1296 -f input.txt -n 1
+  
 ## What is happening
 
 * The Panguin Wrapper script intelligently sets environment variables ROOT can access (since PANGUIN doesn't share them)
