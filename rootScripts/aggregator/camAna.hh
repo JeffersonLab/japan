@@ -1,3 +1,7 @@
+#ifndef __CAMANA__
+#define __CAMANA__
+#include "camguin.hh"
+#include <TLeaf.h>
 using namespace std;
 void writeNEvents_Loop_h(TString tree = "mul", TString branch = "ErrorFlag", Int_t runNumber = 0, Int_t nRuns = -1){
   // Any branch will do, we are just counting the number of events that pass the global EventCuts, not device error codes too
@@ -7,7 +11,7 @@ void writeNEvents_Loop_h(TString tree = "mul", TString branch = "ErrorFlag", Int
   TChain  * Chain   = getTree_h(tree, runNumber, nRuns);
   TLeaf *ErrorFlag = getBranchLeaf_h(tree,branch,runNumber,nRuns);
   if (!ErrorFlag){
-    return 0;
+    return;
   }
   TTree   *Tree   = ErrorFlag->GetBranch()->GetTree();
   Int_t    numEntries = Tree->GetEntries();
@@ -33,7 +37,7 @@ void writeMean_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
   // Make an instance of the relevant data source 
   TLeaf   *Leaf   = getLeaf_h(tree,branch,leaf,runNumber,nRuns);
   if (!Leaf){
-    return 0;
+    return;
   }
   TBranch *Branch = Leaf->GetBranch();
   TTree   *Tree   = Branch->GetTree();
@@ -137,3 +141,4 @@ void writeMean_leafHist_h(TString mode = "default", TString tree = "mul", TStrin
   writeFile_h(rms,data_rms,runNumber,nRuns);
   //writeFile_h("test",1.0,runNumber,nRuns);
 }*/
+#endif // __CAMANA__
