@@ -160,7 +160,7 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1,
           if (debug>1) Printf("File %s doesn't contain tree: \"%s\"",(const char*)filename,(const char*)tree);
         }
         split++;
-        filename = filenamebase + "_" + split + ".root";
+        filename = filenamebase + "_" + Form("%i",split) + ".root";
         candidateFile->Close();
       }
     }
