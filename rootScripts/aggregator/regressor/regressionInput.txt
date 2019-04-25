@@ -5,8 +5,6 @@ asym_sam4 .hw_sum .Device_Error_Code
 asym_sam6 .hw_sum .Device_Error_Code 
 asym_sam8 .hw_sum .Device_Error_Code 
 Manipulated
-diff_bpm4eX .hw_sum .Device_Error_Code 0.001 1.0
-diff_bpm4eY .hw_sum .Device_Error_Code 0.001 1.0
-diff_bpm4aX .hw_sum .Device_Error_Code 0.001 1.0
-diff_bpm4aY .hw_sum .Device_Error_Code 0.001 1.0
-asym_bcm_an_ds3 .hw_sum .Device_Error_Code 0.001 1.0
+diff_bpm4eX .hw_sum .Device_Error_Code 0.010 1.0
+diff_bpm4eY .hw_sum .Device_Error_Code 0.010 1.0
+asym_bcm_an_ds3 .hw_sum .Device_Error_Code 0.010 1.0

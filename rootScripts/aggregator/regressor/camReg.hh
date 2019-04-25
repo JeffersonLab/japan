@@ -5,10 +5,17 @@
 #include <TString.h>
 #include <algorithm>
 #include <iostream>
+#include <TMatrix.h>
 #include <string>
 #include <TChain.h>
 using namespace std;
 void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInput.txt", char delim = ' '){
+  Double_t speed = 0.33;
+  Double_t fitCriteria = 0.01;
+  Double_t parAvg = 10.0;
+  Double_t parameterLimit = 0.000001;
+  Double_t parRms2 = 10.0;
+
   runNumber = getRunNumber_h(runNumber);
   nRuns     = getNruns_h(nRuns);
   vector<vector<string>> textFile = textFileParse_h(regInput,delim);
@@ -126,7 +133,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   vector<Double_t> chi2;
   Double_t chi2sum;
   Double_t fi = 0.0; // The functional value per data entry
-  Double_t si2 = nmanip*uncertainty*uncertainty;// The total sigma value per data entry
+  Double_t si2 = uncertainty*uncertainty;// The total sigma value per data entry
   Double_t si = 0.0; // The total sigma value per data entry
   Double_t chi2i = 0.0;
   vector<Double_t> dfi;   // The first derivative of the functional value per data entry
@@ -174,8 +181,9 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   Int_t fitN = 0;
   Int_t errorFlag = 0;
   Int_t numEntries = oldTree->GetEntries();
+  Int_t numErrorEntries = 0;
   if (debug > -1) Printf("Looping over %d entries",numEntries);
-  if (numEntries>5000) numEntries=5000;
+  if (numEntries>100000) numEntries=100000;
   if (debug > -1) Printf("Looping over %d entries",numEntries);
   Int_t i = 0;
   Int_t iterateAgain = 1;
@@ -189,11 +197,11 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       for (Int_t j = 0 ; j<nmanip ; j++){ // Loop over fit parameters j
         if (debug > 3) Printf("Looping, j = %d",j);
         if (j<nmanipInputs){
-          oldManipulatedValues[j]=*oldManipulatedValuesReader[j];
-          oldManipulatedErrors[j]=*oldManipulatedErrorsReader[j];
+          oldManipulatedValues[j]=*oldManipulatedValuesReader[j]*weighting[j];
+          oldManipulatedErrors[j]=*oldManipulatedErrorsReader[j]*weighting[j];
         }
         else {
-          oldManipulatedValues[j]=1.0; // User input values here;
+          oldManipulatedValues[j]=1.0; // User input values here - this is the asymmetry
         }
         if(oldManipulatedErrors[j]==0){
           fi += parameters[j]*oldManipulatedValues[j]; // Functional form of f
@@ -216,6 +224,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
         errorFlag = 1; 
       }
       if (errorFlag==1){ 
+        numErrorEntries++;
         errorFlag = 0;
         continue; 
       }
@@ -296,11 +305,29 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
     }
   }
   // invert alpha
-  covariance = inverse_h(alpha,covariance);
-  if (covariance[0][0]==-999999.0){
-    Printf("Error, uninvertable matrix");
-    return;
+  //covariance = inverse_h(alpha,covariance);
+  //
+  //if (covariance[0][0]==-999999.0){
+  //  Printf("Error, uninvertable matrix");
+  //  return;
+  //}
+
+  TMatrixD * alphaM = new TMatrixD(nmanip,nmanip);
+  TMatrixD * covarianceM = new TMatrixD(nmanip,nmanip);
+  for (Int_t j = 0 ; j < nmanip ; j++){
+    for (Int_t k = 0 ; k < nmanip ; k++){
+      (*alphaM)[j][k] = alpha[j][k];
+    }
   }
+
+  covarianceM = &alphaM->Invert();
+
+  for (Int_t j = 0 ; j < nmanip ; j++){
+    for (Int_t k = 0 ; k < nmanip ; k++){
+      covariance[j][k] = (*alphaM)[j][k];
+    }
+  }
+
   // multiply epsilon*beta = a vector
   for (Int_t j = 0 ; j<beta.size(); j++){
     for (Int_t k = 0 ; k<beta.size(); k++){
@@ -314,16 +341,45 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
     Printf("Original set of parameters: ");
     displayVector_h(parameters);
   }
+
+
+  for (Int_t j = 0 ; j<delta_parameters.size(); j++){
+    parAvg+=(parameters[j]+delta_parameters[j])/parameters[j];
+  }
+  parAvg = parAvg/nmanip;
+  for (Int_t j = 0 ; j<delta_parameters.size(); j++){
+    parRms2+=(((parameters[j]+delta_parameters[j])/parameters[j])-parAvg)*(((parameters[j]+delta_parameters[j])/parameters[j])-parAvg);
+  }
+  parRms2 = sqrt(parRms2/(nmanip-1));
+  Printf("Relative change in all parameters avg = %f, stddev = %f",parAvg,parRms2);
   for (Int_t j = 0 ; j<parameters.size(); j++){
     Printf("Relative change in parameter %d = %f",j,(delta_parameters[j]+parameters[j])/parameters[j]);
-    if (abs(abs((parameters[j]+delta_parameters[j])/parameters[j])-1)>0.01){
+    if (abs(abs((parameters[j]+delta_parameters[j])/parameters[j])-1)>fitCriteria){
       iterateAgain = 1;
+      numErrorEntries=0;
       oldTreeReader.Restart();
       newTree->Reset();
       newTree->SetEntries(0);
     }
-    parameters[j]=parameters[j]+0.3*delta_parameters[j];
+    if (parRms2<parameterLimit){
+      parameters[j]=(parameters[j]+speed*delta_parameters[j])/(parAvg*parAvg);
+      Printf("\nNormalized \n");
+    }
+    else{
+      parameters[j]=parameters[j]+speed*delta_parameters[j];
+    }
+    //if (parameters[j]>0.2) parameters[j]=0.2;
+    //if (parameters[j]<-0.2) parameters[j]=-0.2;
   }
+
+  if (parRms2<0.001) {
+    for (Int_t j = 0 ; j<parameters.size(); j++){
+      parameters[j]=1.0e-9*parameters[j];
+    }
+  }
+  parAvg = 0.0;
+  parRms2 = 0.0;
+
   if (debug > -1) {
     Printf("New set of parameters: ");
     displayVector_h(parameters);
@@ -336,37 +392,67 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       Printf("Beta vector: ");
       displayVector_h(beta);
     }
-    TFile *outFile = new TFile("outputReg.root","RECREATE");
+    TFile *outFile = new TFile(Form("outputReg_%d.root",runNumber),"RECREATE");
     outFile->cd();
     // Fill a histogram with yi - fi + last parameter*1 weighted by error on that
     //gROOT->SetBatch(kTRUE);
     //gROOT->SetBatch(kFALSE);
     TCanvas * c1 = new TCanvas();
     c1->SetLogy();
+
     newTree->Draw(Form("%s",(const char*)newRegressedBranchList[fitN]));
     TH1 *h1 = (TH1*)gROOT->FindObject("htemp");
-    TH1 *h2 = rebinTH1_h(h1,"clean",1,2,1000); // example use case of rebinTH1_h method
-    TString h2_name = h2->GetName();
+    h1->Write(Form("%s_histogram",(const char*)newRegressedBranchList[fitN]));
+    c1->SaveAs("reg.pdf");
+    c1->SaveAs(Form("reg_%d.pdf",runNumber));
+
+    TCanvas * c1_2 = new TCanvas();
+    c1_2->SetLogy();
+
+    newTree->Draw(Form("%s",(const char*)newRegressedBranchList[fitN]));
+    TH1 *h1_2 = (TH1*)gROOT->FindObject("htemp");
+    h1_2->SetName("h1");
+    TH1 *h2_3 = (TH1*)rebinTH1_h(h1_2,"clean",1,2,1000); // example use case of rebinTH1_h method
+    TH1 *h2_2 = (TH1*)h2_3->Clone(); // example use case of rebinTH1_h method
+    h2_3->Delete();
+    TString h2_name = h2_2->GetName();
     newTree->Draw(Form("%s>>%s",(const char*)newRegressedBranchList[fitN],(const char*)h2_name)); // Manual
-    h2->Write(Form("%s_histogram",(const char*)newRegressedBranchList[fitN]));
+    h2_2->Write(Form("%s_histogram",(const char*)newRegressedBranchList[fitN]));
+    c1_2->SaveAs(Form("reg_rebin_%d.pdf",runNumber));
 
     TCanvas * c2 = new TCanvas();
     c2->SetLogy();
 
     oldTree->Draw(Form("%s",(const char*)oldRespondingDataBranchList[fitN]));
     TH1 *h1old = (TH1*)gROOT->FindObject("htemp");
-    TH1 *h2old = rebinTH1_h(h1old,"clean",1,2,1000); // example use case of rebinTH1_h method
-    TString h2old_name = h2old->GetName();
+    h1old->Write(Form("%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
+    c2->SaveAs(Form("orig_%d.pdf",runNumber));
+
+    TCanvas * c2_2 = new TCanvas();
+    c2_2->SetLogy();
+
+    oldTree->Draw(Form("%s",(const char*)oldRespondingDataBranchList[fitN]));
+    TH1 *h1_2old = (TH1*)gROOT->FindObject("htemp");
+    h1_2old->SetName("h1old");
+    TH1 *h2_3old = (TH1*)rebinTH1_h(h1_2old,"clean",1,2,1000); // example use case of rebinTH1_h method
+    TH1 *h2_2old = (TH1*)h2_3old->Clone(); // example use case of rebinTH1_h method
+    h2_3old->Delete();
+    TString h2old_name = h2_2old->GetName();
     oldTree->Draw(Form("%s>>%s",(const char*)oldRespondingDataBranchList[fitN],(const char*)h2old_name)); // Manual
-    h2old->Write(Form("%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
+    h2_2old->Write(Form("%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
+    c2_2->SaveAs(Form("orig_rebin_%d.pdf",runNumber));
+
     if (debug > -1) {
       Printf("Covariance matrix: ");
       displayMatrix_h(covariance,-2);
       for (Int_t j = 0 ; j<parameters.size(); j++){
         Printf("Parameter %s +- error = %5.3e +- %5.3e",(const char*)oldManipulatedDataBranchList[j],parameters[j],sqrt(covariance[j][j]));
       }
-      Printf("Regressed reg %s average %5.3e +- %5.3e, std dev %5.3e +- %5.3e",(const char*)oldRespondingDataBranchList[fitN],h2->GetMean(),h2->GetMeanError(),h2->GetRMS(),h2->GetRMSError());
-      Printf("Regressed old %s average %5.3e +- %5.3e, std dev %5.3e +- %5.3e",(const char*)oldRespondingDataBranchList[fitN],h2old->GetMean(),h2old->GetMeanError(),h2old->GetRMS(),h2old->GetRMSError());
+      Printf("Regressed reg %s average %5.3e +- %5.3e, std dev %5.3e +- %5.3e",(const char*)oldRespondingDataBranchList[fitN],h1->GetMean(),h1->GetMeanError(),h1->GetRMS(),h1->GetRMSError());
+      Printf("Regressed old %s average %5.3e +- %5.3e, std dev %5.3e +- %5.3e",(const char*)oldRespondingDataBranchList[fitN],h1old->GetMean(),h1old->GetMeanError(),h1old->GetRMS(),h1old->GetRMSError());
+      Printf("Regressed rebinned reg %s average %5.3e +- %5.3e, std dev %5.3e +- %5.3e",(const char*)oldRespondingDataBranchList[fitN],h2_2->GetMean(),h2_2->GetMeanError(),h2_2->GetRMS(),h2_2->GetRMSError());
+      Printf("Regressed rebinned old %s average %5.3e +- %5.3e, std dev %5.3e +- %5.3e",(const char*)oldRespondingDataBranchList[fitN],h2_2old->GetMean(),h2_2old->GetMeanError(),h2_2old->GetRMS(),h2_2old->GetRMSError());
+      Printf("Number of entries = %d, entries with errors = %d, percent good entries = %f%%",numEntries,numErrorEntries,100.0*(numEntries-numErrorEntries)/numEntries);
     }
     newTree->Write("reg"+tree);
     outFile->Close();
