@@ -310,7 +310,7 @@ void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
   //  Only do something, if we have the running sum variables
   if (!fKeepRunningSum || (fRunningsum == NULL)) return;
 
-     Bool_t local_print_flag = true;
+     Bool_t local_print_flag = false;
      Bool_t local_add_element= type.Contains("asy");
   
 
@@ -336,9 +336,9 @@ void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
       element_value       = 0.0;
       element_value_err   = 0.0;
       element_value_width = 0.0;
-      std::cout<< element_name.Data()<<std::endl;
+     
    
-      local_add_these_elements=element_name.Contains("dd"); // Need to change this to add other detectorss in summary
+      local_add_these_elements=element_name.Contains("dd")||element_name.Contains("da"); // Need to change this to add other detectorss in summary
 
       if(local_add_these_elements && local_add_element){
         ps->AddElement(new PromptSummaryElement(element_name)); 

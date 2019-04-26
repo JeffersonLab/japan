@@ -1582,7 +1582,7 @@ void QwBlindDetectorArray::WritePromptSummary(QwPromptSummary *ps, TString type)
     QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
   }
 
-
+/*
   const VQwHardwareChannel* tmp_channel = 0;
   TString  element_name        = "";
   Double_t element_value       = 0.0;
@@ -1624,7 +1624,7 @@ void QwBlindDetectorArray::WritePromptSummary(QwPromptSummary *ps, TString type)
 	       type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
       }
     }
-  
+  */
   return;
 }
 

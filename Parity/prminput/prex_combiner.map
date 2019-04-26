@@ -19,17 +19,30 @@ asym:bcm_an_ds3, -1
 asym:sam4, 1
 asym:sam8, -1
 
-[asym:@sam_4_8_ds]
-asym:sam4, 1
-asym:sam8, 1
+[diff:@sam_4_8_da]
+asym:sam4, 0.5
+asym:sam8, 0.5
 
 [asym:@sam_2_6_dd]
 asym:sam2, 1
 asym:sam6, -1
 
-[asym:@sam_2_6_ds]
+[diff:@sam_2_6_da]
+asym:sam2, 0.5
+asym:sam6, 0.5
+
+[asym:@sam_24_68_dd]
 asym:sam2, 1
-asym:sam6, 1
+asym:sam4, 1
+asym:sam6, -1
+asym:sam8, -1
+
+[diff:@sam_24_68_da]
+asym:sam2, 0.25
+asym:sam4, 0.25
+asym:sam6, 0.25
+asym:sam8, 0.25
+
 
 [asym:@bpm_4aX_4eX_dd]
 asym:bpm4aX, 1
