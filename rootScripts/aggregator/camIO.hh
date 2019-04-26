@@ -269,6 +269,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   else {
     // Open existing file 
     oldTree = (TTree*) aggregatorFile->Get("agg");
+    //oldTree->SetName("old_agg");
     if (!oldTree) {
       Printf("ERROR, tree agg is dead");
     }
@@ -418,7 +419,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
     newTree->Write("agg");
   }
   else {
-    newTree->Write("agg",TObject::kWriteDelete,0);
+    newTree->Write("agg",TObject::kOverwrite);
   }
   if (debug>0) newTree->Scan();
   aggregatorFile->Close();
