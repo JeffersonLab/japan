@@ -7,11 +7,11 @@
 #
 
 # Double differences
-[asym:@bcm_usan_dsan_dd]
+[asym:@bcm_an_us_ds_dd]
 asym:bcm_an_us, 1
 asym:bcm_an_ds, -1
 
-[asym:@bcm_usan_ds3an_dd]
+[asym:@bcm_an_us_ds3_dd]
 asym:bcm_an_us, 1
 asym:bcm_an_ds3, -1
 

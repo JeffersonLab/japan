@@ -267,7 +267,7 @@ QwPromptSummary::GetElementByName(TString name)
     {
       PromptSummaryElement* an_element = *i;
       get_name   = an_element->GetName();
-      if( get_name.Contains(name) ) {
+      if( get_name.EqualTo(name) ) {
 	if(fLocalDebug) {
 	  std::cout << "System " << an_element->GetName()
 		    << " QwPromptSummary::GetElementByName address at" << an_element << std::endl;
@@ -315,7 +315,7 @@ QwPromptSummary::PrintCSVHeader()
   out += "================================================================\n";
 
   out += "Yield Units: bcm*(uA), cav*q(uA), bpm*(mm), sam*(V/uA)\n";
-  out += "Asymmetry Units: bpm*(nm), bcm*, cav*q (ppm) \n";
+  out += "Asymmetry/Difference Units: bpm*(nm), bcm*(ppm), cav*q(ppm) \n";
 
   out += "================================================================\n";
   
@@ -531,7 +531,7 @@ QwPromptSummary::PrintCSV()
 
 
   secheader= "================================================================\n";
-  secheader+="\t\t\t Double Differences/Averages \t\t\t\n";
+  secheader+="\t\t\t Combined Differences/Averages \t\t\t\n";
   secheader+="================================================================\n";
   output << secheader.Data();
 
