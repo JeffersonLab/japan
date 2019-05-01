@@ -265,7 +265,7 @@ void LinRegBevPeb::printSummaryAlphas(){
 void LinRegBevPeb::printSummaryYP(){
   cout << Form("\nLinRegBevPeb::printSummaryYP seen good eve=%lld",fGoodEventNumber)<<endl;
 
-  if(fGoodEventNumber>2) { cout<<"  too fiew events, skip"<<endl; return;}
+  if(fGoodEventNumber<2) { cout<<"  too fiew events, skip"<<endl; return;}
   cout << Form("\n         name:             ");
   for (int i = 0; i <par_nP; i++) {
     cout << Form(" %10sP%d "," ",i);
