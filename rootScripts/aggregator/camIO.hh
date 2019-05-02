@@ -86,13 +86,13 @@ void addAggregateVars_h(TString varName, std::vector<TString>* aggVars, std::vec
 vector<vector<string>> textFileParse_h(TString fileName, char delim = ',')
 {
   vector<vector<string> > filearray;   // the 2D array
+  string line;                     // the contents
+  string word;                     // one word at at time
+  vector<string> words;            // array of values for one line only
+
   if ( !gSystem->AccessPathName(fileName.Data()) ) {
     if (debug>0) Printf("Found file name: %s",(const char*)fileName);
     ifstream in(fileName.Data());
-
-    string line;                     // the contents
-    string word;                     // one word at at time
-    vector<string> words;            // array of values for one line only
 
     filearray.clear();
     //getline(in,line); // Uncomment to skip header line
@@ -109,6 +109,9 @@ vector<vector<string>> textFileParse_h(TString fileName, char delim = ',')
       filearray.push_back(words);  // add the 1D array to the 2D array
     }
     in.close();
+    for (Int_t i = 0 ; i < words.size() ; i++){
+      words[i].clear();
+    }
     words.clear();
     return filearray;
   }
@@ -553,6 +556,9 @@ void writePostPanFile_h(Int_t runNumber = 1369, TString filename = "run1369_summ
     }
   }
 
+  for (Int_t i = 0 ; i < contents.size() ; i++){
+    contents[i].clear();
+  }
   contents.clear();
 }
 #endif // __CAMIO__
