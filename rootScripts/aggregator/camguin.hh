@@ -18,6 +18,12 @@
 #include <string>
 #include <stdlib.h>
 #include <dirent.h>
+#include <TROOT.h>
+#include <TSystem.h>
+#include <TChain.h>
+#include <TLeaf.h>
+#include <TH1.h>
+#include <TFile.h>
 using namespace std;
 
 int debug = 0;
