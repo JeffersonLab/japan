@@ -384,6 +384,8 @@ void  QwBPMStripline<T>::ProcessEvent()
   Bool_t localdebug = kFALSE;
   static T numer("numerator","derived"), denom("denominator","derived");
   static T tmp1("tmp1","derived"), tmp2("tmp2","derived");
+  static T tmp3("tmp3","derived"), tmp4("tmp4","derived");
+  static T tmp5("tmp3","derived");
   static T rawpos[2] = {T("rawpos_0","derived"),T("rawpos_1","derived")};
 
   Short_t i = 0;
@@ -411,7 +413,7 @@ void  QwBPMStripline<T>::ProcessEvent()
       }
     }
   fEllipticity.Ratio(fEllipticity,fEffectiveCharge);
-  fEllipticity.Scale(1.0); // Include 2*k/sigma scale factor here
+  fEllipticity.Scale(0.5*18.81*18.81); // Include 2*k/sigma scale factor here
 
   /**
      To obtain the beam position in X and Y in the CEBAF coordinates, we use the following equations
@@ -484,6 +486,15 @@ void  QwBPMStripline<T>::ProcessEvent()
     }
     
   }
+  // Ellipticity gets corrected by the BPM central axis relative positions
+  //tmp3.AssignScaledValue(fRelPos[kXAxis],1.0);
+  //tmp4.AssignScaledValue(fRelPos[kXAxis],1.0);
+  tmp3.Product(fRelPos[kXAxis],fRelPos[kXAxis]);
+  tmp4.Product(fRelPos[kYAxis],fRelPos[kYAxis]);
+  //tmp5.AssignScaledValue(tmp3,1.0);
+  tmp5.Difference(tmp3,tmp4);
+  tmp5.Scale(-1.0*0.250014);
+  fEllipticity.Sum(fEllipticity,tmp5); // Correction to ellipticity (only 1st correction)
 
   return;
 }

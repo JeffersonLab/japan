@@ -50,6 +50,7 @@ void VQwBPM::GetElectronicFactors(Double_t BSENfactor, Double_t AlphaX, Double_t
   Bool_t ldebug = kFALSE;
 
   fQwStriplineCalibration = BSENfactor*18.81;
+  fQwStriplineCorrection = BSENfactor*0.250014;
 
   fRelativeGains[0]=AlphaX;
   fRelativeGains[1]=AlphaY;
@@ -58,6 +59,7 @@ void VQwBPM::GetElectronicFactors(Double_t BSENfactor, Double_t AlphaX, Double_t
     std::cout<<"\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n";
     std::cout<<this->GetElementName();
     std::cout<<"\nfQwStriplineCalibration = "<<fQwStriplineCalibration<<std::endl;
+    std::cout<<"\nfQwStriplineCorrection = "<<fQwStriplineCorrection<<std::endl;
     std::cout<<"AlphaX = "<<fRelativeGains[0]<<std::endl;
     std::cout<<"AlphaY = "<<fRelativeGains[1]<<std::endl;
     
@@ -116,6 +118,7 @@ VQwBPM& VQwBPM::operator= (const VQwBPM &value)
 {
   if (GetElementName()!=""){
     fQwStriplineCalibration = value.fQwStriplineCalibration;
+    fQwStriplineCorrection = value.fQwStriplineCorrection;
     bRotated = value.bRotated;
     fRotationAngle = value.fRotationAngle;
     fCosRotation = value.fCosRotation;
