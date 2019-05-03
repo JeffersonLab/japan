@@ -94,11 +94,28 @@ PromptSummaryElement::GetTextSummary()
   TString test;
   return test;
 };
+
 TString
-PromptSummaryElement::GetCSVSummary()
+PromptSummaryElement::GetCSVSummary(TString type)
 {
-  return Form("%14s | Yield:  %.2e +/-  %.2e \t Width:  %.2e | Difference/Asymmetry:  %.2e +/-  %.2e \t Width:  %0.2e  \n", fElementName.Data(), fYield, fYieldError, fYieldWidth, fAsymDiff, fAsymDiffError, fAsymDiffWidth);
-  //return Form("%s,%e,%e,%e,%e,%e,%e", fElementName.Data(), fYield, fYieldError, fYieldWidth, fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+
+TString out = "";
+
+Bool_t isDouble= fElementName.Contains("_dd") || fElementName.Contains("_da");
+
+        if (type.Contains("yield")&& !isDouble){     
+   		out = Form("%14s | Mean: %.2e +/- %.2e \t Width: %.2e\n", fElementName.Data(), fYield, fYieldError, fYieldWidth); 
+   	}
+        if (type.Contains("asy")&& !isDouble){
+ 	        out = Form("%14s | Mean: %.2e +/- %.2e \t Width: %0.2e  \n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+        }
+        if (type.Contains("double")&& isDouble) {
+	       	out = Form ("%14s | Mean: %.2e +/- %.2e \t Width: %0.2e  \n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+	}
+
+
+return out;
+ 
 };
 
 
@@ -154,11 +171,8 @@ QwPromptSummary::QwPromptSummary()
 {
   fRunNumber    = 0;
   fRunletNumber = 0;
-  fElementList = new TObjArray();
  
-  fElementList -> Clear();
-  fElementList -> SetOwner(kTRUE);
-
+ 
   fNElements = 0;
 
   fLocalDebug = kTRUE;
@@ -173,11 +187,7 @@ QwPromptSummary::QwPromptSummary(Int_t run_number, Int_t runlet_number)
   fRunNumber    = run_number;
   fRunletNumber = runlet_number;
 
-  fElementList = new TObjArray();
  
-  fElementList -> Clear();
-  fElementList -> SetOwner(kTRUE);
-
   fNElements = 0;
 
   fLocalDebug = kFALSE;
@@ -189,8 +199,12 @@ QwPromptSummary::QwPromptSummary(Int_t run_number, Int_t runlet_number)
 
 QwPromptSummary::~QwPromptSummary()
 {
-  if(fElementList) delete fElementList;
-  fElementList = NULL;
+
+  for (auto i=fElementList.begin() ; i!=fElementList.end();i++){
+  	delete *i;
+  }
+  fElementList.clear();
+
 };
 
 
@@ -232,7 +246,7 @@ QwPromptSummary::AddElement(PromptSummaryElement *in)
 {
   Int_t pos = 0;
 
-  pos = fElementList -> AddAtFree(in);
+  fElementList.push_back(in);
   if(fLocalDebug) {
     printf("AddElement at pos %d\n", pos);
   }
@@ -246,16 +260,14 @@ PromptSummaryElement *
 QwPromptSummary::GetElementByName(TString name)
 {
 
-  PromptSummaryElement* an_element = NULL;
-  TObjArrayIter next(fElementList);
-  TObject* obj = NULL;
+  
   TString get_name = "";
 
-  while ( (obj = next()) )
+  for (auto i=fElementList.begin(); i!=fElementList.end(); i++  )
     {
-      an_element = (PromptSummaryElement*) obj;
+      PromptSummaryElement* an_element = *i;
       get_name   = an_element->GetName();
-      if( get_name.Contains(name) ) {
+      if( get_name.EqualTo(name) ) {
 	if(fLocalDebug) {
 	  std::cout << "System " << an_element->GetName()
 		    << " QwPromptSummary::GetElementByName address at" << an_element << std::endl;
@@ -288,10 +300,7 @@ QwPromptSummary::PrintTextSummaryTailer()
 {
   TString out = "";
   
-  out =  " ======== END of SUMMARY======== \n";
-  out += " ======== END ======== \n\n";
-  out += " Please contact Rakitha Beminiwattha for any queries and suggestions \n";
-  out += " rakithab@jlab.org \n";
+  out =  "======================END OF SUMMARY============================\n";
   return out;
 };
 
@@ -303,13 +312,12 @@ QwPromptSummary::PrintCSVHeader()
    
   
   out += Form("Distribution parameters for run %d \n",fRunNumber);
-  out += "===================================================================================\n";
+  out += "================================================================\n";
 
-  out += "Please follow the following guidance on units \n";
-  out += "Yields: bcm* (uA), cav*q(uA), cav*x/y(mm-uA?), bpm*WS(?), bpm*(mm), sam*(V/uA?)\n";
-  out += "Asymmetries: bpm*(nm), bpm*WS(?), cav*x/y(?), In general (ppm) \n";
+  out += "Yield Units: bcm*(uA), cav*q(uA), bpm*(mm), sam*(V/uA)\n";
+  out += "Asymmetry/Difference Units: bpm*(nm), bcm*(ppm), cav*q(ppm) \n";
 
-  out += "===================================================================================\n";
+  out += "================================================================\n";
   
   
 
@@ -497,33 +505,51 @@ QwPromptSummary::PrintCSV()
   TString header= this->PrintCSVHeader();
   std::ofstream output;
   output.open(filename.Data());
-  output<< header.Data() << "\n";
+  output<< header.Data();
+  
+  TString secheader= "================================================================\n";
+  secheader+="\t\t\t Yields \t\t\t\n";
+  secheader+="================================================================\n" ;
+  output << secheader.Data() ;
+ 
+  for (auto i=fElementList.begin(); i!=fElementList.end(); i++  )
+    {
+      output << (*i)->GetCSVSummary("yield") ;
+    }
   
 
-  TObjArrayIter next(fElementList);
-  TObject* obj = NULL;
-  while ( (obj = next()) )
+  secheader= "================================================================\n";
+  secheader+="\t\t\t Asymmetries/Differences \t\t\t\n";
+  secheader+="================================================================\n";
+  output << secheader.Data();
+ 
+  for ( auto j=fElementList.begin(); j!=fElementList.end(); j++ )
     {
-      PromptSummaryElement* an_element = (PromptSummaryElement*) obj;
-      output << an_element -> GetCSVSummary() << "\n";
+      output << (*j)->GetCSVSummary("asymmetry");
     }
+
+
+
+  secheader= "================================================================\n";
+  secheader+="\t\t\t Combined Differences/Averages \t\t\t\n";
+  secheader+="================================================================\n";
+  output << secheader.Data();
+
+  for ( auto j=fElementList.begin(); j!=fElementList.end(); j++ )
+    {
+      output << (*j)->GetCSVSummary("double");
+    }
+
+  output<< "=======================END OF SUMMARY===========================\n";
+
   output.close();
-  printf("-----------------------\n");
+  
   return;
 };
 
 void
 QwPromptSummary::PrintTextSummary()
-{
-  printf("-----------------------\n");
-  TObjArrayIter next(fElementList);
-  TObject* obj = NULL;
-  while ( (obj = next()) )
-    {
-      PromptSummaryElement* an_element = (PromptSummaryElement*) obj;
-      std::cout << an_element -> GetTextSummary() << std::endl;
-    }
-  printf("-----------------------\n");
+{  
   return;
 };
 

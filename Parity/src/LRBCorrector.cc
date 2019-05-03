@@ -46,6 +46,7 @@ RegisterHandlerFactory(LRBCorrector);
 LRBCorrector::LRBCorrector(const TString& name):VQwDataHandler(name)
 {
   ParseSeparator = "_";
+  fKeepRunningSum = kTRUE;
 }
 
 void LRBCorrector::ParseConfigFile(QwParameterFile& file)
@@ -149,18 +150,7 @@ Int_t LRBCorrector::ConnectChannels(
 
 
 void LRBCorrector::ProcessData() {
-  // Get error flag from QwHelicityPattern
-  if (fHelicityPattern != NULL){
-    fErrorFlag = fHelicityPattern->GetEventcutErrorFlag();
-  } else if (fSubsystemArray != NULL){
-    fErrorFlag = fSubsystemArray->GetEventcutErrorFlag();
-  } else {
-    QwError << "LRBCorrector::ProcessData: Can't set fErrorFlag" << QwLog::endl;
-    fErrorFlag = 0;
-  }
-  
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar, fSensitivity[i]);
   }
-  
 }

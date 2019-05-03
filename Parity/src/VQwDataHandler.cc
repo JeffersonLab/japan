@@ -23,6 +23,7 @@ using namespace std;
 #include "QwParameterFile.h"
 #include "QwRootFile.h"
 #include "QwVQWK_Channel.h"
+#include "QwPromptSummary.h"
 
 #define MYSQLPP_SSQLS_NO_STATICS
 #ifdef __USE_DATABASE__
@@ -30,6 +31,26 @@ using namespace std;
 #include "QwParityDB.h"
 #endif // __USE_DATABASE__
 
+
+VQwDataHandler::VQwDataHandler(const VQwDataHandler &source):
+  fPriority(source.fPriority),
+  fName(source.fName),
+  fMapFile(source.fMapFile),
+  fTreeName(source.fTreeName),
+  fTreeComment(source.fTreeComment),
+  fKeepRunningSum(source.fKeepRunningSum)
+{
+  fDependentVar  = source.fDependentVar;
+  fDependentType = source.fDependentType;
+  fDependentName = source.fDependentName;
+  //  Create new objects for the the outputs.
+  fOutputVar.resize(source.fOutputVar.size());
+  for (size_t i = 0; i < this->fDependentVar.size(); i++) {
+    const QwVQWK_Channel* vqwk = dynamic_cast<const QwVQWK_Channel*>(source.fOutputVar[i]);
+    this->fOutputVar[i] = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
+  }
+
+}
 
 
 VQwDataHandler::~VQwDataHandler() {
@@ -134,12 +155,14 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
       name.insert(0, cor);
       new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
       new_vqwk->SetElementName(name);
+      new_vqwk->SetSubsystemName(fName);
     }
 
     // alias
     if(fDependentName.at(dv).at(0) == '@') {
       //QwMessage << "dv: " << name << QwLog::endl;
       new_vqwk = new QwVQWK_Channel(name, VQwDataElement::kDerived);
+      new_vqwk->SetSubsystemName(fName);
     }
     // defined type
     else if(dv_ptr!=NULL) {
@@ -156,6 +179,7 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
       fOutputVar.push_back(new_vqwk);
     }
   }
+  return 0;
 }
 
 
@@ -225,33 +249,116 @@ void VQwDataHandler::FillTreeVector(std::vector<Double_t>& values) const
 }
 
     
+void VQwDataHandler::AccumulateRunningSum()
+{
+  if (fKeepRunningSum){
+    //  Create the running sum object if it doesn't exist.
+    if (fRunningsum == NULL){
+      fRunningsum = this->Clone();
+      fRunningsum->fKeepRunningSum = kFALSE;
+      fRunningsum->ClearEventData();
+    }
+    fRunningsum->AccumulateRunningSum(*this);
+  }
+}
+
 void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value)
 {
-  if (value.fErrorFlag==0){
-    for (size_t i = 0; i < fOutputVar.size(); i++){
-      this->fOutputVar[i]->AccumulateRunningSum(value.fOutputVar[i]);
-    }
+  for (size_t i = 0; i < fOutputVar.size(); i++){
+    this->fOutputVar[i]->AccumulateRunningSum(value.fOutputVar[i]);
   }
 }
 
 
 void VQwDataHandler::CalculateRunningAverage()
 {
-  for(size_t i = 0; i < fOutputVar.size(); i++) {
-    // calling CalculateRunningAverage in scope of VQwHardwareChannel
-    fOutputVar[i]->CalculateRunningAverage();
+  if (fKeepRunningSum && (fRunningsum != NULL)){
+    for(size_t i = 0; i < fRunningsum->fOutputVar.size(); i++) {
+      // calling CalculateRunningAverage in scope of VQwHardwareChannel
+      fRunningsum->fOutputVar[i]->CalculateRunningAverage();
+    }
   }
-  
   return;
+}
+
+void VQwDataHandler::PrintRunningAverage()
+{
+  if (fKeepRunningSum && (fRunningsum != NULL)){
+    fRunningsum->PrintValue();
+  }
 }
 
 
 void VQwDataHandler::PrintValue() const
 {
-  QwMessage<<"=== QwCombiner ==="<<QwLog::endl<<QwLog::endl;
+  QwMessage<<"=== "<< fName << " ==="<<QwLog::endl<<QwLog::endl;
   for(size_t i = 0; i < fOutputVar.size(); i++) {
     fOutputVar[i]->PrintValue();
   }
+}
+
+
+void VQwDataHandler::ClearEventData()
+{
+  for(size_t i = 0; i < fOutputVar.size(); i++) {
+    fOutputVar[i]->ClearEventData();
+  }
+}
+
+void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
+{
+  //  Only do something, if we have the running sum variables
+  if (!fKeepRunningSum || (fRunningsum == NULL)) return;
+
+     Bool_t local_print_flag = false;
+     Bool_t local_add_element= type.Contains("asy");
+  
+
+    if(local_print_flag){
+          QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
+          QwMessage << "        QwDataHandlerArray::WritePromptSummary()          " << QwLog::endl;
+          QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
+     }
+
+     const VQwHardwareChannel* tmp_channel = 0;
+     TString  element_name        = "";
+     Double_t element_value       = 0.0;
+     Double_t element_value_err   = 0.0;
+     Double_t element_value_width = 0.0;
+
+     PromptSummaryElement *local_ps_element = NULL;
+     Bool_t local_add_these_elements= false;
+
+  for (size_t i = 0; i < fOutputVar.size();  i++) 
+    {
+      element_name        = fOutputVar[i]->GetElementName(); 
+      tmp_channel=fRunningsum->fOutputVar[i];
+      element_value       = 0.0;
+      element_value_err   = 0.0;
+      element_value_width = 0.0;
+     
+   
+      local_add_these_elements=element_name.Contains("dd")||element_name.Contains("da"); // Need to change this to add other detectorss in summary
+
+      if(local_add_these_elements && local_add_element){
+        ps->AddElement(new PromptSummaryElement(element_name)); 
+      }
+
+      local_ps_element=ps->GetElementByName(element_name);
+       
+      if(local_ps_element) {
+        element_value       = tmp_channel->GetValue();
+        element_value_err   = tmp_channel->GetValueError();
+        element_value_width = tmp_channel->GetValueWidth();
+        
+        local_ps_element->Set(type, element_value, element_value_err, element_value_width);
+      }
+      
+      if( local_print_flag && local_ps_element) {
+        printf("Type %12s, Element %32s, value %12.4e error %8.4e  width %12.4e\n", type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
+      }
+    }
+
 }
 
 
