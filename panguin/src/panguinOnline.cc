@@ -316,6 +316,10 @@ void OnlineGUI::DoDraw()
     fCanvas->cd(i+1);
     if (drawcommand[0] == "macro") {
       MacroDraw(drawcommand);
+    } else if (drawcommand[0] == "loadmacro") {
+      LoadDraw(drawcommand);
+    } else if (drawcommand[0] == "loadlib") {
+      LoadLib(drawcommand);
     } else if (IsHistogram(drawcommand[0])) {
       HistDraw(drawcommand);
     } else {
@@ -594,6 +598,37 @@ void OnlineGUI::MacroDraw(vector <TString> command) {
   if(doGolden) fRootFile->cd();
   gROOT->Macro(command[1]);
   
+
+}
+
+void OnlineGUI::LoadDraw(vector <TString> command) {
+  // Called by DoDraw(), this will load a shared object library 
+  // and then make a call to the defined macro, and
+  // plot it in it's own pad.  One plot per macro, please.
+
+  if(command[1].IsNull()) {
+    cout << "load command doesn't contain a command to execute" << endl;
+    return;
+  }
+
+  if(doGolden) fRootFile->cd();
+  gSystem->Load(command[1]);
+  gROOT->Macro(command[2]);
+  
+
+}
+
+void OnlineGUI::LoadLib(vector <TString> command) {
+  // Called by DoDraw(), this will load a shared object library
+
+  if(command[1].IsNull()) {
+    cout << "load command doesn't contain a shared object library path" << endl;
+    return;
+  }
+
+  if(doGolden) fRootFile->cd();
+  gSystem->Load(command[1]);
+
 
 }
 

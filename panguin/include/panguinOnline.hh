@@ -84,6 +84,8 @@ public:
   void TreeDraw(std::vector <TString>); 
   void HistDraw(std::vector <TString>);
   void MacroDraw(std::vector <TString>);
+  void LoadDraw(std::vector <TString>);
+  void LoadLib(std::vector <TString>);
   void DoDrawClear();
   void TimerUpdate();
   void BadDraw(TString);
