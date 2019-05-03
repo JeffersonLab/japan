@@ -145,7 +145,7 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1,
         filename     = filenamebase;
         if (debug>1) Printf("Trying file name: %s",(const char*)filenamebase);
         if ( !gSystem->AccessPathName(filename.Data()) ) {
-          if (debug>1) Printf("Found file name: %s",(const char*)filenamebase);
+          if (debug>-1) Printf("Found file name: %s",(const char*)filenamebase);
           foundFile = true;
           j=6; // Exit loop
         }
