@@ -12,7 +12,7 @@ using namespace std;
 void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInput.txt", char delim = ' '){
   Double_t speed = 0.66;
   Double_t nonLinearFit = 0.0; // 1.0 = nonLinear fit with fit parameter uncertaintites included in weight
-  Int_t passLimit = 1;
+  Int_t passLimitValue = 1;
   Double_t fitCriteria = 0.01;
   Double_t parAvg = 10.0;
   Double_t parameterLimit = 0.000001;
@@ -22,12 +22,14 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   nRuns     = getNruns_h(nRuns);
   vector<vector<string>> textFile = textFileParse_h(regInput,delim);
   TTree * oldTree = getTree_h(tree, runNumber, nRuns, "NULL");
-  TTreeReader oldTreeReader(oldTree);
-  TTree * newTree = new TTree("reg"+tree,"Regressed "+tree+" tree");
   if (oldTree==0){
     Printf("Root file does not exist");
     return;
   }
+  TTreeReader oldTreeReader(oldTree);
+  TTree * newTree = new TTree("reg"+tree,"Regressed "+tree+" tree");
+  TFile *outFile = new TFile(Form("outputReg_%d.root",runNumber),"RECREATE");
+  outFile->cd();
 
   Double_t data     = 0.0;
   Int_t    n_data   = 0;
@@ -49,6 +51,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   Double_t newRegressedValuesOkCut = 1.0;
   Bool_t resp  = false;
   Int_t nresp  = 0;
+  Int_t fitN = 0;
   Bool_t manip = false;
   Int_t nmanip = 0;
   if (debug > -1) Printf("Data structures initialized");
@@ -184,26 +187,27 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
     placeholder3.push_back(placeholder2);
   }
 
-  Int_t fitN = 0;
   //Int_t errorFlag = 0;
   Int_t numEntries = oldTree->GetEntries();
+  newTree->SetEntries(numEntries); // Set the total number of entries to match
   Int_t numErrorEntries = 0;
   if (debug > -1) Printf("Looping over %d entries",numEntries);
   if (numEntries>100000) numEntries=100000;
-  Int_t i = 0;
+  Int_t eventN = 0;
   Int_t iterateAgain = 1;
-  while(iterateAgain){
+  Int_t passLimit = passLimitValue;
+  while(iterateAgain || fitN<nresp){
     if (debug > -1) Printf("Looping over %d entries",numEntries);
     //while(iterateAgain!=0)
     //while(oldTreeReader.Next() && oldTreeReader.GetCurrentEntry() > (iterateAgain-1)*numEntries && oldTreeReader.GetCurrentEntry() < iterateAgain*numEntries)
     while(oldTreeReader.Next() && oldTreeReader.GetCurrentEntry()<numEntries){
       //for (int i = 0; i < numEntries; i++)  // Loop over the input file's entries
-      //oldTree->GetEntry(i);
+      //oldTree->GetEntry(eventN);
       if (*oldTreeErrorFlagValue==0){
         newRegressedValuesOkCut = 1.0;
       }
       else {
-        if (debug > 3) Printf("error encountered, skip event %d",i++);
+        if (debug > 3) Printf("error encountered in event %d",eventN);
         newRegressedValuesOkCut = 0.0;
       }
       for (Int_t j = 0 ; j<nmanip ; j++){ // Loop over fit parameters j
@@ -226,24 +230,24 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
           } // end l
         } // end k
         else {
-          if (debug > 3) Printf("Entry %d has an error in input %s",i,(const char*)oldManipulatedDataBranchList[j]);
-          //errorFlag = 1;
+          if (debug > 3) Printf("Entry %d has an error in input %s",eventN,(const char*)oldManipulatedDataBranchList[j]);
           newRegressedValuesOkCut = 0.0;
           continue; // Abort this entry
         }
       } // end j (f)
       if((*oldRespondingErrorsReader[fitN])!=0){ 
-        if (debug > 3) Printf("Entry %d has an error in input %s",i,(const char*)oldRespondingDataBranchList[fitN]);
-        //errorFlag = 1; 
+        if (debug > 3) Printf("Entry %d has an error in input %s",eventN,(const char*)oldRespondingDataBranchList[fitN]);
         newRegressedValuesOkCut = 0.0;
       }
       f.push_back(fi);
       newRegressedValues[fitN] = *oldRespondingValuesReader[fitN] - fi + (parameters[nmanip]*1); // Regressed asymmetry of main detector [fitN]
       if (newRegressedValuesOkCut==0.0){ 
-        //if (errorFlag==1) 
         numErrorEntries++;
-        //errorFlag = 0;
+        //newTree->GetBranch(newRegressedBranchList[fitN])->Fill(); // Empty event here with error flag set to not ok
+        //newTree->GetBranch(okFlagReg)->Fill(); // Empty event here with error flag set to not ok
+        //newTree->SetEntries(numErrorEntries+eventN);
         newTree->Fill(); // Empty event here with error flag set to not ok
+
         newRegressedValuesOkCut = 1.0;
         continue; 
       }
@@ -264,6 +268,9 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
           continue;
         }
       }
+      //newTree->GetBranch(newRegressedBranchList[fitN])->Fill();
+      //newTree->GetBranch(okFlagReg)->Fill();
+      //newTree->SetEntries(numErrorEntries+eventN);
       newTree->Fill();
       s.push_back(si);
       chi2.push_back(chi2i);
@@ -300,7 +307,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
           if (debug > 4) Printf("Beta = %f, Alpha = %f",betai[j],alpha[j][k]);
         }
       }
-      if (debug > 3) Printf("Functional value at event %d = %f, sigma = %f, chi2 = %f",i,fi,si,chi2i);
+      if (debug > 3) Printf("Functional value at event %d = %f, sigma = %f, chi2 = %f",eventN,fi,si,chi2i);
 
       // End storing values
       fill_n(dsi.begin(),nmanip,0.0);
@@ -316,13 +323,14 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       fi=0.0;
       chi2i=0.0;
       si=0.0;
-      si2=nmanip*uncertainty*uncertainty;
+      si2 = 1.0-nonLinearFit + nonLinearFit*uncertainty*uncertainty;// The total sigma value per data entry
       newRegressedValuesOkCut = 1.0; // Reset true value
 
-      //}
-      if (debug > 4) Printf("Done entry %d",i);
-      i++;
+      //{}
+      if (debug > 4) Printf("Done entry %d",eventN);
+      eventN++;
     }
+    eventN=0;
     // invert alpha
     //covariance = inverse_h(alpha,covariance);
     //
@@ -381,7 +389,9 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
           iterateAgain = 1;
           numErrorEntries=0;
           oldTreeReader.Restart();
-          newTree->Reset();
+          //newTree->Reset();
+          newTree->GetBranch(newRegressedBranchList[fitN])->Reset(); 
+          newTree->GetBranch(okFlagReg)->Reset(); 
           newTree->SetEntries(0);
         }
         if (parRms2<parameterLimit && parAvg > 2.0){
@@ -425,40 +435,38 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
         Printf("Beta vector: ");
         displayVector_h(beta);
       }
-      TFile *outFile = new TFile(Form("outputReg_%d.root",runNumber),"RECREATE");
-      outFile->cd();
       // Fill a histogram with yi - fi + last parameter*1 weighted by error on that
       //gROOT->SetBatch(kTRUE);
       //gROOT->SetBatch(kFALSE);
       TCanvas * c1 = new TCanvas();
       c1->SetLogy();
 
-      newTree->Draw(Form("%s",(const char*)newRegressedBranchList[fitN]),"ok_cut");
+      newTree->Draw(Form("%s",(const char*)newRegressedBranchList[fitN]),(const char*)okFlagReg);
       TH1 *h1 = (TH1*)gROOT->FindObject("htemp");
-      h1->Write(Form("%s_histogram",(const char*)newRegressedBranchList[fitN]));
-      c1->SaveAs(Form("reg_%d.pdf",runNumber));
+      h1->Write(Form("reg_%s_histogram",(const char*)newRegressedBranchList[fitN]));
+      c1->SaveAs(Form("reg_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
 
       TCanvas * c1_2 = new TCanvas();
       c1_2->SetLogy();
 
-      newTree->Draw(Form("%s",(const char*)newRegressedBranchList[fitN]),"ok_cut");
+      newTree->Draw(Form("%s",(const char*)newRegressedBranchList[fitN]),(const char*)okFlagReg);
       TH1 *h1_2 = (TH1*)gROOT->FindObject("htemp");
       h1_2->SetName("h1");
       TH1 *h2_3 = (TH1*)rebinTH1_h(h1_2,"clean",1,2,1000); // example use case of rebinTH1_h method
       TH1 *h2_2 = (TH1*)h2_3->Clone(); // example use case of rebinTH1_h method
       h2_3->Delete();
       TString h2_name = h2_2->GetName();
-      newTree->Draw(Form("%s>>%s",(const char*)newRegressedBranchList[fitN],(const char*)h2_name),"ok_cut"); // Manual
-      h2_2->Write(Form("%s_histogram",(const char*)newRegressedBranchList[fitN]));
-      c1_2->SaveAs(Form("reg_rebin_%d.pdf",runNumber));
+      newTree->Draw(Form("%s>>%s",(const char*)newRegressedBranchList[fitN],(const char*)h2_name),(const char*)okFlagReg); // Manual
+      h2_2->Write(Form("reg_rebin_%s_histogram",(const char*)newRegressedBranchList[fitN]));
+      c1_2->SaveAs(Form("reg_rebin_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
 
       TCanvas * c2 = new TCanvas();
       c2->SetLogy();
 
       oldTree->Draw(Form("%s",(const char*)oldRespondingDataBranchList[fitN]),"ErrorFlag==0");
       TH1 *h1old = (TH1*)gROOT->FindObject("htemp");
-      h1old->Write(Form("%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
-      c2->SaveAs(Form("orig_%d.pdf",runNumber));
+      h1old->Write(Form("orig_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
+      c2->SaveAs(Form("orig_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
 
       TCanvas * c2_2 = new TCanvas();
       c2_2->SetLogy();
@@ -471,8 +479,8 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       h2_3old->Delete();
       TString h2old_name = h2_2old->GetName();
       oldTree->Draw(Form("%s>>%s",(const char*)oldRespondingDataBranchList[fitN],(const char*)h2old_name),"ErrorFlag==0"); // Manual
-      h2_2old->Write(Form("%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
-      c2_2->SaveAs(Form("orig_rebin_%d.pdf",runNumber));
+      h2_2old->Write(Form("orig_rebin_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
+      c2_2->SaveAs(Form("orig_rebin_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
 
       if (debug > -1) {
         Printf("Covariance matrix: ");
@@ -486,8 +494,20 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
         Printf("Regressed rebinned old %s average %5.3e +- %5.3e, std dev %5.3e +- %5.3e",(const char*)oldRespondingDataBranchList[fitN],h2_2old->GetMean(),h2_2old->GetMeanError(),h2_2old->GetRMS(),h2_2old->GetRMSError());
         Printf("Number of entries = %d, entries with errors = %d, percent good entries = %f%%",numEntries,numErrorEntries,100.0*(numEntries-numErrorEntries)/numEntries);
       }
-      newTree->Write("reg"+tree);
-      outFile->Close();
+      // Go back to the top and loop over the next responding variable
+      fitN++;
+      passLimit = passLimitValue;
+      iterateAgain    = 1;
+      numErrorEntries = 0;
+      oldTreeReader.Restart();
+      newTree->Write();
+      newTree->Reset();
+      newTree->SetEntries(0);
+      // Close out on final pass
+      if (fitN==nresp){
+        outFile->Close();
+        iterateAgain=0;
+      }
     }
     chi2sum = 0;
 
