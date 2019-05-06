@@ -413,7 +413,7 @@ void  QwBPMStripline<T>::ProcessEvent()
       }
     }
   fEllipticity.Ratio(fEllipticity,fEffectiveCharge);
-  fEllipticity.Scale(0.5*18.81*18.81); // Include 2*k/sigma scale factor here
+  fEllipticity.Scale(0.5*fQwStriplineCalibration*fQwStriplineCalibration); // Include 2*k/sigma scale factor here
 
   /**
      To obtain the beam position in X and Y in the CEBAF coordinates, we use the following equations
@@ -487,14 +487,11 @@ void  QwBPMStripline<T>::ProcessEvent()
     
   }
   // Ellipticity gets corrected by the BPM central axis relative positions
-  //tmp3.AssignScaledValue(fRelPos[kXAxis],1.0);
-  //tmp4.AssignScaledValue(fRelPos[kXAxis],1.0);
   tmp3.Product(fRelPos[kXAxis],fRelPos[kXAxis]);
   tmp4.Product(fRelPos[kYAxis],fRelPos[kYAxis]);
-  //tmp5.AssignScaledValue(tmp3,1.0);
   tmp5.Difference(tmp3,tmp4);
-  tmp5.Scale(-1.0*0.250014);
-  fEllipticity.Sum(fEllipticity,tmp5); // Correction to ellipticity (only 1st correction)
+  tmp5.Scale(-1.0*0.250014); // FIXME Does this correction factor need a BPM specific (i.e. BSEN) scaling factor? - It already includes BSENfactor^2 because it is made of post-BSENfactor scaled X and Y values, so lets assume its ok for now
+  fEllipticity.Sum(fEllipticity,tmp5); // Correction to ellipticity (only 1st order correction)
 
   return;
 }

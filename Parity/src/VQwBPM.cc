@@ -50,7 +50,7 @@ void VQwBPM::GetElectronicFactors(Double_t BSENfactor, Double_t AlphaX, Double_t
   Bool_t ldebug = kFALSE;
 
   fQwStriplineCalibration = BSENfactor*18.81;
-  fQwStriplineCorrection = BSENfactor*0.250014;
+  fQwStriplineCorrection = 0.250014;
 
   fRelativeGains[0]=AlphaX;
   fRelativeGains[1]=AlphaY;
