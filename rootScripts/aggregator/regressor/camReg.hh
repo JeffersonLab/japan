@@ -29,8 +29,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   }
   TTreeReader oldTreeReader(oldTree);
   TTree * newTree = new TTree("reg"+tree,"Regressed "+tree+" tree");
-  //TTree * histoTree = new TTree("histos_reg"+tree,"Histograms from "+tree+" tree");
-  TFile *outFile = new TFile(Form("outputReg_%d.root",runNumber),"RECREATE");
+  TFile * outFile = new TFile(Form("outputReg_%s_%d.root",(const char*)tree,runNumber),"RECREATE");
   TDirectory *folder = outFile->mkdir("histos_"+tree);
   outFile->cd();
   gSystem->Exec("mkdir plots");
@@ -69,6 +68,10 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
     }
     if (textFile[listEntryN][0] == "Speed"){
       speed = stof(textFile[listEntryN][1]);
+      continue;
+    }
+    if (textFile[listEntryN][0] == "Non-Linear-Fit"){
+      nonLinearFit = stof(textFile[listEntryN][1]);
       continue;
     }
     if (textFile[listEntryN][0] == "Fit-Pass-Limit"){
@@ -471,8 +474,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       newTree->Draw(Form("%s",(const char*)newRegressedBranchList[fitN]),(const char*)okFlagReg);
       TH1 *h1 = (TH1*)gROOT->FindObject("htemp");
       h1->Write(Form("reg_%s_histogram",(const char*)newRegressedBranchList[fitN]));
-      //histoTree->Branch(Form("reg_%s_histogram",(const char*)newRegressedBranchList[fitN]),"TH1F",&h1);
-      c1->SaveAs(Form("plots/reg_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
+      c1->SaveAs(Form("plots/reg_%s_%s_%d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber));
 
       TCanvas * c1_2 = new TCanvas();
       c1_2->SetLogy();
@@ -486,8 +488,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       TString h2_name = h2_2->GetName();
       newTree->Draw(Form("%s>>%s",(const char*)newRegressedBranchList[fitN],(const char*)h2_name),(const char*)okFlagReg); // Manual
       h2_2->Write(Form("reg_rebin_%s_histogram",(const char*)newRegressedBranchList[fitN]));
-      //histoTree->Branch(Form("reg_rebin_%s_histogram",(const char*)newRegressedBranchList[fitN]),"TH1F",&h2_2);
-      c1_2->SaveAs(Form("plots/reg_rebin_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
+      c1_2->SaveAs(Form("plots/reg_rebin_%s_%s_%d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber));
 
       TCanvas * c2 = new TCanvas();
       c2->SetLogy();
@@ -495,8 +496,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       oldTree->Draw(Form("%s",(const char*)oldRespondingDataBranchList[fitN]),"ErrorFlag==0");
       TH1 *h1old = (TH1*)gROOT->FindObject("htemp");
       h1old->Write(Form("orig_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
-      //histoTree->Branch(Form("orig_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]),"TH1F",&h1old);
-      c2->SaveAs(Form("plots/orig_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
+      c2->SaveAs(Form("plots/orig_%s_%s_%d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber));
 
       TCanvas * c2_2 = new TCanvas();
       c2_2->SetLogy();
@@ -510,12 +510,8 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       TString h2old_name = h2_2old->GetName();
       oldTree->Draw(Form("%s>>%s",(const char*)oldRespondingDataBranchList[fitN],(const char*)h2old_name),"ErrorFlag==0"); // Manual
       h2_2old->Write(Form("orig_rebin_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
-      //histoTree->Branch(Form("orig_rebin_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]),"TH1F",&h2_2old);
-      c2_2->SaveAs(Form("plots/orig_rebin_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
+      c2_2->SaveAs(Form("plots/orig_rebin_%s_%s_%d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber));
 
-      //histoTree->Fill();
-      //histoTree->Print();
-      
       outFile->cd();
 
       if (debug > -1) {
@@ -560,7 +556,6 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
 
   }
   newTree->Write();
-  //histoTree->Write();
   outFile->Close();
   //writeFile_h("test_n_data",n_data,runNumber,nRuns);
 }
