@@ -10,8 +10,8 @@ sample_size=4096
 
 
 !ADC0
-    VQWK, 0, 0,  bpmstripline,  BPM1H04xp  !  is this BPM1H04 or is it BPM1H01?
-    VQWK, 0, 1,  bpmstripline,  BPM1H04xm  !  is this BPM1H04 or is it BPM1H01?
+    VQWK, 0, 0,  bcm,  QWK_0_0
+    VQWK, 0, 1,  bcm,  QWK_0_1
     VQWK, 0, 2,  bcm,  BCM_AN_US
     VQWK, 0, 3,  bcm,  BCM_AN_DS
     VQWK, 0, 4,  bcm,  BCM_AN_DS3
@@ -46,23 +46,23 @@ sample_size=4096
     VQWK, 3, 3,  bcm,  CAV4CX
     VQWK, 3, 4,  bcm,  CAV4CY
     VQWK, 3, 5,  bcm,  CAV4CQ
-    VQWK, 3, 6,  bpmstripline,  BPM1H04yp 
+    VQWK, 3, 6,  bcm,  QWK_3_6 
     VQWK, 3, 7,  bcm,  UNSER
 
 !ADC4
     VQWK, 4, 0,  bcm,  CAV4DX
     VQWK, 4, 1,  bcm,  CAV4DY
     VQWK, 4, 2,  bcm,  CAV4DQ
-    VQWK, 4, 3,  bpmstripline, BPM1H04ym ! Spread out, should move later
-    VQWK, 4, 4,  bpmstripline,  BPM8xm
-    VQWK, 4, 5,  bpmstripline,  BPM8xp
-    VQWK, 4, 6,  bpmstripline,  BPM8yp
-    VQWK, 4, 7,  bpmstripline,  BPM8ym
+    VQWK, 4, 3,  bcm,  QWK_4_3
+    VQWK, 4, 4,  bpmstripline,  BPM18xm
+    VQWK, 4, 5,  bpmstripline,  BPM18xp
+    VQWK, 4, 6,  bpmstripline,  BPM18yp
+    VQWK, 4, 7,  bpmstripline,  BPM18ym
 
 !ADC5
-    VQWK, 5, 0,  bcm,  bpm_trigger 
-    VQWK, 5, 1,  bcm,  beam_sync_60Hz
-    VQWK, 5, 2,  bcm,  ch_battery_1
+    VQWK, 5, 0,  bcm,  QWK_5_0 
+    VQWK, 5, 1,  bcm,  QWK_5_1 
+    VQWK, 5, 2,  bcm,  QWK_5_2 
     VQWK, 5, 3,  bcm,  QWK_5_3 
     VQWK, 5, 4,  bcm,  QWK_5_4 
     VQWK, 5, 5,  bcm,  QWK_5_5 

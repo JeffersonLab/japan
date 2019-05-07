@@ -4,32 +4,31 @@ Bank=0x02
 vqwk_buffer_offset=1
 
 !same sample size for ADCs in a given bank
-sample_size=4096
+sample_size=1984
 !
 !
 ! module.type, module.num  chan.num, det.type, det.name
 
 
 !ADC0
-    VQWK, 0, 0,  bpmstripline,  bpm1I02xp
-    VQWK, 0, 1,  bpmstripline,  bpm1I02xm
-    VQWK, 0, 2,  bpmstripline,  bpm1I02yp
-    VQWK, 0, 3,  bpmstripline,  bpm1I02ym
-    VQWK, 0, 7, bcm, inj_battery_1 ! temporary battery channel
-!    VQWK, 0, 4,  bpmstripline,  bpm1I04xp
-!    VQWK, 0, 5,  bpmstripline,  bpm1I04xm
-!    VQWK, 0, 6,  bpmstripline,  bpm1I04yp
-!    VQWK, 0, 7,  bpmstripline,  bpm1I04ym
+    VQWK, 0, 0,  bpmstripline,  bpm0I01Axp
+    VQWK, 0, 1,  bpmstripline,  bpm0I01Axm
+    VQWK, 0, 2,  bpmstripline,  bpm0I01Ayp
+    VQWK, 0, 3,  bpmstripline,  bpm0I01Aym
+    VQWK, 0, 4,  bpmstripline,  bpm1I04xp
+    VQWK, 0, 5,  bpmstripline,  bpm1I04xm
+    VQWK, 0, 6,  bpmstripline,  bpm1I04yp
+    VQWK, 0, 7,  bpmstripline,  bpm1I04ym
 
 !ADC1
-    VQWK, 1, 0,  bpmstripline,  bpm0I01xp
-    VQWK, 1, 1,  bpmstripline,  bpm0I01xm
-    VQWK, 1, 2,  bpmstripline,  bpm0I01yp
-    VQWK, 1, 3,  bpmstripline,  bpm0I01ym
-    VQWK, 1, 4,  bpmstripline,  bpm0I01Axp
-    VQWK, 1, 5,  bpmstripline,  bpm0I01Axm
-    VQWK, 1, 6,  bpmstripline,  bpm0I01Ayp
-    VQWK, 1, 7,  bpmstripline,  bpm0I01Aym
+    VQWK, 1, 0,  bpmstripline,  bpm1I02xp
+    VQWK, 1, 1,  bpmstripline,  bpm1I02xm
+    VQWK, 1, 2,  bpmstripline,  bpm1I02yp
+    VQWK, 1, 3,  bpmstripline,  bpm1I02ym
+    VQWK, 1, 4,  bpmstripline,  bpm0I01xp
+    VQWK, 1, 5,  bpmstripline,  bpm0I01xm
+    VQWK, 1, 6,  bpmstripline,  bpm0I01yp
+    VQWK, 1, 7,  bpmstripline,  bpm0I01ym
 
 
 !ADC2
@@ -94,14 +93,14 @@ sample_size=4096
     VQWK, 7, 7,  bpmstripline,  bpm0L07ym
 
 !ADC8
-    VQWK, 8, 0,  bpmstripline, bpm0L08xp
-    VQWK, 8, 1,  bpmstripline, bpm0L08xm
-    VQWK, 8, 2,  bpmstripline, bpm0L08yp
-    VQWK, 8, 3,  bpmstripline, bpm0L08ym
-    VQWK, 8, 4,  bpmstripline, bpm0L09xp
-    VQWK, 8, 5,  bpmstripline, bpm0L09xm
-    VQWK, 8, 6,  bpmstripline, bpm0L09yp
-    VQWK, 8, 7,  bpmstripline, bpm0L09ym
+    VQWK, 8, 0,  bpmstripline,  bpm0R02xp
+    VQWK, 8, 1,  bpmstripline,  bpm0R02xm
+    VQWK, 8, 2,  bpmstripline,  bpm0R02yp
+    VQWK, 8, 3,  bpmstripline,  bpm0R02ym
+    VQWK, 8, 4,  bpmstripline,  bpm0R05xp
+    VQWK, 8, 5,  bpmstripline,  bpm0R05xm
+    VQWK, 8, 6,  bpmstripline,  bpm0R05yp
+    VQWK, 8, 7,  bpmstripline,  bpm0R05ym
 
 !ADC9
     VQWK, 9, 0,  bpmstripline,  bpm0L10xp
@@ -114,14 +113,14 @@ sample_size=4096
     VQWK, 9, 7,  bpmstripline,  bpm2I02ym
 
 !ADC10
-    VQWK, 10, 0,  bpmstripline,  bpm0R05xp
-    VQWK, 10, 1,  bpmstripline,  bpm0R05xm
-    VQWK, 10, 2,  bpmstripline,  bpm0R05yp
-    VQWK, 10, 3,  bpmstripline,  bpm0R05ym
-    VQWK, 10, 4,  bpmstripline,  bpm0R03xp
-    VQWK, 10, 5,  bpmstripline,  bpm0R03xm
-    VQWK, 10, 6,  bpmstripline,  bpm0R03yp
-    VQWK, 10, 7,  bpmstripline,  bpm0R03ym
+    VQWK, 10, 0,  bpmstripline,  bpmUnknown1xp
+    VQWK, 10, 1,  bpmstripline,  bpmUnknown1xm
+    VQWK, 10, 2,  bpmstripline,  bpmUnknown1yp
+    VQWK, 10, 3,  bpmstripline,  bpmUnknown1ym
+    VQWK, 10, 4,  bpmstripline,  bpmUnknown2xp
+    VQWK, 10, 5,  bpmstripline,  bpmUnknown2xm
+    VQWK, 10, 6,  bpmstripline,  bpmUnknown2yp
+    VQWK, 10, 7,  bpmstripline,  bpmUnknown2ym
 
 !ADC11
     VQWK, 11, 0,  bpmstripline,  bpm2I01xp
@@ -129,26 +128,24 @@ sample_size=4096
     VQWK, 11, 2,  bpmstripline,  bpm2I01yp
     VQWK, 11, 3,  bpmstripline,  bpm2I01ym
     VQWK, 11, 4,  bcm,  BCM0L02
-    VQWK, 11, 5,  bcm,  Battery6
-    VQWK, 11, 6,  bcm,  inj_battery_2 ! Permanent battery 
+    VQWK, 11, 5,  bcm,  Batery6
+    VQWK, 11, 6,  bcm,  Batery7
     VQWK, 11, 7,   bcm,  PhaseMonitor
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Bank=0x01
 scaler_buffer_offset=6
-
-  SCALER,  0,  0, clock, inj_tstable
-  SCALER,  0,  1, bpmstripline, bpm0R02xp
-  SCALER,  0,  2, bpmstripline, bpm0R02xm
-  SCALER,  0,  3, bpmstripline, bpm0R02yp
-  SCALER,  0,  4, bpmstripline, bpm0R02ym
-  SCALER,  0,  5, bpmstripline, bpm0R04xp
-  SCALER,  0,  6, bpmstripline, bpm0R04xm
-  SCALER,  0,  7, bpmstripline, bpm0R04yp
-  SCALER,  0,  8, bpmstripline, bpm0R04ym
-
 normclock=clk4MHz_1
 
+  SCALER,  0,  0, clock, sca0_0
+  SCALER,  0,  1, clock, sca0_1
+  SCALER,  0,  2, clock, sca0_2
+  SCALER,  0,  3, clock, sca0_3
+  SCALER,  0,  4, clock, sca0_4
+  SCALER,  0,  5, clock, sca0_5
+  SCALER,  0,  6, clock, sca0_6
+  SCALER,  0,  7, clock, sca0_7
+  SCALER,  0,  8, clock, sca0_8
   SCALER,  0,  9, clock, sca0_9
   SCALER,  0, 10, clock, sca0_10
   SCALER,  0, 11, clock, sca0_11
@@ -178,5 +175,3 @@ normclock=clk4MHz_1
 [PUBLISH]
 # # q_targ, bcm, bcm0l02, c
 # q_targ, bpmstripline, bpm0i02, ef ###  Effective charge of BPM0i02
-
- 
