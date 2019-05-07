@@ -15,7 +15,8 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   Int_t passLimitValue = 1;
   Double_t fitCriteria = 0.01;
   Double_t parAvg = 10.0;
-  Double_t parameterLimit = 0.000001;
+  Double_t parameterLimitRMS = 0.000001;
+  Double_t parameterLimitValue = 2.0;
   Double_t parRms2 = 10.0;
 
   runNumber = getRunNumber_h(runNumber);
@@ -28,8 +29,11 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   }
   TTreeReader oldTreeReader(oldTree);
   TTree * newTree = new TTree("reg"+tree,"Regressed "+tree+" tree");
+  //TTree * histoTree = new TTree("histos_reg"+tree,"Histograms from "+tree+" tree");
   TFile *outFile = new TFile(Form("outputReg_%d.root",runNumber),"RECREATE");
+  TDirectory *folder = outFile->mkdir("histos_"+tree);
   outFile->cd();
+  gSystem->Exec("mkdir plots");
 
   Double_t data     = 0.0;
   Int_t    n_data   = 0;
@@ -61,6 +65,26 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       errorBranchName = textFile[listEntryN][1];
       resp = false;
       manip = false;
+      continue;
+    }
+    if (textFile[listEntryN][0] == "Speed"){
+      speed = stof(textFile[listEntryN][1]);
+      continue;
+    }
+    if (textFile[listEntryN][0] == "Fit-Pass-Limit"){
+      passLimitValue = (Int_t)stof(textFile[listEntryN][1]);
+      continue;
+    }
+    if (textFile[listEntryN][0] == "Fit-Stability-Criteria"){
+      fitCriteria = stof(textFile[listEntryN][1]);
+      continue;
+    }
+    if (textFile[listEntryN][0] == "Fit-Runaway-Scale-RMS-Criteria"){
+      parameterLimitRMS = stof(textFile[listEntryN][1]);
+      continue;
+    }
+    if (textFile[listEntryN][0] == "Fit-Runaway-Scale-Value-Criteria"){
+      parameterLimitValue = stof(textFile[listEntryN][1]);
       continue;
     }
     if (textFile[listEntryN][0] == "Responding"){
@@ -243,10 +267,10 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       newRegressedValues[fitN] = *oldRespondingValuesReader[fitN] - fi + (parameters[nmanip]*1); // Regressed asymmetry of main detector [fitN]
       if (newRegressedValuesOkCut==0.0){ 
         numErrorEntries++;
-        //newTree->GetBranch(newRegressedBranchList[fitN])->Fill(); // Empty event here with error flag set to not ok
-        //newTree->GetBranch(okFlagReg)->Fill(); // Empty event here with error flag set to not ok
-        //newTree->SetEntries(numErrorEntries+eventN);
-        newTree->Fill(); // Empty event here with error flag set to not ok
+        newTree->GetBranch(newRegressedBranchList[fitN])->Fill(); // Empty event here with error flag set to not ok
+        newTree->GetBranch(okFlagReg)->Fill(); // Empty event here with error flag set to not ok
+        newTree->SetEntries(numErrorEntries+eventN);
+        //newTree->Fill(); // Empty event here with error flag set to not ok
 
         newRegressedValuesOkCut = 1.0;
         continue; 
@@ -268,10 +292,10 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
           continue;
         }
       }
-      //newTree->GetBranch(newRegressedBranchList[fitN])->Fill();
-      //newTree->GetBranch(okFlagReg)->Fill();
-      //newTree->SetEntries(numErrorEntries+eventN);
-      newTree->Fill();
+      newTree->GetBranch(newRegressedBranchList[fitN])->Fill();
+      newTree->GetBranch(okFlagReg)->Fill();
+      newTree->SetEntries(numErrorEntries+eventN);
+      //newTree->Fill();
       s.push_back(si);
       chi2.push_back(chi2i);
       chi2sum+=chi2i;
@@ -394,7 +418,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
           newTree->GetBranch(okFlagReg)->Reset(); 
           newTree->SetEntries(0);
         }
-        if (parRms2<parameterLimit && parAvg > 2.0){
+        if (parRms2<parameterLimitRMS && parAvg > parameterLimitValue){
           parameters[j]=(parameters[j]+speed*delta_parameters[j])/(parAvg*parAvg);
           Printf("\nNormalized \n");
         }
@@ -438,13 +462,17 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       // Fill a histogram with yi - fi + last parameter*1 weighted by error on that
       //gROOT->SetBatch(kTRUE);
       //gROOT->SetBatch(kFALSE);
+
+      if (folder != NULL) folder->cd();
+      
       TCanvas * c1 = new TCanvas();
       c1->SetLogy();
 
       newTree->Draw(Form("%s",(const char*)newRegressedBranchList[fitN]),(const char*)okFlagReg);
       TH1 *h1 = (TH1*)gROOT->FindObject("htemp");
       h1->Write(Form("reg_%s_histogram",(const char*)newRegressedBranchList[fitN]));
-      c1->SaveAs(Form("reg_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
+      //histoTree->Branch(Form("reg_%s_histogram",(const char*)newRegressedBranchList[fitN]),"TH1F",&h1);
+      c1->SaveAs(Form("plots/reg_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
 
       TCanvas * c1_2 = new TCanvas();
       c1_2->SetLogy();
@@ -458,7 +486,8 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       TString h2_name = h2_2->GetName();
       newTree->Draw(Form("%s>>%s",(const char*)newRegressedBranchList[fitN],(const char*)h2_name),(const char*)okFlagReg); // Manual
       h2_2->Write(Form("reg_rebin_%s_histogram",(const char*)newRegressedBranchList[fitN]));
-      c1_2->SaveAs(Form("reg_rebin_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
+      //histoTree->Branch(Form("reg_rebin_%s_histogram",(const char*)newRegressedBranchList[fitN]),"TH1F",&h2_2);
+      c1_2->SaveAs(Form("plots/reg_rebin_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
 
       TCanvas * c2 = new TCanvas();
       c2->SetLogy();
@@ -466,7 +495,8 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       oldTree->Draw(Form("%s",(const char*)oldRespondingDataBranchList[fitN]),"ErrorFlag==0");
       TH1 *h1old = (TH1*)gROOT->FindObject("htemp");
       h1old->Write(Form("orig_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
-      c2->SaveAs(Form("orig_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
+      //histoTree->Branch(Form("orig_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]),"TH1F",&h1old);
+      c2->SaveAs(Form("plots/orig_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
 
       TCanvas * c2_2 = new TCanvas();
       c2_2->SetLogy();
@@ -480,7 +510,13 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       TString h2old_name = h2_2old->GetName();
       oldTree->Draw(Form("%s>>%s",(const char*)oldRespondingDataBranchList[fitN],(const char*)h2old_name),"ErrorFlag==0"); // Manual
       h2_2old->Write(Form("orig_rebin_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
-      c2_2->SaveAs(Form("orig_rebin_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
+      //histoTree->Branch(Form("orig_rebin_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]),"TH1F",&h2_2old);
+      c2_2->SaveAs(Form("plots/orig_rebin_%s_%d.pdf",(const char*)oldRespondingDataBranchList[fitN],runNumber));
+
+      //histoTree->Fill();
+      //histoTree->Print();
+      
+      outFile->cd();
 
       if (debug > -1) {
         Printf("Covariance matrix: ");
@@ -500,13 +536,16 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       iterateAgain    = 1;
       numErrorEntries = 0;
       oldTreeReader.Restart();
-      newTree->Write();
-      newTree->Reset();
-      newTree->SetEntries(0);
+      //newTree->Write();
+      //newTree->Reset();
+      //newTree->SetEntries(0);
       // Close out on final pass
       if (fitN==nresp){
-        outFile->Close();
+        //outFile->Close();
         iterateAgain=0;
+      }
+      else {
+        newTree->SetEntries(0);
       }
     }
     chi2sum = 0;
@@ -520,6 +559,9 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
     fill_n(alpha.begin(),nmanip,placeholder);
 
   }
+  newTree->Write();
+  //histoTree->Write();
+  outFile->Close();
   //writeFile_h("test_n_data",n_data,runNumber,nRuns);
 }
 #endif // __CAMREG__
