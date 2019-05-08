@@ -262,9 +262,27 @@ void QwOptions::ParseCommandLine()
  */
 void QwOptions::ParseEnvironment()
 {
+  class name_mapper {
+    public:
+      name_mapper(const std::string& prefix, const std::string& ignore)
+      : prefix(prefix),ignore(ignore) { }
+      std::string operator()(const std::string& s) {
+        string lc;
+        if (s.find(prefix) == 0) {
+          for(string::size_type n = prefix.size(); n < s.size(); ++n) {
+            lc += static_cast<char>(tolower(s[n]));
+          }
+        }
+        if (ignore.find(lc) == std::string::npos) return lc;
+        else return "";
+      }
+  private:
+    std::string prefix, ignore;
+  } qw_name_mapper("QW_", "bin fieldmap lib lookup prminput rootfiles searchtree tmp");
+
   try {
     po::options_description* environment_options = CombineOptions();
-    po::store(po::parse_environment(*environment_options, "Qw"), fVariablesMap);
+    po::store(po::parse_environment(*environment_options, qw_name_mapper), fVariablesMap);
     delete environment_options;
   } catch (std::exception const& e) {
     QwWarning << e.what() << " while parsing environment variables" << QwLog::endl;
