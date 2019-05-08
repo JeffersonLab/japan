@@ -221,6 +221,11 @@ void QwIntegrationPMT::SetSingleEventCuts(UInt_t errorflag, Double_t LL=0, Doubl
 void QwIntegrationPMT::SetDefaultSampleSize(Int_t sample_size){
  fTriumf_ADC.SetDefaultSampleSize((size_t)sample_size);
 }
+
+/********************************************************/
+void QwIntegrationPMT::SetSaturationLimit(Double_t saturation_volt){
+  fTriumf_ADC.SetVQWKSaturationLimt(saturation_volt);
+}
 //*/
 
 /********************************************************/

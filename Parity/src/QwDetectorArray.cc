@@ -174,8 +174,8 @@ Int_t QwDetectorArray::LoadChannelMap(TString mapfile)
   Int_t wordsofar=0;
   Int_t currentsubbankindex=-1;
   Int_t sample_size=0;
-
-
+  Double_t abs_saturation_limit = 8.5; // default saturation limit(volt)
+  Bool_t bAssignedLimit = kFALSE;
 
   // Open the file
   QwParameterFile mapstr(mapfile.Data());
@@ -191,6 +191,10 @@ Int_t QwDetectorArray::LoadChannelMap(TString mapfile)
   while (mapstr.ReadNextLine())
     {
       RegisterRocBankMarker(mapstr);
+      if (mapstr.PopValue("abs_saturation_limit",value)) {
+	abs_saturation_limit=value;
+	bAssignedLimit = kTRUE;
+      }
       if (mapstr.PopValue("sample_size",value)) {
 	sample_size=value;
       }
@@ -317,6 +321,8 @@ Int_t QwDetectorArray::LoadChannelMap(TString mapfile)
 		  	localIntegrationPMT.SetNormalizability(kTRUE);
 		  fIntegrationPMT.push_back(localIntegrationPMT);
                   fIntegrationPMT[fIntegrationPMT.size()-1].SetDefaultSampleSize(sample_size);
+		  if(bAssignedLimit)
+		    fIntegrationPMT[fIntegrationPMT.size()-1].SetSaturationLimit(abs_saturation_limit);
 		  localMainDetID.fIndex=fIntegrationPMT.size()-1;
                 }
 
