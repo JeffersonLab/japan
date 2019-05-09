@@ -21,9 +21,6 @@
 #include <fstream>
 #include <cstdlib>
 
-// Globally defined instance of the options object
-QwOptions gQwOptions;
-
 // Qweak headers
 #include "QwLog.h"
 #include "QwParameterFile.h"
@@ -42,8 +39,7 @@ QwOptions gQwOptions;
 extern const char* const gGitInfo;
 
 // Initialize the static command line arguments to zero
-int QwOptions::fArgc = 0;
-char** QwOptions::fArgv = 0;
+QwOptions* QwOptions::fInstance = 0;
 
 /**
  * The default constructor sets up the options description object with some

@@ -24,6 +24,8 @@ namespace po = boost::program_options;
 // Qweak headers
 #include "QwLog.h"
 
+#define gQwOptions QwOptions::Instance()
+
 // Helper functions for safe environment variable parsing
 inline const char* getenv_safe (const char* name) {
  if (getenv(name))
@@ -132,24 +134,22 @@ inline const TString getenv_safe_TString (const char* name) {
  */
 class QwOptions {
 
-  public:
+  private:
+    static QwOptions* fInstance;
 
-    /// \brief Default constructor
+    /// \brief Private default constructor
     QwOptions();
+    /// \brief Private copy constructor, not implemented
+    QwOptions(QwOptions const&);
+    /// \brief Private assignment operator, not implemented
+    QwOptions& operator=(QwOptions const&);
 
-    /// \brief Constructor with command line arguments
-    QwOptions(int argc, char* argv[]) {
-      SetCommandLine(argc, argv);
-    };
-    /// \brief Constructor with configuration file
-    QwOptions(const std::string& configfile) {
-      SetConfigFile(configfile);
-    };
-    /// \brief Constructor with command line arguments and configuration file
-    QwOptions(int argc, char* argv[], const std::string& configfile) {
-      SetCommandLine(argc, argv);
-      SetConfigFile(configfile);
-    };
+  public:
+    /// \brief Get instance
+    static QwOptions& Instance() {
+      if (! fInstance) fInstance = new QwOptions();
+      return *fInstance;
+    }
 
     /// \brief Default destructor
     virtual ~QwOptions();
@@ -296,8 +296,8 @@ class QwOptions {
      * to store a copy of them for later parsing.  The copy is static to have
      * them available in local copies of the options object.
      */
-    static int fArgc;
-    static char** fArgv;
+    int fArgc;
+    char** fArgv;
 
     // Vector with option blocks
     // Notes:
@@ -311,7 +311,5 @@ class QwOptions {
 
     bool fParsed;
 };
-
-extern QwOptions gQwOptions;
 
 #endif // QWOPTIONS_H
