@@ -296,6 +296,10 @@ class QwRootFile {
     static void DefineOptions(QwOptions &options);
     /// \brief Process the configuration options
     void ProcessOptions(QwOptions &options);
+    /// \brief Set default ROOT files dir
+    static void SetDefaultRootFileDir(const std::string& dir) {
+      fDefaultRootFileDir = dir;
+    }
     /// \brief Set default ROOT file stem
     static void SetDefaultRootFileStem(const std::string& stem) {
       fDefaultRootFileStem = stem;
@@ -472,6 +476,11 @@ class QwRootFile {
 
     /// ROOT file
     TFile* fRootFile;
+
+    /// ROOT files dir
+    TString fRootFileDir;
+    /// Default ROOT files dir
+    static std::string fDefaultRootFileDir;
 
     /// ROOT file stem
     TString fRootFileStem;
