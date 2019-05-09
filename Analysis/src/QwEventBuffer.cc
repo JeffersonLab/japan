@@ -41,7 +41,8 @@ const UInt_t QwEventBuffer::kNullDataWord = 0x4e554c4c;
 
 /// Default constructor
 QwEventBuffer::QwEventBuffer()
-  :    fRunListFile(NULL),
+  :    fFile(NULL),
+       fRunListFile(NULL),
        fDataFileStem(fDefaultDataFileStem),
        fDataFileExtension(fDefaultDataFileExtension),
        fDataDirectory(fDefaultDataDirectory),
@@ -79,6 +80,9 @@ void QwEventBuffer::DefineOptions(QwOptions &options)
   options.AddDefaultOptions()
     ("online.RunNumber", po::value<int>()->default_bool_value(0),
      "Effective run number to be used by online system to find the parameter files");
+  options.AddDefaultOptions()
+    ("file,f", po::value<string>()->default_value(""),
+     "file to analyze");
   options.AddDefaultOptions()
     ("run,r", po::value<string>()->default_value("0:0"),
      "run range in format #[:#]");
@@ -172,6 +176,7 @@ void QwEventBuffer::ProcessOptions(QwOptions &options)
       fDataDirectory.Append("/");
   }
 
+  fFile = options.GetValue<string>("file");
   fRunRange = options.GetIntValuePair("run");
   fEventRange = options.GetIntValuePair("event");
   fSegmentRange = options.GetIntValuePair("segment");
