@@ -61,7 +61,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
     void ClearEventData();
 
-    void AccumulateRunningSum();
+    virtual void AccumulateRunningSum();
     void AccumulateRunningSum(VQwDataHandler &value);
     void CalculateRunningAverage();
     void PrintRunningAverage();
