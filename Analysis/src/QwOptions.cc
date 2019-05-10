@@ -274,7 +274,7 @@ void QwOptions::ParseEnvironment()
       }
   private:
     std::string prefix, ignore;
-  } qw_name_mapper("QW_", "bin fieldmap lib lookup prminput rootfiles searchtree tmp");
+  } qw_name_mapper("QW_", "bin fieldmap lib lookup prminput searchtree tmp");
 
   try {
     po::options_description* environment_options = CombineOptions();
