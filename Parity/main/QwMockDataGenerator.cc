@@ -71,6 +71,7 @@ int main(int argc, char* argv[])
 
   // Event buffer
   QwEventBuffer eventbuffer;
+  eventbuffer.ProcessOptions(gQwOptions);
 
   // Detector array
   QwSubsystemArrayParity detectors(gQwOptions);
