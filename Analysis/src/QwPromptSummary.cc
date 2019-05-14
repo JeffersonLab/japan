@@ -500,7 +500,7 @@ void
 QwPromptSummary::PrintCSV()
 {
   printf("-----------------------\n");
-  TString filename = getenv_safe_TString("QW_ROOTFILES"); 
+  TString filename = gQwOptions.GetValue<std::string>("rootfiles");
   filename+=Form("/summary_%d.txt", fRunNumber);
   TString header= this->PrintCSVHeader();
   std::ofstream output;
