@@ -20,8 +20,8 @@ bank=0x2
 ROC=24
 bank=0x1
 ! module.type  module.num  chan.num, det.type, det.name
-  header=6
+  header=7
 !  scaler_buffer_offset=6
-  SIS3801D32, 0,   28, syncscal, inj_f1
-  SIS3801D32, 0,   29, syncscal, inj_f2
+  SIS3801D24, 0,   29, syncscal, inj_f1
+  SIS3801D24, 0,   30, syncscal, inj_f2
 

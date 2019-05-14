@@ -1,6 +1,6 @@
 ROC=24
 bank=0x1
 ! module.type  module.num  chan.num, det.type, det.name
-  header=6
-  SIS3801D32, 0,   0,  bcmscal, inj_clock_4mhz
+  header=7
+  SIS3801D24, 0,   17,  bcmscal, inj_clock_4mhz
 
