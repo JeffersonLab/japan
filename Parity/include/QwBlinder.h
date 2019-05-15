@@ -248,8 +248,11 @@ class QwBlinder {
     Double_t fBlindingFactor; /// The factor to be mutliplied to detector asymmetries
 
 
-    static const Double_t kMaximumBlindingAsymmetry; /// Maximum blinding asymmetry (in ppm)
-    static const Double_t kMaximumBlindingFactor;    /// Maximum blinding factor (in % from identity)
+    static const Double_t kDefaultMaximumBlindingAsymmetry; /// Default maximum blinding asymmetry (in ppm)
+    static const Double_t kDefaultMaximumBlindingFactor;    /// Default maximum blinding factor (in fraction from identity)
+
+    Double_t fMaximumBlindingAsymmetry; /// Maximum blinding asymmetry (in ppm)
+    Double_t fMaximumBlindingFactor;    /// Maximum blinding factor (in fraction from identity)
 
     UInt_t fSeedID;      /// ID of seed used (seeds.seed_id)
     TString fSeed;       /// Seed string (seeds.seed)

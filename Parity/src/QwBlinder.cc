@@ -46,8 +46,8 @@ const TString QwBlinder::fStatusName[4] = {"Indeterminate", "NotBlindable",
 					   "Blindable", "BlindableFail"};
 
 // Maximum blinding asymmetry for additive blinding
-const Double_t QwBlinder::kMaximumBlindingAsymmetry = 0.06; // ppm
-const Double_t QwBlinder::kMaximumBlindingFactor = 0.1; // [fraction]
+const Double_t QwBlinder::kDefaultMaximumBlindingAsymmetry = 0.06; // ppm
+const Double_t QwBlinder::kDefaultMaximumBlindingFactor = 0.0; // [fraction]
 
 // Default seed, associated with seed_id 0
 const TString QwBlinder::kDefaultSeed = "Default seed, should not be used!";
@@ -82,7 +82,10 @@ QwBlinder::QwBlinder(const EQwBlindingStrategy blinding_strategy):
   fBlindingStrategy(blinding_strategy),
   fBlindingOffset(0.0),
   fBlindingOffset_Base(0.0),
-  fBlindingFactor(1.0)
+  fBlindingFactor(1.0),
+  //
+  fMaximumBlindingAsymmetry(kDefaultMaximumBlindingAsymmetry),
+  fMaximumBlindingFactor(kDefaultMaximumBlindingFactor)
 {
   // Set up the blinder with seed_id 0
   fSeed = kDefaultSeed;
@@ -475,7 +478,7 @@ void QwBlinder::InitBlinders(const UInt_t seed_id)
     /// First, the blinding asymmetry (offset) is determined.  It is
     /// generated from a signed number between +/- 0.244948974 that
     /// is squared to get a number between +/- 0.06 ppm.
-    static Double_t maximum_asymmetry_sqrt = sqrt(kMaximumBlindingAsymmetry);
+    static Double_t maximum_asymmetry_sqrt = sqrt(fMaximumBlindingAsymmetry);
     Double_t tmp1 = maximum_asymmetry_sqrt * (newtempout / Int_t(0x7FFFFFFF));
     fBlindingOffset = tmp1 * fabs(tmp1) * 0.000001;
 
@@ -492,10 +495,10 @@ void QwBlinder::InitBlinders(const UInt_t seed_id)
     /// number is generated from the blinding asymmetry between, say, 0.9 and 1.1
     /// by an oscillating but uniformly distributed sawtooth function.
     fBlindingFactor = 1.0;
-    if (kMaximumBlindingAsymmetry > 0.0) {
+    if (fMaximumBlindingAsymmetry > 0.0) {
       /// TODO:  This section of InitBlinders doesn't calculate a reasonable fBlindingFactor but we don't use it for anything.
-      fBlindingFactor  = 1.0 + fmod(30.0 * fBlindingOffset, kMaximumBlindingAsymmetry);
-      fBlindingFactor /= (kMaximumBlindingAsymmetry > 0.0 ? kMaximumBlindingAsymmetry : 1.0);
+      fBlindingFactor  = 1.0 + fmod(30.0 * fBlindingOffset, fMaximumBlindingAsymmetry);
+      fBlindingFactor /= (fMaximumBlindingAsymmetry > 0.0 ? fMaximumBlindingAsymmetry : 1.0);
     }
 
     QwMessage << "Blinding parameters have been calculated."<< QwLog::endl;
