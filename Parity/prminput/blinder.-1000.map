@@ -1,0 +1,13 @@
+# Blinder parameter
+
+# strategy = Disabled | Additive | Multiplicative | AdditiveMultiplicative (case insensitive)
+strategy = additive
+
+# seed = unquoted string without starting or ending spaces
+seed = more or less the right value
+
+# max_asymmetry = positive float in ppm such that additive blinding asymmetry is between 0 +/- (this value)
+max_asymmetry = 0.06
+
+# max_factor = positive float fraction such that multiplicative blinding asymmetry is between 1 +/- (this value)
+max_factor = 0.0
