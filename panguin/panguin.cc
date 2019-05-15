@@ -20,6 +20,10 @@ int main(int argc, char **argv){
   Bool_t showedUsage=kFALSE;
   int verbosity(0);
 
+  TString macropath = gROOT->GetMacroPath();
+  macropath += ":./macros";
+  gROOT->SetMacroPath(macropath.Data());
+
   TApplication theApp("App",&argc,argv,NULL,-1);
 
   cout<<"Starting processing arg. Time passed: "
