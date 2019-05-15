@@ -49,13 +49,6 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
   QwBeamMod(const TString& name)
   : VQwSubsystem(name),VQwSubsystemParity(name)
     {
-      // these declaration need to be coherent with the enum vector EBeamInstrumentType
-      fgModTypeNames.push_back(""); // Need to define these wrt to our detector types.
-      fgModTypeNames.push_back("");
-      fgModTypeNames.push_back("");
-      fgModTypeNames.push_back("");
-      for(size_t i=0;i<fgModTypeNames.size();i++)
-        fgModTypeNames[i].ToLower();
       fFFB_holdoff_Counter=0;
       fFFB_Flag=kTRUE;
       fRampChannelIndex = -1;
@@ -64,14 +57,11 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
   /// Copy constructor
   QwBeamMod(const QwBeamMod& source)
   : VQwSubsystem(source),VQwSubsystemParity(source),
-    fModChannel(source.fModChannel),fWord(source.fWord),
-    fMonitorNames(source.fMonitorNames),fMonitors(source.fMonitors),
-    fBPMPosition(source.fBPMPosition)
+    fModChannel(source.fModChannel),fWord(source.fWord)
   { }
   /// Virtual destructor
   virtual ~QwBeamMod() {};
 
-  std::vector<TString> fgModTypeNames;
   /* derived from VQwSubsystem */
 
   //Handle command line options
@@ -102,7 +92,6 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
   void  ClearEventData();
 
   void  ProcessEvent();
-  void  ExchangeProcessedData();
   void  ProcessEvent_2();
 
   VQwSubsystem&  operator=  (VQwSubsystem *value);
@@ -141,18 +130,9 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
 
   void Print();
 
-  void AtEndOfEventLoop();
-  void AnalyzeOpticsPlots();
-  void ResizeOpticsDataContainers(Int_t);
-  void ClearVectors();
-
-  Double_t GetAmplitudeSign(Double_t, Double_t, Double_t, Double_t);
-
  protected:
- Int_t GetDetectorTypeID(TString name);
- Int_t GetDetectorIndex(Int_t TypeID, TString name);    // when the type and the name is passed the detector index from appropriate vector will be returned
- Int_t fTreeArrayIndex; 						        // for example if TypeID is bcm  then the index of the detector from fBCM vector for given name will be returnd.
-
+ Int_t GetDetectorIndex(TString name);
+ Int_t fTreeArrayIndex;
 
  std::vector <QwVQWK_Channel> fModChannel;
  std::vector <QwModChannelID> fModChannelID;
@@ -169,25 +149,6 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
  UInt_t fFFB_ErrorFlag;
  Bool_t fFFB_Flag;
  static const Bool_t bDEBUG=kFALSE;
-
- static const Int_t fNumberPatterns = 5;
-
- // List of monitor channels
-
- std::vector<TString> fMonitorNames;
- std::vector<QwVQWK_Channel> fMonitors;
- std::vector<Double_t> fBPMPosition;
-
- std::vector <std::vector <Double_t> > fAmplitude;
- std::vector <std::vector <Double_t> > fOffset;
- std::vector <std::vector <Double_t> > fPhase;
-
- std::vector <std::vector <Double_t> > fAmplitudeError;
- std::vector <std::vector <Double_t> > fOffsetError;
- std::vector <std::vector <Double_t> > fPhaseError;
-
- std::vector <std::vector <Double_t> > fChisquare;
- std::vector <std::vector <Int_t> > fNFitPoints;
 
  Int_t fRampChannelIndex;
  Int_t fPatternWordIndex;

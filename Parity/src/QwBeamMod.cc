@@ -170,51 +170,6 @@ Int_t QwBeamMod::LoadChannelMap(TString mapfile)
       fWord[i].PrintID();
   }
 
-  // Now load the variables to monitor
-  mapstr.RewindToFileStart();
-  while (QwParameterFile *section = mapstr.ReadNextSection(varvalue)) {
-    if (varvalue == "Monitors") {
-      fMonitorNames.clear();
-      while (section->ReadNextLine()) {
-        section->TrimComment();         // Remove everything after a comment character
-        section->TrimWhitespace();      // Get rid of leading and trailing spaces
-        varvalue = section->GetTypedNextToken<TString>();
-	if (varvalue.Length() > 0) {
-          // Add names of monitor channels for each degree of freedom
-	  //
-	  //
-	  // Consider whether or not the input monitor is a bpm or not.  This should
-	  // allow for usage of monitors other than bpms, .eg bcm{1,2}, lumi, pmtonl,..ect.
-	  //
-
-	  if(varvalue.Contains("qwk_bpm", TString::kExact)){
-	    fMonitorNames.push_back(Form("%sX",varvalue.Data()));
-	    fMonitorNames.push_back(Form("%sY",varvalue.Data()));
-	  }
-	  else if(varvalue.Contains("target", TString::kExact)){
-	    fMonitorNames.push_back(Form("%sX",varvalue.Data()));
-	    fMonitorNames.push_back(Form("%sY",varvalue.Data()));
-	  }
-	  else{
-	    fMonitorNames.push_back(varvalue);
-	  }
-        }
-      }
-    }
-    delete section;
-  }
-  // Resize local version of the BPMs
-  QwVQWK_Channel dummy("dummy");
-  fMonitors.resize(fMonitorNames.size(),dummy);
-  ResizeOpticsDataContainers(fMonitorNames.size());
-
-  // Debug output
-  if (ldebug) {
-    QwMessage << "Done with loading monitor channels:" << QwLog::endl;
-    for (size_t i = 0; i < fMonitorNames.size(); i++)
-      QwMessage << fMonitorNames[i] << QwLog::endl;
-  }
-
   return 0;
 }
 
@@ -226,18 +181,6 @@ QwModChannelID::QwModChannelID(Int_t subbankid, Int_t wordssofar,
   fmoduletype(modtype),fmodulename(name),kUnknownDeviceType(-1)
 {
   fTypeID = kQwUnknownDeviceType;
-  //  for(size_t i=0;i<obj->fgModTypeNames.size();i++){
- //   if(dettype == obj->fgModTypeNames[i]){
- //     fTypeID = EBeamInstrumentType(i);
-  //   std::cout << "Detector type not recognized" << std::endl;
-   //   break;
-   // }
-  //  }
-//   if (fTypeID == kUnknownDeviceType) {
-//     std::cerr << "QwModChannelID::QwModChannelID:  Unknown detector type: "
-//   	      << dettype <<", the detector "<<name<<" will not be decoded "
-//   	      << std::endl;
-//   }
 }
 
 
@@ -279,7 +222,7 @@ Int_t QwBeamMod::LoadEventCuts(TString  filename)
 	varvalue.ToLower();
 	Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
 	QwMessage<<"QwBeamMod Error Code  "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
-	Int_t det_index=GetDetectorIndex(GetDetectorTypeID(kQwUnknownDeviceType),device_name);
+	Int_t det_index=GetDetectorIndex(device_name);
 	QwMessage << "*****************************" << QwLog::endl;
 	QwMessage << " Type " << device_type << " Name " << device_name << " Index [" << det_index << "] "
 	          << " device flag " << eventcut_flag << QwLog::endl;
@@ -493,20 +436,6 @@ void  QwBeamMod::ProcessEvent()
   }
 }
 
-void  QwBeamMod::ExchangeProcessedData()
-{
-  // Make sure sizes are equal
-  if (fMonitorNames.size() != fMonitors.size())
-    QwError << "QwBeamMod: Sizes of fBPMnames and fBPMs do not match!" << QwLog::endl;
-  // Loop over BPMs
-  for (size_t bpm = 0; bpm < fMonitorNames.size(); bpm++) {
-    // Get references to external values
-    if (! RequestExternalValue(fMonitorNames[bpm],&fMonitors[bpm]))
-      QwError << "QwBeamMod: RequestExternalValue for " << fMonitorNames[bpm]
-              << " failed!" << QwLog::endl;
-  }
-}
-
 void  QwBeamMod::ProcessEvent_2()
 {
   // Fill histograms here to bypass event cuts
@@ -530,23 +459,12 @@ void QwBeamMod::ClearEventData()
 }
 
 //*****************************************************************
-Int_t QwBeamMod::GetDetectorTypeID(TString name)
-{
-  Int_t result=-1;
-  for(size_t i=0;i<fgModTypeNames.size();i++)
-    if(name==fgModTypeNames[i])
-      {result=i;i=fgModTypeNames.size()+1;}
-  return result;
-}
-
-//*****************************************************************
-Int_t QwBeamMod::GetDetectorIndex(Int_t type_id, TString name)
+Int_t QwBeamMod::GetDetectorIndex(TString name)
 {
   Bool_t ldebug=kFALSE;
   if(ldebug)
     {
       std::cout<<"QwBeamMod::GetDetectorIndex\n";
-      std::cout<<"type_id=="<<type_id<<" name="<<name<<"\n";
       std::cout<<fModChannelID.size()<<" already registered detector\n";
     }
 
@@ -696,28 +614,6 @@ void  QwBeamMod::ConstructHistograms(TDirectory *folder, TString &prefix)
   // No histogram creation for asym, yield, diff, etc
   if (prefix != "") return;
 
-  TString basename;
-  for (size_t bpm = 0; bpm < fMonitorNames.size(); bpm++) {
-    // Find histogram with correct name
-    basename = TString("bmod_") + prefix + fMonitorNames[bpm];
-    fHistograms.push_back(gQwHists.Construct1DProf(basename + "_X"));
-    fHistograms.push_back(gQwHists.Construct1DProf(basename + "_Y"));
-    fHistograms.push_back(gQwHists.Construct1DProf(basename + "_E"));
-    fHistograms.push_back(gQwHists.Construct1DProf(basename + "_XP"));
-    fHistograms.push_back(gQwHists.Construct1DProf(basename + "_YP"));
-  }
-
-  // Beam modulation correlations
-  for (size_t chan = 0; chan < fModChannel.size(); chan++) {
-    // Find histogram with correct name
-    basename = TString("bmod_") + prefix + fModChannel[chan].GetElementName();
-    fHistograms.push_back(gQwHists.Construct1DProf(basename + "_X"));
-    fHistograms.push_back(gQwHists.Construct1DProf(basename + "_Y"));
-    fHistograms.push_back(gQwHists.Construct1DProf(basename + "_E"));
-    fHistograms.push_back(gQwHists.Construct1DProf(basename + "_XP"));
-    fHistograms.push_back(gQwHists.Construct1DProf(basename + "_YP"));
-  }
-
   // Beam modulation channels
   //for (size_t i = 0; i < fModChannel.size(); i++)
   //  fModChannel[i].ConstructHistograms(folder,prefix);
@@ -768,160 +664,8 @@ void  QwBeamMod::FillHistograms()
   Double_t ramp_block_32 = fModChannel[fRampChannelIndex].GetValue(3) + fModChannel[fRampChannelIndex].GetValue(2);
   Double_t ramp_block    = ramp_block_41 - ramp_block_32;  
 
-  //  Require the difference between the block1/4 average and 
-  //  the block2/3 average to be within 5 degrees.
-  //  In run 9636, the distribution of ramp_block has a sigma of 0.5 degrees.
-  if( ramp_block < 5.0 && ramp_block > -5.0 ){
-    for (size_t bpm = 0; bpm < fMonitors.size(); bpm++){
-      fHistograms[5 * bpm + pattern]->Fill(ramp,fMonitors[bpm].GetValue());
-    }
-  
-    // Beam modulation correlations
-    for (size_t chan = 0; chan < fModChannel.size(); chan++){
-      fHistograms[5 * (fMonitors.size() + chan) + pattern]->Fill(ramp,fModChannel[chan].GetValue());
-    }
-  }
 }
 
-void QwBeamMod::AtEndOfEventLoop()
-{
-
-  AnalyzeOpticsPlots();
-
-}
-
-void QwBeamMod::ClearVectors()
-{
-    fOffset.clear();
-    fAmplitude.clear();
-    fPhase.clear();
-    fOffsetError.clear();
-    fAmplitudeError.clear();
-    fPhaseError.clear();
-    fChisquare.clear();
-    fNFitPoints.clear();
-    
-}
-
-void QwBeamMod::ResizeOpticsDataContainers(Int_t size)
-{
-  fOffset.resize(size);
-  fAmplitude.resize(size);
-  fPhase.resize(size);
-  fOffsetError.resize(size);
-  fAmplitudeError.resize(size);
-  fPhaseError.resize(size);
-  fChisquare.resize(size);
-  fNFitPoints.resize(size);
-
-  for(Int_t i = 0; i < size; i++){
-    fOffset[i].resize(fNumberPatterns);
-    fAmplitude[i].resize(fNumberPatterns);
-    fPhase[i].resize(fNumberPatterns);
-    fOffsetError[i].resize(fNumberPatterns);
-    fAmplitudeError[i].resize(fNumberPatterns);
-    fPhaseError[i].resize(fNumberPatterns);
-    fChisquare[i].resize(fNumberPatterns);
-    fNFitPoints[i].resize(fNumberPatterns);
-  }
-}
-
-void QwBeamMod::AnalyzeOpticsPlots()
-{
-  //   How to get the run info:
-  //   UInt_t runnum = this->GetParent()->GetCodaRunNumber();
-  //   UInt_t segnum = this->GetParent()->GetCodaSegmentNumber();
-
-  TF1 *sine = new TF1("sine", "[0] + [1]*sin(TMath::DegToRad()*x + [2])", 5, 350);
-
-  TCanvas *canvas = new TCanvas("canvas", "canvas", 5);
-
-  //Double_t mean; // unused
-  Double_t amplitude;
-  Double_t phase;
-
-  ResizeOpticsDataContainers(fMonitorNames.size());
-
-  canvas->cd();
-  for(size_t bpm = 0; bpm < fMonitors.size(); bpm++){
-
-    for(size_t pattern = 0; pattern < 5; pattern++){
-      //  Only do the fits if there are more than three entries.
-      if (fHistograms[5*bpm + pattern]->GetEntries()>3){
-	sine->SetParameters(fHistograms[5*bpm + pattern]->GetMean(), 0.10, 0);
-	sine->SetLineColor(2);
-	sine->SetParLimits(2, 0, TMath::Pi()*2 );
-	fHistograms[5*bpm + pattern]->Fit("sine","R B");
-	
-	//mean = sine->GetParameter(0); // unused
-	amplitude = TMath::Abs(sine->GetParameter(1));
-	phase = sine->GetParameter(2) * TMath::RadToDeg();
-	
-	amplitude *= GetAmplitudeSign(sine->Derivative(10), 
-				      sine->Derivative2(10), 
-				      sine->Derivative3(10), 
-				      sine->GetParameter(0));
-
-	if(phase >= 180){
-	  phase -= 180;
-// 	  amplitude = -amplitude;
-	} else if (phase < 0){
-	  phase += 180;
-// 	  amplitude = -amplitude;
-	} 
-	fOffset[bpm][pattern] = sine->GetParameter(0);
-	fAmplitude[bpm][pattern] = amplitude;
-	fPhase[bpm][pattern] = phase;
-	fOffsetError[bpm][pattern] = sine->GetParError(0);
-	fAmplitudeError[bpm][pattern] = sine->GetParError(1);
-	fPhaseError[bpm][pattern] = sine->GetParError(2);
-	fChisquare[bpm][pattern] = sine->GetChisquare();
-	fNFitPoints[bpm][pattern] = sine->GetNumberFitPoints();
-      } else {
-	QwDebug << "QwBeamMod can't fit [" << bpm << "][" << pattern
-		<< "] because there are only " 
-		<< fHistograms[5*bpm + pattern]->GetEntries()
-		<< " entries, and we need at least 3."
-		<< QwLog::endl;
-	//  No events in this histogram.  Zero-out the fit results
-	fOffset[bpm][pattern]         = 0.0;
-	fAmplitude[bpm][pattern]      = 0.0;
-	fPhase[bpm][pattern]          = 0.0;
-	fOffsetError[bpm][pattern]    = 0.0;
-	fAmplitudeError[bpm][pattern] = 0.0;
-	fPhaseError[bpm][pattern]     = 0.0;
-	fChisquare[bpm][pattern]      = 0.0;
-	fNFitPoints[bpm][pattern]     = 0;
-      }
-    }
-  }
-  delete canvas;
-  delete sine;
-}
-
-Double_t QwBeamMod::GetAmplitudeSign(Double_t d1, Double_t d2, Double_t d3, Double_t fmean)
-{
-
-  Double_t sign = 0.0;
-
-  if(d1 > 0.0 && d2 < 0.0)          sign =  1.0;
-  else if(d1 == 0.0 && fmean > 0.0) sign =  1.0;
-  else if(d1 < 0.0 && d2 < 0.0)     sign =  1.0;
-
-  else if(d1 < 0.0 && d3 < 0)       sign =  1.0;
-
-  else if(d1 < 0.0 && d2 > 0.0)     sign = -1.0;
-  else if(d1 == 0.0 && fmean < 0.0) sign = -1.0;
-  else if(d1 > 0.0 && d2 > 0.0)     sign = -1.0;
-
-  else if(d1 < 0.0 && d3 > 0)       sign = -1.0;
-
-  else
-    sign = 1.0;
-
-  return(sign);
-
-}
 
 void QwBeamMod::ConstructBranchAndVector(TTree *tree, TString & prefix, std::vector <Double_t> &values)
 {
