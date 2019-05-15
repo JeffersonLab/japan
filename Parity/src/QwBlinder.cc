@@ -22,6 +22,7 @@
 #include "QwParityDB.h"
 #endif // __USE_DATABASE__
 #include "QwVQWK_Channel.h"
+#include "QwParameterFile.h"
 
 ///  Blinder event counter indices
 enum EQwBlinderErrorCounterIndices{
@@ -91,10 +92,23 @@ QwBlinder::QwBlinder(const EQwBlindingStrategy blinding_strategy):
   fSeed = kDefaultSeed;
   fSeedID = 0;
 
+  // Read parameter file
+  QwParameterFile blinder("blinder.map");
+  if (blinder.FileHasVariablePair("=", "seed", fSeed))
+    QwOut << "Using seed from file: " << fSeed << QwLog::endl;
+  if (blinder.FileHasVariablePair("=", "max_asymmetry", fMaximumBlindingAsymmetry))
+    QwOut << "Using blinding box: " << fMaximumBlindingAsymmetry << " ppm" << QwLog::endl;
+  if (blinder.FileHasVariablePair("=", "max_factor", fMaximumBlindingFactor))
+    QwOut << "Using blinding factor: " << fMaximumBlindingFactor << QwLog::endl;
+
+
+  // Initialize blinder from seed
   InitBlinders(0);
 
   // Calculate set of test values
   InitTestValues(10);
+
+  // Resize counters
   fPatternCounters.resize(kBlinderCount_NumCounters);
   fPairCounters.resize(kBlinderCount_NumCounters);
 }
