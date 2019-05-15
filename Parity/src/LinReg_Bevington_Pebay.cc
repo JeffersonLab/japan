@@ -190,9 +190,12 @@ void LinRegBevPeb::printSummaryP(){
     }
     cout << Form("\n           mean     sig(distrib)   nSig(mean)       corelation-matrix ....\n");
     for (size_t i = 0; i <dim; i++) {
+      Int_t testval;
       double meanI,sigI;
-      assert( getMeanP(i,meanI)==0);
-      assert( getSigmaP(i,sigI)==0);
+      testval = getMeanP(i,meanI);
+      assert(testval==0);
+      testval = getSigmaP(i,sigI);
+      assert(testval==0);
       double nSig=-1;
       double err=sigI/sqrt(fGoodEventNumber);
       if(sigI>0.) nSig=meanI/err;
@@ -200,8 +203,12 @@ void LinRegBevPeb::printSummaryP(){
       cout << Form("P%d:  %+12.4g  %12.3g      %.1f    ",(int)i,meanI,sigI,nSig);
       for (size_t j = 1; j <dim; j++) {
         if( j<=i) { cout << Form("  %12s","._._._."); continue;}
-        double sigJ,cov; assert( getSigmaP(j,sigJ)==0);
-        assert( getCovarianceP(i,j,cov)==0);
+        Int_t testval;
+        double sigJ,cov;
+        testval = getSigmaP(j,sigJ);
+        assert(testval==0);
+        testval = getCovarianceP(i,j,cov);
+        assert(testval==0);
         double corel=cov/sigI/sigJ;
         
         cout << Form("  %12.3g",corel);
@@ -219,9 +226,12 @@ void LinRegBevPeb::printSummaryY(){
   cout << Form("  j,       mean,     sig(mean),   nSig(mean),  sig(distribution)    \n");
   
   for (int i = 0; i <par_nY; i++) {
+    Int_t testval;
     double meanI,sigI;
-    assert( getMeanY(i,meanI)==0);
-    assert( getSigmaY(i,sigI)==0);
+    testval = getMeanY(i,meanI);
+    assert(testval==0);
+    testval = getSigmaY(i,sigI);
+    assert(testval==0);
     double err=sigI/sqrt(fGoodEventNumber);
     double nSigErr=meanI/err;
     cout << Form("Y%02d, %+11.4g, %12.4g, %8.1f, %12.4g "" ",i,meanI,err,nSigErr,sigI)<<endl;
@@ -255,21 +265,28 @@ void LinRegBevPeb::printSummaryAlphas(){
 void LinRegBevPeb::printSummaryYP(){
   cout << Form("\nLinRegBevPeb::printSummaryYP seen good eve=%lld",fGoodEventNumber)<<endl;
 
-  if(fGoodEventNumber>2) { cout<<"  too fiew events, skip"<<endl; return;}
+  if(fGoodEventNumber<2) { cout<<"  too fiew events, skip"<<endl; return;}
   cout << Form("\n         name:             ");
   for (int i = 0; i <par_nP; i++) {
     cout << Form(" %10sP%d "," ",i);
   }
   cout << Form("\n  j                   meanY         sigY      corelation with Ps ....\n");
   for (int iy = 0; iy <par_nY; iy++) {
+    Int_t testval;
     double meanI,sigI;
-    assert( getMeanY(iy,meanI)==0);
-    assert( getSigmaY(iy,sigI)==0);
+    testval = getMeanY(iy,meanI);
+    assert(testval==0);
+    testval = getSigmaY(iy,sigI);
+    assert(testval==0);
     
     cout << Form(" %3d %6sY%d:  %+12.4g  %12.4g ",iy," ",iy,meanI,sigI);
     for (int ip = 0; ip <par_nP; ip++) {
-      double sigJ,cov; assert( getSigmaP(ip,sigJ)==0);
-      assert( getCovariancePY(ip,iy,cov)==0);
+      Int_t testval;
+      double sigJ,cov; 
+      testval = getSigmaP(ip,sigJ);
+      assert(testval==0);
+      testval = getCovariancePY(ip,iy,cov);
+      assert(testval==0);
       double corel=cov/sigI/sigJ;      
       cout << Form("  %12.3g",corel);
     }
@@ -285,10 +302,17 @@ void LinRegBevPeb::solve() {
   cout << Form("\n********LinRegBevPeb::solve...invert Rjk")<<endl;
   TMatrixD S2jk;S2jk.ResizeTo(mVPP);
   for (int j = 0; j < par_nP; j++) {
-    double Sj; assert( getSigmaP(j,Sj)==0);
+    Int_t testval;
+    double Sj;
+    testval = getSigmaP(j,Sj);
+    assert(testval==0);
     for (int k = 0; k <par_nP; k++) {
-       double Sk,s2jk; assert( getSigmaP(k,Sk)==0);
-       assert( getCovarianceP(j,k,s2jk)==0);
+       Int_t testval;
+       double Sk,s2jk;
+       testval = getSigmaP(k,Sk);
+       assert(testval==0);
+       testval = getCovarianceP(j,k,s2jk);
+       assert(testval==0);
        S2jk(j,k)=s2jk;
        mRjk(j,k)=s2jk/Sj/Sk;
     }
@@ -307,10 +331,17 @@ void LinRegBevPeb::solve() {
    cout << Form("\n********LinRegBevPeb::solve... alphas ")<<endl;
    TMatrixD Rky;Rky.ResizeTo(mVPY); 
    for (int iy = 0; iy <par_nY; iy++) {
-     double Sy; assert( getSigmaY(iy,Sy)==0);
+     Int_t testval;
+     double Sy;
+     testval = getSigmaY(iy,Sy);
+     assert(testval==0);
      for (int ip = 0; ip <par_nP; ip++) {
-       double Sk,Syk2; assert( getSigmaP(ip,Sk)==0);
-       assert( getCovariancePY(ip,iy,Syk2)==0);
+       Int_t testval;
+       double Sk,Syk2;
+       testval = getSigmaP(ip,Sk);
+       assert(testval==0);
+       testval = getCovariancePY(ip,iy,Syk2);
+       assert(testval==0);
        Rky(ip,iy)=Syk2/Sy/Sk;
        //if(ip==0 && iy==0) printf("Syk2=%f  Sy=%f Sk=%f\n", Syk2,Sy,Sk); 
      }
@@ -320,9 +351,15 @@ void LinRegBevPeb::solve() {
    Djy.Mult(invRjk,Rky);
    //   cout<<"Djy:"; Djy.Print();
    for (int iy = 0; iy <par_nY; iy++) {
-    double Sy; assert( getSigmaY(iy,Sy)==0);
+    double Sy;
+    Int_t testval;
+    testval = getSigmaY(iy,Sy);
+    assert(testval==0);
     for (int ip = 0; ip <par_nP; ip++) {
-      double Sk; assert( getSigmaP(ip,Sk)==0);
+      Int_t testval;
+      double Sk;
+      testval = getSigmaP(ip,Sk);
+      assert(testval==0);
       mA(ip,iy)= Djy(ip,iy)*Sy/Sk;
     }
   }
@@ -335,13 +372,19 @@ void LinRegBevPeb::solve() {
     
     /* compute s^2= Vy + Vx -2*Vxy 
        where Vy~var(y), Vx~var(x), Vxy~cov(y,x)     */
-    double Sy; assert( getSigmaY(iy,Sy)==0);  
+    Int_t testval;
+    double Sy;
+    testval = getSigmaY(iy,Sy);
+    assert(testval==0);
     
     double Vx=0,Vxy=0;
     for (int j = 0; j < par_nP; j++) {
       for (int k = 0; k <par_nP; k++) 
 	Vx+=S2jk(j,k)*mA(j,iy)*mA(k,iy);
-      double Syk2; assert( getCovariancePY(j,iy,Syk2)==0);
+      Int_t testval;
+      double Syk2;
+      testval = getCovariancePY(j,iy,Syk2);
+      assert(testval==0);
       Vxy+=Syk2*mA(j,iy);
     }
     //cout<<"iy="<<iy<<"  Vx="<<Vx<<"  Vxy="<<Vxy<<endl;
@@ -350,7 +393,10 @@ void LinRegBevPeb::solve() {
     
     //   cout <<" iy="<<iy<<" s2="<<s2<<endl;
     for (int j = 0; j < par_nP; j++) {
-      double Sj; assert( getSigmaP(j,Sj)==0);
+      Int_t testval;
+      double Sj;
+      testval = getSigmaP(j,Sj);
+      assert(testval==0);
       mAsig(j,iy)= sqrt(norm * invRjk(j,j) * s2) / Sj;
     }
   }

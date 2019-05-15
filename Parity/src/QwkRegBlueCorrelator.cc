@@ -186,7 +186,9 @@ QwkRegBlueCorrelator::exportAlphas(TString outName, std::vector < TString > ivNa
   TH1D hiv("IVname","names of IVs",nP,-0.5,nP-0.5); 
   double val;
   for(int i=0;i<nP;i++){
-    assert( linReg.getSigmaP(i,val)==0);
+    Int_t testval = 0;
+    testval = linReg.getSigmaP(i,val);
+    assert(testval==0);
     MsigIV(i,0)=val;
     hiv.Fill(ivName[i],i);
   }
@@ -197,7 +199,9 @@ QwkRegBlueCorrelator::exportAlphas(TString outName, std::vector < TString > ivNa
   TMatrixD MsigDV(nY,1);
   TH1D hdv("DVname","names of IVs",nY,-0.5,nY-0.5); 
   for(int i=0;i<nY;i++){
-    assert( linReg.getSigmaY(i,val)==0);
+    Int_t testval = 0;
+    testval = linReg.getSigmaY(i,val);
+    assert(testval==0);
     MsigDV(i,0)=val;
     hdv.Fill(dvName[i],i);
   }

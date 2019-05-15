@@ -39,58 +39,28 @@ using namespace std;
 
 #include <TMatrixD.h>
 
+// Register this handler with the factory
+RegisterHandlerFactory(LRBCorrector);
 
-LRBCorrector::LRBCorrector(QwOptions &options, QwHelicityPattern& helicitypattern, const TString &run) {
-  
-  run_label = run;
+/// \brief Constructor with name
+LRBCorrector::LRBCorrector(const TString& name):VQwDataHandler(name)
+{
   ParseSeparator = "_";
-  fEnableCorrection = false;
-  ProcessOptions(options);
-  LoadChannelMap(fCorrectorMapFile);
-  fHelicityPattern = &helicitypattern;
-  QwSubsystemArrayParity& asym = helicitypattern.fAsymmetry;
-  QwSubsystemArrayParity& diff = helicitypattern.fDifference;
-  ConnectChannels(asym,diff);
-  
+  fKeepRunningSum = kTRUE;
 }
 
-/**
- * Defines configuration options using QwOptions functionality.
- * @param options Options object
- */
-void LRBCorrector::DefineOptions(QwOptions &options)
+void LRBCorrector::ParseConfigFile(QwParameterFile& file)
 {
-  options.AddOptions("LRBCorrector")
-    ("enable-lrbcorrection", po::value<bool>()->zero_tokens()->default_value(false),
-     "enable lrb correction");
-  options.AddOptions("LRBCorrector")
-    ("lrbcorrector-map", po::value<std::string>()->default_value("corrector_new.map"),
-     "variables and sensitivities for lrb correction");
+  VQwDataHandler::ParseConfigFile(file);
+  file.PopValue("slope-path", outPath);
 }
 
-/**
- * Process configuration options using QwOptions functionality.
- * @param options Options object
- */
-void LRBCorrector::ProcessOptions(QwOptions &options)
+Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
 {
-  fEnableCorrection = options.GetValue<bool>("enable-lrbcorrection");
-  fCorrectorMapFile = options.GetValue<std::string>("lrbcorrector-map");
-  outPath = options.GetValue<std::string>("slope-file-path");
-}
-
-
-Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile) {
-  
-  if (fEnableCorrection == false) {
-    QwWarning << "enable-lrbcorrection is set to false.  Skipping LoadChannelMap for LRBCorrector" << QwLog::endl;
-    return 0;
-  }
-
   string TmpFilePath = run_label.Data();
-  fCorrectorMapFile = "blueR" + TmpFilePath + "new.slope.root";
+  fMapFile = "blueR" + TmpFilePath + "new.slope.root";
   string MapFilePath = outPath + "/";
-  string tmp = MapFilePath + fCorrectorMapFile;
+  string tmp = MapFilePath + fMapFile;
   TString corFileName(tmp.c_str());
   QwMessage << "Trying to open " << corFileName << QwLog::endl;
   TFile*  corFile=new TFile(corFileName);
@@ -131,7 +101,7 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile) {
       fSensitivity[j].push_back(-1.0*(*alphasM)(i,j));
     }
   }
-  
+
   //printf("opened %s, slopes found, dump:\n",corFile->GetName());
   //alphasM->Print();
   corFile->Close();
@@ -144,8 +114,6 @@ Int_t LRBCorrector::ConnectChannels(
     QwSubsystemArrayParity& diff)
 {
   VQwDataHandler::ConnectChannels(asym, diff);
-
-  if (fEnableCorrection == false) {return 0;}
 
   // Add independent variables
   for (size_t iv = 0; iv < fIndependentName.size(); iv++) {
@@ -180,52 +148,9 @@ Int_t LRBCorrector::ConnectChannels(
 
 }
 
-void LRBCorrector::CalcOneOutput(const VQwHardwareChannel* dv, VQwHardwareChannel* output,
-                                  vector< const VQwHardwareChannel* > &ivs,
-                                  vector< Double_t > &sens) {
-  
-  // if second is NULL, can't do corrector
-  if (output == NULL){
-    QwError<<"Second is value is NULL, unable to calculate corrector."<<QwLog::endl;
-    return;
-  }
-  // For correct type (asym, diff, mps)
-  // if (fDependentType.at(dv) != type) continue;
-
-  // Clear data in second, if first is NULL
-  if (dv == NULL){
-    output->ClearEventData();
-  }else{
-    // Update second value
-    output->AssignValueFrom(dv);
-  }
-
-  // Add corrections
-  for (size_t iv = 0; iv < ivs.size(); iv++) {
-    output->ScaledAdd(sens.at(iv), ivs.at(iv));
-  }
-  
-}
-
 
 void LRBCorrector::ProcessData() {
-  // Return if correction is not enabled
-  if (! fEnableCorrection){
-    QwDebug << "LRB Correction is not enabled!" << QwLog::endl;
-    return;
-  }
-  // Get error flag from QwHelicityPattern
-  if (fHelicityPattern != NULL){
-    fErrorFlag = fHelicityPattern->GetEventcutErrorFlag();
-  } else if (fSubsystemArray != NULL){
-    fErrorFlag = fSubsystemArray->GetEventcutErrorFlag();
-  } else {
-    QwError << "LRBCorrector::ProcessData: Can't set fErrorFlag" << QwLog::endl;
-    fErrorFlag = 0;
-  }
-  
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar, fSensitivity[i]);
   }
-  
 }

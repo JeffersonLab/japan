@@ -29,44 +29,32 @@ using namespace std;
 #include "QwParityDB.h"
 #endif // __USE_DATABASE__
 
+// Register this handler with the factory
+RegisterHandlerFactory(QwCorrelator);
 
 //******************************************************************************************************************************************************
 
-QwCorrelator::QwCorrelator(QwOptions &options, QwHelicityPattern& helicitypattern, const TString &run): corA("input") {
-
-  run_label = run;
+QwCorrelator::QwCorrelator(const TString& name):VQwDataHandler(name),
+					       fAlphaOutputPath("."),
+					       fAliasOutputPath("."),
+					       fDisableHistos(true),
+					       corA("input")
+{
   ParseSeparator = "_";
-  fEnableCorrelation = false;
-  ProcessOptions(options);
-  LoadChannelMap(fCorrelatorMapFile);
-  corA.SetDisableHistogramFlag(fDisableHistos);
-  QwSubsystemArrayParity& asym = helicitypattern.fAsymmetry;
-  QwSubsystemArrayParity& diff = helicitypattern.fDifference;
-  ConnectChannels(asym, diff);
-
-  if (fEnableCorrelation == true) {
-
-    vector<TString> fIndependentName_t;
-    vector<TString> fDependentName_t;
- 
-    for (size_t i = 0; i < fIndependentName.size(); ++i) {
-      fIndependentName_t.push_back(TString(fIndependentName.at(i)));
-    }
-    for (size_t i = 0; i < fDependentName.size(); ++i) {
-      fDependentName_t.push_back(TString(fDependentName.at(i)));
-    }
- 
-    corA.init(fIndependentName_t, fDependentName_t);
-
-  }
-  
 }
 
-void QwCorrelator::FillCorrelator() {
+void QwCorrelator::ParseConfigFile(QwParameterFile& file)
+{
+  VQwDataHandler::ParseConfigFile(file);
+  file.PopValue("slope-path", fAlphaOutputPath);
+  file.PopValue("alias-path", fAliasOutputPath);
+  file.PopValue("disable-histos", fDisableHistos);
+  corA.SetDisableHistogramFlag(fDisableHistos);
+}
 
-  if (! fEnableCorrelation) return;
-
-  UInt_t error;
+void QwCorrelator::AccumulateRunningSum()
+{
+  UInt_t error = 0;
 
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     error |= fDependentVar.at(i)->GetErrorCode();
@@ -89,11 +77,9 @@ void QwCorrelator::FillCorrelator() {
 }
 
 
-void QwCorrelator::CalcCorrelations() {
-
-  if (! fEnableCorrelation) return;
-
-	corA.finish();
+void QwCorrelator::CalcCorrelations()
+{
+  corA.finish();
 	
   std::string TmpRunLabel = run_label.Data();
   std::string fSlopeFileName = "blueR" + TmpRunLabel + "new.slope.root";
@@ -109,39 +95,6 @@ void QwCorrelator::CalcCorrelations() {
 
 //******************************************************************************************************************************************************
 
-
-void QwCorrelator::DefineOptions(QwOptions &options) {
-	
-  options.AddOptions("Correlator")
-    ("enable-correlator", po::value<bool>()->zero_tokens()->default_value(false),
-     "enables correlator");
-  options.AddOptions("Correlator")
-    ("correlator-map", po::value<std::string>()->default_value("blueReg.conf"),
-     "variables and sensitivities for correlator");
-  
-  options.AddOptions("Correlator")
-    ("slope-file-path", po::value<std::string>()->default_value("."),
-     "Path for the slop files, also used for lrb (alpha)");
-  options.AddOptions("Correlator")
-    ("alias-output-path", po::value<std::string>()->default_value("."),
-     "Path for the final correlation output file (alias)");
-	
-}
-
-
-void QwCorrelator::ProcessOptions(QwOptions &options) {
-	
-  fEnableCorrelation = options.GetValue<bool>("enable-correlator");
-  fCorrelatorMapFile = options.GetValue<std::string>("correlator-map");
-	  
-  fAlphaOutputPath = options.GetValue<std::string>("slope-file-path");
-  fAliasOutputPath = options.GetValue<std::string>("alias-output-path");
-
-  fDisableHistos = options.GetValue<bool>("disable-histos");
-	  
-}
-
-
 /** Load the channel map
  *
  * @param mapfile Filename of map file
@@ -149,9 +102,6 @@ void QwCorrelator::ProcessOptions(QwOptions &options) {
  */
 Int_t QwCorrelator::LoadChannelMap(const std::string& mapfile)
 {
-  // Return if correlator is not enabled
-  if (! fEnableCorrelation) return 0;
-
   // Open the file
   QwParameterFile map(mapfile);
 
@@ -203,7 +153,6 @@ Int_t QwCorrelator::LoadChannelMap(const std::string& mapfile)
 Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff) {
 	
 	// Return if correlator is not enabled
-  if (! fEnableCorrelation) return 0;
 
   /// Fill vector of pointers to the relevant data elements
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
@@ -293,6 +242,19 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
   }
   fIndependentValues.resize(fIndependentVar.size());
   fDependentValues.resize(fDependentVar.size());
+
+  //  Restructure the lists for the corA object
+  vector<TString> fIndependentName_t;
+  vector<TString> fDependentName_t;
+ 
+  for (size_t i = 0; i < fIndependentName.size(); ++i) {
+    fIndependentName_t.push_back(TString(fIndependentName.at(i)));
+  }
+  for (size_t i = 0; i < fDependentName.size(); ++i) {
+    fDependentName_t.push_back(TString(fDependentName.at(i)));
+  }
+  corA.init(fIndependentName_t, fDependentName_t);
+
   return 0;
 	
 }

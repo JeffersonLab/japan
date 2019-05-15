@@ -38,6 +38,7 @@
 #include "QwPromptSummary.h"
 #include "QwCorrelator.h"
 #include "LRBCorrector.h"
+#include "QwDataHandlerArray.h"
 
 // Qweak subsystems
 // (for correct dependency generation)
@@ -116,7 +117,7 @@ Int_t main(Int_t argc, Char_t* argv[])
     ///  Create an EPICS event
     QwEPICSEvent epicsevent;
     epicsevent.ProcessOptions(gQwOptions);
-    //epicsevent.LoadChannelMap("EpicsTable.map");  /* KLUDGE, 20180710:  Do not give the EPICS system a channel map */
+    epicsevent.LoadChannelMap("EpicsTable.map");
 
 
     ///  Load the detectors from file
@@ -134,7 +135,10 @@ Int_t main(Int_t argc, Char_t* argv[])
     //    make since to have it be an option for use globally
     QwHelicityPattern helicitypattern(detectors,run_label);
     helicitypattern.ProcessOptions(gQwOptions);
-
+    
+    /// Create the data handler array
+    QwDataHandlerArray datahandlerarray(gQwOptions,helicitypattern,run_label);
+    
     ///  Create the event ring with the subsystem array
     QwEventRing eventring(gQwOptions,detectors);
     //  Make a copy of the detectors object to hold the
@@ -143,7 +147,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     ///  Create the running sum
     QwSubsystemArrayParity runningsum(detectors);
-
+    QwHelicityPattern patternsum(helicitypattern);
 
     //  Initialize the database connection.
     #ifdef __USE_DATABASE__
@@ -188,9 +192,12 @@ Int_t main(Int_t argc, Char_t* argv[])
     //  Construct tree branches
     treerootfile->ConstructTreeBranches("evt", "MPS event data tree", ringoutput);
     treerootfile->ConstructTreeBranches("mul", "Helicity event data tree", helicitypattern);
-    treerootfile->ConstructTreeBranches("mulc", "Helicity event data tree (corrected)", helicitypattern.return_combiner());
-    treerootfile->ConstructTreeBranches("mulc_lrb", "Helicity event data tree (corrected by LinRegBlue)", helicitypattern.return_LRBCorrector());
+    burstrootfile->ConstructTreeBranches("pr", "Pair tree", helicitypattern.GetPairYield(),"yield_");
+    burstrootfile->ConstructTreeBranches("pr", "Pair tree", helicitypattern.GetPairAsymmetry(),"asym_");
     treerootfile->ConstructTreeBranches("slow", "EPICS and slow control tree", epicsevent);
+
+    datahandlerarray.ConstructTreeBranches(treerootfile);
+
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstYield(),"yield_");
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstAsymmetry(),"asym_");
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstDifference(),"diff_");
@@ -202,7 +209,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     //  Clear the single-event running sum at the beginning of the runlet
     runningsum.ClearEventData();
-    helicitypattern.ClearRunningSum();
+    patternsum.ClearRunningSum();
     //  Clear the running sum of the burst values at the beginning of the runlet
     helicitypattern.ClearBurstSum();
 
@@ -293,15 +300,20 @@ Int_t main(Int_t argc, Char_t* argv[])
           // Load the event into the helicity pattern
           helicitypattern.LoadEventData(ringoutput);
 
-          // Calculate helicity pattern asymmetry
-          if (helicitypattern.IsCompletePattern()) {
-
-            // Update the blinder if conditions have changed
-            helicitypattern.UpdateBlinder(ringoutput);
-
-            // Calculate the asymmetry
-            helicitypattern.CalculateAsymmetry();
-            if (helicitypattern.IsGoodAsymmetry()) {
+	  if (helicitypattern.PairAsymmetryIsGood()) {
+	    patternsum.AccumulatePairRunningSum(helicitypattern);
+	    // Fill pair tree branches
+	    treerootfile->FillTreeBranches(helicitypattern.GetPairYield());
+	    treerootfile->FillTreeBranches(helicitypattern.GetPairAsymmetry());
+	    treerootfile->FillTreeBranches(helicitypattern.GetPairDifference());
+	    treerootfile->FillTree("pr");
+	    
+	    // Clear the data
+	    helicitypattern.ClearPairData();
+	  }
+          // Check to see if we can calculate helicity pattern asymmetry, do so, and report if it worked
+          if (helicitypattern.IsGoodAsymmetry()) {
+	    patternsum.AccumulateRunningSum(helicitypattern);
 
               // Fill histograms
               historootfile->FillHistograms(helicitypattern);
@@ -326,20 +338,15 @@ Int_t main(Int_t argc, Char_t* argv[])
               }
 
               // Process data handlers
-              helicitypattern.ProcessDataHandlerEntry();
-
+              datahandlerarray.ProcessDataHandlerEntry();
+	      
               // Fill regressed tree branches
-	      treerootfile->FillTreeBranches(helicitypattern.return_combiner());
-	      treerootfile->FillTree("mulc");
-              treerootfile->FillTreeBranches(helicitypattern.return_LRBCorrector());
-	      treerootfile->FillTree("mulc_lrb");
+	      datahandlerarray.FillTreeBranches(treerootfile);
 
               // Clear the data
               helicitypattern.ClearEventData();
 
-            } // helicitypattern.IsGoodAsymmetry()
-
-          } // helicitypattern.IsCompletePattern()
+	  } // helicitypattern.IsGoodAsymmetry()
 
         } // eventring.IsReady()
 
@@ -357,14 +364,14 @@ Int_t main(Int_t argc, Char_t* argv[])
 
 
     // Calculate running averages over helicity patterns
-    if (helicitypattern.IsRunningSumEnabled()) {
-      helicitypattern.CalculateRunningAverage();
+    if (patternsum.IsRunningSumEnabled()) {
+      patternsum.CalculateRunningAverage();
       if (helicitypattern.IsBurstSumEnabled()) {
         helicitypattern.CalculateRunningBurstAverage();
       }
     }
 
-    helicitypattern.FinishDataHandler();
+    datahandlerarray.FinishDataHandler();
 
     // This will calculate running averages over single helicity events
     runningsum.CalculateRunningAverage();
@@ -406,7 +413,8 @@ Int_t main(Int_t argc, Char_t* argv[])
       //      runningsum.WritePromptSummary(&promptsummary, "yield");
       // runningsum.WritePromptSummary(&promptsummary, "asymmetry");
       //      runningsum.WritePromptSummary(&promptsummary, "difference");
-      helicitypattern.WritePromptSummary(&promptsummary);
+      datahandlerarray.WritePromptSummary(&promptsummary, "asymmetry");
+      patternsum.WritePromptSummary(&promptsummary);
       promptsummary.PrintCSV();
     }
     //  Read from the database
@@ -415,8 +423,8 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     // Each subsystem has its own Connect() and Disconnect() functions.
     if (database.AllowsWriteAccess()) {
-      helicitypattern.FillDB(&database);
-      helicitypattern.FillErrDB(&database);
+      patternsum.FillDB(&database);
+      patternsum.FillErrDB(&database);
       epicsevent.FillDB(&database);
       helicitypattern.return_running_combiner().FillDB(&database,"asymmetry");
       ringoutput.FillDB_MPS(&database, "optics");

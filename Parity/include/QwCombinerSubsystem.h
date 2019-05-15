@@ -13,7 +13,6 @@
 #include <boost/shared_ptr.hpp>
 
 // headers
-#include "QwOptions.h"
 #include "VQwSubsystemParity.h"
 #include "QwSubsystemArrayParity.h"
 #include "QwCombiner.h"
@@ -35,16 +34,8 @@ class QwCombinerSubsystem: public VQwSubsystemParity,
   public:
       // Constructors
       /// \brief Constructor with just name.
-      /// (use gQwOptions to initialize the QwCombiner baseclass)
-      QwCombinerSubsystem(TString name)
-      : VQwSubsystem(name), VQwSubsystemParity(name), QwCombiner(gQwOptions) { }
-      /// \brief Constructor with only options
-      QwCombinerSubsystem(QwOptions &options, TString name)
-      : VQwSubsystem(name), VQwSubsystemParity(name), QwCombiner(options) { }
-      /// \brief Constructor with single event
-      QwCombinerSubsystem(QwOptions &options, QwSubsystemArrayParity& event, TString name)
-      : VQwSubsystem(name), VQwSubsystemParity(name), QwCombiner(options, event)
-      { QwMessage << "Constructing QwCombinerSubsystem" << QwLog::endl; }
+      QwCombinerSubsystem(const TString name)
+      : VQwSubsystem(name), VQwSubsystemParity(name), QwCombiner(name) { }
 
       // Copy Constructor
       QwCombinerSubsystem(const QwCombinerSubsystem &source)
@@ -54,8 +45,6 @@ class QwCombinerSubsystem: public VQwSubsystemParity,
       ~QwCombinerSubsystem();
 
       boost::shared_ptr<VQwSubsystem> GetSharedPointerToStaticObject();
-
-      void ProcessOptions(QwOptions &options){QwCombiner::ProcessOptions(options);};
 
       /// \brief Update the running sums
       void AccumulateRunningSum(VQwSubsystem* input);

@@ -189,6 +189,8 @@ protected:
   std::vector <QwEnergyCalculator> fECalculator;
   std::vector <QwBeamDetectorID> fBeamDetectorID;
 
+  
+
 /////
 private:
   // std::vector<TString> DetectorTypes;// for example could be BCM, LUMI,BPMSTRIPLINE, etc..
@@ -196,6 +198,8 @@ private:
 
 
   static const Bool_t bDEBUG=kFALSE;
+
+  
 
 };
 

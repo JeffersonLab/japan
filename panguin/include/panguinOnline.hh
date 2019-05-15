@@ -22,7 +22,7 @@
 #include "TH3.h"
 #include "panguinOnlineConfig.hh"
 
-#define UPDATETIME 2000
+#define UPDATETIME 30000
 
 class OnlineGUI {
   // Class that takes care of the GUI
@@ -63,8 +63,10 @@ private:
   TH2D                             *mytemp2d_golden;
   TH3D                             *mytemp3d_golden;
 
+  int fVerbosity;
+
 public:
-  OnlineGUI(OnlineConfig&,Bool_t);
+  OnlineGUI(OnlineConfig&, Bool_t,int);
   void CreateGUI(const TGWindow *p, UInt_t w, UInt_t h);
   virtual ~OnlineGUI();
   void DoDraw();
@@ -82,6 +84,8 @@ public:
   void TreeDraw(std::vector <TString>); 
   void HistDraw(std::vector <TString>);
   void MacroDraw(std::vector <TString>);
+  void LoadDraw(std::vector <TString>);
+  void LoadLib(std::vector <TString>);
   void DoDrawClear();
   void TimerUpdate();
   void BadDraw(TString);
@@ -91,6 +95,7 @@ public:
   void PrintPages();
   void MyCloseWindow();
   void CloseGUI();
+  void SetVerbosity(int ver){fVerbosity=ver;}
   ClassDef(OnlineGUI,0);
 };
 #endif //panguinOnline_h

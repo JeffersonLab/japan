@@ -26,7 +26,7 @@ void  QwQPD::InitializeChannel(TString name)
 
   VQwBPM::InitializeChannel(name);
 
-  fEffectiveCharge.InitializeChannel(name+"_EffectiveCharge","derived");
+  fEffectiveCharge.InitializeChannel(name+"WS","derived");
 
   for(i=0;i<4;i++) {
     fPhotodiode[i].InitializeChannel(name+subelement[i],"raw");
@@ -52,7 +52,7 @@ void  QwQPD::InitializeChannel(TString subsystem, TString name)
 
   VQwBPM::InitializeChannel(name);
 
-  fEffectiveCharge.InitializeChannel(subsystem, "QwQPD", name+"_EffectiveCharge","derived");
+  fEffectiveCharge.InitializeChannel(subsystem, "QwQPD", name+"WS","derived");
 
   for(i=0;i<4;i++) {
     fPhotodiode[i].InitializeChannel(subsystem, "QwQPD", name+subelement[i],"raw");

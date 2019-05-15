@@ -110,7 +110,9 @@ class QwBlinder {
 
 
     void  WriteFinalValuesToDB(QwParityDB* db);
-    void  PrintFinalValues();
+    void  PrintCountersValues(std::vector<Int_t> fCounters, TString counter_type);
+    void  PrintFinalValues(Int_t kVerbosity=1);
+
 
 #ifdef __USE_DATABASE__
     /// Write to the database
@@ -176,9 +178,16 @@ class QwBlinder {
 
     /// Blind the asymmetry of an array of subsystems
     void  Blind(QwSubsystemArrayParity& diff) {
-      if (CheckBlindability()!=kNotBlindable)
+      if (CheckBlindability(fPatternCounters)!=kNotBlindable)
 	diff.Blind(this);
     };
+    /// Blind the pair asymmetry 
+    /// and only check fBlindingStrategy to avoid  overcounting fPatternCounters
+    void  BlindPair(QwSubsystemArrayParity& diff) {
+      if (CheckBlindability(fPairCounters)!=kNotBlindable)
+	diff.Blind(this);
+    };
+
     /// Unblind the asymmetry of an array of subsystems
     void  UnBlind(QwSubsystemArrayParity& diff) {
       diff.UnBlind(this);
@@ -186,9 +195,15 @@ class QwBlinder {
 
     /// Blind the difference of an array of subsystems
     void  Blind(QwSubsystemArrayParity& diff, const QwSubsystemArrayParity& yield) {
-      if (CheckBlindability()!=kNotBlindable)
+      if (CheckBlindability(fPatternCounters)!=kNotBlindable)
 	diff.Blind(this, yield);
     };
+    /// Blind the pair difference of an array of subsystems
+    void  BlindPair(QwSubsystemArrayParity& diff, const QwSubsystemArrayParity& yield) {
+      if (CheckBlindability(fPairCounters)!=kNotBlindable)
+	diff.Blind(this, yield);
+    };
+
     /// Unblind the difference of an array of subsystems
     void  UnBlind(QwSubsystemArrayParity& diff, const QwSubsystemArrayParity& yield) {
       diff.UnBlind(this, yield);
@@ -213,7 +228,7 @@ class QwBlinder {
     Double_t fBeamCurrentThreshold;
     Bool_t fBeamIsPresent;
 
-    EQwBlinderStatus CheckBlindability();
+    EQwBlinderStatus CheckBlindability(std::vector<Int_t> &fCounters);
     Bool_t fBlinderIsOkay;
 
     
@@ -275,6 +290,7 @@ class QwBlinder {
     std::vector<UChar_t> GenerateDigest(const TString& input) const;
 
     std::vector<Int_t> fPatternCounters; ///< Counts the number of events in each failure mode
+    std::vector<Int_t> fPairCounters; ///< Counts the number of helicity pairs in each failure mode
 };
 
 #endif //__QWBLINDER__

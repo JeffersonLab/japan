@@ -8,7 +8,7 @@
  */
 
 #include <iostream>
-
+#include <fstream>
 
 #include "TObject.h"
 #include "TClonesArray.h"
@@ -16,7 +16,7 @@
 #include "TString.h"
 
 #include "TROOT.h"
-
+#include "QwOptions.h"
 /**
  *  \class QwPromptSummary
  *  \ingroup QwAnalysis
@@ -88,7 +88,7 @@ class PromptSummaryElement :  public TObject
   // void SetAsymmetryWidthUnit  (const TString  in) { fAsymmetryWidthUnit=in; };
 
 
-  TString GetCSVSummary();
+  TString GetCSVSummary(TString type);
   TString GetTextSummary();
   //
 
@@ -129,7 +129,7 @@ class QwPromptSummary  :  public TObject
 
 
   Int_t                    fNElements;
-  TObjArray               *fElementList; 
+  std::vector<PromptSummaryElement*> fElementList; 
 
   void SetRunNumber(const Int_t in) {fRunNumber = in;};
   const Int_t GetRunNumber() {return fRunNumber;};
