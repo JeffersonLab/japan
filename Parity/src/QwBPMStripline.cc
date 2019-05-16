@@ -521,7 +521,8 @@ void QwBPMStripline<T>::PrintValue() const
     fAbsPos[i].PrintValue();
     fRelPos[i].PrintValue();
   }
-  return;
+  fEffectiveCharge.PrintValue();
+  fEllipticity.PrintValue();
 }
 
 
@@ -683,7 +684,6 @@ void QwBPMStripline<T>::Ratio( QwBPMStripline<T> &numer, QwBPMStripline<T> &deno
   *this=numer;
   this->fEffectiveCharge.Ratio(numer.fEffectiveCharge,denom.fEffectiveCharge);
   this->fEllipticity.Ratio(numer.fEllipticity,denom.fEllipticity);
-  return;
 }
 
 
@@ -700,7 +700,6 @@ void QwBPMStripline<T>::Scale(Double_t factor)
     fRelPos[i].Scale(factor);
     fAbsPos[i].Scale(factor);
   }
-  return;
 }
 
 
@@ -718,7 +717,6 @@ void QwBPMStripline<T>::CalculateRunningAverage()
   }
   fEffectiveCharge.CalculateRunningAverage();
   fEllipticity.CalculateRunningAverage();
-  return;
 }
 
 
@@ -741,7 +739,6 @@ void QwBPMStripline<T>::AccumulateRunningSum(const QwBPMStripline<T>& value)
   }
   fEffectiveCharge.AccumulateRunningSum(value.fEffectiveCharge);
   fEllipticity.AccumulateRunningSum(value.fEllipticity);
-  return;
 }
 template<typename T>
 void    QwBPMStripline<T>::DeaccumulateRunningSum(VQwBPM& value){
@@ -758,9 +755,8 @@ void    QwBPMStripline<T>::DeaccumulateRunningSum(QwBPMStripline<T>& value){
     fRelPos[i].DeaccumulateRunningSum(value.fRelPos[i]);
     fAbsPos[i].DeaccumulateRunningSum(value.fAbsPos[i]);
   }
-  fEffectiveCharge.DeaccumulateRunningSum(value.fEffectiveCharge);  return;
-  fEllipticity.DeaccumulateRunningSum(value.fEllipticity);  return;
-  
+  fEffectiveCharge.DeaccumulateRunningSum(value.fEffectiveCharge);
+  fEllipticity.DeaccumulateRunningSum(value.fEllipticity);  
 };
 
 template<typename T>
