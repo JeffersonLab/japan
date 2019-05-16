@@ -211,6 +211,13 @@ class QwBlinder {
 
     const Bool_t& IsBlinderOkay() const {return fBlinderIsOkay;};
 
+    void ConstructObjects(TDirectory *folder, TString &prefix) {
+      if (folder != NULL) folder->cd();
+      TString basename = prefix + "seed";
+      const TObjString* data = new TObjString(fSeed);
+      folder->WriteTObject(data, basename.Data());
+    };
+
  private:
     ///  Indicates the first value recieved of the blindability of the target 
     EQwBlinderStatus fTargetBlindability_firstread;
