@@ -95,11 +95,11 @@ QwBlinder::QwBlinder(const EQwBlindingStrategy blinding_strategy):
   // Read parameter file
   QwParameterFile blinder("blinder.map");
   if (blinder.FileHasVariablePair("=", "seed", fSeed))
-    QwOut << "Using seed from file: " << fSeed << QwLog::endl;
+    QwVerbose << "Using seed from file: " << fSeed << QwLog::endl;
   if (blinder.FileHasVariablePair("=", "max_asymmetry", fMaximumBlindingAsymmetry))
-    QwOut << "Using blinding box: " << fMaximumBlindingAsymmetry << " ppm" << QwLog::endl;
+    QwVerbose << "Using blinding box: " << fMaximumBlindingAsymmetry << " ppm" << QwLog::endl;
   if (blinder.FileHasVariablePair("=", "max_factor", fMaximumBlindingFactor))
-    QwOut << "Using blinding factor: " << fMaximumBlindingFactor << QwLog::endl;
+    QwVerbose << "Using blinding factor: " << fMaximumBlindingFactor << QwLog::endl;
 
 
   // Initialize blinder from seed
