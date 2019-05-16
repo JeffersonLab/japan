@@ -9,7 +9,7 @@
 #include <string>
 #include <TChain.h>
 using namespace std;
-void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInput.txt", char delim = ' '){
+void regressDipole_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInputDipole.txt", char delim = ' '){
   Double_t speed = 0.66;
   Double_t nonLinearFit = 0.0; // 1.0 = nonLinear fit with fit parameter uncertaintites included in weight
   Int_t passLimitValue = 1;
@@ -29,7 +29,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   }
   TTreeReader oldTreeReader(oldTree);
   TTree * newTree = new TTree("reg"+tree,"Regressed "+tree+" tree");
-  TFile * outFile = new TFile(Form("outputReg_%s_%d.root",(const char*)tree,runNumber),"RECREATE");
+  TFile * outFile = new TFile(Form("outputRegDipole_%s_%d.root",(const char*)tree,runNumber),"RECREATE");
   TDirectory *folder = outFile->mkdir("histos_"+tree);
   outFile->cd();
   gSystem->Exec("mkdir plots");
@@ -41,13 +41,16 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   vector<Double_t> weighting;
   vector<Double_t> oldManipulatedValues;
   vector<Double_t> oldManipulatedErrors;
+  vector<Double_t> oldManipulatedUncertainties;
   //vector<Double_t> oldRespondingValues;
   //vector<Double_t> oldRespondingErrors;
   vector<TString> newRegressedBranchList;
   vector<TString> oldManipulatedDataBranchList;
   vector<TString> oldManipulatedErrorBranchList;
+  vector<TString> oldManipulatedUncertaintiesBranchList;
   vector<TString> oldRespondingDataBranchList;
   vector<TString> oldRespondingErrorBranchList;
+  vector<TString> oldRespondingUncertaintiesBranchList;
   TString errorBranchName  = "ErrorFlag"; // == 0 means no error, means its ok
   Double_t oldTreeErrorFlag = 0.0;
   TString okFlagReg  = "ok_cut"; // == 1 means true, means its ok
@@ -57,6 +60,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   Int_t fitN = 0;
   Bool_t manip = false;
   Int_t nmanip = 0;
+  Int_t nmanipInputs = 0;
   if (debug > -1) Printf("Data structures initialized");
   for (UInt_t listEntryN = 0; listEntryN < textFile.size(); listEntryN++){
     if (textFile[listEntryN][0] == "Global"){
@@ -102,57 +106,130 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
     }
     if (resp){
       if (debug > 2) Printf("Branch %s",textFile[listEntryN][0].c_str());
-      oldRespondingDataBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][1]);
+      if (textFile[listEntryN][1]!="NULL"){
+        oldRespondingDataBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][1]);
+      }
+      else {
+        oldRespondingDataBranchList.push_back(textFile[listEntryN][0]);
+      }
       //oldRespondingValues.push_back(0.0); 
-      oldRespondingErrorBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][2]);
+      if (textFile[listEntryN][2]!="NULL"){
+        oldRespondingErrorBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][2]);
+      }
+      else {
+        oldRespondingErrorBranchList.push_back(errorBranchName);
+      }
       //oldRespondingErrors.push_back(0.0); 
       newRegressedBranchList.push_back("reg_"+textFile[listEntryN][0]);
       newRegressedValues.push_back(0.0); 
+      listEntryN++; // Read next line for uncertainty data
+      if (textFile[listEntryN][1]!="NULL"){
+        oldRespondingUncertaintiesBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][1]);
+        oldRespondingUncertainties.push_back(0.0);
+      }
+      else {
+        if (textFile[listEntryN][0]=="User"){
+          oldRespondingUncertaintiesBranchList.push_back(textFile[listEntryN][0]);
+          oldRespondingUncertainties.push_back(stof(textFile[listEntryN][1].c_str()));
+        }
+        else {
+          oldRespondingUncertaintiesBranchList.push_back(textFile[listEntryN][0]);
+          oldRespondingUncertainties.push_back(0.0);
+        }
+      }
       nresp++;
     }
     if (manip){
       if (debug > 2) Printf("Branch %s",textFile[listEntryN][0].c_str());
-      oldManipulatedDataBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][1]);
-      oldManipulatedValues.push_back(0.0); 
-      oldManipulatedErrorBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][2]);
-      oldManipulatedErrors.push_back(0.0); 
-      parameters.push_back(stof(textFile[listEntryN][3])); // Initial parameter correlation slope guess for iterating fit
-      weighting.push_back(stof(textFile[listEntryN][4])); // Initial weighting guess for errors
+      if (textFile[listEntryN][1]!="NULL"){
+        oldManipulatedDataBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][1]);
+      }
+      else {
+        oldManipulatedDataBranchList.push_back(textFile[listEntryN][0]);
+      }
+      if (textFile[listEntryN][0] == "constant"){
+        oldManipulatedValues.push_back(1.0); // The physics asymmetry is asymmetry*1 (the number 1 is the type of value it is, an exact scalar)
+        oldManipulatedErrors.push_back(0.0); // The physics asymmetry applies for all Global Cuts passing entries
+        parameters.push_back(stof(textFile[listEntryN][3])); // Push back the physics asymmetry value placeholder at nmanip+1 position... assume it is trivially 0 for first pass
+        weighting.push_back(stof(textFile[listEntryN][4])); // Push back the physics asymmetry relative weighting factor for uncertainty calculations
+        nmanipInputs=nmanip; // This is our constant term
+      }
+      else {
+        oldManipulatedValues.push_back(0.0); 
+        if (textFile[listEntryN][2]!="NULL"){
+          oldManipulatedErrorBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][2]);
+        }
+        else {
+          oldManipulatedErrorBranchList.push_back(errorBranchName);
+        }
+        oldManipulatedErrors.push_back(0.0); 
+        parameters.push_back(stof(textFile[listEntryN][3])); // Initial parameter correlation slope guess for iterating fit
+        weighting.push_back(stof(textFile[listEntryN][4])); // Initial weighting guess for errors
+      }
+      listEntryN++; // Read next line for uncertainty data
+      if (textFile[listEntryN][1]!="NULL"){
+        oldManipulatedUncertaintiesBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][1]);
+        oldManipulatedUncertainties.push_back(0.0);
+      }
+      else {
+        if (textFile[listEntryN][0]=="User"){
+          oldManipulatedUncertaintiesBranchList.push_back(textFile[listEntryN][0]);
+          oldManipulatedUncertainties.push_back(stof(textFile[listEntryN][1].c_str()));
+        }
+        else {
+          oldManipulatedUncertaintiesBranchList.push_back(textFile[listEntryN][0]);
+          oldManipulatedUncertainties.push_back(0.0);
+        }
+      }
       nmanip++;
     }
     if (debug > 1) Printf("Branch %d initialized",listEntryN);
   }
-  oldManipulatedValues.push_back(1.0); // The physics asymmetry is asymmetry*1 (the number 1 is the type of value it is, an exact scalar)
-  oldManipulatedErrors.push_back(0.0); // The physics asymmetry applies for all Global Cuts passing entries
-  parameters.push_back(0.0); // Push back the physics asymmetry value placeholder at nmanip+1 position... assume it is trivially 0 for first pass
-  weighting.push_back(1.0); // Push back the physics asymmetry relative weighting factor for uncertainty calculations
-  nmanip++; // The physics asymmetry value adds ++ to the parameters of the fit
-  Int_t nmanipInputs = nmanip-1;
 
   vector<TTreeReaderValue<Double_t>> oldRespondingValuesReader;
   vector<TTreeReaderValue<Double_t>> oldRespondingErrorsReader;
+  vector<TTreeReaderValue<Double_t>> oldRespondingUncertaintiesReader;
   vector<TTreeReaderValue<Double_t>> oldManipulatedValuesReader;
   vector<TTreeReaderValue<Double_t>> oldManipulatedErrorsReader;
+  vector<TTreeReaderValue<Double_t>> oldManipulatedUncertaintiesReader;
 
   for(Int_t iBranch = 0; iBranch < oldManipulatedDataBranchList.size(); iBranch++) {
-    TTreeReaderValue<Double_t> temp1(oldTreeReader,oldManipulatedDataBranchList[iBranch]);
-    TTreeReaderValue<Double_t> temp2(oldTreeReader,oldManipulatedErrorBranchList[iBranch]);
-    oldManipulatedValuesReader.push_back(temp1);
-    oldManipulatedErrorsReader.push_back(temp2);
-    //oldTree->SetBranchAddress(oldManipulatedDataBranchList[iBranch],&oldManipulatedValues[iBranch]);
-    //oldTree->SetBranchAddress(oldManipulatedErrorBranchList[iBranch],&oldManipulatedErrors[iBranch]);
+    if (oldManipulatedDataBranchList[iBranch]!="constant"){
+      TTreeReaderValue<Double_t> temp1(oldTreeReader,oldManipulatedDataBranchList[iBranch]);
+      TTreeReaderValue<Double_t> temp2(oldTreeReader,oldManipulatedErrorBranchList[iBranch]);
+      if (oldManipulatedUncertaintiesBranchList[iBranch]=="User"){
+        TTreeReaderValue<Double_t> temp3(oldTreeReader,oldManipulatedDataBranchList[iBranch]); // trivially just put something here to avoid errors, doesn't get used in this if case later...
+        oldManipulatedUncertaintiesReader.push_back(temp3);
+      }
+      else {
+        TTreeReaderValue<Double_t> temp3(oldTreeReader,oldManipulatedUncertaintiesBranchList[iBranch]);
+        oldManipulatedUncertaintiesReader.push_back(temp3);
+      }
+      oldManipulatedValuesReader.push_back(temp1);
+      oldManipulatedErrorsReader.push_back(temp2);
+      //oldTree->SetBranchAddress(oldManipulatedDataBranchList[iBranch],&oldManipulatedValues[iBranch]);
+      //oldTree->SetBranchAddress(oldManipulatedErrorBranchList[iBranch],&oldManipulatedErrors[iBranch]);
+    }
   }
-  oldManipulatedDataBranchList.push_back("PV_Asymmetry");
   for(Int_t iBranch = 0; iBranch < oldRespondingDataBranchList.size(); iBranch++) {
     TTreeReaderValue<Double_t> temp1(oldTreeReader,oldRespondingDataBranchList[iBranch]);
     TTreeReaderValue<Double_t> temp2(oldTreeReader,oldRespondingErrorBranchList[iBranch]);
+    if (oldRespondingUncertaintiesBranchList[iBranch]=="User"){
+      TTreeReaderValue<Double_t> temp3(oldTreeReader,oldRespondingDataBranchList[iBranch]); // trivially just put something here to avoid errors, doesn't get used in this if case later...
+      oldRespondingUncertaintiesReader.push_back(temp3);
+    }
+    else {
+      TTreeReaderValue<Double_t> temp3(oldTreeReader,oldRespondingUncertaintiesBranchList[iBranch]);
+      oldRespondingUncertaintiesReader.push_back(temp3);
+    }
     oldRespondingValuesReader.push_back(temp1);
     oldRespondingErrorsReader.push_back(temp2);
+    oldRespondingUncertaintiesReader.push_back(temp3);
     //oldTree->SetBranchAddress(oldRespondingDataBranchList[iBranch],&oldRespondingValues[iBranch]);
     //oldTree->SetBranchAddress(oldRespondingErrorBranchList[iBranch],&oldRespondingErrors[iBranch]);
     newTree->Branch(          newRegressedBranchList[iBranch],&newRegressedValues[iBranch]);
   }
-  TTreeReaderValue<Double_t> oldTreeErrorFlagValue(oldTreeReader,errorBranchName);
+  TTreeReaderValue<Double_t> oldTreeErrorFlagValue(oldTreeReader,errorBranchName); // Constraint: all input ROOT files must have a parallel branch that denotes whether the event is to be taken seriously or not -> 0 == good event
   //oldTree->SetBranchAddress(errorBranchName,&oldTreeErrorFlag);
   newTree->Branch(okFlagReg,&newRegressedValuesOkCut);
   newTree->SetBranchStatus("*",1);
@@ -169,7 +246,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   vector<Double_t> chi2;
   Double_t chi2sum;
   Double_t fi = 0.0; // The functional value per data entry
-  Double_t si2 = 1.0-nonLinearFit + nonLinearFit*uncertainty*uncertainty;// The total sigma value per data entry
+  Double_t si2 = 1.0-nonLinearFit + nonLinearFit*0;//uncertainty*uncertainty;// The total sigma value per data entry
   Double_t si = 0.0; // The total sigma value per data entry
   Double_t chi2i = 0.0;
   vector<Double_t> dfi;   // The first derivative of the functional value per data entry
@@ -239,12 +316,18 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       }
       for (Int_t j = 0 ; j<nmanip ; j++){ // Loop over fit parameters j
         if (debug > 3) Printf("Looping, j = %d",j);
-        if (j<nmanipInputs){
+        if (j<nmanip && j!=nmanipInputs){
           oldManipulatedValues[j]=*oldManipulatedValuesReader[j]*weighting[j];
           oldManipulatedErrors[j]=*oldManipulatedErrorsReader[j];
+          if (oldManipulatedUncertaintiesBranchList[j]!="User"){
+            oldManipulatedUncertainties[j]=*oldManipulatedUncertaintiesReader[j];
+          } // Else use the ROOT file supplied branch with uncertainties in it
+          if (oldRespondingUncertaintiesBranchList[j]!="User"){
+            oldRespondingUncertainties[j]=*oldRespondingUncertaintiesReader[j];
+          } // Else use the ROOT file supplied branch with uncertainties in it
         }
         else {
-          oldManipulatedValues[j]=1.0; // User input values here - this is the asymmetry
+          oldManipulatedValues[j]=1.0; // User input values here - this is the asymmetry/constant term
         }
         if(oldManipulatedErrors[j]==0){
           fi += parameters[j]*oldManipulatedValues[j]; // Functional form of f
@@ -278,7 +361,9 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
         newRegressedValuesOkCut = 1.0;
         continue; 
       }
+      si2 += oldRespondingUncertainies[j]*oldRespondingUncertainies[j];
       for (Int_t j = 0 ; j<nmanip ; j++){ // Loop over fit parameters j
+        si2 += oldManipulatedUncertainties[j]*oldManipulatedUncertainties[j];
         si2 += nonLinearFit*covariance[j][j]*dfi[j]*dfi[j];
         for (Int_t k = j+1; k<nmanip ; k++){ // Loop over fit parameters k
           si2  += nonLinearFit*2*dfi[j]*dfi[k]*covariance[j][k];
@@ -350,7 +435,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       fi=0.0;
       chi2i=0.0;
       si=0.0;
-      si2 = 1.0-nonLinearFit + nonLinearFit*uncertainty*uncertainty;// The total sigma value per data entry
+      si2 = 1.0-nonLinearFit + nonLinearFit*0;//uncertainty*uncertainty;// The total sigma value per data entry
       newRegressedValuesOkCut = 1.0; // Reset true value
 
       //{}
