@@ -242,7 +242,7 @@ class QwBlinder {
     const QwBlinder& operator= (const QwBlinder& __attribute__((unused)) blinder) { return *this; };
 
     //  Variables and functions used in blinding the detector asymmetries
-    const EQwBlindingStrategy fBlindingStrategy; /// Blinding strategy
+    EQwBlindingStrategy fBlindingStrategy; /// Blinding strategy
     Double_t fBlindingOffset; /// The term to be added to detector asymmetries
     Double_t fBlindingOffset_Base; /// The term to be added to detector asymmetries, before polarity correction
     Double_t fBlindingFactor; /// The factor to be mutliplied to detector asymmetries

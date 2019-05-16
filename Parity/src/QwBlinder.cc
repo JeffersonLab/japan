@@ -100,6 +100,16 @@ QwBlinder::QwBlinder(const EQwBlindingStrategy blinding_strategy):
     QwVerbose << "Using blinding box: " << fMaximumBlindingAsymmetry << " ppm" << QwLog::endl;
   if (blinder.FileHasVariablePair("=", "max_factor", fMaximumBlindingFactor))
     QwVerbose << "Using blinding factor: " << fMaximumBlindingFactor << QwLog::endl;
+  std::string strategy;
+  if (blinder.FileHasVariablePair("=", "strategy", strategy)) {
+    std::transform(strategy.begin(), strategy.end(), strategy.begin(), ::tolower);
+    QwVerbose << "Using blinding strategy from file: " << strategy << QwLog::endl;
+    if (strategy == "diabled") fBlindingStrategy = kDisabled;
+    else if (strategy == "additive") fBlindingStrategy = kAdditive;
+    else if (strategy == "multiplicative") fBlindingStrategy = kMultiplicative;
+    else if (strategy == "additivemultiplicative") fBlindingStrategy = kAdditiveMultiplicative;
+    else QwWarning << "Blinding strategy " << strategy << " not recognized" << QwLog::endl;
+  }
 
 
   // Initialize blinder from seed
