@@ -223,7 +223,7 @@ void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_0
   if (hMeanRms==0)
   {
     Printf("Error, Histogram failed");
-    return 0;
+    return;
   }
   data_mean = hMeanRms->GetMean(1);
   data_mean_error = hMeanRms->GetMeanError(1);
@@ -259,7 +259,7 @@ void writeMean_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
   if (hMean==0)
   {
     Printf("Error, Histogram failed");
-    return 0;
+    return;
   }
   data_mean = hMean->GetMean(1);
   data_mean_error = hMean->GetMeanError(1);
@@ -290,7 +290,7 @@ void writeRMS_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
   if (hRms==0)
   {
     Printf("Error, Histogram failed");
-    return 0;
+    return;
   }
   data_rms = hRms->GetRMS(1);
   data_rms_error = hRms->GetRMSError(1);
