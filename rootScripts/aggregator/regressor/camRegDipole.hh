@@ -9,7 +9,7 @@
 #include <string>
 #include <TChain.h>
 using namespace std;
-void regressDipole_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInputDipole.txt", char delim = ' '){
+void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInputDipole.txt", char delim = ' '){
   Double_t speed = 0.66;
   Double_t nonLinearFit = 0.0; // 1.0 = nonLinear fit with fit parameter uncertaintites included in weight
   Int_t passLimitValue = 1;
@@ -42,6 +42,7 @@ void regressDipole_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1
   vector<Double_t> oldManipulatedValues;
   vector<Double_t> oldManipulatedErrors;
   vector<Double_t> oldManipulatedUncertainties;
+  vector<Double_t> oldRespondingUncertainties;
   //vector<Double_t> oldRespondingValues;
   //vector<Double_t> oldRespondingErrors;
   vector<TString> newRegressedBranchList;
@@ -224,7 +225,6 @@ void regressDipole_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1
     }
     oldRespondingValuesReader.push_back(temp1);
     oldRespondingErrorsReader.push_back(temp2);
-    oldRespondingUncertaintiesReader.push_back(temp3);
     //oldTree->SetBranchAddress(oldRespondingDataBranchList[iBranch],&oldRespondingValues[iBranch]);
     //oldTree->SetBranchAddress(oldRespondingErrorBranchList[iBranch],&oldRespondingErrors[iBranch]);
     newTree->Branch(          newRegressedBranchList[iBranch],&newRegressedValues[iBranch]);
@@ -361,7 +361,7 @@ void regressDipole_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1
         newRegressedValuesOkCut = 1.0;
         continue; 
       }
-      si2 += oldRespondingUncertainies[j]*oldRespondingUncertainies[j];
+      si2 += oldRespondingUncertainties[fitN]*oldRespondingUncertainties[fitN];
       for (Int_t j = 0 ; j<nmanip ; j++){ // Loop over fit parameters j
         si2 += oldManipulatedUncertainties[j]*oldManipulatedUncertainties[j];
         si2 += nonLinearFit*covariance[j][j]*dfi[j]*dfi[j];
