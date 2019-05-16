@@ -64,3 +64,8 @@
 "meanRms","mul","diff_bpm14Y","hw_sum","defaultCuts",0,"defaultHist"
 "meanRms","mul","diff_bpm12X","hw_sum","defaultCuts",0,"defaultHist"
 "meanRms","mul","diff_bpm12Y","hw_sum","defaultCuts",0,"defaultHist"
+"meanrms","reg","reg_asym_sam2","reg_asym_sam2","1",0,"defaultHist"
+"meanrms","reg","reg_asym_sam4","reg_asym_sam4","1",0,"defaultHist"
+"meanrms","reg","reg_asym_sam6","reg_asym_sam6","1",0,"defaultHist"
+"meanrms","reg","reg_asym_sam8","reg_asym_sam8","1",0,"defaultHist"
+"meanrms","reg","reg_asym_bcm_an_ds3","reg_asym_bcm_an_ds3","1",0,"defaultHist"

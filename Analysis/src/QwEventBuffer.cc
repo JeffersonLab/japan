@@ -26,6 +26,7 @@ void sigint_handler(int sig)
 #include "THaEtClient.h"
 #endif
 
+std::string QwEventBuffer::fDefaultDataDirectory = "/adaq1/data1/apar";
 std::string QwEventBuffer::fDefaultDataFileStem = "QwRun_";
 std::string QwEventBuffer::fDefaultDataFileExtension = "log";
 
@@ -43,6 +44,7 @@ QwEventBuffer::QwEventBuffer()
   :    fRunListFile(NULL),
        fDataFileStem(fDefaultDataFileStem),
        fDataFileExtension(fDefaultDataFileExtension),
+       fDataDirectory(fDefaultDataDirectory),
        fEvStreamMode(fEvStreamNull),
        fEvStream(NULL),
        fCurrentRun(-1),
@@ -56,14 +58,6 @@ QwEventBuffer::QwEventBuffer()
   signal(SIGINT,  sigint_handler);// ctrl+c
   signal(SIGTERM, sigint_handler);// kill in shell // 15
   //  signal(SIGTSTP, sigint_handler);// ctrl+z // 20
-
-  fDataDirectory = getenv_safe("QW_DATA");
-  if (fDataDirectory.Length() == 0){
-    QwError << "ERROR:  Can't get the data directory in the QwEventBuffer creator."
-	    << QwLog::endl;
-  } else if (! fDataDirectory.EndsWith("/")) {
-      fDataDirectory.Append("/");
-  }
 
   fCleanParameter[0] = 0.0;
   fCleanParameter[1] = 0.0;
@@ -88,6 +82,9 @@ void QwEventBuffer::DefineOptions(QwOptions &options)
   options.AddDefaultOptions()
     ("run,r", po::value<string>()->default_value("0:0"),
      "run range in format #[:#]");
+  options.AddDefaultOptions()
+    ("data,d", po::value<string>()->default_value(fDefaultDataDirectory),
+     "data directory, also $QW_DATA");
   options.AddDefaultOptions()
     ("runlist", po::value<string>()->default_value(""),
      "run list file name");
@@ -166,6 +163,15 @@ void QwEventBuffer::ProcessOptions(QwOptions &options)
     }
 #endif
   }
+
+  fDataDirectory = options.GetValue<string>("data");
+  if (fDataDirectory.Length() == 0){
+    QwError << "ERROR:  Can't get the data directory in the QwEventBuffer creator."
+	    << QwLog::endl;
+  } else if (! fDataDirectory.EndsWith("/")) {
+      fDataDirectory.Append("/");
+  }
+
   fRunRange = options.GetIntValuePair("run");
   fEventRange = options.GetIntValuePair("event");
   fSegmentRange = options.GetIntValuePair("segment");

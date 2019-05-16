@@ -39,19 +39,16 @@ QwDataHandlerArray::QwDataHandlerArray(const QwDataHandlerArray& source)
   fDataHandlersDisabledByName(source.fDataHandlersDisabledByName),
   fDataHandlersDisabledByType(source.fDataHandlersDisabledByType)
 {
-  /*
   // Make copies of all handlers rather than copying just the pointers
   for (const_iterator handler = source.begin(); handler != source.end(); ++handler) {
     this->push_back(handler->get()->Clone());
+    /*
     // Instruct the handler to publish variables
     if (this->back()->PublishInternalValues() == kFALSE) {
       QwError << "Not all variables for " << this->back()->GetDataHandlerName()
              << " could be published!" << QwLog::endl;
-    }
+    */
   }
-  */
-  QwError << "QwDataHandlerArray copy constructor is not defined" <<QwLog::endl;
-  exit(555);
 }
 
 
@@ -70,6 +67,7 @@ QwDataHandlerArray::~QwDataHandlerArray()
  */
 void QwDataHandlerArray::LoadDataHandlersFromParameterFile(QwParameterFile& detectors,  QwHelicityPattern& helicitypattern, const TString &run)
 {
+  fDataSource = &(helicitypattern);
   QwSubsystemArrayParity& yield = helicitypattern.fYield;
   QwSubsystemArrayParity& asym  = helicitypattern.fAsymmetry;
   QwSubsystemArrayParity& diff  = helicitypattern.fDifference;
@@ -246,6 +244,9 @@ void QwDataHandlerArray::ProcessOptions(QwOptions &options)
   // DataHandlers to disable
   fDataHandlersDisabledByName = options.GetValueVector<std::string>("DataHandler.disable-by-name");
   fDataHandlersDisabledByType = options.GetValueVector<std::string>("DataHandler.disable-by-type");
+
+  //  Get the globally defined print running sum flag
+  fPrintRunningSum = options.GetValue<bool>("print-runningsum");
 }
 
 /**
@@ -382,6 +383,7 @@ void  QwDataHandlerArray::FillErrDB(QwParityDB *db, TString type)
   }
   return;
 }
+*/
 
 void QwDataHandlerArray::WritePromptSummary(QwPromptSummary *ps, TString type)
 {
@@ -390,7 +392,7 @@ void QwDataHandlerArray::WritePromptSummary(QwPromptSummary *ps, TString type)
     handler_parity->WritePromptSummary(ps, type);
   }
 }
-*/
+
 
 //*****************************************************************//
 
@@ -464,6 +466,22 @@ void QwDataHandlerArray::CalculateRunningAverage()
   for (iterator handler = begin(); handler != end(); ++handler) {
     VQwDataHandler* handler_parity = dynamic_cast<VQwDataHandler*>(handler->get());
     handler_parity->CalculateRunningAverage();
+  }
+  if (fPrintRunningSum){
+    for (iterator handler = begin(); handler != end(); ++handler) {
+      VQwDataHandler* handler_parity = dynamic_cast<VQwDataHandler*>(handler->get());
+      handler_parity->PrintRunningAverage();
+    }
+  }
+}
+
+void QwDataHandlerArray::AccumulateRunningSum()
+{
+  if (fDataSource->GetEventcutErrorFlag() == 0){
+    for (iterator handler = begin(); handler != end(); ++handler) {
+      VQwDataHandler* handler_parity = dynamic_cast<VQwDataHandler*>(handler->get());
+      handler_parity->AccumulateRunningSum();
+    }
   }
 }
 
@@ -628,27 +646,20 @@ TList* QwDataHandlerArray::GetParamFileNameList(TString name) const
 
 */
 
-void QwDataHandlerArray::ProcessDataHandlerEntry() {
-
-    for(iterator handler = begin(); handler != end(); ++handler){
-        (*handler)->ProcessData();
-      }
-
-  ///*(this->GetDataHandlerByName("QwCombiner"))->ProcessData();//(QwCombiner::kHandleTypeAsym);
-  //running_combiner.AccumulateRunningSum(combiner);
-  //*(this->GetDataHandlerByName("LRBCorrector"))->ProcessData();//(QwCombiner::kHandleTypeAsym);
-  //*(this->GetDataHandlerByName("QwCorrelator"))->ProcessData();
-
+void QwDataHandlerArray::ProcessDataHandlerEntry()
+{
+  for(iterator handler = begin(); handler != end(); ++handler){
+    (*handler)->ProcessData();
+  }
+  this->AccumulateRunningSum();
 }
 
-void QwDataHandlerArray::FinishDataHandler() {
-
+void QwDataHandlerArray::FinishDataHandler()
+{
   for(iterator handler = begin(); handler != end(); ++handler){
-      (*handler)->CalcCorrelations();
-    }
-  //running_combiner.CalculateRunningAverage();
-  //running_combiner.PrintValue();
-
+    (*handler)->CalcCorrelations();
+  }
+  this->CalculateRunningAverage();  
 }
   
   

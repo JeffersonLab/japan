@@ -20,11 +20,13 @@ Last Modified: August 1, 2018 1:39 PM
 #include "VQwHardwareChannel.h"
 #include "QwFactory.h"
 
+
 class QwParameterFile;
 class QwRootFile;
 class QwHelicityPattern;
+class QwPromptSummary;
 
-class VQwDataHandler{
+class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
   public:
   
@@ -35,7 +37,8 @@ class VQwDataHandler{
     typedef std::vector< VQwHardwareChannel* >::iterator Iterator_HdwChan;
     typedef std::vector< VQwHardwareChannel* >::const_iterator ConstIterator_HdwChan;
 
-    VQwDataHandler(const TString& name):fName(name){}
+    VQwDataHandler(const TString& name):fName(name),fKeepRunningSum(kFALSE){}
+    VQwDataHandler(const VQwDataHandler &source);
 
     virtual void ParseConfigFile(QwParameterFile& file);
 
@@ -56,10 +59,16 @@ class VQwDataHandler{
 
     TString GetDataHandlerName(){return fName;}
 
+    void ClearEventData();
+
+    virtual void AccumulateRunningSum();
     void AccumulateRunningSum(VQwDataHandler &value);
     void CalculateRunningAverage();
+    void PrintRunningAverage();
     void PrintValue() const;
     void FillDB(QwParityDB *db, TString datatype){};
+
+    void WritePromptSummary(QwPromptSummary *ps, TString type);
 
     void ConstructTreeBranches(QwRootFile *treerootfile);
     void FillTreeBranches(QwRootFile *treerootfile);
@@ -74,7 +83,7 @@ class VQwDataHandler{
     }
 
     Int_t LoadChannelMap(){return this->LoadChannelMap(fMapFile);}
-    virtual Int_t LoadChannelMap(const std::string& mapfile) = 0;
+    virtual Int_t LoadChannelMap(const std::string& mapfile){return 0;};
 
   protected:
     
@@ -101,8 +110,6 @@ class VQwDataHandler{
    std::string fTreeName;
    std::string fTreeComment;
 
-   UInt_t fErrorFlag;
-
    TString run_label;
 
    /// Single event pointer
@@ -121,6 +128,9 @@ class VQwDataHandler{
 
    std::string ParseSeparator;  // Used as space between tokens in ParseHandledVariable
 
+ protected:
+   Bool_t fKeepRunningSum;
+   VQwDataHandler *fRunningsum;
 };
 
 #endif // VQWDATAHANDLER_H_

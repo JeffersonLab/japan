@@ -113,6 +113,9 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     */
 
     /// \brief Update the running sums for devices accumulated for the global error non-zero events/patterns
+    void AccumulateRunningSum();
+
+    /// \brief Update the running sums for devices accumulated for the global error non-zero events/patterns
     void AccumulateRunningSum(const QwDataHandlerArray& value);
     /// \brief Update the running sums for devices check only the error flags at the channel level. Only used for stability checks
     void AccumulateAllRunningSum(const QwDataHandlerArray& value);
@@ -126,9 +129,9 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     /// \brief Print value of all channels
     void PrintValue() const;
 
-    /*
+    
     void WritePromptSummary(QwPromptSummary *ps, TString type);
-    */
+    
     
     void ProcessDataHandlerEntry();
 
@@ -136,8 +139,14 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
   protected:
   /// Filename of the global detector map
   std::string fDataHandlersMapFile;
+
+  /// Pointer for the original data source
+  QwHelicityPattern *fDataSource;
+
   std::vector<std::string> fDataHandlersDisabledByName; ///< List of disabled types
   std::vector<std::string> fDataHandlersDisabledByType; ///< List of disabled names
+
+  Bool_t fPrintRunningSum;
 
     /// Test whether this handler array can contain a particular handler
     static Bool_t CanContain(VQwDataHandler* handler) {

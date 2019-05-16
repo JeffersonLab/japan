@@ -30,21 +30,11 @@ RegisterHandlerFactory(QwCombiner);
 QwCombiner::QwCombiner(const TString& name):VQwDataHandler(name)
 {
   ParseSeparator = ":";
+  fKeepRunningSum = kTRUE;
 }
 
-QwCombiner::QwCombiner(const QwCombiner &source)
+QwCombiner::QwCombiner(const QwCombiner &source):VQwDataHandler(source)
 {
-  fMapFile = source.fMapFile;
-  fErrorFlag = source.fErrorFlag;
-  this->fDependentVar.resize(source.fDependentVar.size());
-  fDependentType.resize(source.fDependentVar.size());
-  fOutputVar.resize(source.fDependentVar.size());
-  for (size_t i = 0; i < this->fDependentVar.size(); i++) {
-    const QwVQWK_Channel* vqwk = dynamic_cast<const QwVQWK_Channel*>(source.fOutputVar[i]);
-    this->fDependentVar[i] = NULL;
-    this->fOutputVar[i] = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
-    fDependentType[i] = source.fDependentType[i];
-  }
 }
 
 /// Destructor
@@ -76,8 +66,6 @@ QwCombiner::~QwCombiner()
  */
 Int_t QwCombiner::LoadChannelMap(const std::string& mapfile)
 {
-  // Return if correctiion is not enabled
-
   // Open the file
   QwParameterFile map(mapfile);
 
@@ -184,12 +172,14 @@ Int_t QwCombiner::ConnectChannels(
       name.insert(0, calc);
       new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
       new_vqwk->SetElementName(name);
+      new_vqwk->SetSubsystemName(fName);
     }
 
     // alias
     if(fDependentName.at(dv).at(0) == '@'){
       //QwMessage << "dv: " << name << QwLog::endl;
       new_vqwk = new QwVQWK_Channel(name, VQwDataElement::kDerived);
+      new_vqwk->SetSubsystemName(fName);
     }
     // defined type
     else if(dv_ptr!=NULL){
@@ -281,6 +271,7 @@ Int_t QwCombiner::ConnectChannels(QwSubsystemArrayParity& event)
         new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
         new_vqwk->SetElementName(name);
       }
+      new_vqwk->SetSubsystemName(fName);
     }
 
     // alias
@@ -323,19 +314,8 @@ Int_t QwCombiner::ConnectChannels(QwSubsystemArrayParity& event)
 }
 
 void QwCombiner::ProcessData() {
-  // Get error flag from QwHelicityPattern
-  if (fHelicityPattern != NULL){
-    fErrorFlag = fHelicityPattern->GetEventcutErrorFlag();
-  } else if (fSubsystemArray != NULL){
-    fErrorFlag = fSubsystemArray->GetEventcutErrorFlag();
-  } else {
-    QwError << "QwCombiner::LinearProcessData: Can't set fErrorFlag" << QwLog::endl;
-    fErrorFlag = 0;
-  }
- 
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar[i], fSensitivity[i]);
   }
-  
 }
 
