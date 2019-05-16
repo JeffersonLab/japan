@@ -7,25 +7,25 @@ Fit-Runaway-Scale-RMS-Criteria 0.0000001  (If all of the parameters relative cha
 Fit-Runaway-Scale-Value-Criteria 2.0      (If all of the parameters meet above criteria and avg change scale factor is above this number then rescale them down by 1e6)
 Responding                                (Varaibles to independently regress)
 asym_sam2 .hw_sum .Device_Error_Code      (Branch name, data leaf - NULL for branch==leaf, error code leaf - NULL for no error codes)
-NULL                                      (Uncertainty data: NULL for no uncertainties; branch name, data leaf for matching structure; double for manual input)
+NULL NULL                                 (Uncertainty data: NULL for no uncertainties; branch name, data leaf for matching structure; double for manual input)
 asym_sam4 .hw_sum .Device_Error_Code 
-NULL
+NULL NULL
 asym_sam6 .hw_sum .Device_Error_Code 
-NULL
+NULL NULL
 asym_sam8 .hw_sum .Device_Error_Code 
-NULL
+NULL NULL
 asym_bcm_an_ds3 .hw_sum .Device_Error_Code
-NULL
+NULL NULL
 Manipulated                               (Input variables with which to regress)
 diff_bpm4aX .hw_sum .Device_Error_Code 0.000 1.0 (Branch name, data leaf, error code leaf, initial parameter guess, relative weighting)
-NULL
+NULL NULL
 diff_bpm4aY .hw_sum .Device_Error_Code 0.000 1.0
-NULL
+NULL NULL
 diff_bpm4eX .hw_sum .Device_Error_Code 0.000 1.0
-NULL
+NULL NULL
 diff_bpm4eY .hw_sum .Device_Error_Code 0.000 1.0
-NULL
+NULL NULL
 diff_bpm14X .hw_sum .Device_Error_Code 0.000 1.0
-NULL
-constant NULL NULL 0.0 1.0                (Non-ROOT data entry)
+NULL NULL
+constant NULL NULL 0.000 1.0              (Non-ROOT data entry)
 User 4.8989e-4 (=1.0/sqrt(1.0e9/240Hz))
