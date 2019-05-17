@@ -1,15 +1,8 @@
 #ifndef __CAMREG__
 #define __CAMREG__
 #include "../camguin.hh"
-#include <vector>
-#include <TString.h>
-#include <algorithm>
-#include <iostream>
-#include <TMatrix.h>
-#include <string>
-#include <TChain.h>
 using namespace std;
-void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInputDipole.txt", char delim = ' '){
+void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t runNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInputDipole.txt", char delim = ' '){
   Double_t speed = 0.66;
   Double_t nonLinearFit = 0.0; // 1.0 = nonLinear fit with fit parameter uncertaintites included in weight
   Int_t passLimitValue = 1;
@@ -22,7 +15,13 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   runNumber = getRunNumber_h(runNumber);
   nRuns     = getNruns_h(nRuns);
   vector<vector<string>> textFile = textFileParse_h(regInput,delim);
-  TTree * oldTree = getTree_h(tree, runNumber, nRuns, "NULL");
+  //TTree * oldTree = getTree_h(tree, runNumber, nRuns, "NULL");
+  TChain *chain = new TChain(tree);
+  TFile * candidateFile = new TFile(filename.Data(),"READ");
+  if (candidateFile->GetListOfKeys()->Contains(tree)){
+    chain->Add(filename);
+  }
+  TTree * oldTree = chain;
   if (oldTree==0){
     Printf("Root file does not exist");
     return;
@@ -65,7 +64,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   if (debug > -1) Printf("Data structures initialized");
   for (UInt_t listEntryN = 0; listEntryN < textFile.size(); listEntryN++){
     if (textFile[listEntryN][0] == "Global"){
-      if (debug > 2) Printf("Branch %s",textFile[listEntryN][1].c_str());
+      if (debug > -2) Printf("Branch %s",textFile[listEntryN][1].c_str());
       errorBranchName = textFile[listEntryN][1];
       resp = false;
       manip = false;
@@ -578,7 +577,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       TCanvas * c2 = new TCanvas();
       c2->SetLogy();
 
-      oldTree->Draw(Form("%s",(const char*)oldRespondingDataBranchList[fitN]),"ErrorFlag==0");
+      oldTree->Draw(Form("%s",(const char*)oldRespondingDataBranchList[fitN]),Form("%s==0",(const char*)errorBranchName));
       TH1 *h1old = (TH1*)gROOT->FindObject("htemp");
       h1old->Write(Form("orig_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
       c2->SaveAs(Form("plots/orig_%s_%s_%d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber));
@@ -586,14 +585,14 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       TCanvas * c2_2 = new TCanvas();
       c2_2->SetLogy();
 
-      oldTree->Draw(Form("%s",(const char*)oldRespondingDataBranchList[fitN]),"ErrorFlag==0");
+      oldTree->Draw(Form("%s",(const char*)oldRespondingDataBranchList[fitN]),Form("%s==0",(const char*)errorBranchName));
       TH1 *h1_2old = (TH1*)gROOT->FindObject("htemp");
       h1_2old->SetName("h1old");
       TH1 *h2_3old = (TH1*)rebinTH1_h(h1_2old,"clean",1,2,1000); // example use case of rebinTH1_h method
       TH1 *h2_2old = (TH1*)h2_3old->Clone(); // example use case of rebinTH1_h method
       h2_3old->Delete();
       TString h2old_name = h2_2old->GetName();
-      oldTree->Draw(Form("%s>>%s",(const char*)oldRespondingDataBranchList[fitN],(const char*)h2old_name),"ErrorFlag==0"); // Manual
+      oldTree->Draw(Form("%s>>%s",(const char*)oldRespondingDataBranchList[fitN],(const char*)h2old_name),Form("%s==0",(const char*)errorBranchName)); // Manual
       h2_2old->Write(Form("orig_rebin_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
       c2_2->SaveAs(Form("plots/orig_rebin_%s_%s_%d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber));
 

@@ -24,6 +24,15 @@
 #include <TLeaf.h>
 #include <TH1.h>
 #include <TFile.h>
+#include <vector>
+#include <TString.h>
+#include <algorithm>
+#include <iostream>
+#include <TMatrix.h>
+#include <TMatrixD.h>
+#include <TChain.h>
+#include <TCanvas.h>
+#include <TTreeReader.h>
 using namespace std;
 
 int debug = 0;
