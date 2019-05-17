@@ -4,6 +4,7 @@
 using namespace std;
 void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t runNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInputDipole.txt", char delim = ' '){
   Double_t speed = 0.66;
+  TString fit = "parity";
   Double_t nonLinearFit = 0.0; // 1.0 = nonLinear fit with fit parameter uncertaintites included in weight
   Int_t passLimitValue = 1;
   Double_t fitCriteria = 0.01;
@@ -64,7 +65,7 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
   if (debug > -1) Printf("Data structures initialized");
   for (UInt_t listEntryN = 0; listEntryN < textFile.size(); listEntryN++){
     if (textFile[listEntryN][0] == "Global"){
-      if (debug > -2) Printf("Branch %s",textFile[listEntryN][1].c_str());
+      if (debug > 2) Printf("Branch %s",textFile[listEntryN][1].c_str());
       errorBranchName = textFile[listEntryN][1];
       resp = false;
       manip = false;
@@ -72,6 +73,10 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
     }
     if (textFile[listEntryN][0] == "Speed"){
       speed = stof(textFile[listEntryN][1]);
+      continue;
+    }
+    if (textFile[listEntryN][0] == "Fit-Type"){
+      fit = textFile[listEntryN][1];
       continue;
     }
     if (textFile[listEntryN][0] == "Non-Linear-Fit"){
@@ -123,19 +128,17 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
       newRegressedBranchList.push_back("reg_"+textFile[listEntryN][0]);
       newRegressedValues.push_back(0.0); 
       listEntryN++; // Read next line for uncertainty data
-      if (textFile[listEntryN][1]!="NULL"){
-        oldRespondingUncertaintiesBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][1]);
+      if (textFile[listEntryN][0]=="File" && textFile[listEntryN][2]!="NULL"){
+        oldRespondingUncertaintiesBranchList.push_back(textFile[listEntryN][1]+textFile[listEntryN][2]);
         oldRespondingUncertainties.push_back(0.0);
       }
-      else {
-        if (textFile[listEntryN][0]=="User"){
-          oldRespondingUncertaintiesBranchList.push_back(textFile[listEntryN][0]);
-          oldRespondingUncertainties.push_back(stof(textFile[listEntryN][1].c_str()));
-        }
-        else {
-          oldRespondingUncertaintiesBranchList.push_back(textFile[listEntryN][0]);
-          oldRespondingUncertainties.push_back(0.0);
-        }
+      else if (textFile[listEntryN][0]=="File" && textFile[listEntryN][2]=="NULL") {
+        oldRespondingUncertaintiesBranchList.push_back(textFile[listEntryN][1]);
+        oldRespondingUncertainties.push_back(0.0);
+      }
+      else if (textFile[listEntryN][0]=="User"){
+        oldRespondingUncertaintiesBranchList.push_back(textFile[listEntryN][0]);
+        oldRespondingUncertainties.push_back(stof(textFile[listEntryN][1].c_str()));
       }
       nresp++;
     }
@@ -167,19 +170,17 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
         weighting.push_back(stof(textFile[listEntryN][4])); // Initial weighting guess for errors
       }
       listEntryN++; // Read next line for uncertainty data
-      if (textFile[listEntryN][1]!="NULL"){
-        oldManipulatedUncertaintiesBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][1]);
+      if (textFile[listEntryN][0]=="File" && textFile[listEntryN][2]!="NULL") {
+        oldManipulatedUncertaintiesBranchList.push_back(textFile[listEntryN][1]+textFile[listEntryN][2]);
         oldManipulatedUncertainties.push_back(0.0);
       }
-      else {
-        if (textFile[listEntryN][0]=="User"){
-          oldManipulatedUncertaintiesBranchList.push_back(textFile[listEntryN][0]);
-          oldManipulatedUncertainties.push_back(stof(textFile[listEntryN][1].c_str()));
-        }
-        else {
-          oldManipulatedUncertaintiesBranchList.push_back(textFile[listEntryN][0]);
-          oldManipulatedUncertainties.push_back(0.0);
-        }
+      else if (textFile[listEntryN][0]=="File" && textFile[listEntryN][2]=="NULL") {
+        oldManipulatedUncertaintiesBranchList.push_back(textFile[listEntryN][1]);
+        oldManipulatedUncertainties.push_back(0.0);
+      }
+      else if (textFile[listEntryN][0]=="User"){
+        oldManipulatedUncertaintiesBranchList.push_back(textFile[listEntryN][0]);
+        oldManipulatedUncertainties.push_back(stof(textFile[listEntryN][1].c_str()));
       }
       nmanip++;
     }
@@ -294,7 +295,7 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
   Int_t numEntries = oldTree->GetEntries();
   newTree->SetEntries(numEntries); // Set the total number of entries to match
   Int_t numErrorEntries = 0;
-  if (debug > -1) Printf("Looping over %d entries",numEntries);
+  if (debug > -1) Printf("Will loop over %d entries",numEntries);
   if (numEntries>100000) numEntries=100000;
   Int_t eventN = 0;
   Int_t iterateAgain = 1;
@@ -315,39 +316,63 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
       }
       for (Int_t j = 0 ; j<nmanip ; j++){ // Loop over fit parameters j
         if (debug > 3) Printf("Looping, j = %d",j);
-        if (j<nmanip && j!=nmanipInputs){
-          oldManipulatedValues[j]=*oldManipulatedValuesReader[j]*weighting[j];
-          oldManipulatedErrors[j]=*oldManipulatedErrorsReader[j];
-          if (oldManipulatedUncertaintiesBranchList[j]!="User"){
-            oldManipulatedUncertainties[j]=*oldManipulatedUncertaintiesReader[j];
-          } // Else use the ROOT file supplied branch with uncertainties in it
-          if (oldRespondingUncertaintiesBranchList[j]!="User"){
-            oldRespondingUncertainties[j]=*oldRespondingUncertaintiesReader[j];
-          } // Else use the ROOT file supplied branch with uncertainties in it
+        if(oldManipulatedErrors[j]==0){
+          if (j<nmanip && j!=nmanipInputs){
+            oldManipulatedValues[j]=*oldManipulatedValuesReader[j]*weighting[j];
+            oldManipulatedErrors[j]=*oldManipulatedErrorsReader[j];
+            if (oldManipulatedUncertaintiesBranchList[j]!="User"){
+              oldManipulatedUncertainties[j]=*oldManipulatedUncertaintiesReader[j];
+            } // use the ROOT file supplied branch with uncertainties in it
+          }
+          else {
+            oldManipulatedValues[j]=1.0; // User input values here - this is the asymmetry/constant term
+          }
         }
         else {
-          oldManipulatedValues[j]=1.0; // User input values here - this is the asymmetry/constant term
+          if (debug > 3) Printf("Entry %d has an error in input %s",eventN,(const char*)oldManipulatedDataBranchList[j]);
+          newRegressedValuesOkCut = 0.0;
+          continue; // Abort this entry
         }
-        if(oldManipulatedErrors[j]==0){
+      }
+      // Define the function here
+      if ( fit=="linear" || fit=="parity" ) {
+        for (Int_t j = 0 ; j<nmanip ; j++){ // Loop over fit parameters j
           fi += parameters[j]*oldManipulatedValues[j]; // Functional form of f
           dfi[j] = 1*oldManipulatedValues[j]; // Functional form of first derivative of f
           for (Int_t k = 0 ; k<nmanip ; k++){ // Loop over fit parameters k
             ddfi[j][k] = 0; // Functional form of second derivative of f
             for (Int_t l = 0 ; l<nmanip ; l++){ // Loop over fit parameters l
               dddfi[j][k][l] = 0; // Functional form of third derivative of f
-            }
-          } // end l
-        } // end k
-        else {
-          if (debug > 3) Printf("Entry %d has an error in input %s",eventN,(const char*)oldManipulatedDataBranchList[j]);
-          newRegressedValuesOkCut = 0.0;
-          continue; // Abort this entry
-        }
-      } // end j (f)
+            } // end l
+          } // end k
+        } // end j (f)
+      }
+      if ( fit=="dipole" ) {
+        Double_t Q2 = pow(oldManipulatedValues[0],2.0);
+        Double_t in = 1-0.5*parameters[1]*Q2;
+        fi = parameters[0]*pow(in,-2.0);
+        dfi[0] = fi/parameters[0];
+        dfi[1] = parameters[0]*pow(in,-3.0)*Q2;
+        ddfi[0][0] = 0.0;
+        ddfi[0][1] = dfi[1]/parameters[0];
+        ddfi[1][0] = dfi[1]/parameters[0];
+        ddfi[1][1] = 1.5*parameters[0]*pow(in,-4.0)*pow(Q2,2.0);
+        dddfi[0][0][0] = 0.0;
+        dddfi[0][0][1] = 0.0;
+        dddfi[0][1][0] = 0.0;
+        dddfi[0][1][1] = ddfi[1][1]/parameters[0];
+        dddfi[1][1][0] = ddfi[1][1]/parameters[0];
+        dddfi[1][1][1] = 3.0*parameters[0]*pow(in,-5.0)*pow(Q2,3.0);
+        dddfi[1][0][0] = 0.0;
+        dddfi[1][0][1] = ddfi[1][1]/parameters[0];
+      }
       if((*oldRespondingErrorsReader[fitN])!=0){ 
         if (debug > 3) Printf("Entry %d has an error in input %s",eventN,(const char*)oldRespondingDataBranchList[fitN]);
         newRegressedValuesOkCut = 0.0;
       }
+      if (oldRespondingUncertaintiesBranchList[fitN]!="User"){
+        oldRespondingUncertainties[fitN]=*oldRespondingUncertaintiesReader[fitN];
+      } // use the ROOT file supplied branch with uncertainties in it
       f.push_back(fi);
       newRegressedValues[fitN] = *oldRespondingValuesReader[fitN] - fi + (parameters[nmanip]*1); // Regressed asymmetry of main detector [fitN]
       if (newRegressedValuesOkCut==0.0){ 

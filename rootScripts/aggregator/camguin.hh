@@ -33,6 +33,7 @@
 #include <TChain.h>
 #include <TCanvas.h>
 #include <TTreeReader.h>
+#include <cmath>
 using namespace std;
 
 int debug = 0;
