@@ -12,6 +12,7 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
   Double_t parameterLimitRMS = 0.000001;
   Double_t parameterLimitValue = 2.0;
   Double_t parRms2 = 10.0;
+  Int_t parameterLimits = 0;
 
   runNumber = getRunNumber_h(runNumber);
   nRuns     = getNruns_h(nRuns);
@@ -38,6 +39,8 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
   Int_t    n_data   = 0;
   vector<Double_t> newRegressedValues;
   vector<Double_t> parameters;
+  vector<Double_t> parametersLowerLimit;
+  vector<Double_t> parametersUpperLimit;
   vector<Double_t> weighting;
   vector<Double_t> oldManipulatedValues;
   vector<Double_t> oldManipulatedErrors;
@@ -73,6 +76,10 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
     }
     if (textFile[listEntryN][0] == "Speed"){
       speed = stof(textFile[listEntryN][1]);
+      continue;
+    }
+    if (textFile[listEntryN][0] == "Parameter-Limits"){
+      parameterLimits = stod(textFile[listEntryN][1]);
       continue;
     }
     if (textFile[listEntryN][0] == "Fit-Type"){
@@ -155,6 +162,10 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
         oldManipulatedErrors.push_back(0.0); // The physics asymmetry applies for all Global Cuts passing entries
         parameters.push_back(stof(textFile[listEntryN][3])); // Push back the physics asymmetry value placeholder at nmanip+1 position... assume it is trivially 0 for first pass
         weighting.push_back(stof(textFile[listEntryN][4])); // Push back the physics asymmetry relative weighting factor for uncertainty calculations
+        if (parameterLimits) {
+          parametersLowerLimit.push_back(stof(textFile[listEntryN][5])); 
+          parametersUpperLimit.push_back(stof(textFile[listEntryN][6])); 
+        }
         nmanipInputs=nmanip; // This is our constant term
       }
       else {
@@ -168,6 +179,10 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
         oldManipulatedErrors.push_back(0.0); 
         parameters.push_back(stof(textFile[listEntryN][3])); // Initial parameter correlation slope guess for iterating fit
         weighting.push_back(stof(textFile[listEntryN][4])); // Initial weighting guess for errors
+        if (parameterLimits) {
+          parametersLowerLimit.push_back(stof(textFile[listEntryN][5])); 
+          parametersUpperLimit.push_back(stof(textFile[listEntryN][6])); 
+        }
       }
       listEntryN++; // Read next line for uncertainty data
       if (textFile[listEntryN][0]=="File" && textFile[listEntryN][2]!="NULL") {
@@ -348,7 +363,7 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
         } // end j (f)
       }
       if ( fit=="dipole" ) {
-        Double_t Q2 = pow(oldManipulatedValues[0],2.0);
+        Double_t Q2 = oldManipulatedValues[0];
         Double_t in = 1-0.5*parameters[1]*Q2;
         fi = parameters[0]*pow(in,-2.0);
         dfi[0] = fi/parameters[0];
@@ -536,6 +551,16 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
         }
         else{
           parameters[j]=parameters[j]+speed*delta_parameters[j];
+          if (parameterLimits){
+            if (parameters[j]>parametersUpperLimit[j]){
+              parameters[j]=parametersUpperLimit[j];
+              Printf("\nUpper limit encountered on parameter %d \n",j);
+            }
+            if (parameters[j]<parametersLowerLimit[j]){
+              parameters[j]=parametersLowerLimit[j];
+              Printf("\nLower limit encountered on parameter %d \n",j);
+            }
+          }
         }
         //if (parameters[j]>0.2) parameters[j]=0.2;
         //if (parameters[j]<-0.2) parameters[j]=-0.2;
