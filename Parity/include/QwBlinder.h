@@ -213,9 +213,12 @@ class QwBlinder {
 
     void ConstructObjects(TDirectory *folder, TString &prefix) {
       if (folder != NULL) folder->cd();
-      TString basename = prefix + "seed";
-      const TObjString* data = new TObjString(fSeed);
-      folder->WriteTObject(data, basename.Data());
+      const TObjString* seed = new TObjString(fSeed);
+      folder->WriteTObject(seed, prefix + "seed", "WriteDelete");
+      const TObjString* seedID = new TObjString(Form("%u",fSeedID));
+      folder->WriteTObject(seedID, prefix + "seedID", "WriteDelete");
+      const TObjString* strategy = new TObjString(Form("%u", fBlindingStrategy));
+      folder->WriteTObject(strategy, prefix + "strategy", "WriteDelete");
     };
 
  private:
