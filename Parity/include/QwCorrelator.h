@@ -57,6 +57,11 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   std::string fAlphaOutputPath;
   std::string fAliasOutputPath;		
 
+  Int_t fTotalCount;
+  Int_t fGoodCount;
+  std::vector< Int_t > fErrCounts_IV;
+  std::vector< Int_t > fErrCounts_DV;
+
  private:
 		
   //Default Constructor

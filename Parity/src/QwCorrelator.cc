@@ -41,6 +41,8 @@ QwCorrelator::QwCorrelator(const TString& name):VQwDataHandler(name),
 					       corA("input")
 {
   ParseSeparator = "_";
+  fTotalCount = 0;
+  fGoodCount  = 0;
 }
 
 void QwCorrelator::ParseConfigFile(QwParameterFile& file)
@@ -56,21 +58,26 @@ void QwCorrelator::AccumulateRunningSum()
 {
   UInt_t error = 0;
 
+  fTotalCount++;
+
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     error |= fDependentVar.at(i)->GetErrorCode();
     fDependentValues.at(i) = (fDependentVar[i]->GetValue());
     //QwMessage << "Loading DV " << fDependentVar.at(i) << " into fDependentValues." << QwLog::endl;
+    if ( fDependentVar.at(i)->GetErrorCode() !=0)  (fErrCounts_DV.at(i))++;
   }
   for (size_t i = 0; i < fIndependentVar.size(); ++i) {
     error |= fIndependentVar.at(i)->GetErrorCode();
     fIndependentValues.at(i) = (fIndependentVar[i]->GetValue());
     //QwMessage << "Loading IV " << fIndependentVar.at(i) << " into fIndependentValues." << QwLog::endl;
+    if ( fIndependentVar.at(i)->GetErrorCode() !=0)  (fErrCounts_IV.at(i))++;
   }
 
   //QwMessage << "fDependentVar has a size of: " << fDependentVar.size() << QwLog::endl;
   //QwMessage << "fIndependentVar has a size of: " << fIndependentVar.size() << QwLog::endl;
 
   if (error == 0) {
+    fGoodCount++;
     corA.addEvent(&fIndependentValues[0],&fDependentValues[0]);
   }
   
@@ -79,6 +86,15 @@ void QwCorrelator::AccumulateRunningSum()
 
 void QwCorrelator::CalcCorrelations()
 {
+  QwMessage << "QwCorrelator:  Total entries: " << fTotalCount <<", good entries: "<< fGoodCount << QwLog::endl;
+  for (size_t i = 0; i < fDependentVar.size(); ++i) {
+    if (fErrCounts_DV.at(i) >0) QwMessage << "   Entries failed due to " << fDependentVar.at(i)->GetElementName()
+					  << ": " <<  fErrCounts_DV.at(i) << QwLog::endl;
+  }
+  for (size_t i = 0; i < fIndependentVar.size(); ++i) {
+    if (fErrCounts_IV.at(i) >0) QwMessage << "   Entries failed due to " << fIndependentVar.at(i)->GetElementName()
+					  << ": " <<  fErrCounts_IV.at(i) << QwLog::endl;
+  }
   corA.finish();
 	
   std::string TmpRunLabel = run_label.Data();
@@ -254,6 +270,9 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
     fDependentName_t.push_back(TString(fDependentName.at(i)));
   }
   corA.init(fIndependentName_t, fDependentName_t);
+
+  fErrCounts_IV.resize(fIndependentVar.size(),0);
+  fErrCounts_DV.resize(fDependentVar.size(),0);
 
   return 0;
 	
