@@ -514,6 +514,7 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
     }
     iterateAgain = 0;
     if (passLimit == 1){ // Last pass, go for it
+      Printf("Last pass of fit, speed = 1");
       speed=1.0;
     }
     if (passLimit>0){
@@ -583,6 +584,7 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
     else {
       iterateAgain = 0;
     }
+    Printf("Fit pass %%%d completed",passLimitValue-passLimit);
     passLimit = passLimit - 1;
     if (iterateAgain == 0){
       if (debug > -1) {
@@ -651,8 +653,14 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
       if (debug > -1) {
         Printf("Covariance matrix: ");
         displayMatrix_h(covariance,-2);
-        for (Int_t j = 0 ; j<parameters.size(); j++){
-          Printf("Parameter %s +- error = %5.3e +- %5.3e",(const char*)oldManipulatedDataBranchList[j],parameters[j],sqrt(covariance[j][j]));
+        if (fit=="linear"||fit=="parity"){
+          for (Int_t j = 0 ; j<parameters.size(); j++){
+            Printf("Parameter %s +- error = %5.3e +- %5.3e",(const char*)oldManipulatedDataBranchList[j],parameters[j],sqrt(covariance[j][j]));
+          }
+        }
+        if (fit=="dipole"){
+          Printf("Par: Normalization = %5.3e +- %5.3e",parameters[0],sqrt(covariance[0][0]));
+          Printf("Par: Radius = %5.3e +- %5.3e",sqrt(-1*6*parameters[1]),1.224*sqrt(covariance[1][1]));
         }
         Printf("Regressed reg %s average %5.3e +- %5.3e, std dev %5.3e +- %5.3e",(const char*)oldRespondingDataBranchList[fitN],h1->GetMean(),h1->GetMeanError(),h1->GetRMS(),h1->GetRMSError());
         Printf("Regressed old %s average %5.3e +- %5.3e, std dev %5.3e +- %5.3e",(const char*)oldRespondingDataBranchList[fitN],h1old->GetMean(),h1old->GetMeanError(),h1old->GetRMS(),h1old->GetRMSError());
