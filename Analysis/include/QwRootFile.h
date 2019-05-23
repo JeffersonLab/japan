@@ -331,6 +331,10 @@ class QwRootFile {
 
     /// \brief Construct the histograms of a generic object
     template < class T >
+    void ConstructObjects(const std::string& name, T& object);
+
+    /// \brief Construct the histograms of a generic object
+    template < class T >
     void ConstructHistograms(const std::string& name, T& object);
     /// Fill histograms of the subsystem array
     template < class T >
@@ -724,6 +728,37 @@ void QwRootFile::FillTreeBranches(
   // Fill the trees with the correct address
   for (size_t tree = 0; tree < fTreeByAddr[addr].size(); tree++) {
     fTreeByAddr[addr].at(tree)->FillTreeBranches(object);
+  }
+}
+
+
+/**
+ * Construct the objects directory of a generic object
+ * @param name Name for objects directory
+ * @param object Subsystem array
+ */
+template < class T >
+void QwRootFile::ConstructObjects(const std::string& name, T& object)
+{
+  // Create the objects in a directory
+  if (fRootFile) {
+    std::string type = typeid(object).name();
+    fDirsByName[name] = fRootFile->GetDirectory("/")->mkdir(name.c_str());
+    fDirsByType[type].push_back(name);
+    object.ConstructObjects(fDirsByName[name]);
+  }
+
+  // No support for directories in a map file
+  if (fMapFile) {
+    QwMessage << "QwRootFile::ConstructObjects::detectors address "
+	      << &object
+	      << " and its name " << name
+	      << QwLog::endl;
+
+    std::string type = typeid(object).name();
+    fDirsByName[name] = fMapFile->GetDirectory()->mkdir(name.c_str());
+    fDirsByType[type].push_back(name);
+    object.ConstructObjects();
   }
 }
 
