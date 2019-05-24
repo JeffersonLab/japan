@@ -705,7 +705,9 @@ void  QwHelicityPattern::AccumulateBurstSum()
   if (fPatternIsGood){
     fBurstYield.AccumulateRunningSum(fYield);
     fBurstDifference.AccumulateRunningSum(fDifference);
-    // The difference is blinded, so the burst difference is also blinded.
+    // Update: eventwise now, accumulate running sums of asymmetry itself
+    fBurstAsymmetry.AccumulateRunningSum(fAsymmetry);
+    // The asyms are blinded, so the burst is also blinded. Diffs will be used for BPMs, etc.
   }
 }
 
@@ -765,7 +767,8 @@ void  QwHelicityPattern::AccumulateRunningBurstSum()
   }
 
   // Calculate asymmetry over this entire burst
-  fBurstAsymmetry.Ratio(fBurstDifference, fBurstYield);
+  // Update: At end of burst calculate the asymmetry eventwise now, instead of burstwise
+  //fBurstAsymmetry.Ratio(fBurstDifference, fBurstYield);
   // Accumulate this burst asymmetry
   fRunningBurstAsymmetry.AccumulateRunningSum(fBurstAsymmetry);
 
