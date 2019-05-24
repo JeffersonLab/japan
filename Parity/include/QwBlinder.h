@@ -219,6 +219,10 @@ class QwBlinder {
       folder->WriteTObject(seedID, prefix + "seedID", "WriteDelete");
       const TObjString* strategy = new TObjString(Form("%u", fBlindingStrategy));
       folder->WriteTObject(strategy, prefix + "strategy", "WriteDelete");
+      const TObjString* max_asymmetry = new TObjString(Form("%f",fMaximumBlindingAsymmetry));
+      folder->WriteTObject(max_asymmetry, prefix + "max_asymmetry", "WriteDelete");
+      const TObjString* max_factor = new TObjString(Form("%f",fMaximumBlindingFactor));
+      folder->WriteTObject(max_factor, prefix + "max_factor", "WriteDelete");
     };
 
  private:
