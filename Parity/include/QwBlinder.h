@@ -223,6 +223,8 @@ class QwBlinder {
       folder->WriteTObject(max_asymmetry, prefix + "max_asymmetry", "WriteDelete");
       const TObjString* max_factor = new TObjString(Form("%f",fMaximumBlindingFactor));
       folder->WriteTObject(max_factor, prefix + "max_factor", "WriteDelete");
+      const TObjString* checksum = new TObjString(fChecksum.c_str());
+      folder->WriteTObject(checksum, prefix + "checksum", "WriteDelete");
     };
 
  private:
