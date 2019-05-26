@@ -19,6 +19,7 @@
 using namespace std;
 Int_t getRunNumber_h(Int_t runNumber = 0){
 // Get environment variable run number
+  if (debug>0) Printf("Run number: %d",runNumber);
   if ( runNumber == 0 ) 
   { 
     TString run = gSystem->Getenv("RUNNUM");
@@ -30,6 +31,21 @@ Int_t getRunNumber_h(Int_t runNumber = 0){
   }
   if (debug>0) Printf("Run number: %d",runNumber);
   return runNumber;
+}
+
+Int_t getSplitNumber_h(Int_t splitNumber = -1){
+// Get environment variable split number
+  if ( splitNumber == -1 ) 
+  { 
+    TString split = gSystem->Getenv("SPLITNUM");
+    splitNumber = split.Atoi();
+  }
+  if (splitNumber<0){
+    Printf("Error: Split Number given (%d) invalid, must be an integer >= 0",splitNumber);
+    return 0;
+  }
+  if (debug>0) Printf("Split number: %d",splitNumber);
+  return splitNumber;
 }
 
 Int_t getNruns_h(Int_t n_runs = -1){
@@ -121,10 +137,11 @@ vector<vector<string>> textFileParse_h(TString fileName, char delim = ',')
   }
 }
 
-TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1, TString filenamebase = "NULL"){
+TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t n_runs = -1, TString filenamebase = "NULL"){
 
   TString filename = "NULL";
   runNumber = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
   n_runs    = getNruns_h(n_runs);
   if (filenamebase == "NULL"){
     filenamebase = gSystem->Getenv("QW_ROOTFILES");
@@ -136,18 +153,22 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1,
   for(Int_t i = 0; i < (n_runs); i++){
 
     TString daqConfigs[5] = {"prexRespin1","prexCH","prexINJ","prexALL","prex_tedf"}; // Potentially replace this with a config file read in array or map;
-    TString analyses[3] = {".root","_regress_prFIXME.root","_regress_mul.root"};
+    TString analyses[3] = {".","_regress_prFIXME.","_regress_mul."};
+    TString suffix[2] = {"root",Form("%03d.root",splitNumber)};
     // FIXME remove this "FIXME" once there is a non-degeneracy in the tree names between the regress_pr and _mul root file's tree names
     if (debug>0) Printf("Looping over candidate rootfile prefixes and suffixes");
     for(Int_t ana=0;ana<3;ana++){
       for(Int_t j=0;j<5;j++){
-        filenamebase = Form("%s/%s_%d%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber+i,(const char*)analyses[ana]);
-        filename     = filenamebase;
-        if (debug>1) Printf("Trying file name: %s",(const char*)filenamebase);
-        if ( !gSystem->AccessPathName(filename.Data()) ) {
-          if (debug>1) Printf("Found file name: %s",(const char*)filenamebase);
-          foundFile = true;
-          j=6; // Exit loop
+        for(Int_t suf=0;suf<2;suf++){
+          filenamebase = Form("%s/%s_%d%s%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber+i,(const char*)analyses[ana],(const char*) suffix[suf]);
+          filename     = filenamebase;
+          if (debug>1) Printf("Trying file name: %s",(const char*)filenamebase);
+          if ( !gSystem->AccessPathName(filename.Data()) ) {
+            if (debug>1) Printf("Found file name: %s",(const char*)filenamebase);
+            foundFile = true;
+            j=6; // Exit loop
+            suf=3;
+          }
         }
       }
       //filenamebase = getRootFile_h(runNumber+i);
@@ -171,17 +192,18 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1,
     }
   }
   if (!foundFile){
-    Printf("Rootfile not found in %s with runs from %d to %d, check your config and rootfiles",(const char*)fileNameBase,runNumber,runNumber+n_runs-1);
+    Printf("Rootfile not found in %s with runs from %d to %d, split %03d, check your config and rootfiles",(const char*)fileNameBase,runNumber,runNumber+n_runs-1, splitNumber);
     return 0;
   }
   if (debug>3) Printf("TChain total N Entries: %d",(int)chain->GetEntries());
   return chain;
 }
 
-TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", Int_t runNumber = 0, Int_t nRuns = -1, TString filenamebase = "NULL"){
+TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1, TString filenamebase = "NULL"){
   runNumber = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
   nRuns     = getNruns_h(nRuns);
-  TChain  * Chain = getTree_h(tree, runNumber, nRuns, filenamebase);
+  TChain  * Chain = getTree_h(tree, runNumber, splitNumber, nRuns, filenamebase);
   if (!Chain){
     return 0;
   }
@@ -189,10 +211,11 @@ TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", 
   return BranchLeaf;
 }
 
-TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", Int_t runNumber = 0, Int_t nRuns = -1, TString filenamebase = "NULL"){
+TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1, TString filenamebase = "NULL"){
   runNumber = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
   nRuns     = getNruns_h(nRuns);
-  TChain  * Chain = getTree_h(tree, runNumber, nRuns, filenamebase);
+  TChain  * Chain = getTree_h(tree, runNumber, splitNumber, nRuns, filenamebase);
   if (!Chain){
     return 0;
   }
@@ -200,11 +223,12 @@ TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
   return Branch;
 }
 
-TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TString leaf = "hw_sum", Int_t runNumber = 0, Int_t nRuns = -1, TString filenamebase = "NULL"){
-  if (debug >2) Printf("Looking for leaf: \"%s\"",(const char*)(tree+"."+branch+"."+leaf));
+TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TString leaf = "hw_sum", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1, TString filenamebase = "NULL"){
+  if (debug>2) Printf("Looking for leaf: \"%s\"",(const char*)(tree+"."+branch+"."+leaf));
   runNumber = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
   nRuns     = getNruns_h(nRuns);
-  TChain  * Chain = getTree_h(tree, runNumber, nRuns, filenamebase);
+  TChain  * Chain = getTree_h(tree, runNumber, splitNumber, nRuns, filenamebase);
   if (!Chain){
     Printf("Error, tree %s missing",(const char*)(tree));
     return 0;
@@ -212,7 +236,7 @@ TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TSt
   TBranch * Branch = Chain->GetBranch(branch);
   if (!Branch){ // If the branch doesn't exist assume the user wants to get a leaf instead
     TLeaf * Leaf = Chain->GetLeaf(branch);
-    //getBranchLeaf_h(tree,leaf,runNumber,nRuns,filenamebase);
+    //getBranchLeaf_h(tree,leaf,runNumber,splitNumber,nRuns,filenamebase);
     if (!Leaf){
       Leaf = Chain->GetLeaf(leaf); //Try again
       if (!Leaf){ 
@@ -230,7 +254,7 @@ TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TSt
   return Leaf;
 }
 
-void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t new_runNumber = 0, Int_t new_nRuns = -1){
+void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t new_runNumber = 0, Int_t new_splitNumber = -1, Int_t new_nRuns = -1){
   // Store all trees
   TString aggregatorFileName = "run_aggregator.root";
   TString pwd                = gSystem->Getenv("PWD");
@@ -245,6 +269,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
 
   // Get environment variables
   new_runNumber = getRunNumber_h(new_runNumber);
+  new_splitNumber = getSplitNumber_h(new_splitNumber);
   new_nRuns     = getNruns_h(new_nRuns);
 
   // Placeholder variables for reading of root file
@@ -262,6 +287,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
     if (debug>0) Printf("Making new aggregator tree");
     branchList.push_back("run_number");
     branchList.push_back("n_runs");
+    branchList.push_back("split_n");
     newValues.push_back( 1.0e99); // Vectors have to be initialized, and I don't know how many entries will come, so go for all of them
     newValues.push_back( 1.0e99);
     tempValues.push_back(1.0e99);
@@ -330,6 +356,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   Bool_t writeEntry         = false;
   Bool_t editEntry          = false;
   Bool_t nRunsCheck         = false;
+  Bool_t splitNumberCheck   = false;
   Bool_t userAddedNewBranch = newBranch;
   Bool_t loopEnd            = false;
 
@@ -366,13 +393,17 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
         if (debug > 1) Printf("User editting value in root file: branch %s, value (new = %f, old = %f) runnumber %d",(const char*)valueName,new_value,oldValues[l],new_runNumber);
         //
         nRunsCheck = true; // Loop through again and check for nRuns being duplicated too
+        splitNumberCheck = true; // Loop through again and check for splitNumber being duplicated too
 	    }
-      if ( nRunsCheck && (branchList[l] == "n_runs") && (oldValues[l]==(Double_t)new_nRuns) ){ // FIXME this relies on run_number being first in the list of things being checked in order for it to work, maybe set l=0 and add nRunsheck== false to run_number check?
+      if ( ( nRunsCheck && (branchList[l] == "n_runs") && (oldValues[l]==(Double_t)new_nRuns) ) || ( splitNumberCheck && (branchList[l] == "split_n") && (oldValues[l]==(Double_t)new_splitNumber) ) ){ // FIXME this relies on run_number being first in the list of things being checked in order for it to work, maybe set l=0 and add nRunsheck== false to run_number check?
+        if (userAddedNewEntry == true) { // then this condition has not already been looped through once
+		      numEntries--;
+        }
 		    userAddedNewEntry = false;
 		    writeEntry        = true;
 		    editEntry         = true;
         nRunsCheck        = false; // Reset so further runs can be analyzed too
-		    numEntries--;
+        splitNumberCheck  = false; // Reset
       }
     }
     for (size_t l = 0; l < branchList.size(); l++){
@@ -382,9 +413,13 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
           if (debug > 3) Printf("NOTE: RunNumber %d getting written by user",new_runNumber);
   	      tempValues[l] = (Double_t)new_runNumber;
   	    }
-  	    else if ( branchList[l] == "n_runs" ) {
+        else if ( branchList[l] == "n_runs" ) {
           if (debug > 3) Printf("NOTE: new_nRuns %d getting written by user",new_nRuns);
-  	      tempValues[l] = (Double_t)new_nRuns;
+          tempValues[l] = (Double_t)new_nRuns;
+        }
+  	    else if ( branchList[l] == "split_n" ) {
+          if (debug > 3) Printf("NOTE: new_splitNumber %d getting written by user",new_splitNumber);
+  	      tempValues[l] = (Double_t)new_splitNumber;
   	    }
   	    else if ( branchList[l] == valueName ) {
           if (debug > 3) Printf("NOTE: %s branch = %f getting written by user",(const char*) valueName,new_value);
@@ -460,8 +495,9 @@ string stripStrChar(string str, const string& replace) {
 }
 
 
-void writePostPanFile_h(Int_t runNumber = 1369, TString filename = "run1369_summary.txt"){
+void writePostPanFile_h(Int_t runNumber = 1369, Int_t splitNumber = -1, TString filename = "run1369_summary.txt"){
   runNumber= getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
   filename = Form("txt_out/run%d_regression_summary.txt",runNumber);
   char delim = '\t';
   vector<vector<string>> contents = textFileParse_h(filename,delim);
