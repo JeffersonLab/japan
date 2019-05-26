@@ -90,6 +90,84 @@ Int_t writeNEvents_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
   return stabilityRingStart;
 }
 
+Int_t writeEventLoopN_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, Int_t stabilityRingLength = 0, Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
+  // Any branch will do, we are just counting the number of events that pass the global EventCuts, not device error codes too
+  runNumber = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
+  nRuns     = getNruns_h(nRuns);
+  TString channel = tree + "_" + branch + "_" + leaf;
+  // Make an instance of the relevant data source 
+  TLeaf   *Leaf   = getLeaf_h(tree,branch,leaf,runNumber,splitNumber,nRuns);
+  if (!Leaf){
+    Printf("Event counting terminated, branch not found");
+    return 0;
+  }
+  TString leafName = "NULL";
+  if (leaf==branch)
+  {
+    leafName = (TString)Leaf->GetName();
+  }
+  else
+  {
+    leafName = branch+"."+(TString)Leaf->GetName();
+  }
+  TBranch *Branch = Leaf->GetBranch();
+  TTree   *Tree   = Branch->GetTree();
+  Int_t    numEntries = Tree->GetEntries();
+
+  Int_t    cutValue = 0;
+  TLeaf   *CutLeaf;
+  TLeaf   *CutBranch;
+  TString defaultCut = "(ErrorFlag==0 && "+branch+".Device_Error_Code==0)"; // Make the default JAPAN cut on the user's given branch (assumes its a device ... excplicitly use noCut for non-device branches
+  if (cut == "defaultCut" || cut == "default" || cut == "def" || cut == "defaultCuts" || cut == "prex" || cut == "PREX"){
+    if (debug > 1) Printf("Cut == %s",(const char*)defaultCut);
+    CutBranch = Tree->GetLeaf("ErrorFlag");
+    CutLeaf   = Branch->GetLeaf("Device_Error_Code");
+    cutValue = 0;
+  }
+  else {
+    CutLeaf = Tree->GetLeaf(tree,cut); // Assume the user adds to ErrorFlag with a passed single branch (non-device) that they want to compare to == 0 for "good" cuts
+    cutValue = 0;
+  }
+  if (cut == "noCut" || cut == "1"){
+    cutValue = 1;
+  }
+  if (overWriteCut == 1){ // Don't include ErrorFlag cut - user overwrote
+    CutLeaf = Branch->GetLeaf(cut);
+    CutBranch = CutLeaf;
+    cutValue = 0;
+  }
+  // End cut setup
+
+  Int_t    n_reverse_data = 0;
+  Int_t    n_reverse_data_good = 0;
+  Int_t    stabilityRingStart = 0;
+  TString  number_total_events = channel+"_number_total_events";
+  TString  number_good_events = channel+"_number_good_events";
+  TString  number_stabilityRingStart = channel+"_number_stability_ring_start"; // Entry number that begins good cut passing stability ring of length stabilityRing
+  TString  number_stabilityRingLength = channel+"_number_stability_ring_length"; // length of stabilityRing
+
+  writeFile_h(number_total_events,numEntries,runNumber,splitNumber,nRuns);
+  if (stabilityRingLength!=0){
+    for (int k = numEntries-1; k > 0 ; k--)
+    { // Loop over input file's entries in reverse
+      Tree->GetEntry(k);
+      n_reverse_data++;
+      if ( cutValue || (CutBranch->GetValue(0) == 0 && CutLeaf->GetValue(0) == 0) ){ // cutValue = 1 iff overwrote cuts with 1, branch==leaf if overwritecuts==1, branch and leaf defined by default cuts or with added on top of non-deviceerrorcode leaf
+        n_reverse_data_good++;
+      }
+      if (n_reverse_data_good>=stabilityRingLength || n_reverse_data>numEntries)
+      {
+        break;
+      }
+    }
+    stabilityRingStart=numEntries-n_reverse_data+1; // +1 since events start on 1
+    writeFile_h(number_stabilityRingStart,stabilityRingStart,runNumber,splitNumber,nRuns);
+    writeFile_h(number_stabilityRingLength,stabilityRingLength,runNumber,splitNumber,nRuns);
+  }
+  return stabilityRingStart;
+}
+
 void writeMean_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);

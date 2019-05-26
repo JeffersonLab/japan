@@ -38,6 +38,17 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     writeNEvents_Loop_h( tree, branch, leaf, cut, overWriteCut, stabilityRing, runNumber, splitNumber, nRuns );
     if (debug>1) Printf("Done with nEvents loop ana");
   }
+  else if( 
+       ana == "eventsloopn"
+    || ana == "eventloopn"
+    || ana == "eventloopN"
+    || ana == "eventLoopN"
+    || ana == "eventsLoopN"
+    || ana == "eventsloopN"
+    || ana == "EventLoop"){
+    writeEventLoopN_Loop_h( tree, branch, leaf, cut, overWriteCut, stabilityRing, runNumber, splitNumber, nRuns );
+    if (debug>1) Printf("Done with EventLoopNs loop ana");
+  }
   else if ( 
        ana == "rms" 
     || ana == "Rms" 

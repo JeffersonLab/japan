@@ -83,8 +83,8 @@ void getAggregateVars_h(TTree * rootTree, std::vector<TString>* aggVars, std::ve
     // Not sure if the line below is so smart...
     aggVars->push_back(found);
     if (debug>1) Printf("In branch %s",(const char*)found);
-    oldValues->push_back(1.0e99); // Add the other vectors simulatneously to avoid mis-mapping
-    newValues->push_back(1.0e99);
+    oldValues->push_back(-1.0e6); // Add the other vectors simulatneously to avoid mis-mapping
+    newValues->push_back(-1.0e6);
   }
 
   for(auto iBranch = aggVars->begin(); iBranch != aggVars->end(); iBranch++) {
@@ -95,8 +95,8 @@ void addAggregateVars_h(TString varName, std::vector<TString>* aggVars, std::vec
 
   if (debug>1) Printf("Push back %s",(const char*)varName);
   aggVars->push_back(varName);
-  oldValues->push_back(1.0e99); // Add the other vectors simulatneously to avoid mis-mapping
-  newValues->push_back(1.0e99);
+  oldValues->push_back(-1.0e6); // Add the other vectors simulatneously to avoid mis-mapping
+  newValues->push_back(-1.0e6);
 }
 
 vector<vector<string>> textFileParse_h(TString fileName, char delim = ',')
@@ -288,12 +288,15 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
     branchList.push_back("run_number");
     branchList.push_back("n_runs");
     branchList.push_back("split_n");
-    newValues.push_back( 1.0e99); // Vectors have to be initialized, and I don't know how many entries will come, so go for all of them
-    newValues.push_back( 1.0e99);
-    tempValues.push_back(1.0e99);
-    oldValues.push_back( 1.0e99); 
-    oldValues.push_back( 1.0e99); 
-    tempValues.push_back(1.0e99); 
+    newValues.push_back( -1.0e6); // Vectors have to be initialized, and I don't know how many entries will come, so go for all of them
+    newValues.push_back( -1.0e6);
+    newValues.push_back( -1.0e6);
+    oldValues.push_back( -1.0e6); 
+    oldValues.push_back( -1.0e6); 
+    oldValues.push_back( -1.0e6); 
+    tempValues.push_back(-1.0e6);
+    tempValues.push_back(-1.0e6);
+    tempValues.push_back(-1.0e6); 
   }
   else {
     // Open existing file 
@@ -309,9 +312,9 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
       TString found = (TString)(((TBranch*)(aggVars->At(b)))->GetName());
       if (debug>2) Printf("In branch %s",(const char*)found);
       branchList.push_back(found);
-      newValues.push_back(1.0e99);
-      oldValues.push_back(1.0e99);
-      tempValues.push_back(1.0e99);
+      newValues.push_back(-1.0e6);
+      oldValues.push_back(-1.0e6);
+      tempValues.push_back(-1.0e6);
     }
     for(Int_t iBranch = 0; iBranch < branchList.size(); iBranch++) {
       if (debug>4) Printf("In branch %d : %s",iBranch,(const char*)branchList[iBranch]);
@@ -328,9 +331,9 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
     if (debug>1) Printf("User adding new branch: %s",(const char*)valueName);
     //addAggregateVars_h(valueName,&branchList,&newValues,&oldValues);
     branchList.push_back(valueName);
-    newValues.push_back(1.0e99);
-    oldValues.push_back(1.0e99);
-    tempValues.push_back(1.0e99);
+    newValues.push_back(-1.0e6);
+    oldValues.push_back(-1.0e6);
+    tempValues.push_back(-1.0e6);
     newBranch = true;
   }
   // Loop over branches and assign their addresses to old and new tree
@@ -355,8 +358,9 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   Bool_t userAddedNewEntry  = true; // Assume we are adding a new entry
   Bool_t writeEntry         = false;
   Bool_t editEntry          = false;
-  Bool_t nRunsCheck         = false;
-  Bool_t splitNumberCheck   = false;
+  Bool_t RunNCheck          = false;
+  Bool_t NRunsCheck         = false;
+  Bool_t SplitNumberCheck   = false;
   Bool_t userAddedNewBranch = newBranch;
   Bool_t loopEnd            = false;
 
@@ -385,25 +389,28 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
         if (debug>1) Printf("User adding new value to root file: branch %s, value (new = %f, old = %f) runnumber %d",(const char*)valueName,new_value,oldValues[l],new_runNumber);
   		  writeEntry = true;
   	  }
+    }
+    for (size_t l = 0; l < branchList.size(); l++){
 	    // Check to see if we are on the requested new_runNumber, and if it is unique then behave differently
-	    if ( (branchList[l] == "run_number") && (oldValues[l]==(Double_t)new_runNumber) ){
-	    	// Case 2
-        // We are replacing a prior entry
-        // Keep track of it being editted since it could also be a new branch situation
-        if (debug > 1) Printf("User editting value in root file: branch %s, value (new = %f, old = %f) runnumber %d",(const char*)valueName,new_value,oldValues[l],new_runNumber);
-        //
-        nRunsCheck = true; // Loop through again and check for nRuns being duplicated too
-        splitNumberCheck = true; // Loop through again and check for splitNumber being duplicated too
-	    }
-      if ( ( nRunsCheck && (branchList[l] == "n_runs") && (oldValues[l]==(Double_t)new_nRuns) ) || ( splitNumberCheck && (branchList[l] == "split_n") && (oldValues[l]==(Double_t)new_splitNumber) ) ){ // FIXME this relies on run_number being first in the list of things being checked in order for it to work, maybe set l=0 and add nRunsheck== false to run_number check?
-        if (userAddedNewEntry == true) { // then this condition has not already been looped through once
-		      numEntries--;
-        }
+      if (branchList[l] == "run_number" && oldValues[l]==(Double_t)new_runNumber){
+        if (debug>3) Printf("Looking at entry# %d, run_number %d",entryN,new_runNumber);
+        RunNCheck=true;
+      }
+      if (branchList[l] == "n_runs" && oldValues[l]==(Double_t)new_nRuns){
+        if (debug>3) Printf("Looking at entry# %d, n_runs %d",entryN,new_nRuns);
+        NRunsCheck=true;
+      }
+      if (branchList[l] == "split_n" && oldValues[l]==(Double_t)new_splitNumber){
+        if (debug>3) Printf("Looking at entry# %d, split_n %d",entryN,new_splitNumber);
+        SplitNumberCheck=true;
+      }
+      if (SplitNumberCheck && NRunsCheck && RunNCheck){
+        if (debug>3) Printf("Looking at entry# %d, editing it with updated values",entryN);
+		    numEntries--;
 		    userAddedNewEntry = false;
 		    writeEntry        = true;
 		    editEntry         = true;
-        nRunsCheck        = false; // Reset so further runs can be analyzed too
-        splitNumberCheck  = false; // Reset
+        break;
       }
     }
     for (size_t l = 0; l < branchList.size(); l++){
@@ -428,7 +435,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
 	  	  else {
           if (debug > 3) Printf("NOTE: %s branch = %f getting written by user",(const char*) branchList[l],oldValues[l]);
           if (userAddedNewBranch && !editEntry){
-            tempValues[l] = 1.0e99; //oldValues[l] has been replaced with the prior entry, and because this new branch has no value in the tree its just that prior value
+            tempValues[l] = -1.0e6; //oldValues[l] has been replaced with the prior entry, and because this new branch has no value in the tree its just that prior value
           }
           else {
             tempValues[l] = oldValues[l];// has been replaced with the prior entry, and because this new branch has no value in the tree its just that prior value
@@ -443,10 +450,14 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
 	    }
 	    newValues[l] = tempValues[l];
       if (debug > 1) Printf("Saving %s = %f, overwriting %f",(const char*)branchList[l],tempValues[l],oldValues[l]);
-      oldValues[l] = 1.0e99;
+      oldValues[l] = -1.0e6;
 	  }
     // Reset the triggers for writing
     writeEntry = false; 
+    editEntry = false;
+    NRunsCheck=false;
+    RunNCheck=false;
+    SplitNumberCheck = false;
  	  // And then be done writing the user passed input
     if (newFile || entryN<=numEntries){
 	    newTree->Fill();  
@@ -504,7 +515,7 @@ void writePostPanFile_h(Int_t runNumber = 1369, Int_t splitNumber = -1, TString 
   int miniRun = 0;
   bool header = false;
   bool print  = false;
-  double data = 1.0e99;
+  double data = -1.0e6;
   string type = "type";
   string channel = "null";
   vector <string> manip;
