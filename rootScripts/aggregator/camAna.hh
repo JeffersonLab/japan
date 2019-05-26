@@ -36,9 +36,7 @@ void writeMean_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
   TString channel = tree + "_" + branch + "_" + leaf;
   // Make an instance of the relevant data source 
   TLeaf   *Leaf   = getLeaf_h(tree,branch,leaf,runNumber,nRuns);
-  if (!Leaf){
-    return;
-  }
+  if (Leaf){
   TBranch *Branch = Leaf->GetBranch();
   TTree   *Tree   = Branch->GetTree();
   Int_t    numEntries = Tree->GetEntries();
@@ -56,6 +54,7 @@ void writeMean_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
   }
   data_mean = data/(1.0*n_data);
   writeFile_h(analysis,data_mean,runNumber,nRuns);
+  }
 }
 
 void writeInt_loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t runNumber = 0, Int_t nRuns = -1){

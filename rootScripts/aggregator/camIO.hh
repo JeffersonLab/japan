@@ -86,13 +86,13 @@ void addAggregateVars_h(TString varName, std::vector<TString>* aggVars, std::vec
 vector<vector<string>> textFileParse_h(TString fileName, char delim = ',')
 {
   vector<vector<string> > filearray;   // the 2D array
+  string line;                     // the contents
+  string word;                     // one word at at time
+  vector<string> words;            // array of values for one line only
+
   if ( !gSystem->AccessPathName(fileName.Data()) ) {
     if (debug>0) Printf("Found file name: %s",(const char*)fileName);
     ifstream in(fileName.Data());
-
-    string line;                     // the contents
-    string word;                     // one word at at time
-    vector<string> words;            // array of values for one line only
 
     filearray.clear();
     //getline(in,line); // Uncomment to skip header line
@@ -109,6 +109,9 @@ vector<vector<string>> textFileParse_h(TString fileName, char delim = ',')
       filearray.push_back(words);  // add the 1D array to the 2D array
     }
     in.close();
+    for (Int_t i = 0 ; i < words.size() ; i++){
+      words[i].clear();
+    }
     words.clear();
     return filearray;
   }
@@ -118,12 +121,14 @@ vector<vector<string>> textFileParse_h(TString fileName, char delim = ',')
   }
 }
 
-TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1, TString filenamebase = "Rootfiles/"){
+TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1, TString filenamebase = "NULL"){
 
   TString filename = "NULL";
   runNumber = getRunNumber_h(runNumber);
   n_runs    = getNruns_h(n_runs);
-  filenamebase = gSystem->Getenv("QW_ROOTFILES");
+  if (filenamebase == "NULL"){
+    filenamebase = gSystem->Getenv("QW_ROOTFILES");
+  }
   TString fileNameBase  = filenamebase; // placeholder string
   TChain *chain = new TChain(tree);
   Bool_t foundFile = false;
@@ -173,7 +178,7 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t n_runs = -1,
   return chain;
 }
 
-TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", Int_t runNumber = 0, Int_t nRuns = -1, TString filenamebase = "Rootfiles/"){
+TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", Int_t runNumber = 0, Int_t nRuns = -1, TString filenamebase = "NULL"){
   runNumber = getRunNumber_h(runNumber);
   nRuns     = getNruns_h(nRuns);
   TChain  * Chain = getTree_h(tree, runNumber, nRuns, filenamebase);
@@ -184,7 +189,7 @@ TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", 
   return BranchLeaf;
 }
 
-TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", Int_t runNumber = 0, Int_t nRuns = -1, TString filenamebase = "Rootfiles/"){
+TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", Int_t runNumber = 0, Int_t nRuns = -1, TString filenamebase = "NULL"){
   runNumber = getRunNumber_h(runNumber);
   nRuns     = getNruns_h(nRuns);
   TChain  * Chain = getTree_h(tree, runNumber, nRuns, filenamebase);
@@ -195,7 +200,7 @@ TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
   return Branch;
 }
 
-TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TString leaf = "hw_sum", Int_t runNumber = 0, Int_t nRuns = -1, TString filenamebase = "Rootfiles/"){
+TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TString leaf = "hw_sum", Int_t runNumber = 0, Int_t nRuns = -1, TString filenamebase = "NULL"){
   if (debug >2) Printf("Looking for leaf: \"%s\"",(const char*)(tree+"."+branch+"."+leaf));
   runNumber = getRunNumber_h(runNumber);
   nRuns     = getNruns_h(nRuns);
@@ -250,7 +255,6 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   std::vector<Double_t> newValues;
   // List of branch names, append with new user additions
   std::vector<TString> branchList;
-  std::vector<TBranch*>newBranches;
 
   if (newFile) {
     // Write a new file
@@ -268,6 +272,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   else {
     // Open existing file 
     oldTree = (TTree*) aggregatorFile->Get("agg");
+    //oldTree->SetName("old_agg");
     if (!oldTree) {
       Printf("ERROR, tree agg is dead");
     }
@@ -282,8 +287,8 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
       oldValues.push_back(1.0e99);
       tempValues.push_back(1.0e99);
     }
-    for(auto iBranch = branchList.begin(); iBranch != branchList.end(); iBranch++) {
-      //if (debug>2) Printf("In branch %d : %s",iBranch,(const char*)branchList[iBranch]);
+    for(Int_t iBranch = 0; iBranch < branchList.size(); iBranch++) {
+      if (debug>4) Printf("In branch %d : %s",iBranch,(const char*)branchList[iBranch]);
     }
     if (debug>1) Printf("Got agg contents");
   }
@@ -417,7 +422,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
     newTree->Write("agg");
   }
   else {
-    newTree->Write("agg",TObject::kWriteDelete,0);
+    newTree->Write("agg",TObject::kOverwrite);
   }
   if (debug>0) newTree->Scan();
   aggregatorFile->Close();
@@ -551,6 +556,9 @@ void writePostPanFile_h(Int_t runNumber = 1369, TString filename = "run1369_summ
     }
   }
 
+  for (Int_t i = 0 ; i < contents.size() ; i++){
+    contents[i].clear();
+  }
   contents.clear();
 }
 #endif // __CAMIO__
