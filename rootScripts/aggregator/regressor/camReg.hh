@@ -9,7 +9,7 @@
 #include <string>
 #include <TChain.h>
 using namespace std;
-void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInput.txt", char delim = ' '){
+void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInput.txt", char delim = ' '){
   Double_t speed = 0.66;
   Double_t nonLinearFit = 0.0; // 1.0 = nonLinear fit with fit parameter uncertaintites included in weight
   Int_t passLimitValue = 1;
@@ -20,16 +20,17 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   Double_t parRms2 = 10.0;
 
   runNumber = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
   nRuns     = getNruns_h(nRuns);
   vector<vector<string>> textFile = textFileParse_h(regInput,delim);
-  TTree * oldTree = getTree_h(tree, runNumber, nRuns, "NULL");
+  TTree * oldTree = getTree_h(tree, runNumber, splitNumber, nRuns, "NULL");
   if (oldTree==0){
     Printf("Root file does not exist");
     return;
   }
   TTreeReader oldTreeReader(oldTree);
   TTree * newTree = new TTree("reg"+tree,"Regressed "+tree+" tree");
-  TFile * outFile = new TFile(Form("outputReg_%s_%d.root",(const char*)tree,runNumber),"RECREATE");
+  TFile * outFile = new TFile(Form("outputReg_%s_%d.%03d.root",(const char*)tree,runNumber,splitNumber),"RECREATE");
   TDirectory *folder = outFile->mkdir("histos_"+tree);
   outFile->cd();
   gSystem->Exec("mkdir plots");
@@ -474,7 +475,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       newTree->Draw(Form("%s",(const char*)newRegressedBranchList[fitN]),(const char*)okFlagReg);
       TH1 *h1 = (TH1*)gROOT->FindObject("htemp");
       h1->Write(Form("reg_%s_histogram",(const char*)newRegressedBranchList[fitN]));
-      c1->SaveAs(Form("plots/reg_%s_%s_%d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber));
+      c1->SaveAs(Form("plots/reg_%s_%s_%d.%03d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber,splitNumber));
 
       TCanvas * c1_2 = new TCanvas();
       c1_2->SetLogy();
@@ -488,7 +489,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       TString h2_name = h2_2->GetName();
       newTree->Draw(Form("%s>>%s",(const char*)newRegressedBranchList[fitN],(const char*)h2_name),(const char*)okFlagReg); // Manual
       h2_2->Write(Form("reg_rebin_%s_histogram",(const char*)newRegressedBranchList[fitN]));
-      c1_2->SaveAs(Form("plots/reg_rebin_%s_%s_%d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber));
+      c1_2->SaveAs(Form("plots/reg_rebin_%s_%s_%d.%03d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber,splitNumber));
 
       TCanvas * c2 = new TCanvas();
       c2->SetLogy();
@@ -496,7 +497,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       oldTree->Draw(Form("%s",(const char*)oldRespondingDataBranchList[fitN]),"ErrorFlag==0");
       TH1 *h1old = (TH1*)gROOT->FindObject("htemp");
       h1old->Write(Form("orig_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
-      c2->SaveAs(Form("plots/orig_%s_%s_%d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber));
+      c2->SaveAs(Form("plots/orig_%s_%s_%d.%03d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber,splitNumber));
 
       TCanvas * c2_2 = new TCanvas();
       c2_2->SetLogy();
@@ -510,7 +511,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
       TString h2old_name = h2_2old->GetName();
       oldTree->Draw(Form("%s>>%s",(const char*)oldRespondingDataBranchList[fitN],(const char*)h2old_name),"ErrorFlag==0"); // Manual
       h2_2old->Write(Form("orig_rebin_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
-      c2_2->SaveAs(Form("plots/orig_rebin_%s_%s_%d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber));
+      c2_2->SaveAs(Form("plots/orig_rebin_%s_%s_%d.%03d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber,splitNumber));
 
       outFile->cd();
 
@@ -557,6 +558,6 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t nRuns = -1, TStr
   }
   newTree->Write();
   outFile->Close();
-  //writeFile_h("test_n_data",n_data,runNumber,nRuns);
+  //writeFile_h("test_n_data",n_data,runNumber,splitNumber,nRuns);
 }
 #endif // __CAMREG__

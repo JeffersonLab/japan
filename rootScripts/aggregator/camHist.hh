@@ -75,13 +75,14 @@ TString getCuts_h(TString cut = "defaultCut", Int_t overWriteCut = 0, TString br
   return cut;
 }
 
-TH1 * getHistogram_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t nRuns = -1){
+TH1 * getHistogram_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber           = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
   nRuns               = getNruns_h(nRuns);
   TString channel     = tree + "_" + branch + "_" + leaf;
   cut                 = getCuts_h(cut,overWriteCut,branch);
   // Make an instance of the relevant data source 
-  TLeaf   *Leaf       = getLeaf_h(tree,branch,leaf,runNumber,nRuns);
+  TLeaf   *Leaf       = getLeaf_h(tree,branch,leaf,runNumber,splitNumber,nRuns);
   if (!Leaf){
     return 0;
   }
@@ -123,13 +124,14 @@ TH1 * getHistogram_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",
   return h2; 
 }
 
-TH1 * getWeightedHistogram_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString weight = "1", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t nRuns = -1){
+TH1 * getWeightedHistogram_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString weight = "1", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber           = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
   nRuns               = getNruns_h(nRuns);
   TString channel     = tree + "_" + branch + "_" + leaf;
   cut                 = getCuts_h(cut,overWriteCut,branch);
   // Make an instance of the relevant data source 
-  TLeaf   *Leaf       = getLeaf_h(tree,branch,leaf,runNumber,nRuns);
+  TLeaf   *Leaf       = getLeaf_h(tree,branch,leaf,runNumber,splitNumber,nRuns);
   if (!Leaf){
     return 0;
   }
@@ -171,8 +173,9 @@ TH1 * getWeightedHistogram_h(TString tree = "mul", TString branch = "asym_vqwk_0
   return h2; 
 }
 
-void writeInt_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t nRuns = -1){
+void writeInt_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
   nRuns     = getNruns_h(nRuns);
   TString weight = "NULL";
   TString integral = "NULL";
@@ -187,15 +190,20 @@ void writeInt_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
     integral = "integral_" + branch + "_" + leaf;
   }
   Double_t data_integral = 0.0;
-	//data_integral = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns)->Integral();
-	data_integral = getWeightedHistogram_h(tree,branch,leaf,weight,cut,0,mode,runNumber,nRuns)->Integral();
-
+  TH1 * h1_int = getWeightedHistogram_h(tree,branch,leaf,weight,cut,overWriteCut,mode,runNumber,splitNumber,nRuns);
+  if (h1_int ==0)
+  { 
+    Printf("Error, Histogram failed");
+    return;
+  }
+  data_integral = h1_int->Integral();
   if (debug>1) Printf("Run %d integral %s: %f",runNumber,(const char*)integral,data_integral);
-  writeFile_h(integral,data_integral,runNumber,nRuns);
+  writeFile_h(integral,data_integral,runNumber,splitNumber,nRuns);
 }
 
-void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t nRuns = -1){
+void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
   nRuns     = getNruns_h(nRuns);
   TString mean = "NULL";
   TString mean_error  = "NULL";
@@ -219,7 +227,7 @@ void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_0
   Double_t data_mean_error = -1e99;
   Double_t data_rms = -1e99;
   Double_t data_rms_error = -1e99;
-  TH1 * hMeanRms = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns);
+  TH1 * hMeanRms = getHistogram_h(tree,branch,leaf,cut,overWriteCut,mode,runNumber,splitNumber,nRuns);
   if (hMeanRms==0)
   {
     Printf("Error, Histogram failed");
@@ -232,14 +240,15 @@ void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_0
 
   if (debug>1) Printf("Run %d mean %s: %f+-%f",runNumber,(const char*)mean,data_mean,data_mean_error);
   if (debug>1) Printf("Run %d rms %s: %f+-%f",runNumber,(const char*)rms,data_rms,data_rms_error);
-  writeFile_h(mean,data_mean,runNumber,nRuns);
-  writeFile_h(mean_error,data_mean_error,runNumber,nRuns);
-  writeFile_h(rms,data_rms,runNumber,nRuns);
-  writeFile_h(rms_error,data_rms_error,runNumber,nRuns);
+  writeFile_h(mean,data_mean,runNumber,splitNumber,nRuns);
+  writeFile_h(mean_error,data_mean_error,runNumber,splitNumber,nRuns);
+  writeFile_h(rms,data_rms,runNumber,splitNumber,nRuns);
+  writeFile_h(rms_error,data_rms_error,runNumber,splitNumber,nRuns);
 }
 
-void writeMean_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t nRuns = -1){
+void writeMean_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
   nRuns     = getNruns_h(nRuns);
   TString mean = "NULL";
   TString mean_error  = "NULL";
@@ -255,7 +264,7 @@ void writeMean_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
   }
   Double_t data_mean = -1e99;
   Double_t data_mean_error = -1e99;
-  TH1 * hMean = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns);
+  TH1 * hMean = getHistogram_h(tree,branch,leaf,cut,overWriteCut,mode,runNumber,splitNumber,nRuns);
   if (hMean==0)
   {
     Printf("Error, Histogram failed");
@@ -265,12 +274,13 @@ void writeMean_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
   data_mean_error = hMean->GetMeanError(1);
 
   if (debug>1) Printf("Run %d mean %s: %f+-%f",runNumber,(const char*)mean,data_mean,data_mean_error);
-  writeFile_h(mean,data_mean,runNumber,nRuns);
-  writeFile_h(mean_error,data_mean_error,runNumber,nRuns);
+  writeFile_h(mean,data_mean,runNumber,splitNumber,nRuns);
+  writeFile_h(mean_error,data_mean_error,runNumber,splitNumber,nRuns);
 }
 
-void writeRMS_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t nRuns = -1){
+void writeRMS_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
   nRuns     = getNruns_h(nRuns);
   TString rms = "NULL";
   TString rms_error = "NULL";
@@ -286,7 +296,7 @@ void writeRMS_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
   }
   Double_t data_rms = -1e99;
   Double_t data_rms_error = -1e99;
-  TH1 * hRms = getHistogram_h(tree,branch,leaf,cut,0,mode,runNumber,nRuns);
+  TH1 * hRms = getHistogram_h(tree,branch,leaf,cut,overWriteCut,mode,runNumber,splitNumber,nRuns);
   if (hRms==0)
   {
     Printf("Error, Histogram failed");
@@ -296,7 +306,7 @@ void writeRMS_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
   data_rms_error = hRms->GetRMSError(1);
 
   if (debug>1) Printf("Run %d rms %s: %f+-%f",runNumber,(const char*)rms,data_rms,data_rms_error);
-  writeFile_h(rms,data_rms,runNumber,nRuns);
-  writeFile_h(rms_error,data_rms_error,runNumber,nRuns);
+  writeFile_h(rms,data_rms,runNumber,splitNumber,nRuns);
+  writeFile_h(rms_error,data_rms_error,runNumber,splitNumber,nRuns);
 }
 #endif // __CAMHIST__
