@@ -224,9 +224,7 @@ void VQwDataHandler::ConstructBranchAndVector(
     std::vector<Double_t>& values)
 {
   for (size_t i = 0; i < fOutputVar.size(); ++i) {
-    TString fullprefix(fPrefix);
-    fullprefix += prefix;
-    fOutputVar.at(i)->ConstructBranchAndVector(tree, fullprefix, values);
+    fOutputVar.at(i)->ConstructBranchAndVector(tree, prefix, values);
   }
 }
 
