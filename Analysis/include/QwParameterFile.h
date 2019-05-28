@@ -270,6 +270,8 @@ class QwParameterFile {
     /// \brief Parse a range of integers as #:# where either can be missing
     static std::pair<int,int> ParseIntRange(const std::string& separatorchars, const std::string& range);
 
+    /// \brief Parse an integer as #[kM] with optional metric scale factor
+    static int ParseInt(const std::string& value);
 
   protected:
 
