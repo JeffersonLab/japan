@@ -169,6 +169,10 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
       std::cerr << e.what() << std::endl;
     }
 
+  // Register dependent objects
+  RegisterDependentForObjects(&fYield, "yield_");
+  RegisterDependentForObjects(&fAsymmetry, "asym_");
+  RegisterDependentForObjects(&fBlinder, "blinder_");
 }
 
 /*****************************************************************/
@@ -197,6 +201,10 @@ QwHelicityPattern::QwHelicityPattern(const QwHelicityPattern &source)
     fNegativeHelicitySum(source.fYield),
     fNextPair(source.fNextPair)
 {
+  // Register dependent objects
+  RegisterDependentForObjects(&fYield, "yield_");
+  RegisterDependentForObjects(&fAsymmetry, "asym_");
+  RegisterDependentForObjects(&fBlinder, "blinder_");
 };
 
 
@@ -880,29 +888,6 @@ void  QwHelicityPattern::PrintBurstAverage() const
   QwMessage << " Burst average of yields     " << QwLog::endl;
   QwMessage << " ==============================" << QwLog::endl;
   fBurstYield.PrintValue();
-}
-
-//*****************************************************************
-void  QwHelicityPattern::ConstructObjects(TDirectory *folder)
-{
-  TString prefix = "blinder_";
-  fBlinder.ConstructObjects(folder,prefix);
-
-  prefix = "yield_";
-  fYield.ConstructObjects(folder,prefix);
-  prefix = "asym_";
-  fAsymmetry.ConstructObjects(folder,prefix);
-
-  if (fEnableDifference) {
-    prefix = "diff_";
-    fDifference.ConstructObjects(folder,prefix);
-  }
-  if (fEnableAlternateAsym) {
-    prefix = "asym1_";
-    fAsymmetry1.ConstructObjects(folder,prefix);
-    prefix = "asym2_";
-    fAsymmetry2.ConstructObjects(folder,prefix);
-  }
 }
 
 //*****************************************************************

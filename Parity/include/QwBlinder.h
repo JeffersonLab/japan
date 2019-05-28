@@ -63,7 +63,7 @@ typedef unsigned long long ULong64_t; // Portable unsigned long integer 8 bytes
  * ROOT files without compromising the blinding.
  *
  */
-class QwBlinder {
+class QwBlinder: public MQwStoreObjects {
 
  public:
 

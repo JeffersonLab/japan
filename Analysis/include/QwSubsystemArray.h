@@ -29,7 +29,7 @@ class QwParameterFile;
 
 ///
 /// \ingroup QwAnalysis
-class QwSubsystemArray:  public std::vector<boost::shared_ptr<VQwSubsystem> > {
+class QwSubsystemArray:  public std::vector<boost::shared_ptr<VQwSubsystem> >, public MQwStoreObjects {
  private:
   typedef std::vector<boost::shared_ptr<VQwSubsystem> >  SubsysPtrs;
  public:
@@ -191,22 +191,6 @@ class QwSubsystemArray:  public std::vector<boost::shared_ptr<VQwSubsystem> > {
 
 
  public:
-
-  /// \name Object construction and maintenance
-  // @{
-  /// Construct the objects for this subsystem
-  void  ConstructObjects() {
-    ConstructObjects((TDirectory*) NULL);
-  };
-  /// Construct the objects for this subsystem in a folder
-  void  ConstructObjects(TDirectory *folder) {
-    TString prefix = "";
-    ConstructObjects(folder, prefix);
-  };
-  /// \brief Construct the objects for this subsystem in a folder with a prefix
-  void  ConstructObjects(TDirectory *folder, TString &prefix);
-  // @}
-
 
   /// \name Histogram construction and maintenance
   // @{

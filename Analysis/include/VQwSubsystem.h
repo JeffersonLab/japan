@@ -21,6 +21,7 @@
 
 // Qweak headers
 #include "MQwHistograms.h"
+#include "MQwStoreObjects.h"
 // Note: the factory header is included here because every subsystem
 // has to register itself with a subsystem factory.
 #include "QwFactory.h"
@@ -56,20 +57,20 @@ class QwParameterFile;
  * This will define the interfaces used in communicating with the
  * CODA routines.
  */
-class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms {
+class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms, public MQwStoreObjects {
 
  public:
 
   /// Constructor with name
   VQwSubsystem(const TString& name)
-  : MQwHistograms(),
+  : MQwHistograms(),MQwStoreObjects(),
     fSystemName(name), fEventTypeMask(0x0), fIsDataLoaded(kFALSE),
     fCurrentROC_ID(-1), fCurrentBank_ID(-1) {
     ClearAllBankRegistrations();
   }
   /// Copy constructor by object
   VQwSubsystem(const VQwSubsystem& orig)
-  : MQwHistograms(orig),
+  : MQwHistograms(orig),MQwStoreObjects(orig),
     fPublishList(orig.fPublishList),
     fROC_IDs(orig.fROC_IDs),
     fBank_IDs(orig.fBank_IDs),
@@ -202,27 +203,6 @@ class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms {
   // Not all derived classes will have the following functions
   virtual void  RandomizeEventData(int helicity = 0, double time = 0.0) { };
   virtual void  EncodeEventData(std::vector<UInt_t> &buffer) { };
-
-
-  /// \name Objects construction and maintenance
-  // @{
-  /// Construct the objects for this subsystem
-  virtual void  ConstructObjects() {
-    TString tmpstr("");
-    ConstructObjects((TDirectory*) NULL, tmpstr);
-  };
-  /// Construct the objects for this subsystem in a folder
-  virtual void  ConstructObjects(TDirectory *folder) {
-    TString tmpstr("");
-    ConstructObjects(folder, tmpstr);
-  };
-  /// Construct the objects for this subsystem with a prefix
-  virtual void  ConstructObjects(TString &prefix) {
-    ConstructObjects((TDirectory*) NULL, prefix);
-  };
-  /// \brief Construct the objects for this subsystem in a folder with a prefix
-  virtual void  ConstructObjects(TDirectory *folder, TString &prefix) { };
-  // @}
 
 
   /// \name Histogram construction and maintenance

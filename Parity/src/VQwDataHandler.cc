@@ -32,7 +32,8 @@ using namespace std;
 #endif // __USE_DATABASE__
 
 
-VQwDataHandler::VQwDataHandler(const VQwDataHandler &source):
+VQwDataHandler::VQwDataHandler(const VQwDataHandler &source)
+: MQwHistograms(source),
   fPriority(source.fPriority),
   fName(source.fName),
   fMapFile(source.fMapFile),
