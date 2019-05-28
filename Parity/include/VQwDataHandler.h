@@ -130,7 +130,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
  protected:
    Bool_t fKeepRunningSum;
-   VQwDataHandler *fRunningsum;
+   VQwDataHandler *fRunningSum;
 };
 
 #endif // VQWDATAHANDLER_H_
