@@ -254,6 +254,120 @@ TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TSt
   return Leaf;
 }
 
+void writeAlarmFile_h(string type0 = "Sams", string type1 = "vqwk_04_0ch0", string type2 = "asym_mean", string type3 = "value", string type4 = "0.0", char delim = ',', string startIndexStr = "0", string endIndexStr = "0", string changeIndexStr = "0"){
+  // Store all trees
+  TString alarmFileName = "alarm.csv";
+  TString pwd           = gSystem->Getenv("PWD");
+  Bool_t newFile        = gSystem->AccessPathName(pwd+"/"+alarmFileName); // Opposite return convention
+  std::ofstream file_in;
+  std::ofstream file_out;
+  if (!newFile) file_in.open(alarmFileName,std::ofstream::in);
+
+  vector<string> placeholder; // placeholder
+  vector<vector<string> > filearray;   // the 2D array
+  vector<vector<string> > filearraycopy;   // the 2D array
+  if (newFile) {
+    Printf("New alarm file started");
+  }
+  else{
+    filearray = textFileParse_h(alarmFileName,delim);
+    Printf("Old alarm file read");
+    file_in.close();
+  }
+	file_out.open(alarmFileName,std::ofstream::trunc);
+
+  // The file takes the form:
+  // 0, type0_0, type1_0, type2_0, type3_0, type4_0
+  // 1, type0_0, type1_0, type2_0, type3_1, type4_0
+  // 2, type0_0, type1_0, type2_0, type3_2, type4_0
+  // 3, type0_0, type1_0, type2_1, type3_0, type4_0
+  // 4, type0_0, type1_0, type2_1, type3_1, type4_0
+  // 5, type0_0, type1_0, type2_1, type3_2, type4_0
+  // 6, type0_0, type1_1, type2_0, type3_0, type4_0
+  // 7, type0_0, type1_1, type2_0, type3_1, type4_0
+  // 8, type0_0, type1_1, type2_0, type3_2, type4_0
+  // 9, type0_1, type1_0, type2_0, type3_0, type4_0
+  // 10,type0_1, type1_0, type2_0, type3_1, type4_0
+  //
+  // At any given moment the user is assumed to know what the starting and ending indices are for their chose edit of the GUI
+  // or for their chosen analysis
+  
+  Int_t changeIndex = stoi(changeIndexStr);
+  Int_t startIndex = stoi(startIndexStr);
+  Int_t endIndex = stoi(endIndexStr);
+
+  if(changeIndex==0){
+    // Proceed in normal edit or add mode
+    if(debug>3) Printf("Editing filearray");
+    placeholder.push_back(startIndexStr);
+    placeholder.push_back(type0);
+    placeholder.push_back(type1);
+    placeholder.push_back(type2);
+    placeholder.push_back(type3);
+    placeholder.push_back(type4);
+    if (newFile || startIndex>stoi(filearray[filearray.size()-1][0])){ // Then edit
+      if(debug>3) Printf("Editing filearray - adding new entry");
+      filearray.push_back(placeholder);
+    }
+    else{ // Then add
+      if(debug>3) Printf("Editing filearray - editing entry");
+      filearray[startIndex]=placeholder;
+    }
+    placeholder.clear();
+  }
+  else if(changeIndex==999999){
+    if(debug>3) Printf("Editing filearray - deleting entry");
+    // Delete mode
+  }
+  else if(changeIndex<0){ // Assume that the user has requested exactly the correct number of indices to move up or down
+    if(debug>3) Printf("Editing filearray - swap up");
+    // Swap locations mode
+    Int_t sizeIndex = endIndex-startIndex;
+    if((changeIndex+startIndex)<0){
+      return; // If the user sets it too far back continue
+    }
+    filearraycopy = filearray;
+    for (Int_t i = 0 ; i > changeIndex ; i--){    
+      filearray[endIndex+i]=filearraycopy[startIndex-1+i];
+    }
+    for (Int_t i = startIndex ; i < endIndex+1 ; i++){
+      filearray[changeIndex+i]=filearraycopy[i]; // Swap remaining contents into gap
+    }
+    for (size_t j = 0 ; j < filearray.size() ; j++){
+      filearray[j][0]=std::to_string(j);
+    }
+  }
+  else if(changeIndex>0){ // Assume that the user has requested exactly the correct number of indices to move up or down
+    if(debug>3) Printf("Editing filearray - swap down");
+    // Swap locations mode
+    Int_t sizeIndex = endIndex-startIndex;
+    if((changeIndex+endIndex)>filearray.size()){
+      return; // If the user sets it too far forward continue
+    }
+    filearraycopy = filearray;
+    for (Int_t i = 0 ; i < changeIndex ; i++){    
+      filearray[startIndex+i]=filearraycopy[endIndex+1+i];
+    }
+    for (Int_t i = startIndex ; i < endIndex+1 ; i++){ // Swap remaining contents into gap
+      filearray[changeIndex+i]=filearraycopy[i];
+    }
+    for (size_t j = 0 ; j < filearray.size() ; j++){
+      filearray[j][0]=std::to_string(j);
+    }
+    //filearray(startIndex+changeIndex,endIndex+changeIndex)=filearraycopy(startIndex,endIndex);
+    //filearray(startIndex,startIndex+changeIndex)=filearraycopy(endIndex+1,endIndex+1+changeIndex);
+  }
+  if(debug>3) Printf("Printing new version of alarm file");
+  for (size_t i = 0 ; i<filearray.size(); i++){
+    file_out<<filearray[i][0];
+    for (size_t j = 1; j<filearray[i].size(); j++){
+      file_out<<delim<<filearray[i][j];
+    }
+    file_out<<std::endl;
+  }
+  file_out.close();
+}
+
 void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t new_runNumber = 0, Int_t new_splitNumber = -1, Int_t new_nRuns = -1){
   // Store all trees
   TString aggregatorFileName = "run_aggregator.root";
