@@ -211,14 +211,14 @@ class QwBlinder: public MQwStoreObjects {
 
     const Bool_t& IsBlinderOkay() const {return fBlinderIsOkay;};
 
-    void ConstructObjects(TDirectory *folder, TString &prefix) {
+    void ConstructObjects(TDirectory *folder, std::string prefix) {
       if (folder != NULL) folder->cd();
       const TObjString* seed = new TObjString(fSeed);
-      folder->WriteTObject(seed, prefix + "seed", "WriteDelete");
+      gDirectory->WriteTObject(seed, TString(prefix + "seed"), "WriteDelete");
       const TObjString* seedID = new TObjString(Form("%u",fSeedID));
-      folder->WriteTObject(seedID, prefix + "seedID", "WriteDelete");
+      gDirectory->WriteTObject(seedID, TString(prefix + "seedID"), "WriteDelete");
       const TObjString* strategy = new TObjString(Form("%u", fBlindingStrategy));
-      folder->WriteTObject(strategy, prefix + "strategy", "WriteDelete");
+      gDirectory->WriteTObject(strategy, TString(prefix + "strategy"), "WriteDelete");
     };
 
  private:
