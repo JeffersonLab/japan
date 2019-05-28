@@ -11,10 +11,7 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
        ana == "Integral" 
     || ana == "integral" 
     || ana == "Sum" 
-    || ana == "sum" 
-    || ana == "INT" 
-    || ana == "Int" 
-    || ana == "int"){
+    || ana == "sum"){
     //writeInt_loop_h( tree, branch, leaf, cut, runNumber, splitNumber, nRuns );
     writeInt_leafHist_h( tree, branch, leaf, cut, overWriteCut, histMode, runNumber, splitNumber, nRuns );
     if (debug>1) Printf("Done with integral ana");

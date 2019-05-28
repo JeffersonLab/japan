@@ -254,7 +254,7 @@ TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TSt
   return Leaf;
 }
 
-void writeAlarmFile_h(string type0 = "Sams", string type1 = "vqwk_04_0ch0", string type2 = "asym_mean", string type3 = "value", string type4 = "0.0", char delim = ',', string startIndexStr = "0", string endIndexStr = "0", string changeIndexStr = "0"){
+void writeAlarmFile_h(string type0 = "NULL", string type1 = "NULL", string type2 = "NULL", string type3 = "NULL", string type4 = "-1.0e6", char delim = ',', string startIndexStr = "0", string endIndexStr = "0", string changeIndexStr = "0"){
   // Store all trees
   TString alarmFileName = "alarm.csv";
   TString pwd           = gSystem->Getenv("PWD");
@@ -267,14 +267,13 @@ void writeAlarmFile_h(string type0 = "Sams", string type1 = "vqwk_04_0ch0", stri
   vector<vector<string> > filearray;   // the 2D array
   vector<vector<string> > filearraycopy;   // the 2D array
   if (newFile) {
-    Printf("New alarm file started");
+    if (debug>2) Printf("New alarm file started");
   }
   else{
     filearray = textFileParse_h(alarmFileName,delim);
-    Printf("Old alarm file read");
+    if (debug>2) Printf("Old alarm file read");
     file_in.close();
   }
-	file_out.open(alarmFileName,std::ofstream::trunc);
 
   // The file takes the form:
   // 0, type0_0, type1_0, type2_0, type3_0, type4_0
@@ -299,14 +298,15 @@ void writeAlarmFile_h(string type0 = "Sams", string type1 = "vqwk_04_0ch0", stri
   if(changeIndex==0){
     // Proceed in normal edit or add mode
     if(debug>3) Printf("Editing filearray");
-    placeholder.push_back(startIndexStr);
+    //placeholder.push_back(startIndexStr);
     placeholder.push_back(type0);
     placeholder.push_back(type1);
     placeholder.push_back(type2);
     placeholder.push_back(type3);
     placeholder.push_back(type4);
-    if (newFile || startIndex>stoi(filearray[filearray.size()-1][0])){ // Then edit
-      if(debug>3) Printf("Editing filearray - adding new entry");
+    //if (newFile || startIndex>stoi(filearray[filearray.size()-1][0])){ // Then edit
+    if (newFile || startIndex>filearray.size()-1){ // Then edit
+      if(debug>3) Printf("Editing filearray - adding new entry"); // FIXME add a new entry into the array (not at the end) somehow - do push_back() and then move()
       filearray.push_back(placeholder);
     }
     else{ // Then add
@@ -318,6 +318,7 @@ void writeAlarmFile_h(string type0 = "Sams", string type1 = "vqwk_04_0ch0", stri
   else if(changeIndex==999999){
     if(debug>3) Printf("Editing filearray - deleting entry");
     // Delete mode
+    filearray.erase(filearray.begin()+startIndex,filearray.begin()+endIndex+1); // Blast away all from start to end indices
   }
   else if(changeIndex<0){ // Assume that the user has requested exactly the correct number of indices to move up or down
     if(debug>3) Printf("Editing filearray - swap up");
@@ -333,9 +334,9 @@ void writeAlarmFile_h(string type0 = "Sams", string type1 = "vqwk_04_0ch0", stri
     for (Int_t i = startIndex ; i < endIndex+1 ; i++){
       filearray[changeIndex+i]=filearraycopy[i]; // Swap remaining contents into gap
     }
-    for (size_t j = 0 ; j < filearray.size() ; j++){
-      filearray[j][0]=std::to_string(j);
-    }
+    //for (size_t j = 0 ; j < filearray.size() ; j++){
+      //filearray[j][0]=std::to_string(j);
+    //}
   }
   else if(changeIndex>0){ // Assume that the user has requested exactly the correct number of indices to move up or down
     if(debug>3) Printf("Editing filearray - swap down");
@@ -351,16 +352,17 @@ void writeAlarmFile_h(string type0 = "Sams", string type1 = "vqwk_04_0ch0", stri
     for (Int_t i = startIndex ; i < endIndex+1 ; i++){ // Swap remaining contents into gap
       filearray[changeIndex+i]=filearraycopy[i];
     }
-    for (size_t j = 0 ; j < filearray.size() ; j++){
-      filearray[j][0]=std::to_string(j);
-    }
+    //for (size_t j = 0 ; j < filearray.size() ; j++){
+      //filearray[j][0]=std::to_string(j);
+    //}
     //filearray(startIndex+changeIndex,endIndex+changeIndex)=filearraycopy(startIndex,endIndex);
     //filearray(startIndex,startIndex+changeIndex)=filearraycopy(endIndex+1,endIndex+1+changeIndex);
   }
   if(debug>3) Printf("Printing new version of alarm file");
+	file_out.open(alarmFileName,std::ofstream::trunc);
   for (size_t i = 0 ; i<filearray.size(); i++){
     file_out<<filearray[i][0];
-    for (size_t j = 1; j<filearray[i].size(); j++){
+    for (size_t j = 1 ; j<filearray[i].size(); j++){
       file_out<<delim<<filearray[i][j];
     }
     file_out<<std::endl;
@@ -493,7 +495,6 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
 	  oldTree->GetEntry(entryN);
 	  //newTree->GetEntry(entryN);
     
-	  // Loop over all branches (FIXME (A) for the "new" user added value maybe initialize it differently?)
 	  // Set the "old" values to placeholder values
     for (size_t l = 0; l < branchList.size(); l++){
       if (debug>2) Printf("NOTE: Examining branch %s = %f (old value)",(const char*) branchList[l],oldValues[l]);
