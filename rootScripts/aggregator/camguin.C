@@ -6,6 +6,9 @@
 #include "regressor/camReg.hh"
 using namespace std;
 void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCuts", Int_t overWriteCut = 0, TString histMode = "defaultHist", Int_t stabilityRing = 0, Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
+  getDebug_h();
+  getAlarmStatus_h();
+  getAggregatorStatus_h();
   if (debug>0) Printf("Analysis: %s",(const char*) ana);
   if( 
        ana == "Integral" 

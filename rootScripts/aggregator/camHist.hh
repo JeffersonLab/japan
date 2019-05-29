@@ -198,7 +198,9 @@ void writeInt_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
   }
   data_integral = h1_int->Integral();
   if (debug>1) Printf("Run %d integral %s: %f",runNumber,(const char*)integral,data_integral);
-  writeFile_h(integral,data_integral,runNumber,splitNumber,nRuns);
+  if (aggregatorStatus){
+    writeFile_h(integral,data_integral,runNumber,splitNumber,nRuns);
+  }
 }
 
 void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
@@ -240,10 +242,12 @@ void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_0
 
   if (debug>1) Printf("Run %d mean %s: %f+-%f",runNumber,(const char*)mean,data_mean,data_mean_error);
   if (debug>1) Printf("Run %d rms %s: %f+-%f",runNumber,(const char*)rms,data_rms,data_rms_error);
-  writeFile_h(mean,data_mean,runNumber,splitNumber,nRuns);
-  writeFile_h(mean_error,data_mean_error,runNumber,splitNumber,nRuns);
-  writeFile_h(rms,data_rms,runNumber,splitNumber,nRuns);
-  writeFile_h(rms_error,data_rms_error,runNumber,splitNumber,nRuns);
+  if (aggregatorStatus){
+    writeFile_h(mean,data_mean,runNumber,splitNumber,nRuns);
+    writeFile_h(mean_error,data_mean_error,runNumber,splitNumber,nRuns);
+    writeFile_h(rms,data_rms,runNumber,splitNumber,nRuns);
+    writeFile_h(rms_error,data_rms_error,runNumber,splitNumber,nRuns);
+  }
 }
 
 void writeMean_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
@@ -274,8 +278,10 @@ void writeMean_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
   data_mean_error = hMean->GetMeanError(1);
 
   if (debug>1) Printf("Run %d mean %s: %f+-%f",runNumber,(const char*)mean,data_mean,data_mean_error);
-  writeFile_h(mean,data_mean,runNumber,splitNumber,nRuns);
-  writeFile_h(mean_error,data_mean_error,runNumber,splitNumber,nRuns);
+  if (aggregatorStatus){
+    writeFile_h(mean,data_mean,runNumber,splitNumber,nRuns);
+    writeFile_h(mean_error,data_mean_error,runNumber,splitNumber,nRuns);
+  }
 }
 
 void writeRMS_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
@@ -306,7 +312,9 @@ void writeRMS_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
   data_rms_error = hRms->GetRMSError(1);
 
   if (debug>1) Printf("Run %d rms %s: %f+-%f",runNumber,(const char*)rms,data_rms,data_rms_error);
-  writeFile_h(rms,data_rms,runNumber,splitNumber,nRuns);
-  writeFile_h(rms_error,data_rms_error,runNumber,splitNumber,nRuns);
+  if (aggregatorStatus){
+    writeFile_h(rms,data_rms,runNumber,splitNumber,nRuns);
+    writeFile_h(rms_error,data_rms_error,runNumber,splitNumber,nRuns);
+  }
 }
 #endif // __CAMHIST__

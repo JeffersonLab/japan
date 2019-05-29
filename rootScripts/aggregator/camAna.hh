@@ -68,8 +68,10 @@ Int_t writeNEvents_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
       n_data+=1;
     }
   }
-  writeFile_h(number_total_events,numEntries,runNumber,splitNumber,nRuns);
-  writeFile_h(number_good_events,n_data,runNumber,splitNumber,nRuns);
+  if (aggregatorStatus){
+    writeFile_h(number_total_events,numEntries,runNumber,splitNumber,nRuns);
+    writeFile_h(number_good_events,n_data,runNumber,splitNumber,nRuns);
+  }
   if (stabilityRingLength!=0){
     for (int k = numEntries-1; k > 0 ; k--)
     { // Loop over input file's entries in reverse
@@ -84,8 +86,10 @@ Int_t writeNEvents_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
       }
     }
     stabilityRingStart=numEntries-n_reverse_data+1; // +1 since events start on 1
-    writeFile_h(number_stabilityRingStart,stabilityRingStart,runNumber,splitNumber,nRuns);
-    writeFile_h(number_stabilityRingLength,stabilityRingLength,runNumber,splitNumber,nRuns);
+    if (aggregatorStatus){
+      writeFile_h(number_stabilityRingStart,stabilityRingStart,runNumber,splitNumber,nRuns);
+      writeFile_h(number_stabilityRingLength,stabilityRingLength,runNumber,splitNumber,nRuns);
+    }
   }
   return stabilityRingStart;
 }
@@ -147,7 +151,9 @@ Int_t writeEventLoopN_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_0
   TString  number_stabilityRingStart = channel+"_number_stability_ring_start"; // Entry number that begins good cut passing stability ring of length stabilityRing
   TString  number_stabilityRingLength = channel+"_number_stability_ring_length"; // length of stabilityRing
 
-  writeFile_h(number_total_events,numEntries,runNumber,splitNumber,nRuns);
+  if (aggregatorStatus){
+    writeFile_h(number_total_events,numEntries,runNumber,splitNumber,nRuns);
+  }
   if (stabilityRingLength!=0){
     for (int k = numEntries-1; k > 0 ; k--)
     { // Loop over input file's entries in reverse
@@ -162,8 +168,10 @@ Int_t writeEventLoopN_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_0
       }
     }
     stabilityRingStart=numEntries-n_reverse_data+1; // +1 since events start on 1
-    writeFile_h(number_stabilityRingStart,stabilityRingStart,runNumber,splitNumber,nRuns);
-    writeFile_h(number_stabilityRingLength,stabilityRingLength,runNumber,splitNumber,nRuns);
+    if (aggregatorStatus){
+      writeFile_h(number_stabilityRingStart,stabilityRingStart,runNumber,splitNumber,nRuns);
+      writeFile_h(number_stabilityRingLength,stabilityRingLength,runNumber,splitNumber,nRuns);
+    }
   }
   return stabilityRingStart;
 }
@@ -229,7 +237,9 @@ void writeMean_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
     }
   }
   data_mean = data/(1.0*n_data);
-  writeFile_h(analysis,data_mean,runNumber,splitNumber,nRuns);
+  if (aggregatorStatus){
+    writeFile_h(analysis,data_mean,runNumber,splitNumber,nRuns);
+  }
 }
 
 void writeInt_loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
@@ -291,7 +301,9 @@ void writeInt_loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",
       n_data+=1;
     }
   }
-  writeFile_h(analysis,data,runNumber,splitNumber,nRuns);
+  if (aggregatorStatus){
+    writeFile_h(analysis,data,runNumber,splitNumber,nRuns);
+  }
 }
 
 /*
@@ -340,8 +352,10 @@ void writeMean_leafHist_h(TString mode = "default", TString tree = "mul", TStrin
 
   Printf("Run %d mean %s: %f",runNumber,(const char*)mean,data_mean);
   Printf("Run %d rms %s: %f",runNumber,(const char*)rms,data_rms);
-  writeFile_h(mean,data_mean,runNumber,splitNumber,nRuns);
-  writeFile_h(rms,data_rms,runNumber,splitNumber,nRuns);
+  if (aggregatorStatus){
+    writeFile_h(mean,data_mean,runNumber,splitNumber,nRuns);
+    writeFile_h(rms,data_rms,runNumber,splitNumber,nRuns);
   //writeFile_h("test",1.0,runNumber,splitNumber,nRuns);
+  }
 }*/
 #endif // __CAMANA__

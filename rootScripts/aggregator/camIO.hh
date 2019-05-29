@@ -17,6 +17,54 @@
 #include <TChain.h>
 #include <TFile.h>
 using namespace std;
+Int_t getAggregatorStatus_h(){
+// Get environment variable run number
+  if (debug>0) Printf("Aggregator Satus: %d",aggregatorStatus);
+  if ( aggregatorStatus == -1 ) 
+  { 
+    TString run = gSystem->Getenv("CAM_AGGREGATE");
+    aggregatorStatus = run.Atoi();
+  }
+  if (aggregatorStatus<0){
+    Printf("Error: Aggregator Status given (%d) invalid, must be an integer >= 0",aggregatorStatus);
+    return 0;
+  }
+  if (debug>0) Printf("Aggregator Status: %d",aggregatorStatus);
+  return aggregatorStatus;
+}
+
+Int_t getAlarmStatus_h(){
+// Get environment variable run number
+  if (debug>0) Printf("Alarm Status number: %d",alarmStatus);
+  if ( alarmStatus == -1 ) 
+  { 
+    TString run = gSystem->Getenv("CAM_ALARM");
+    alarmStatus = run.Atoi();
+  }
+  if (alarmStatus<0){
+    Printf("Error: Alarm Status given (%d) invalid, must be an integer >= 0",alarmStatus);
+    return 0;
+  }
+  if (debug>0) Printf("Alarm Status: %d",alarmStatus);
+  return alarmStatus;
+}
+
+Int_t getDebug_h(){
+// Get environment variable run number
+  if (debug>0) Printf("Debug Level: %d",debug);
+  if ( debug == -1 ) 
+  { 
+    TString run = gSystem->Getenv("CAM_DEBUG");
+    debug = run.Atoi();
+  }
+  if (debug<0){
+    Printf("Error: Debug Level given (%d) invalid, must be an integer >= 0",debug);
+    return 0;
+  }
+  if (debug>0) Printf("Debug Level: %d",debug);
+  return debug;
+}
+
 Int_t getRunNumber_h(Int_t runNumber = 0){
 // Get environment variable run number
   if (debug>0) Printf("Run number: %d",runNumber);
@@ -254,9 +302,9 @@ TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TSt
   return Leaf;
 }
 
-void writeAlarmFile_h(string type0 = "NULL", string type1 = "NULL", string type2 = "NULL", string type3 = "NULL", string type4 = "-1.0e6", char delim = ',', string startIndexStr = "0", string endIndexStr = "0", string changeIndexStr = "0"){
+void writeAlarmFile_h(){
   // Store all trees
-  TString alarmFileName = "alarm.csv";
+  TString alarmFileName = "~/bin/alarm.csv";
   TString pwd           = gSystem->Getenv("PWD");
   Bool_t newFile        = gSystem->AccessPathName(pwd+"/"+alarmFileName); // Opposite return convention
   std::ofstream file_in;
@@ -270,7 +318,7 @@ void writeAlarmFile_h(string type0 = "NULL", string type1 = "NULL", string type2
     if (debug>2) Printf("New alarm file started");
   }
   else{
-    filearray = textFileParse_h(alarmFileName,delim);
+    filearray = textFileParse_h(alarmFileName,fAlarmData.delim);
     if (debug>2) Printf("Old alarm file read");
     file_in.close();
   }
@@ -290,84 +338,72 @@ void writeAlarmFile_h(string type0 = "NULL", string type1 = "NULL", string type2
   //
   // At any given moment the user is assumed to know what the starting and ending indices are for their chose edit of the GUI
   // or for their chosen analysis
-  
-  Int_t changeIndex = stoi(changeIndexStr);
-  Int_t startIndex = stoi(startIndexStr);
-  Int_t endIndex = stoi(endIndexStr);
 
-  if(changeIndex==0){
+  if(fAlarmData.changeIndex==0){
     // Proceed in normal edit or add mode
     if(debug>3) Printf("Editing filearray");
-    //placeholder.push_back(startIndexStr);
-    placeholder.push_back(type0);
-    placeholder.push_back(type1);
-    placeholder.push_back(type2);
-    placeholder.push_back(type3);
-    placeholder.push_back(type4);
-    //if (newFile || startIndex>stoi(filearray[filearray.size()-1][0])){ // Then edit
-    if (newFile || startIndex>filearray.size()-1){ // Then edit
+    placeholder.push_back(fAlarmData.type[0]);
+    placeholder.push_back(fAlarmData.type[1]);
+    placeholder.push_back(fAlarmData.type[2]);
+    placeholder.push_back(fAlarmData.type[3]);
+    placeholder.push_back(fAlarmData.type[4]);
+    if (newFile || fAlarmData.indexStart>filearray.size()-1){ // Then edit
       if(debug>3) Printf("Editing filearray - adding new entry"); // FIXME add a new entry into the array (not at the end) somehow - do push_back() and then move()
       filearray.push_back(placeholder);
     }
     else{ // Then add
       if(debug>3) Printf("Editing filearray - editing entry");
-      filearray[startIndex]=placeholder;
+      filearray[fAlarmData.indexStart]=placeholder;
     }
     placeholder.clear();
   }
-  else if(changeIndex==999999){
+  else if(fAlarmData.changeIndex==999999){
     if(debug>3) Printf("Editing filearray - deleting entry");
     // Delete mode
-    filearray.erase(filearray.begin()+startIndex,filearray.begin()+endIndex+1); // Blast away all from start to end indices
+    filearray.erase(filearray.begin()+fAlarmData.indexStart,filearray.begin()+fAlarmData.indexEnd+1); // Blast away all from start to end indices
   }
-  else if(changeIndex<0){ // Assume that the user has requested exactly the correct number of indices to move up or down
+  else if(fAlarmData.changeIndex<0){ // Assume that the user has requested exactly the correct number of indices to move up or down
     if(debug>3) Printf("Editing filearray - swap up");
     // Swap locations mode
-    Int_t sizeIndex = endIndex-startIndex;
-    if((changeIndex+startIndex)<0){
+    Int_t sizeIndex = fAlarmData.indexEnd-fAlarmData.indexStart;
+    if((fAlarmData.changeIndex+fAlarmData.indexStart)<0){
       return; // If the user sets it too far back continue
     }
     filearraycopy = filearray;
-    for (Int_t i = 0 ; i > changeIndex ; i--){    
-      filearray[endIndex+i]=filearraycopy[startIndex-1+i];
+    for (Int_t i = 0 ; i > fAlarmData.changeIndex ; i--){    
+      filearray[fAlarmData.indexEnd+i]=filearraycopy[fAlarmData.indexStart-1+i];
     }
-    for (Int_t i = startIndex ; i < endIndex+1 ; i++){
-      filearray[changeIndex+i]=filearraycopy[i]; // Swap remaining contents into gap
+    for (Int_t i = fAlarmData.indexStart ; i < fAlarmData.indexEnd+1 ; i++){
+      filearray[fAlarmData.changeIndex+i]=filearraycopy[i]; // Swap remaining contents into gap
     }
-    //for (size_t j = 0 ; j < filearray.size() ; j++){
-      //filearray[j][0]=std::to_string(j);
-    //}
   }
-  else if(changeIndex>0){ // Assume that the user has requested exactly the correct number of indices to move up or down
+  else if(fAlarmData.changeIndex>0){ // Assume that the user has requested exactly the correct number of indices to move up or down
     if(debug>3) Printf("Editing filearray - swap down");
     // Swap locations mode
-    Int_t sizeIndex = endIndex-startIndex;
-    if((changeIndex+endIndex)>filearray.size()){
+    Int_t sizeIndex = fAlarmData.indexEnd-fAlarmData.indexStart;
+    if((fAlarmData.changeIndex+fAlarmData.indexEnd)>filearray.size()){
       return; // If the user sets it too far forward continue
     }
     filearraycopy = filearray;
-    for (Int_t i = 0 ; i < changeIndex ; i++){    
-      filearray[startIndex+i]=filearraycopy[endIndex+1+i];
+    for (Int_t i = 0 ; i < fAlarmData.changeIndex ; i++){    
+      filearray[fAlarmData.indexStart+i]=filearraycopy[fAlarmData.indexEnd+1+i];
     }
-    for (Int_t i = startIndex ; i < endIndex+1 ; i++){ // Swap remaining contents into gap
-      filearray[changeIndex+i]=filearraycopy[i];
+    for (Int_t i = fAlarmData.indexStart ; i < fAlarmData.indexEnd+1 ; i++){ // Swap remaining contents into gap
+      filearray[fAlarmData.changeIndex+i]=filearraycopy[i];
     }
-    //for (size_t j = 0 ; j < filearray.size() ; j++){
-      //filearray[j][0]=std::to_string(j);
-    //}
-    //filearray(startIndex+changeIndex,endIndex+changeIndex)=filearraycopy(startIndex,endIndex);
-    //filearray(startIndex,startIndex+changeIndex)=filearraycopy(endIndex+1,endIndex+1+changeIndex);
   }
   if(debug>3) Printf("Printing new version of alarm file");
-	file_out.open(alarmFileName,std::ofstream::trunc);
-  for (size_t i = 0 ; i<filearray.size(); i++){
-    file_out<<filearray[i][0];
-    for (size_t j = 1 ; j<filearray[i].size(); j++){
-      file_out<<delim<<filearray[i][j];
+  if(alarmStatus){
+    file_out.open(alarmFileName,std::ofstream::trunc);
+    for (size_t i = 0 ; i<filearray.size(); i++){
+      file_out<<filearray[i][0];
+      for (size_t j = 1 ; j<filearray[i].size(); j++){
+        file_out<<fAlarmData.delim<<filearray[i][j];
+      }
+      file_out<<std::endl;
     }
-    file_out<<std::endl;
+    file_out.close();
   }
-  file_out.close();
 }
 
 void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t new_runNumber = 0, Int_t new_splitNumber = -1, Int_t new_nRuns = -1){
@@ -712,7 +748,9 @@ void writePostPanFile_h(Int_t runNumber = 1369, Int_t splitNumber = -1, TString 
     if (print){
       // Print one row at a time
       for (size_t b = 0; b < manip.size(); b++){
-        writeFile_h(channel+"_"+manip[b]+"_"+type,numbers[b],runNumber,miniRun);
+        if (aggregatorStatus){
+          writeFile_h(channel+"_"+manip[b]+"_"+type,numbers[b],runNumber,miniRun);
+        }
       }
       numbers.clear();
     }
