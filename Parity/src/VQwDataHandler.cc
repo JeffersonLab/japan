@@ -38,6 +38,7 @@ VQwDataHandler::VQwDataHandler(const VQwDataHandler &source):
   fMapFile(source.fMapFile),
   fTreeName(source.fTreeName),
   fTreeComment(source.fTreeComment),
+  fPrefix(source.fPrefix),
   fKeepRunningSum(source.fKeepRunningSum)
 {
   fDependentVar  = source.fDependentVar;
@@ -75,6 +76,7 @@ void VQwDataHandler::ParseConfigFile(QwParameterFile& file){
   file.PopValue("priority",fPriority);
   file.PopValue("tree-name",fTreeName);
   file.PopValue("tree-comment",fTreeComment);
+  file.PopValue("prefix",fPrefix);
 }
 
 
@@ -212,7 +214,7 @@ pair<VQwDataHandler::EQwHandleType,string> VQwDataHandler::ParseHandledVariable(
 void VQwDataHandler::ConstructTreeBranches(QwRootFile *treerootfile)
 {
   if (fTreeName.size()>0){
-    treerootfile->ConstructTreeBranches(fTreeName, fTreeComment, *this);
+    treerootfile->ConstructTreeBranches(fTreeName, fTreeComment, *this, fPrefix);
   }
 }
 
