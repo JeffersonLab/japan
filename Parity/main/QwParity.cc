@@ -380,8 +380,11 @@ Int_t main(Int_t argc, Char_t* argv[])
       QwMessage << " =========================" << QwLog::endl;
       runningsum.PrintValue();
     }
-   
-  
+
+
+    //  Construct objects
+    treerootfile->ConstructObjects("objects", helicitypattern);
+
     /*  Write to the root file, being sure to delete the old cycles  *
      *  which were written by Autosave.                              *
      *  Doing this will remove the multiple copies of the ntuples    *
