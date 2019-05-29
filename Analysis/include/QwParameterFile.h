@@ -145,6 +145,15 @@ class QwParameterFile {
 
     Bool_t FileHasVariablePair(const std::string& separatorchars, const std::string& varname, std::string& varvalue);
     Bool_t FileHasVariablePair(const std::string& separatorchars, const TString& varname, TString& varvalue);
+    template <typename T>
+    Bool_t FileHasVariablePair(const std::string& separatorchars, const std::string& varname, T& varvalue) {
+      std::string strvalue;
+      Bool_t status = FileHasVariablePair(separatorchars, varname, strvalue);
+      if (status){
+	varvalue = ConvertValue<T>(strvalue);
+      }
+      return status;
+    }
 
     Bool_t LineHasSectionHeader();
     Bool_t LineHasSectionHeader(std::string& secname);

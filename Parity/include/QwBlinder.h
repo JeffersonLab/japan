@@ -219,6 +219,12 @@ class QwBlinder {
       folder->WriteTObject(seedID, prefix + "seedID", "WriteDelete");
       const TObjString* strategy = new TObjString(Form("%u", fBlindingStrategy));
       folder->WriteTObject(strategy, prefix + "strategy", "WriteDelete");
+      const TObjString* max_asymmetry = new TObjString(Form("%f",fMaximumBlindingAsymmetry));
+      folder->WriteTObject(max_asymmetry, prefix + "max_asymmetry", "WriteDelete");
+      const TObjString* max_factor = new TObjString(Form("%f",fMaximumBlindingFactor));
+      folder->WriteTObject(max_factor, prefix + "max_factor", "WriteDelete");
+      const TObjString* checksum = new TObjString(fChecksum.c_str());
+      folder->WriteTObject(checksum, prefix + "checksum", "WriteDelete");
     };
 
  private:
@@ -252,14 +258,17 @@ class QwBlinder {
     const QwBlinder& operator= (const QwBlinder& __attribute__((unused)) blinder) { return *this; };
 
     //  Variables and functions used in blinding the detector asymmetries
-    const EQwBlindingStrategy fBlindingStrategy; /// Blinding strategy
+    EQwBlindingStrategy fBlindingStrategy; /// Blinding strategy
     Double_t fBlindingOffset; /// The term to be added to detector asymmetries
     Double_t fBlindingOffset_Base; /// The term to be added to detector asymmetries, before polarity correction
     Double_t fBlindingFactor; /// The factor to be mutliplied to detector asymmetries
 
 
-    static const Double_t kMaximumBlindingAsymmetry; /// Maximum blinding asymmetry (in ppm)
-    static const Double_t kMaximumBlindingFactor;    /// Maximum blinding factor (in % from identity)
+    static const Double_t kDefaultMaximumBlindingAsymmetry; /// Default maximum blinding asymmetry (in ppm)
+    static const Double_t kDefaultMaximumBlindingFactor;    /// Default maximum blinding factor (in fraction from identity)
+
+    Double_t fMaximumBlindingAsymmetry; /// Maximum blinding asymmetry (in ppm)
+    Double_t fMaximumBlindingFactor;    /// Maximum blinding factor (in fraction from identity)
 
     UInt_t fSeedID;      /// ID of seed used (seeds.seed_id)
     TString fSeed;       /// Seed string (seeds.seed)

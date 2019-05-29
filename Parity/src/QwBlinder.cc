@@ -22,6 +22,7 @@
 #include "QwParityDB.h"
 #endif // __USE_DATABASE__
 #include "QwVQWK_Channel.h"
+#include "QwParameterFile.h"
 
 ///  Blinder event counter indices
 enum EQwBlinderErrorCounterIndices{
@@ -46,16 +47,16 @@ const TString QwBlinder::fStatusName[4] = {"Indeterminate", "NotBlindable",
 					   "Blindable", "BlindableFail"};
 
 // Maximum blinding asymmetry for additive blinding
-const Double_t QwBlinder::kMaximumBlindingAsymmetry = 0.06; // ppm
-const Double_t QwBlinder::kMaximumBlindingFactor = 0.1; // [fraction]
+const Double_t QwBlinder::kDefaultMaximumBlindingAsymmetry = 0.06; // ppm
+const Double_t QwBlinder::kDefaultMaximumBlindingFactor = 0.0; // [fraction]
 
 // Default seed, associated with seed_id 0
 const TString QwBlinder::kDefaultSeed = "Default seed, should not be used!";
 
 //**************************************************//
 void QwBlinder::DefineOptions(QwOptions &options){
-  options.AddOptions("Blinder")("blinder.force-target-lh2", po::value<bool>()->default_bool_value(false),
-		       "Forces the blinder to interpret the target position as LH2");
+  options.AddOptions("Blinder")("blinder.force-target-blindable", po::value<bool>()->default_bool_value(false),
+		       "Forces the blinder to interpret the target as being in a blindable position");
   options.AddOptions("Blinder")("blinder.force-target-out", po::value<bool>()->default_bool_value(false),
 		       "Forces the blinder to interpret the target position as target-out");
   options.AddOptions("Blinder")("blinder.beam-current-threshold", po::value<double>()->default_value(1.0),
@@ -82,16 +83,42 @@ QwBlinder::QwBlinder(const EQwBlindingStrategy blinding_strategy):
   fBlindingStrategy(blinding_strategy),
   fBlindingOffset(0.0),
   fBlindingOffset_Base(0.0),
-  fBlindingFactor(1.0)
+  fBlindingFactor(1.0),
+  //
+  fMaximumBlindingAsymmetry(kDefaultMaximumBlindingAsymmetry),
+  fMaximumBlindingFactor(kDefaultMaximumBlindingFactor)
 {
   // Set up the blinder with seed_id 0
   fSeed = kDefaultSeed;
   fSeedID = 0;
 
+  // Read parameter file
+  QwParameterFile blinder("blinder.map");
+  if (blinder.FileHasVariablePair("=", "seed", fSeed))
+    QwVerbose << "Using seed from file: " << fSeed << QwLog::endl;
+  if (blinder.FileHasVariablePair("=", "max_asymmetry", fMaximumBlindingAsymmetry))
+    QwVerbose << "Using blinding box: " << fMaximumBlindingAsymmetry << " ppm" << QwLog::endl;
+  if (blinder.FileHasVariablePair("=", "max_factor", fMaximumBlindingFactor))
+    QwVerbose << "Using blinding factor: " << fMaximumBlindingFactor << QwLog::endl;
+  std::string strategy;
+  if (blinder.FileHasVariablePair("=", "strategy", strategy)) {
+    std::transform(strategy.begin(), strategy.end(), strategy.begin(), ::tolower);
+    QwVerbose << "Using blinding strategy from file: " << strategy << QwLog::endl;
+    if (strategy == "diabled") fBlindingStrategy = kDisabled;
+    else if (strategy == "additive") fBlindingStrategy = kAdditive;
+    else if (strategy == "multiplicative") fBlindingStrategy = kMultiplicative;
+    else if (strategy == "additivemultiplicative") fBlindingStrategy = kAdditiveMultiplicative;
+    else QwWarning << "Blinding strategy " << strategy << " not recognized" << QwLog::endl;
+  }
+
+
+  // Initialize blinder from seed
   InitBlinders(0);
 
   // Calculate set of test values
   InitTestValues(10);
+
+  // Resize counters
   fPatternCounters.resize(kBlinderCount_NumCounters);
   fPairCounters.resize(kBlinderCount_NumCounters);
 }
@@ -115,12 +142,12 @@ QwBlinder::~QwBlinder()
 void QwBlinder::ProcessOptions(QwOptions& options)
 {
   if (options.GetValue<bool>("blinder.force-target-out")
-      && options.GetValue<bool>("blinder.force-target-lh2")){
-    QwError << "QwBlinder::Update:  Both blinder.force-target-lh2 and blinder.force-target-out are set.  "
+      && options.GetValue<bool>("blinder.force-target-blindable")){
+    QwError << "QwBlinder::Update:  Both blinder.force-target-blindable and blinder.force-target-out are set.  "
 	    << "Only one can be in force at one time.  Exit and choose one option."
 	    << QwLog::endl;
     exit(10);
-  } else if (options.GetValue<bool>("blinder.force-target-lh2")){
+  } else if (options.GetValue<bool>("blinder.force-target-blindable")){
     fTargetPositionForced = kTRUE;
     SetTargetBlindability(QwBlinder::kBlindable);
   } else if (options.GetValue<bool>("blinder.force-target-out")){
@@ -475,7 +502,7 @@ void QwBlinder::InitBlinders(const UInt_t seed_id)
     /// First, the blinding asymmetry (offset) is determined.  It is
     /// generated from a signed number between +/- 0.244948974 that
     /// is squared to get a number between +/- 0.06 ppm.
-    static Double_t maximum_asymmetry_sqrt = sqrt(kMaximumBlindingAsymmetry);
+    static Double_t maximum_asymmetry_sqrt = sqrt(fMaximumBlindingAsymmetry);
     Double_t tmp1 = maximum_asymmetry_sqrt * (newtempout / Int_t(0x7FFFFFFF));
     fBlindingOffset = tmp1 * fabs(tmp1) * 0.000001;
 
@@ -492,10 +519,10 @@ void QwBlinder::InitBlinders(const UInt_t seed_id)
     /// number is generated from the blinding asymmetry between, say, 0.9 and 1.1
     /// by an oscillating but uniformly distributed sawtooth function.
     fBlindingFactor = 1.0;
-    if (kMaximumBlindingAsymmetry > 0.0) {
+    if (fMaximumBlindingAsymmetry > 0.0) {
       /// TODO:  This section of InitBlinders doesn't calculate a reasonable fBlindingFactor but we don't use it for anything.
-      fBlindingFactor  = 1.0 + fmod(30.0 * fBlindingOffset, kMaximumBlindingAsymmetry);
-      fBlindingFactor /= (kMaximumBlindingAsymmetry > 0.0 ? kMaximumBlindingAsymmetry : 1.0);
+      fBlindingFactor  = 1.0 + fmod(30.0 * fBlindingOffset, fMaximumBlindingAsymmetry);
+      fBlindingFactor /= (fMaximumBlindingAsymmetry > 0.0 ? fMaximumBlindingAsymmetry : 1.0);
     }
 
     QwMessage << "Blinding parameters have been calculated."<< QwLog::endl;
