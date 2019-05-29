@@ -52,7 +52,7 @@ class VQwDataElement: public MQwHistograms {
  public:
   /// Flag to be used to decide which data needs to be histogrammed and
   /// entered in the tree
-  enum EDataToSave {kRaw = 0, kDerived};
+  enum EDataToSave {kRaw = 0, kDerived, kMoments};
 
 
  public:
