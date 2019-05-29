@@ -231,9 +231,10 @@ QwkRegBlueCorrelator::exportAlias(TString outPath, TString macroName,std::vector
 
  
   FILE *fd=fopen(outPath+macroName+".C","w");
-  fprintf(fd,"%s() {\n",macroName.Data());
+  fprintf(fd,"void %s() {\n",macroName.Data());
+  fprintf(fd,"  TTree* tree = (TTree*) gDirectory->Get(\"mul\");\n");
   for (int iy = 0; iy <nY; iy++) {
-    fprintf(fd,"  Hel_Tree->SetAlias(\"reg_%s\",\n         \"%s",Yname[iy].Data(),Yname[iy].Data());
+    fprintf(fd,"  tree->SetAlias(\"reg_%s\",\n         \"%s",Yname[iy].Data(),Yname[iy].Data());
     for (int j = 0; j < nP; j++) {
       double val= -linReg.mA(j,iy);
       if(val>0)  fprintf(fd,"+");

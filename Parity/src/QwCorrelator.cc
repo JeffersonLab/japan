@@ -104,7 +104,7 @@ void QwCorrelator::CalcCorrelations()
 
   TString outAlphas=Form(tmp.c_str());
   corA.exportAlphas(outAlphas, fIndependentFull, fDependentFull);
-  corA.exportAlias(fAliasOutputPath, "/regalias_"+run_label, fIndependentFull, fDependentFull);
+  corA.exportAlias(fAliasOutputPath + "/", "regalias_"+run_label, fIndependentFull, fDependentFull);
 
 }
 
