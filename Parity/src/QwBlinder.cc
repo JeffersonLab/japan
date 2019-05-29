@@ -55,8 +55,8 @@ const TString QwBlinder::kDefaultSeed = "Default seed, should not be used!";
 
 //**************************************************//
 void QwBlinder::DefineOptions(QwOptions &options){
-  options.AddOptions("Blinder")("blinder.force-target-lh2", po::value<bool>()->default_bool_value(false),
-		       "Forces the blinder to interpret the target position as LH2");
+  options.AddOptions("Blinder")("blinder.force-target-blindable", po::value<bool>()->default_bool_value(false),
+		       "Forces the blinder to interpret the target as being in a blindable position");
   options.AddOptions("Blinder")("blinder.force-target-out", po::value<bool>()->default_bool_value(false),
 		       "Forces the blinder to interpret the target position as target-out");
   options.AddOptions("Blinder")("blinder.beam-current-threshold", po::value<double>()->default_value(1.0),
@@ -142,12 +142,12 @@ QwBlinder::~QwBlinder()
 void QwBlinder::ProcessOptions(QwOptions& options)
 {
   if (options.GetValue<bool>("blinder.force-target-out")
-      && options.GetValue<bool>("blinder.force-target-lh2")){
-    QwError << "QwBlinder::Update:  Both blinder.force-target-lh2 and blinder.force-target-out are set.  "
+      && options.GetValue<bool>("blinder.force-target-blindable")){
+    QwError << "QwBlinder::Update:  Both blinder.force-target-blindable and blinder.force-target-out are set.  "
 	    << "Only one can be in force at one time.  Exit and choose one option."
 	    << QwLog::endl;
     exit(10);
-  } else if (options.GetValue<bool>("blinder.force-target-lh2")){
+  } else if (options.GetValue<bool>("blinder.force-target-blindable")){
     fTargetPositionForced = kTRUE;
     SetTargetBlindability(QwBlinder::kBlindable);
   } else if (options.GetValue<bool>("blinder.force-target-out")){
