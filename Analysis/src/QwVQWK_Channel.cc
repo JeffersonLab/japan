@@ -695,6 +695,12 @@ void  QwVQWK_Channel::ConstructBranchAndVector(TTree *tree, TString &prefix, std
   if (bHw_sum) {
     values.push_back(0.0);
     list += "hw_sum/D";
+    if (fDataToSave == kMoments) {
+      values.push_back(0.0);
+      list += "hw_sum_m2/D";
+      values.push_back(0.0);
+      list += "hw_sum_err/D";
+    }
   }
 
   if (bBlock) {
@@ -799,6 +805,10 @@ void  QwVQWK_Channel::FillTreeVector(std::vector<Double_t> &values) const
     // hw_sum
     if (bHw_sum) {
       values[index++] = this->GetHardwareSum();
+      if (fDataToSave == kMoments) {
+        values[index++] = this->GetHardwareSumM2();
+        values[index++] = this->GetHardwareSumError();
+      }
     }
 
     if (bBlock) {
