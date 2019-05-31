@@ -754,7 +754,10 @@ void QwRootFile::ConstructObjects(const std::string& name, T& object)
   // Create the objects in a directory
   if (fRootFile) {
     std::string type = typeid(object).name();
-    fDirsByName[name] = fRootFile->GetDirectory("/")->mkdir(name.c_str());
+    fDirsByName[name] =
+        fRootFile->GetDirectory(("/" + name).c_str()) ?
+            fRootFile->GetDirectory(("/" + name).c_str()) :
+            fRootFile->GetDirectory("/")->mkdir(name.c_str());
     fDirsByType[type].push_back(name);
     object.ConstructObjects(fDirsByName[name]);
   }
@@ -788,7 +791,10 @@ void QwRootFile::ConstructHistograms(const std::string& name, T& object)
   // Create the histograms in a directory
   if (fRootFile) {
     std::string type = typeid(object).name();
-    fDirsByName[name] = fRootFile->GetDirectory("/")->mkdir(name.c_str());
+    fDirsByName[name] =
+        fRootFile->GetDirectory(("/" + name).c_str()) ?
+            fRootFile->GetDirectory(("/" + name).c_str()) :
+            fRootFile->GetDirectory("/")->mkdir(name.c_str());
     fDirsByType[type].push_back(name);
     object.ConstructHistograms(fDirsByName[name]);
   }
@@ -799,7 +805,7 @@ void QwRootFile::ConstructHistograms(const std::string& name, T& object)
 	      << &object  
 	      << " and its name " << name 
 	      << QwLog::endl;
-    
+
     std::string type = typeid(object).name();
     fDirsByName[name] = fMapFile->GetDirectory()->mkdir(name.c_str());
     fDirsByType[type].push_back(name);
