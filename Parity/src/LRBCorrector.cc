@@ -81,22 +81,62 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
   pair<EQwHandleType, string> type_name_dv;
   pair<EQwHandleType, string> type_name_iv;
 
+    // Open the file
+  QwParameterFile map(mapfile);
+
+  // Read the sections of dependent variables
+  std::pair<EQwHandleType,std::string> type_name;
+
+  // Add independent variables and sensitivities
+  while (map.ReadNextLine()) {
+    // Throw away comments, whitespace, empty lines
+    map.TrimComment();
+    map.TrimWhitespace();
+    if (map.LineIsEmpty()) continue;
+    // Get first token: label (dv or iv), second token is the name like "asym_blah"
+    string primary_token = map.GetNextToken(" ");
+    string current_token = map.GetNextToken(" ");
+    // Parse current token into independent variable type and name
+    type_name = ParseHandledVariable(current_token);
+
+    if (primary_token == "iv") {
+      fIndependentType.push_back(type_name.first);
+      fIndependentName.push_back(type_name.second);
+      fIndependentFull.push_back(current_token);
+      //QwMessage << "IV Type: " << type_name.first << QwLog::endl;
+      //QwMessage << "IV Name: " << type_name.second << QwLog::endl;
+    }
+    else if (primary_token == "dv") {
+      fDependentType.push_back(type_name.first);
+      fDependentName.push_back(type_name.second);
+      fDependentFull.push_back(current_token);
+      //QwMessage << "DV Type: " << type_name.first << QwLog::endl;
+      //QwMessage << "DV Name: " << type_name.second << QwLog::endl;
+    }
+    else if (primary_token == "treetype") {
+      QwMessage << "Tree Type read, ignoring." << QwLog::endl;
+    }
+    else {
+      QwError << "Function LoadChannelMap in LRBCorrector.cc read in invalid primary_token." << QwLog::endl;
+    }
+  }
+
   //  Loop through ivnames to get IV type and name
   //    Loop over # of dep variables
   //      Push-back the sensitiivity, IV type and IVnames into their respective vectors for each DV
 
-  for (Int_t i = 0; i < dvnames->GetXaxis()->GetNbins(); ++i){
+  /*for (Int_t i = 0; i < dvnames->GetXaxis()->GetNbins(); ++i){
     type_name_dv = ParseHandledVariable(dvnames->GetXaxis()->GetBinLabel(i+1));
     fDependentType.push_back(type_name_dv.first);
     fDependentName.push_back(type_name_dv.second);
-  }
+  }*/
 
   fSensitivity.resize(fDependentType.size());
 
   for (Int_t i = 0; i < ivnames->GetXaxis()->GetNbins(); ++i) {
-    type_name_iv = ParseHandledVariable(ivnames->GetXaxis()->GetBinLabel(i+1));
-    fIndependentType.push_back(type_name_iv.first);
-    fIndependentName.push_back(type_name_iv.second);
+    //type_name_iv = ParseHandledVariable(ivnames->GetXaxis()->GetBinLabel(i+1));
+    //fIndependentType.push_back(type_name_iv.first);
+    //fIndependentName.push_back(type_name_iv.second);
     for (Int_t j = 0; j < dvnames->GetXaxis()->GetNbins(); ++j) {
       fSensitivity[j].push_back(-1.0*(*alphasM)(i,j));
     }

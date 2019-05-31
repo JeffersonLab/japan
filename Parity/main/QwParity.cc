@@ -38,7 +38,9 @@
 #include "QwPromptSummary.h"
 #include "QwCorrelator.h"
 #include "LRBCorrector.h"
-#include "QwDataHandlerArray.h"
+#include "QwDataHandlerArrayHel.h"
+#include "QwDataHandlerArrayEvt.h"
+#include "EvtDatahandler.h"
 
 // Qweak subsystems
 // (for correct dependency generation)
@@ -137,7 +139,9 @@ Int_t main(Int_t argc, Char_t* argv[])
     helicitypattern.ProcessOptions(gQwOptions);
     
     /// Create the data handler array
-    QwDataHandlerArray datahandlerarray(gQwOptions,helicitypattern,run_label);
+    QwDataHandlerArrayHel datahandlerarray(gQwOptions,helicitypattern,run_label);
+    //QwDataHandlerArrayEvt datahandlerarray(gQwOptions,BeamMod,run_label);
+
     
     ///  Create the event ring with the subsystem array
     QwEventRing eventring(gQwOptions,detectors);

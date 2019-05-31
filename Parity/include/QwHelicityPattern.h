@@ -231,7 +231,7 @@ class QwHelicityPattern {
   Bool_t fIsDataLoaded;
   void SetDataLoaded(Bool_t flag) { fIsDataLoaded = flag; };
 
-  friend class QwDataHandlerArray;
+  friend class QwDataHandlerArrayHel;
 };
 
 

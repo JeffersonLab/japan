@@ -33,6 +33,9 @@ class LRBCorrector : public VQwDataHandler, public MQwDataHandlerCloneable<LRBCo
     void ProcessData();
 
   protected:
+
+    std::vector< TString > fIndependentFull;
+    std::vector< TString > fDependentFull;
     
     LRBCorrector() { }
 

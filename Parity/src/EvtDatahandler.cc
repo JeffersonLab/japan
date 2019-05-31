@@ -1,0 +1,331 @@
+/*
+ * EvtDatahandler.cc
+ *
+ *  Created on: Oct 22, 2010
+ *      Author: wdconinc
+ *
+ *  Last Modified: August 1, 2018 1:45 PM
+ */
+
+#include "EvtDatahandler.h"
+
+// Qweak headers
+#include "VQwDataElement.h"
+#include "QwVQWK_Channel.h"
+#include "QwParameterFile.h"
+#include "QwHelicityPattern.h"
+
+#define MYSQLPP_SSQLS_NO_STATICS
+#ifdef __USE_DATABASE__
+#include "QwParitySSQLS.h"
+#include "QwParityDB.h"
+#endif // __USE_DATABASE__
+
+
+// Register this handler with the factory
+RegisterHandlerFactory(EvtDatahandler);
+
+
+/// \brief Constructor with name
+EvtDatahandler::EvtDatahandler(const TString& name):VQwDataHandler(name)
+{
+  ParseSeparator = ":";
+  fKeepRunningSum = kTRUE;
+}
+
+EvtDatahandler::EvtDatahandler(const EvtDatahandler &source):VQwDataHandler(source)
+{
+}
+
+/// Destructor
+EvtDatahandler::~EvtDatahandler()
+{
+  Iterator_HdwChan element;
+  for (element = fOutputVar.begin(); element != fOutputVar.end(); element++) {
+    if (*element != NULL){
+       delete *element;
+    }
+  }
+  fOutputVar.clear();
+}
+
+
+/*  Just use the base class version for now....
+ *
+ * void ParseConfigFile(QwParameterFile& file)
+ * {
+ *   VQwDataHandler::ParseConfigFile(file);
+ *   file.PopValue("slope-path", outPath);
+ * }
+ */
+
+/** Load the channel map
+ *
+ * @param mapfile Filename of map file
+ * @return Zero when success
+ */
+Int_t EvtDatahandler::LoadChannelMap(const std::string& mapfile)
+{/*
+  // Open the file
+  QwParameterFile map(mapfile);
+
+  // Read the sections of dependent variables
+  bool keep_header = true;
+  std::string section_name;
+  QwParameterFile* section = 0;
+  std::pair<EQwHandleType,std::string> type_name;
+  while ((section = map.ReadNextSection(section_name,keep_header))) {
+
+    // Store index to the current position in the dv vector
+    size_t current_dv_start = fDependentName.size();
+
+    // Add dependent variables from the section header
+    section->ReadNextLine();
+    if (section->LineHasSectionHeader()) {
+      section->TrimSectionHeader();
+      section->TrimWhitespace();
+      // Parse section header into tokens separated by a comma
+      std::string current_token;
+      std::string previous_token;
+      do {
+        previous_token = current_token;
+        current_token = section->GetNextToken(",");
+        if (current_token.size() == 0) continue;
+        // Parse current token into dependent variable type and name
+        type_name = ParseHandledVariable(current_token);
+        fDependentType.push_back(type_name.first);
+        fDependentName.push_back(type_name.second);
+        // Resize the vectors of sensitivities and independent variables
+        fSensitivity.resize(fDependentName.size());
+        fIndependentType.resize(fDependentName.size());
+        fIndependentName.resize(fDependentName.size());
+      } while (current_token.size() != 0);
+    } else QwError << "Section does not start with header." << QwLog::endl;
+
+    // Add independent variables and sensitivities
+    while (section->ReadNextLine()) {
+      // Throw away comments, whitespace, empty lines
+      section->TrimComment();
+      section->TrimWhitespace();
+      if (section->LineIsEmpty()) continue;
+      // Get first token: independent variable
+      std::string current_token = section->GetNextToken(",");
+      // Parse current token into independent variable type and name
+      type_name = ParseHandledVariable(current_token);
+      // Loop over dependent variables to set sensitivities
+      for (size_t dv = current_dv_start; dv < fDependentName.size(); dv++) {
+        Double_t sensitivity = atof(section->GetNextToken(",").c_str());
+        fSensitivity.at(dv).push_back(sensitivity);
+        fIndependentType.at(dv).push_back(type_name.first);
+        fIndependentName.at(dv).push_back(type_name.second);
+      }
+    }
+  }*/
+        QwWarning << "Testing Datahandler LoadChannelMap."
+                  << QwLog::endl;
+  return 0;
+}
+
+/** Connect to the dependent and independent channels
+ *
+ * @param asym Asymmetry event structure
+ * @param diff Difference event structure
+ * @return Zero on success
+ */
+Int_t EvtDatahandler::ConnectChannels(
+    QwSubsystemArrayParity& asym,
+    QwSubsystemArrayParity& diff)
+{/*
+  // Return if correction is not enabled
+
+  /// Fill vector of pointers to the relevant data elements
+  for (size_t dv = 0; dv < fDependentName.size(); dv++) {
+    // Get the dependent variables
+
+    VQwHardwareChannel* dv_ptr = 0;
+    QwVQWK_Channel* new_vqwk = NULL;
+    QwVQWK_Channel* vqwk = NULL;
+    string name = "";
+    string calc = "calc_";
+    
+    if (fDependentType.at(dv)==kHandleTypeMps){
+      //  Quietly ignore the MPS type when we're connecting the asym & diff
+      continue;
+    } else if(fDependentName.at(dv).at(0) == '@' ){
+        name = fDependentName.at(dv).substr(1,fDependentName.at(dv).length());
+    }else{
+      switch (fDependentType.at(dv)) {
+        case kHandleTypeAsym:
+          dv_ptr = asym.ReturnInternalValueForFriends(fDependentName.at(dv));
+          break;
+        case kHandleTypeDiff:
+          dv_ptr = diff.ReturnInternalValueForFriends(fDependentName.at(dv));
+          break;
+        default:
+          QwWarning << "EvtDatahandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
+		                << fDependentName.at(dv)
+		                << ", for asym/diff combiner does not have proper type, type=="
+		                << fDependentType.at(dv) << "."<< QwLog::endl;
+          break;
+      }
+
+      vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
+      name = vqwk->GetElementName().Data();
+      name.insert(0, calc);
+      new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
+      new_vqwk->SetElementName(name);
+      new_vqwk->SetSubsystemName(fName);
+    }
+
+    // alias
+    if(fDependentName.at(dv).at(0) == '@'){
+      //QwMessage << "dv: " << name << QwLog::endl;
+      new_vqwk = new QwVQWK_Channel(name, VQwDataElement::kDerived);
+      new_vqwk->SetSubsystemName(fName);
+    }
+    // defined type
+    else if(dv_ptr!=NULL){
+      //QwMessage << "dv: " << fDependentName.at(dv) << QwLog::endl;
+    }else {
+      QwWarning << "Dependent variable " << fDependentName.at(dv) << " could not be found, "
+                << "or is not a VQWK channel." << QwLog::endl;
+      continue; 
+    }
+
+    // pair creation
+    if(new_vqwk != NULL){
+      fDependentType.push_back(fDependentType.at(dv));
+      fDependentVar.push_back(vqwk);
+      fOutputVar.push_back(new_vqwk);
+      //fDependentVar.push_back(std::make_pair(vqwk, new_vqwk));
+    }
+
+    // Add independent variables
+    fIndependentVar.resize(fDependentVar.size());
+    for (size_t iv = 0; iv < fIndependentName.at(dv).size(); iv++) {
+      // Get the independent variables
+      const VQwHardwareChannel* iv_ptr = 0;
+      switch (fIndependentType.at(dv).at(iv)) {
+        case kHandleTypeAsym:
+          iv_ptr = asym.ReturnInternalValue(fIndependentName.at(dv).at(iv));
+          break;
+        case kHandleTypeDiff:
+          iv_ptr = diff.ReturnInternalValue(fIndependentName.at(dv).at(iv));
+          break;
+        default:
+          QwWarning << "Independent variable for combiner has unknown type."
+                    << QwLog::endl;
+          break;
+      }
+      if (iv_ptr) {
+        //QwMessage << " iv: " << fIndependentName.at(dv).at(iv) << " (sens = " << fSensitivity.at(dv).at(iv) << ")" << QwLog::endl;
+        fIndependentVar.back().push_back(iv_ptr);
+      } else {
+        QwWarning << "Independent variable " << fIndependentName.at(dv).at(iv) << " for combiner of "
+                  << "dependent variable " << fDependentName.at(dv) << " could not be found."
+                  << QwLog::endl;
+      }
+    }
+  }
+  */
+        QwWarning << "Testing Datahandler ConnectChannels 1."
+                  << QwLog::endl;
+  return 0;
+
+}
+
+/** Connect to the dependent and independent channels
+ *
+ * @param event Helicity event structure
+ * @return Zero on success
+ */
+Int_t EvtDatahandler::ConnectChannels(QwSubsystemArrayParity& event)
+{
+  // Return if correction is not enabled
+/*
+  /// Fill vector of pointers to the relevant data elements
+  for (size_t dv = 0; dv < fDependentName.size(); dv++) {
+    // Get the dependent variables
+
+    VQwHardwareChannel* dv_ptr = 0;
+    QwVQWK_Channel* new_vqwk = NULL;
+    QwVQWK_Channel* vqwk = NULL;
+    string name = " s";
+    string calc = "calc_";
+
+    if (fDependentType.at(dv)==kHandleTypeAsym || fDependentType.at(dv)==kHandleTypeDiff){
+      //  Quietly skip the asymmetry or difference types.
+      continue;
+    } else if(fDependentType.at(dv) != kHandleTypeMps){
+      QwWarning << "EvtDatahandler::ConnectChannels(QwSubsystemArrayParity& event):  Dependent variable, "
+                << fDependentName.at(dv)
+	              << ", for MPS combiner does not have MPS type, type=="
+	              << fDependentType.at(dv) << "."<< QwLog::endl;
+      continue;
+    } else {
+      if(fDependentName.at(dv).at(0) == '@' ){
+        name = fDependentName.at(dv).substr(1,fDependentName.at(dv).length());
+        new_vqwk = new QwVQWK_Channel(name, VQwDataElement::kDerived);
+      } else {
+        dv_ptr = event.ReturnInternalValueForFriends(fDependentName.at(dv));
+
+        vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
+        name = vqwk->GetElementName().Data();
+        name.insert(0,calc);
+        new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
+        new_vqwk->SetElementName(name);
+      }
+      new_vqwk->SetSubsystemName(fName);
+    }
+
+    // alias
+    if(new_vqwk==NULL){
+      QwWarning << "Dependent variable " << fDependentName.at(dv) << " could not be found, "
+                << "or is not a VQWK channel." << QwLog::endl;
+      continue; 
+    } else {
+      //QwMessage << "dv: " << new_vqwk->GetElementName() << QwLog::endl;
+      // pair creation
+      fDependentType.push_back(fDependentType.at(dv));
+      fDependentVar.push_back(vqwk);
+      fOutputVar.push_back(new_vqwk);
+      //fDependentVar.push_back(std::make_pair(vqwk, new_vqwk));
+    }
+
+    // Add independent variables
+    fIndependentVar.resize(fDependentVar.size());
+    for (size_t iv = 0; iv < fIndependentName.at(dv).size(); iv++) {
+      // Get the independent variables
+      const VQwHardwareChannel* iv_ptr = 0;
+      if(fIndependentType.at(dv).at(iv) == kHandleTypeMps){
+        iv_ptr = event.ReturnInternalValue(fIndependentName.at(dv).at(iv));
+    	} else {
+        QwWarning << "Independent variable for MPS combiner has unknown type."
+                  << QwLog::endl;
+      }
+      if (iv_ptr) {
+        //QwMessage << " iv: " << fIndependentName.at(dv).at(iv) << " (sens = " << fSensitivity.at(dv).at(iv) << ")" << QwLog::endl;
+        fIndependentVar.back().push_back(iv_ptr);
+      } else {
+        QwWarning << "Independent variable " << fIndependentName.at(dv).at(iv) << " for combiner of "
+                  << "dependent variable " << fDependentName.at(dv) << " could not be found."
+                  << QwLog::endl;
+      }
+    }
+  }
+ */
+        QwWarning << "Testing Datahandler ConnectChannels 2."
+                  << QwLog::endl;
+  return 0;
+}
+
+void EvtDatahandler::ProcessData() {
+    //if (Eventnumber%10000 == 0){
+    //	QwWarning << "Testing Datahandler ProcessData."
+     //             << QwLog::endl;
+    //}
+  //for (size_t i = 0; i < fDependentVar.size(); ++i) {
+   // CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar[i], fSensitivity[i]);
+  //}
+}
+

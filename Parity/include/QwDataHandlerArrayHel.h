@@ -18,7 +18,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/mem_fn.hpp>
 
-#include "QwDataHandlerArray.h"
+#include "QwDataHandlerArrayHel.h"
 #include "VQwDataHandler.h"
 #include "QwOptions.h"
 #include "QwHelicityPattern.h"
@@ -39,7 +39,7 @@ class QwPromptSummary;
  *   with the CODA routines.
  *
  */
-class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> > {
+class QwDataHandlerArrayHel:  public std::vector<boost::shared_ptr<VQwDataHandler> > {
  private:
   typedef std::vector<boost::shared_ptr<VQwDataHandler> >  HandlerPtrs;
  public:
@@ -52,15 +52,15 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
 
   private:
     /// Private default constructor
-    QwDataHandlerArray(); // not implement, will thrown linker error on use
+    QwDataHandlerArrayHel(); // not implement, will thrown linker error on use
 
   public:
     /// Constructor with options
-    QwDataHandlerArray(QwOptions& options, QwHelicityPattern& helicitypattern, const TString &run);
+    QwDataHandlerArrayHel(QwOptions& options, QwHelicityPattern& helicitypattern, const TString &run);
     /// Copy constructor by reference
-    QwDataHandlerArray(const QwDataHandlerArray& source);
+    QwDataHandlerArrayHel(const QwDataHandlerArrayHel& source);
     /// Default destructor
-    virtual ~QwDataHandlerArray();
+    virtual ~QwDataHandlerArrayHel();
 
   /// \brief Define configuration options for global array
   static void DefineOptions(QwOptions &options);
@@ -98,12 +98,12 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     void  ProcessEvent();
 
     /// \brief Assignment operator
-    QwDataHandlerArray& operator=  (const QwDataHandlerArray &value);
+    QwDataHandlerArrayHel& operator=  (const QwDataHandlerArrayHel &value);
     /*
     /// \brief Addition-assignment operator
-    QwDataHandlerArray& operator+= (const QwDataHandlerArray &value);
+    QwDataHandlerArrayHel& operator+= (const QwDataHandlerArray &value);
     /// \brief Subtraction-assignment operator
-    QwDataHandlerArray& operator-= (const QwDataHandlerArray &value);
+    QwDataHandlerArrayHel& operator-= (const QwDataHandlerArray &value);
     /// \brief Sum of two handler arrays
     void Sum(const QwDataHandlerArray &value1, const QwDataHandlerArray &value2);
     /// \brief Difference of two handler arrays
@@ -116,9 +116,9 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     void AccumulateRunningSum();
 
     /// \brief Update the running sums for devices accumulated for the global error non-zero events/patterns
-    void AccumulateRunningSum(const QwDataHandlerArray& value);
+    void AccumulateRunningSum(const QwDataHandlerArrayHel& value);
     /// \brief Update the running sums for devices check only the error flags at the channel level. Only used for stability checks
-    void AccumulateAllRunningSum(const QwDataHandlerArray& value);
+    void AccumulateAllRunningSum(const QwDataHandlerArrayHel& value);
 
     /// \brief Calculate the average for all good events
     void CalculateRunningAverage();
