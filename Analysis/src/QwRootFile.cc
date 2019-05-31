@@ -11,6 +11,9 @@ std::string QwRootFile::fDefaultRootFileStem = "Qweak_";
 const Long64_t QwRootFile::kMaxTreeSize = 100000000000LL;
 const Int_t QwRootFile::kMaxMapFileSize = 0x3fffffff; // 1 GiB
 
+const TString QwRootTree::kUnitsName = "ppm/D:ppb/D:um/D:mm/D";
+Double_t QwRootTree::kUnitsValue[] = { 1e-6, 1e-9, 1e-3, 1 };
+
 /**
  * Constructor with relative filename
  */

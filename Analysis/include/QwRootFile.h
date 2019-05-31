@@ -61,6 +61,9 @@ class QwRootTree {
       // Construct tree
       ConstructNewTree();
 
+      // Construct branch
+      ConstructUnitsBranch();
+
       // Construct branches and vector
       ConstructBranchAndVector(object);
     }
@@ -83,10 +86,18 @@ class QwRootTree {
 
   private:
 
+    static const TString kUnitsName;
+    static Double_t kUnitsValue[];
+
     /// Construct the tree
     void ConstructNewTree() {
       QwMessage << "New tree: " << fName << ", " << fDesc << QwLog::endl;
       fTree = new TTree(fName.c_str(), fDesc.c_str());
+    }
+
+    void ConstructUnitsBranch() {
+      std::string name = "units";
+      fTree->Branch(name.c_str(), &kUnitsValue, kUnitsName);
     }
 
     /// Construct index from this tree to another tree
