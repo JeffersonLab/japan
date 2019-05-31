@@ -14,7 +14,7 @@ if current=="30":
 
 
 for i in run:
-  os.system("./wrapper.sh -f input.txt -r "+str(i)+" -n 1")
+  os.system("./wrapper.sh -f input.txt -r "+str(i)+" -s 000 -n 1")
 
 
 
