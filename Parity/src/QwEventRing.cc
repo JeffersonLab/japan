@@ -149,3 +149,19 @@ Bool_t QwEventRing::IsReady(){ //Check for readyness to read data from the ring 
   return bRING_READY;
 }
 
+void QwEventRing::CheckBurpCut(Int_t thisevent)
+{
+  if (bRING_READY || thisevent>fBurpExtent){
+    if (fBurpAvg.CheckForBurpFail()){
+      Int_t precut_start = (thisevent+fRING_SIZE-fBurpPrecut)%fRING_SIZE;
+      for(Int_t i=precut_start;i!=(thisevent+1)%fRING_SIZE;i=(i++)%fRING_SIZE){
+	fEvent_Ring[i].UpdateErrorFlag(fBurpAvg);
+	fEvent_Ring[i].UpdateErrorFlag();
+      }
+    }
+    Int_t beforeburp = (thisevent+fRING_SIZE-fBurpExtent)%fRING_SIZE;
+    fBurpAvg.DeaccumulateRunningSum(fEvent_Ring[beforeburp]);
+  }
+  fBurpAvg.AccumulateAllRunningSum(fEvent_Ring[thisevent]);
+
+}
