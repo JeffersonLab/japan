@@ -370,7 +370,8 @@ void OnlineGUI::DoRadio()
   }
 
   current_page = id;
-  if(!fConfig->IsMonitor()) DoDraw();
+  //  if(!fConfig->IsMonitor())
+    DoDraw();
 
 }
 
