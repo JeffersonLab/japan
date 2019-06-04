@@ -786,6 +786,42 @@ std::ostream& operator<< (std::ostream& stream, const QwParameterFile& file)
 }
 
 
+/** @brief Interpret an integer with optional scale factor
+ *
+ *  @param value String containing an integer with optional scale factor
+ *
+ *  @return Pure integer value with any scale factor applied
+ */
+int QwParameterFile::ParseInt(const std::string& value)
+{
+  int retval;
+
+  const std::string scalechars("kM");
+  size_t pos = value.find_first_of(scalechars);
+  if (pos == std::string::npos) {
+    //  Separator not found.
+    retval = atoi(value.c_str());
+  } else if (pos == value.length()-1) {
+    retval = atoi(value.substr(0,pos).c_str());
+    switch (value[pos]) {
+      case 'k': retval *= 1e3; break;
+      case 'M': retval *= 1e6; break;
+      default:
+        QwError << "Integer contains unknown scale factor! " << value << QwLog::endl;
+        break;
+    }
+  } else {
+    QwError << "Integer must end with scale factor! " << value << QwLog::endl;
+    return INT_MAX;
+  }
+
+  //  Print the integer for debugging.
+  QwVerbose << "The integer is " << retval << QwLog::endl;
+
+  return retval;
+}
+
+
 /** @brief Separate a separated range of integers into a pair of values
  *
  *  @param separatorchars String with possible separator characters to consider.
@@ -805,21 +841,21 @@ std::pair<int,int> QwParameterFile::ParseIntRange(const std::string& separatorch
   size_t pos = range.find_first_of(separatorchars);
   if (pos == std::string::npos) {
     //  Separator not found.
-    mypair.first  = atoi(range.substr(0,range.length()).c_str());
+    mypair.first  = ParseInt(range.substr(0,range.length()).c_str());
     mypair.second = mypair.first;
   } else {
     size_t end = range.length() - pos - 1;
     if (pos == 0) {
       // Separator is the first character
       mypair.first  = 0;
-      mypair.second = atoi(range.substr(pos+1, end).c_str());
+      mypair.second = ParseInt(range.substr(pos+1, end).c_str());
     } else if (pos == range.length() - 1) {
       // Separator is the last character
-      mypair.first  = atoi(range.substr(0,pos).c_str());
+      mypair.first  = ParseInt(range.substr(0,pos).c_str());
       mypair.second = INT_MAX;
     } else {
-      mypair.first  = atoi(range.substr(0,pos).c_str());
-      mypair.second = atoi(range.substr(pos+1, end).c_str());
+      mypair.first  = ParseInt(range.substr(0,pos).c_str());
+      mypair.second = ParseInt(range.substr(pos+1, end).c_str());
     }
   }
 

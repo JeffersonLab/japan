@@ -61,6 +61,9 @@ class QwRootTree {
       // Construct tree
       ConstructNewTree();
 
+      // Construct branch
+      ConstructUnitsBranch();
+
       // Construct branches and vector
       ConstructBranchAndVector(object);
     }
@@ -83,10 +86,18 @@ class QwRootTree {
 
   private:
 
+    static const TString kUnitsName;
+    static Double_t kUnitsValue[];
+
     /// Construct the tree
     void ConstructNewTree() {
       QwMessage << "New tree: " << fName << ", " << fDesc << QwLog::endl;
       fTree = new TTree(fName.c_str(), fDesc.c_str());
+    }
+
+    void ConstructUnitsBranch() {
+      std::string name = "units";
+      fTree->Branch(name.c_str(), &kUnitsValue, kUnitsName);
     }
 
     /// Construct index from this tree to another tree
@@ -743,7 +754,10 @@ void QwRootFile::ConstructObjects(const std::string& name, T& object)
   // Create the objects in a directory
   if (fRootFile) {
     std::string type = typeid(object).name();
-    fDirsByName[name] = fRootFile->GetDirectory("/")->mkdir(name.c_str());
+    fDirsByName[name] =
+        fRootFile->GetDirectory(("/" + name).c_str()) ?
+            fRootFile->GetDirectory(("/" + name).c_str()) :
+            fRootFile->GetDirectory("/")->mkdir(name.c_str());
     fDirsByType[type].push_back(name);
     object.ConstructObjects(fDirsByName[name]);
   }
@@ -777,7 +791,10 @@ void QwRootFile::ConstructHistograms(const std::string& name, T& object)
   // Create the histograms in a directory
   if (fRootFile) {
     std::string type = typeid(object).name();
-    fDirsByName[name] = fRootFile->GetDirectory("/")->mkdir(name.c_str());
+    fDirsByName[name] =
+        fRootFile->GetDirectory(("/" + name).c_str()) ?
+            fRootFile->GetDirectory(("/" + name).c_str()) :
+            fRootFile->GetDirectory("/")->mkdir(name.c_str());
     fDirsByType[type].push_back(name);
     object.ConstructHistograms(fDirsByName[name]);
   }
@@ -788,7 +805,7 @@ void QwRootFile::ConstructHistograms(const std::string& name, T& object)
 	      << &object  
 	      << " and its name " << name 
 	      << QwLog::endl;
-    
+
     std::string type = typeid(object).name();
     fDirsByName[name] = fMapFile->GetDirectory()->mkdir(name.c_str());
     fDirsByType[type].push_back(name);

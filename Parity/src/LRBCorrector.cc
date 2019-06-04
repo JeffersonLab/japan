@@ -105,7 +105,8 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
   //printf("opened %s, slopes found, dump:\n",corFile->GetName());
   //alphasM->Print();
   corFile->Close();
-  
+
+  return 0;
 }
 
 
@@ -146,6 +147,7 @@ Int_t LRBCorrector::ConnectChannels(
   QwMessage << "In LRBCorrector::ConnectChannels; Number of IVs: " << fIndependentVar.size()
             << " Number of DVs: " << fDependentVar.size() << QwLog::endl;
 
+  return 0;
 }
 
 

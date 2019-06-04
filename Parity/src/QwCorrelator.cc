@@ -163,6 +163,7 @@ Int_t QwCorrelator::LoadChannelMap(const std::string& mapfile)
   //QwMessage << "fDependentType has a size of: " << fDependentType.size() << QwLog::endl;
   //QwMessage << "fDependentName has a size of: " << fDependentName.size() << QwLog::endl;
 
+  return 0;
 }
 
 
@@ -275,7 +276,6 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
   fErrCounts_DV.resize(fDependentVar.size(),0);
 
   return 0;
-	
 }
 
 
