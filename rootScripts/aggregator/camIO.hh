@@ -194,8 +194,12 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber 
   if (filenamebase == "NULL"){
     filenamebase = gSystem->Getenv("QW_ROOTFILES");
   }
+  Printf("test 1");
   TString fileNameBase  = filenamebase; // placeholder string
-  TChain *chain = new TChain(tree);
+  Printf("tree = %s",(const char*)tree);
+  TChain * newTChain;//(tree);
+  newTChain->SetName(tree);
+  Printf("test 2");
   Bool_t foundFile = false;
 
   for(Int_t i = 0; i < (n_runs); i++){
@@ -228,7 +232,7 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber 
         TFile * candidateFile = new TFile(filename.Data(),"READ");
         if (candidateFile->GetListOfKeys()->Contains(tree)){
           if (debug>0) Printf("File added to Chain: \"%s\"",(const char*)filename);
-          chain->Add(filename);
+          newTChain->Add(filename);
         }
         else {
           if (debug>1) Printf("File %s doesn't contain tree: \"%s\"",(const char*)filename,(const char*)tree);
@@ -243,15 +247,15 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber 
     Printf("Rootfile not found in %s with runs from %d to %d, split %03d, check your config and rootfiles",(const char*)fileNameBase,runNumber,runNumber+n_runs-1, splitNumber);
     return 0;
   }
-  if (debug>3) Printf("TChain total N Entries: %d",(int)chain->GetEntries());
-  return chain;
+  if (debug>3) Printf("TChain total N Entries: %d",(int)newTChain->GetEntries());
+  return newTChain;
 }
 
 TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1, TString filenamebase = "NULL"){
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   nRuns     = getNruns_h(nRuns);
-  TChain  * Chain = getTree_h(tree, runNumber, splitNumber, nRuns, filenamebase);
+  TChain *Chain = getTree_h(tree, runNumber, splitNumber, nRuns, filenamebase);
   if (!Chain){
     return 0;
   }
@@ -263,7 +267,7 @@ TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   nRuns     = getNruns_h(nRuns);
-  TChain  * Chain = getTree_h(tree, runNumber, splitNumber, nRuns, filenamebase);
+  TChain * Chain = getTree_h(tree, runNumber, splitNumber, nRuns, filenamebase);
   if (!Chain){
     return 0;
   }
@@ -276,7 +280,7 @@ TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TSt
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   nRuns     = getNruns_h(nRuns);
-  TChain  * Chain = getTree_h(tree, runNumber, splitNumber, nRuns, filenamebase);
+  TChain * Chain = getTree_h(tree, runNumber, splitNumber, nRuns, filenamebase);
   if (!Chain){
     Printf("Error, tree %s missing",(const char*)(tree));
     return 0;

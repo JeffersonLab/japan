@@ -50,7 +50,7 @@ add_library(camguin-lib SHARED ${sources} ${headers} camguinDict.cxx)
 set_target_properties(camguin-lib PROPERTIES OUTPUT_NAME camguin)
 target_link_libraries(camguin-lib ${ROOT_LIBRARIES})
 
-add_executable(camguin-bin camguin.C)
+add_executable(camguin-bin camguin_compile.C)
 set_target_properties(camguin-bin PROPERTIES OUTPUT_NAME camguin)
 target_link_libraries(camguin-bin camguin-lib)
 

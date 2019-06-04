@@ -7,17 +7,30 @@
 using namespace std;
 //void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCuts", Int_t overWriteCut = 0, TString histMode = "defaultHist", Int_t stabilityRing = 0, Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
 int main(int argc, char **argv) {
-  TString ana        = Form("%s", argv[0]);
-  TString tree       = Form("%s", argv[1]);
-  TString branch     = Form("%s", argv[2]);
-  TString leaf       = Form("%s", argv[3]);
-  TString cut        = Form("%s", argv[4]);
-  Int_t overWriteCut  = atoi(argv[5]);
-  TString histMode   = Form("%s", argv[6]);
-  Int_t stabilityRing = atoi(argv[7]);
-  Int_t runNumber     = atoi(argv[8]);
-  Int_t splitNumber   = atoi(argv[9]);
-  Int_t nRuns         = atoi(argv[10]);
+  TString ana        = Form("%s", argv[1]);
+  Printf("ana == %s",(const char*)ana);
+  TString tree       = Form("%s", argv[2]);
+  Printf("tree == %s",(const char*)tree);
+  TString branch     = Form("%s", argv[3]);
+  Printf("branch == %s",(const char*)branch);
+  TString leaf       = Form("%s", argv[4]);
+  Printf("leaf == %s",(const char*)leaf);
+  TString cut        = Form("%s", argv[5]);
+  Printf("cut == %s",(const char*)cut);
+  Int_t overWriteCut  = atoi(argv[6]);
+  Printf("overWriteCut == %d",overWriteCut);
+  TString histMode   = Form("%s", argv[7]);
+  Printf("histMode == %s",(const char*)histMode);
+  Int_t stabilityRing = atoi(argv[8]);
+  Printf("stabilityRing == %d",stabilityRing);
+  Int_t runNumber     = atoi(argv[9]);
+  Printf("runNumber == %d",runNumber);
+  Int_t splitNumber   = atoi(argv[10]);
+  Printf("splitNumber == %d",splitNumber);
+  Int_t nRuns         = atoi(argv[11]);
+  Printf("nRuns == %d",nRuns);
+  Double_t data         = atoi(argv[12]);
+  Printf("data == %f",data);
 
   /*TString ana = "help";
   TString tree = "mul"; 

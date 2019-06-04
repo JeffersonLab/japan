@@ -295,11 +295,13 @@ void writeRMS_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
   TString rms_error = "NULL";
   if (leaf==branch)
   {
+    if (debug>3) Printf("defining strings for printing data type");
     rms = "rms_" + leaf;
     rms_error = "rms_" + leaf + "_error";
   }
   else
   {
+    if (debug>3) Printf("defining strings for printing data type");
     rms = "rms_" + branch + "_" + leaf;
     rms_error = "rms_" + branch + "_" + leaf + "_error";
   }
