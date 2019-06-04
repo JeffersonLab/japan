@@ -145,4 +145,5 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     Printf("Standard form: ./camguin.C(string \"type of analysis\" (rms), string \"tree\" (mul), string \"branch\" (asym_vqwk_04_0ch0), string \"leaf\" (hw_sum), string \"cuts\" (defaultCuts), int overWriteCut (0, boolean to overwrite default cuts), string \"histMode\" (defaultHist, doesn't rebin), int runNumber ($RUNNUM), int nRuns ($NRUNS), double data (0.0))");
   }
   if (debug>2) Printf("Done with camguin.C");
+  gApplication->Terminate();
 }

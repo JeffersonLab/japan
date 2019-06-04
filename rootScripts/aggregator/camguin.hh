@@ -36,7 +36,7 @@
 #include <cmath>
 using namespace std;
 
-Int_t debug = 5;
+Int_t debug = -1;
 Int_t alarmStatus = -1;
 Int_t aggregatorStatus = -1;
 

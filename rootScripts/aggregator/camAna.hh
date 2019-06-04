@@ -90,6 +90,16 @@ Int_t writeNEvents_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
       writeFile_h(number_stabilityRingStart,stabilityRingStart,runNumber,splitNumber,nRuns);
       writeFile_h(number_stabilityRingLength,stabilityRingLength,runNumber,splitNumber,nRuns);
     }
+    if (alarmStatus){
+      // Then the alarm handler wants to receive the output in stdout
+      Printf("%s=%f",(const char*)number_stabilityRingStart,stabilityRingStart);
+      Printf("%s=%f",(const char*)number_stabilityRingLength,stabilityRingLength);
+    }
+  }
+  if (alarmStatus){
+    // Then the alarm handler wants to receive the output in stdout
+    Printf("%s=%f",(const char*)number_total_events,numEntries);
+    Printf("%s=%f",(const char*)number_good_events,n_data);
   }
   return stabilityRingStart;
 }
@@ -172,6 +182,11 @@ Int_t writeEventLoopN_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_0
       writeFile_h(number_stabilityRingStart,stabilityRingStart,runNumber,splitNumber,nRuns);
       writeFile_h(number_stabilityRingLength,stabilityRingLength,runNumber,splitNumber,nRuns);
     }
+    if (alarmStatus){
+      // Then the alarm handler wants to receive the output in stdout
+      Printf("%s=%f",(const char*)number_stabilityRingStart,stabilityRingStart);
+      Printf("%s=%f",(const char*)number_stabilityRingLength,stabilityRingLength);
+    }
   }
   return stabilityRingStart;
 }
@@ -240,6 +255,10 @@ void writeMean_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
   if (aggregatorStatus){
     writeFile_h(analysis,data_mean,runNumber,splitNumber,nRuns);
   }
+  if (alarmStatus){
+    // Then the alarm handler wants to receive the output in stdout
+    Printf("%s=%f",(const char*)analysis,data_mean);
+  }
 }
 
 void writeInt_loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
@@ -303,6 +322,10 @@ void writeInt_loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",
   }
   if (aggregatorStatus){
     writeFile_h(analysis,data,runNumber,splitNumber,nRuns);
+  }
+  if (alarmStatus){
+    // Then the alarm handler wants to receive the output in stdout
+    Printf("%s=%f",(const char*)analysis,data);
   }
 }
 

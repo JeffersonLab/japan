@@ -101,8 +101,8 @@ TH1 * getHistogram_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",
 
   gROOT->SetBatch(kTRUE);
   if (debug > 2) Printf("Leaf name: %s",(const char*)leafName);
-  Tree->Draw(Form("%s",(const char*)leafName),cut,"");
-  if (debug > 2) Printf("Tree->Draw(\"%s,%s,\"\")",(const char*)leafName,(const char*) cut);
+  Tree->Draw(Form("%s",(const char*)leafName),(const char*)cut,"");
+  if (debug > 2) Printf("%s->Draw(\"%s\",\"%s\",\"\")",(const char*)tree,(const char*)leafName,(const char*) cut);
   TH1 *h1 = (TH1*)gROOT->FindObject("htemp");
   if (debug > 2) Printf("Histogram mean = %f",h1->GetMean());
   TH1 *h2 = new TH1F();
@@ -228,10 +228,10 @@ void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_0
     rms = "rms_" + branch + "_" + leaf;
     rms_error = "rms_" + branch + "_" + leaf + "_error";
   }
-  Double_t data_mean = -1e99;
-  Double_t data_mean_error = -1e99;
-  Double_t data_rms = -1e99;
-  Double_t data_rms_error = -1e99;
+  Double_t data_mean = -1e6;
+  Double_t data_mean_error = -1e6;
+  Double_t data_rms = -1e6;
+  Double_t data_rms_error = -1e6;
   TH1 * hMeanRms = getHistogram_h(tree,branch,leaf,cut,overWriteCut,mode,runNumber,splitNumber,nRuns);
   if (hMeanRms==0)
   {
@@ -251,6 +251,13 @@ void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_0
     writeFile_h(rms,data_rms,runNumber,splitNumber,nRuns);
     writeFile_h(rms_error,data_rms_error,runNumber,splitNumber,nRuns);
   }
+  if (alarmStatus){
+    // Then the alarm handler wants to receive the output in stdout
+    Printf("%s=%f",(const char*)mean,data_mean);
+    Printf("%s=%f",(const char*)mean_error,data_mean_error);
+    Printf("%s=%f",(const char*)rms,data_rms);
+    Printf("%s=%f",(const char*)rms_error,data_rms_error);
+  }
 }
 
 void writeMean_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
@@ -269,8 +276,8 @@ void writeMean_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
     mean = "mean_" + branch + "_" + leaf;
     mean_error = "mean_" + branch + "_" + leaf + "_error";
   }
-  Double_t data_mean = -1e99;
-  Double_t data_mean_error = -1e99;
+  Double_t data_mean = -1e6;
+  Double_t data_mean_error = -1e6;
   TH1 * hMean = getHistogram_h(tree,branch,leaf,cut,overWriteCut,mode,runNumber,splitNumber,nRuns);
   if (hMean==0)
   {
@@ -284,6 +291,11 @@ void writeMean_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
   if (aggregatorStatus){
     writeFile_h(mean,data_mean,runNumber,splitNumber,nRuns);
     writeFile_h(mean_error,data_mean_error,runNumber,splitNumber,nRuns);
+  }
+  if (alarmStatus){
+    // Then the alarm handler wants to receive the output in stdout
+    Printf("%s=%f",(const char*)mean,data_mean); 
+    Printf("%s=%f",(const char*)mean_error,data_mean_error); 
   }
 }
 
@@ -305,8 +317,8 @@ void writeRMS_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
     rms = "rms_" + branch + "_" + leaf;
     rms_error = "rms_" + branch + "_" + leaf + "_error";
   }
-  Double_t data_rms = -1e99;
-  Double_t data_rms_error = -1e99;
+  Double_t data_rms = -1e6;
+  Double_t data_rms_error = -1e6;
   TH1 * hRms = getHistogram_h(tree,branch,leaf,cut,overWriteCut,mode,runNumber,splitNumber,nRuns);
   if (hRms==0)
   {
@@ -320,6 +332,11 @@ void writeRMS_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
   if (aggregatorStatus){
     writeFile_h(rms,data_rms,runNumber,splitNumber,nRuns);
     writeFile_h(rms_error,data_rms_error,runNumber,splitNumber,nRuns);
+  }
+  if (alarmStatus){
+    // Then the alarm handler wants to receive the output in stdout
+    Printf("%s=%f",(const char*)rms,data_rms); 
+    Printf("%s=%f",(const char*)rms_error,data_rms_error); 
   }
 }
 #endif // __CAMHIST__

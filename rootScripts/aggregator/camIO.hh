@@ -18,7 +18,7 @@
 #include <TFile.h>
 using namespace std;
 Int_t getAggregatorStatus_h(){
-// Get environment variable run number
+// Get environment variable agg status
   if (debug>0) Printf("Aggregator Status: %d",aggregatorStatus);
   if ( aggregatorStatus == -1 ) 
   { 
@@ -34,7 +34,7 @@ Int_t getAggregatorStatus_h(){
 }
 
 Int_t getAlarmStatus_h(){
-// Get environment variable run number
+// Get environment variable alarm status (if 1 then print to stdout)
   if (debug>0) Printf("Alarm Status: %d",alarmStatus);
   if ( alarmStatus == -1 ) 
   { 
@@ -50,7 +50,7 @@ Int_t getAlarmStatus_h(){
 }
 
 Int_t getDebug_h(){
-// Get environment variable run number
+// Get environment variable debug level
   if (debug>0) Printf("Debug Level: %d",debug);
   if ( debug == -1 ) 
   { 
@@ -97,7 +97,7 @@ Int_t getSplitNumber_h(Int_t splitNumber = -1){
 }
 
 Int_t getNruns_h(Int_t n_runs = -1){
-// Get environment variable run number
+// Get environment variable number of runs to chain
   if ( n_runs == -1 ) 
   { 
     TString nRuns = gSystem->Getenv("NRUNS");
@@ -194,12 +194,9 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber 
   if (filenamebase == "NULL"){
     filenamebase = gSystem->Getenv("QW_ROOTFILES");
   }
-  Printf("test 1");
   TString fileNameBase  = filenamebase; // placeholder string
-  Printf("tree = %s",(const char*)tree);
-  TChain * newTChain;//(tree);
-  newTChain->SetName(tree);
-  Printf("test 2");
+  if (debug>4) Printf("Tree to add to chain = %s",(const char*)tree);
+  TChain * newTChain = new TChain(tree);
   Bool_t foundFile = false;
 
   for(Int_t i = 0; i < (n_runs); i++){
