@@ -198,9 +198,9 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     datahandlerarray.ConstructTreeBranches(treerootfile);
 
-    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstYield(),"yield_");
-    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstAsymmetry(),"asym_");
-    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstDifference(),"diff_");
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstYield(), "stat_yield_");
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstAsymmetry(), "stat_asym_");
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstDifference(), "stat_diff_");
 
     // Summarize the ROOT file structure
     //treerootfile->PrintTrees();
