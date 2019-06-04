@@ -573,10 +573,7 @@ void  QwVQWK_Channel::ConstructHistograms(TDirectory *folder, TString &prefix)
     //  This channel is not used, so skip filling the histograms.
   } else {
     //  Now create the histograms.
-    if (prefix == TString("asym_")
-       || prefix == TString("diff_")
-       || prefix == TString("yield_"))
-      fDataToSave=kDerived;
+    SetDataToSaveByPrefix(prefix);
 
     TString basename, fullname;
     basename = prefix + GetElementName();
@@ -679,6 +676,9 @@ void  QwVQWK_Channel::ConstructBranchAndVector(TTree *tree, TString &prefix, std
   //  This channel is not used, so skip setting up the tree.
   if (IsNameEmpty()) return;
 
+  //  Decide what to store based on prefix
+  SetDataToSaveByPrefix(prefix);
+
   TString basename = prefix + GetElementName();
   fTreeArrayIndex  = values.size();
 
@@ -697,9 +697,9 @@ void  QwVQWK_Channel::ConstructBranchAndVector(TTree *tree, TString &prefix, std
     list += "hw_sum/D";
     if (fDataToSave == kMoments) {
       values.push_back(0.0);
-      list += "hw_sum_m2/D";
+      list += ":hw_sum_m2/D";
       values.push_back(0.0);
-      list += "hw_sum_err/D";
+      list += ":hw_sum_err/D";
     }
   }
 
