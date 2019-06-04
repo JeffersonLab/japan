@@ -19,11 +19,11 @@
 using namespace std;
 Int_t getAggregatorStatus_h(){
 // Get environment variable run number
-  if (debug>0) Printf("Aggregator Satus: %d",aggregatorStatus);
+  if (debug>0) Printf("Aggregator Status: %d",aggregatorStatus);
   if ( aggregatorStatus == -1 ) 
   { 
-    TString run = gSystem->Getenv("CAM_AGGREGATE");
-    aggregatorStatus = run.Atoi();
+    TString aggStatusStr = gSystem->Getenv("CAM_AGGREGATE");
+    aggregatorStatus = aggStatusStr.Atoi();
   }
   if (aggregatorStatus<0){
     Printf("Error: Aggregator Status given (%d) invalid, must be an integer >= 0",aggregatorStatus);
@@ -35,11 +35,11 @@ Int_t getAggregatorStatus_h(){
 
 Int_t getAlarmStatus_h(){
 // Get environment variable run number
-  if (debug>0) Printf("Alarm Status number: %d",alarmStatus);
+  if (debug>0) Printf("Alarm Status: %d",alarmStatus);
   if ( alarmStatus == -1 ) 
   { 
-    TString run = gSystem->Getenv("CAM_ALARM");
-    alarmStatus = run.Atoi();
+    TString alarmStr = gSystem->Getenv("CAM_ALARM");
+    alarmStatus = alarmStr.Atoi();
   }
   if (alarmStatus<0){
     Printf("Error: Alarm Status given (%d) invalid, must be an integer >= 0",alarmStatus);
@@ -54,8 +54,8 @@ Int_t getDebug_h(){
   if (debug>0) Printf("Debug Level: %d",debug);
   if ( debug == -1 ) 
   { 
-    TString run = gSystem->Getenv("CAM_DEBUG");
-    debug = run.Atoi();
+    TString debugStr = gSystem->Getenv("CAM_DEBUG");
+    debug = debugStr.Atoi();
   }
   if (debug<0){
     Printf("Error: Debug Level given (%d) invalid, must be an integer >= 0",debug);
@@ -345,13 +345,13 @@ void writeAlarmFile_h(){
     placeholder.push_back(fAlarmData.type[0]);
     placeholder.push_back(fAlarmData.type[1]);
     placeholder.push_back(fAlarmData.type[2]);
-    placeholder.push_back(fAlarmData.type[3]);
-    placeholder.push_back(fAlarmData.type[4]);
-    if (newFile || fAlarmData.indexStart>filearray.size()-1){ // Then edit
+    placeholder.push_back(fAlarmData.name);
+    placeholder.push_back(fAlarmData.value);
+    if (newFile || fAlarmData.indexStart>filearray.size()-1){ // Then add
       if(debug>3) Printf("Editing filearray - adding new entry"); // FIXME add a new entry into the array (not at the end) somehow - do push_back() and then move()
       filearray.push_back(placeholder);
     }
-    else{ // Then add
+    else{ // Then edit
       if(debug>3) Printf("Editing filearray - editing entry");
       filearray[fAlarmData.indexStart]=placeholder;
     }
@@ -367,6 +367,7 @@ void writeAlarmFile_h(){
     // Swap locations mode
     Int_t sizeIndex = fAlarmData.indexEnd-fAlarmData.indexStart;
     if((fAlarmData.changeIndex+fAlarmData.indexStart)<0){
+      file_out.close();
       return; // If the user sets it too far back continue
     }
     filearraycopy = filearray;
@@ -382,6 +383,7 @@ void writeAlarmFile_h(){
     // Swap locations mode
     Int_t sizeIndex = fAlarmData.indexEnd-fAlarmData.indexStart;
     if((fAlarmData.changeIndex+fAlarmData.indexEnd)>filearray.size()){
+      file_out.close();
       return; // If the user sets it too far forward continue
     }
     filearraycopy = filearray;

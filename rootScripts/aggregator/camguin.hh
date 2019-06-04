@@ -47,8 +47,8 @@ struct alarm_data {
   Int_t indexEnd     = 0;
   Int_t column       = 0;
   Int_t columnIndex  = 0;
-  std::string identifier = "NULL";
-  std::string value      = "NULL";
+  std::string name   = "NULL";
+  std::string value  = "NULL";
   Int_t color        = 0x0;
   Int_t alarm_status = 0;
 

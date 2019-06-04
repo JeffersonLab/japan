@@ -201,6 +201,9 @@ void writeInt_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
   if (aggregatorStatus){
     writeFile_h(integral,data_integral,runNumber,splitNumber,nRuns);
   }
+  if (alarmStatus){
+    Printf("%s=%f",(const char*)integral,data_integral); // Then the alarm handler wants to receive the output in stdout
+  }
 }
 
 void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
