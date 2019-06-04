@@ -231,8 +231,7 @@ void VQwScaler_Channel::ConstructHistograms(TDirectory *folder, TString &prefix)
     //  This channel is not used, so skip filling the histograms.
   } else {
     //  Now create the histograms.
-    TString basename, fullname;
-    basename = prefix + GetElementName();
+    TString basename = prefix + GetElementName();
 
     fHistograms.resize(1, NULL);
     size_t index=0;
@@ -263,7 +262,7 @@ void QwScaler_Channel<data_mask,data_shift>::ConstructBranchAndVector(TTree *tre
     //  Decide what to store based on prefix
     SetDataToSaveByPrefix(prefix);
 
-    TString basename = prefix + GetElementName();
+    TString basename = prefix(0,prefix.First("|")) + GetElementName();
     fTreeArrayIndex  = values.size();
 
     TString list;

@@ -179,7 +179,7 @@ public:
      || prefix.Contains("diff_")
      || prefix.Contains("yield_"))
       fDataToSave = kDerived;
-    if (prefix.Contains("stat_"))
+    if (prefix.Contains("stat"))
       fDataToSave = kMoments; // stat has priority
   }
 

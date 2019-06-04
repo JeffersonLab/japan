@@ -575,8 +575,7 @@ void  QwVQWK_Channel::ConstructHistograms(TDirectory *folder, TString &prefix)
     //  Now create the histograms.
     SetDataToSaveByPrefix(prefix);
 
-    TString basename, fullname;
-    basename = prefix + GetElementName();
+    TString basename = prefix + GetElementName();
 
     if(fDataToSave==kRaw)
       {
@@ -679,7 +678,7 @@ void  QwVQWK_Channel::ConstructBranchAndVector(TTree *tree, TString &prefix, std
   //  Decide what to store based on prefix
   SetDataToSaveByPrefix(prefix);
 
-  TString basename = prefix + GetElementName();
+  TString basename = prefix(0,prefix.First("|")) + GetElementName();
   fTreeArrayIndex  = values.size();
 
   TString list = "";

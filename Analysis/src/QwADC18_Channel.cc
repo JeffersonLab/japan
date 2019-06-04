@@ -572,7 +572,7 @@ void  QwADC18_Channel::ConstructBranchAndVector(TTree *tree, TString &prefix, st
     //  Decide what to store based on prefix
     SetDataToSaveByPrefix(prefix);
 
-    TString basename = prefix + GetElementName();
+    TString basename = prefix(0,prefix.First("|")) + GetElementName();
     fTreeArrayIndex  = values.size();
 
     TString list;
