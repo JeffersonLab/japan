@@ -260,12 +260,23 @@ void QwScaler_Channel<data_mask,data_shift>::ConstructBranchAndVector(TTree *tre
   if (IsNameEmpty()){
     //  This channel is not used, so skip setting up the tree.
   } else {
+    //  Decide what to store based on prefix
+    SetDataToSaveByPrefix(prefix);
+
     TString basename = prefix + GetElementName();
     fTreeArrayIndex  = values.size();
 
     TString list;
     values.push_back(0.0);
     list = "value/D";
+    if (fDataToSave == kMoments) {
+      values.push_back(0.0);
+      list += ":value_m2/D";
+      values.push_back(0.0);
+      list += ":value_err/D";
+      values.push_back(0.0);
+      list += ":num_samples/D";
+    }
     values.push_back(0.0);
     list += ":Device_Error_Code/D";
     if(fDataToSave==kRaw){
@@ -320,6 +331,11 @@ void QwScaler_Channel<data_mask,data_shift>::FillTreeVector(std::vector<Double_t
   } else {
     size_t index = fTreeArrayIndex;
     values[index++] = this->fValue;
+    if (fDataToSave == kMoments) {
+      values[index++] = fValueM2;
+      values[index++] = fValueError;
+      values[index++] = fGoodEventCount;
+    }
     values[index++] = this->fErrorFlag;
     if(fDataToSave==kRaw){
       values[index++] = this->fValue_Raw;
