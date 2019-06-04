@@ -820,7 +820,8 @@ void  QwVQWK_Channel::FillTreeVector(std::vector<Double_t> &values) const
 
     // num_samples
     if (bNum_samples)
-      values[index++] = this->fNumberOfSamples;
+      values[index++] =
+          (fDataToSave == kMoments)? this->fGoodEventCount: this->fNumberOfSamples;
 
     // Device_Error_Code
     if (bDevice_Error_Code)
