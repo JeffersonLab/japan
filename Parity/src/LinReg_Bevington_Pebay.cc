@@ -364,54 +364,94 @@ void LinRegBevPeb::solve() {
     }
   }
 
-   TMatrixD Eynew; Eynew.ResizeTo(Rky);
-   for (int iy = 0; iy <par_nY; iy++) {
-    double Ey;
-    Int_t testval;
-    testval = getMeanY(iy,Ey);
-    assert(testval==0);
-    for (int ip = 0; ip <par_nP; ip++) {
-      Int_t testval;
-      double Ep, covxx, covxy, covyx, covyy;
-      testval = getMeanP(ip,Ep);
-      assert(testval==0);
-      //testval = getCovariancePY(ip,ip,covxx);
-      testval = getSigmaP(ip,covxx);
-      covxx = covxx*covxx;
-      assert(testval==0);
-      testval = getCovariancePY(ip,iy,covxy);
-      assert(testval==0);
-      Eynew(ip,iy) = Ey - Ep*covxy/covxx;
-    }
-  }
+	//define the diagonals of sigYY
+	TMatrixD sigYY_diag; sigYY_diag.ResizeTo(par_nY,par_nY);
+	for(int iy = 0; iy < par_nY; iy++){
+		Int_t testval;
+		testval = getSigmaY(iy,sigYY_diag(iy,iy));
+		assert(testval==0);
+		sigYY_diag(iy,iy) = sigYY_diag(iy,iy)*sigYY_diag(iy,iy);
+	}
 
-  TMatrixD Varynew; Varynew.ResizeTo(Rky);
-  double Ayx, Axy, covxx, covxy, covyx, covyy;
-  Int_t testval;
-  for (int iy = 0; iy <par_nY; iy++) {
-   for (int ip = 0; ip <par_nP; ip++) {
-      //testval = getCovariancePY(ip,ip,covxx);
-      testval = getSigmaP(ip,covxx);
-      covxx = covxx*covxx;
-      assert(testval==0);
-      testval = getCovariancePY(ip,iy,covxy);
-      assert(testval==0);
-      covyx = covxy;
-      //testval = getCovariancePY(iy,ip,covyx);
-      //assert(testval==0);
-      //testval = getCovariancePY(iy,iy,covyy);
-      testval = getSigmaY(ip,covyy);
-      covyy = covyy*covyy;
-      assert(testval==0);
-      Axy = covxy/covxx;
-      Ayx = covyx/covxx;
-      Varynew(ip,iy) = covyy + Ayx*covxx*Axy - 2*covxy*Axy;
-   }
-  }
+	//define sigXX
+	TMatrixD sigXX; sigXX.ResizeTo(par_nP,par_nP);
+	for(int iy = 0; iy < par_nY; iy++){
+		for(int ip = 0; ip < par_nY; ip++){
+			Int_t testval;
+			testval = getCovarianceP(ip,iy,sigXX(ip,iy));
+			assert(testval==0);
+		}
+	}
+
+	//define sigXY
+	TMatrixD sigXY; sigXY.ResizeTo(par_nP,par_nY);
+	for(int iy = 0; iy < par_nY; iy++){
+		for(int ip = 0; ip < par_nP; ip++){
+			Int_t testval;
+			testval = getCovariancePY(ip,iy,sigXY(ip,iy));
+			assert(testval==0);
+		}
+	}
+
+	//define sigYX
+	TMatrixD sigYX; sigYX.ResizeTo(par_nY,par_nP);
+	sigYX.Transpose(sigXY);
+
+	TMatrixD Axy; Axy.ResizeTo(par_nP,par_nY);
+	TMatrixD Ayx; Ayx.ResizeTo(par_nY,par_nP);
+	sigXX.Invert();
+	sigYY_diag.Invert();
+	Axy=sigXX*sigXY;
+	Ayx=sigYY_diag*sigYX;
+	sigXX.Invert();
+	sigYY_diag.Invert();
+
+	//define meanY
+	TMatrixD meanY; meanY.ResizeTo(1,par_nY);
+	for(int iy = 0; iy < par_nY; iy++){
+		Int_t testval;
+		testval = getMeanY(iy,meanY(0,iy));
+		assert(testval==0);
+	}
+
+	//define meanX
+	TMatrixD meanX; meanX.ResizeTo(1,par_nP);
+	for(int ip = 0; ip < par_nP; ip++){
+		Int_t testval;
+		testval = getMeanP(ip,meanX(0,ip));
+		assert(testval==0);
+	}
+
+	TMatrixD meanYprime; meanYprime.ResizeTo(1,par_nY);
+	meanYprime = meanY - meanX*Axy;
+
+	TMatrixD covYprime; covYprime.ResizeTo(par_nY,par_nY);
+	covYprime = sigYY_diag + Ayx*sigXX*Axy - (sigYX*Axy + sigYX*Axy);
+
+	TMatrixD sigYprime; sigYprime.ResizeTo(1,par_nY);
+	for(int iy = 0; iy < par_nY; iy++){
+		sigYprime(0,iy) = sqrt(covYprime(iy,iy));
+	}
+
+	//cout << "cov(y'):"; covYprime.Print();
+	//cout << "sig(y'):"; sigYprime.Print();
   
-  cout<<"mA:"; mA.Print();	
-  cout<<"E[Y'] = "; Eynew.Print();
-  cout<<"Cov[Y'] = "; Varynew.Print();
+  cout << "Uncorrected Y values:" << endl;
+  cout << "     mean          sig" << endl;
+  for(int i = 0; i < par_nY; i++){
+  	double yold, oldsigy;
+  	getMeanY(i,yold);
+  	getSigmaY(i,oldsigy);
+  	cout << "Y" << i << ":  " << yold << " +- " << oldsigy << endl;
+  }
+  cout << endl;
+
+  cout << "Corrected Y values:" << endl;
+  cout << "     mean          sig" << endl;
+  for(int i = 0; i < par_nY; i++){
+  	cout << "Y" << i << ":  " << meanYprime(0,i) << " +- " << sigYprime(0,i) << endl;
+  }
+  cout << endl;
 
   cout << "Compute errors of alphas ..."<<endl;
   double norm=1./(fGoodEventNumber - par_nP -1);
@@ -447,6 +487,6 @@ void LinRegBevPeb::solve() {
       mAsig(j,iy)= sqrt(norm * invRjk(j,j) * s2) / Sj;
     }
   }
-  cout<<"mAsig:"; mAsig.Print();
+  //cout<<"mAsig:"; mAsig.Print();
 }
 
