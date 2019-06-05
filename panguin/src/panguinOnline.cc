@@ -1,6 +1,7 @@
 ///////////////////////////////////////////////////////////////////
 //  Macro to help with online analysis
 //    B. Moffit  Oct. 2003
+///////////////////////////////////////////////////////////////////
 
 #include "panguinOnline.hh"
 #include <string>
@@ -370,9 +371,7 @@ void OnlineGUI::DoRadio()
   }
 
   current_page = id;
-  //  if(!fConfig->IsMonitor())
-    DoDraw();
-
+  DoDraw();
 }
 
 void OnlineGUI::CheckPageButtons() 
@@ -472,7 +471,7 @@ void OnlineGUI::GetTreeVars()
     treeVars.push_back(currentTree);
   }
 
-  if(fVerbosity>=2){
+  if(fVerbosity>=5){
     for(UInt_t iTree=0; iTree<treeVars.size(); iTree++) {
       cout << "In Tree " << iTree << ": " << endl;
       for(UInt_t i=0; i<treeVars[iTree].size(); i++) {
@@ -618,6 +617,12 @@ void OnlineGUI::TimerUpdate() {
 #ifdef OLDTIMERUPDATE
   if(fVerbosity>=2)
     cout<<"\t rtFile: "<<fRootFile<<"\t"<<fConfig->GetRootFile()<<endl;
+  if(fRootFile){
+    fRootFile->Close();
+    fRootFile->Delete();
+    delete fRootFile;
+    fRootFile=0;
+  }
   fRootFile = new TFile(fConfig->GetRootFile(),"READ");
   if(fRootFile->IsZombie()) {
     cout << "New run not yet available.  Waiting..." << endl;
@@ -651,10 +656,8 @@ void OnlineGUI::TimerUpdate() {
     }
     DoDraw();
   }
-  fRootFile->Close();
-  fRootFile->Delete();
-  delete fRootFile;
-  fRootFile = 0;
+  timer->Reset();
+
 #else
 
   if(fRootFile->IsZombie() || (fRootFile->GetSize() == -1)
