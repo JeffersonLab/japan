@@ -21,12 +21,15 @@
 #include "QwRootFile.h"
 #include "QwOptionsParity.h"
 #include "QwEventBuffer.h"
+#ifdef __USE_DATABASE__
+#include "QwParityDB.h"
+#endif //__USE_DATABASE__
 #include "QwHistogramHelper.h"
 #include "QwSubsystemArrayParity.h"
 #include "QwHelicityCorrelatedFeedback.h"
 #include "QwEventRing.h"
 #include "QwEPICSEvent.h"
-//#include "QwEPICSControl.h"
+#include "QwEPICSControl.h"
 //#include "GreenMonster.h"
 
 // Qweak subsystems
@@ -35,6 +38,7 @@
 #include "QwFakeHelicity.h"
 #include "QwBeamLine.h"
 #include "QwVQWK_Channel.h"
+#include "QwHelicityPattern.h"
 
 
 
@@ -45,9 +49,10 @@ Int_t main(Int_t argc, Char_t* argv[])
   ///  static variable within the QwParameterFile class which will be used by
   ///  all instances.
   ///  The "scratch" directory should be first.
-  //QwParameterFile::AppendToSearchPath(getenv_safe_string("QW_PRMINPUT"));
-  QwParameterFile::AppendToSearchPath(getenv_safe_string("QWANALYSIS") + "/Extensions/QwFeedback/prminput");
-  //QwParameterFile::AppendToSearchPath(getenv_safe_string("QWANALYSIS") + "/Parity/prminput");
+  QwParameterFile::AppendToSearchPath(getenv_safe_string("QW_PRMINPUT"));
+  QwParameterFile::AppendToSearchPath(getenv_safe_string("QWANALYSIS") + "/Feedback/prminput");
+
+  QwParameterFile::AppendToSearchPath(getenv_safe_string("QWANALYSIS") + "/Parity/prminput");
   //QwParameterFile::AppendToSearchPath(getenv_safe_string("QWANALYSIS") + "/Analysis/prminput");
 
 
@@ -60,6 +65,7 @@ Int_t main(Int_t argc, Char_t* argv[])
     // Define the command line options
   DefineOptionsParity(gQwOptions);
   QwHelicityCorrelatedFeedback::DefineOptions(gQwOptions);
+
   //Load command line options for the histogram/tree helper class
   gQwHists.ProcessOptions(gQwOptions);
    /// Setup screen and file logging
@@ -75,7 +81,12 @@ Int_t main(Int_t argc, Char_t* argv[])
   QwEventBuffer eventbuffer;
   eventbuffer.ProcessOptions(gQwOptions);
 
+///  Create the database connection
+  #ifdef __USE_DATABASE__
 
+
+  QwParityDB database(gQwOptions);
+  #endif //__USE_DATABASE__
 
   ///  Create the database connection
   //  QwDatabase database(gQwOptions);
@@ -100,6 +111,8 @@ Int_t main(Int_t argc, Char_t* argv[])
   
   fEPICSCtrl.Print_Qasym_Ctrls();
   */
+
+  QwError << "*** Before opening stream" << QwLog::endl;
     
   // Loop over all runs
   while (eventbuffer.OpenNextStream() == CODA_OK){
@@ -107,20 +120,31 @@ Int_t main(Int_t argc, Char_t* argv[])
  
     ///  Set the current event number for parameter file lookup
     QwParameterFile::SetCurrentRunNumber(eventbuffer.GetRunNumber());
+gQwOptions.Parse(kTRUE);
+    eventbuffer.ProcessOptions(gQwOptions);
 
-
+    QwError << "*** Before loading EPICS decoder" << QwLog::endl;
     ///  Create an EPICS event
     QwEPICSEvent epicsevent;
     epicsevent.LoadChannelMap("EpicsTable.map");
-
+   
+    QwError << "*** Before setting up detectors object" << QwLog::endl;
     ///  Load the detectors from file
     QwSubsystemArrayParity detectors(gQwOptions);
     detectors.ProcessOptions(gQwOptions);
+   detectors.ListPublishedValues();
 
+
+  ;
+    QwError << "*** Before creating helicity pattern" << QwLog::endl;
     ///  Create the helicity pattern
     QwHelicityCorrelatedFeedback helicitypattern(detectors);
+    //std::cout << "***********************Amali****************** "  << std::endl;
     helicitypattern.ProcessOptions(gQwOptions);
+
+    QwError << "*** Before loading feedback param file" << QwLog::endl;
     helicitypattern.LoadParameterFile("qweak_fb_prm.in");
+   
     /*
       helicitypattern.UpdateGMClean(0);
       helicitypattern.FeedIASetPoint(0);
@@ -128,9 +152,11 @@ Int_t main(Int_t argc, Char_t* argv[])
     */
 
     ///  Create the event ring with the subsysten array
-    QwEventRing eventring(gQwOptions,detectors);
-
-    ///  Create the running sum
+  
+    
+ 
+  
+    //     Create the running sum
     QwSubsystemArrayParity runningsum(detectors);
 
 
@@ -144,14 +170,16 @@ Int_t main(Int_t argc, Char_t* argv[])
     helicitypattern.ClearBurstSum();
 
 
-    
+        QwEventRing eventring(gQwOptions,detectors);
+
+	QwError << "*** Before starting event loop" << QwLog::endl;
 
     // Loop over events in this CODA file
     while (eventbuffer.GetNextEvent() == CODA_OK) {
 
       if (eventbuffer.GetEventNumber()%1000)
 	std::cout<<std::flush;
-
+  
       //  First, do processing of non-physics events...
       if (eventbuffer.IsROCConfigurationEvent()){
 	//  Send ROC configuration event data to the subsystem objects.
@@ -206,6 +234,7 @@ Int_t main(Int_t argc, Char_t* argv[])
             helicitypattern.CalculateAsymmetry();
             if (helicitypattern.IsGoodAsymmetry()) {
 	      helicitypattern.ApplyFeedbackCorrections();//apply IA feedback
+           
               // Clear the data
               helicitypattern.ClearEventData();	      
             }
@@ -228,7 +257,7 @@ Int_t main(Int_t argc, Char_t* argv[])
     QwMessage << "Number of events processed at end of run: "
               << eventbuffer.GetEventNumber() << std::endl;
 
-
+ 
 
     //  Close event buffer stream
     eventbuffer.CloseStream();
@@ -259,6 +288,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
 
   QwMessage << "I have done everything I can do..." << QwLog::endl; 
- 
+
   return 0;
+
 }
