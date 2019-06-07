@@ -161,7 +161,6 @@ class QwHelicityPattern {
 
   void  WritePromptSummary(QwPromptSummary *ps);
 
-  void ForcePatternIsGood() { fPatternIsGood = true; };
   Bool_t IsGoodAsymmetry();
   UInt_t GetEventcutErrorFlag() const{
     return fAsymmetry.GetEventcutErrorFlag();

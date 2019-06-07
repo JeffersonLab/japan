@@ -146,11 +146,12 @@ Int_t main(Int_t argc, Char_t* argv[])
     QwSubsystemArrayParity ringoutput(detectors);
 
     ///  Create the burst sum
-    QwHelicityPattern burstsum(helicitypattern);
+    QwHelicityPattern patternsum_per_burst(helicitypattern);
 
     ///  Create the running sum
-    QwSubsystemArrayParity runningsum(detectors);
+    QwSubsystemArrayParity eventsum(detectors);
     QwHelicityPattern patternsum(helicitypattern);
+    QwHelicityPattern burstsum(helicitypattern);
 
     //  Initialize the database connection.
     #ifdef __USE_DATABASE__
@@ -198,14 +199,11 @@ Int_t main(Int_t argc, Char_t* argv[])
     burstrootfile->ConstructTreeBranches("pr", "Pair tree", helicitypattern.GetPairYield(),"yield_");
     burstrootfile->ConstructTreeBranches("pr", "Pair tree", helicitypattern.GetPairAsymmetry(),"asym_");
     treerootfile->ConstructTreeBranches("slow", "EPICS and slow control tree", epicsevent);
-    treerootfile->ConstructTreeBranches("run", "Running sum tree", runningsum);
+    treerootfile->ConstructTreeBranches("run", "Running sum tree", eventsum);
 
     datahandlerarray.ConstructTreeBranches(treerootfile);
 
-    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstYield(),"yield_");
-    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstAsymmetry(),"asym_");
-    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstDifference(),"diff_");
-    burstrootfile->ConstructTreeBranches("burst2", "Burst2 level data tree", burstsum);
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", patternsum_per_burst);
 
     // Summarize the ROOT file structure
     //treerootfile->PrintTrees();
@@ -213,11 +211,12 @@ Int_t main(Int_t argc, Char_t* argv[])
 
 
     //  Clear the single-event running sum at the beginning of the runlet
-    runningsum.ClearEventData();
-    patternsum.ClearRunningSum();
-    //  Clear the running sum of the burst values at the beginning of the runlet
-    helicitypattern.ClearBurstSum();
+    eventsum.ClearEventData();
+    patternsum.ClearEventData();
     burstsum.ClearEventData();
+    //  Clear the running sum of the burst values at the beginning of the runlet
+    helicitypattern.ClearEventData();
+    patternsum_per_burst.ClearEventData();
 
 
     //  Load the blinder seed from the database for this runlet.
@@ -294,7 +293,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
 
 	  // Accumulate the running sum to calculate the event based running average
-	  runningsum.AccumulateRunningSum(ringoutput);
+	  eventsum.AccumulateRunningSum(ringoutput);
 
 	  // Fill the histograms
 	  historootfile->FillHistograms(ringoutput);
@@ -329,29 +328,23 @@ Int_t main(Int_t argc, Char_t* argv[])
               treerootfile->FillTreeBranches(helicitypattern);
               treerootfile->FillTree("mul");
 
+              // Fill the pattern into the sum for this burst
+              patternsum_per_burst.AccumulateRunningSum(helicitypattern);
+
               // Burst mode
               if (helicitypattern.IsEndOfBurst()) {
-                helicitypattern.AccumulateRunningBurstSum();
-                helicitypattern.CalculateBurstAverage();
-                //
-                burstsum.AccumulateRunningSum(helicitypattern);
-                burstsum.CalculateRunningAverage();
+                // Calculate average over this burst
+                patternsum_per_burst.CalculateRunningAverage();
+
+                // Fill the burst into the sum over all bursts
+                burstsum.AccumulateRunningSum(patternsum_per_burst);
 
                 // Fill burst tree branches
-                burstrootfile->FillTreeBranches(helicitypattern.GetBurstYield());
-                burstrootfile->FillTreeBranches(helicitypattern.GetBurstAsymmetry());
-                burstrootfile->FillTreeBranches(helicitypattern.GetBurstDifference());
+                burstrootfile->FillTreeBranches(patternsum_per_burst);
                 burstrootfile->FillTree("burst");
-                //
-                burstsum.ForcePatternIsGood();
-                burstsum.GetYield().PrintValue();
-                burstrootfile->FillTreeBranches(burstsum);
-                burstrootfile->FillTree("burst2");
 
-                // Clear the data
-                helicitypattern.ClearBurstSum();
-                //
-                burstsum.ClearEventData();
+                // Clear the burst data
+                patternsum_per_burst.ClearEventData();
               }
 
               // Process data handlers
@@ -381,21 +374,18 @@ Int_t main(Int_t argc, Char_t* argv[])
 
 
     // Calculate running averages over helicity patterns
-    if (patternsum.IsRunningSumEnabled()) {
-      patternsum.CalculateRunningAverage();
-      if (helicitypattern.IsBurstSumEnabled()) {
-        helicitypattern.CalculateRunningBurstAverage();
-      }
-    }
+    patternsum.CalculateRunningAverage();
+    burstsum.CalculateRunningAverage();
 
     datahandlerarray.FinishDataHandler();
 
     // This will calculate running averages over single helicity events
-    runningsum.CalculateRunningAverage();
+    eventsum.CalculateRunningAverage();
     if (gQwOptions.GetValue<bool>("print-runningsum")) {
       QwMessage << " Running average of events" << QwLog::endl;
       QwMessage << " =========================" << QwLog::endl;
-      runningsum.PrintValue();
+      eventsum.PrintValue();
+    }
     }
 
 

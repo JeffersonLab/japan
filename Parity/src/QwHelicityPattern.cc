@@ -727,6 +727,7 @@ void  QwHelicityPattern::AccumulateRunningSum(QwHelicityPattern &entry)
       fAsymmetry1.AccumulateRunningSum(entry.fAsymmetry1);
       fAsymmetry2.AccumulateRunningSum(entry.fAsymmetry2);
     }
+    fPatternIsGood = entry.fPatternIsGood;
   }
 }
 
@@ -745,6 +746,7 @@ void  QwHelicityPattern::AccumulatePairRunningSum(QwHelicityPattern &entry)
       fPairDifference.AccumulateRunningSum(entry.fPairDifference);
       // The difference is blinded, so the running difference is also blinded.
     }
+    fPairIsGood = entry.fPairIsGood;
   }
 }
 
