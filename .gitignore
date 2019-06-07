@@ -52,10 +52,13 @@ Doxygen/html
 *.png
 *.pdf
 *.ps
+*.log*
 
 #tmp files
+*#*#
 *~
 z_*
+x*
 
 # setup files
 SetupFiles/SET_ME_UP.*
