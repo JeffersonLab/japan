@@ -29,15 +29,15 @@ public:
   ~QwEPICSControl();
 
   void Print_HallAIA(){
-    Int_t status;
+    //  Int_t status;
     //    Char_t tmp[30];
     //    status = ca_get(DBR_STRING, fIDHall_A_IA, tmp);
     //    status = ca_pend_io(10);
     //    std::cout << "Hall A IA value: " << tmp << std::endl;
-    Double_t value;
-    status = ca_get(DBR_DOUBLE, fIDHall_A_IA, &value);
-    status = ca_pend_io(10);
-    printf("Hall A IA value: %lf\n", value);
+    //Double_t value;
+    /* status = ca_get(DBR_DOUBLE, fIDHall_A_IA, &value); */
+    /* status = ca_pend_io(10); */
+    /* printf("Hall A IA value: %lf\n", value); */
   };
 
 
@@ -49,522 +49,1258 @@ public:
     //    std::cout << "Hall A IA value: " << tmp << std::endl;
     Double_t value;
 
-    status = ca_get(DBR_DOUBLE, fIDPockels_Cell_plus, &value);
-    status = ca_pend_io(10);
-    std::cout << "Pockels Cell plus HV value: " << value << std::endl;
-    status = ca_get(DBR_DOUBLE, fIDPockels_Cell_minus, &value);
-    status = ca_pend_io(10);
-    std::cout << "Pockels Cell minus HV value: " << value << std::endl;
+    /* status = ca_get(DBR_DOUBLE, fIDPockels_Cell_plus, &value); */
+    /* status = ca_pend_io(10); */
+    /* std::cout << "Pockels Cell plus HV value: " << value << std::endl; */
+    /* status = ca_get(DBR_DOUBLE, fIDPockels_Cell_minus, &value); */
+    /* status = ca_pend_io(10); */
+    /* std::cout << "Pockels Cell minus HV value: " << value << std::endl; */
 
-    status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A0, &value);
+    //Amali2019
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_1, &value);
     status = ca_pend_io(10);
-    std::cout << "Hall C IA value A0: " << value << std::endl;
-    status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A1, &value);
+    std::cout << "RTP1 HV value: " << value << std::endl;
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_2, &value);
     status = ca_pend_io(10);
-    std::cout << "Hall C IA value A1: " << value << std::endl;
-    status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A2, &value);
+    std::cout << "RTP2 HV value: " << value << std::endl;
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_3, &value);
     status = ca_pend_io(10);
-    std::cout << "Hall C IA value A2: " << value << std::endl;
-    status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A3, &value);
+    std::cout << "RTP3 HV value: " << value << std::endl;
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_4, &value);
     status = ca_pend_io(10);
-    std::cout << "Hall C IA value A3: " << value << std::endl;
+    std::cout << "RTP4 HV value: " << value << std::endl;
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_5, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP5 HV value: " << value << std::endl;
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_6, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP6 HV value: " << value << std::endl;
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_7, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP7 HV value: " << value << std::endl;
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_8, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP8 HV value: " << value << std::endl;
+
+
+status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_1, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP1 HV value: " << value << std::endl;
+status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_2, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP2 HV value: " << value << std::endl;
+status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_5, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP5 HV value: " << value << std::endl;
+status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_6, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP6 HV value: " << value << std::endl;
+
+status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_3, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP3 HV value: " << value << std::endl;
+status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_4, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP4 HV value: " << value << std::endl;
+status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_7, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP7 HV value: " << value << std::endl;
+status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_8, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP8 HV value: " << value << std::endl;
+
+  status = ca_get(DBR_DOUBLE, fIDIA_HC_1, &value);
+    status = ca_pend_io(10);
+std::cout << "HCIA1 HV value: " << value << std::endl;
+ status = ca_get(DBR_DOUBLE, fIDIA_HC_2, &value);
+    status = ca_pend_io(10);
+std::cout << "HCIA2 HV value: " << value << std::endl;
+ status = ca_get(DBR_DOUBLE, fIDIA_HC_3, &value);
+    status = ca_pend_io(10);
+std::cout << "HCIA3 HV value: " << value << std::endl;
+ status = ca_get(DBR_DOUBLE, fIDIA_HC_4, &value);
+    status = ca_pend_io(10);
+std::cout << "HCIA4 HV value: " << value << std::endl;
+
+ status = ca_get(DBR_DOUBLE, fIDIA_HA_1, &value);
+    status = ca_pend_io(10);
+std::cout << "HAIA1 HV value: " << value << std::endl;
+ status = ca_get(DBR_DOUBLE, fIDIA_HA_2, &value);
+    status = ca_pend_io(10);
+std::cout << "HAIA2 HV value: " << value << std::endl;
+ status = ca_get(DBR_DOUBLE, fIDIA_HA_3, &value);
+    status = ca_pend_io(10);
+std::cout << "HAIA3 HV value: " << value << std::endl;
+ status = ca_get(DBR_DOUBLE, fIDIA_HA_4, &value);
+    status = ca_pend_io(10);
+std::cout << "HAIA4 HV value: " << value << std::endl;
+
+ status = ca_get(DBR_DOUBLE, fIDIA_HB_1, &value);
+    status = ca_pend_io(10);
+std::cout << "HBIA1 HV value: " << value << std::endl;
+ status = ca_get(DBR_DOUBLE, fIDIA_HB_2, &value);
+    status = ca_pend_io(10);
+std::cout << "HBIA2 HV value: " << value << std::endl;
+ status = ca_get(DBR_DOUBLE, fIDIA_HB_3, &value);
+    status = ca_pend_io(10);
+std::cout << "HBIA3 HV value: " << value << std::endl;
+ status = ca_get(DBR_DOUBLE, fIDIA_HB_4, &value);
+    status = ca_pend_io(10);
+std::cout << "HBIA4 HV value: " << value << std::endl;
+
+
+    /* status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A0, &value); */
+    /* status = ca_pend_io(10); */
+    /* std::cout << "Hall C IA value A0: " << value << std::endl; */
+    /* status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A1, &value); */
+    /* status = ca_pend_io(10); */
+    /* std::cout << "Hall C IA value A1: " << value << std::endl; */
+    /* status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A2, &value); */
+    /* status = ca_pend_io(10); */
+    /* std::cout << "Hall C IA value A2: " << value << std::endl; */
+    /* status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A3, &value); */
+    /* status = ca_pend_io(10); */
+    /* std::cout << "Hall C IA value A3: " << value << std::endl; */
     
   };
 
   void Set_HallCIA(Int_t mode, Double_t &value){
-    Int_t status;
-    switch(mode){
-    case 0:
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-      status = ca_put(DBR_DOUBLE, fIDHall_C_IA_A0, &value);
-      status = ca_pend_io(10);
-      status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A0, &value);
-      status = ca_pend_io(10);
-#endif
-      std::cout << "Hall C IA value A0: " << value << std::endl; 
-      break;
-    case 1:
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-      status = ca_put(DBR_DOUBLE, fIDHall_C_IA_A1, &value);
-      status = ca_pend_io(10);
-      status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A1, &value);
-      status = ca_pend_io(10);
-#endif
-      std::cout << "Hall C IA value A1: " << value << std::endl;      
-      break;
-    case 2:
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-      status = ca_put(DBR_DOUBLE, fIDHall_C_IA_A2, &value);
-      status = ca_pend_io(10);
-      status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A2, &value);
-      status = ca_pend_io(10);
-#endif
-      std::cout << "Hall C IA value A2: " << value << std::endl;
-      break;
-    case 3:
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-      status = ca_put(DBR_DOUBLE, fIDHall_C_IA_A3, &value);
-      status = ca_pend_io(10);
-      status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A3, &value);
-      status = ca_pend_io(10);
-#endif
-      std::cout << "Hall C IA value A3: " << value << std::endl;
-      break;
-    }
+    //Int_t status;
+   /*  switch(mode){ */
+/*     case 0: */
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*       status = ca_put(DBR_DOUBLE, fIDHall_C_IA_A0, &value); */
+/*       status = ca_pend_io(10); */
+/*       status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A0, &value); */
+/*       status = ca_pend_io(10); */
+/* #endif */
+/*       std::cout << "Hall C IA value A0: " << value << std::endl; */
+/*       break; */
+/*     case 1: */
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*       status = ca_put(DBR_DOUBLE, fIDHall_C_IA_A1, &value); */
+/*       status = ca_pend_io(10); */
+/*       status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A1, &value); */
+/*       status = ca_pend_io(10); */
+/* #endif */
+/*       std::cout << "Hall C IA value A1: " << value << std::endl; */
+/*       break; */
+/*     case 2: */
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*       status = ca_put(DBR_DOUBLE, fIDHall_C_IA_A2, &value); */
+/*       status = ca_pend_io(10); */
+/*       status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A2, &value); */
+/*       status = ca_pend_io(10); */
+/* #endif */
+/*       std::cout << "Hall C IA value A2: " << value << std::endl; */
+/*       break; */
+/*     case 3: */
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*       status = ca_put(DBR_DOUBLE, fIDHall_C_IA_A3, &value); */
+/*       status = ca_pend_io(10); */
+/*       status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A3, &value); */
+/*       status = ca_pend_io(10); */
+/* #endif */
+/*       std::cout << "Hall C IA value A3: " << value << std::endl; */
+/*       break; */
+/*     } */
  
   };
 
   void Set_HallAIA(Int_t mode, Double_t &value){
-    Int_t status;
-    switch(mode){
-    case 0:
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-      status = ca_put(DBR_DOUBLE, fIDHall_A_IA_A0, &value);
-      status = ca_pend_io(10);
-      status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A0, &value);
-      status = ca_pend_io(10);
-#endif
-      std::cout << "Hall A IA value A0: " << value << std::endl; 
-      break;
-    case 1:
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-      status = ca_put(DBR_DOUBLE, fIDHall_A_IA_A1, &value);
-      status = ca_pend_io(10);
-      status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A1, &value);
-      status = ca_pend_io(10);
-#endif
-      std::cout << "Hall A IA value A1: " << value << std::endl;      
-      break;
-    case 2:
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-      status = ca_put(DBR_DOUBLE, fIDHall_A_IA_A2, &value);
-      status = ca_pend_io(10);
-      status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A2, &value);
-      status = ca_pend_io(10);
-#endif
-      std::cout << "Hall A IA value A2: " << value << std::endl;
-      break;
-    case 3:
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-      status = ca_put(DBR_DOUBLE, fIDHall_A_IA_A3, &value);
-      status = ca_pend_io(10);
-      status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A3, &value);
-      status = ca_pend_io(10);
-#endif
-      std::cout << "Hall A IA value A3: " << value << std::endl;
-      break;
-    }
+    //Int_t status;
+    /* switch(mode){ */
+/*     case 0: */
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*       status = ca_put(DBR_DOUBLE, fIDHall_A_IA_A0, &value); */
+/*       status = ca_pend_io(10); */
+/*       status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A0, &value); */
+/*       status = ca_pend_io(10); */
+/* #endif */
+/*       std::cout << "Hall A IA value A0: " << value << std::endl; */
+/*       break; */
+/*     case 1: */
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*       status = ca_put(DBR_DOUBLE, fIDHall_A_IA_A1, &value); */
+/*       status = ca_pend_io(10); */
+/*       status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A1, &value); */
+/*       status = ca_pend_io(10); */
+/* #endif */
+/*       std::cout << "Hall A IA value A1: " << value << std::endl; */
+/*       break; */
+/*     case 2: */
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*       status = ca_put(DBR_DOUBLE, fIDHall_A_IA_A2, &value); */
+/*       status = ca_pend_io(10); */
+/*       status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A2, &value); */
+/*       status = ca_pend_io(10); */
+/* #endif */
+/*       std::cout << "Hall A IA value A2: " << value << std::endl; */
+/*       break; */
+/*     case 3: */
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*       status = ca_put(DBR_DOUBLE, fIDHall_A_IA_A3, &value); */
+/*       status = ca_pend_io(10); */
+/*       status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A3, &value); */
+/*       status = ca_pend_io(10); */
+/* #endif */
+/*       std::cout << "Hall A IA value A3: " << value << std::endl; */
+/*       break; */
+/*     } */
  
   };
 
   void Set_HelicityMagnet(size_t magnet_index, size_t helicity_index, Double_t &value){
-    Int_t status;
-    if (magnet_index<4 && helicity_index<2){
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-      status = ca_put(DBR_DOUBLE, fIDHelMag[magnet_index][helicity_index], &value);
-      status = ca_pend_io(10);
-      status = ca_get(DBR_DOUBLE, fIDHelMag[magnet_index][helicity_index], &value);
-      status = ca_pend_io(10);
-#endif
-      std::cout << "Helicity Magnet, " << fHelMagNames[magnet_index] 
-		<< "," << fHelicityNames[helicity_index] << " setpoint: "
-		<< value << std::endl; 
-    } else {
-      std::cerr << "Set_HelicityMagnet():  "
-		<< "magnet_index must be less than 4, and is " << magnet_index
-		<< "; helicity_index must be 0 or 1 but is " << helicity_index
-		<< std::endl;
-    }
+    //Int_t status;
+   /*  if (magnet_index<4 && helicity_index<2){ */
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*       status = ca_put(DBR_DOUBLE, fIDHelMag[magnet_index][helicity_index], &value); */
+/*       status = ca_pend_io(10); */
+/*       status = ca_get(DBR_DOUBLE, fIDHelMag[magnet_index][helicity_index], &value); */
+/*       status = ca_pend_io(10); */
+/* #endif */
+/*       std::cout << "Helicity Magnet, " << fHelMagNames[magnet_index] */
+/* 		<< "," << fHelicityNames[helicity_index] << " setpoint: " */
+/* 		<< value << std::endl; */
+/*     } else { */
+/*       std::cerr << "Set_HelicityMagnet():  " */
+/* 		<< "magnet_index must be less than 4, and is " << magnet_index */
+/* 		<< "; helicity_index must be 0 or 1 but is " << helicity_index */
+/* 		<< std::endl; */
+/*     } */
   };
 
 
 
   void Get_HallCIA(Int_t mode, Double_t &value){
     Int_t status;
-    switch(mode){
-    case 0:
-      status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A0, &value);
-      status = ca_pend_io(10);
-      std::cout << "Hall C IA value A0: " << value << std::endl; 
-      break;
-    case 1:
-      status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A1, &value);
-      status = ca_pend_io(10);
-      std::cout << "Hall C IA value A1: " << value << std::endl;      
-      break;
-    case 2:
-      status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A2, &value);
-      status = ca_pend_io(10);
-      std::cout << "Hall C IA value A2: " << value << std::endl;
-      break;
-    case 3:
-      status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A3, &value);
-      status = ca_pend_io(10);
-      std::cout << "Hall C IA value A3: " << value << std::endl;
-      break;
-    }
+    /* switch(mode){ */
+    /* case 0: */
+    /*   status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A0, &value); */
+    /*   status = ca_pend_io(10); */
+    /*   std::cout << "Hall C IA value A0: " << value << std::endl; */
+    /*   break; */
+    /* case 1: */
+    /*   status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A1, &value); */
+    /*   status = ca_pend_io(10); */
+    /*   std::cout << "Hall C IA value A1: " << value << std::endl; */
+    /*   break; */
+    /* case 2: */
+    /*   status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A2, &value); */
+    /*   status = ca_pend_io(10); */
+    /*   std::cout << "Hall C IA value A2: " << value << std::endl; */
+    /*   break; */
+    /* case 3: */
+    /*   status = ca_get(DBR_DOUBLE, fIDHall_C_IA_A3, &value); */
+    /*   status = ca_pend_io(10); */
+    /*   std::cout << "Hall C IA value A3: " << value << std::endl; */
+    /*   break; */
+    /* } */
  
     
-  }
-
+  };
   void Get_HallAIA(Int_t mode, Double_t &value){
     Int_t status;
-    switch(mode){
-    case 0:
-      status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A0, &value);
-      status = ca_pend_io(10);
-      std::cout << "Hall A IA value A0: " << value << std::endl; 
-      break;
-    case 1:
-      status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A1, &value);
-      status = ca_pend_io(10);
-      std::cout << "Hall A IA value A1: " << value << std::endl;      
-      break;
-    case 2:
-      status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A2, &value);
-      status = ca_pend_io(10);
-      std::cout << "Hall A IA value A2: " << value << std::endl;
-      break;
-    case 3:
-      status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A3, &value);
-      status = ca_pend_io(10);
-      std::cout << "Hall A IA value A3: " << value << std::endl;
-      break;
-    }
+    /* switch(mode){ */
+    /* case 0: */
+    /*   status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A0, &value); */
+    /*   status = ca_pend_io(10); */
+    /*   std::cout << "Hall A IA value A0: " << value << std::endl; */
+    /*   break; */
+    /* case 1: */
+    /*   status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A1, &value); */
+    /*   status = ca_pend_io(10); */
+    /*   std::cout << "Hall A IA value A1: " << value << std::endl; */
+    /*   break; */
+    /* case 2: */
+    /*   status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A2, &value); */
+    /*   status = ca_pend_io(10); */
+    /*   std::cout << "Hall A IA value A2: " << value << std::endl; */
+    /*   break; */
+    /* case 3: */
+    /*   status = ca_get(DBR_DOUBLE, fIDHall_A_IA_A3, &value); */
+    /*   status = ca_pend_io(10); */
+    /*   std::cout << "Hall A IA value A3: " << value << std::endl; */
+    /*   break; */
+    /* } */
  
     
-  }
+  };
 
   void Get_HelicityMagnet(size_t magnet_index, size_t helicity_index, Double_t &value){
     Int_t status;
-    if (magnet_index<4 && helicity_index<2){
-      status = ca_get(DBR_DOUBLE, fIDHelMag[magnet_index][helicity_index], &value);
-      status = ca_pend_io(10);
-      std::cout << "Helicity Magnet, " << fHelMagNames[magnet_index] 
-		<< "," << fHelicityNames[helicity_index] << " setpoint: "
-		<< value << std::endl; 
-    } else {
-      std::cerr << "Get_HelicityMagnet():  "
-		<< "magnet_index must be less than 4, and is " << magnet_index
-		<< "; helicity_index must be 0 or 1 but is " << helicity_index
-		<< std::endl;
-    }
+    /* if (magnet_index<4 && helicity_index<2){ */
+    /*   status = ca_get(DBR_DOUBLE, fIDHelMag[magnet_index][helicity_index], &value); */
+    /*   status = ca_pend_io(10); */
+    /*   std::cout << "Helicity Magnet, " << fHelMagNames[magnet_index] */
+    /* 		<< "," << fHelicityNames[helicity_index] << " setpoint: " */
+    /* 		<< value << std::endl; */
+    /* } else { */
+    /*   std::cerr << "Get_HelicityMagnet():  " */
+    /* 		<< "magnet_index must be less than 4, and is " << magnet_index */
+    /* 		<< "; helicity_index must be 0 or 1 but is " << helicity_index */
+    /* 		<< std::endl; */
+    /* } */
   };
 
   //I removed followup read after eahc ca_put command - rakithab (02-29-2012)
-  void Set_Pockels_Cell_plus(Double_t &value){
+/*   void Set_Pockels_Cell_plus(Double_t &value){ */
+/*     Int_t status; */
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*     status = ca_put(DBR_DOUBLE, fIDPockels_Cell_plus, &value); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE, fIDPockels_Cell_plus, &value); */
+/*     status = ca_pend_io(10); */
+/* #endif */
+/*     std::cout << "Pockels Cell pos HW-count value: " << value << std::endl; */
+
+/*   }; */
+/*   void Set_Pockels_Cell_minus(Double_t &value){ */
+/*     Int_t status; */
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*     status = ca_put(DBR_DOUBLE, fIDPockels_Cell_minus, &value); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE, fIDPockels_Cell_minus, &value); */
+/*     status = ca_pend_io(10); */
+/* #endif */
+/*     std::cout << "Pockels Cell minus HW-count value: " << value << std::endl; */
+/*   }; */
+
+  void Set_RTP_PITA_1(Double_t &value){
     Int_t status;
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-    status = ca_put(DBR_DOUBLE, fIDPockels_Cell_plus, &value);
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_1, &value);
     status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE, fIDPockels_Cell_plus, &value);
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_1, &value);
     status = ca_pend_io(10);
-#endif
-    std::cout << "Pockels Cell pos HW-count value: " << value << std::endl;
+    //#endif
+    std::cout << "RTP 1 HW-count value: " << value << std::endl;
 
   };
-  void Set_Pockels_Cell_minus(Double_t &value){
+  void Set_RTP_PITA_2(Double_t &value){
     Int_t status;
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-    status = ca_put(DBR_DOUBLE, fIDPockels_Cell_minus, &value);
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_2, &value);
     status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE, fIDPockels_Cell_minus, &value);
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_2, &value);
     status = ca_pend_io(10);
-#endif
-    std::cout << "Pockels Cell minus HW-count value: " << value << std::endl;
-  };
-
-  void Get_Pockels_Cell_plus(Double_t &value){ 
-    Int_t status;
-    status = ca_get(DBR_DOUBLE, fIDPockels_Cell_plus, &value);
-    status = ca_pend_io(10);
-    std::cout << "Pockels Cell pos HW-count value: " << value << std::endl;
+    //#endif
+    std::cout << "RTP 2 HW-count value: " << value << std::endl;
 
   };
-  void Get_Pockels_Cell_minus(Double_t &value){
+  void Set_RTP_PITA_3(Double_t &value){
     Int_t status;
-    status = ca_get(DBR_DOUBLE, fIDPockels_Cell_minus, &value);
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_3, &value);
     status = ca_pend_io(10);
-    std::cout << "Pockels Cell minus HW-count value: " << value << std::endl;
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_3, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 3 HW-count value: " << value << std::endl;
+
+  };
+  void Set_RTP_PITA_4(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_4, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_4, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 4 HW-count value: " << value << std::endl;
+
+  };
+  void Set_RTP_PITA_5(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_5, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_5, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 5 HW-count value: " << value << std::endl;
+
+  };
+  void Set_RTP_PITA_6(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_6, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_6, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 6 HW-count value: " << value << std::endl;
+
+  };
+  void Set_RTP_PITA_7(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_7, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_7, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 7 HW-count value: " << value << std::endl;
+
+  };
+  void Set_RTP_PITA_8(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_8, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITA_8, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 8 HW-count value: " << value << std::endl;
+
+  };
+
+
+
+void Set_RTP_PITAPOSU_1(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSU_1, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSU_1, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 1 HW-count value: " << value << std::endl;
+
+  };
+void Set_RTP_PITAPOSU_2(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSU_2, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSU_2, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 2 HW-count value: " << value << std::endl;
+
+  };
+void Set_RTP_PITAPOSU_5(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSU_5, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSU_5, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 5 HW-count value: " << value << std::endl;
+
+  };
+void Set_RTP_PITAPOSU_6(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSU_6, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSU_6, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 6 HW-count value: " << value << std::endl;
+
+  };
+
+
+void Set_RTP_PITAPOSV_3(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSV_3, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSV_3, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 3 HW-count value: " << value << std::endl;
+
+  };
+void Set_RTP_PITAPOSV_4(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSV_4, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSV_4, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 4 HW-count value: " << value << std::endl;
+
+  };
+void Set_RTP_PITAPOSV_7(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSV_7, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSV_7, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 7 HW-count value: " << value << std::endl;
+
+  };
+void Set_RTP_PITAPOSV_8(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSV_8, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_PITAPOSV_8, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 8 HW-count value: " << value << std::endl;
+
+  };
+
+void Set_RTP_POSXY_1(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_1, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_1, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 1 HW-count value: " << value << std::endl;
+
+  };
+void Set_RTP_POSXY_2(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_2, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_2, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 2 HW-count value: " << value << std::endl;
+
+  };
+void Set_RTP_POSXY_3(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_3, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_3, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 3 HW-count value: " << value << std::endl;
+
+  };
+void Set_RTP_POSXY_4(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_4, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_4, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 4 HW-count value: " << value << std::endl;
+
+  };
+void Set_RTP_POSXY_5(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_5, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_5, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 5 HW-count value: " << value << std::endl;
+
+  };
+void Set_RTP_POSXY_6(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_6, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_6, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 6 HW-count value: " << value << std::endl;
+
+  };
+
+void Set_RTP_POSXY_7(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_7, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_7, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 7 HW-count value: " << value << std::endl;
+
+  };
+void Set_RTP_POSXY_8(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_8, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDRTP_POSXY_8, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "RTP 8 HW-count value: " << value << std::endl;
+
+  };
+
+
+ void Set_IA_HC_1(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDIA_HC_1, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDIA_HC_1, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "HC IA 1 HW-count value: " << value << std::endl;
+
+  };
+
+ void Set_IA_HC_2(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDIA_HC_2, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDIA_HC_2, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "HC IA 2 HW-count value: " << value << std::endl;
+
+  };
+
+ void Set_IA_HC_3(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDIA_HC_3, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDIA_HC_3, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "HC IA 3 HW-count value: " << value << std::endl;
+
+  };
+
+ void Set_IA_HC_4(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDIA_HC_4, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDIA_HC_4, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "HC IA 4 HW-count value: " << value << std::endl;
+
+  };
+
+
+ void Set_IA_HA_1(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDIA_HA_1, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDIA_HA_1, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "HA IA 1 HW-count value: " << value << std::endl;
+
+  };
+
+ void Set_IA_HA_2(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDIA_HA_2, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDIA_HA_2, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "HA IA 2 HW-count value: " << value << std::endl;
+
+  };
+
+ void Set_IA_HA_3(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDIA_HA_3, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDIA_HA_3, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "HA IA 3 HW-count value: " << value << std::endl;
+
+  };
+
+ void Set_IA_HA_4(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDIA_HA_4, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDIA_HA_4, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "HA IA 4 HW-count value: " << value << std::endl;
+
+  };
+
+
+ void Set_IA_HB_1(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDIA_HB_1, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDIA_HB_1, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "HB IA 1 HW-count value: " << value << std::endl;
+
+  };
+
+ void Set_IA_HB_2(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDIA_HB_2, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDIA_HB_2, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "HB IA 2 HW-count value: " << value << std::endl;
+
+  };
+
+ void Set_IA_HB_3(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDIA_HB_3, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDIA_HB_3, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "HB IA 3 HW-count value: " << value << std::endl;
+
+  };
+
+ void Set_IA_HB_4(Double_t &value){
+    Int_t status;
+    //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT
+    status = ca_put(DBR_DOUBLE, fIDIA_HB_4, &value);
+    status = ca_pend_io(10);
+    status = ca_put(DBR_DOUBLE, fIDIA_HB_4, &value);
+    status = ca_pend_io(10);
+    //#endif
+    std::cout << "HB IA 4 HW-count value: " << value << std::endl;
+
+  };
+
+
+
+
+
+  /* void Get_Pockels_Cell_plus(Double_t &value){  */
+  /*   Int_t status; */
+  /*   status = ca_get(DBR_DOUBLE, fIDPockels_Cell_plus, &value); */
+  /*   status = ca_pend_io(10); */
+  /*   std::cout << "Pockels Cell pos HW-count value: " << value << std::endl; */
+
+  /* }; */
+  /* void Get_Pockels_Cell_minus(Double_t &value){ */
+  /*   Int_t status; */
+  /*   status = ca_get(DBR_DOUBLE, fIDPockels_Cell_minus, &value); */
+  /*   status = ca_pend_io(10); */
+  /*   std::cout << "Pockels Cell minus HW-count value: " << value << std::endl; */
+   
+  /* }; */
+
+void Get_RTP_PITA_1(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_1, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP 1 HW-count value: " << value << std::endl;
+  };
+void Get_RTP_PITA_2(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_2, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP 2 HW-count value: " << value << std::endl;
+  };
+void Get_RTP_PITA_3(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_3, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP 3 HW-count value: " << value << std::endl;
+  };
+void Get_RTP_PITA_4(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_4, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP 4 HW-count value: " << value << std::endl;
+  };
+void Get_RTP_PITA_5(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_5, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP 5 HW-count value: " << value << std::endl;
+  };
+void Get_RTP_PITA_6(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_6, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP 6 HW-count value: " << value << std::endl;
+  };
+void Get_RTP_PITA_7(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_7, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP 7 HW-count value: " << value << std::endl;
+  };
+void Get_RTP_PITA_8(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDRTP_PITA_8, &value);
+    status = ca_pend_io(10);
+    std::cout << "RTP 8 HW-count value: " << value << std::endl;
+  };
+
+
+
+/* void Get_RTP_PITAPOSU_1(Double_t &value){ */
+/*     Int_t status; */
+/*     status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_1, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP 1 HW-count value: " << value << std::endl; */
+/*   }; */
+/*  void Get_RTP_PITAPOSU_2(Double_t &value){ */
+/*     Int_t status; */
+/*     status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_2, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP 2 HW-count value: " << value << std::endl; */
+/*   }; */
+/* void Get_RTP_PITAPOSU_5(Double_t &value){ */
+/*     Int_t status; */
+/*     status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_5, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP 5 HW-count value: " << value << std::endl; */
+/*   }; */
+/* void Get_RTP_PITAPOSU_6(Double_t &value){ */
+/*     Int_t status; */
+/*     status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_6, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP 6 HW-count value: " << value << std::endl; */
+/*   }; */
+
+
+/*  void Get_RTP_PITAPOSV_3(Double_t &value){ */
+/*     Int_t status; */
+/*     status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_3, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP 3 HW-count value: " << value << std::endl; */
+/*   }; */
+
+/*  void Get_RTP_PITAPOSV_4(Double_t &value){ */
+/*     Int_t status; */
+/*     status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_4, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP 4 HW-count value: " << value << std::endl; */
+/*   }; */
+
+/*  void Get_RTP_PITAPOSV_7(Double_t &value){ */
+/*     Int_t status; */
+/*     status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_7, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP 7 HW-count value: " << value << std::endl; */
+/*   }; */
+
+/*  void Get_RTP_PITAPOSV_8(Double_t &value){ */
+/*     Int_t status; */
+/*     status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_8, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP 8 HW-count value: " << value << std::endl; */
+/*   }; */
+
+void Get_IA_HC_1(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDIA_HC_1, &value);
+    status = ca_pend_io(10);
+    std::cout << "HCIA 1 HW-count value: " << value << std::endl;
+  };
+
+void Get_IA_HC_2(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDIA_HC_2, &value);
+    status = ca_pend_io(10);
+    std::cout << "HCIA 2 HW-count value: " << value << std::endl;
+  };
+void Get_IA_HC_3(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDIA_HC_3, &value);
+    status = ca_pend_io(10);
+    std::cout << "HCIA 3 HW-count value: " << value << std::endl;
+  };
+void Get_IA_HC_4(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDIA_HC_4, &value);
+    status = ca_pend_io(10);
+    std::cout << "HCIA 4 HW-count value: " << value << std::endl;
+  };
+
+
+
+void Get_IA_HA_1(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDIA_HA_1, &value);
+    status = ca_pend_io(10);
+    std::cout << "HAIA 1 HW-count value: " << value << std::endl;
+  };
+
+void Get_IA_HA_2(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDIA_HA_2, &value);
+    status = ca_pend_io(10);
+    std::cout << "HAIA 2 HW-count value: " << value << std::endl;
+  };
+void Get_IA_HA_3(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDIA_HA_3, &value);
+    status = ca_pend_io(10);
+    std::cout << "HAIA 3 HW-count value: " << value << std::endl;
+  };
+void Get_IA_HA_4(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDIA_HA_4, &value);
+    status = ca_pend_io(10);
+    std::cout << "HAIA 4 HW-count value: " << value << std::endl;
+  };
+
+
+
+void Get_IA_HB_1(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDIA_HB_1, &value);
+    status = ca_pend_io(10);
+    std::cout << "HCIB 1 HW-count value: " << value << std::endl;
+  };
+
+void Get_IA_HB_2(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDIA_HB_2, &value);
+    status = ca_pend_io(10);
+    std::cout << "HBIA 2 HW-count value: " << value << std::endl;
+  };
+void Get_IA_HB_3(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDIA_HB_3, &value);
+    status = ca_pend_io(10);
+    std::cout << "HBIA 3 HW-count value: " << value << std::endl;
+  };
+void Get_IA_HB_4(Double_t &value){
+    Int_t status;
+    status = ca_get(DBR_DOUBLE, fIDIA_HB_4, &value);
+    status = ca_pend_io(10);
+    std::cout << "HBIA 4 HW-count value: " << value << std::endl;
   };
 
   void Set_ChargeAsymmetry(Double_t &value, Double_t &value_error, Double_t &value_width){
-    Int_t status;
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-    status = ca_put(DBR_DOUBLE,fChargeAsymmetry , &value);
-    status = ca_pend_io(10);
-    //status = ca_get(DBR_DOUBLE,fChargeAsymmetry , &value);
-    //status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fChargeAsymmetryError , &value_error);
-    status = ca_pend_io(10);
-    //status = ca_get(DBR_DOUBLE,fChargeAsymmetryError , &value_error);
-    //status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fChargeAsymmetryWidth , &value_width);
-    status = ca_pend_io(10);
-    //status = ca_get(DBR_DOUBLE,fChargeAsymmetryWidth , &value_width);
-    //status = ca_pend_io(10);
-#endif
+/*     Int_t status; */
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*     status = ca_put(DBR_DOUBLE,fChargeAsymmetry , &value); */
+/*     status = ca_pend_io(10); */
+/*     //status = ca_get(DBR_DOUBLE,fChargeAsymmetry , &value); */
+/*     //status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,fChargeAsymmetryError , &value_error); */
+/*     status = ca_pend_io(10); */
+/*     //status = ca_get(DBR_DOUBLE,fChargeAsymmetryError , &value_error); */
+/*     //status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,fChargeAsymmetryWidth , &value_width); */
+/*     status = ca_pend_io(10); */
+/*     //status = ca_get(DBR_DOUBLE,fChargeAsymmetryWidth , &value_width); */
+/*     //status = ca_pend_io(10); */
+/* #endif */
 
-    std::cout << "EPICS Charge asymmetry updated " << value <<" +/- "<<value_error<<" width "<<value_width<< std::endl;
-
+/*     std::cout << "EPICS Charge asymmetry updated " << value <<" +/- "<<value_error<<" width "<<value_width<< std::endl; */
+     
   };
 
   void Get_ChargeAsymmetry(Double_t &value, Double_t &value_error, Double_t &value_width){
+    /* Int_t status; */
+    /* status = ca_get(DBR_DOUBLE,fChargeAsymmetry , &value); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fChargeAsymmetryError , &value_error); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fChargeAsymmetryWidth , &value_width); */
+    /* status = ca_pend_io(10); */
+    /* std::cout << "Charge asymmetry  " << value <<" +/- "<<value_error<<" width "<<value_width<< std::endl; */
+
+  };
+
+
+  void Set_HCChargeAsymmetry(Double_t &value, Double_t &value_error, Double_t &value_width){
     Int_t status;
-    status = ca_get(DBR_DOUBLE,fChargeAsymmetry , &value);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,fChargeAsymmetryError , &value_error);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,fChargeAsymmetryWidth , &value_width);
-    status = ca_pend_io(10);
-    std::cout << "Charge asymmetry  " << value <<" +/- "<<value_error<<" width "<<value_width<< std::endl;
+
+    /* status = ca_put(DBR_DOUBLE,fHCChargeAsymmetry , &value); */
+    /* status = ca_pend_io(10); */
+    /* //status = ca_get(DBR_DOUBLE,fChargeAsymmetry , &value); */
+    /* //status = ca_pend_io(10); */
+    /* status = ca_put(DBR_DOUBLE,fHCChargeAsymmetryError , &value_error); */
+    /* status = ca_pend_io(10); */
+    /* //status = ca_get(DBR_DOUBLE,fChargeAsymmetryError , &value_error); */
+    /* //status = ca_pend_io(10); */
+    /* status = ca_put(DBR_DOUBLE,fHCChargeAsymmetryWidth , &value_width); */
+    /* status = ca_pend_io(10); */
+    /* //status = ca_get(DBR_DOUBLE,fChargeAsymmetryWidth , &value_width); */
+    /* //status = ca_pend_io(10); */
+
+    /* std::cout << "EPICS HC Charge asymmetry updated " << value <<" +/- "<<value_error<<" width "<<value_width<< std::endl; */
+     
+  };
+
+  void Get_HCChargeAsymmetry(Double_t &value, Double_t &value_error, Double_t &value_width){
+    Int_t status;
+    /* status = ca_get(DBR_DOUBLE,fHCChargeAsymmetry , &value); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fHCChargeAsymmetryError , &value_error); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fHCChargeAsymmetryWidth , &value_width); */
+    /* status = ca_pend_io(10); */
+    /* std::cout << "HC Charge asymmetry  " << value <<" +/- "<<value_error<<" width "<<value_width<< std::endl; */
 
   };
 
   void Set_HAChargeAsymmetry(Double_t &value, Double_t &value_error, Double_t &value_width){
     Int_t status;
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-    status = ca_put(DBR_DOUBLE,fHAChargeAsymmetry , &value);
-    status = ca_pend_io(10);
-    //status = ca_get(DBR_DOUBLE,fHAChargeAsymmetry , &value);
-    // status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fHAChargeAsymmetryError , &value_error);
-    status = ca_pend_io(10);
-    //status = ca_get(DBR_DOUBLE,fHAChargeAsymmetryError , &value_error);
-    //status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fHAChargeAsymmetryWidth , &value_width);
-    status = ca_pend_io(10);
-    //status = ca_get(DBR_DOUBLE,fHAChargeAsymmetryWidth , &value_width);
-    //status = ca_pend_io(10);
-#endif
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*     status = ca_put(DBR_DOUBLE,fHAChargeAsymmetry , &value); */
+/*     status = ca_pend_io(10); */
+/*     //status = ca_get(DBR_DOUBLE,fHAChargeAsymmetry , &value); */
+/*     // status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,fHAChargeAsymmetryError , &value_error); */
+/*     status = ca_pend_io(10); */
+/*     //status = ca_get(DBR_DOUBLE,fHAChargeAsymmetryError , &value_error); */
+/*     //status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,fHAChargeAsymmetryWidth , &value_width); */
+/*     status = ca_pend_io(10); */
+/*     //status = ca_get(DBR_DOUBLE,fHAChargeAsymmetryWidth , &value_width); */
+/*     //status = ca_pend_io(10); */
+/* #endif */
 
-    std::cout << "EPICS HA Charge asymmetry updated " << value <<" +/- "<<value_error<<" width "<<value_width<< std::endl;
+/*     std::cout << "EPICS HA Charge asymmetry updated " << value <<" +/- "<<value_error<<" width "<<value_width<< std::endl; */
 
   };
  
   void Get_HAChargeAsymmetry(Double_t &value, Double_t &value_error, Double_t &value_width){
     Int_t status;
-    status = ca_get(DBR_DOUBLE,fHAChargeAsymmetry , &value);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,fHAChargeAsymmetryError , &value_error);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,fHAChargeAsymmetryWidth , &value_width);
-    status = ca_pend_io(10);
-    std::cout << "HA Charge asymmetry  " << value <<" +/- "<<value_error<<" width "<<value_width<< std::endl;
+    /* status = ca_get(DBR_DOUBLE,fHAChargeAsymmetry , &value); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fHAChargeAsymmetryError , &value_error); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fHAChargeAsymmetryWidth , &value_width); */
+    /* status = ca_pend_io(10); */
+    /* std::cout << "HA Charge asymmetry  " << value <<" +/- "<<value_error<<" width "<<value_width<< std::endl; */
 
   };
 
-  void Set_TargetHCDiffereces(Double_t &xvalue, Double_t &xvalue_error, Double_t &xvalue_width,Double_t &xpvalue, Double_t &xpvalue_error, Double_t &xpvalue_width, Double_t &yvalue, Double_t &yvalue_error, Double_t &yvalue_width, Double_t &ypvalue, Double_t &ypvalue_error, Double_t &ypvalue_width){
+  void Set_TargetHADiffereces(Double_t &xvalue, Double_t &xvalue_error, Double_t &xvalue_width,Double_t &xpvalue, Double_t &xpvalue_error, Double_t &xpvalue_width, Double_t &yvalue, Double_t &yvalue_error, Double_t &yvalue_width, Double_t &ypvalue, Double_t &ypvalue_error, Double_t &ypvalue_width){
 
-    Int_t status;
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-    status = ca_put(DBR_DOUBLE,fTargetXDiff , &xvalue);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fTargetXDiffError , &xvalue_error);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fTargetXDiffWidth , &xvalue_width);
-    status = ca_pend_io(10);
+/*     Int_t status; */
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*     status = ca_put(DBR_DOUBLE,fTargetXDiff , &xvalue); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,fTargetXDiffError , &xvalue_error); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,fTargetXDiffWidth , &xvalue_width); */
+/*     status = ca_pend_io(10); */
 
-    status = ca_put(DBR_DOUBLE,fTargetXPDiff , &xpvalue);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fTargetXPDiffError , &xpvalue_error);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fTargetXPDiffWidth , &xpvalue_width);
-    status = ca_pend_io(10);
+/*     status = ca_put(DBR_DOUBLE,fTargetXPDiff , &xpvalue); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,fTargetXPDiffError , &xpvalue_error); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,fTargetXPDiffWidth , &xpvalue_width); */
+/*     status = ca_pend_io(10); */
 
-    status = ca_put(DBR_DOUBLE,fTargetYDiff , &yvalue);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fTargetYDiffError , &yvalue_error);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fTargetYDiffWidth , &yvalue_width);
-    status = ca_pend_io(10);
+    /* status = ca_put(DBR_DOUBLE,fTargetYDiff , &yvalue); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_put(DBR_DOUBLE,fTargetYDiffError , &yvalue_error); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_put(DBR_DOUBLE,fTargetYDiffWidth , &yvalue_width); */
+    /* status = ca_pend_io(10); */
 
-    status = ca_put(DBR_DOUBLE,fTargetYPDiff , &ypvalue);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fTargetYPDiffError , &ypvalue_error);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fTargetYPDiffWidth , &ypvalue_width);
-    status = ca_pend_io(10);
-#endif
+/*     status = ca_put(DBR_DOUBLE,fTargetYPDiff , &ypvalue); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,fTargetYPDiffError , &ypvalue_error); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,fTargetYPDiffWidth , &ypvalue_width); */
+/*     status = ca_pend_io(10); */
+ /* #endif  */
 
-    std::cout << "Target X Diff (um)  " << xvalue <<" +/- "<<xvalue_error<<" width "<<xvalue_width << std::endl;
-    std::cout << "Target XP Diff (mrad)  " << xpvalue <<" +/- "<<xpvalue_error<<" width "<<xpvalue_width << std::endl;
-    std::cout << "Target Y Diff (um)  " << yvalue <<" +/- "<<yvalue_error<<" width "<<yvalue_width << std::endl;
-    std::cout << "Target YP Diff (mrad)  " << ypvalue <<" +/- "<<ypvalue_error<<" width "<<ypvalue_width << std::endl;
+ /*    std::cout << "Target X Diff (um)  " << xvalue <<" +/- "<<xvalue_error<<" width "<<xvalue_width << std::endl; */
+/* /\*     std::cout << "Target XP Diff (mrad)  " << xpvalue <<" +/- "<<xpvalue_error<<" width "<<xpvalue_width << std::endl; *\/ */
+/*     std::cout << "Target Y Diff (um)  " << yvalue <<" +/- "<<yvalue_error<<" width "<<yvalue_width << std::endl; */
+/*     std::cout << "Target YP Diff (mrad)  " << ypvalue <<" +/- "<<ypvalue_error<<" width "<<ypvalue_width << std::endl; */
 
 
 
-  }
+  };
 
-  void Get_TargetHCDiffereces(Double_t &xvalue, Double_t &xvalue_error, Double_t &xvalue_width,Double_t &xpvalue, Double_t &xpvalue_error, Double_t &xpvalue_width, Double_t &yvalue, Double_t &yvalue_error, Double_t &yvalue_width, Double_t &ypvalue, Double_t &ypvalue_error, Double_t &ypvalue_width){
+  void Get_TargetHADiffereces(Double_t &xvalue, Double_t &xvalue_error, Double_t &xvalue_width,Double_t &xpvalue, Double_t &xpvalue_error, Double_t &xpvalue_width, Double_t &yvalue, Double_t &yvalue_error, Double_t &yvalue_width, Double_t &ypvalue, Double_t &ypvalue_error, Double_t &ypvalue_width){
 
-    Int_t status;
-    status = ca_get(DBR_DOUBLE,fTargetXDiff , &xvalue);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,fTargetXDiffError , &xvalue_error);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,fTargetXDiffWidth , &xvalue_width);
-    status = ca_pend_io(10);
+    /* Int_t status; */
+    /* status = ca_get(DBR_DOUBLE,fTargetXDiff , &xvalue); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fTargetXDiffError , &xvalue_error); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fTargetXDiffWidth , &xvalue_width); */
+    /* status = ca_pend_io(10); */
 
-    status = ca_get(DBR_DOUBLE,fTargetXPDiff , &xpvalue);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,fTargetXPDiffError , &xpvalue_error);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,fTargetXPDiffWidth , &xpvalue_width);
-    status = ca_pend_io(10);
+    /* status = ca_get(DBR_DOUBLE,fTargetXPDiff , &xpvalue); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fTargetXPDiffError , &xpvalue_error); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fTargetXPDiffWidth , &xpvalue_width); */
+    /* status = ca_pend_io(10); */
 
-    status = ca_get(DBR_DOUBLE,fTargetYDiff , &yvalue);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,fTargetYDiffError , &yvalue_error);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,fTargetYDiffWidth , &yvalue_width);
-    status = ca_pend_io(10);
+    /* status = ca_get(DBR_DOUBLE,fTargetYDiff , &yvalue); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fTargetYDiffError , &yvalue_error); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fTargetYDiffWidth , &yvalue_width); */
+    /* status = ca_pend_io(10); */
 
-    status = ca_get(DBR_DOUBLE,fTargetYPDiff , &ypvalue);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,fTargetYPDiffError , &ypvalue_error);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,fTargetYPDiffWidth , &ypvalue_width);
-    status = ca_pend_io(10);
+    /* status = ca_get(DBR_DOUBLE,fTargetYPDiff , &ypvalue); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fTargetYPDiffError , &ypvalue_error); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fTargetYPDiffWidth , &ypvalue_width); */
+    /* status = ca_pend_io(10); */
 
-  }
+  };
 
 
   void Set_3C12HCDiffereces(Double_t &xvalue, Double_t &xvalue_error, Double_t &xvalue_width, Double_t &yvalue, Double_t &yvalue_error, Double_t &yvalue_width, Double_t &yqvalue, Double_t &yqvalue_error, Double_t &yqvalue_width){
 
     Int_t status;
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-    status = ca_put(DBR_DOUBLE,f3C12XDiff , &xvalue);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,f3C12XDiffError , &xvalue_error);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,f3C12XDiffWidth , &xvalue_width);
-    status = ca_pend_io(10);
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*     status = ca_put(DBR_DOUBLE,f3C12XDiff , &xvalue); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,f3C12XDiffError , &xvalue_error); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,f3C12XDiffWidth , &xvalue_width); */
+/*     status = ca_pend_io(10); */
 
-    status = ca_put(DBR_DOUBLE,f3C12YDiff , &yvalue);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,f3C12YDiffError , &yvalue_error);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,f3C12YDiffWidth , &yvalue_width);
-    status = ca_pend_io(10);
+/*     status = ca_put(DBR_DOUBLE,f3C12YDiff , &yvalue); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,f3C12YDiffError , &yvalue_error); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,f3C12YDiffWidth , &yvalue_width); */
+/*     status = ca_pend_io(10); */
 
-    status = ca_put(DBR_DOUBLE,f3C12YQ , &yqvalue);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,f3C12YQError , &yqvalue_error);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,f3C12YQWidth , &yqvalue_width);
-    status = ca_pend_io(10);
-#endif
+/*     status = ca_put(DBR_DOUBLE,f3C12YQ , &yqvalue); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,f3C12YQError , &yqvalue_error); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,f3C12YQWidth , &yqvalue_width); */
+/*     status = ca_pend_io(10); */
+/* #endif */
 
-    std::cout << "3C12 X Diff (um)  " << xvalue <<" +/- "<<xvalue_error<<" width "<<xvalue_width << std::endl;
-    std::cout << "3C12 Y Diff (mrad)  " << yvalue <<" +/- "<<yvalue_error<<" width "<<yvalue_width << std::endl;
-    std::cout << "3C12 EffQ Diff (um)  " << yqvalue <<" +/- "<<yqvalue_error<<" width "<<yqvalue_width << std::endl;
+/*     std::cout << "3C12 X Diff (um)  " << xvalue <<" +/- "<<xvalue_error<<" width "<<xvalue_width << std::endl; */
+/*     std::cout << "3C12 Y Diff (mrad)  " << yvalue <<" +/- "<<yvalue_error<<" width "<<yvalue_width << std::endl; */
+/*     std::cout << "3C12 EffQ Diff (um)  " << yqvalue <<" +/- "<<yqvalue_error<<" width "<<yqvalue_width << std::endl; */
 
 
   }
 
   void Get_3C12HCDiffereces(Double_t &xvalue, Double_t &xvalue_error, Double_t &xvalue_width, Double_t &yvalue, Double_t &yvalue_error, Double_t &yvalue_width, Double_t &yqvalue, Double_t &yqvalue_error, Double_t &yqvalue_width){
     Int_t status;
-    status = ca_get(DBR_DOUBLE,f3C12XDiff , &xvalue);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,f3C12XDiffError , &xvalue_error);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,f3C12XDiffWidth , &xvalue_width);
-    status = ca_pend_io(10);
+    /* status = ca_get(DBR_DOUBLE,f3C12XDiff , &xvalue); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,f3C12XDiffError , &xvalue_error); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,f3C12XDiffWidth , &xvalue_width); */
+    /* status = ca_pend_io(10); */
 
-    status = ca_get(DBR_DOUBLE,f3C12YDiff , &yvalue);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,f3C12YDiffError , &yvalue_error);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,f3C12YDiffWidth , &yvalue_width);
-    status = ca_pend_io(10);
+    /* status = ca_get(DBR_DOUBLE,f3C12YDiff , &yvalue); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,f3C12YDiffError , &yvalue_error); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,f3C12YDiffWidth , &yvalue_width); */
+    /* status = ca_pend_io(10); */
 
-    status = ca_get(DBR_DOUBLE,f3C12YQ , &yqvalue);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,f3C12YQError , &yqvalue_error);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,f3C12YQWidth , &yqvalue_width);
-    status = ca_pend_io(10);
+    /* status = ca_get(DBR_DOUBLE,f3C12YQ , &yqvalue); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,f3C12YQError , &yqvalue_error); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,f3C12YQWidth , &yqvalue_width); */
+    /* status = ca_pend_io(10); */
   }
 
 
   
   void Set_BCM78DDAsymmetry(Double_t &value, Double_t &value_error, Double_t &value_width){
     Int_t status;
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-    status = ca_put(DBR_DOUBLE,fBCM8DDAsymmetry , &value);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fBCM8DDAsymmetryError , &value_error);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fBCM8DDAsymmetryWidth , &value_width);
-    status = ca_pend_io(10);
-#endif
-    std::cout << "EPICS BCM78 DD asymmetry updated " << value <<" +/- "<<value_error<<" width "<<value_width<< std::endl;
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*     status = ca_put(DBR_DOUBLE,fBCM8DDAsymmetry , &value); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,fBCM8DDAsymmetryError , &value_error); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,fBCM8DDAsymmetryWidth , &value_width); */
+/*     status = ca_pend_io(10); */
+/* #endif */
+/*     std::cout << "EPICS BCM78 DD asymmetry updated " << value <<" +/- "<<value_error<<" width "<<value_width<< std::endl; */
 
   }
 
   void Get_BCM78DDAsymmetry(Double_t &value, Double_t &value_error, Double_t &value_width){
     Int_t status;
-    status = ca_get(DBR_DOUBLE,fBCM8DDAsymmetry , &value);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,fBCM8DDAsymmetryError , &value_error);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE,fBCM8DDAsymmetryWidth , &value_width);
-    status = ca_pend_io(10);
+    /* status = ca_get(DBR_DOUBLE,fBCM8DDAsymmetry , &value); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fBCM8DDAsymmetryError , &value_error); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE,fBCM8DDAsymmetryWidth , &value_width); */
+    /* status = ca_pend_io(10); */
 
   };
 
   
   void Set_BCM8Yield(Double_t &value){
-    Int_t status;
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-    status = ca_put(DBR_DOUBLE,fBCM8Yield, &value);
-    status = ca_pend_io(10);
-#endif
+ /*    Int_t status; */
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*     status = ca_put(DBR_DOUBLE,fBCM8Yield, &value); */
+/*     status = ca_pend_io(10); */
+/* #endif */
   }
 
   void Get_BCM8Yield(Double_t &value){
-    Int_t status;
-    status = ca_get(DBR_DOUBLE,fBCM8Yield, &value);
-    status = ca_pend_io(10);
+    /* Int_t status; */
+    /* status = ca_get(DBR_DOUBLE,fBCM8Yield, &value); */
+    /* status = ca_pend_io(10); */
   }
 
   void Set_USLumiSumAsymmetry(Double_t &value, Double_t &value_error, Double_t &value_width){
     Int_t status;
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-    status = ca_put(DBR_DOUBLE,fUSLumiSumAsymmetry , &value);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fUSLumiSumAsymmetryError , &value_error);
-    status = ca_pend_io(10);
-    status = ca_put(DBR_DOUBLE,fUSLumiSumAsymmetryWidth , &value_width);
-    status = ca_pend_io(10);
-#endif
+/* #ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+/*     status = ca_put(DBR_DOUBLE,fUSLumiSumAsymmetry , &value); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,fUSLumiSumAsymmetryError , &value_error); */
+/*     status = ca_pend_io(10); */
+/*     status = ca_put(DBR_DOUBLE,fUSLumiSumAsymmetryWidth , &value_width); */
+/*     status = ca_pend_io(10); */
+/* #endif */
   }
 
   void Get_USLumiSumAsymmetry(Double_t &value, Double_t &value_error, Double_t &value_width){
     Int_t status;
-    status = ca_get(DBR_DOUBLE,fUSLumiSumAsymmetry , &value);
-    status = ca_get(DBR_DOUBLE,fUSLumiSumAsymmetryError , &value_error);
-    status = ca_get(DBR_DOUBLE,fUSLumiSumAsymmetryWidth , &value_width);
+    /* status = ca_get(DBR_DOUBLE,fUSLumiSumAsymmetry , &value); */
+    /* status = ca_get(DBR_DOUBLE,fUSLumiSumAsymmetryError , &value_error); */
+    /* status = ca_get(DBR_DOUBLE,fUSLumiSumAsymmetryWidth , &value_width); */
   }
   
   void Set_FeedbackStatus(Double_t value){
-    Int_t status;
-#ifdef(__QWFEEDBACK_ALLOW_EPICS_CA_PUT)
-    status = ca_put(DBR_DOUBLE, fFeedbackStatus, &value);
-    status = ca_pend_io(10);
-    status = ca_get(DBR_DOUBLE, fFeedbackStatus, &value);
-    status = ca_pend_io(10);
-    std::cout << "Feedback status updated " << value << std::endl;
-#endif
+    /* Int_t status; */
+    /* //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT */
+    /* status = ca_put(DBR_DOUBLE, fFeedbackStatus, &value); */
+    /* status = ca_pend_io(10); */
+    /* status = ca_get(DBR_DOUBLE, fFeedbackStatus, &value); */
+    /* status = ca_pend_io(10); */
+    /* std::cout << "Feedback status updated " << value << std::endl; */
+    /* //#endif */
   };
   
   Double_t Get_FeedbackStatus(){
-   Int_t status;
-   Double_t fbstat;
-   status = ca_get(DBR_DOUBLE, fFeedbackStatus, &fbstat);
-   status = ca_pend_io(10); 
-   return fbstat;
+   /* Int_t status; */
+   /* Double_t fbstat; */
+   /* status = ca_get(DBR_DOUBLE, fFeedbackStatus, &fbstat); */
+   /* status = ca_pend_io(10);  */
+   /* return fbstat; */
   }
 
   //
@@ -667,10 +1403,52 @@ public:
   chid fIDHall_A_IA_A2;//hallA IA A2
   chid fIDHall_A_IA_A3;//hallA IA A3
 
-  
+  chid fIDIA_HC_1;
+  chid fIDIA_HC_2;
+  chid fIDIA_HC_3;
+  chid fIDIA_HC_4;
+
+  chid fIDIA_HA_1;
+  chid fIDIA_HA_2;
+  chid fIDIA_HA_3;
+  chid fIDIA_HA_4;
+
+ chid fIDIA_HB_1;
+  chid fIDIA_HB_2;
+  chid fIDIA_HB_3;
+  chid fIDIA_HB_4;
 
   chid fIDPockels_Cell_plus;
   chid fIDPockels_Cell_minus;
+
+chid fIDRTP_PITA_1;
+chid fIDRTP_PITA_2;
+chid fIDRTP_PITA_3;
+chid fIDRTP_PITA_4;
+chid fIDRTP_PITA_5;
+chid fIDRTP_PITA_6;
+chid fIDRTP_PITA_7;
+chid fIDRTP_PITA_8;
+
+chid fIDRTP_POSXY_1;
+chid fIDRTP_POSXY_2;
+chid fIDRTP_POSXY_3;
+chid fIDRTP_POSXY_4;
+chid fIDRTP_POSXY_5;
+chid fIDRTP_POSXY_6;
+chid fIDRTP_POSXY_7;
+chid fIDRTP_POSXY_8;
+
+chid fIDRTP_PITAPOSU_1;
+chid fIDRTP_PITAPOSU_2;
+chid fIDRTP_PITAPOSU_5;
+chid fIDRTP_PITAPOSU_6;
+
+chid fIDRTP_PITAPOSV_3;
+chid fIDRTP_PITAPOSV_4;
+chid fIDRTP_PITAPOSV_7;
+chid fIDRTP_PITAPOSV_8;
+
 
   chid fChargeAsymmetry;
   chid fChargeAsymmetryError;
@@ -679,6 +1457,10 @@ public:
   chid fHAChargeAsymmetry;
   chid fHAChargeAsymmetryError;
   chid fHAChargeAsymmetryWidth;
+
+ chid fHCChargeAsymmetry;
+  chid fHCChargeAsymmetryError;
+  chid fHCChargeAsymmetryWidth;
 
   chid fTargetXDiff;
   chid fTargetXDiffError;
