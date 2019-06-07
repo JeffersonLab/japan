@@ -119,28 +119,16 @@ class QwHelicityPattern {
   QwSubsystemArrayParity& GetAsymmetry()  { return fAsymmetry; };
 
   // wish these could be const references, but ConstructBranchAndVector messes with object
-  QwSubsystemArrayParity& GetBurstYield()      { return fBurstYield; };
-  QwSubsystemArrayParity& GetBurstDifference() { return fBurstDifference; };
-  QwSubsystemArrayParity& GetBurstAsymmetry()  { return fBurstAsymmetry; };
-
-  // wish these could be const references, but ConstructBranchAndVector messes with object
   QwSubsystemArrayParity& GetPairYield()      { return fPairYield; };
   QwSubsystemArrayParity& GetPairDifference() { return fPairDifference; };
   QwSubsystemArrayParity& GetPairAsymmetry()  { return fPairAsymmetry; };
 
-  void  AccumulateBurstSum();
-  void  AccumulateRunningBurstSum();
-  void  AccumulateRunningSum(){AccumulateRunningSum(*this);};
   void  AccumulateRunningSum(QwHelicityPattern &entry);
   void  AccumulatePairRunningSum(QwHelicityPattern &entry);
 
-  void  CalculateBurstAverage();
-  void  CalculateRunningBurstAverage();
   void  CalculateRunningAverage();
 
-  void  PrintRunningBurstAverage() const;
-  void  PrintRunningAverage() const;
-  void  PrintBurstAverage() const;
+  void  PrintValue() const;
 
   void  ConstructObjects(){ConstructObjects((TDirectory*)NULL);};
   void  ConstructObjects(TDirectory *folder);
@@ -167,15 +155,10 @@ class QwHelicityPattern {
   };
 
   void  ClearEventData();
-  void  ClearBurstSum();
-  void  ClearRunningSum();
 
   void  Print() const;
 
  protected:
-  Bool_t fDEBUG;
-
-  //  QwHelicity* fHelicitySubsystem;
 
   std::vector<QwSubsystemArrayParity> fEvents;
   std::vector<Bool_t> fEventLoaded;
@@ -199,11 +182,13 @@ class QwHelicityPattern {
   QwSubsystemArrayParity fYield;
   QwSubsystemArrayParity fDifference;
   QwSubsystemArrayParity fAsymmetry;
+
   // Alternate asymmetry calculations
   Bool_t fEnableAlternateAsym;
   QwSubsystemArrayParity fAsymmetry1;
   QwSubsystemArrayParity fAsymmetry2;
 
+  // Yield and asymmetry of a single helicity pair
   QwSubsystemArrayParity fPairYield;
   QwSubsystemArrayParity fPairDifference;
   QwSubsystemArrayParity fPairAsymmetry;
@@ -212,12 +197,6 @@ class QwHelicityPattern {
   Int_t fBurstLength;
   Bool_t fEnableBurstSum;
   Bool_t fPrintBurstSum;
-  QwSubsystemArrayParity fBurstYield;
-  QwSubsystemArrayParity fBurstDifference;
-  QwSubsystemArrayParity fBurstAsymmetry;
-  QwSubsystemArrayParity fRunningBurstYield;
-  QwSubsystemArrayParity fRunningBurstDifference;
-  QwSubsystemArrayParity fRunningBurstAsymmetry;
 
   // Running sum/average of the yield and asymmetry
   Bool_t fEnableRunningSum;

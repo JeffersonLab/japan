@@ -386,6 +386,17 @@ Int_t main(Int_t argc, Char_t* argv[])
       QwMessage << " =========================" << QwLog::endl;
       eventsum.PrintValue();
     }
+
+    if (gQwOptions.GetValue<bool>("print-patternsum")) {
+      QwMessage << " Running average of patterns" << QwLog::endl;
+      QwMessage << " =========================" << QwLog::endl;
+      patternsum.PrintValue();
+    }
+
+    if (gQwOptions.GetValue<bool>("print-burstsum")) {
+      QwMessage << " Running average of bursts" << QwLog::endl;
+      QwMessage << " =========================" << QwLog::endl;
+      burstsum.PrintValue();
     }
 
 
