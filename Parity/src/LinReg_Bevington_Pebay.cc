@@ -402,7 +402,7 @@ void LinRegBevPeb::solve() {
 	sigXX.Invert();
 	sigYY_diag.Invert();
 	Axy=sigXX*sigXY;
-	Ayx=sigYY_diag*sigYX;
+	Ayx.Transpose(Axy);
 	sigXX.Invert();
 	sigYY_diag.Invert();
 

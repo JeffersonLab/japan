@@ -58,9 +58,9 @@ void LRBCorrector::ParseConfigFile(QwParameterFile& file)
 Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
 {
   string TmpFilePath = run_label.Data();
-  fMapFile = "blueR" + TmpFilePath + "new.slope.root";
-  string MapFilePath = outPath + "/";
-  string tmp = MapFilePath + fMapFile;
+  string myfMapFile = "blueR" + TmpFilePath + "new.slope.root";
+  string myMapFilePath = outPath + "/";
+  string tmp = myMapFilePath + myfMapFile;
   TString corFileName(tmp.c_str());
   QwMessage << "Trying to open " << corFileName << QwLog::endl;
   TFile*  corFile=new TFile(corFileName);
@@ -81,6 +81,8 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
   pair<EQwHandleType, string> type_name_dv;
   pair<EQwHandleType, string> type_name_iv;
 
+  QwMessage << mapfile << QwLog::endl;
+
     // Open the file
   QwParameterFile map(mapfile);
 
@@ -96,6 +98,7 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
     // Get first token: label (dv or iv), second token is the name like "asym_blah"
     string primary_token = map.GetNextToken(" ");
     string current_token = map.GetNextToken(" ");
+    QwMessage<< primary_token << QwLog::endl;
     // Parse current token into independent variable type and name
     type_name = ParseHandledVariable(current_token);
 
