@@ -145,6 +145,9 @@ Int_t main(Int_t argc, Char_t* argv[])
     //  events which pass through the ring.
     QwSubsystemArrayParity ringoutput(detectors);
 
+    ///  Create the burst sum
+    QwHelicityPattern burstsum(helicitypattern);
+
     ///  Create the running sum
     QwSubsystemArrayParity runningsum(detectors);
     QwHelicityPattern patternsum(helicitypattern);
@@ -195,12 +198,14 @@ Int_t main(Int_t argc, Char_t* argv[])
     burstrootfile->ConstructTreeBranches("pr", "Pair tree", helicitypattern.GetPairYield(),"yield_");
     burstrootfile->ConstructTreeBranches("pr", "Pair tree", helicitypattern.GetPairAsymmetry(),"asym_");
     treerootfile->ConstructTreeBranches("slow", "EPICS and slow control tree", epicsevent);
+    treerootfile->ConstructTreeBranches("run", "Running sum tree", runningsum);
 
     datahandlerarray.ConstructTreeBranches(treerootfile);
 
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstYield(),"yield_");
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstAsymmetry(),"asym_");
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstDifference(),"diff_");
+    burstrootfile->ConstructTreeBranches("burst2", "Burst2 level data tree", burstsum);
 
     // Summarize the ROOT file structure
     //treerootfile->PrintTrees();
@@ -212,6 +217,7 @@ Int_t main(Int_t argc, Char_t* argv[])
     patternsum.ClearRunningSum();
     //  Clear the running sum of the burst values at the beginning of the runlet
     helicitypattern.ClearBurstSum();
+    burstsum.ClearEventData();
 
 
     //  Load the blinder seed from the database for this runlet.
@@ -311,6 +317,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 	    // Clear the data
 	    helicitypattern.ClearPairData();
 	  }
+
           // Check to see if we can calculate helicity pattern asymmetry, do so, and report if it worked
           if (helicitypattern.IsGoodAsymmetry()) {
 	    patternsum.AccumulateRunningSum(helicitypattern);
@@ -326,15 +333,25 @@ Int_t main(Int_t argc, Char_t* argv[])
               if (helicitypattern.IsEndOfBurst()) {
                 helicitypattern.AccumulateRunningBurstSum();
                 helicitypattern.CalculateBurstAverage();
+                //
+                burstsum.AccumulateRunningSum(helicitypattern);
+                burstsum.CalculateRunningAverage();
 
                 // Fill burst tree branches
                 burstrootfile->FillTreeBranches(helicitypattern.GetBurstYield());
                 burstrootfile->FillTreeBranches(helicitypattern.GetBurstAsymmetry());
                 burstrootfile->FillTreeBranches(helicitypattern.GetBurstDifference());
                 burstrootfile->FillTree("burst");
+                //
+                burstsum.ForcePatternIsGood();
+                burstsum.GetYield().PrintValue();
+                burstrootfile->FillTreeBranches(burstsum);
+                burstrootfile->FillTree("burst2");
 
                 // Clear the data
                 helicitypattern.ClearBurstSum();
+                //
+                burstsum.ClearEventData();
               }
 
               // Process data handlers

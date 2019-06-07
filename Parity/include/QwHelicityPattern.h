@@ -53,7 +53,11 @@ class QwHelicityPattern {
   Bool_t PairAsymmetryIsGood();
   Bool_t NextPairIsComplete();
   void   CalculatePairAsymmetry();
-  void   ClearPairData(){fPairYield.ClearEventData();fPairDifference.ClearEventData(); fPairAsymmetry.ClearEventData();}
+  void   ClearPairData(){
+    fPairYield.ClearEventData();
+    fPairDifference.ClearEventData();
+    fPairAsymmetry.ClearEventData();
+  }
 
   Bool_t IsCompletePattern() const;
 
@@ -110,6 +114,11 @@ class QwHelicityPattern {
   };
 
   // wish these could be const references, but ConstructBranchAndVector messes with object
+  QwSubsystemArrayParity& GetYield()      { return fYield; };
+  QwSubsystemArrayParity& GetDifference() { return fDifference; };
+  QwSubsystemArrayParity& GetAsymmetry()  { return fAsymmetry; };
+
+  // wish these could be const references, but ConstructBranchAndVector messes with object
   QwSubsystemArrayParity& GetBurstYield()      { return fBurstYield; };
   QwSubsystemArrayParity& GetBurstDifference() { return fBurstDifference; };
   QwSubsystemArrayParity& GetBurstAsymmetry()  { return fBurstAsymmetry; };
@@ -152,6 +161,7 @@ class QwHelicityPattern {
 
   void  WritePromptSummary(QwPromptSummary *ps);
 
+  void ForcePatternIsGood() { fPatternIsGood = true; };
   Bool_t IsGoodAsymmetry();
   UInt_t GetEventcutErrorFlag() const{
     return fAsymmetry.GetEventcutErrorFlag();
