@@ -18,6 +18,16 @@
   alias-path = .
   disable-histos = true
 
+[QwCorrelator]
+  name       = MyMassiveCorrelator
+  priority   = 50
+  map        = prex_corrolator_all.conf
+  slope-file-base = blueR
+  slope-file-suff = all.slope.root
+  slope-path = . 
+  alias-path = .
+  disable-histos = true
+
 [QwCombiner]
   name       = MyCombiner
   priority   = 0
