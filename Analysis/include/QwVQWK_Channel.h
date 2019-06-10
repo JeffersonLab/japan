@@ -275,9 +275,6 @@ private:
   static const Int_t  kWordsPerChannel; //no.of words per channel in the CODA buffer
   static const Int_t  kMaxChannels;     //no.of channels per module
 
-  /// Pointer to the running sum for this channel
-  QwVQWK_Channel* fRunningSum;
-
   /*! \name ADC Calibration                    */
   // @{
   static const Double_t kVQWK_VoltsPerBit;
