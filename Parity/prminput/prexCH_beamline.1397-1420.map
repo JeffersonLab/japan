@@ -40,18 +40,18 @@ sample_size=1984
     VQWK, 2, 7,  bpmstripline,  BPM4Aym
 
 !ADC3
-    VQWK, 3, 0,  bpmcavity,  CAV4BX
-    VQWK, 3, 1,  bpmcavity,  CAV4BY
+    VQWK, 3, 0,  bpmcavity,  CAV4BXI
+    VQWK, 3, 1,  bpmcavity,  CAV4BYI
     VQWK, 3, 2,  bpmcavity,  CAV4BQ
-    VQWK, 3, 3,  bpmcavity,  CAV4CX
-    VQWK, 3, 4,  bpmcavity,  CAV4CY
+    VQWK, 3, 3,  bpmcavity,  CAV4CXI
+    VQWK, 3, 4,  bpmcavity,  CAV4CYI
     VQWK, 3, 5,  bpmcavity,  CAV4CQ
     VQWK, 3, 6,  bcm,  QWK_3_6 
     VQWK, 3, 7,  bcm,  UNSER
 
 !ADC4
-    VQWK, 4, 0,  bpmcavity,  CAV4DX
-    VQWK, 4, 1,  bpmcavity,  CAV4DY
+    VQWK, 4, 0,  bpmcavity,  CAV4DXI
+    VQWK, 4, 1,  bpmcavity,  CAV4DYI
     VQWK, 4, 2,  bpmcavity,  CAV4DQ
     VQWK, 4, 3,  bcm,  QWK_4_3
     VQWK, 4, 4,  bpmstripline,  BPM18xm

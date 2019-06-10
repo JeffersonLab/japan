@@ -20,7 +20,7 @@ const Double_t QwBPMCavity::kQwCavityCalibration = 1.0;
 //The value of kQwCavityCalibration is made up so we have to replace it with an actual value when it is determined
 //Josh Kaisen
 
-const TString QwBPMCavity::subelement[QwBPMCavity::kNumElements]={"X","Y","Q"};
+const TString QwBPMCavity::subelement[QwBPMCavity::kNumElements]={"XI","YI","Q"};
 
 
 Bool_t QwBPMCavity::ParseChannelName(const TString &channel,
@@ -29,6 +29,7 @@ Bool_t QwBPMCavity::ParseChannelName(const TString &channel,
 				     UInt_t &localindex)
 {
   localindex=kInvalidSubelementIndex;
+  //QwMessage << "Channel Name: " << channel << QwLog::endl;
   for(size_t i=0;i<kNumElements;i++){
     if(channel.EndsWith(subelement[i],TString::kIgnoreCase)){
       localindex=i;
@@ -38,6 +39,9 @@ Bool_t QwBPMCavity::ParseChannelName(const TString &channel,
       break;
     }
   }
+
+  //QwMessage << "Detector Name: " << detname << QwLog::endl;
+  //QwMessage << "Sub Name: " << subname << QwLog::endl;
 
   if(localindex==kInvalidSubelementIndex){
     detname = "";
@@ -64,7 +68,7 @@ void  QwBPMCavity::InitializeChannel(TString name)
 
   for(i=kXAxis;i<kNumAxes;i++){
     fRelPos[i].InitializeChannel(name+"Rel"+subelement[i],"derived");
-    fAbsPos[i].InitializeChannel(name+"Abs"+kAxisLabel[i],"derived");
+    fAbsPos[i].InitializeChannel(name+kAxisLabel[i],"derived");
   }
 
   bFullSave=kTRUE;
@@ -87,7 +91,7 @@ void  QwBPMCavity::InitializeChannel(TString subsystem, TString name)
   
   for(i=kXAxis;i<kNumAxes;i++){
     fRelPos[i].InitializeChannel(subsystem, "QwBPMCavity", name+"Rel"+subelement[i],"derived");
-    fAbsPos[i].InitializeChannel(subsystem, "QwBPMCavity", name+"Abs"+kAxisLabel[i],"derived");
+    fAbsPos[i].InitializeChannel(subsystem, "QwBPMCavity", name+kAxisLabel[i],"derived");
   }
   
   bFullSave=kTRUE;
