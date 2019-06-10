@@ -29,10 +29,14 @@ void LinRegBevPeb::init(){
   mMP.ResizeTo(par_nP,1);
   mVPP.ResizeTo(par_nP,par_nP);
   mVPY.ResizeTo(par_nP,par_nY);
+  mVYY.ResizeTo(par_nY,par_nY);
+  mVP2.ResizeTo(par_nP,1);
   mVY2.ResizeTo(par_nY,1); 
   mA.ResizeTo(par_nP,par_nY);
   mAsig.ResizeTo(mA);
   mRjk.ResizeTo(mVPP);
+  mRky.ResizeTo(mVPY);
+  mRyy.ResizeTo(mVYY);
 
   fGoodEventNumber=0;
  
@@ -43,8 +47,13 @@ void LinRegBevPeb::init(){
 void LinRegBevPeb::print(){
   printf("LinReg dims:  nP=%d nY=%d\n",par_nP,par_nY);
 
-  cout<<"MP:"; mMP.Print(); cout<<"MY: ="; mMY.Print();
-  cout<<"VPP:";mVPP.Print();  cout<<"VPY:";mVPY.Print();  cout<<"VY2:=";mVY2.Print();
+  cout<<"MP:"; mMP.Print();
+  cout<<"MY:"; mMY.Print();
+  cout<<"VPP:"; mVPP.Print();
+  cout<<"VPY:"; mVPY.Print();
+  cout<<"VYY:"; mVYY.Print();
+  cout<<"VP2:"; mVP2.Print();
+  cout<<"VY2:"; mVY2.Print();
 }
 
 
@@ -81,6 +90,9 @@ void LinRegBevPeb::accumulate(double *P, double *Y){
     if(fGoodEventNumber<=1) mMP(i,0)=u;
     else mMP(i,0)+=udel/fGoodEventNumber;
 
+    if(fGoodEventNumber<=1)  mVP2(i,0)=0; // only diagonal elements are needed for linReg
+    else mVP2(i,0)+=(u-mMP(i,0))*udel; // Note, it uses pre & post incremented means!
+
     if(fGoodEventNumber<=1)  mVPP(i,i)=0;
     else mVPP(i,i)+=(u-mMP(i,0))*udel; // Note, it uses pre & post incremented means!
     
@@ -104,6 +116,18 @@ void LinRegBevPeb::accumulate(double *P, double *Y){
 
     if(fGoodEventNumber<=1)  mVY2(i,0)=0; // only diagonal elements are needed for linReg
     else mVY2(i,0)+=(u-mMY(i,0))*udel; // Note, it uses pre & post incremented means!
+
+    if(fGoodEventNumber<=1)  mVYY(i,i)=0;
+    else mVYY(i,i)+=(u-mMY(i,0))*udel; // Note, it uses pre & post incremented means!
+
+    for (int j = i+1; j < par_nY; j++) {// only upper triangle
+      double v=Y[j];
+      double vdel=v-mMY(j,0);
+
+      if(fGoodEventNumber<=1) mVYY(i,j)=0;
+      else mVYY(i,j)+=udel*vdel*(fGoodEventNumber-1.)/fGoodEventNumber;
+      }// end of cov-YY
+
   } // end of Y-only
 
 
@@ -175,7 +199,17 @@ Int_t  LinRegBevPeb::getCovariancePY(  int ip, int iy, Double_t &covar ){
     return 0;
 }
 
-
+//==========================================================
+//==========================================================
+Int_t  LinRegBevPeb::getCovarianceY( int i, int j, Double_t &covar ){
+    covar=-1e50;
+    if( i>j) { int k=i; i=j; j=k; }//swap i & j
+    //... now we need only upper right triangle
+    if(i<0 || i >= par_nY ) return -11;
+    if( fGoodEventNumber<2) return -14;
+    covar=mVYY(i,j)/(fGoodEventNumber-1.);
+    return 0;
+}
 
 //==========================================================
 //==========================================================
@@ -329,7 +363,6 @@ void LinRegBevPeb::solve() {
    cout<<"check M*invM"; M.Print();
    */
    cout << Form("\n********LinRegBevPeb::solve... alphas ")<<endl;
-   TMatrixD Rky;Rky.ResizeTo(mVPY); 
    for (int iy = 0; iy <par_nY; iy++) {
      Int_t testval;
      double Sy;
@@ -342,13 +375,22 @@ void LinRegBevPeb::solve() {
        assert(testval==0);
        testval = getCovariancePY(ip,iy,Syk2);
        assert(testval==0);
-       Rky(ip,iy)=Syk2/Sy/Sk;
+       mRky(ip,iy)=Syk2/Sy/Sk;
        //if(ip==0 && iy==0) printf("Syk2=%f  Sy=%f Sk=%f\n", Syk2,Sy,Sk); 
+     }
+     for (int jy = 0; jy < par_nY; jy++) {
+        Int_t testval;
+        double Sj,s2ij;
+        testval = getSigmaY(jy,Sj);
+        assert(testval==0);
+        testval = getCovarianceY(iy,jy,s2ij);
+        assert(testval==0);
+        mRyy(iy,jy)=s2ij/Sy/Sj;
      }
    }
    //cout<<"new Rky:"; Rky.Print();
-   TMatrixD Djy; Djy.ResizeTo(Rky);	
-   Djy.Mult(invRjk,Rky);
+   TMatrixD Djy; Djy.ResizeTo(mRky);
+   Djy.Mult(invRjk,mRky);
    //   cout<<"Djy:"; Djy.Print();
    for (int iy = 0; iy <par_nY; iy++) {
     double Sy;

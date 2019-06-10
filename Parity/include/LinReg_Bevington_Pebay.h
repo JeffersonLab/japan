@@ -22,9 +22,9 @@ class LinRegBevPeb {
 
  public:
   TMatrixD mA, mAsig;  ///< found slopes + their stand errors
-  TMatrixD mRjk;  ///< found covariance between IVs
+  TMatrixD mRjk, mRky, mRyy; ///< found correlations for IV/IV, DV/IV, DV/DV
   TMatrixD mMP, mMY;   ///< mean values accumulators
-  TMatrixD mVPP, mVPY,mVY2; ///< variances accumulators
+  TMatrixD mVPP, mVPY, mVYY, mVP2, mVY2; ///< variances accumulators
 
   LinRegBevPeb();
   
@@ -57,6 +57,7 @@ class LinRegBevPeb {
   /// Get mean value of a variable, returns error code
   Int_t getCovarianceP ( int i,  int j,  Double_t &covar );
   Int_t getCovariancePY( int ip, int iy, Double_t &covar );
+  Int_t getCovarianceY ( int i,  int j,  Double_t &covar );
 
   double  getUsedEve(){ return fGoodEventNumber;}
 

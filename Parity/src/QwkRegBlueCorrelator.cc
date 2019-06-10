@@ -171,7 +171,9 @@ QwkRegBlueCorrelator::exportAlphas(TString outName, std::vector < TString > ivNa
 
   linReg.mA.Write("slopes");
   linReg.mAsig.Write("sigSlopes");
-  linReg.mRjk.Write("IV_correlation");
+  linReg.mRjk.Write("IV_IV_correlation");
+  linReg.mRky.Write("IV_DV_correlation");
+  linReg.mRyy.Write("DV_DV_correlation");
   linReg.mMP.Write("IV_mean");
   linReg.mMY.Write("DV_mean");
  
@@ -209,9 +211,11 @@ QwkRegBlueCorrelator::exportAlphas(TString outName, std::vector < TString > ivNa
   hdv.Write();
 
   //raw matrices
-  linReg.mVPP.Write("IV_rawVariance");
+  linReg.mVPP.Write("IV_IV_rawVariance");
   linReg.mVPY.Write("IV_DV_rawVariance");
+  linReg.mVYY.Write("DV_DV_rawVariance");
   linReg.mVY2.Write("DV_rawVariance");
+  linReg.mVP2.Write("IV_rawVariance");
 
   //  TMatrixD Mstats(1,0);
 
