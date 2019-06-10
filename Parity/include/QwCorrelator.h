@@ -54,6 +54,8 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   std::vector< const VQwHardwareChannel* > fIndependentVar;
   std::vector< Double_t > fIndependentValues;
 
+  std::string fAlphaOutputFileBase;
+  std::string fAlphaOutputFileSuff;
   std::string fAlphaOutputPath;
   std::string fAliasOutputPath;		
 
