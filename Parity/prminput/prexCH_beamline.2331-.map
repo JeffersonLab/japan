@@ -61,7 +61,7 @@ sample_size=4096
 
 !ADC5
     VQWK, 5, 0,  bcm,  QWK_5_0
-    VQWK, 5, 1,  bcm,  bpm_trigger 
+    VQWK, 5, 1,  bcm,  ch_bpm_trigger 
     VQWK, 5, 2,  bcm,  beam_sync_60Hz
     VQWK, 5, 3,  bcm,  ch_battery_2
     VQWK, 5, 4,  bcm,  BCM_DG_DS
