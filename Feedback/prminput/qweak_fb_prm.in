@@ -3,7 +3,8 @@
 #No.of good patterns to accumulate before triggering the feedback algorithm.
 
 #for Hall A PITA
-patterns = 210
+#patterns = 210
+patterns = 2000
 
 #for Hall C IA
 cia_patterns = 210
@@ -17,13 +18,13 @@ bia_patterns = 1800
 #for Hall A IA
 HAF_patterns = 200
 
-#for XY feedback
-xy_patterns = 9000
+#for XY pos feedback
+xy_patterns = 4000
 
 #for position feedback
 #pf_patterns = 9000
-#pfu_patterns = 9000
-pfu_patterns = 18000
+pfu_patterns = 4000
+#pfu_patterns = 18000
 pfv_patterns = 18000
 
 
@@ -85,10 +86,10 @@ HB_IA_up  = 70000
 
 #matrix elements for do 2 by 2 feedback
 
-dDxdAposU = 1
-dDxdAposV = 1
-dDydAposU = 1
-dDydAposV = 1
+XU = 1
+XV = 2
+YU = 3
+YV = 4
 
 
 

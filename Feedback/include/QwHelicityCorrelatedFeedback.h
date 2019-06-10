@@ -40,7 +40,8 @@ class QwHelicityCorrelatedFeedback : public QwHelicityPattern {
     // fPFGoodPatternCounter=0;
 fPFUGoodPatternCounter=0;
 fPFVGoodPatternCounter=0;
- fXYGoodPatternCounter=0;
+ fXGoodPatternCounter=0;
+ fYGoodPatternCounter=0;
     fPatternCounter=0;
 fHCIAGoodPatternCounter=0;
  fHAIAGoodPatternCounter=0;
@@ -78,10 +79,10 @@ fHCIAGoodPatternCounter=0;
    fPITASetpoint[i]=0;
    }
 
-   for(Int_t j=1;j<9;j++){
-    fPrevPOSXYSetpoint[j]=0;
-   fPOSXYSetpoint[j]=0;
-   }
+    //  for(Int_t j=1;j<9;j++){
+    //fPrevPOSXYSetpoint[j]=0;
+    //fPOSXYSetpoint[j]=0;
+    // }
 
 fPITAPOSUSetpoint1=0;
 fPITAPOSUSetpoint2=0;
@@ -92,6 +93,24 @@ fPrevPITAPOSUSetpoint1=0;
 fPrevPITAPOSUSetpoint2=0;
 fPrevPITAPOSUSetpoint5=0;
 fPrevPITAPOSUSetpoint6=0;
+
+fPOSXYSetpoint1=0;
+fPOSXYSetpoint2=0;
+fPOSXYSetpoint3=0;
+fPOSXYSetpoint4=0;
+fPOSXYSetpoint5=0;
+fPOSXYSetpoint6=0;
+fPOSXYSetpoint7=0;
+fPOSXYSetpoint8=0;
+
+fPrevPOSXYSetpoint1=0;
+fPrevPOSXYSetpoint2=0;
+fPrevPOSXYSetpoint3=0;
+fPrevPOSXYSetpoint4=0;
+fPrevPOSXYSetpoint5=0;
+fPrevPOSXYSetpoint6=0;
+fPrevPOSXYSetpoint7=0;
+fPrevPOSXYSetpoint8=0;
 
  fPITAPOSVSetpoint3=0; 
  fPITAPOSVSetpoint4=0; 
@@ -422,8 +441,15 @@ Bool_t IsPFVPatternsAccumulated(){
      };
 
 
-Bool_t IsPosXYPatternsAccumulated(){
-     if (fXYGoodPatternCounter>=fXYAccumulatePatternMax)
+Bool_t IsPosXPatternsAccumulated(){
+     if (fXGoodPatternCounter>=fXYAccumulatePatternMax)
+     	return kTRUE;
+
+     return kFALSE;
+     };
+
+Bool_t IsPosYPatternsAccumulated(){
+     if (fYGoodPatternCounter>=fXYAccumulatePatternMax)
      	return kTRUE;
 
      return kFALSE;
@@ -631,8 +657,8 @@ Int_t fXYAccumulatePatternMax;
 
     Double_t fPITASetpoint[];//New setpont calculated based on the charge asymmetry
     Double_t fPrevPITASetpoint[];
-    Double_t fPOSXYSetpoint[];
-    Double_t fPrevPOSXYSetpoint[];//previous setpoin
+    // Double_t fPOSXYSetpoint[];
+    //Double_t fPrevPOSXYSetpoint[];//previous setpoin
 
 Double_t fHCIASetpoint[];//New setpont calculated based on the charge asymmetry
     Double_t fPrevHCIASetpoint[];//previous setpoin
@@ -696,8 +722,8 @@ Double_t fHAIASetpointlow;//lower and upper limits for IA dac hardware counts
 Double_t fHBIASetpointlow;//lower and upper limits for IA dac hardware counts
     Double_t fHBIASetpointup;
 
-    Double_t fxV;
     Double_t fxU;
+    Double_t fxV;
     Double_t fyV;
     Double_t fyU;
 
@@ -808,7 +834,8 @@ Double_t fHBIASlopeIN;//IHWP1 IN
     //Int_t fPFGoodPatternCounter;//increment the quartet number - reset after each position/angle feedback operation
 Int_t fPFUGoodPatternCounter;
 Int_t fPFVGoodPatternCounter;
-Int_t fXYGoodPatternCounter;
+Int_t fXGoodPatternCounter;
+Int_t fYGoodPatternCounter;
     Int_t fPatternCounter;//increment the quartet number - reset after each feedback operation
 
     

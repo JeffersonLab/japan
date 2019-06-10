@@ -83,31 +83,34 @@ public:
     std::cout << "RTP8 HV value: " << value << std::endl;
 
 
-status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_1, &value);
-    status = ca_pend_io(10);
-    std::cout << "RTP1 HV value: " << value << std::endl;
-status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_2, &value);
-    status = ca_pend_io(10);
-    std::cout << "RTP2 HV value: " << value << std::endl;
-status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_5, &value);
-    status = ca_pend_io(10);
-    std::cout << "RTP5 HV value: " << value << std::endl;
-status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_6, &value);
-    status = ca_pend_io(10);
-    std::cout << "RTP6 HV value: " << value << std::endl;
 
-status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_3, &value);
-    status = ca_pend_io(10);
-    std::cout << "RTP3 HV value: " << value << std::endl;
-status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_4, &value);
-    status = ca_pend_io(10);
-    std::cout << "RTP4 HV value: " << value << std::endl;
-status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_7, &value);
-    status = ca_pend_io(10);
-    std::cout << "RTP7 HV value: " << value << std::endl;
-status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_8, &value);
-    status = ca_pend_io(10);
-    std::cout << "RTP8 HV value: " << value << std::endl;
+
+
+/* status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_1, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP1 HV value: " << value << std::endl; */
+/* status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_2, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP2 HV value: " << value << std::endl; */
+/* status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_5, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP5 HV value: " << value << std::endl; */
+/* status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSU_6, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP6 HV value: " << value << std::endl; */
+
+/* status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_3, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP3 HV value: " << value << std::endl; */
+/* status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_4, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP4 HV value: " << value << std::endl; */
+/* status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_7, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP7 HV value: " << value << std::endl; */
+/* status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_8, &value); */
+/*     status = ca_pend_io(10); */
+/*     std::cout << "RTP8 HV value: " << value << std::endl; */
 
   status = ca_get(DBR_DOUBLE, fIDIA_HC_1, &value);
     status = ca_pend_io(10);
@@ -881,33 +884,33 @@ void Get_RTP_PITA_8(Double_t &value){
 /*   }; */
 
 
-/*  void Get_RTP_PITAPOSV_3(Double_t &value){ */
-/*     Int_t status; */
-/*     status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_3, &value); */
-/*     status = ca_pend_io(10); */
-/*     std::cout << "RTP 3 HW-count value: " << value << std::endl; */
-/*   }; */
+ /* void Get_RTP_PITAPOSV_3(Double_t &value){ */
+ /*    Int_t status; */
+ /*    status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_3, &value); */
+ /*    status = ca_pend_io(10); */
+ /*    std::cout << "RTP 3 HW-count value: " << value << std::endl; */
+ /*  }; */
 
-/*  void Get_RTP_PITAPOSV_4(Double_t &value){ */
-/*     Int_t status; */
-/*     status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_4, &value); */
-/*     status = ca_pend_io(10); */
-/*     std::cout << "RTP 4 HW-count value: " << value << std::endl; */
-/*   }; */
+ /* void Get_RTP_PITAPOSV_4(Double_t &value){ */
+ /*    Int_t status; */
+ /*    status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_4, &value); */
+ /*    status = ca_pend_io(10); */
+ /*    std::cout << "RTP 4 HW-count value: " << value << std::endl; */
+ /*  }; */
 
-/*  void Get_RTP_PITAPOSV_7(Double_t &value){ */
-/*     Int_t status; */
-/*     status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_7, &value); */
-/*     status = ca_pend_io(10); */
-/*     std::cout << "RTP 7 HW-count value: " << value << std::endl; */
-/*   }; */
+ /* void Get_RTP_PITAPOSV_7(Double_t &value){ */
+ /*    Int_t status; */
+ /*    status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_7, &value); */
+ /*    status = ca_pend_io(10); */
+ /*    std::cout << "RTP 7 HW-count value: " << value << std::endl; */
+ /*  }; */
 
-/*  void Get_RTP_PITAPOSV_8(Double_t &value){ */
-/*     Int_t status; */
-/*     status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_8, &value); */
-/*     status = ca_pend_io(10); */
-/*     std::cout << "RTP 8 HW-count value: " << value << std::endl; */
-/*   }; */
+ /* void Get_RTP_PITAPOSV_8(Double_t &value){ */
+ /*    Int_t status; */
+ /*    status = ca_get(DBR_DOUBLE, fIDRTP_PITAPOSV_8, &value); */
+ /*    status = ca_pend_io(10); */
+ /*    std::cout << "RTP 8 HW-count value: " << value << std::endl; */
+ /*  }; */
 
 void Get_IA_HC_1(Double_t &value){
     Int_t status;

@@ -341,19 +341,19 @@ else if (varname=="hb_ia_up"){
       dvalue = atof(varvalue.Data());
       fHBIASlopeOUT = dvalue;
       }
-     else if (varname=="dDxdAposU"){
+     else if (varname=="xu"){
 	dvalue = atof(varvalue.Data());
 	fxU = dvalue;
       }
-     else if (varname=="dDxdAposV"){
+     else if (varname=="xv"){
 	dvalue = atof(varvalue.Data());
 	fxV = dvalue;
       }
-      else if (varname=="dDydAposU"){
+      else if (varname=="yu"){
 	dvalue = atof(varvalue.Data());
 	fyU = dvalue;
       }
-     else if (varname=="dDydAposV"){
+     else if (varname=="yv"){
 	dvalue = atof(varvalue.Data());
 	fyV = dvalue;
       }
@@ -431,7 +431,10 @@ else if (varname=="hb_ia_up"){
   QwMessage<<"PFU patternMax = "<<fPFUAccumulatePatternMax<<QwLog::endl;
   QwMessage<<"PFV patternMax = "<<fPFVAccumulatePatternMax<<QwLog::endl;
   QwMessage<<"XY feedback patternMax = "<<fXYAccumulatePatternMax<<QwLog::endl;
-
+  QwMessage<<"XU = "<<fxU<<QwLog::endl;
+ QwMessage<<"XV = "<<fxV<<QwLog::endl;
+ QwMessage<<"YU = "<<fyU<<QwLog::endl;
+ QwMessage<<"YV = "<<fyV<<QwLog::endl;
   
   
  QwMessage<<"PITA slopes: H-wave IN "<<fPITASlopeIN<<" H-wave OUT "<<fPITASlopeOUT<<QwLog::endl;
@@ -965,10 +968,10 @@ void QwHelicityCorrelatedFeedback::FeedPOSXYSetPoints(){
 
 
   if (fxU!=0 && fxV!=0 && fyU!=0 && fyV!=0) {
-    Double_t a = fyU/((fxU * fyU)-(fyU * fxV)); 
-    Double_t b = -fxV/((fxU * fyU)-(fyU * fxV));
-    Double_t c = -fyU/((fxU * fyU)-(fyU * fxV));
-    Double_t d = fxU/((fxU * fyU)-(fyU * fxV));
+    Double_t a = fyV/((fxU * fyV)-(fyU * fxV)); 
+    Double_t b = -fxV/((fxU * fyV)-(fyU * fxV));
+    Double_t c = -fyU/((fxU * fyV)-(fyU * fxV));
+    Double_t d = fxU/((fxU * fyV)-(fyU * fxV));
     Double_t correction1 = a*fXDiff;
     Double_t correction2 = b*fYDiff;
     Double_t correction3 = c*fXDiff;
@@ -979,10 +982,10 @@ QwMessage<<"................Correction3............."<<c*fXDiff<<QwLog::endl;
 QwMessage<<"................Correction4............."<<d*fYDiff<<QwLog::endl;
 QwMessage<<"................DiffX............."<<fXDiff<<QwLog::endl;
 QwMessage<<"................DiffY............."<<fYDiff<<QwLog::endl;
-QwMessage<<"................a............."<<fyU/((fxU * fyU)-(fyU * fxV))<<QwLog::endl;
-QwMessage<<"................b............."<<-fxV/((fxU * fyU)-(fyU * fxV))<<QwLog::endl;
-QwMessage<<"................c............."<<-fyU/((fxU * fyU)-(fyU * fxV))<<QwLog::endl;
-QwMessage<<"................d............."<<fxU/((fxU * fyU)-(fyU * fxV))<<QwLog::endl;
+QwMessage<<"................a............."<<fyV/((fxU * fyV)-(fyU * fxV))<<QwLog::endl;
+QwMessage<<"................b............."<<-fxV/((fxU * fyV)-(fyU * fxV))<<QwLog::endl;
+QwMessage<<"................c............."<<-fyU/((fxU * fyV)-(fyU * fxV))<<QwLog::endl;
+QwMessage<<"................d............."<<fxU/((fxU * fyV)-(fyU * fxV))<<QwLog::endl;
     
    
     //amali2019
@@ -1382,7 +1385,7 @@ void QwHelicityCorrelatedFeedback::LogXYParameters(){
  
 
   out_file_PITAPOSXY = fopen("/adaqfs/halla/apar/amali/japan/text/Feedback_PITAPOSXY_log.txt", "a");
-  fprintf(out_file_PITAPOSXY,"%9.0d %+15.2f %15.2f %15.2f %15.2f %15.2f \n",fQuartetNumber,fTargetXDiff,fTargetYDiff,TMath::Abs(fPOSXYSetpoint1-fPrevPOSXYSetpoint1),fPOSXYSetpoint1,fPrevPOSXYSetpoint1);
+  fprintf(out_file_PITAPOSXY,"%9.0d %+15.2f %15.2f %15.2f %15.2f %15.2f \n",fQuartetNumber,fXDiff,fYDiff,TMath::Abs(fPOSXYSetpoint1-fPrevPOSXYSetpoint1),fPOSXYSetpoint1,fPrevPOSXYSetpoint1);
   fclose(out_file_PITAPOSXY); 
 };
 
@@ -1558,7 +1561,8 @@ Bool_t QwHelicityCorrelatedFeedback::ApplyPOSXYFeedback(){
     LogXYParameters();//Log PITA setting after feedback
     //UpdateGMClean(1);//set back to clean
     status=kTRUE;
-     fXYGoodPatternCounter=0;//Reset after each feedback operation
+     fXGoodPatternCounter=0;//Reset after each feedback operation
+     fYGoodPatternCounter=0;
     // }
 
 
@@ -1821,7 +1825,7 @@ fHalfWavePlateStatus = GetHalfWavePlateState();
 
 if(fPOSXYFB){
 
-  if (IsPosXYPatternsAccumulated()){
+  if (IsPosXPatternsAccumulated() && IsPosYPatternsAccumulated()){
 fHalfWavePlateStatus = GetHalfWavePlateState();
       if(fHalfWavePlateStatus.Contains("IN")) {
 	if(fHalfWaveRevert) fHalfWaveIN = false;
@@ -2351,7 +2355,7 @@ if(fAsymmetry.RequestExternalValue("q_targB", &fTargetParameter)){
    if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
      fXYPosXDiffRunningSum.AccumulateRunningSum(fTargetParameter);
      //  bXDiff=kTRUE;
-     fXYGoodPatternCounter++;
+     fXGoodPatternCounter++;
    }
  }
 
@@ -2359,7 +2363,7 @@ if(fAsymmetry.RequestExternalValue("q_targB", &fTargetParameter)){
    if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
      fXYPosYDiffRunningSum.AccumulateRunningSum(fTargetParameter);
      //  bXDiff=kTRUE;
-     fXYGoodPatternCounter++;
+     fYGoodPatternCounter++;
    }
  }
 

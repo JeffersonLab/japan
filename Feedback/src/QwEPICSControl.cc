@@ -31,6 +31,24 @@ QwEPICSControl::QwEPICSControl()
   status = ca_search("IGL0I00C1068_DAC12", &fIDRTP_PITA_8);//PC (PITA) 8
   status = ca_pend_io(10);
 
+ status = ca_search("IGL0I00C1068_DAC05", &fIDRTP_POSXY_1);//PC (PITA) 1
+  status = ca_pend_io(10);
+  status = ca_search("IGL0I00C1068_DAC06", &fIDRTP_POSXY_2);//PC (PITA) 2
+  status = ca_pend_io(10);
+  status = ca_search("IGL0I00C1068_DAC07", &fIDRTP_POSXY_3);//PC (PITA) 3
+  status = ca_pend_io(10);
+  status = ca_search("IGL0I00C1068_DAC08", &fIDRTP_POSXY_4);//PC (PITA) 4
+  status = ca_pend_io(10);
+  status = ca_search("IGL0I00C1068_DAC09", &fIDRTP_POSXY_5);//PC (PITA) 5
+  status = ca_pend_io(10);
+  status = ca_search("IGL0I00C1068_DAC10", &fIDRTP_POSXY_6);//PC (PITA) 6
+  status = ca_pend_io(10);
+  status = ca_search("IGL0I00C1068_DAC11", &fIDRTP_POSXY_7);//PC (PITA) 7
+  status = ca_pend_io(10);
+  status = ca_search("IGL0I00C1068_DAC12", &fIDRTP_POSXY_8);//PC (PITA) 8
+  status = ca_pend_io(10);
+
+
 
   // status = ca_search("LC1068_QDAC02", &fIDIA_HC_2);//PC (PITA) 8
   //status = ca_pend_io(10);
