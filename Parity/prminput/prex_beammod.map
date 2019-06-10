@@ -1,29 +1,30 @@
 ROC=23
+
+bank=0x2
+
+  SIS3801D32, 0,   19,  bmod_trig
+  SIS3801D32, 0,   24,  bmod_trim1
+  SIS3801D32, 0,   25,  bmod_trim2
+  SIS3801D32, 0,   26,  bmod_trim3
+  SIS3801D32, 0,   27,  bmod_trim4
+  SIS3801D32, 0,   28,  bmod_trim5
+  SIS3801D32, 0,   29,  bmod_trim6
+  SIS3801D32, 0,   30,  bmod_trim7
+  SIS3801D32, 0,   31,  bmod_trim8
+
 Bank=0x4
 
 SKIP 8
-WORD, 0,  0, helicitydata,  bmwphase
-WORD, 0,  0, helicitydata,  bmwperiod
-WORD, 0,  0, helicitydata,  bmwobj
-WORD, 0,  0, helicitydata,  bmwfreq
-WORD, 0,  0, helicitydata,  bmwcycnum
+WORD, 0,  0,  bmwphase
+WORD, 0,  0,  bmwperiod
+WORD, 0,  0,  bmwobj
+WORD, 0,  0,  bmwfreq
+WORD, 0,  0,  bmwcycnum
 !!
-WORD, 0,  0, helicitydata,  roc23_cleandata
-WORD, 0,  0, helicitydata,  roc23_scandata1
-WORD, 0,  0, helicitydata,  roc23_scandata2
+WORD, 0,  0,  roc23_cleandata
+WORD, 0,  0,  roc23_scandata1
+WORD, 0,  0,  roc23_scandata2
 !!
-WORD, 0,  0, helicitydata,  roc23_ioctime
-WORD, 0,  0, helicitydata,  roc23_ncnt
+WORD, 0,  0,  roc23_ioctime
+WORD, 0,  0,  roc23_ncnt
 
-
-ROC=23
-bank=0x2
-  SIS3801D32, 0,   19, syncscal, bmod_trig
-  SIS3801D32, 0,   24, syncscal, bmod_trim1
-  SIS3801D32, 0,   25, syncscal, bmod_trim2
-  SIS3801D32, 0,   26, syncscal, bmod_trim3
-  SIS3801D32, 0,   27, syncscal, bmod_trim4
-  SIS3801D32, 0,   28, syncscal, bmod_trim5
-  SIS3801D32, 0,   29, syncscal, bmod_trim6
-  SIS3801D32, 0,   30, syncscal, bmod_trim7
-  SIS3801D32, 0,   31, syncscal, bmod_trim8

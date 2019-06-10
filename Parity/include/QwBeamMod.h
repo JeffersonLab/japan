@@ -26,6 +26,7 @@
 #include "QwWord.h"
 
 
+
 //enum EBeamInstrumentType{kBPMStripline = 0,
 //			 kBCM,
 //			 kCombinedBCM,
@@ -57,8 +58,16 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
   /// Copy constructor
   QwBeamMod(const QwBeamMod& source)
   : VQwSubsystem(source),VQwSubsystemParity(source),
-    fModChannel(source.fModChannel),fWord(source.fWord)
-  { }
+    fWord(source.fWord)
+  { 
+    // std::cout<< "Here in the copy constructor" << std::endl;
+    this->fModChannel.reserve(source.fModChannel.size());
+    for(size_t i=0;i< source.fModChannel.size();i++) {
+      this->fModChannel.push_back(source.fModChannel[i]->Clone());
+      *(this->fModChannel[i]) = *(source.fModChannel[i]);
+      //source.fModChannel[i]->PrintValue();
+    }
+  }
   /// Virtual destructor
   virtual ~QwBeamMod() {};
 
@@ -134,7 +143,7 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
  Int_t GetDetectorIndex(TString name);
  Int_t fTreeArrayIndex;
 
- std::vector <QwVQWK_Channel> fModChannel;
+ std::vector <VQwHardwareChannel*> fModChannel;
  std::vector <QwModChannelID> fModChannelID;
  std::vector <QwWord> fWord;
  std::vector < std::pair<Int_t, Int_t> > fWordsPerSubbank;
@@ -164,8 +173,11 @@ class QwModChannelID
   QwModChannelID(Int_t subbankid, Int_t wordssofar,TString name,
 		   TString modtype ,QwBeamMod * obj);
 
+   QwModChannelID(Int_t subbankid, QwParameterFile &paramfile);
+  
 
-/*     QwModChannelID():fSubbankIndex(-1),fWordInSubbank(-1),fTypeID(-1),fIndex(-1), */
+
+/*     QwModChannelID):fSubbankIndex(-1),fWordInSubbank(-1),fTypeID(-1),fIndex(-1), */
 /*     fSubelement(999999),fmoduletype(""),fmodulename("") */
 /*     {}; */
 
@@ -178,7 +190,10 @@ class QwModChannelID
 
   TString fmoduletype; // eg: VQWK, SCALER
   TString fmodulename;
- // TString fdetectortype;
+  Int_t modnum;
+  Int_t channum;
+  
+  // TString fdetectortype;
 
   Int_t  kUnknownDeviceType;
   Int_t  fTypeID;           // type of detector eg: lumi or stripline, etc..

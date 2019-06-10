@@ -83,6 +83,11 @@ class QwVQWK_Channel: public VQwHardwareChannel, public MQwMockable {
   };
   virtual ~QwVQWK_Channel() { };
 
+  VQwHardwareChannel* Clone(){
+    return new QwVQWK_Channel(*this);
+  };
+
+
   /// \brief Initialize the fields in this object
   void  InitializeChannel(TString name, TString datatosave);
 

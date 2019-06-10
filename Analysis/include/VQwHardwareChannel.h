@@ -39,6 +39,8 @@ public:
   VQwHardwareChannel(const VQwHardwareChannel& value, VQwDataElement::EDataToSave datatosave);
   virtual ~VQwHardwareChannel() { };
 
+  virtual VQwHardwareChannel* Clone() = 0;
+
   using VQwDataElement::UpdateErrorFlag;
 
   /*! \brief Get the number of data words in this data element */
@@ -104,6 +106,10 @@ public:
   void UpdateErrorFlag(const VQwHardwareChannel& elem){fErrorFlag |= elem.fErrorFlag;};
   virtual UInt_t GetErrorCode() const {return (fErrorFlag);}; 
 
+  virtual  void IncrementErrorCounters()=0;
+  virtual  void  ProcessEvent()=0;
+ 
+  
   virtual void CalculateRunningAverage() = 0;
 //   virtual void AccumulateRunningSum(const VQwHardwareChannel *value) = 0;
 
@@ -116,11 +122,23 @@ public:
      AssignValueFrom(&value);
      Scale(scale);
   };
+    virtual void Ratio(const VQwHardwareChannel* numer, const VQwHardwareChannel* denom){
+    if (!IsNameEmpty()){
+      this->AssignValueFrom(numer); 
+      this->operator/=(denom);
+       
+        // Remaining variables
+    fGoodEventCount  = denom->fGoodEventCount;
+    fErrorFlag = (numer->fErrorFlag|denom->fErrorFlag);//error code is ORed.  
+     }
+  }
+
   void AssignValueFrom(const VQwDataElement* valueptr) = 0;
   virtual VQwHardwareChannel& operator+=(const VQwHardwareChannel* input) = 0;
   virtual VQwHardwareChannel& operator-=(const VQwHardwareChannel* input) = 0;
   virtual VQwHardwareChannel& operator*=(const VQwHardwareChannel* input) = 0;
   virtual VQwHardwareChannel& operator/=(const VQwHardwareChannel* input) = 0;
+
 
   virtual void ScaledAdd(Double_t scale, const VQwHardwareChannel *value) = 0;
 
