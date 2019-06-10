@@ -35,11 +35,13 @@ RegisterHandlerFactory(QwCorrelator);
 //******************************************************************************************************************************************************
 
 QwCorrelator::QwCorrelator(const TString& name):VQwDataHandler(name),
+                                               fDisableHistos(true),
                                                fAlphaOutputFileBase("blueR"),
                                                fAlphaOutputFileSuff("new.slope.root"),
 					       fAlphaOutputPath("."),
+                                               fAliasOutputFileBase("regalias_"),
+                                               fAliasOutputFileSuff(""),
 					       fAliasOutputPath("."),
-					       fDisableHistos(true),
 					       corA("input")
 {
   ParseSeparator = "_";
@@ -53,6 +55,8 @@ void QwCorrelator::ParseConfigFile(QwParameterFile& file)
   file.PopValue("slope-file-base", fAlphaOutputFileBase);
   file.PopValue("slope-file-suff", fAlphaOutputFileSuff);
   file.PopValue("slope-path", fAlphaOutputPath);
+  file.PopValue("alias-file-base", fAliasOutputFileBase);
+  file.PopValue("alias-file-suff", fAliasOutputFileSuff);
   file.PopValue("alias-path", fAliasOutputPath);
   file.PopValue("disable-histos", fDisableHistos);
   corA.SetDisableHistogramFlag(fDisableHistos);
@@ -101,15 +105,14 @@ void QwCorrelator::CalcCorrelations()
   }
   corA.finish();
 	
-  std::string TmpRunLabel = run_label.Data();
-  std::string fSlopeFileName = fAlphaOutputFileBase + TmpRunLabel + fAlphaOutputFileSuff;
-  std::string fSlopeFilePath = fAlphaOutputPath + "/";
-  std::string tmp = fSlopeFilePath + fSlopeFileName;
+  std::string SlopeFileName = fAlphaOutputFileBase + run_label.Data() + fAlphaOutputFileSuff;
+  std::string SlopeFilePath = fAlphaOutputPath + "/";
+  std::string SlopeFile = SlopeFilePath + SlopeFileName;
+  corA.exportAlphas(TString(SlopeFile), fIndependentFull, fDependentFull);
 
-  TString outAlphas=Form(tmp.c_str());
-  corA.exportAlphas(outAlphas, fIndependentFull, fDependentFull);
-  corA.exportAlias(fAliasOutputPath + "/", "regalias_"+run_label, fIndependentFull, fDependentFull);
-
+  std::string MacroFileName = fAliasOutputFileBase + run_label.Data() + fAliasOutputFileSuff;
+  std::string MacroFilePath = fAliasOutputPath + "/";
+  corA.exportAlias(TString(MacroFilePath), TString(MacroFileName), fIndependentFull, fDependentFull);
 }
 
 
