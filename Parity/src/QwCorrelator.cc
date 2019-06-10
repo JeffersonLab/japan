@@ -35,6 +35,8 @@ RegisterHandlerFactory(QwCorrelator);
 //******************************************************************************************************************************************************
 
 QwCorrelator::QwCorrelator(const TString& name):VQwDataHandler(name),
+                                               fAlphaOutputFileBase("blueR"),
+                                               fAlphaOutputFileSuff("new.slope.root"),
 					       fAlphaOutputPath("."),
 					       fAliasOutputPath("."),
 					       fDisableHistos(true),
@@ -48,6 +50,8 @@ QwCorrelator::QwCorrelator(const TString& name):VQwDataHandler(name),
 void QwCorrelator::ParseConfigFile(QwParameterFile& file)
 {
   VQwDataHandler::ParseConfigFile(file);
+  file.PopValue("slope-file-base", fAlphaOutputFileBase);
+  file.PopValue("slope-file-suff", fAlphaOutputFileSuff);
   file.PopValue("slope-path", fAlphaOutputPath);
   file.PopValue("alias-path", fAliasOutputPath);
   file.PopValue("disable-histos", fDisableHistos);
@@ -98,7 +102,7 @@ void QwCorrelator::CalcCorrelations()
   corA.finish();
 	
   std::string TmpRunLabel = run_label.Data();
-  std::string fSlopeFileName = "blueR" + TmpRunLabel + "new.slope.root";
+  std::string fSlopeFileName = fAlphaOutputFileBase + TmpRunLabel + fAlphaOutputFileSuff;
   std::string fSlopeFilePath = fAlphaOutputPath + "/";
   std::string tmp = fSlopeFilePath + fSlopeFileName;
 

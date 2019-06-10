@@ -12,6 +12,8 @@
   name       = MyCorrelator
   priority   = 50
   map        = prex_corrolator.conf
+  slope-file-base = blueR
+  slope-file-suff = new.slope.root
   slope-path = . 
   alias-path = .
   disable-histos = true
