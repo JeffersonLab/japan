@@ -65,6 +65,7 @@ Int_t QwScaler::LoadChannelMap(TString mapfile)
 
   // Include header for this scaler bank
   UInt_t header = 1;
+  UInt_t buffer_offset = 0;
 
   // By default the scalers are not differential
   Bool_t differential = false;
@@ -77,6 +78,7 @@ Int_t QwScaler::LoadChannelMap(TString mapfile)
   mapstr.AddBreakpointKeyword("norm");
   mapstr.AddBreakpointKeyword("header");
   mapstr.AddBreakpointKeyword("differential");
+  mapstr.AddBreakpointKeyword("scaler_buffer_offset");
 
   while (mapstr.ReadNextLine()) {
     RegisterRocBankMarker(mapstr);
@@ -107,6 +109,9 @@ Int_t QwScaler::LoadChannelMap(TString mapfile)
         }
         QwMessage << "Normalization channel: " << channame << QwLog::endl;
         QwMessage << "Normalization factor: " << current_norm_factor << QwLog::endl;
+      } else if (varname == "scaler_buffer_offset") {
+        // Buffer offset
+        buffer_offset = value;
       } else if (varname == "header") {
         // Header for this block of channels
         header = value;
@@ -139,9 +144,9 @@ Int_t QwScaler::LoadChannelMap(TString mapfile)
 
       UInt_t offset = 0;
       if (modtype == "SIS3801" || modtype == "SIS3801D24" || modtype == "SIS3801D32") {
-        offset = QwSIS3801D24_Channel::GetBufferOffset(modnum, channum, header);
+        offset = QwSIS3801D24_Channel::GetBufferOffset(modnum, channum, header)+buffer_offset;
       } else if (modtype == "STR7200") {
-        offset = QwSIS3801D32_Channel::GetBufferOffset(modnum, channum, header);
+        offset = QwSIS3801D32_Channel::GetBufferOffset(modnum, channum, header)+buffer_offset;
       } else {
         QwError << "Unrecognized module type " << modtype << QwLog::endl;
         continue;
