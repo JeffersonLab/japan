@@ -363,7 +363,7 @@ void LinRegBevPeb::solve() {
       mA(ip,iy)= Djy(ip,iy)*Sy/Sk;
     }
   }
-cout << "Test1" << endl;
+
 	//define the diagonals of sigYY
 	TMatrixD sigYY_diag; sigYY_diag.ResizeTo(par_nY,par_nY);
 	for(int iy = 0; iy < par_nY; iy++){
@@ -372,7 +372,7 @@ cout << "Test1" << endl;
 		assert(testval==0);
 		sigYY_diag(iy,iy) = sigYY_diag(iy,iy)*sigYY_diag(iy,iy);
 	}
-cout << "Test2" << endl;
+
 	//define sigXX
 	TMatrixD sigXX; sigXX.ResizeTo(par_nP,par_nP);
 	for(int iy = 0; iy < par_nP; iy++){
@@ -382,7 +382,7 @@ cout << "Test2" << endl;
 			assert(testval==0);
 		}
 	}
-cout << "Test3" << endl;
+
 	//define sigXY
 	TMatrixD sigXY; sigXY.ResizeTo(par_nP,par_nY);
 	for(int iy = 0; iy < par_nY; iy++){
@@ -392,7 +392,7 @@ cout << "Test3" << endl;
 			assert(testval==0);
 		}
 	}
-cout << "Test4" << endl;
+
 	//define sigYX
 	TMatrixD sigYX; sigYX.ResizeTo(par_nY,par_nP);
 	sigYX.Transpose(sigXY);
@@ -405,7 +405,7 @@ cout << "Test4" << endl;
 	Ayx.Transpose(Axy);
 	sigXX.Invert();
 	sigYY_diag.Invert();
-cout << "Test5" << endl;
+
 	//define meanY
 	TMatrixD meanY; meanY.ResizeTo(1,par_nY);
 	for(int iy = 0; iy < par_nY; iy++){
@@ -413,7 +413,7 @@ cout << "Test5" << endl;
 		testval = getMeanY(iy,meanY(0,iy));
 		assert(testval==0);
 	}
-cout << "Test6" << endl;
+
 	//define meanX
 	TMatrixD meanX; meanX.ResizeTo(1,par_nP);
 	for(int ip = 0; ip < par_nP; ip++){
@@ -421,7 +421,7 @@ cout << "Test6" << endl;
 		testval = getMeanP(ip,meanX(0,ip));
 		assert(testval==0);
 	}
-cout << "Test7" << endl;
+
 	TMatrixD meanYprime; meanYprime.ResizeTo(1,par_nY);
 	meanYprime = meanY - meanX*Axy;
 
