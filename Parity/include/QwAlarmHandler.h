@@ -44,38 +44,47 @@ class QwAlarmHandler:public VQwDataHandler, public MQwDataHandlerCloneable<QwAla
     void ProcessData();
     void CheckAlarms();
     void UpdateAlarmFile();
+    void ParseConfigFile(QwParameterFile&);
   
   protected:
   
     /// Default constructor (Protected for child class access)
     QwAlarmHandler() { };
 
-    /// List of channels to use in the combiner
-    std::vector< std::vector< EQwHandleType > > fAnalysisEnumType;
-    std::vector< std::vector< std::string > > fIndependentName;
-    std::vector< std::vector< const VQwHardwareChannel* > > fAnalysisVar;
-    std::vector< std::vector< Double_t > > fSensitivity;
+    std::string fAlarmOutputFile = "adaqfs/home/apar/bin/onlineAlarms.csv"; // The location of outpur file: alarm-output-file=/location/on/disk....
+    UInt_t fCounter = 0;
+    int fAlarmNupdate = 350;
+    int fAlarmActive = 0; // Default to not actually doing the alarm loop unless specified by the user
+    std::pair<std::string,std::string> ParseAlarmMapVariable(const string&, char);
 
     // List of parameters to use in the alarm handler
     // Cameron's Alarm Stuff
-    std::vector<std::string> fType;
-    std::vector<std::string> fChannel;
-    std::vector<std::string> fAna;
-    std::vector<std::string> fTree;
-    std::vector<VQwDataHandler::EQwHandleType> fAnalysisType;
-    std::vector<std::string> fAnalysisName;
-    std::vector<std::string> fHighHigh;
-    std::vector<std::string> fHigh;
-    std::vector<std::string> fLow;
-    std::vector<std::string> fLowLow;
-    std::vector<std::string> fRingLength;
-    std::vector<std::string> fTolerance;
+    struct alarmObject {
+      // To get contents of map do map.at("key");
+      // To see if contents in map check map.count("key")!=0
+      std::map <std::string,std::string> alarmParameterMap;
+      VQwDataHandler::EQwHandleType analysisType;
+      // List of resultant objects for data handler to update
+      const VQwHardwareChannel* value;
+      UInt_t eventcutErrorFlag;
+      std::string alarmStatus;
+      int Nviolated; // Vector of 0's for history tracking
+      int NsinceLastViolation; // Vector of 0's for history tracking
+      /*
+      std::string type;
+      std::string channel;
+      std::string ana;
+      std::string tree;
+      std::string analysisName;
+      std::string highHigh;
+      std::string high;
+      std::string low;
+      std::string lowLow;
+      std::string ringLength;
+      std::string tolerance;   */
+    };
 
-    // List of resultant objects for data handler to update
-    std::vector< const VQwHardwareChannel* > fValue;
-    std::vector<std::string> fAlarmStatus;
-    std::vector<int> fNviolated = {}; // Vector of 0's for history tracking
-    std::vector<int> fNsinceLastViolation = {}; // Vector of 0's for history tracking
+    std::vector<alarmObject> *fAlarmObjectList = new std::vector<alarmObject>; // Vector pointer of objects
 
 }; // class QwAlarmHandler
 
@@ -83,11 +92,11 @@ inline std::ostream& operator<< (std::ostream& stream, const QwAlarmHandler::EQw
   switch (i){
   case QwAlarmHandler::kHandleTypeMps:  stream << "mps"; break;
   case QwAlarmHandler::kHandleTypeAsym: stream << "asym"; break;
+  case QwAlarmHandler::kHandleTypeYield: stream << "yield"; break;
   case QwAlarmHandler::kHandleTypeDiff: stream << "diff"; break;
   default:           stream << "Unknown";
   }
   return stream;
 }
-
 
 #endif // QWALARMHANDLER_H_
