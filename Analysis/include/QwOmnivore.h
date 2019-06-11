@@ -40,6 +40,9 @@ class QwOmnivore: public VQwSubsystem_t {
     Int_t LoadEventCuts(TString filename) { return 0; };
     /// Apply the single event cuts
     Bool_t ApplySingleEventCuts() { return kTRUE; };
+
+    Bool_t CheckForBurpFail(const VQwSubsystemParity *subsys){return kFALSE;};
+
     /// Report the number of events failed due to HW and event cut failures
     void PrintErrorCounters() const { };
     /// Return the error flag to the main routine

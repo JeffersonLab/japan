@@ -1344,6 +1344,37 @@ Bool_t QwBeamLine::ApplySingleEventCuts(){
 
 }
 
+Bool_t QwBeamLine::CheckForBurpFail(const VQwSubsystemParity *subsys){
+  Bool_t burpstatus = kFALSE;
+  VQwSubsystemParity* tmp = const_cast<VQwSubsystemParity *>(subsys);
+  if(Compare(tmp)) {
+    const QwBeamLine* input = dynamic_cast<const QwBeamLine*>(subsys);
+
+    for(size_t i=0;i<input->fClock.size();i++)
+      burpstatus |= (this->fClock[i].get())->CheckForBurpFail(input->fClock[i].get());
+    for(size_t i=0;i<input->fStripline.size();i++)
+      burpstatus |= (this->fStripline[i].get())->CheckForBurpFail(input->fStripline[i].get());
+    for(size_t i=0;i<input->fQPD.size();i++)
+      burpstatus |= (this->fQPD[i]).CheckForBurpFail(&(input->fQPD[i]));
+    for(size_t i=0;i<input->fLinearArray.size();i++)
+      burpstatus |= (this->fLinearArray[i]).CheckForBurpFail(&(input->fLinearArray[i]));
+    for(size_t i=0;i<input->fCavity.size();i++)
+      burpstatus |= (this->fCavity[i]).CheckForBurpFail(&(input->fCavity[i]));      
+    for(size_t i=0;i<input->fBCM.size();i++)
+      burpstatus |= (this->fBCM[i].get())->CheckForBurpFail(input->fBCM[i].get());
+    for(size_t i=0;i<input->fBCMCombo.size();i++)
+      burpstatus |= (this->fBCMCombo[i].get())->CheckForBurpFail(input->fBCMCombo[i].get()); 
+    for(size_t i=0;i<input->fBPMCombo.size();i++)
+      burpstatus |= (this->fBPMCombo[i].get())->CheckForBurpFail(input->fBPMCombo[i].get()); 
+    for(size_t i=0;i<input->fECalculator.size();i++)
+      burpstatus |= (this->fECalculator[i]).CheckForBurpFail(&(input->fECalculator[i]));
+    for(size_t i=0;i<input->fHaloMonitor.size();i++)
+      burpstatus |= (this->fHaloMonitor[i]).CheckForBurpFail(&(input->fHaloMonitor[i]));
+  }
+  return burpstatus;
+}
+
+
 
 //*****************************************************************//
 void QwBeamLine::PrintErrorCounters() const{//inherited from the VQwSubsystemParity; this will display the error summary

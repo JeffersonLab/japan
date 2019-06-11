@@ -71,6 +71,11 @@ class QwBlindDetectorArray:
   Int_t LoadInputParameters(TString pedestalfile);
   Int_t LoadEventCuts(TString filename);
   Bool_t ApplySingleEventCuts();//Check for good events by stting limits on the devices readings
+
+  Bool_t  CheckForBurpFail(const VQwSubsystemParity *ev_error){
+    return kFALSE;
+  };
+
   void IncrementErrorCounters();
   void PrintErrorCounters() const;// report number of events failed due to HW and event cut faliure
   UInt_t GetEventcutErrorFlag();//return the error flag

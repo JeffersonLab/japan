@@ -114,6 +114,7 @@ class QwBPMStripline : public VQwBPM {
   UInt_t  GetEventcutErrorFlag();
   UInt_t  UpdateErrorFlag();
 
+  Bool_t  CheckForBurpFail(const VQwDataElement *ev_error);
   void    UpdateErrorFlag(const VQwBPM *ev_error);
 
 

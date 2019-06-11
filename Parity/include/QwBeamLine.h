@@ -73,6 +73,9 @@ class QwBeamLine : public VQwSubsystemParity, public MQwSubsystemCloneable<QwBea
 
   Bool_t ApplySingleEventCuts();//derived from VQwSubsystemParity
   void   IncrementErrorCounters();
+
+  Bool_t CheckForBurpFail(const VQwSubsystemParity *subsys);
+
   void   PrintErrorCounters() const;// report number of events failed due to HW and event cut faliures
   UInt_t GetEventcutErrorFlag();//return the error flag
 

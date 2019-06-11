@@ -191,6 +191,38 @@ UInt_t QwBPMStripline<T>::UpdateErrorFlag()
 
 
 template<typename T>
+Bool_t QwBPMStripline<T>::CheckForBurpFail(const VQwDataElement *ev_error){
+  Short_t i=0;
+  Bool_t burpstatus = kFALSE;
+  try {
+    if(typeid(*ev_error)==typeid(*this)) {
+      // std::cout<<" Here in QwBPMStripline::CheckForBurpFail \n";
+      if (this->GetElementName()!="") {
+        const QwBPMStripline<T>* value_bpm = dynamic_cast<const QwBPMStripline<T>* >(ev_error);
+	for(i=0;i<4;i++){
+	  burpstatus |= fWire[i].CheckForBurpFail(&(value_bpm->fWire[i]));
+	}
+	for(i=kXAxis;i<kNumAxes;i++) {
+	  burpstatus |= fRelPos[i].CheckForBurpFail(&(value_bpm->fRelPos[i]));
+	  burpstatus |= fAbsPos[i].CheckForBurpFail(&(value_bpm->fAbsPos[i])); 
+	}
+	burpstatus |= fEffectiveCharge.CheckForBurpFail(&(value_bpm->fEffectiveCharge)); 
+	burpstatus |= fEllipticity.CheckForBurpFail(&(value_bpm->fEllipticity)); 
+      }
+    } else {
+      TString loc="Standard exception from QwBPMStripline::CheckForBurpFail :"+
+        ev_error->GetElementName()+" "+this->GetElementName()+" are not of the "
+        +"same type";
+      throw std::invalid_argument(loc.Data());
+    }
+  } catch (std::exception& e) {
+    std::cerr<< e.what()<<std::endl;
+  }
+  return burpstatus;
+};
+
+
+template<typename T>
 void QwBPMStripline<T>::UpdateErrorFlag(const VQwBPM *ev_error){
   Short_t i=0;
   try {

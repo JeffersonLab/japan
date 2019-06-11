@@ -86,6 +86,24 @@ public:
   void SetEventCutMode(Int_t bcuts){bEVENTCUTMODE=bcuts;};
 
   virtual Bool_t ApplySingleEventCuts() = 0;//check values read from modules are at desired level
+
+  virtual Bool_t CheckForBurpFail(const VQwHardwareChannel *event){
+    Bool_t foundburp = kFALSE;
+    if (fBurpThreshold>0){
+      Double_t diff = this->GetValue() - event->GetValue();
+      if (abs(diff)>fBurpThreshold){
+	foundburp = kTRUE;
+	fBurpCountdown = fBurpHoldoff;
+      } else if (fBurpCountdown>0) {
+	foundburp = kTRUE;
+	fBurpCountdown--;
+      }
+    }
+    if (foundburp){
+      fErrorFlag |= kErrorFlag_BurpCut;
+    }
+    return foundburp;
+  }
   
   /*! \brief Set the upper and lower limits (fULimit and fLLimit) 
    *         for this channel */
@@ -213,6 +231,10 @@ protected:
   Int_t bEVENTCUTMODE;/*!<If this set to kFALSE then Event cuts are OFF*/
   Double_t fULimit, fLLimit;/*!<this sets the upper and lower limits*/
   Double_t fStability;/*!<how much deviaton from the stable reading is allowed*/
+
+  Double_t fBurpThreshold;
+  Int_t fBurpCountdown;
+  Int_t fBurpHoldoff;
   //@}
 
 };   // class VQwHardwareChannel

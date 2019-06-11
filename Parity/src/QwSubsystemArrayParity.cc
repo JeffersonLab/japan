@@ -524,6 +524,33 @@ void QwSubsystemArrayParity::IncrementErrorCounters()
   }
 }
 
+Bool_t QwSubsystemArrayParity::CheckForBurpFail(QwSubsystemArrayParity &event)
+{
+  Bool_t burpstatus = kFALSE;
+  if (!event.empty() && this->size() == event.size()){
+    for(size_t i=0;i<event.size();i++){
+      if (event.at(i)!=NULL && this->at(i)!=NULL){
+	VQwSubsystemParity *ptr1 =
+	  dynamic_cast<VQwSubsystemParity*>(this->at(i).get());
+	if (typeid(*ptr1)==typeid(*(event.at(i).get()))){
+	  //*(ptr1) = event.at(i).get();//when =operator is used
+	  //pass the correct subsystem to update the errorflags at subsystem to devices to channel levels
+	  burpstatus |= ptr1->CheckForBurpFail(event.at(i).get());
+	} else {
+	  //  Subsystems don't match
+	  QwError << " QwSubsystemArrayParity::CheckForBurpFail types do not mach" << QwLog::endl;
+	  QwError << " typeid(ptr1)=" << typeid(*ptr1).name()
+		  << " but typeid(*(event.at(i).get()))=" << typeid(*(event.at(i).get())).name()
+		  << QwLog::endl;
+	}
+      }
+    }
+  } else {
+    //  The source is empty
+  }
+  return burpstatus;
+}
+
 
 void QwSubsystemArrayParity::PrintErrorCounters() const{// report number of events failed due to HW and event cut faliure
   const VQwSubsystemParity *subsys_parity;

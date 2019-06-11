@@ -80,6 +80,11 @@ class VQwSubsystemParity: virtual public VQwSubsystem {
     /// \brief Apply the single event cuts
     virtual Bool_t ApplySingleEventCuts() = 0;
     /// \brief Report the number of events failed due to HW and event cut failures
+
+    virtual Bool_t CheckForBurpFail(const VQwSubsystem *subsys){
+      return kFALSE;
+    };
+
     virtual void PrintErrorCounters() const = 0;
     /// \brief Increment the error counters
     virtual void IncrementErrorCounters() = 0;

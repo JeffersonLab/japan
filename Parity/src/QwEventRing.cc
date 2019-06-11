@@ -3,7 +3,7 @@
 
 
 QwEventRing::QwEventRing(QwSubsystemArrayParity &event, Int_t ring_size)
-: fRollingAvg(event)
+  : fRollingAvg(event),fBurpAvg(event)
 {
   fRING_SIZE=ring_size;
   fEvent_Ring.resize(fRING_SIZE,event);
@@ -20,7 +20,7 @@ QwEventRing::QwEventRing(QwSubsystemArrayParity &event, Int_t ring_size)
 
 
 QwEventRing::QwEventRing(QwOptions &options, QwSubsystemArrayParity &event)
-: fRollingAvg(event)
+  : fRollingAvg(event), fBurpAvg(event)
 {
   ProcessOptions(options);
 
@@ -152,7 +152,7 @@ Bool_t QwEventRing::IsReady(){ //Check for readyness to read data from the ring 
 void QwEventRing::CheckBurpCut(Int_t thisevent)
 {
   if (bRING_READY || thisevent>fBurpExtent){
-    if (fBurpAvg.CheckForBurpFail()){
+    if (fBurpAvg.CheckForBurpFail(fEvent_Ring[thisevent])){
       Int_t precut_start = (thisevent+fRING_SIZE-fBurpPrecut)%fRING_SIZE;
       for(Int_t i=precut_start;i!=(thisevent+1)%fRING_SIZE;i=(i++)%fRING_SIZE){
 	fEvent_Ring[i].UpdateErrorFlag(fBurpAvg);

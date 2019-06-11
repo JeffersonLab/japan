@@ -145,6 +145,10 @@ class VQwDataElement: public MQwHistograms {
   /*! \brief report number of events failed due to HW and event cut failure */
   virtual void PrintErrorCounters() const {};
 
+  virtual Bool_t  CheckForBurpFail(const VQwDataElement *ev_error){
+    return kFALSE;
+  };
+
   /*! \brief return the error flag on this channel/device*/
   virtual UInt_t GetEventcutErrorFlag(){
     //first condition check for global/local status and second condition check to see non-zero HW error codes

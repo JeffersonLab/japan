@@ -84,6 +84,10 @@ class QwScaler: public VQwSubsystemParity, public MQwSubsystemCloneable<QwScaler
     Int_t LoadEventCuts(TString filename);
     Bool_t SingleEventCuts();
     Bool_t ApplySingleEventCuts();
+    Bool_t  CheckForBurpFail(const VQwSubsystemParity *ev_error){
+      return kFALSE;
+    };
+
     void IncrementErrorCounters();
 
     void PrintErrorCounters() const;

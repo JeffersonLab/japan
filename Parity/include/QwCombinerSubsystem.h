@@ -115,6 +115,11 @@ class QwCombinerSubsystem: public VQwSubsystemParity,
       void ProcessEvent(){};
 
       Bool_t ApplySingleEventCuts();
+
+      Bool_t  CheckForBurpFail(const VQwSubsystemParity *ev_error){
+	return kFALSE;
+      };
+
       void IncrementErrorCounters();
       void PrintErrorCounters() const;
       UInt_t GetEventcutErrorFlag();

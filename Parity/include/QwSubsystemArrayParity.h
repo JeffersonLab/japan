@@ -113,6 +113,8 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
     ///        internal error flags.
     void IncrementErrorCounters();
 
+    Bool_t CheckForBurpFail(QwSubsystemArrayParity &event);
+
     /// \brief Report the number of events failed due to HW and event cut failures
     void PrintErrorCounters() const;
     /// \brief Return the error flag to the main routine

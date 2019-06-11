@@ -42,6 +42,8 @@ class QwEventRing {
   /// \brief Return the read status of the ring
   Bool_t IsReady();
 
+  void CheckBurpCut(Int_t thisevent);
+
  private:
 
   Int_t fRING_SIZE;//this is the length of the ring
@@ -67,6 +69,12 @@ class QwEventRing {
 
   //State of the stability check - ON/OFF
   Bool_t bStability;
+
+
+  //  Burp cut variables
+  Int_t fBurpExtent;
+  Int_t fBurpPrecut;
+  QwSubsystemArrayParity fBurpAvg;
 
 };
 
