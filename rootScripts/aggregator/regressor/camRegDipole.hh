@@ -700,6 +700,8 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
   }
   newTree->Write();
   outFile->Close();
+  if (aggregatorStatus){
   //writeFile_h("test_n_data",n_data,runNumber,nRuns);
+  }
 }
 #endif // __CAMREG__

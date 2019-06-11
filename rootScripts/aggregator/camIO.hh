@@ -17,6 +17,54 @@
 #include <TChain.h>
 #include <TFile.h>
 using namespace std;
+Int_t getAggregatorStatus_h(){
+// Get environment variable agg status
+  if (debug>0) Printf("Aggregator Status: %d",aggregatorStatus);
+  if ( aggregatorStatus == -1 ) 
+  { 
+    TString aggStatusStr = gSystem->Getenv("CAM_AGGREGATE");
+    aggregatorStatus = aggStatusStr.Atoi();
+  }
+  if (aggregatorStatus<0){
+    Printf("Error: Aggregator Status given (%d) invalid, must be an integer >= 0",aggregatorStatus);
+    return 0;
+  }
+  if (debug>0) Printf("Aggregator Status: %d",aggregatorStatus);
+  return aggregatorStatus;
+}
+
+Int_t getAlarmStatus_h(){
+// Get environment variable alarm status (if 1 then print to stdout)
+  if (debug>0) Printf("Alarm Status: %d",alarmStatus);
+  if ( alarmStatus == -1 ) 
+  { 
+    TString alarmStr = gSystem->Getenv("CAM_ALARM");
+    alarmStatus = alarmStr.Atoi();
+  }
+  if (alarmStatus<0){
+    Printf("Error: Alarm Status given (%d) invalid, must be an integer >= 0",alarmStatus);
+    return 0;
+  }
+  if (debug>0) Printf("Alarm Status: %d",alarmStatus);
+  return alarmStatus;
+}
+
+Int_t getDebug_h(){
+// Get environment variable debug level
+  if (debug>0) Printf("Debug Level: %d",debug);
+  if ( debug == -1 ) 
+  { 
+    TString debugStr = gSystem->Getenv("CAM_DEBUG");
+    debug = debugStr.Atoi();
+  }
+  if (debug<0){
+    Printf("Error: Debug Level given (%d) invalid, must be an integer >= 0",debug);
+    return 0;
+  }
+  if (debug>0) Printf("Debug Level: %d",debug);
+  return debug;
+}
+
 Int_t getRunNumber_h(Int_t runNumber = 0){
 // Get environment variable run number
   if (debug>0) Printf("Run number: %d",runNumber);
@@ -49,7 +97,7 @@ Int_t getSplitNumber_h(Int_t splitNumber = -1){
 }
 
 Int_t getNruns_h(Int_t n_runs = -1){
-// Get environment variable run number
+// Get environment variable number of runs to chain
   if ( n_runs == -1 ) 
   { 
     TString nRuns = gSystem->Getenv("NRUNS");
@@ -147,7 +195,8 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber 
     filenamebase = gSystem->Getenv("QW_ROOTFILES");
   }
   TString fileNameBase  = filenamebase; // placeholder string
-  TChain *chain = new TChain(tree);
+  if (debug>4) Printf("Tree to add to chain = %s",(const char*)tree);
+  TChain * newTChain = new TChain(tree);
   Bool_t foundFile = false;
 
   for(Int_t i = 0; i < (n_runs); i++){
@@ -180,7 +229,7 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber 
         TFile * candidateFile = new TFile(filename.Data(),"READ");
         if (candidateFile->GetListOfKeys()->Contains(tree)){
           if (debug>0) Printf("File added to Chain: \"%s\"",(const char*)filename);
-          chain->Add(filename);
+          newTChain->Add(filename);
         }
         else {
           if (debug>1) Printf("File %s doesn't contain tree: \"%s\"",(const char*)filename,(const char*)tree);
@@ -195,15 +244,15 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber 
     Printf("Rootfile not found in %s with runs from %d to %d, split %03d, check your config and rootfiles",(const char*)fileNameBase,runNumber,runNumber+n_runs-1, splitNumber);
     return 0;
   }
-  if (debug>3) Printf("TChain total N Entries: %d",(int)chain->GetEntries());
-  return chain;
+  if (debug>3) Printf("TChain total N Entries: %d",(int)newTChain->GetEntries());
+  return newTChain;
 }
 
 TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1, TString filenamebase = "NULL"){
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   nRuns     = getNruns_h(nRuns);
-  TChain  * Chain = getTree_h(tree, runNumber, splitNumber, nRuns, filenamebase);
+  TChain *Chain = getTree_h(tree, runNumber, splitNumber, nRuns, filenamebase);
   if (!Chain){
     return 0;
   }
@@ -215,7 +264,7 @@ TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   nRuns     = getNruns_h(nRuns);
-  TChain  * Chain = getTree_h(tree, runNumber, splitNumber, nRuns, filenamebase);
+  TChain * Chain = getTree_h(tree, runNumber, splitNumber, nRuns, filenamebase);
   if (!Chain){
     return 0;
   }
@@ -228,7 +277,7 @@ TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TSt
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   nRuns     = getNruns_h(nRuns);
-  TChain  * Chain = getTree_h(tree, runNumber, splitNumber, nRuns, filenamebase);
+  TChain * Chain = getTree_h(tree, runNumber, splitNumber, nRuns, filenamebase);
   if (!Chain){
     Printf("Error, tree %s missing",(const char*)(tree));
     return 0;
@@ -252,6 +301,112 @@ TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TSt
     return 0;
   }
   return Leaf;
+}
+
+void writeAlarmFile_h(){
+  // Store all trees
+  TString alarmFileName = "~/bin/alarm.csv";
+  TString pwd           = gSystem->Getenv("PWD");
+  Bool_t newFile        = gSystem->AccessPathName(pwd+"/"+alarmFileName); // Opposite return convention
+  std::ofstream file_in;
+  std::ofstream file_out;
+  if (!newFile) file_in.open(alarmFileName,std::ofstream::in);
+
+  vector<string> placeholder; // placeholder
+  vector<vector<string> > filearray;   // the 2D array
+  vector<vector<string> > filearraycopy;   // the 2D array
+  if (newFile) {
+    if (debug>2) Printf("New alarm file started");
+  }
+  else{
+    filearray = textFileParse_h(alarmFileName,fAlarmData.delim);
+    if (debug>2) Printf("Old alarm file read");
+    file_in.close();
+  }
+
+  // The file takes the form:
+  // 0, type0_0, type1_0, type2_0, type3_0, type4_0
+  // 1, type0_0, type1_0, type2_0, type3_1, type4_0
+  // 2, type0_0, type1_0, type2_0, type3_2, type4_0
+  // 3, type0_0, type1_0, type2_1, type3_0, type4_0
+  // 4, type0_0, type1_0, type2_1, type3_1, type4_0
+  // 5, type0_0, type1_0, type2_1, type3_2, type4_0
+  // 6, type0_0, type1_1, type2_0, type3_0, type4_0
+  // 7, type0_0, type1_1, type2_0, type3_1, type4_0
+  // 8, type0_0, type1_1, type2_0, type3_2, type4_0
+  // 9, type0_1, type1_0, type2_0, type3_0, type4_0
+  // 10,type0_1, type1_0, type2_0, type3_1, type4_0
+  //
+  // At any given moment the user is assumed to know what the starting and ending indices are for their chose edit of the GUI
+  // or for their chosen analysis
+
+  if(fAlarmData.changeIndex==0){
+    // Proceed in normal edit or add mode
+    if(debug>3) Printf("Editing filearray");
+    placeholder.push_back(fAlarmData.type[0]);
+    placeholder.push_back(fAlarmData.type[1]);
+    placeholder.push_back(fAlarmData.type[2]);
+    placeholder.push_back(fAlarmData.name);
+    placeholder.push_back(fAlarmData.value);
+    if (newFile || fAlarmData.indexStart>filearray.size()-1){ // Then add
+      if(debug>3) Printf("Editing filearray - adding new entry"); // FIXME add a new entry into the array (not at the end) somehow - do push_back() and then move()
+      filearray.push_back(placeholder);
+    }
+    else{ // Then edit
+      if(debug>3) Printf("Editing filearray - editing entry");
+      filearray[fAlarmData.indexStart]=placeholder;
+    }
+    placeholder.clear();
+  }
+  else if(fAlarmData.changeIndex==999999){
+    if(debug>3) Printf("Editing filearray - deleting entry");
+    // Delete mode
+    filearray.erase(filearray.begin()+fAlarmData.indexStart,filearray.begin()+fAlarmData.indexEnd+1); // Blast away all from start to end indices
+  }
+  else if(fAlarmData.changeIndex<0){ // Assume that the user has requested exactly the correct number of indices to move up or down
+    if(debug>3) Printf("Editing filearray - swap up");
+    // Swap locations mode
+    Int_t sizeIndex = fAlarmData.indexEnd-fAlarmData.indexStart;
+    if((fAlarmData.changeIndex+fAlarmData.indexStart)<0){
+      file_out.close();
+      return; // If the user sets it too far back continue
+    }
+    filearraycopy = filearray;
+    for (Int_t i = 0 ; i > fAlarmData.changeIndex ; i--){    
+      filearray[fAlarmData.indexEnd+i]=filearraycopy[fAlarmData.indexStart-1+i];
+    }
+    for (Int_t i = fAlarmData.indexStart ; i < fAlarmData.indexEnd+1 ; i++){
+      filearray[fAlarmData.changeIndex+i]=filearraycopy[i]; // Swap remaining contents into gap
+    }
+  }
+  else if(fAlarmData.changeIndex>0){ // Assume that the user has requested exactly the correct number of indices to move up or down
+    if(debug>3) Printf("Editing filearray - swap down");
+    // Swap locations mode
+    Int_t sizeIndex = fAlarmData.indexEnd-fAlarmData.indexStart;
+    if((fAlarmData.changeIndex+fAlarmData.indexEnd)>filearray.size()){
+      file_out.close();
+      return; // If the user sets it too far forward continue
+    }
+    filearraycopy = filearray;
+    for (Int_t i = 0 ; i < fAlarmData.changeIndex ; i++){    
+      filearray[fAlarmData.indexStart+i]=filearraycopy[fAlarmData.indexEnd+1+i];
+    }
+    for (Int_t i = fAlarmData.indexStart ; i < fAlarmData.indexEnd+1 ; i++){ // Swap remaining contents into gap
+      filearray[fAlarmData.changeIndex+i]=filearraycopy[i];
+    }
+  }
+  if(debug>3) Printf("Printing new version of alarm file");
+  if(alarmStatus){
+    file_out.open(alarmFileName,std::ofstream::trunc);
+    for (size_t i = 0 ; i<filearray.size(); i++){
+      file_out<<filearray[i][0];
+      for (size_t j = 1 ; j<filearray[i].size(); j++){
+        file_out<<fAlarmData.delim<<filearray[i][j];
+      }
+      file_out<<std::endl;
+    }
+    file_out.close();
+  }
 }
 
 void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t new_runNumber = 0, Int_t new_splitNumber = -1, Int_t new_nRuns = -1){
@@ -379,7 +534,6 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
 	  oldTree->GetEntry(entryN);
 	  //newTree->GetEntry(entryN);
     
-	  // Loop over all branches (FIXME (A) for the "new" user added value maybe initialize it differently?)
 	  // Set the "old" values to placeholder values
     for (size_t l = 0; l < branchList.size(); l++){
       if (debug>2) Printf("NOTE: Examining branch %s = %f (old value)",(const char*) branchList[l],oldValues[l]);
@@ -597,7 +751,9 @@ void writePostPanFile_h(Int_t runNumber = 1369, Int_t splitNumber = -1, TString 
     if (print){
       // Print one row at a time
       for (size_t b = 0; b < manip.size(); b++){
-        writeFile_h(channel+"_"+manip[b]+"_"+type,numbers[b],runNumber,miniRun);
+        if (aggregatorStatus){
+          writeFile_h(channel+"_"+manip[b]+"_"+type,numbers[b],runNumber,miniRun);
+        }
       }
       numbers.clear();
     }

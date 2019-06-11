@@ -558,6 +558,8 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
   }
   newTree->Write();
   outFile->Close();
+  if (aggregatorStatus){
   //writeFile_h("test_n_data",n_data,runNumber,splitNumber,nRuns);
+  }
 }
 #endif // __CAMREG__
