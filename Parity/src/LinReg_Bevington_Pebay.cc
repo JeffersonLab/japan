@@ -363,8 +363,95 @@ void LinRegBevPeb::solve() {
       mA(ip,iy)= Djy(ip,iy)*Sy/Sk;
     }
   }
+cout << "Test1" << endl;
+	//define the diagonals of sigYY
+	TMatrixD sigYY_diag; sigYY_diag.ResizeTo(par_nY,par_nY);
+	for(int iy = 0; iy < par_nY; iy++){
+		Int_t testval;
+		testval = getSigmaY(iy,sigYY_diag(iy,iy));
+		assert(testval==0);
+		sigYY_diag(iy,iy) = sigYY_diag(iy,iy)*sigYY_diag(iy,iy);
+	}
+cout << "Test2" << endl;
+	//define sigXX
+	TMatrixD sigXX; sigXX.ResizeTo(par_nP,par_nP);
+	for(int iy = 0; iy < par_nP; iy++){
+		for(int ip = 0; ip < par_nP; ip++){
+			Int_t testval;
+			testval = getCovarianceP(ip,iy,sigXX(ip,iy));
+			assert(testval==0);
+		}
+	}
+cout << "Test3" << endl;
+	//define sigXY
+	TMatrixD sigXY; sigXY.ResizeTo(par_nP,par_nY);
+	for(int iy = 0; iy < par_nY; iy++){
+		for(int ip = 0; ip < par_nP; ip++){
+			Int_t testval;
+			testval = getCovariancePY(ip,iy,sigXY(ip,iy));
+			assert(testval==0);
+		}
+	}
+cout << "Test4" << endl;
+	//define sigYX
+	TMatrixD sigYX; sigYX.ResizeTo(par_nY,par_nP);
+	sigYX.Transpose(sigXY);
+
+	TMatrixD Axy; Axy.ResizeTo(par_nP,par_nY);
+	TMatrixD Ayx; Ayx.ResizeTo(par_nY,par_nP);
+	sigXX.Invert();
+	sigYY_diag.Invert();
+	Axy=sigXX*sigXY;
+	Ayx.Transpose(Axy);
+	sigXX.Invert();
+	sigYY_diag.Invert();
+cout << "Test5" << endl;
+	//define meanY
+	TMatrixD meanY; meanY.ResizeTo(1,par_nY);
+	for(int iy = 0; iy < par_nY; iy++){
+		Int_t testval;
+		testval = getMeanY(iy,meanY(0,iy));
+		assert(testval==0);
+	}
+cout << "Test6" << endl;
+	//define meanX
+	TMatrixD meanX; meanX.ResizeTo(1,par_nP);
+	for(int ip = 0; ip < par_nP; ip++){
+		Int_t testval;
+		testval = getMeanP(ip,meanX(0,ip));
+		assert(testval==0);
+	}
+cout << "Test7" << endl;
+	TMatrixD meanYprime; meanYprime.ResizeTo(1,par_nY);
+	meanYprime = meanY - meanX*Axy;
+
+	TMatrixD covYprime; covYprime.ResizeTo(par_nY,par_nY);
+	covYprime = sigYY_diag + Ayx*sigXX*Axy - (sigYX*Axy + sigYX*Axy);
+
+	TMatrixD sigYprime; sigYprime.ResizeTo(1,par_nY);
+	for(int iy = 0; iy < par_nY; iy++){
+		sigYprime(0,iy) = sqrt(covYprime(iy,iy));
+	}
+
+	//cout << "cov(y'):"; covYprime.Print();
+	//cout << "sig(y'):"; sigYprime.Print();
   
-  //cout<<"mA:"; mA.Print();
+  cout << "Uncorrected Y values:" << endl;
+  cout << "     mean          sig" << endl;
+  for(int i = 0; i < par_nY; i++){
+  	double yold, oldsigy;
+  	getMeanY(i,yold);
+  	getSigmaY(i,oldsigy);
+  	cout << "Y" << i << ":  " << yold << " +- " << oldsigy << endl;
+  }
+  cout << endl;
+
+  cout << "Corrected Y values:" << endl;
+  cout << "     mean          sig" << endl;
+  for(int i = 0; i < par_nY; i++){
+  	cout << "Y" << i << ":  " << meanYprime(0,i) << " +- " << sigYprime(0,i) << endl;
+  }
+  cout << endl;
 
   cout << "Compute errors of alphas ..."<<endl;
   double norm=1./(fGoodEventNumber - par_nP -1);
@@ -388,7 +475,7 @@ void LinRegBevPeb::solve() {
       Vxy+=Syk2*mA(j,iy);
     }
     //cout<<"iy="<<iy<<"  Vx="<<Vx<<"  Vxy="<<Vxy<<endl;
-    //    printf(" errAl:  iy=%d Vy=%f\n",iy,Sy*Sy);
+     //   printf(" errAl:  iy=%d Vy=%f\n",iy,Sy*Sy);
     double s2=Sy*Sy + Vx -2*Vxy; // consistent w/ Bevington
     
     //   cout <<" iy="<<iy<<" s2="<<s2<<endl;
