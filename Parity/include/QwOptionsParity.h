@@ -23,7 +23,8 @@
 #include "QwHelicityPattern.h"
 #include "QwDetectorArray.h"
 #include "QwBlindDetectorArray.h"
-#include "QwDataHandlerArray.h"
+#include "QwDataHandlerArrayHel.h"
+#include "QwDataHandlerArrayEvt.h"
 
 #ifdef __USE_DATABASE__
 #include "QwParityDB.h"
@@ -39,7 +40,7 @@ void DefineOptionsParity(QwOptions& options)
   QwEventRing::DefineOptions(options);
   QwHelicity::DefineOptions(options);
   QwHelicityPattern::DefineOptions(options);
-  QwDataHandlerArray::DefineOptions(options);
+  QwDataHandlerArrayHel::DefineOptions(options);
   #ifdef __USE_DATABASE__
   QwParityDB::DefineAdditionalOptions(options);
   #endif //__USE_DATABASE__

@@ -133,9 +133,6 @@ class QwHelicityPattern {
   void  PrintRunningAverage() const;
   void  PrintBurstAverage() const;
 
-  void  ConstructObjects(){ConstructObjects((TDirectory*)NULL);};
-  void  ConstructObjects(TDirectory *folder);
-
   void  ConstructHistograms(){ConstructHistograms((TDirectory*)NULL);};
   void  ConstructHistograms(TDirectory *folder);
   void  FillHistograms();
@@ -234,7 +231,7 @@ class QwHelicityPattern {
   Bool_t fIsDataLoaded;
   void SetDataLoaded(Bool_t flag) { fIsDataLoaded = flag; };
 
-  friend class QwDataHandlerArray;
+  friend class QwDataHandlerArrayHel;
 };
 
 

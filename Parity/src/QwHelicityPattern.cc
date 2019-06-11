@@ -883,29 +883,6 @@ void  QwHelicityPattern::PrintBurstAverage() const
 }
 
 //*****************************************************************
-void  QwHelicityPattern::ConstructObjects(TDirectory *folder)
-{
-  TString prefix = "blinder_";
-  fBlinder.ConstructObjects(folder,prefix);
-
-  prefix = "yield_";
-  fYield.ConstructObjects(folder,prefix);
-  prefix = "asym_";
-  fAsymmetry.ConstructObjects(folder,prefix);
-
-  if (fEnableDifference) {
-    prefix = "diff_";
-    fDifference.ConstructObjects(folder,prefix);
-  }
-  if (fEnableAlternateAsym) {
-    prefix = "asym1_";
-    fAsymmetry1.ConstructObjects(folder,prefix);
-    prefix = "asym2_";
-    fAsymmetry2.ConstructObjects(folder,prefix);
-  }
-}
-
-//*****************************************************************
 void  QwHelicityPattern::ConstructHistograms(TDirectory *folder)
 {
   TString prefix = "yield_";
