@@ -842,7 +842,7 @@ void QwHelicityCorrelatedFeedback::FeedPITAPOSVSetPoints(){
 	    << fTargetYDiffRunningSum.GetGoodEventCount()
 	    << " at pattern number "
 	    << fCurrentPatternNumber
-	    << " after making the correction."<<QwLog::endl;
+	    << " before making the correction."<<QwLog::endl;
  
   //calculate the new setpoint
   if (fHalfWaveIN)
@@ -938,13 +938,13 @@ void QwHelicityCorrelatedFeedback::FeedPOSXYSetPoints(){
 	    << fXYPosXDiffRunningSum.GetGoodEventCount()
 	    << " at pattern number "
 	    << fCurrentPatternNumber
-	    << " after making the correction."<<QwLog::endl;
+	    << " before making the correction."<<QwLog::endl;
 
   QwMessage << "fXYPosYDiffRunningSum.GetGoodEventCount()=="
 	    << fXYPosYDiffRunningSum.GetGoodEventCount()
 	    << " at pattern number "
 	    << fCurrentPatternNumber
-	    << " after making the correction."<<QwLog::endl;
+	    << " before making the correction."<<QwLog::endl;
  
   //calculate the new setpoint
   // if (fHalfWaveIN)
@@ -1082,7 +1082,7 @@ void QwHelicityCorrelatedFeedback::FeedHCIASetPoints(){
 	    << fTargetHCChargeRunningSum.GetGoodEventCount()
 	    << " at pattern number "
 	    << fCurrentPatternNumber
-	    << " after making the correction."<<QwLog::endl;
+	    << " before making the correction."<<QwLog::endl;
 
   //calculate the new setpoint
   if (fHalfWaveIN)
@@ -1167,7 +1167,7 @@ void QwHelicityCorrelatedFeedback::FeedHAIASetPoints(){
 	    << fTargetHAChargeRunningSum.GetGoodEventCount()
 	    << " at pattern number "
 	    << fCurrentPatternNumber
-	    << " after making the correction."<<QwLog::endl;
+	    << " before making the correction."<<QwLog::endl;
 
   //calculate the new setpoint
   if (fHalfWaveIN)
