@@ -50,6 +50,15 @@ class QwEventRing {
   /// \brief Return the number of events in the ring
   Int_t GetNumberOfEvents() const { return fNumberOfEvents; }
 
+  /// \brief Unwind the ring until empty
+  void Unwind() {
+    while (GetNumberOfEvents() > 0) pop();
+    if (fPrintAfterUnwind) {
+      QwMessage << "Residual rolling average (should be zero)" << QwLog::endl;
+      PrintRollingAverage();
+    }
+  }
+
  private:
 
   Int_t fRING_SIZE;//this is the length of the ring
