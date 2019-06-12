@@ -38,6 +38,12 @@ class QwEventRing {
   /// \brief Return the last subsystem in the ring
   QwSubsystemArrayParity& pop();
 
+  /// \brief Print value of rolling average
+  void PrintRollingAverage() {
+    fRollingAvg.CalculateRunningAverage();
+    fRollingAvg.PrintValue();
+  }
+
   /// \brief Return the read status of the ring
   Bool_t IsReady();
 
