@@ -30,6 +30,9 @@ void QwEventRing::DefineOptions(QwOptions &options)
   options.AddOptions()("ring.stability_cut",
       po::value<double>()->default_value(1),
       "QwEventRing: Stability ON/OFF");
+  options.AddOptions()("ring.print-after-unwind",
+      po::value<bool>()->default_bool_value(false),
+      "QwEventRing: print rolling avg after unwind");
 }
 
 void QwEventRing::ProcessOptions(QwOptions &options)
@@ -46,7 +49,8 @@ void QwEventRing::ProcessOptions(QwOptions &options)
     bStability=kTRUE;
   else
     bStability=kFALSE;
- 
+
+  fPrintAfterUnwind = gQwOptions.GetValue<bool>("ring.print-after-unwind");
 }
 void QwEventRing::push(QwSubsystemArrayParity &event)
 {

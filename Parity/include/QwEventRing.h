@@ -68,7 +68,8 @@ class QwEventRing {
   Int_t fNextToBeFilled;//counts events in the ring
   Int_t fNextToBeRead;//keep track off when to read next from the ring.
 
-  
+  Bool_t fPrintAfterUnwind; // print rolling average after unwinding
+
   Bool_t bEVENT_READY; //If kTRUE, the good events are added to the event ring. After a beam trip this is set to kFALSE
   //after discarding LEAVE_COUNT no.of good event this is set to kTRUE
 
