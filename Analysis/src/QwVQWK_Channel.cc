@@ -1428,6 +1428,8 @@ void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t cou
         if (fabs(fBlockM2[i]) < 10.*std::numeric_limits<double>::epsilon())
           fBlockM2[i] = 0; // rounding
       }
+    } else {
+      QwWarning << "Running sum has deaccumulated to negative good events." << QwLog::endl;
     }
 
   } else if (n2 == 1) {
