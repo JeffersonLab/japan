@@ -354,6 +354,14 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     } // end of loop over events
     
+    // Unwind event ring
+    QwMessage << "Unwinding event ring" << QwLog::endl;
+    while (eventring.GetNumberOfEvents() > 0) {
+      eventring.pop();
+    }
+    //QwMessage << "Residual rolling average (should be zero)" << QwLog::endl;
+    //eventring.PrintRollingAverage();
+
     //  Perform actions at the end of the event loop on the
     //  detectors object, which ought to have handles for the
     //  MPS based histograms.
