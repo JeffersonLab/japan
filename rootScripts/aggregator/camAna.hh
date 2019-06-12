@@ -92,14 +92,14 @@ Int_t writeNEvents_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
     }
     if (alarmStatus){
       // Then the alarm handler wants to receive the output in stdout
-      Printf("%s=%f",(const char*)number_stabilityRingStart,stabilityRingStart);
-      Printf("%s=%f",(const char*)number_stabilityRingLength,stabilityRingLength);
+      Printf("%s=%i",(const char*)number_stabilityRingStart,stabilityRingStart);
+      Printf("%s=%i",(const char*)number_stabilityRingLength,stabilityRingLength);
     }
   }
   if (alarmStatus){
     // Then the alarm handler wants to receive the output in stdout
-    Printf("%s=%f",(const char*)number_total_events,numEntries);
-    Printf("%s=%f",(const char*)number_good_events,n_data);
+    Printf("%s=%i",(const char*)number_total_events,numEntries);
+    Printf("%s=%i",(const char*)number_good_events,n_data);
   }
   return stabilityRingStart;
 }
@@ -184,8 +184,8 @@ Int_t writeEventLoopN_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_0
     }
     if (alarmStatus){
       // Then the alarm handler wants to receive the output in stdout
-      Printf("%s=%f",(const char*)number_stabilityRingStart,stabilityRingStart);
-      Printf("%s=%f",(const char*)number_stabilityRingLength,stabilityRingLength);
+      Printf("%s=%i",(const char*)number_stabilityRingStart,stabilityRingStart);
+      Printf("%s=%i",(const char*)number_stabilityRingLength,stabilityRingLength);
     }
   }
   return stabilityRingStart;
