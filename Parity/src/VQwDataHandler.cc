@@ -38,6 +38,7 @@ VQwDataHandler::VQwDataHandler(const VQwDataHandler &source):
   fMapFile(source.fMapFile),
   fTreeName(source.fTreeName),
   fTreeComment(source.fTreeComment),
+  fPrefix(source.fPrefix),
   fKeepRunningSum(source.fKeepRunningSum)
 {
   fDependentVar  = source.fDependentVar;
@@ -75,6 +76,7 @@ void VQwDataHandler::ParseConfigFile(QwParameterFile& file){
   file.PopValue("priority",fPriority);
   file.PopValue("tree-name",fTreeName);
   file.PopValue("tree-comment",fTreeComment);
+  file.PopValue("prefix",fPrefix);
 }
 
 
@@ -212,7 +214,7 @@ pair<VQwDataHandler::EQwHandleType,string> VQwDataHandler::ParseHandledVariable(
 void VQwDataHandler::ConstructTreeBranches(QwRootFile *treerootfile)
 {
   if (fTreeName.size()>0){
-    treerootfile->ConstructTreeBranches(fTreeName, fTreeComment, *this);
+    treerootfile->ConstructTreeBranches(fTreeName, fTreeComment, *this, fPrefix);
   }
 }
 
@@ -253,12 +255,12 @@ void VQwDataHandler::AccumulateRunningSum()
 {
   if (fKeepRunningSum){
     //  Create the running sum object if it doesn't exist.
-    if (fRunningsum == NULL){
-      fRunningsum = this->Clone();
-      fRunningsum->fKeepRunningSum = kFALSE;
-      fRunningsum->ClearEventData();
+    if (fRunningSum == NULL){
+      fRunningSum = this->Clone();
+      fRunningSum->fKeepRunningSum = kFALSE;
+      fRunningSum->ClearEventData();
     }
-    fRunningsum->AccumulateRunningSum(*this);
+    fRunningSum->AccumulateRunningSum(*this);
   }
 }
 
@@ -272,10 +274,10 @@ void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value)
 
 void VQwDataHandler::CalculateRunningAverage()
 {
-  if (fKeepRunningSum && (fRunningsum != NULL)){
-    for(size_t i = 0; i < fRunningsum->fOutputVar.size(); i++) {
+  if (fKeepRunningSum && (fRunningSum != NULL)){
+    for(size_t i = 0; i < fRunningSum->fOutputVar.size(); i++) {
       // calling CalculateRunningAverage in scope of VQwHardwareChannel
-      fRunningsum->fOutputVar[i]->CalculateRunningAverage();
+      fRunningSum->fOutputVar[i]->CalculateRunningAverage();
     }
   }
   return;
@@ -283,8 +285,8 @@ void VQwDataHandler::CalculateRunningAverage()
 
 void VQwDataHandler::PrintRunningAverage()
 {
-  if (fKeepRunningSum && (fRunningsum != NULL)){
-    fRunningsum->PrintValue();
+  if (fKeepRunningSum && (fRunningSum != NULL)){
+    fRunningSum->PrintValue();
   }
 }
 
@@ -308,7 +310,7 @@ void VQwDataHandler::ClearEventData()
 void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
 {
   //  Only do something, if we have the running sum variables
-  if (!fKeepRunningSum || (fRunningsum == NULL)) return;
+  if (!fKeepRunningSum || (fRunningSum == NULL)) return;
 
      Bool_t local_print_flag = false;
      Bool_t local_add_element= type.Contains("asy");
@@ -332,7 +334,7 @@ void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
   for (size_t i = 0; i < fOutputVar.size();  i++) 
     {
       element_name        = fOutputVar[i]->GetElementName(); 
-      tmp_channel=fRunningsum->fOutputVar[i];
+      tmp_channel=fRunningSum->fOutputVar[i];
       element_value       = 0.0;
       element_value_err   = 0.0;
       element_value_width = 0.0;

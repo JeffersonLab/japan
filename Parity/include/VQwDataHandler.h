@@ -37,7 +37,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
     typedef std::vector< VQwHardwareChannel* >::iterator Iterator_HdwChan;
     typedef std::vector< VQwHardwareChannel* >::const_iterator ConstIterator_HdwChan;
 
-    VQwDataHandler(const TString& name):fName(name),fKeepRunningSum(kFALSE){}
+    VQwDataHandler(const TString& name):fName(name),fPrefix(""),fKeepRunningSum(kFALSE) {}
     VQwDataHandler(const VQwDataHandler &source);
 
     virtual void ParseConfigFile(QwParameterFile& file);
@@ -110,6 +110,8 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
    std::string fTreeName;
    std::string fTreeComment;
 
+   std::string fPrefix;
+
    TString run_label;
 
    /// Single event pointer
@@ -130,7 +132,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
  protected:
    Bool_t fKeepRunningSum;
-   VQwDataHandler *fRunningsum;
+   VQwDataHandler *fRunningSum;
 };
 
 #endif // VQWDATAHANDLER_H_

@@ -35,17 +35,23 @@ RegisterHandlerFactory(QwCorrelator);
 //******************************************************************************************************************************************************
 
 QwCorrelator::QwCorrelator(const TString& name):VQwDataHandler(name),
+                                               fAlphaOutputFileBase("blueR"),
+                                               fAlphaOutputFileSuff("new.slope.root"),
 					       fAlphaOutputPath("."),
 					       fAliasOutputPath("."),
 					       fDisableHistos(true),
 					       corA("input")
 {
   ParseSeparator = "_";
+  fTotalCount = 0;
+  fGoodCount  = 0;
 }
 
 void QwCorrelator::ParseConfigFile(QwParameterFile& file)
 {
   VQwDataHandler::ParseConfigFile(file);
+  file.PopValue("slope-file-base", fAlphaOutputFileBase);
+  file.PopValue("slope-file-suff", fAlphaOutputFileSuff);
   file.PopValue("slope-path", fAlphaOutputPath);
   file.PopValue("alias-path", fAliasOutputPath);
   file.PopValue("disable-histos", fDisableHistos);
@@ -56,21 +62,26 @@ void QwCorrelator::AccumulateRunningSum()
 {
   UInt_t error = 0;
 
+  fTotalCount++;
+
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     error |= fDependentVar.at(i)->GetErrorCode();
     fDependentValues.at(i) = (fDependentVar[i]->GetValue());
     //QwMessage << "Loading DV " << fDependentVar.at(i) << " into fDependentValues." << QwLog::endl;
+    if ( fDependentVar.at(i)->GetErrorCode() !=0)  (fErrCounts_DV.at(i))++;
   }
   for (size_t i = 0; i < fIndependentVar.size(); ++i) {
     error |= fIndependentVar.at(i)->GetErrorCode();
     fIndependentValues.at(i) = (fIndependentVar[i]->GetValue());
     //QwMessage << "Loading IV " << fIndependentVar.at(i) << " into fIndependentValues." << QwLog::endl;
+    if ( fIndependentVar.at(i)->GetErrorCode() !=0)  (fErrCounts_IV.at(i))++;
   }
 
   //QwMessage << "fDependentVar has a size of: " << fDependentVar.size() << QwLog::endl;
   //QwMessage << "fIndependentVar has a size of: " << fIndependentVar.size() << QwLog::endl;
 
   if (error == 0) {
+    fGoodCount++;
     corA.addEvent(&fIndependentValues[0],&fDependentValues[0]);
   }
   
@@ -79,16 +90,25 @@ void QwCorrelator::AccumulateRunningSum()
 
 void QwCorrelator::CalcCorrelations()
 {
+  QwMessage << "QwCorrelator:  Total entries: " << fTotalCount <<", good entries: "<< fGoodCount << QwLog::endl;
+  for (size_t i = 0; i < fDependentVar.size(); ++i) {
+    if (fErrCounts_DV.at(i) >0) QwMessage << "   Entries failed due to " << fDependentVar.at(i)->GetElementName()
+					  << ": " <<  fErrCounts_DV.at(i) << QwLog::endl;
+  }
+  for (size_t i = 0; i < fIndependentVar.size(); ++i) {
+    if (fErrCounts_IV.at(i) >0) QwMessage << "   Entries failed due to " << fIndependentVar.at(i)->GetElementName()
+					  << ": " <<  fErrCounts_IV.at(i) << QwLog::endl;
+  }
   corA.finish();
 	
   std::string TmpRunLabel = run_label.Data();
-  std::string fSlopeFileName = "blueR" + TmpRunLabel + "new.slope.root";
+  std::string fSlopeFileName = fAlphaOutputFileBase + TmpRunLabel + fAlphaOutputFileSuff;
   std::string fSlopeFilePath = fAlphaOutputPath + "/";
   std::string tmp = fSlopeFilePath + fSlopeFileName;
 
   TString outAlphas=Form(tmp.c_str());
   corA.exportAlphas(outAlphas, fIndependentFull, fDependentFull);
-  corA.exportAlias(fAliasOutputPath, "/regalias_"+run_label, fIndependentFull, fDependentFull);
+  corA.exportAlias(fAliasOutputPath + "/", "regalias_"+run_label, fIndependentFull, fDependentFull);
 
 }
 
@@ -147,6 +167,7 @@ Int_t QwCorrelator::LoadChannelMap(const std::string& mapfile)
   //QwMessage << "fDependentType has a size of: " << fDependentType.size() << QwLog::endl;
   //QwMessage << "fDependentName has a size of: " << fDependentName.size() << QwLog::endl;
 
+  return 0;
 }
 
 
@@ -255,8 +276,10 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
   }
   corA.init(fIndependentName_t, fDependentName_t);
 
+  fErrCounts_IV.resize(fIndependentVar.size(),0);
+  fErrCounts_DV.resize(fDependentVar.size(),0);
+
   return 0;
-	
 }
 
 
