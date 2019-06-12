@@ -1475,8 +1475,8 @@ void QwVQWK_Channel::CalculateRunningAverage()
 	  // if the width is greater than the stability required flag the event
 	  fErrorFlag = kBeamStabilityError;
 	} else
+	  fErrorFlag = 0;
       }
-          
     }
 }
 
