@@ -1,24 +1,6 @@
 #include "QwEventRing.h"
 
 
-
-QwEventRing::QwEventRing(QwSubsystemArrayParity &event, Int_t ring_size)
-: fRollingAvg(event)
-{
-  fRING_SIZE=ring_size;
-  fEvent_Ring.resize(fRING_SIZE,event);
-
-  bRING_READY=kFALSE;
-  bEVENT_READY=kTRUE;
-  fNextToBeFilled=0;
-  fNextToBeRead=0;
-  
-  //open the log file
-  if (bDEBUG_Write)
-    out_file = fopen("Ring_log.txt", "wt");
-}
-
-
 QwEventRing::QwEventRing(QwOptions &options, QwSubsystemArrayParity &event)
 : fRollingAvg(event)
 {

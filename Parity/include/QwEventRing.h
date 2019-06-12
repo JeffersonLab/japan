@@ -26,7 +26,6 @@ class QwEventRing {
 
  public:
   QwEventRing(QwOptions &options, QwSubsystemArrayParity &event);
-  QwEventRing(QwSubsystemArrayParity &event, Int_t ring_size); //this will create a fixed size event ring
   virtual ~QwEventRing() { };
 
   /// \brief Define options
