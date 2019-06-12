@@ -8,10 +8,11 @@ QwEventRing::QwEventRing(QwOptions &options, QwSubsystemArrayParity &event)
 
   fEvent_Ring.resize(fRING_SIZE,event);
 
-  bRING_READY=kFALSE;
-  bEVENT_READY=kTRUE;
-  fNextToBeFilled=0;
-  fNextToBeRead=0;
+  bRING_READY = kFALSE;
+  bEVENT_READY = kTRUE;
+
+  fNextToBeFilled = 0;
+  fNextToBeRead = 0;
 
   //open the log file
   if (bDEBUG_Write)
@@ -22,7 +23,6 @@ QwEventRing::QwEventRing(QwOptions &options, QwSubsystemArrayParity &event)
 void QwEventRing::DefineOptions(QwOptions &options)
 {
   // Define the execution options
-  options.AddDefaultOptions();
   options.AddOptions()("ring.size",
       po::value<int>()->default_value(4800),
       "QwEventRing: ring/buffer size");
@@ -103,10 +103,7 @@ void QwEventRing::push(QwSubsystemArrayParity &event)
 	}
     }
     //ring processing is done at a separate location
-  }else{
   }
-  
-  
 }
 
 
