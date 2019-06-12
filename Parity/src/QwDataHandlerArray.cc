@@ -320,11 +320,14 @@ void  QwDataHandlerArray::ProcessEvent()
   }
 }
 
-void  QwDataHandlerArray::ConstructTreeBranches(QwRootFile *treerootfile)
+void  QwDataHandlerArray::ConstructTreeBranches(
+    QwRootFile *treerootfile,
+    const std::string& treeprefix,
+    const std::string& branchprefix)
 {
   if (!empty()){
     for (iterator handler = begin(); handler != end(); ++handler) {
-      handler->get()->ConstructTreeBranches(treerootfile);
+      handler->get()->ConstructTreeBranches(treerootfile, treeprefix, branchprefix);
     }
   }
 }
