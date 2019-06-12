@@ -569,13 +569,22 @@ void  QwADC18_Channel::ConstructBranchAndVector(TTree *tree, TString &prefix, st
   if (IsNameEmpty()){
     //  This channel is not used, so skip setting up the tree.
   } else {
-    TString basename = prefix + GetElementName();
+    //  Decide what to store based on prefix
+    SetDataToSaveByPrefix(prefix);
+
+    TString basename = prefix(0,prefix.First("|")) + GetElementName();
     fTreeArrayIndex  = values.size();
 
     TString list;
 
     values.push_back(0.0);
     list = "value/D";
+    if (fDataToSave == kMoments) {
+      values.push_back(0.0);
+      list += ":value_m2/D";
+      values.push_back(0.0);
+      list += ":value_err/D";
+    }
 
     values.push_back(0.0);
     list += ":Device_Error_Code/D";
@@ -633,6 +642,10 @@ void  QwADC18_Channel::FillTreeVector(std::vector<Double_t> &values) const
   } else {
     size_t index = fTreeArrayIndex;
     values[index++] = this->fValue;
+    if (fDataToSave == kMoments) {
+      values[index++] = fValueM2;
+      values[index++] = fValueError;
+    }
     values[index++] = this->fErrorFlag;
     if(fDataToSave==kRaw){
       values[index++] = this->fValue_Raw;
