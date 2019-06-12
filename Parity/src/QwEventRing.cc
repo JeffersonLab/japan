@@ -11,6 +11,7 @@ QwEventRing::QwEventRing(QwOptions &options, QwSubsystemArrayParity &event)
   bRING_READY = kFALSE;
   bEVENT_READY = kTRUE;
 
+  fNumberOfEvents = 0;
   fNextToBeFilled = 0;
   fNextToBeRead = 0;
 
@@ -65,8 +66,9 @@ void QwEventRing::push(QwSubsystemArrayParity &event)
     if (bDEBUG) QwMessage<<" Filled at "<<thisevent;//<<"Ring count "<<fRing_Count<<QwLog::endl; 
     if (bDEBUG_Write) fprintf(out_file," Filled at %d ",thisevent);
 
-
-    fNextToBeFilled=(thisevent+1)%fRING_SIZE;
+    // Increment fill index
+    fNumberOfEvents ++;
+    fNextToBeFilled = (thisevent + 1) % fRING_SIZE;
     
     if(fNextToBeFilled == 0){
       //then we have RING_SIZE events to process
@@ -119,7 +121,12 @@ QwSubsystemArrayParity& QwEventRing::pop(){
   if (bStability){
      fRollingAvg.DeaccumulateRunningSum(fEvent_Ring[tempIndex]);
   }
-  fNextToBeRead=(fNextToBeRead+1)%fRING_SIZE;  
+
+  // Increment read index
+  fNumberOfEvents --;
+  fNextToBeRead = (fNextToBeRead + 1) % fRING_SIZE;
+
+  // Return the event
   return fEvent_Ring[tempIndex];  
 }
 

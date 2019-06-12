@@ -47,10 +47,14 @@ class QwEventRing {
   /// \brief Return the read status of the ring
   Bool_t IsReady();
 
+  /// \brief Return the number of events in the ring
+  Int_t GetNumberOfEvents() const { return fNumberOfEvents; }
+
  private:
 
   Int_t fRING_SIZE;//this is the length of the ring
 
+  Int_t fNumberOfEvents;
 
   Int_t fNextToBeFilled;//counts events in the ring
   Int_t fNextToBeRead;//keep track off when to read next from the ring.
