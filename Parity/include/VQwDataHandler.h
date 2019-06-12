@@ -61,10 +61,8 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
     void ClearEventData();
 
-    virtual void AccumulateRunningSum();
     void AccumulateRunningSum(VQwDataHandler &value);
     void CalculateRunningAverage();
-    void PrintRunningAverage();
     void PrintValue() const;
     void FillDB(QwParityDB *db, TString datatype){};
 
@@ -132,7 +130,6 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
  protected:
    Bool_t fKeepRunningSum;
-   VQwDataHandler *fRunningSum;
 };
 
 #endif // VQWDATAHANDLER_H_
