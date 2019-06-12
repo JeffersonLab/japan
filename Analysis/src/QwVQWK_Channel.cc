@@ -1381,8 +1381,7 @@ void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t cou
   } else if (n2 == -1) {
     // simple version for removal of single event from the sum
     fGoodEventCount--;
-    //QwMessage<<"Deaccumulate before "<<QwLog::endl;
-    if (n>0){
+    if (n > 1) {
       fHardwareBlockSum -= (M12 - M11) / n;
       fHardwareBlockSumM2 -= (M12 - M11)
 	* (M12 - fHardwareBlockSum); // note: using updated mean
@@ -1433,10 +1432,6 @@ void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t cou
   // Nanny
   if (fHardwareBlockSum != fHardwareBlockSum)
     QwWarning << "Angry Nanny: NaN detected in " << GetElementName() << QwLog::endl;
-
-
-   
-
 }
 
 
