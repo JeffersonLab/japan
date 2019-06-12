@@ -172,6 +172,16 @@ public:
   void SetDataToSave(VQwDataElement::EDataToSave datatosave) {
     fDataToSave = datatosave;
   }
+  /*! \brief Set the flag indicating if raw or derived values are
+   *         in this data element based on prefix */
+  void SetDataToSaveByPrefix(const TString& prefix) {
+    if (prefix.Contains("asym_")
+     || prefix.Contains("diff_")
+     || prefix.Contains("yield_"))
+      fDataToSave = kDerived;
+    if (prefix.Contains("stat"))
+      fDataToSave = kMoments; // stat has priority
+  }
 
   /*! \brief Checks that the requested element is in range, to be
    *         used in accesses to subelements similar to
