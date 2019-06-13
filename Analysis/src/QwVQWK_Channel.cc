@@ -676,7 +676,7 @@ void  QwVQWK_Channel::ConstructBranchAndVector(TTree *tree, TString &prefix, std
   //  Decide what to store based on prefix
   SetDataToSaveByPrefix(prefix);
 
-  TString basename = prefix(0,prefix.First("|")) + GetElementName();
+  TString basename = prefix(0, (prefix.First("|") > 0)? prefix.First("|"): prefix.Length()) + GetElementName();
   fTreeArrayIndex  = values.size();
 
   TString list = "";

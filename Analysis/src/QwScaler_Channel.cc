@@ -262,7 +262,7 @@ void QwScaler_Channel<data_mask,data_shift>::ConstructBranchAndVector(TTree *tre
     //  Decide what to store based on prefix
     SetDataToSaveByPrefix(prefix);
 
-    TString basename = prefix(0,prefix.First("|")) + GetElementName();
+    TString basename = prefix(0, (prefix.First("|") > 0)? prefix.First("|"): prefix.Length()) + GetElementName();
     fTreeArrayIndex  = values.size();
 
     TString list;
