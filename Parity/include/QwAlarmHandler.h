@@ -27,7 +27,7 @@ class QwAlarmHandler:public VQwDataHandler, public MQwDataHandlerCloneable<QwAla
     /// \brief Copy constructor
     QwAlarmHandler(const QwAlarmHandler &source);
     /// Virtual destructor
-    virtual ~QwAlarmHandler();
+    virtual ~QwAlarmHandler() {};
 
     /// \brief Load the channels and sensitivities
     Int_t LoadChannelMap(const std::string& mapfile);
@@ -45,6 +45,8 @@ class QwAlarmHandler:public VQwDataHandler, public MQwDataHandlerCloneable<QwAla
     void CheckAlarms();
     void UpdateAlarmFile();
     void ParseConfigFile(QwParameterFile&);
+
+
   
   protected:
   
@@ -62,7 +64,8 @@ class QwAlarmHandler:public VQwDataHandler, public MQwDataHandlerCloneable<QwAla
     struct alarmObject {
       // To get contents of map do map.at("key");
       // To see if contents in map check map.count("key")!=0
-      std::map <std::string,std::string> alarmParameterMap;
+      std::map <std::string,std::string> alarmParameterMapStr;
+      std::map <std::string,double> alarmParameterMap;
       VQwDataHandler::EQwHandleType analysisType;
       // List of resultant objects for data handler to update
       const VQwHardwareChannel* value;
@@ -84,7 +87,7 @@ class QwAlarmHandler:public VQwDataHandler, public MQwDataHandlerCloneable<QwAla
       std::string tolerance;   */
     };
 
-    std::vector<alarmObject> *fAlarmObjectList = new std::vector<alarmObject>; // Vector pointer of objects
+    std::vector<alarmObject> fAlarmObjectList; // Vector pointer of objects
 
 }; // class QwAlarmHandler
 

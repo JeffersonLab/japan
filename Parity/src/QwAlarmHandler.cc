@@ -37,32 +37,14 @@ QwAlarmHandler::QwAlarmHandler(const QwAlarmHandler &source):VQwDataHandler(sour
 {
 }
 
-/// Destructor
-QwAlarmHandler::~QwAlarmHandler()
-{
-  //Iterator_HdwChan element;
-  //for (element = fAlarmObjectList.begin(); element != fAlarmObjectList.end(); element++) {
-  //  if (*element != NULL){
-  //     delete *element;
-  //  }
-  for (size_t iti = 0; iti < fAlarmObjectList->size(); iti++) { 
-    if (fAlarmObjectList->at(iti).value != NULL){
-       delete fAlarmObjectList->at(iti).value;
-    }
-  }
-  fAlarmObjectList->clear();
-}
-
-
 //  Just use the base class version for now....
 
 void QwAlarmHandler::ParseConfigFile(QwParameterFile& file)
 {
-  file.RewindToFileStart();
-  file.EnableGreediness();
-  while (file.ReadNextLine()) {
-    QwMessage << file.GetLine() << QwLog::endl;
-  }
+  VQwDataHandler::ParseConfigFile(file);
+  //name        = MyAlarmHandler
+  //priority    = 20
+  //map         = prex_alarm_handler.map
   file.PopValue("alarm-output-file",fAlarmOutputFile);
   file.PopValue("alarm-loop-N-update",fAlarmNupdate);
   file.PopValue("alarm-active",fAlarmActive);
@@ -111,8 +93,7 @@ Int_t QwAlarmHandler::LoadChannelMap(const std::string& mapfile)
     if (map.LineIsEmpty()) continue;
     // Get first token: label (dv or iv), second token is the name like "asym_blah"
 //  Type, Channel, Ana, tree, channel, highhigh, high, low, lowlow, ringLength, pat-tolerance
-//  Kind=Main-Det Chan=usr Analysis=mean Tree=mul Channel=asym_usr HighHigh=1000 High=100 Low=-100 LowLow=-1000 Ring-Length=200 Tolerance=2
-
+//  Kind=Main-Det Chan=usr Tree=mul Channel=asym_usr HighHigh=1000 High=100 Low=-100 LowLow=-1000 Ring-Length=200 Tolerance=2
     alarmObject tmpAlarmObject;
     // Do while tmpVal = map.GetNextToken parse
     // Do map[tmpVal.type] = tmpVal.value
@@ -121,20 +102,27 @@ Int_t QwAlarmHandler::LoadChannelMap(const std::string& mapfile)
       tmpPair = ParseAlarmMapVariable(tmpToken,'='); // This refers to the object under scrutiny, finds type of object - asym, yield, diff, etc. Check on yields FIXME
       if (tmpPair.first=="Channel") {
         type_name = ParseHandledVariable(tmpPair.second);
+        tmpAlarmObject.alarmParameterMapStr["Analysis"] = tmpPair.second;
         tmpAlarmObject.analysisType = type_name.first;
-        tmpAlarmObject.alarmParameterMap.at("Channel-Name") = type_name.second;
-        tmpAlarmObject.alarmParameterMap.at("Type-Name") = tmpPair.second;
+        tmpAlarmObject.alarmParameterMapStr["Channel-Name"] = type_name.second;
+        tmpAlarmObject.alarmParameterMapStr["Type-Name"] = tmpPair.second;
+      }
+      else if (tmpPair.first == "Kind") {
+        tmpAlarmObject.alarmParameterMapStr[tmpPair.first] = tmpPair.second;
+      }
+      else if (tmpPair.first == "Chan") {
+        tmpAlarmObject.alarmParameterMapStr[tmpPair.first] = tmpPair.second;
       }
       else {
-        tmpAlarmObject.alarmParameterMap.at(tmpPair.first) = tmpPair.second;
+        tmpAlarmObject.alarmParameterMap[tmpPair.first] = std::stod(tmpPair.second);
       }
       tmpToken = map.GetNextToken(" ");
     }
     if (!tmpAlarmObject.alarmParameterMap.count("Ring-Length")) {
-      tmpAlarmObject.alarmParameterMap.at("Ring-Length") = "2e9";
+      tmpAlarmObject.alarmParameterMap["Ring-Length"] = 1e9;
     }
     if (!tmpAlarmObject.alarmParameterMap.count("Tolerance")) {
-      tmpAlarmObject.alarmParameterMap.at("Tolerance") = "0";
+      tmpAlarmObject.alarmParameterMap["Tolerance"] = 0;
     }
 
     /* tmpAlarmObject.type         = map.GetNextToken(" ");
@@ -156,8 +144,8 @@ Int_t QwAlarmHandler::LoadChannelMap(const std::string& mapfile)
     // Default Initializations
     tmpAlarmObject.alarmStatus  = "OK";
     tmpAlarmObject.Nviolated    = 0;
-    tmpAlarmObject.NsinceLastViolation = 2e9;
-    fAlarmObjectList->push_back(tmpAlarmObject);
+    tmpAlarmObject.NsinceLastViolation = 1e9;
+    fAlarmObjectList.push_back(tmpAlarmObject);
 
     /*else if (primary_token == "treetype") {
       QwMessage << "Tree Type read, ignoring." << QwLog::endl;
@@ -180,27 +168,26 @@ Int_t QwAlarmHandler::ConnectChannels(
     QwSubsystemArrayParity& asym,
     QwSubsystemArrayParity& diff)
 {
-
   /// Fill vector of pointers to the relevant data elements
-  for (size_t anaInd = 0; anaInd < fAlarmObjectList->size(); anaInd++) {
+  for (size_t anaInd = 0; anaInd < fAlarmObjectList.size(); anaInd++) {
     // Get the dependent variables
-    if (fAlarmObjectList->at(anaInd).analysisType==kHandleTypeMps){
+    if (fAlarmObjectList.at(anaInd).analysisType==kHandleTypeMps || fAlarmObjectList.at(anaInd).alarmParameterMapStr.count("Channel-Name") == 0){
       //  Quietly ignore the MPS type when we're connecting the asym & diff
       continue;
     }
     const VQwHardwareChannel* ana_ptr = 0;
     UInt_t eventcut = 0; 
-    switch (fAlarmObjectList->at(anaInd).analysisType) {
+    switch (fAlarmObjectList.at(anaInd).analysisType) {
       case kHandleTypeYield:
-        ana_ptr = yield.ReturnInternalValue(fAlarmObjectList->at(anaInd).alarmParameterMap.at("Channel-Name"));
+        ana_ptr = yield.ReturnInternalValue(fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name"));
         eventcut = yield.GetEventcutErrorFlag();
         break;
       case kHandleTypeAsym:
-        ana_ptr = asym.ReturnInternalValue(fAlarmObjectList->at(anaInd).alarmParameterMap.at("Channel-Name"));
+        ana_ptr = asym.ReturnInternalValue(fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name"));
         eventcut = asym.GetEventcutErrorFlag();
         break;
       case kHandleTypeDiff:
-        ana_ptr = diff.ReturnInternalValue(fAlarmObjectList->at(anaInd).alarmParameterMap.at("Channel-Name"));
+        ana_ptr = diff.ReturnInternalValue(fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name"));
         eventcut = diff.GetEventcutErrorFlag();
         break;
       default:
@@ -209,16 +196,14 @@ Int_t QwAlarmHandler::ConnectChannels(
         break;
     }
     if (ana_ptr) {
-      fAlarmObjectList->at(anaInd).value = ana_ptr;
-      fAlarmObjectList->at(anaInd).eventcutErrorFlag = eventcut;
+      fAlarmObjectList.at(anaInd).value = ana_ptr;
+      fAlarmObjectList.at(anaInd).eventcutErrorFlag = eventcut;
     } else {
-      QwWarning << "Independent variable " << fAlarmObjectList->at(anaInd).alarmParameterMap.at("Channel-Name") << " missing in alarm map "
+      QwWarning << "Independent variable " << fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name") << " missing in alarm map "
         << QwLog::endl;
     }
   }
-
   return 0;
-
 }
 
 /** Connect to the dependent and independent channels
@@ -231,7 +216,7 @@ Int_t QwAlarmHandler::ConnectChannels(
   // Return if correction is not enabled
 
   /// Fill vector of pointers to the relevant data elements
-  for (size_t dv = 0; dv < fAlarmObjectList->size(); dv++) {
+  for (size_t dv = 0; dv < fAlarmObjectList.size(); dv++) {
     // Get the dependent variables
 
     const VQwHardwareChannel* dv_ptr = 0;
@@ -257,11 +242,11 @@ Int_t QwAlarmHandler::ConnectChannels(
         dv_ptr = event.ReturnInternalValue(fAnalysisName.at(dv));
 
         vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
-        name = vqwk->GetElementName().Data();
+        name = vqwk.GetElementName().Data();
         new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
-        new_vqwk->SetElementName(name);
+        new_vqwk.SetElementName(name);
       }
-      new_vqwk->SetSubsystemName(fName);
+      new_vqwk.SetSubsystemName(fName);
     }
 
     // alias
@@ -270,7 +255,7 @@ Int_t QwAlarmHandler::ConnectChannels(
                 << "or is not a VQWK channel." << QwLog::endl;
       continue; 
     } else {
-      //QwMessage << "dv: " << new_vqwk->GetElementName() << QwLog::endl;
+      //QwMessage << "dv: " << new_vqwk.GetElementName() << QwLog::endl;
       // pair creation
       fAnalysisType.push_back(fAnalysisType.at(dv));
       fDependentVar.push_back(vqwk);
@@ -331,7 +316,7 @@ void QwAlarmHandler::ProcessData() {
   size_t GetNumberOfDataWords() {return fNumberOfDataWords;}
   size_t GetNumberOfSubelements() {return fNumberOfSubElements;};
   
-  Int_t GetRawValue() const       {return this->GetRawValue(0);};
+  Int_t GetRawValue() const       {return this.GetRawValue(0);};
   Double_t GetValue() const       {return this->GetValue(0);};
   Double_t GetValueM2() const     {return this->GetValueM2(0);};
   Double_t GetValueError() const  {return this->GetValueError(0);};
@@ -345,44 +330,54 @@ void QwAlarmHandler::ProcessData() {
 void QwAlarmHandler::CheckAlarms() {
   // if user-name-of-variable exists then grab it, grab its value from memory, and then compare to the upper and lower limits defined by user (if they were defined) 
   std::string tmpAlarmStat = "OK";
-  for ( size_t numAna = 0; numAna < fAlarmObjectList->size() ; numAna++ ) {
-    if ( fAlarmObjectList->at(numAna).alarmParameterMap.count("Event-Cut") == 0 && fAlarmObjectList->at(numAna).eventcutErrorFlag==0) { //do running sum only if error flag is zero. This way will prevent any Beam Trip(in ev mode 3) related events going into the running sum.
-      // Proceed
-      if (fAlarmObjectList->at(numAna).alarmParameterMap.count("Exactly") != 0 && fAlarmObjectList->at(numAna).value->GetValue() != std::stod(fAlarmObjectList->at(numAna).alarmParameterMap.at("Exactly")) ){
-        fAlarmObjectList->at(numAna).Nviolated++;
-        fAlarmObjectList->at(numAna).NsinceLastViolation = 0;
-        tmpAlarmStat = "Not-Exactly";
-      }
-      else if ( fAlarmObjectList->at(numAna).alarmParameterMap.count("HighHigh") != 0 && fAlarmObjectList->at(numAna).value->GetValue() >= std::stod(fAlarmObjectList->at(numAna).alarmParameterMap.at("HighHigh")) ) { 
-        fAlarmObjectList->at(numAna).Nviolated++;
-        fAlarmObjectList->at(numAna).NsinceLastViolation = 0;
-        tmpAlarmStat = "HighHigh";
-      }
-      else if ( fAlarmObjectList->at(numAna).alarmParameterMap.count("High") != 0 && fAlarmObjectList->at(numAna).value->GetValue() >= std::stod(fAlarmObjectList->at(numAna).alarmParameterMap.at("High")) ) {
-        fAlarmObjectList->at(numAna).Nviolated++;
-        fAlarmObjectList->at(numAna).NsinceLastViolation = 0;
-        tmpAlarmStat = "High";
-      }
-      else if ( fAlarmObjectList->at(numAna).alarmParameterMap.count("LowLow") != 0 && fAlarmObjectList->at(numAna).value->GetValue() <= std::stod(fAlarmObjectList->at(numAna).alarmParameterMap.at("LowLow")) ) {
-        fAlarmObjectList->at(numAna).Nviolated++;
-        fAlarmObjectList->at(numAna).NsinceLastViolation = 0;
-        tmpAlarmStat = "LowLow";
-      }
-      else if ( fAlarmObjectList->at(numAna).alarmParameterMap.count("Low") != 0 &&  fAlarmObjectList->at(numAna).value->GetValue() <= std::stod(fAlarmObjectList->at(numAna).alarmParameterMap.at("Low")) ) {
-        fAlarmObjectList->at(numAna).Nviolated++;
-        fAlarmObjectList->at(numAna).NsinceLastViolation = 0;
-        tmpAlarmStat = "Low";
-      }
-      fAlarmObjectList->at(numAna).NsinceLastViolation++;
-      if ( fAlarmObjectList->at(numAna).NsinceLastViolation < stoi(fAlarmObjectList->at(numAna).alarmParameterMap.at("Ring-Length")) ) { 
-        fAlarmObjectList->at(numAna).Nviolated--;
-      }
-      if ( fAlarmObjectList->at(numAna).Nviolated > stoi(fAlarmObjectList->at(numAna).alarmParameterMap.at("Tolerance")) ) {
-        fAlarmObjectList->at(numAna).alarmStatus = tmpAlarmStat;
-      }
-      else {
-        fAlarmObjectList->at(numAna).alarmStatus = "OK";
-      }
+  for ( size_t numAna = 0; numAna < fAlarmObjectList.size() ; numAna++ ) {
+    //do running sum only if error flag is zero. This way will prevent any Beam Trip(in ev mode 3) related events going into the running sum.
+    if ( fAlarmObjectList.at(numAna).alarmParameterMap.count("Event-Cut") != 0 
+        && ((int)(fAlarmObjectList.at(numAna).alarmParameterMap.at("Event-Cut")) & fAlarmObjectList.at(numAna).eventcutErrorFlag) != 0 ) { 
+      //do running sum only if error flag is zero. This way will prevent any Beam Trip(in ev mode 3) related events going into the running sum.AA
+      fAlarmObjectList.at(numAna).Nviolated++;
+      fAlarmObjectList.at(numAna).NsinceLastViolation = 0;
+      tmpAlarmStat = "Event-Cut";
+    }
+    else if (fAlarmObjectList.at(numAna).alarmParameterMap.count("Exactly") != 0 
+        && fAlarmObjectList.at(numAna).value->GetValue() != fAlarmObjectList.at(numAna).alarmParameterMap.at("Exactly"))  {
+      fAlarmObjectList.at(numAna).Nviolated++;
+      fAlarmObjectList.at(numAna).NsinceLastViolation = 0;
+      tmpAlarmStat = "Not-Exactly";
+    }
+    else if ( fAlarmObjectList.at(numAna).alarmParameterMap.count("HighHigh") != 0 
+        && fAlarmObjectList.at(numAna).value->GetValue() >= fAlarmObjectList.at(numAna).alarmParameterMap.at("HighHigh") ) { 
+      fAlarmObjectList.at(numAna).Nviolated++;
+      fAlarmObjectList.at(numAna).NsinceLastViolation = 0;
+      tmpAlarmStat = "HighHigh";
+    }
+    else if ( fAlarmObjectList.at(numAna).alarmParameterMap.count("High") != 0 
+        && fAlarmObjectList.at(numAna).value->GetValue() >= fAlarmObjectList.at(numAna).alarmParameterMap.at("High") ) {
+      fAlarmObjectList.at(numAna).Nviolated++;
+      fAlarmObjectList.at(numAna).NsinceLastViolation = 0;
+      tmpAlarmStat = "High";
+    }
+    else if ( fAlarmObjectList.at(numAna).alarmParameterMap.count("LowLow") != 0 
+        && fAlarmObjectList.at(numAna).value->GetValue() <= fAlarmObjectList.at(numAna).alarmParameterMap.at("LowLow") ) {
+      fAlarmObjectList.at(numAna).Nviolated++;
+      fAlarmObjectList.at(numAna).NsinceLastViolation = 0;
+      tmpAlarmStat = "LowLow";
+    }
+    else if ( fAlarmObjectList.at(numAna).alarmParameterMap.count("Low") != 0 
+        &&  fAlarmObjectList.at(numAna).value->GetValue() <= fAlarmObjectList.at(numAna).alarmParameterMap.at("Low") ) {
+      fAlarmObjectList.at(numAna).Nviolated++;
+      fAlarmObjectList.at(numAna).NsinceLastViolation = 0;
+      tmpAlarmStat = "Low";
+    }
+    fAlarmObjectList.at(numAna).NsinceLastViolation++;
+    if ( fAlarmObjectList.at(numAna).NsinceLastViolation < fAlarmObjectList.at(numAna).alarmParameterMap.at("Ring-Length") ) { 
+      fAlarmObjectList.at(numAna).Nviolated--;
+    }
+    if ( fAlarmObjectList.at(numAna).Nviolated > fAlarmObjectList.at(numAna).alarmParameterMap.at("Tolerance") ) {
+      fAlarmObjectList.at(numAna).alarmStatus = tmpAlarmStat;
+    }
+    else {
+      fAlarmObjectList.at(numAna).alarmStatus = "OK";
     }
   }
 }
@@ -402,14 +397,26 @@ void QwAlarmHandler::UpdateAlarmFile(){
   // 9, type0_1, type1_0, type2_0, type3_0, type4_0
   // 10,type0_1, type1_0, type2_0, type3_1, type4_0
   //
+  // Format of alarmObject struct contents
+  // std::map <std::string,std::string> alarmParameterMap;
+  // VQwDataHandler::EQwHandleType analysisType;
+  // const VQwHardwareChannel* value;
+  // UInt_t eventcutErrorFlag;
+  // std::string alarmStatus;
+  // int Nviolated; // Vector of 0's for history tracking
+  // int NsinceLastViolation; // Vector of 0's for history tracking
+
   file_out.open(fAlarmOutputFile,std::ofstream::trunc);
-  for (size_t ite = 0 ; ite<fAlarmObjectList->size(); ite++){
-    if (fAlarmObjectList->at(ite).alarmParameterMap.count("Kind") && fAlarmObjectList->at(ite).alarmParameterMap.count("Chan") && fAlarmObjectList->at(ite).alarmParameterMap.count("Type-Name") && fAlarmObjectList->at(ite).value != 0) { // Check if non-trivial value object...
-      file_out<<fAlarmObjectList->at(ite).alarmParameterMap.at("Kind")<<","<<fAlarmObjectList->at(ite).alarmParameterMap.at("Chan")<<","<<fAlarmObjectList->at(ite).alarmParameterMap.at("Type-Name")<<","<<"Value"<<","<<fAlarmObjectList->at(ite).value->GetValue()<<std::endl;
+  for (size_t ite = 0 ; ite<fAlarmObjectList.size(); ite++){
+    if (fAlarmObjectList.at(ite).alarmParameterMapStr.count("Kind") && fAlarmObjectList.at(ite).alarmParameterMapStr.count("Chan") && fAlarmObjectList.at(ite).alarmParameterMapStr.count("Analysis") && fAlarmObjectList.at(ite).value != 0) { // Check if non-trivial value object...
+      file_out<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Kind")<<","<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Chan")<<","<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Analysis")<<","<<"Value"<<","<<fAlarmObjectList.at(ite).value->GetValue()<<std::endl;
+    }
+    if (fAlarmObjectList.at(ite).alarmParameterMapStr.count("Kind") && fAlarmObjectList.at(ite).alarmParameterMapStr.count("Chan") && fAlarmObjectList.at(ite).alarmParameterMapStr.count("Analysis") && fAlarmObjectList.at(ite).alarmStatus != "") { // Check if non-trivial value object...
+      file_out<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Kind")<<","<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Chan")<<","<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Analysis")<<","<<"Alarm Status"<<","<<fAlarmObjectList.at(ite).alarmStatus<<std::endl;
     }
     else continue;
-    for (auto jte : fAlarmObjectList->at(ite).alarmParameterMap){ // Loop through parameter list
-      file_out<<fAlarmObjectList->at(ite).alarmParameterMap.at("Kind")<<","<<fAlarmObjectList->at(ite).alarmParameterMap.at("Chan")<<","<<fAlarmObjectList->at(ite).alarmParameterMap.at("Type-Name")<<","<<jte.first<<","<<jte.second<<std::endl;
+    for (auto jte : fAlarmObjectList.at(ite).alarmParameterMap){ // Loop through parameter list
+      file_out<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Kind")<<","<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Chan")<<","<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Analysis")<<","<<jte.first<<","<<jte.second<<std::endl;
     }
   }
   file_out.close();
