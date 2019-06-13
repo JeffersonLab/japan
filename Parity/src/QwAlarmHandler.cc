@@ -369,8 +369,10 @@ void QwAlarmHandler::CheckAlarms() {
       fAlarmObjectList.at(numAna).NsinceLastViolation = 0;
       tmpAlarmStat = "Low";
     }
-    fAlarmObjectList.at(numAna).NsinceLastViolation++;
-    if ( fAlarmObjectList.at(numAna).NsinceLastViolation < fAlarmObjectList.at(numAna).alarmParameterMap.at("Ring-Length") ) { 
+    else {
+      fAlarmObjectList.at(numAna).NsinceLastViolation++;
+    }
+    if ( fAlarmObjectList.at(numAna).NsinceLastViolation > fAlarmObjectList.at(numAna).alarmParameterMap.at("Ring-Length") ) { 
       fAlarmObjectList.at(numAna).Nviolated--;
     }
     if ( fAlarmObjectList.at(numAna).Nviolated > fAlarmObjectList.at(numAna).alarmParameterMap.at("Tolerance") ) {
@@ -384,19 +386,6 @@ void QwAlarmHandler::CheckAlarms() {
 
 void QwAlarmHandler::UpdateAlarmFile(){
   std::ofstream file_out;
-  // The file takes the form:
-  // 0, type0_0, type1_0, type2_0, type3_0, type4_0
-  // 1, type0_0, type1_0, type2_0, type3_1, type4_0
-  // 2, type0_0, type1_0, type2_0, type3_2, type4_0
-  // 3, type0_0, type1_0, type2_1, type3_0, type4_0
-  // 4, type0_0, type1_0, type2_1, type3_1, type4_0
-  // 5, type0_0, type1_0, type2_1, type3_2, type4_0
-  // 6, type0_0, type1_1, type2_0, type3_0, type4_0
-  // 7, type0_0, type1_1, type2_0, type3_1, type4_0
-  // 8, type0_0, type1_1, type2_0, type3_2, type4_0
-  // 9, type0_1, type1_0, type2_0, type3_0, type4_0
-  // 10,type0_1, type1_0, type2_0, type3_1, type4_0
-  //
   // Format of alarmObject struct contents
   // std::map <std::string,std::string> alarmParameterMap;
   // VQwDataHandler::EQwHandleType analysisType;
