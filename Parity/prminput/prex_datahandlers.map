@@ -37,9 +37,3 @@
   map        = prex_combiner.map
   tree-name  = mulc
   tree-comment = Helicity event data tree (corrected)
-
-[EvtDatahandler]
-  name       = MyEvtData
-  priority   = 0
-  tree-name  = evtc
-  tree-comment = Single event data tree (corrected)
