@@ -1342,7 +1342,7 @@ void QwHelicityCorrelatedFeedback::FeedPCNeg(){
 
 /*****************************************************************/
 void QwHelicityCorrelatedFeedback::LogParameters(Int_t mode){
-  // out_file_IA = fopen("/adaqfs/halla/apar/amali/japan/text/Feedback_IA_log.txt", "a");
+  // out_file_IA = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback_IA_log.txt", "a");
   // //  fprintf(out_file," Feedback at %d current A_q[%d]:%5.8f+/-%5.8f IA Setpoint:%5.3f  IA Previous Setpoint:%5.3f\n",fQuartetNumber,mode,fChargeAsym[mode],fChargeAsymError[mode],fIASetpoint[mode],fPrevIASetpoint[mode]);
   // fprintf(out_file_IA," %10.0d A_q[%1.0d] %20.4f +/-  %20.4f  %20.2f  %20.2f\n",fQuartetNumber,mode,fChargeAsym[mode],fChargeAsymError[mode],fIASetpoint[mode],fPrevIASetpoint[mode]);
   // fclose(out_file_IA);
@@ -1352,7 +1352,7 @@ void QwHelicityCorrelatedFeedback::LogParameters(Int_t mode){
 void QwHelicityCorrelatedFeedback::LogParameters(){
   // fEPICSCtrl.Set_ChargeAsymmetry(fChargeAsymmetry,fChargeAsymmetryError,fChargeAsymmetryWidth);//updates the epics values
 
-  out_file_PITA = fopen("/adaqfs/halla/apar/amali/japan/text/Feedback_PITA_log.txt", "a");
+  out_file_PITA = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback_PITA_log.txt", "a");
   
 
   fprintf(out_file_PITA,"%9.0d %+15.2f %15.2f %15.2f %25.2f %25.2f %25.2f %25.2f \n",fQuartetNumber,fChargeAsymmetry,fChargeAsymmetryError,TMath::Abs(fPITASetpoint1-fPrevPITASetpoint1),fPITASetpoint1,fPrevPITASetpoint1,fPITASetpoint5,fPrevPITASetpoint5);
@@ -1365,7 +1365,7 @@ void QwHelicityCorrelatedFeedback::LogParameters(){
 /*****************************************************************/
 void QwHelicityCorrelatedFeedback::LogPFUParameters(){
   
- out_file_PITAPOSU = fopen("/adaqfs/halla/apar/amali/japan/text/Feedback_PITAPOSU_log.txt", "a");
+ out_file_PITAPOSU = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback_PITAPOSU_log.txt", "a");
   fprintf(out_file_PITAPOSU,"%9.0d %+15.2f %15.2f %15.2f %15.2f %15.2f \n",fQuartetNumber,fTargetXDiff,fTargetXDiffError,TMath::Abs(fPITAPOSUSetpoint1-fPrevPITAPOSUSetpoint1),fPITAPOSUSetpoint1,fPrevPITAPOSUSetpoint1);
   fclose(out_file_PITAPOSU); 
 };
@@ -1375,7 +1375,7 @@ void QwHelicityCorrelatedFeedback::LogPFUParameters(){
 void QwHelicityCorrelatedFeedback::LogPFVParameters(){
  
 
-  out_file_PITAPOSV = fopen("/adaqfs/halla/apar/amali/japan/text/Feedback_PITAPOSV_log.txt", "a");
+  out_file_PITAPOSV = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback_PITAPOSV_log.txt", "a");
   fprintf(out_file_PITAPOSV,"%9.0d %+15.2f %15.2f %15.2f %15.2f %15.2f \n",fQuartetNumber,fTargetYDiff,fTargetYDiffError,TMath::Abs(fPITAPOSVSetpoint3-fPrevPITAPOSVSetpoint3),fPITAPOSVSetpoint3,fPrevPITAPOSVSetpoint3);
   fclose(out_file_PITAPOSV); 
 };
@@ -1384,7 +1384,7 @@ void QwHelicityCorrelatedFeedback::LogPFVParameters(){
 void QwHelicityCorrelatedFeedback::LogXYParameters(){
  
 
-  out_file_PITAPOSXY = fopen("/adaqfs/halla/apar/amali/japan/text/Feedback_PITAPOSXY_log.txt", "a");
+  out_file_PITAPOSXY = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback_PITAPOSXY_log.txt", "a");
   fprintf(out_file_PITAPOSXY,"%9.0d %+15.2f %15.2f %15.2f %15.2f %15.2f \n",fQuartetNumber,fXDiff,fYDiff,TMath::Abs(fPOSXYSetpoint1-fPrevPOSXYSetpoint1),fPOSXYSetpoint1,fPrevPOSXYSetpoint1);
   fclose(out_file_PITAPOSXY); 
 };
@@ -1393,7 +1393,7 @@ void QwHelicityCorrelatedFeedback::LogXYParameters(){
 /*****************************************************************/
 void QwHelicityCorrelatedFeedback::LogHCParameters(){
  
-   out_file_HC_IA = fopen("/adaqfs/halla/apar/amali/japan/text/Feedback_HC_IA_log.txt", "a");
+   out_file_HC_IA = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback_HC_IA_log.txt", "a");
   //fQuartetNumber only available when we have good stable Hall C beam
      fprintf(out_file_HC_IA," %9.0d  %15.2f  %15.2f %15.0f %25.0f  %25.0f \n",fQuartetNumber,fTargetHCCharge,fTargetHCChargeError,TMath::Abs(fHCIASetpoint1-fPrevHCIASetpoint1),fHCIASetpoint1,fPrevHCIASetpoint1);
    fclose(out_file_HC_IA);
@@ -1403,7 +1403,7 @@ void QwHelicityCorrelatedFeedback::LogHCParameters(){
 
 void QwHelicityCorrelatedFeedback::LogHAParameters(){
  
-   out_file_HA_IA = fopen("/adaqfs/halla/apar/amali/japan/text/Feedback_HA_IA_log.txt", "a");
+   out_file_HA_IA = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback_HA_IA_log.txt", "a");
   //fQuartetNumber only available when we have good stable Hall C beam
      fprintf(out_file_HA_IA," %9.0d  %15.2f  %15.2f %15.0f %25.0f  %25.0f \n",fQuartetNumber,fTargetHACharge,fTargetHAChargeError,TMath::Abs(fHAIASetpoint1-fPrevHAIASetpoint1),fHAIASetpoint1,fPrevHAIASetpoint1);
    fclose(out_file_HA_IA);
@@ -1412,7 +1412,7 @@ void QwHelicityCorrelatedFeedback::LogHAParameters(){
 
 void QwHelicityCorrelatedFeedback::LogHBParameters(){
  
-   out_file_HB_IA = fopen("/adaqfs/halla/apar/amali/japan/text/Feedback_HB_IA_log.txt", "a");
+   out_file_HB_IA = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback_HB_IA_log.txt", "a");
   //fQuartetNumber only available when we have good stable Hall C beam
      fprintf(out_file_HB_IA," %9.0d  %15.2f  %15.2f %15.0f %25.0f  %25.0f \n",fQuartetNumber,fTargetHBCharge,fTargetHBChargeError,TMath::Abs(fHBIASetpoint1-fPrevHBIASetpoint1),fHBIASetpoint1,fPrevHBIASetpoint1);
    fclose(out_file_HB_IA);
