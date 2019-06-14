@@ -448,24 +448,8 @@ void LinRegBevPeb::solve() {
   sigXX.Invert();
   sigYY_diag.Invert();
 
-  //define meanY
-  meanY.ResizeTo(par_nY,1);
-  for(int iy = 0; iy < par_nY; iy++){
-    Int_t testval;
-    testval = getMeanY(iy,meanY(iy,0));
-    assert(testval==0);
-  }
-
-  //define meanX
-  meanX.ResizeTo(par_nP,1);
-  for(int ip = 0; ip < par_nP; ip++){
-    Int_t testval;
-    testval = getMeanP(ip,meanX(ip,0));
-    assert(testval==0);
-  }
-
-  meanYprime.ResizeTo(par_nY,1);
-  meanYprime = meanY - Ayx*meanX;
+  mMYprime.ResizeTo(par_nY,1);
+  mMYprime = mMY - Ayx*mMP;
 
   covYprime.ResizeTo(par_nY,par_nY);
   covYprime = sigYY_diag + Ayx*sigXX*Axy - (sigYX*Axy + sigYX*Axy);
