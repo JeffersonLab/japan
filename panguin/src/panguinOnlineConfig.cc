@@ -545,20 +545,25 @@ void OnlineConfig::OverrideRootFile(UInt_t runnumber)
 
     DIR *dirSearch;
     struct dirent *entSearch;
-    const string daqConfigs[3] = {"CH","INJ","ALL"};
+    const string daqConfigs[3] = {"CH","inj","ALL"};
     int found=0;
     string partialname = "";
     if ((dirSearch = opendir (fnmRoot.c_str())) != NULL) {
       while ((entSearch = readdir (dirSearch)) != NULL) {
 	for(int i=0;i<3;i++){
 	  partialname = Form("prex%s_%d.root",daqConfigs[i].c_str(),runnumber);
-	  if(fMonitor)
-	    partialname = Form("prex%s_%d.adaq3",daqConfigs[i].c_str(),runnumber);
-
 	  std::string fullname = entSearch->d_name;
 	  if(fullname.find(partialname) != std::string::npos){
 	    rootfilename = fnmRoot + "/" + fullname;
 	    found++;
+	  }
+	  if(found==0 && fMonitor){
+	    partialname = Form("prex%s_%d.adaq1",daqConfigs[i].c_str(),runnumber);
+	    std::string fullname = entSearch->d_name;
+	    if(fullname.find(partialname) != std::string::npos){
+	      rootfilename = fnmRoot + "/" + fullname;
+	      found++;
+	    }
 	  }
 	}
 	if(found) break;

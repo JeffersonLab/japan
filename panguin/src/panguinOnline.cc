@@ -1,12 +1,16 @@
 ///////////////////////////////////////////////////////////////////
 //  Macro to help with online analysis
 //    B. Moffit  Oct. 2003
+///////////////////////////////////////////////////////////////////
 
 #include "panguinOnline.hh"
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <list>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <ctime>
 #include <TMath.h>
 #include <TBranch.h>
 #include <TGClient.h>
@@ -38,7 +42,8 @@ using namespace std;
 
 OnlineGUI::OnlineGUI(OnlineConfig& config, Bool_t printonly=0, int ver=0):
   runNumber(0),
-  timer(0),
+  timer(0), 
+  timerNow(0),
   fFileAlive(kFALSE),
   fVerbosity(ver)
 {
@@ -165,6 +170,22 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
 						      kLHintsCenterY,5,5,3,4));
     fRadioPage[i]->Connect("Pressed()", "OnlineGUI", this, "DoRadio()");
   }
+
+  // heartbeat below the picture, watchfile only
+  if(fConfig->IsMonitor()){
+    fRootFileLastUpdated = new TGTextButton(vframe, "File updated at: XX:XX:XX");
+    // fRootFileLastUpdated->SetWidth(156);
+    vframe->AddFrame(fRootFileLastUpdated, new TGLayoutHints(kLHintsBottom | kLHintsRight, 5, 5, 3, 4));
+
+    fLastUpdated = new TGTextButton(vframe, "Plots updated at: XX:XX:XX");
+    // fLastUpdated->SetWidth(156);
+    vframe->AddFrame(fLastUpdated, new TGLayoutHints(kLHintsBottom | kLHintsRight, 5, 5, 3, 4));
+
+    fNow = new TGTextButton(vframe, "Current time: XX:XX:XX");
+    // fNow->SetWidth(156);
+    vframe->AddFrame(fNow, new TGLayoutHints(kLHintsBottom | kLHintsRight, 5, 5, 3, 4));
+  }
+
   if(!fConfig->IsMonitor()) {
     wile = 
       new TGPictureButton(vframe,gClient->GetPicture(guiDirectory+"/genius.xpm"));
@@ -255,6 +276,12 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
   if(fFileAlive) DoDraw();
 
   if(fConfig->IsMonitor()) {
+    timerNow = new TTimer();
+    timerNow->Connect(timerNow, "Timeout()", "OnlineGUI", this, "UpdateCurrentTime()");
+    timerNow->Start(1000);  // update every second
+  }
+
+  if(fConfig->IsMonitor()) {
     timer = new TTimer();
     if(fFileAlive) {
       timer->Connect(timer,"Timeout()","OnlineGUI",this,"TimerUpdate()");
@@ -326,6 +353,24 @@ void OnlineGUI::DoDraw()
   fCanvas->cd();
   fCanvas->Update();
 
+  if(fConfig->IsMonitor()) {
+    char buffer[9]; // HH:MM:SS
+    time_t t = time(0);
+    TString sLastUpdated("Plots updated at: ");
+    strftime(buffer, 9, "%T", localtime(&t));
+    sLastUpdated += buffer;
+    fLastUpdated->SetText(sLastUpdated);
+
+    struct stat result;
+    stat(fConfig->GetRootFile().Data(), &result);
+    t = result.st_mtime;
+    strftime(buffer, 9, "%T", localtime(&t));
+
+    TString sRootFileLastUpdated("File updated at: ");
+    sRootFileLastUpdated += buffer;
+    fRootFileLastUpdated->SetText(sRootFileLastUpdated);
+  }
+
   if(!fPrintOnly) {
     CheckPageButtons();
   }
@@ -370,8 +415,7 @@ void OnlineGUI::DoRadio()
   }
 
   current_page = id;
-  if(!fConfig->IsMonitor()) DoDraw();
-
+  DoDraw();
 }
 
 void OnlineGUI::CheckPageButtons() 
@@ -471,7 +515,7 @@ void OnlineGUI::GetTreeVars()
     treeVars.push_back(currentTree);
   }
 
-  if(fVerbosity>=2){
+  if(fVerbosity>=5){
     for(UInt_t iTree=0; iTree<treeVars.size(); iTree++) {
       cout << "In Tree " << iTree << ": " << endl;
       for(UInt_t i=0; i<treeVars[iTree].size(); i++) {
@@ -617,6 +661,12 @@ void OnlineGUI::TimerUpdate() {
 #ifdef OLDTIMERUPDATE
   if(fVerbosity>=2)
     cout<<"\t rtFile: "<<fRootFile<<"\t"<<fConfig->GetRootFile()<<endl;
+  if(fRootFile){
+    fRootFile->Close();
+    fRootFile->Delete();
+    delete fRootFile;
+    fRootFile=0;
+  }
   fRootFile = new TFile(fConfig->GetRootFile(),"READ");
   if(fRootFile->IsZombie()) {
     cout << "New run not yet available.  Waiting..." << endl;
@@ -650,10 +700,8 @@ void OnlineGUI::TimerUpdate() {
     }
     DoDraw();
   }
-  fRootFile->Close();
-  fRootFile->Delete();
-  delete fRootFile;
-  fRootFile = 0;
+  timer->Reset();
+
 #else
 
   if(fRootFile->IsZombie() || (fRootFile->GetSize() == -1)
@@ -675,6 +723,16 @@ void OnlineGUI::TimerUpdate() {
 
 #endif
 
+}
+
+void OnlineGUI::UpdateCurrentTime() {
+  char buffer[9];
+  time_t t = time(0);
+  strftime(buffer, 9, "%T", localtime(&t));
+  TString sNow("Current time: ");
+  sNow += buffer;
+  fNow->SetText(sNow); 
+  timerNow->Reset();
 }
 
 void OnlineGUI::BadDraw(TString errMessage) {
