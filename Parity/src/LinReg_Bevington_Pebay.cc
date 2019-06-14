@@ -406,77 +406,77 @@ void LinRegBevPeb::solve() {
     }
   }
 
-	//define the diagonals of sigYY
-	TMatrixD sigYY_diag; sigYY_diag.ResizeTo(par_nY,par_nY);
-	for(int iy = 0; iy < par_nY; iy++){
-		Int_t testval;
-		testval = getSigmaY(iy,sigYY_diag(iy,iy));
-		assert(testval==0);
-		sigYY_diag(iy,iy) = sigYY_diag(iy,iy)*sigYY_diag(iy,iy);
-	}
+  //define the diagonals of sigYY
+  TMatrixD sigYY_diag; sigYY_diag.ResizeTo(par_nY,par_nY);
+  for(int iy = 0; iy < par_nY; iy++){
+    Int_t testval;
+    testval = getSigmaY(iy,sigYY_diag(iy,iy));
+    assert(testval==0);
+    sigYY_diag(iy,iy) = sigYY_diag(iy,iy)*sigYY_diag(iy,iy);
+  }
 
-	//define sigXX
-	TMatrixD sigXX; sigXX.ResizeTo(par_nP,par_nP);
-	for(int iy = 0; iy < par_nP; iy++){
-		for(int ip = 0; ip < par_nP; ip++){
-			Int_t testval;
-			testval = getCovarianceP(ip,iy,sigXX(ip,iy));
-			assert(testval==0);
-		}
-	}
+  //define sigXX
+  TMatrixD sigXX; sigXX.ResizeTo(par_nP,par_nP);
+  for(int iy = 0; iy < par_nP; iy++){
+    for(int ip = 0; ip < par_nP; ip++){
+      Int_t testval;
+      testval = getCovarianceP(ip,iy,sigXX(ip,iy));
+      assert(testval==0);
+    }
+  }
 
-	//define sigXY
-	TMatrixD sigXY; sigXY.ResizeTo(par_nP,par_nY);
-	for(int iy = 0; iy < par_nY; iy++){
-		for(int ip = 0; ip < par_nP; ip++){
-			Int_t testval;
-			testval = getCovariancePY(ip,iy,sigXY(ip,iy));
-			assert(testval==0);
-		}
-	}
+  //define sigXY
+  TMatrixD sigXY; sigXY.ResizeTo(par_nP,par_nY);
+  for(int iy = 0; iy < par_nY; iy++){
+    for(int ip = 0; ip < par_nP; ip++){
+      Int_t testval;
+      testval = getCovariancePY(ip,iy,sigXY(ip,iy));
+      assert(testval==0);
+    }
+  }
 
-	//define sigYX
-	TMatrixD sigYX; sigYX.ResizeTo(par_nY,par_nP);
-	sigYX.Transpose(sigXY);
+  //define sigYX
+  TMatrixD sigYX; sigYX.ResizeTo(par_nY,par_nP);
+  sigYX.Transpose(sigXY);
 
-	TMatrixD Axy; Axy.ResizeTo(par_nP,par_nY);
-	TMatrixD Ayx; Ayx.ResizeTo(par_nY,par_nP);
-	sigXX.Invert();
-	sigYY_diag.Invert();
-	Axy=sigXX*sigXY;
-	Ayx.Transpose(Axy);
-	sigXX.Invert();
-	sigYY_diag.Invert();
+  TMatrixD Axy; Axy.ResizeTo(par_nP,par_nY);
+  TMatrixD Ayx; Ayx.ResizeTo(par_nY,par_nP);
+  sigXX.Invert();
+  sigYY_diag.Invert();
+  Axy=sigXX*sigXY;
+  Ayx.Transpose(Axy);
+  sigXX.Invert();
+  sigYY_diag.Invert();
 
-	//define meanY
-	TMatrixD meanY; meanY.ResizeTo(1,par_nY);
-	for(int iy = 0; iy < par_nY; iy++){
-		Int_t testval;
-		testval = getMeanY(iy,meanY(0,iy));
-		assert(testval==0);
-	}
+  //define meanY
+  TMatrixD meanY; meanY.ResizeTo(1,par_nY);
+  for(int iy = 0; iy < par_nY; iy++){
+    Int_t testval;
+    testval = getMeanY(iy,meanY(0,iy));
+    assert(testval==0);
+  }
 
-	//define meanX
-	TMatrixD meanX; meanX.ResizeTo(1,par_nP);
-	for(int ip = 0; ip < par_nP; ip++){
-		Int_t testval;
-		testval = getMeanP(ip,meanX(0,ip));
-		assert(testval==0);
-	}
+  //define meanX
+  TMatrixD meanX; meanX.ResizeTo(1,par_nP);
+  for(int ip = 0; ip < par_nP; ip++){
+    Int_t testval;
+    testval = getMeanP(ip,meanX(0,ip));
+    assert(testval==0);
+  }
 
-	TMatrixD meanYprime; meanYprime.ResizeTo(1,par_nY);
-	meanYprime = meanY - meanX*Axy;
+  TMatrixD meanYprime; meanYprime.ResizeTo(1,par_nY);
+  meanYprime = meanY - meanX*Axy;
 
-	TMatrixD covYprime; covYprime.ResizeTo(par_nY,par_nY);
-	covYprime = sigYY_diag + Ayx*sigXX*Axy - (sigYX*Axy + sigYX*Axy);
+  TMatrixD covYprime; covYprime.ResizeTo(par_nY,par_nY);
+  covYprime = sigYY_diag + Ayx*sigXX*Axy - (sigYX*Axy + sigYX*Axy);
 
-	TMatrixD sigYprime; sigYprime.ResizeTo(1,par_nY);
-	for(int iy = 0; iy < par_nY; iy++){
-		sigYprime(0,iy) = sqrt(covYprime(iy,iy));
-	}
+  TMatrixD sigYprime; sigYprime.ResizeTo(1,par_nY);
+  for(int iy = 0; iy < par_nY; iy++){
+    sigYprime(0,iy) = sqrt(covYprime(iy,iy));
+  }
 
-	//cout << "cov(y'):"; covYprime.Print();
-	//cout << "sig(y'):"; sigYprime.Print();
+  //cout << "cov(y'):"; covYprime.Print();
+  //cout << "sig(y'):"; sigYprime.Print();
   
   cout << "Uncorrected Y values:" << endl;
   cout << "     mean          sig" << endl;
