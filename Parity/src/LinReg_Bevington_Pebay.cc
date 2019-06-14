@@ -449,7 +449,7 @@ void LinRegBevPeb::solve() {
   sigYY_diag.Invert();
 
   //define meanY
-  TMatrixD meanY; meanY.ResizeTo(1,par_nY);
+  meanY.ResizeTo(1,par_nY);
   for(int iy = 0; iy < par_nY; iy++){
     Int_t testval;
     testval = getMeanY(iy,meanY(0,iy));
@@ -457,20 +457,20 @@ void LinRegBevPeb::solve() {
   }
 
   //define meanX
-  TMatrixD meanX; meanX.ResizeTo(1,par_nP);
+  meanX.ResizeTo(1,par_nP);
   for(int ip = 0; ip < par_nP; ip++){
     Int_t testval;
     testval = getMeanP(ip,meanX(0,ip));
     assert(testval==0);
   }
 
-  TMatrixD meanYprime; meanYprime.ResizeTo(1,par_nY);
+  meanYprime.ResizeTo(1,par_nY);
   meanYprime = meanY - meanX*Axy;
 
-  TMatrixD covYprime; covYprime.ResizeTo(par_nY,par_nY);
+  covYprime.ResizeTo(par_nY,par_nY);
   covYprime = sigYY_diag + Ayx*sigXX*Axy - (sigYX*Axy + sigYX*Axy);
 
-  TMatrixD sigYprime; sigYprime.ResizeTo(1,par_nY);
+  sigYprime.ResizeTo(1,par_nY);
   for(int iy = 0; iy < par_nY; iy++){
     sigYprime(0,iy) = sqrt(covYprime(iy,iy));
   }
