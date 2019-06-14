@@ -506,6 +506,7 @@ class QwRootFile {
     /// change to a permanent name when closing the file.
     TString fPermanentName;
     Bool_t fMakePermanent;
+    Bool_t fUseTemporaryFile;
 
     /// Search for non-empty trees or histograms in the file
     Bool_t HasAnyFilled(void);

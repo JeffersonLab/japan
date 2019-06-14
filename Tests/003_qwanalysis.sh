@@ -16,6 +16,6 @@ fi
 
 source ${setupscript} || exit -1
 
-bin/qwparity_simple || exit -1
+bin/qwparity || exit -1
 
 exit 0
