@@ -3,7 +3,9 @@
 [LRBCorrector]
   name       = LinRegBlue Corrector
   priority   = 10
-  map        = blueR####new.slope.root
+  map        = prex_corrolator.conf
+  slope-file-base = blueR
+  slope-file-suff = new.slope.root
   slope-path = . 
   tree-name  = mulc_lrb
   tree-comment = Helicity event data tree (corrected by LinRegBlue)
