@@ -4,7 +4,8 @@
   name       = LinRegBlue Corrector
   priority   = 10
   map        = prex_corrolator.conf
-#  map        = blueR####new.slope.root
+  slope-file-base = blueR
+  slope-file-suff = new.slope.root
   slope-path = . 
   tree-name  = mulc_lrb
   tree-comment = Helicity event data tree (corrected by LinRegBlue)
@@ -13,6 +14,8 @@
   name       = MyCorrelator
   priority   = 50
   map        = prex_corrolator.conf
+  slope-file-base = blueR
+  slope-file-suff = new.slope.root
   slope-path = . 
   alias-file-base = regalias_
   alias-file-suff = 

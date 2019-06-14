@@ -52,16 +52,17 @@ LRBCorrector::LRBCorrector(const TString& name):VQwDataHandler(name)
 void LRBCorrector::ParseConfigFile(QwParameterFile& file)
 {
   VQwDataHandler::ParseConfigFile(file);
-  file.PopValue("slope-path", outPath);
+  file.PopValue("slope-file-base", fAlphaFileBase);
+  file.PopValue("slope-file-suff", fAlphaFileSuff);
+  file.PopValue("slope-path", fAlphaFilePath);
 }
 
 Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
 {
-  string TmpFilePath = run_label.Data();
-  string myfMapFile = "blueR" + TmpFilePath + "new.slope.root";
-  string myMapFilePath = outPath + "/";
-  string tmp = myMapFilePath + myfMapFile;
-  TString corFileName(tmp.c_str());
+  std::string SlopeFileName = fAlphaFileBase + run_label.Data() + fAlphaFileSuff;
+  std::string SlopeFilePath = fAlphaFilePath + "/";
+  std::string SlopeFile = SlopeFilePath + SlopeFileName;
+  TString corFileName(SlopeFile);
   QwMessage << "Trying to open " << corFileName << QwLog::endl;
   TFile*  corFile=new TFile(corFileName);
   if( !corFile->IsOpen()) {
@@ -104,14 +105,12 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
     if (primary_token == "iv") {
       fIndependentType.push_back(type_name.first);
       fIndependentName.push_back(type_name.second);
-      fIndependentFull.push_back(current_token);
       //QwMessage << "IV Type: " << type_name.first << QwLog::endl;
       //QwMessage << "IV Name: " << type_name.second << QwLog::endl;
     }
     else if (primary_token == "dv") {
       fDependentType.push_back(type_name.first);
       fDependentName.push_back(type_name.second);
-      fDependentFull.push_back(current_token);
       //QwMessage << "DV Type: " << type_name.first << QwLog::endl;
       //QwMessage << "DV Name: " << type_name.second << QwLog::endl;
     }
@@ -147,7 +146,7 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
   //printf("opened %s, slopes found, dump:\n",corFile->GetName());
   //alphasM->Print();
   corFile->Close();
-  
+  return 0;
 }
 
 
@@ -187,7 +186,7 @@ Int_t LRBCorrector::ConnectChannels(
 
   QwMessage << "In LRBCorrector::ConnectChannels; Number of IVs: " << fIndependentVar.size()
             << " Number of DVs: " << fDependentVar.size() << QwLog::endl;
-
+  return 0;
 }
 
 
