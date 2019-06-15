@@ -449,8 +449,8 @@ void LinRegBevPeb::solve() {
   TMatrixD sigYX; sigYX.ResizeTo(par_nY,par_nP);
   sigYX.Transpose(sigXY);
 
-  TMatrixD Axy; Axy.ResizeTo(par_nP,par_nY);
-  TMatrixD Ayx; Ayx.ResizeTo(par_nY,par_nP);
+  Axy.ResizeTo(par_nP,par_nY);
+  Ayx.ResizeTo(par_nY,par_nP);
   sigXX.Invert();
   sigYY_diag.Invert();
   Axy=sigXX*sigXY;

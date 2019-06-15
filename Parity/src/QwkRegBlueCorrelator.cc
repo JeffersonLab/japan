@@ -217,6 +217,8 @@ QwkRegBlueCorrelator::exportAlphas(TString outName, std::vector < TString > ivNa
   linReg.mVYY.Write("DV_DV_rawVariance");
   linReg.mVY2.Write("DV_rawVariance");
   linReg.mVP2.Write("IV_rawVariance");
+  linReg.Axy.Write("A_xy");
+  linReg.Ayx.Write("A_yx");
 
   //  TMatrixD Mstats(1,0);
 

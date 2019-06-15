@@ -26,6 +26,7 @@ class LinRegBevPeb {
   TMatrixD mMP, mMY, mMYprime;   ///< mean values accumulators
   TMatrixD mVPP, mVPY, mVYY, mVP2, mVY2; ///< variances accumulators
   TMatrixD covYprime, sigYprime; ///< covariances after correction
+  TMatrixD Axy, Ayx;
 
   LinRegBevPeb();
   
