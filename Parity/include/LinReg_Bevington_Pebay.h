@@ -50,6 +50,7 @@ class LinRegBevPeb {
   /// Get mean value of a variable, returns error code
   Int_t getMeanP(const int i, Double_t &mean );
   Int_t getMeanY(const int i, Double_t &mean );
+  Int_t getMeanYprime(const int i, Double_t &mean );
 
   /// Get mean value of a variable, returns error code
   Int_t getSigmaP(const int i, Double_t &sigma );

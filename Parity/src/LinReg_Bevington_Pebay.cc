@@ -156,6 +156,16 @@ Int_t  LinRegBevPeb::getMeanY(const int i, Double_t &mean ){
 
 //==========================================================
 //==========================================================
+Int_t  LinRegBevPeb::getMeanYprime(const int i, Double_t &mean ){
+  mean=-1e50;
+  if(i<0 || i >= par_nY ) return -1;
+  if( fGoodEventNumber<1) return -3;
+  mean=mMYprime(i,0);    return 0;
+}
+
+
+//==========================================================
+//==========================================================
 Int_t   LinRegBevPeb::getSigmaP(const int i, Double_t &sigma ){
   sigma=-1e50;
   if(i<0 || i >= par_nP ) return -1;
