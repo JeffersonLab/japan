@@ -462,9 +462,9 @@ void LinRegBevPeb::solve() {
   covYprime.ResizeTo(par_nY,par_nY);
   covYprime = sigYY_diag + Ayx*sigXX*Axy - (sigYX*Axy + sigYX*Axy);
 
-  sigYprime.ResizeTo(1,par_nY);
+  sigYprime.ResizeTo(par_nY,1);
   for(int iy = 0; iy < par_nY; iy++){
-    sigYprime(0,iy) = sqrt(covYprime(iy,iy));
+    sigYprime(iy,0) = sqrt(covYprime(iy,iy));
   }
 
   //cout << "cov(y'):"; covYprime.Print();
