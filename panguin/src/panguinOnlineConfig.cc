@@ -564,6 +564,16 @@ void OnlineConfig::OverrideRootFile(UInt_t runnumber)
 	      rootfilename = fnmRoot + "/" + fullname;
 	      found++;
 	    }
+	  }else if(!fMonitor && found==0){
+	    partialname = Form("prex%s_%d.000.root",daqConfigs[i].c_str(),runnumber);
+	    if(fVerbosity>=1)
+	      cout<<__PRETTY_FUNCTION__<<"\t"<<__LINE__<<endl
+		  <<"Looking for a segmented output. Looking at segment 000 only"<<endl;
+	    std::string fullname = entSearch->d_name;
+	    if(fullname.find(partialname) != std::string::npos){
+	      rootfilename = fnmRoot + "/" + fullname;
+	      found++;
+	    }
 	  }
 	}
 	if(found) break;
