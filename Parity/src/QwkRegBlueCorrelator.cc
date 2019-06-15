@@ -176,6 +176,7 @@ QwkRegBlueCorrelator::exportAlphas(TString outName, std::vector < TString > ivNa
   linReg.mRyy.Write("DV_DV_correlation");
   linReg.mMP.Write("IV_mean");
   linReg.mMY.Write("DV_mean");
+  linReg.mMYprime.Write("DV_mean_prime");
  
   //add processed  matrices
   double usedEve=linReg.getUsedEve();
