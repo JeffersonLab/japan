@@ -483,7 +483,7 @@ void LinRegBevPeb::solve() {
   cout << "Corrected Y values:" << endl;
   cout << "     mean          sig" << endl;
   for(int i = 0; i < par_nY; i++){
-  	cout << "Y" << i << ":  " << meanYprime(0,i) << " +- " << sigYprime(0,i) << endl;
+  	cout << "Y" << i << ":  " << mMYprime(i,0) << " +- " << sigYprime(i,0) << endl;
   }
   cout << endl;
 
