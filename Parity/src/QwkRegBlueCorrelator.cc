@@ -171,9 +171,9 @@ QwkRegBlueCorrelator::exportAlphas(TString outName, std::vector < TString > ivNa
 
   linReg.mA.Write("slopes");
   linReg.mAsig.Write("sigSlopes");
-  linReg.mRjk.Write("IV_IV_correlation");
-  linReg.mRky.Write("IV_DV_correlation");
-  linReg.mRyy.Write("DV_DV_correlation");
+  linReg.mRPP.Write("IV_IV_correlation");
+  linReg.mRPY.Write("IV_DV_correlation");
+  linReg.mRYY.Write("DV_DV_correlation");
   linReg.mMP.Write("IV_mean");
   linReg.mMY.Write("DV_mean");
   linReg.mMYprime.Write("DV_mean_prime");

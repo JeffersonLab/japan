@@ -34,9 +34,9 @@ void LinRegBevPeb::init(){
   mVY2.ResizeTo(par_nY,1); 
   mA.ResizeTo(par_nP,par_nY);
   mAsig.ResizeTo(mA);
-  mRjk.ResizeTo(mVPP);
-  mRky.ResizeTo(mVPY);
-  mRyy.ResizeTo(mVYY);
+  mRPP.ResizeTo(mVPP);
+  mRPY.ResizeTo(mVPY);
+  mRYY.ResizeTo(mVYY);
 
   fGoodEventNumber=0;
  
@@ -358,12 +358,12 @@ void LinRegBevPeb::solve() {
        testval = getCovarianceP(j,k,s2jk);
        assert(testval==0);
        S2jk(j,k)=s2jk;
-       mRjk(j,k)=s2jk/Sj/Sk;
+       mRPP(j,k)=s2jk/Sj/Sk;
     }
   }
   //cout << "new Rjk:"; mRjk.Print();
   
-  TMatrixD invRjk(mRjk); double det;
+  TMatrixD invRjk(mRPP); double det;
    //cout<<"0 invRkl:"; invRjk.Print();
    invRjk.Invert(&det);
    cout<<Form("det=%f\n",det); //invRjk.Print();
@@ -385,7 +385,7 @@ void LinRegBevPeb::solve() {
        assert(testval==0);
        testval = getCovariancePY(ip,iy,Syk2);
        assert(testval==0);
-       mRky(ip,iy)=Syk2/Sy/Sk;
+       mRPY(ip,iy)=Syk2/Sy/Sk;
        //if(ip==0 && iy==0) printf("Syk2=%f  Sy=%f Sk=%f\n", Syk2,Sy,Sk); 
      }
      for (int jy = 0; jy < par_nY; jy++) {
@@ -395,12 +395,12 @@ void LinRegBevPeb::solve() {
         assert(testval==0);
         testval = getCovarianceY(iy,jy,s2ij);
         assert(testval==0);
-        mRyy(iy,jy)=s2ij/Sy/Sj;
+        mRYY(iy,jy)=s2ij/Sy/Sj;
      }
    }
    //cout<<"new Rky:"; Rky.Print();
-   TMatrixD Djy; Djy.ResizeTo(mRky);
-   Djy.Mult(invRjk,mRky);
+   TMatrixD Djy; Djy.ResizeTo(mRPY);
+   Djy.Mult(invRjk,mRPY);
    //   cout<<"Djy:"; Djy.Print();
    for (int iy = 0; iy <par_nY; iy++) {
     double Sy;
