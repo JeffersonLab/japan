@@ -41,9 +41,19 @@ void QwEventRing::DefineOptions(QwOptions &options)
 {
   // Define the execution options
   options.AddDefaultOptions();
+  
   options.AddOptions()("ring.size",
       po::value<int>()->default_value(4800),
       "QwEventRing: ring/buffer size");
+
+  options.AddOptions()("burp.extent",
+      po::value<int>()->default_value(10),
+      "QwEventRing: burp extent");
+
+  options.AddOptions()("burp.precut",
+      po::value<int>()->default_value(5),
+      "QwEventRing: burp precut");
+
   options.AddOptions()("ring.stability_cut",
       po::value<double>()->default_value(1),
       "QwEventRing: Stability ON/OFF");
@@ -55,6 +65,12 @@ void QwEventRing::ProcessOptions(QwOptions &options)
   Double_t stability = 0.0;
   if (gQwOptions.HasValue("ring.size"))
     fRING_SIZE=gQwOptions.GetValue<int>("ring.size");
+
+  if (gQwOptions.HasValue("burp.extent"))
+    fBurpExtent=gQwOptions.GetValue<int>("burp.extent");
+
+  if (gQwOptions.HasValue("burp.precut"))
+    fBurpPrecut=gQwOptions.GetValue<int>("burp.precut");
 
   if (gQwOptions.HasValue("ring.stability_cut"))
     stability=gQwOptions.GetValue<double>("ring.stability_cut");
@@ -93,6 +109,9 @@ void QwEventRing::push(QwSubsystemArrayParity &event)
       bRING_READY=kTRUE;//ring is filled with good multiplets
       fNextToBeFilled=0;//next event to be filled is the first element  
     }
+
+    this->CheckBurpCut(thisevent);
+
       //check for current ramps
     if (bRING_READY && bStability){
 	fRollingAvg.CalculateRunningAverage();
@@ -113,6 +132,7 @@ void QwEventRing::push(QwSubsystemArrayParity &event)
 	    fEvent_Ring[i].UpdateErrorFlag();
 	  }
 	}
+
 	if ((fEvent_Ring[thisevent].GetEventcutErrorFlag() & kBCMErrorFlag)!=0 &&
 	    (fEvent_Ring[prevevent].GetEventcutErrorFlag() & kBCMErrorFlag)!=0){
 	  for(Int_t i=0;i<fRING_SIZE;i++){
@@ -155,8 +175,8 @@ void QwEventRing::CheckBurpCut(Int_t thisevent)
     if (fBurpAvg.CheckForBurpFail(fEvent_Ring[thisevent])){
       Int_t precut_start = (thisevent+fRING_SIZE-fBurpPrecut)%fRING_SIZE;
       for(Int_t i=precut_start;i!=(thisevent+1)%fRING_SIZE;i=(i++)%fRING_SIZE){
-	fEvent_Ring[i].UpdateErrorFlag(fBurpAvg);
-	fEvent_Ring[i].UpdateErrorFlag();
+	    fEvent_Ring[i].UpdateErrorFlag(fBurpAvg);
+	    fEvent_Ring[i].UpdateErrorFlag();
       }
     }
     Int_t beforeburp = (thisevent+fRING_SIZE-fBurpExtent)%fRING_SIZE;

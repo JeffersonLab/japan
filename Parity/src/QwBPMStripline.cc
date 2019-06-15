@@ -196,18 +196,18 @@ Bool_t QwBPMStripline<T>::CheckForBurpFail(const VQwDataElement *ev_error){
   Bool_t burpstatus = kFALSE;
   try {
     if(typeid(*ev_error)==typeid(*this)) {
-      // std::cout<<" Here in QwBPMStripline::CheckForBurpFail \n";
+      //std::cout<<" Here in QwBPMStripline::CheckForBurpFail \n";
       if (this->GetElementName()!="") {
         const QwBPMStripline<T>* value_bpm = dynamic_cast<const QwBPMStripline<T>* >(ev_error);
-	for(i=0;i<4;i++){
-	  burpstatus |= fWire[i].CheckForBurpFail(&(value_bpm->fWire[i]));
-	}
-	for(i=kXAxis;i<kNumAxes;i++) {
-	  burpstatus |= fRelPos[i].CheckForBurpFail(&(value_bpm->fRelPos[i]));
-	  burpstatus |= fAbsPos[i].CheckForBurpFail(&(value_bpm->fAbsPos[i])); 
-	}
-	burpstatus |= fEffectiveCharge.CheckForBurpFail(&(value_bpm->fEffectiveCharge)); 
-	burpstatus |= fEllipticity.CheckForBurpFail(&(value_bpm->fEllipticity)); 
+	      for(i=0;i<4;i++){
+	        burpstatus |= fWire[i].CheckForBurpFail(&(value_bpm->fWire[i]));
+	      }
+	      for(i=kXAxis;i<kNumAxes;i++) {
+	        burpstatus |= fRelPos[i].CheckForBurpFail(&(value_bpm->fRelPos[i]));
+	        burpstatus |= fAbsPos[i].CheckForBurpFail(&(value_bpm->fAbsPos[i])); 
+	      }
+	      burpstatus |= fEffectiveCharge.CheckForBurpFail(&(value_bpm->fEffectiveCharge)); 
+	      burpstatus |= fEllipticity.CheckForBurpFail(&(value_bpm->fEllipticity)); 
       }
     } else {
       TString loc="Standard exception from QwBPMStripline::CheckForBurpFail :"+

@@ -141,6 +141,8 @@ public:
 
   Bool_t ApplySingleEventCuts();//check values read from modules are at desired level
 
+  Bool_t CheckForBurpFail(const VQwDataElement *ev_error){return kFALSE;};
+
   void IncrementErrorCounters();
 
   /// report number of events failed due to HW and event cut failure

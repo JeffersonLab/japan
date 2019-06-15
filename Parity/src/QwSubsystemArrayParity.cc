@@ -530,19 +530,19 @@ Bool_t QwSubsystemArrayParity::CheckForBurpFail(QwSubsystemArrayParity &event)
   if (!event.empty() && this->size() == event.size()){
     for(size_t i=0;i<event.size();i++){
       if (event.at(i)!=NULL && this->at(i)!=NULL){
-	VQwSubsystemParity *ptr1 =
-	  dynamic_cast<VQwSubsystemParity*>(this->at(i).get());
-	if (typeid(*ptr1)==typeid(*(event.at(i).get()))){
-	  //*(ptr1) = event.at(i).get();//when =operator is used
-	  //pass the correct subsystem to update the errorflags at subsystem to devices to channel levels
-	  burpstatus |= ptr1->CheckForBurpFail(event.at(i).get());
-	} else {
-	  //  Subsystems don't match
-	  QwError << " QwSubsystemArrayParity::CheckForBurpFail types do not mach" << QwLog::endl;
-	  QwError << " typeid(ptr1)=" << typeid(*ptr1).name()
-		  << " but typeid(*(event.at(i).get()))=" << typeid(*(event.at(i).get())).name()
-		  << QwLog::endl;
-	}
+	      VQwSubsystemParity *ptr1 = dynamic_cast<VQwSubsystemParity*>(this->at(i).get());
+	      if (typeid(*ptr1)==typeid(*(event.at(i).get()))){
+	        //*(ptr1) = event.at(i).get();//when =operator is used
+	        //pass the correct subsystem to update the errorflags at subsystem to devices to channel levels
+          //QwError << "************* test " << typeid(*ptr1).name() << "*****************" << QwLog::endl;
+	        burpstatus |= ptr1->CheckForBurpFail(event.at(i).get());
+	      } else {
+	        //  Subsystems don't match
+	        QwError << " QwSubsystemArrayParity::CheckForBurpFail types do not mach" << QwLog::endl;
+	        QwError << " typeid(ptr1)=" << typeid(*ptr1).name()
+		      << " but typeid(*(event.at(i).get()))=" << typeid(*(event.at(i).get())).name()
+		      << QwLog::endl;
+	      }
       }
     }
   } else {

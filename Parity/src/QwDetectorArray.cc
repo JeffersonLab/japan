@@ -905,6 +905,20 @@ void QwDetectorArray::PrintErrorCounters() const
   QwVQWK_Channel::PrintErrorCounterTail();
 }
 
+Bool_t QwDetectorArray::CheckForBurpFail(const VQwSubsystem *subsys){
+  Bool_t burpstatus = kFALSE;
+  VQwSubsystem* tmp = const_cast<VQwSubsystem *>(subsys);
+  if(Compare(tmp)) {
+    const QwDetectorArray* input = dynamic_cast<const QwDetectorArray*>(subsys);
+    for(size_t i=0;i<input->fIntegrationPMT.size();i++)
+      burpstatus |= (this->fIntegrationPMT[i]).CheckForBurpFail(&(input->fIntegrationPMT[i]));
+    for(size_t i=0;i<input->fCombinedPMT.size();i++)
+      burpstatus |= (this->fCombinedPMT[i]).CheckForBurpFail(&(input->fCombinedPMT[i]));
+  }
+  return burpstatus;
+}
+
+
 void QwDetectorArray::UpdateErrorFlag(const VQwSubsystem *ev_error){
   VQwSubsystem* tmp = const_cast<VQwSubsystem*>(ev_error);
   if(Compare(tmp)){

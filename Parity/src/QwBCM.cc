@@ -422,6 +422,29 @@ void QwBCM<T>::CalculateRunningAverage()
 }
 
 template<typename T>
+Bool_t QwBCM<T>::CheckForBurpFail(const VQwDataElement *ev_error){
+  Short_t i=0;
+  Bool_t burpstatus = kFALSE;
+  try {
+    if(typeid(*ev_error)==typeid(*this)) {
+      //std::cout<<" Here in VQwBCM::CheckForBurpFail \n";
+      if (this->GetElementName()!="") {
+        const QwBCM<T>* value_bcm = dynamic_cast<const QwBCM<T>* >(ev_error);
+        burpstatus |= fBeamCurrent.CheckForBurpFail(&(value_bcm->fBeamCurrent)); 
+      }
+    } else {
+      TString loc="Standard exception from QwBCM::CheckForBurpFail :"+
+        ev_error->GetElementName()+" "+this->GetElementName()+" are not of the "
+        +"same type";
+      throw std::invalid_argument(loc.Data());
+    }
+  } catch (std::exception& e) {
+    std::cerr<< e.what()<<std::endl;
+  }
+  return burpstatus;
+}
+
+template<typename T>
 void QwBCM<T>::AccumulateRunningSum(const VQwBCM& value) {
   fBeamCurrent.AccumulateRunningSum(
       dynamic_cast<const QwBCM<T>* >(&value)->fBeamCurrent);

@@ -133,6 +133,28 @@ void QwHaloMonitor::PrintInfo() const
   fHalo_Counter.PrintInfo();
 }
 
+Bool_t QwHaloMonitor::CheckForBurpFail(const VQwDataElement *ev_error){
+  Short_t i=0;
+  Bool_t burpstatus = kFALSE;
+  try {
+    if(typeid(*ev_error)==typeid(*this)) {
+      //std::cout<<" Here in VQwBCM::CheckForBurpFail \n";
+      if (this->GetElementName()!="") {
+        const QwHaloMonitor* value_halo = dynamic_cast<const QwHaloMonitor* >(ev_error);
+        burpstatus |= fHalo_Counter.CheckForBurpFail(&(value_halo->fHalo_Counter)); 
+      }
+    } else {
+      TString loc="Standard exception from QwHaloMonitor::CheckForBurpFail :"+
+        ev_error->GetElementName()+" "+this->GetElementName()+" are not of the "
+        +"same type";
+      throw std::invalid_argument(loc.Data());
+    }
+  } catch (std::exception& e) {
+    std::cerr<< e.what()<<std::endl;
+  }
+  return burpstatus;
+}
+
 void  QwHaloMonitor::ConstructHistograms(TDirectory *folder, TString &prefix)
 {
   if (GetElementName()==""){

@@ -106,6 +106,8 @@ void RandomizeMollerEvent(int helicity, const QwBeamCharge& charge, const QwBeam
     return fTriumf_ADC.GetEventcutErrorFlag();
   }
 
+  Bool_t CheckForBurpFail(const VQwDataElement *ev_error);
+  
   UInt_t UpdateErrorFlag() {return GetEventcutErrorFlag();};
   void UpdateErrorFlag(const QwIntegrationPMT *ev_error);
 

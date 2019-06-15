@@ -157,6 +157,8 @@ public:
   void DeaccumulateRunningSum(VQwBCM& value);
   void CalculateRunningAverage();
 
+  Bool_t CheckForBurpFail(const VQwDataElement *ev_error);
+
   void SetPedestal(Double_t ped);
   void SetCalibrationFactor(Double_t calib);
 

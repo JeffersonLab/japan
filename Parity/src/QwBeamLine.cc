@@ -1344,12 +1344,11 @@ Bool_t QwBeamLine::ApplySingleEventCuts(){
 
 }
 
-Bool_t QwBeamLine::CheckForBurpFail(const VQwSubsystemParity *subsys){
+Bool_t QwBeamLine::CheckForBurpFail(const VQwSubsystem *subsys){
   Bool_t burpstatus = kFALSE;
-  VQwSubsystemParity* tmp = const_cast<VQwSubsystemParity *>(subsys);
+  VQwSubsystem* tmp = const_cast<VQwSubsystem *>(subsys);
   if(Compare(tmp)) {
     const QwBeamLine* input = dynamic_cast<const QwBeamLine*>(subsys);
-
     for(size_t i=0;i<input->fClock.size();i++)
       burpstatus |= (this->fClock[i].get())->CheckForBurpFail(input->fClock[i].get());
     for(size_t i=0;i<input->fStripline.size();i++)

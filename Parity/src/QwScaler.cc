@@ -499,6 +499,19 @@ Bool_t QwScaler::ApplySingleEventCuts()
   return true;
 }
 
+Bool_t QwScaler::CheckForBurpFail(const VQwSubsystem *subsys){
+  Bool_t burpstatus = kFALSE;
+  VQwSubsystem* tmp = const_cast<VQwSubsystem *>(subsys);
+  if(Compare(tmp)) {
+    const QwScaler* input = dynamic_cast<const QwScaler*>(subsys);
+    for (size_t i = 0; i < input->fScaler.size(); i++) {
+      //QwError << "************* test " << typeid(this->fScaler[i]).name() << "*****************" << QwLog::endl;
+      burpstatus |= (this->fScaler.at(i))->CheckForBurpFail(input->fScaler.at(i));
+    }
+  }
+  return burpstatus;
+}
+
 void QwScaler::IncrementErrorCounters()
 {
 }

@@ -872,6 +872,19 @@ UInt_t QwBlindDetectorArray::GetEventcutErrorFlag() //return the error flag
   return ErrorFlag;
 }
 
+Bool_t QwBlindDetectorArray::CheckForBurpFail(const VQwSubsystem *subsys){
+  Bool_t burpstatus = kFALSE;
+  VQwSubsystem* tmp = const_cast<VQwSubsystem *>(subsys);
+  if(Compare(tmp)) {
+    const QwBlindDetectorArray* input = dynamic_cast<const QwBlindDetectorArray*>(subsys);
+    for(size_t i=0;i<input->fIntegrationPMT.size();i++)
+      burpstatus |= (this->fIntegrationPMT[i]).CheckForBurpFail(&(input->fIntegrationPMT[i]));
+    for(size_t i=0;i<input->fCombinedPMT.size();i++)
+      burpstatus |= (this->fCombinedPMT[i]).CheckForBurpFail(&(input->fCombinedPMT[i]));
+  }
+  return burpstatus;
+}
+
 void QwBlindDetectorArray::IncrementErrorCounters()
 {
   for(size_t i=0;i<fIntegrationPMT.size();i++){

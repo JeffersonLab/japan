@@ -253,6 +253,29 @@ void QwIntegrationPMT::PrintErrorCounters() const{// report number of events fai
   fTriumf_ADC.PrintErrorCounters();
 }
 
+/*********************************************************/
+
+Bool_t QwIntegrationPMT::CheckForBurpFail(const VQwDataElement *ev_error){
+  Bool_t burpstatus = kFALSE;
+  try {
+    if(typeid(*ev_error)==typeid(*this)) {
+      //std::cout<<" Here in QwIntegrationPMT::CheckForBurpFail \n";
+      if (this->GetElementName()!="") {
+        const QwIntegrationPMT* value_pmt = dynamic_cast<const QwIntegrationPMT* >(ev_error);
+        burpstatus |= fTriumf_ADC.CheckForBurpFail(&(value_pmt->fTriumf_ADC)); 
+      }
+    } else {
+      TString loc="Standard exception from QwIntegrationPMT::CheckForBurpFail :"+
+        ev_error->GetElementName()+" "+this->GetElementName()+" are not of the "
+        +"same type";
+      throw std::invalid_argument(loc.Data());
+    }
+  } catch (std::exception& e) {
+    std::cerr<< e.what()<<std::endl;
+  }
+  return burpstatus;
+};
+
 /********************************************************/
 void QwIntegrationPMT::UpdateErrorFlag(const QwIntegrationPMT* ev_error){
   try {

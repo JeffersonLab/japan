@@ -72,9 +72,7 @@ class QwDetectorArray:
   Int_t LoadEventCuts(TString filename);
   Bool_t ApplySingleEventCuts();//Check for good events by stting limits on the devices readings
 
-  Bool_t  CheckForBurpFail(const VQwSubsystemParity *ev_error){
-    return kFALSE;
-  };
+  Bool_t  CheckForBurpFail(const VQwSubsystem *subsys);
 
   void IncrementErrorCounters();
   void PrintErrorCounters() const;// report number of events failed due to HW and event cut faliure
