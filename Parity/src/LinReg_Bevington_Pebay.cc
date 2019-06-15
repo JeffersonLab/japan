@@ -451,10 +451,8 @@ void LinRegBevPeb::solve() {
 
   Axy.ResizeTo(par_nP,par_nY);
   Ayx.ResizeTo(par_nY,par_nP);
-  sigXX.Invert();
-  Axy=sigXX*sigXY;
+  Axy = mA;
   Ayx.Transpose(Axy);
-  sigXX.Invert();
 
   mMYprime.ResizeTo(par_nY,1);
   mMYprime = mMY - Ayx*mMP;
