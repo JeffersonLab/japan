@@ -369,12 +369,20 @@ void OnlineGUI::DoDraw()
 
     struct stat result;
     stat(fConfig->GetRootFile().Data(), &result);
-    t = result.st_mtime;
-    strftime(buffer, 9, "%T", localtime(&t));
+    time_t tf = result.st_mtime;
+    strftime(buffer, 9, "%T", localtime(&tf));
 
     TString sRootFileLastUpdated("File updated at: ");
     sRootFileLastUpdated += buffer;
     fRootFileLastUpdated->SetText(sRootFileLastUpdated);
+    
+    if(fVerbosity>=4)
+      cout<<"Updating plots (current, file, diff[s]):\t"<<t<<"\t"<<tf<<"\t"<<t - tf<<endl;
+    if( t - tf > 60 ){
+      ULong_t red;
+      gClient->GetColorByName("red",red);
+      fRootFileLastUpdated->SetBackgroundColor(red);//FIXME
+    }
   }
 
   if(!fPrintOnly) {
