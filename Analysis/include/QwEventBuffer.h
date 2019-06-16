@@ -35,9 +35,6 @@ class QwSubsystemArray;
 class QwEventBuffer: public MQwCodaControlEvent{
  public:
   static void DefineOptions(QwOptions &options);
-  static void SetDefaultDataDirectory(const std::string& dir) {
-	fDefaultDataDirectory = dir;
-  }
   static void SetDefaultDataFileStem(const std::string& stem) {
 	fDefaultDataFileStem = stem;
   }
@@ -170,6 +167,8 @@ class QwEventBuffer: public MQwCodaControlEvent{
   TString fETHostname;
   TString fETSession;
   TString fETStationName;
+  Int_t   fETWaitMode;
+  Bool_t  fExitOnEnd;
 
   Bool_t fAllowLowSubbankIDs;
 
@@ -188,7 +187,6 @@ class QwEventBuffer: public MQwCodaControlEvent{
 
  protected:
 
-  static std::string fDefaultDataDirectory;
   static std::string fDefaultDataFileStem;
   static std::string fDefaultDataFileExtension;
 

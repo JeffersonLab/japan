@@ -1,12 +1,16 @@
 ///////////////////////////////////////////////////////////////////
 //  Macro to help with online analysis
 //    B. Moffit  Oct. 2003
+///////////////////////////////////////////////////////////////////
 
 #include "panguinOnline.hh"
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <list>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <ctime>
 #include <TMath.h>
 #include <TBranch.h>
 #include <TGClient.h>
@@ -38,7 +42,8 @@ using namespace std;
 
 OnlineGUI::OnlineGUI(OnlineConfig& config, Bool_t printonly=0, int ver=0):
   runNumber(0),
-  timer(0),
+  timer(0), 
+  timerNow(0),
   fFileAlive(kFALSE),
   fVerbosity(ver)
 {
@@ -60,7 +65,7 @@ OnlineGUI::OnlineGUI(OnlineConfig& config, Bool_t printonly=0, int ver=0):
     PrintPages();
   } else {
     fPrintOnly=kFALSE;
-    CreateGUI(gClient->GetRoot(),200,200);
+    CreateGUI(gClient->GetRoot(),800,600);
   }
 }
 
@@ -141,14 +146,14 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
   fMain->SetBackgroundColor(mainguicolor);
 
   // Top frame, to hold page buttons and canvas
-  fTopframe = new TGHorizontalFrame(fMain,200,200);
+  fTopframe = new TGHorizontalFrame(fMain,w,UInt_t(h*0.9));
   fTopframe->SetBackgroundColor(mainguicolor);
   fMain->AddFrame(fTopframe, new TGLayoutHints(kLHintsExpandX 
 					       | kLHintsExpandY,10,10,10,1));
 
   // Create a verticle frame widget with radio buttons
   //  This will hold the page buttons
-  vframe = new TGVerticalFrame(fTopframe,40,200);
+  vframe = new TGVerticalFrame(fTopframe,UInt_t(w*0.3),UInt_t(h*0.9));
   vframe->SetBackgroundColor(mainguicolor);
   TString buff;
   for(UInt_t i=0; i<fConfig->GetPageCount(); i++) {
@@ -165,6 +170,22 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
 						      kLHintsCenterY,5,5,3,4));
     fRadioPage[i]->Connect("Pressed()", "OnlineGUI", this, "DoRadio()");
   }
+
+  // heartbeat below the picture, watchfile only
+  if(fConfig->IsMonitor()){
+    fRootFileLastUpdated = new TGTextButton(vframe, "File updated at: XX:XX:XX");
+    // fRootFileLastUpdated->SetWidth(156);
+    vframe->AddFrame(fRootFileLastUpdated, new TGLayoutHints(kLHintsBottom | kLHintsRight, 5, 5, 3, 4));
+
+    fLastUpdated = new TGTextButton(vframe, "Plots updated at: XX:XX:XX");
+    // fLastUpdated->SetWidth(156);
+    vframe->AddFrame(fLastUpdated, new TGLayoutHints(kLHintsBottom | kLHintsRight, 5, 5, 3, 4));
+
+    fNow = new TGTextButton(vframe, "Current time: XX:XX:XX");
+    // fNow->SetWidth(156);
+    vframe->AddFrame(fNow, new TGLayoutHints(kLHintsBottom | kLHintsRight, 5, 5, 3, 4));
+  }
+
   if(!fConfig->IsMonitor()) {
     wile = 
       new TGPictureButton(vframe,gClient->GetPicture(guiDirectory+"/genius.xpm"));
@@ -179,24 +200,26 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
   vframe->AddFrame(wile,new TGLayoutHints(kLHintsBottom|kLHintsLeft,5,10,4,2));
 
 
-  fTopframe->AddFrame(vframe,new TGLayoutHints(kLHintsCenterX|
+  fTopframe->AddFrame(vframe,new TGLayoutHints(kLHintsLeft|
                                                kLHintsCenterY,2,2,2,2));
   
   // Create canvas widget
-  fEcanvas = new TRootEmbeddedCanvas("Ecanvas", fTopframe, 800, 600);
+  fEcanvas = new TRootEmbeddedCanvas("Ecanvas", fTopframe, UInt_t(w*0.7), UInt_t(h*0.9));
   fEcanvas->SetBackgroundColor(mainguicolor);
-  fTopframe->AddFrame(fEcanvas, new TGLayoutHints(kLHintsExpandY,10,10,10,1));
+  fTopframe->AddFrame(fEcanvas, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY
+						  ,10,10,10,1));
   fCanvas = fEcanvas->GetCanvas();
 
   // Create the bottom frame.  Contains control buttons
-  fBottomFrame = new TGHorizontalFrame(fMain,1200,200);
+  fBottomFrame = new TGHorizontalFrame(fMain,w,UInt_t(h*0.1));
   fBottomFrame->SetBackgroundColor(mainguicolor);
   fMain->AddFrame(fBottomFrame, new TGLayoutHints(kLHintsExpandX,10,10,10,10));
   
   // Create a horizontal frame widget with buttons
   hframe = new TGHorizontalFrame(fBottomFrame,1200,40);
   hframe->SetBackgroundColor(mainguicolor);
-  fBottomFrame->AddFrame(hframe,new TGLayoutHints(kLHintsExpandX,200,20,2,2));
+  //fBottomFrame->AddFrame(hframe,new TGLayoutHints(kLHintsExpandX,200,20,2,2));
+  fBottomFrame->AddFrame(hframe,new TGLayoutHints(kLHintsExpandX,2,2,2,2));
 
   fPrev = new TGTextButton(hframe,"Prev");
   fPrev->SetBackgroundColor(mainguicolor);
@@ -253,6 +276,12 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
     fMain->Print();
 
   if(fFileAlive) DoDraw();
+
+  if(fConfig->IsMonitor()) {
+    timerNow = new TTimer();
+    timerNow->Connect(timerNow, "Timeout()", "OnlineGUI", this, "UpdateCurrentTime()");
+    timerNow->Start(1000);  // update every second
+  }
 
   if(fConfig->IsMonitor()) {
     timer = new TTimer();
@@ -330,6 +359,32 @@ void OnlineGUI::DoDraw()
   fCanvas->cd();
   fCanvas->Update();
 
+  if(fConfig->IsMonitor()) {
+    char buffer[9]; // HH:MM:SS
+    time_t t = time(0);
+    TString sLastUpdated("Plots updated at: ");
+    strftime(buffer, 9, "%T", localtime(&t));
+    sLastUpdated += buffer;
+    fLastUpdated->SetText(sLastUpdated);
+
+    struct stat result;
+    stat(fConfig->GetRootFile().Data(), &result);
+    time_t tf = result.st_mtime;
+    strftime(buffer, 9, "%T", localtime(&tf));
+
+    TString sRootFileLastUpdated("File updated at: ");
+    sRootFileLastUpdated += buffer;
+    fRootFileLastUpdated->SetText(sRootFileLastUpdated);
+    
+    if(fVerbosity>=4)
+      cout<<"Updating plots (current, file, diff[s]):\t"<<t<<"\t"<<tf<<"\t"<<t - tf<<endl;
+    if( t - tf > 60 ){
+      ULong_t red;
+      gClient->GetColorByName("red",red);
+      fRootFileLastUpdated->SetBackgroundColor(red);//FIXME
+    }
+  }
+
   if(!fPrintOnly) {
     CheckPageButtons();
   }
@@ -374,8 +429,7 @@ void OnlineGUI::DoRadio()
   }
 
   current_page = id;
-  if(!fConfig->IsMonitor()) DoDraw();
-
+  DoDraw();
 }
 
 void OnlineGUI::CheckPageButtons() 
@@ -475,7 +529,7 @@ void OnlineGUI::GetTreeVars()
     treeVars.push_back(currentTree);
   }
 
-  if(fVerbosity>=2){
+  if(fVerbosity>=5){
     for(UInt_t iTree=0; iTree<treeVars.size(); iTree++) {
       cout << "In Tree " << iTree << ": " << endl;
       for(UInt_t i=0; i<treeVars[iTree].size(); i++) {
@@ -652,6 +706,12 @@ void OnlineGUI::TimerUpdate() {
 #ifdef OLDTIMERUPDATE
   if(fVerbosity>=2)
     cout<<"\t rtFile: "<<fRootFile<<"\t"<<fConfig->GetRootFile()<<endl;
+  if(fRootFile){
+    fRootFile->Close();
+    fRootFile->Delete();
+    delete fRootFile;
+    fRootFile=0;
+  }
   fRootFile = new TFile(fConfig->GetRootFile(),"READ");
   if(fRootFile->IsZombie()) {
     cout << "New run not yet available.  Waiting..." << endl;
@@ -685,10 +745,8 @@ void OnlineGUI::TimerUpdate() {
     }
     DoDraw();
   }
-  fRootFile->Close();
-  fRootFile->Delete();
-  delete fRootFile;
-  fRootFile = 0;
+  timer->Reset();
+
 #else
 
   if(fRootFile->IsZombie() || (fRootFile->GetSize() == -1)
@@ -710,6 +768,16 @@ void OnlineGUI::TimerUpdate() {
 
 #endif
 
+}
+
+void OnlineGUI::UpdateCurrentTime() {
+  char buffer[9];
+  time_t t = time(0);
+  strftime(buffer, 9, "%T", localtime(&t));
+  TString sNow("Current time: ");
+  sNow += buffer;
+  fNow->SetText(sNow); 
+  timerNow->Reset();
 }
 
 void OnlineGUI::BadDraw(TString errMessage) {

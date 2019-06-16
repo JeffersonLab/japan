@@ -114,6 +114,17 @@ namespace Qw {
   //@}
 
   //@{
+  /// Beam current:  base unit is microamp
+  static const double uA    = 1.0;
+  //@}
+
+  //@{
+  /// Signal levels:  base unit is volt, and is already defined above
+  static const double V_uA  = V/uA; ///< Signal volts per microamp
+  static const double mV_uA = 1.0e-3 * V_uA; ///< Signal volts per microamp
+  //@}
+
+  //@{
   /// Physical constants
   static const double c = 299792458. * m / sec;    ///< Speed of light
   static const double Mp = 938.272013 * MeV;    ///< Mass of the proton
