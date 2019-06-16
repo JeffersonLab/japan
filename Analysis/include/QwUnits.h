@@ -59,7 +59,7 @@ namespace Qw {
   //@{
   // metric
   static const double mm = 1.0;
-  static const double cm = 1.0e1 * cm;
+  static const double cm = 1.0e1 * mm;
   static const double m = 1.0e2 * cm;
   static const double km = 1.0e3 * m;
   // imperial
