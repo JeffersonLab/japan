@@ -65,7 +65,7 @@ OnlineGUI::OnlineGUI(OnlineConfig& config, Bool_t printonly=0, int ver=0):
     PrintPages();
   } else {
     fPrintOnly=kFALSE;
-    CreateGUI(gClient->GetRoot(),200,200);
+    CreateGUI(gClient->GetRoot(),800,600);
   }
 }
 
@@ -146,14 +146,14 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
   fMain->SetBackgroundColor(mainguicolor);
 
   // Top frame, to hold page buttons and canvas
-  fTopframe = new TGHorizontalFrame(fMain,200,200);
+  fTopframe = new TGHorizontalFrame(fMain,w,UInt_t(h*0.9));
   fTopframe->SetBackgroundColor(mainguicolor);
   fMain->AddFrame(fTopframe, new TGLayoutHints(kLHintsExpandX 
 					       | kLHintsExpandY,10,10,10,1));
 
   // Create a verticle frame widget with radio buttons
   //  This will hold the page buttons
-  vframe = new TGVerticalFrame(fTopframe,40,200);
+  vframe = new TGVerticalFrame(fTopframe,UInt_t(w*0.3),UInt_t(h*0.9));
   vframe->SetBackgroundColor(mainguicolor);
   TString buff;
   for(UInt_t i=0; i<fConfig->GetPageCount(); i++) {
@@ -200,24 +200,26 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
   vframe->AddFrame(wile,new TGLayoutHints(kLHintsBottom|kLHintsLeft,5,10,4,2));
 
 
-  fTopframe->AddFrame(vframe,new TGLayoutHints(kLHintsCenterX|
+  fTopframe->AddFrame(vframe,new TGLayoutHints(kLHintsLeft|
                                                kLHintsCenterY,2,2,2,2));
   
   // Create canvas widget
-  fEcanvas = new TRootEmbeddedCanvas("Ecanvas", fTopframe, 800, 600);
+  fEcanvas = new TRootEmbeddedCanvas("Ecanvas", fTopframe, UInt_t(w*0.7), UInt_t(h*0.9));
   fEcanvas->SetBackgroundColor(mainguicolor);
-  fTopframe->AddFrame(fEcanvas, new TGLayoutHints(kLHintsExpandY,10,10,10,1));
+  fTopframe->AddFrame(fEcanvas, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY
+						  ,10,10,10,1));
   fCanvas = fEcanvas->GetCanvas();
 
   // Create the bottom frame.  Contains control buttons
-  fBottomFrame = new TGHorizontalFrame(fMain,1200,200);
+  fBottomFrame = new TGHorizontalFrame(fMain,w,UInt_t(h*0.1));
   fBottomFrame->SetBackgroundColor(mainguicolor);
   fMain->AddFrame(fBottomFrame, new TGLayoutHints(kLHintsExpandX,10,10,10,10));
   
   // Create a horizontal frame widget with buttons
   hframe = new TGHorizontalFrame(fBottomFrame,1200,40);
   hframe->SetBackgroundColor(mainguicolor);
-  fBottomFrame->AddFrame(hframe,new TGLayoutHints(kLHintsExpandX,200,20,2,2));
+  //fBottomFrame->AddFrame(hframe,new TGLayoutHints(kLHintsExpandX,200,20,2,2));
+  fBottomFrame->AddFrame(hframe,new TGLayoutHints(kLHintsExpandX,2,2,2,2));
 
   fPrev = new TGTextButton(hframe,"Prev");
   fPrev->SetBackgroundColor(mainguicolor);

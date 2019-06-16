@@ -22,7 +22,7 @@
 #include "TH3.h"
 #include "panguinOnlineConfig.hh"
 
-#define UPDATETIME 3000
+#define UPDATETIME 10000
 
 class OnlineGUI {
   // Class that takes care of the GUI
