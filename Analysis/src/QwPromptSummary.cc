@@ -137,11 +137,11 @@ PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, 
     }
     else if (fElementName.Contains("MD")||fElementName.Contains("sam")) {
       this->SetYieldUnit("V/uA");
-      unit=1e-3;
+      unit=Qw::mV_uA;
     }
     else if (fElementName.Contains("lumi")) {
       this->SetYieldUnit("V/uA");
-      unit=1e-3;
+      unit=Qw::mV_uA;
     }
     else {
       this->SetYieldUnit("---");
