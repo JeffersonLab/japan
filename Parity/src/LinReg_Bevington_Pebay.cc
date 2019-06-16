@@ -30,13 +30,13 @@ void LinRegBevPeb::init(){
   mVPP.ResizeTo(par_nP,par_nP);
   mVPY.ResizeTo(par_nP,par_nY);
   mVYY.ResizeTo(par_nY,par_nY);
-  mVP2.ResizeTo(par_nP,1);
-  mVY2.ResizeTo(par_nY,1); 
+  mVYYprime.ResizeTo(par_nY,par_nY);
   mA.ResizeTo(par_nP,par_nY);
   mAsig.ResizeTo(mA);
   mRPP.ResizeTo(mVPP);
   mRPY.ResizeTo(mVPY);
   mRYY.ResizeTo(mVYY);
+  mRYYprime.ResizeTo(mVYYprime);
 
   fGoodEventNumber=0;
  
@@ -52,8 +52,7 @@ void LinRegBevPeb::print(){
   cout<<"VPP:"; mVPP.Print();
   cout<<"VPY:"; mVPY.Print();
   cout<<"VYY:"; mVYY.Print();
-  cout<<"VP2:"; mVP2.Print();
-  cout<<"VY2:"; mVY2.Print();
+  cout<<"VYYprime:"; mVYYprime.Print();
 }
 
 
@@ -90,9 +89,6 @@ void LinRegBevPeb::accumulate(double *P, double *Y){
     if(fGoodEventNumber<=1) mMP(i,0)=u;
     else mMP(i,0)+=udel/fGoodEventNumber;
 
-    if(fGoodEventNumber<=1)  mVP2(i,0)=0; // only diagonal elements are needed for linReg
-    else mVP2(i,0)+=(u-mMP(i,0))*udel; // Note, it uses pre & post incremented means!
-
     if(fGoodEventNumber<=1)  mVPP(i,i)=0;
     else mVPP(i,i)+=(u-mMP(i,0))*udel; // Note, it uses pre & post incremented means!
     
@@ -113,9 +109,6 @@ void LinRegBevPeb::accumulate(double *P, double *Y){
  
     if(fGoodEventNumber<=1) mMY(i,0)=u;
     else mMY(i,0)+=udel/fGoodEventNumber;
-
-    if(fGoodEventNumber<=1)  mVY2(i,0)=0; // only diagonal elements are needed for linReg
-    else mVY2(i,0)+=(u-mMY(i,0))*udel; // Note, it uses pre & post incremented means!
 
     if(fGoodEventNumber<=1)  mVYY(i,i)=0;
     else mVYY(i,i)+=(u-mMY(i,0))*udel; // Note, it uses pre & post incremented means!
@@ -181,7 +174,17 @@ Int_t   LinRegBevPeb::getSigmaY(const int i, Double_t &sigma ){
   sigma=-1e50;
   if(i<0 || i >= par_nY ) return -1;
   if( fGoodEventNumber<2) return -3;
-  sigma=sqrt(mVY2(i,0)/(fGoodEventNumber-1.));
+  sigma=sqrt(mVYY(i,i)/(fGoodEventNumber-1.));
+  return 0;
+}
+
+//==========================================================
+//==========================================================
+Int_t   LinRegBevPeb::getSigmaYprime(const int i, Double_t &sigma ){
+  sigma=-1e50;
+  if(i<0 || i >= par_nY ) return -1;
+  if( fGoodEventNumber<2) return -3;
+  sigma=sqrt(mVYYprime(i,i)/(fGoodEventNumber-1.));
   return 0;
 }
 
@@ -436,18 +439,9 @@ void LinRegBevPeb::solve() {
   }
 
   //define sigXY
-  TMatrixD sigXY; sigXY.ResizeTo(par_nP,par_nY);
-  for(int iy = 0; iy < par_nY; iy++){
-    for(int ip = 0; ip < par_nP; ip++){
-      Int_t testval;
-      testval = getCovariancePY(ip,iy,sigXY(ip,iy));
-      assert(testval==0);
-    }
-  }
-
+  TMatrixD sigXY(mVPY * (1.0 / (fGoodEventNumber - 1.)));
   //define sigYX
-  TMatrixD sigYX; sigYX.ResizeTo(par_nY,par_nP);
-  sigYX.Transpose(sigXY);
+  TMatrixD sigYX(sigXY.T());
 
   Axy.ResizeTo(par_nP,par_nY);
   Ayx.ResizeTo(par_nY,par_nP);
@@ -455,18 +449,16 @@ void LinRegBevPeb::solve() {
   Ayx.Transpose(Axy);
 
   mMYprime.ResizeTo(par_nY,1);
-  mMYprime = mMY - Ayx*mMP;
+  mMYprime = mMY - Ayx * mMP;
 
   covYprime.ResizeTo(par_nY,par_nY);
-  covYprime = sigYY_diag + Ayx*sigXX*Axy - (sigYX*Axy + sigYX*Axy);
+  covYprime = sigYY_diag + Ayx * sigXX * Axy - 2.0 * sigYX * Axy;
+  mVYYprime = mVYY + Ayx * mVPP * Axy - 2.0 * Ayx * mVPY;
 
   sigYprime.ResizeTo(par_nY,1);
   for(int iy = 0; iy < par_nY; iy++){
     sigYprime(iy,0) = sqrt(covYprime(iy,iy));
   }
-
-  //cout << "cov(y'):"; covYprime.Print();
-  //cout << "sig(y'):"; sigYprime.Print();
   
   cout << "Uncorrected Y values:" << endl;
   cout << "     mean          sig" << endl;

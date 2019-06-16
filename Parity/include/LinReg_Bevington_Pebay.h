@@ -10,6 +10,7 @@
  * "Formulas for Robust, One-Pass Parallel Computation of Covariances and Arbitrary-Order Statistical Moments" Philippe Peba, SANDIA REPORT SAND2008-6212, Unlimited Release, Printed September 2008
  *********************************************************************/
 
+#include <TVectorD.h>
 #include <TMatrixD.h>
 
 //-----------------------------------------
@@ -22,9 +23,9 @@ class LinRegBevPeb {
 
  public:
   TMatrixD mA, mAsig;  ///< found slopes + their stand errors
-  TMatrixD mRPP, mRPY, mRYY; ///< found correlations for IV/IV, DV/IV, DV/DV
+  TMatrixD mRPP, mRPY, mRYY, mRYYprime; ///< found correlations for IV/IV, DV/IV, DV/DV
   TMatrixD mMP, mMY, mMYprime;   ///< mean values accumulators
-  TMatrixD mVPP, mVPY, mVYY, mVP2, mVY2; ///< variances accumulators
+  TMatrixD mVPP, mVPY, mVYY, mVYYprime; ///< variances accumulators
   TMatrixD covYprime, sigYprime; ///< covariances after correction
   TMatrixD Axy, Ayx;
 
@@ -56,6 +57,7 @@ class LinRegBevPeb {
   /// Get mean value of a variable, returns error code
   Int_t getSigmaP(const int i, Double_t &sigma );
   Int_t getSigmaY(const int i, Double_t &sigma );
+  Int_t getSigmaYprime(const int i, Double_t &sigma );
 
   /// Get mean value of a variable, returns error code
   Int_t getCovarianceP ( int i,  int j,  Double_t &covar );

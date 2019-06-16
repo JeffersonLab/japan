@@ -200,23 +200,33 @@ QwkRegBlueCorrelator::exportAlphas(TString outName, std::vector < TString > ivNa
 
   //... DVs
   TMatrixD MsigDV(nY,1);
+  TMatrixD MsigDVprime(nY,1);
   TH1D hdv("DVname","names of IVs",nY,-0.5,nY-0.5); 
   for(int i=0;i<nY;i++){
     Int_t testval = 0;
     testval = linReg.getSigmaY(i,val);
     assert(testval==0);
     MsigDV(i,0)=val;
+    testval = linReg.getSigmaYprime(i,val);
+    assert(testval==0);
+    MsigDVprime(i,0)=val;
     hdv.Fill(dvName[i],i);
   }
   MsigDV.Write("DV_sigma"); // of distribution
+  MsigDVprime.Write("DV_sigma_prime"); // of distribution
   hdv.Write();
 
   //raw matrices
   linReg.mVPP.Write("IV_IV_rawVariance");
   linReg.mVPY.Write("IV_DV_rawVariance");
   linReg.mVYY.Write("DV_DV_rawVariance");
-  linReg.mVY2.Write("DV_rawVariance");
-  linReg.mVP2.Write("IV_rawVariance");
+  linReg.mVYYprime.Write("DV_DV_rawVariance_prime");
+  TVectorD mVY2(TMatrixDDiag(linReg.mVYY));
+  mVY2.Write("DV_rawVariance");
+  TVectorD mVP2(TMatrixDDiag(linReg.mVPP));
+  mVP2.Write("IV_rawVariance");
+  TVectorD mVY2prime(TMatrixDDiag(linReg.mVYYprime));
+  mVY2prime.Write("DV_rawVariance_prime");
   linReg.Axy.Write("A_xy");
   linReg.Ayx.Write("A_yx");
 
