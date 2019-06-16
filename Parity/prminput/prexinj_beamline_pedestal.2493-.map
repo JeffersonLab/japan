@@ -1,0 +1,96 @@
+!  Pedestals for 2I* and 1I* devices are taken from Caryn's 21MAY2019 analysis
+!    /adaqfs/home/apar/caryn/paninj2019/pan/controldb/control.db_inj_20190521_ebeamPcup_run2397
+! All others taken from Caryn's analysis from 22 JAN 2019
+!    /adaqfs/home/apar/caryn/paninj2018/pan/controldb/control.db_inj_20190122_20uAHallB
+! These are expected to be reasonable for the running through APEX.
+!
+bpm0i01aXP                     -854.785     1.0
+bpm0i01aXM                     479.757     1.0
+bpm0i01aYP                     1274.96     1.0
+bpm0i01aYM                     309.442     1.0
+bpm1i04XP                       625.713    1.0
+bpm1i04XM                       -530.809   1.0
+bpm1i04YP                        1584.18   1.0
+bpm1i04YM                        1611.81   1.0
+bpm1i02XP                       227.062  1.0
+bpm1i02XM                       -863.056  1.0
+bpm1i02YP                       170.91   1.0
+bpm1i02YM                       -621.521  1.0
+bpm0i01XP                      400.658     1.0
+bpm0i01XM                      1230.95     1.0
+bpm0i01YP                      26.8986     1.0
+bpm0i01YM                      624.453     1.0
+bpm1i06XP                       1574.3   1.0
+bpm1i06XM                       164.93    1.0
+bpm1i06YP                       -248.739  1.0
+bpm1i06YM                        1122.59  1.0
+bpm0i02XP                         680.879  1.0
+bpm0i02XM                         1496.58  1.0
+bpm0i02YP                         832.64  1.0
+bpm0i02YM                         1099.37  1.0
+bpm0i02aXP                        1907.98   1.0
+bpm0i02aXM                        509.293   1.0
+bpm0i02aYP                        1609.2   1.0
+bpm0i02aYM                        1931.05   1.0
+bpm0i05XP                          943.333  1.0
+bpm0i05XM                          1517.67  1.0
+bpm0i05YP                          280.264  1.0
+bpm0i05YM                          2067.47  1.0
+bpm0i07XP                           -307.134  1.0
+bpm0i07XM                          212.563  1.0
+bpm0i07YP                           383.511  1.0
+bpm0i07YM                           1387.97  1.0
+bpm0l01XP                         -177.242   1.0
+bpm0l01XM                           445.541  1.0
+bpm0l01YP                          -756.088  1.0
+bpm0l01YM                           598.717 1.0
+bpm0l02XP                            348.205 1.0
+bpm0l02XM                            965.553 1.0
+bpm0l02YP                           -592.531  1.0
+bpm0l02YM                          887.902  1.0
+bpm0l03XP                           977.256  1.0
+bpm0l03XM                           1694.43  1.0
+bpm0l03YP                            1176.06 1.0
+bpm0l03YM                            225.695 1.0
+bpm0l04XP                       -667.464     1.0
+bpm0l04XM                        -56.794     1.0
+bpm0l04YP                         48.150     1.0
+bpm0l04YM                       -513.805     1.0
+bpm0l05XP                       -163.069     1.0
+bpm0l05XM                       -497.898     1.0
+bpm0l05YP                        115.034     1.0
+bpm0l05YM                        -63.297     1.0
+bpm0l06XP                       -675.142     1.0
+bpm0l06XM                       -662.160     1.0
+bpm0l06YP                       -591.049     1.0
+bpm0l06YM                        305.864     1.0
+bpm0l07XP                        512.767     1.0
+bpm0l07XM                        512.755     1.0
+bpm0l07YP                        946.555     1.0
+bpm0l07YM                        734.040     1.0
+bpm0r02XP                        265.510     1.0
+bpm0r02XM                        424.975     1.0
+bpm0r02YP                        268.745     1.0
+bpm0r02YM                        269.683     1.0
+bpm0r05XP                      -1014.460     1.0
+bpm0r05XM                        100.906     1.0
+bpm0r05YP                       -115.385     1.0
+bpm0r05YM                       -918.480     1.0
+bpm0l10XP                       -342.079     1.0
+bpm0l10XM                        -24.541     1.0
+bpm0l10YP                         31.786     1.0
+bpm0l10YM                       -133.045     1.0
+bpm2i02XP                        1823.73  1.0
+bpm2i02XM                        2166.6   1.0
+bpm2i02YP                        2277.17  1.0
+bpm2i02YM                        2862.11  1.0
+bpm2i01XP                         381.395  1.0
+bpm2i01XM                         813.7  1.0
+bpm2i01YP                         995.792  1.0
+bpm2i01YM                         1695.57   1.0
+!  BCM gain for 0L02 is from Qweak parameter files
+bcm0l02                         -327.751     0.00150841
+!  Use calibration into volts for batteries and phase monitor.
+batery6                         -295.052     76.2939e-6
+batery7                         -445.764     76.2939e-6
+phasemonitor                    -162.172     76.2939e-6

@@ -170,6 +170,7 @@ class QwEventBuffer: public MQwCodaControlEvent{
   TString fETHostname;
   TString fETSession;
   TString fETStationName;
+  Int_t   fETWaitMode;
 
   Bool_t fAllowLowSubbankIDs;
 

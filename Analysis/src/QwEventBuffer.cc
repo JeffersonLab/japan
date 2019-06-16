@@ -117,12 +117,16 @@ void QwEventBuffer::DefineOptions(QwOptions &options)
   options.AddOptions("ET system options")
     ("ET.station", po::value<string>(),
      "ET station name --- Only used in online mode"); 
+  options.AddOptions("ET system options")
+    ("ET.waitmode", po::value<int>()->default_value(0),
+     "ET system wait mode: 0 is wait-forever, 1 is timeout \"quickly\"  --- Only used in online mode"); 
 }
 
 void QwEventBuffer::ProcessOptions(QwOptions &options)
 {
   fOnline     = options.GetValue<bool>("online");
   if (fOnline){
+    fETWaitMode  = options.GetValue<int>("ET.waitmode");
 #ifndef __CODA_ET
     QwError << "Online mode will not work without the CODA libraries!"
 	    << QwLog::endl;
@@ -307,7 +311,7 @@ Int_t QwEventBuffer::ReOpenStream()
 
   if (fOnline) {
     // Online stream
-    status = OpenETStream(fETHostname, fETSession, 0, fETStationName);
+    status = OpenETStream(fETHostname, fETSession, fETWaitMode, fETStationName);
   } else {
     // Offline data file
     if (fRunIsSegmented)
@@ -336,7 +340,7 @@ Int_t QwEventBuffer::OpenNextStream()
 	      << fETHostname
 	      << ", SESSION==" << fETSession << "."
 	      << QwLog::endl;
-    status = OpenETStream(fETHostname, fETSession, 0, fETStationName);
+    status = OpenETStream(fETHostname, fETSession, fETWaitMode, fETStationName);
 
   } else {
     //  Try to open the next data file for the current run,
