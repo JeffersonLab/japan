@@ -58,8 +58,8 @@ namespace Qw {
   /// Length units: base unit is mm
   //@{
   // metric
-  static const double cm = 1.0;
-  static const double mm = 0.1 * cm;
+  static const double mm = 1.0;
+  static const double cm = 1.0e1 * cm;
   static const double m = 1.0e2 * cm;
   static const double km = 1.0e3 * m;
   // imperial
