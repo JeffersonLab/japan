@@ -101,17 +101,19 @@ PromptSummaryElement::GetCSVSummary(TString type)
 
 TString out = "";
 
-Bool_t isDouble= fElementName.Contains("_dd") || fElementName.Contains("_da");
+Bool_t dd= fElementName.Contains("_dd");
+Bool_t da= fElementName.Contains("_da");
 
-        if (type.Contains("yield")&& !isDouble){     
+
+if (type.Contains("yield")&& !(dd||da)){     
    		out = Form("%14s | Mean: %.2e +/- %.2e \t Width: %.2e\n", fElementName.Data(), fYield, fYieldError, fYieldWidth); 
-   	}
-        if (type.Contains("asy")&& !isDouble){
- 	        out = Form("%14s | Mean: %.2e +/- %.2e \t Width: %0.2e  \n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
-        }
-        if (type.Contains("double")&& isDouble) {
-	       	out = Form ("%14s | Mean: %.2e +/- %.2e \t Width: %0.2e  \n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
-	}
+}
+if (type.Contains("asy")&& !(dd||da)){
+      out = Form("%14s | Mean: %.2e +/- %.2e \t Width: %0.2e  \n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+}
+if (type.Contains("double")&& (dd||da)) {
+     	out = Form ("%14s | Mean: %.2e +/- %.2e \t Width: %0.2e  \n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+}     
 
 
 return out;
@@ -120,37 +122,40 @@ return out;
 
 
 void 
-PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, const Double_t a_width)    // Fix Me - This function could use some cleaning up. Use maps.
+PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, const Double_t a_width)   
 {
   Double_t asymmetry_ppm = 1e-6;
+  Double_t difference_um = 1e-3;
+  Double_t unit= 1;
 
-  if(type.Contains("yield")) {
+  if (type.Contains("yield")){
     if (fElementName.Contains("bcm")) {
       this->SetYieldUnit("uA");
     }
     else if (fElementName.Contains("bpm")) {
       this->SetYieldUnit("mm");
     }
-    else if (fElementName.Contains("MD")) {
+    else if (fElementName.Contains("MD")||fElementName.Contains("sam")) {
       this->SetYieldUnit("V/uA");
+      unit=1e-3;
     }
     else if (fElementName.Contains("lumi")) {
       this->SetYieldUnit("V/uA");
+      unit=1e-3;
     }
     else {
       this->SetYieldUnit("---");
     }
-    this->SetYield(a);
-    this->SetYieldError(a_err);
-    this->SetYieldWidth(a_width);
-  } 
+    this->SetYield(a/unit);
+    this->SetYieldError(a_err/unit);
+    this->SetYieldWidth(a_width/unit);
+  }
   else if(type.Contains("asymmetry")) {
-    
     if (fElementName.Contains("bpm")) {
-      this->SetDifferenceUnit("nm");
-      this->SetDifference(a);
-      this->SetDifferenceError(a_err);
-      this->SetDifferenceWidth(a_width);
+      this->SetDifferenceUnit("um");
+      this->SetDifference(a/difference_um);
+      this->SetDifferenceError(a_err/difference_um);
+      this->SetDifferenceWidth(a_width/difference_um);
     } 
     else {
       this->SetAsymmetryUnit("ppm");
@@ -315,7 +320,7 @@ QwPromptSummary::PrintCSVHeader()
   out += "================================================================\n";
 
   out += "Yield Units: bcm*(uA), cav*q(uA), bpm*(mm), sam*(V/uA)\n";
-  out += "Asymmetry/Difference Units: bpm*(nm), bcm*(ppm), cav*q(ppm) \n";
+  out += "Asymmetry/Difference Units: bpm*(um), bcm*(ppm), cav*q(ppm) \n";
 
   out += "================================================================\n";
   
