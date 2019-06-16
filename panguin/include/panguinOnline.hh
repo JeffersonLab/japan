@@ -22,7 +22,7 @@
 #include "TH3.h"
 #include "panguinOnlineConfig.hh"
 
-#define UPDATETIME 30000
+#define UPDATETIME 3000
 
 class OnlineGUI {
   // Class that takes care of the GUI
@@ -33,6 +33,9 @@ private:
   TGVerticalFrame                  *vframe;
   TGRadioButton                    *fRadioPage[50];
   TGPictureButton                  *wile;
+  TGTextButton                     *fNow; // current time
+  TGTextButton                     *fLastUpdated; // plots last updated
+  TGTextButton                     *fRootFileLastUpdated; // Root file last updated
   TRootEmbeddedCanvas              *fEcanvas;
   TGHorizontalFrame                *fBottomFrame;
   TGHorizontalFrame                *hframe;
@@ -53,6 +56,7 @@ private:
   std::vector < std::vector <TString> >       treeVars;
   UInt_t                            runNumber;
   TTimer                           *timer;
+  TTimer                           *timerNow; // used to update time
   Bool_t                            fUpdate;
   Bool_t                            fFileAlive;
   Bool_t                            fPrintOnly;
@@ -88,6 +92,7 @@ public:
   void LoadLib(std::vector <TString>);
   void DoDrawClear();
   void TimerUpdate();
+  void UpdateCurrentTime();  // update current time
   void BadDraw(TString);
   void CheckRootFile();
   Int_t OpenRootFile();

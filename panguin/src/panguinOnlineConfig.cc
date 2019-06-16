@@ -560,6 +560,14 @@ void OnlineConfig::OverrideRootFile(UInt_t runnumber)
 	    rootfilename = fnmRoot + "/" + fullname;
 	    found++;
 	  }
+	  if(found==0 && fMonitor){
+	    partialname = Form("prex%s_%d.adaq1",daqConfigs[i].c_str(),runnumber);
+	    std::string fullname = entSearch->d_name;
+	    if(fullname.find(partialname) != std::string::npos){
+	      rootfilename = fnmRoot + "/" + fullname;
+	      found++;
+	    }
+	  }
 	}
 	if(found) break;
       }
