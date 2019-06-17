@@ -635,13 +635,16 @@ Int_t VQwScaler_Channel::ApplyHWChecks() {
 
 Bool_t VQwScaler_Channel::ApplySingleEventCuts()
 {
+  //std::cout << "Here in VQwScaler_Channel: "<< std::endl; 
   Bool_t status;
   //QwError<<" Single Event Check ! "<<QwLog::endl;
   if (bEVENTCUTMODE>=2){//Global switch to ON/OFF event cuts set at the event cut file
-
-    if (fULimit==0 && fLLimit==0){
+    //std::cout << "Upper : " << fULimit << " , Lower: " << fLLimit << std::endl;
+    if (fULimit <  fLLimit){
+      // std::cout << "First" << std::endl;
       status=kTRUE;
     } else  if (GetValue()<=fULimit && GetValue()>=fLLimit){
+      //std::cout << "Second" << std::endl;
       //QwError<<" Single Event Cut passed "<<GetElementName()<<" "<<GetValue()<<QwLog::endl;
       if (fErrorFlag !=0)
 	status=kFALSE;
@@ -649,6 +652,7 @@ Bool_t VQwScaler_Channel::ApplySingleEventCuts()
 	status=kTRUE;
     }
     else{
+      //std::cout << "Third" << std::endl;
       //QwError<<" Single Event Cut Failed "<<GetElementName()<<" "<<GetValue()<<QwLog::endl;
       if (GetValue()> fULimit)
 	fErrorFlag|=kErrorFlag_EventCut_U;

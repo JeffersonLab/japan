@@ -3,6 +3,11 @@
 *                                                         *
 * Author: Joshua Hoskins                                  *
 * Time-stamp: 052510                                      *
+*                                                         *
+* Updated for PREX by Ezekiel Wertz and Paul King         *
+* Time-Stamp: 06/17/19                                    *
+*                                                         *
+*                                                         *
 \**********************************************************/
 
 #include "QwBeamMod.h"
@@ -198,6 +203,10 @@ Int_t QwBeamMod::LoadChannelMap(TString mapfile)
 
         if(namech=="ffb_status")//save the location of this word to access this later
           fFFB_Index=fWord.size()-1;
+	//store reference to bmwobj
+	if(namech == "bmwobj"){
+	  fBmwObj_Index = fWord.size() - 1;
+	}
 
         fWordsPerSubbank[bankindex].second = fWord.size();
         QwDebug << "--" << namech << "--" << fWord.size()-1 << QwLog::endl;
@@ -276,8 +285,9 @@ Int_t QwBeamMod::LoadEventCuts(TString  filename)
   QwParameterFile mapstr(filename.Data());
   fDetectorMaps.insert(mapstr.GetParamFileNameContents());
   fFFB_holdoff=0;//Default holdoff for the FFB pause
+  
   while (mapstr.ReadNextLine()){
-    //std::cout<<"********* In the loop  *************"<<std::endl;
+    //  std::cout<<"********* In the loop of LoadEventCuts  *************"<<std::endl;
     mapstr.TrimComment('!');   // Remove everything after a '!' character.
     mapstr.TrimWhitespace();   // Get rid of leading and trailing spaces.
     if (mapstr.LineIsEmpty())  continue;
@@ -291,12 +301,13 @@ Int_t QwBeamMod::LoadEventCuts(TString  filename)
     }
     else{
       TString device_type = mapstr.GetTypedNextToken<TString>();
-      device_type.ToLower();
+      device_type.ToUpper();
+      //std::cout <<"device_type= " << device_type << std::endl;
       TString device_name = mapstr.GetTypedNextToken<TString>();
       device_name.ToLower();
+      //std::cout << "device_name= "<< device_name << std::endl;
 
-
-      if (device_type == "vqwk"){
+      if (device_type == "VQWK"||device_type=="SCALER" ||device_type=="SIS3801D24" ||device_type=="SIS3801D32"){
 
 	Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for BCM value
 	Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for BCM value
@@ -312,9 +323,10 @@ Int_t QwBeamMod::LoadEventCuts(TString  filename)
 	QwMessage << "*****************************" << QwLog::endl;
 
       }
-      else if (device_type == "word" && device_name== "ffb_status"){
+      else if (device_type == "WORD" && device_name== "FFB_STATUS"){
 	fFFB_holdoff=mapstr.GetTypedNextToken<UInt_t>();//Read the FFB OFF interval
       }
+
 
     }
 
@@ -437,35 +449,54 @@ Int_t QwBeamMod::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, U
 }
 
 Bool_t QwBeamMod::ApplySingleEventCuts(){
-  //std::cout << "Here in ApplySingleEventCuts() " << std::endl;
+  //  std::cout << "Here in ApplySingleEventCuts() " << std::endl;
   Bool_t test_Mod=kTRUE;
   Bool_t test_BCM1=kTRUE;
-
-
+  
   for(size_t i=0;i<fModChannel.size();i++){
     //std::cout<<"  BCM ["<<i<<"] "<<std::endl;
-    //fModChannel[i]->PrintValue();
+   //fModChannel[i]->PrintValue();
+   //if(fModChannel[i]->GetEventcutErrorFlag() >0){
+     //  fModChannel[i]->PrintValue();
+     // }
     test_BCM1 = fModChannel[i]->ApplySingleEventCuts();
     test_Mod &= test_BCM1;
-    if(!test_BCM1 && bDEBUG) std::cout<<"******* QwBeamMod::SingleEventCuts()->BCM[ "<<i<<" , "<<fModChannel[i]->GetElementName()<<" ] ******\n";
+   
+    // fModChannel[i]->PrintValue();
+    //std::cout << "ErrorFlag: "<< fModChannel[i]->GetEventcutErrorFlag()<< std::endl;
     
+    //if(fModChannel[i]->GetEventcutErrorFlag() >0){
+    // fModChannel[i]->PrintValue();
+    //}
+    
+
+    if(!test_BCM1 &&  bDEBUG) std::cout<<"******* QwBeamMod::SingleEventCuts()->BCM[ "<<i<<" , "<<fModChannel[i]->GetElementName()<<" ] ******" << std::endl;
   }
   
-  if (fWord[fFFB_Index].fValue==8 && fFFB_Flag && fFFB_holdoff_Counter==0){
+  
+  /*  if (fWord[fFFB_Index].fValue==8 && fFFB_Flag && fFFB_holdoff_Counter==0){
     fFFB_holdoff_Counter=fFFB_holdoff;
     fFFB_Flag=kFALSE;
     
-  } 
-  if (!fFFB_Flag &&  (fFFB_holdoff_Counter>0 && fFFB_holdoff_Counter<=fFFB_holdoff) ){
+    } 
+  */
+
+  //copy for fBmwObj
+  if (fWord[fBmwObj_Index].GetValue()>0){
+    fFFB_ErrorFlag = (kGlobalCut+kBModErrorFlag+kBModFFBErrorFlag+kEventCutMode3);  
+  }
+  
+  /*if (!fFFB_Flag &&  (fFFB_holdoff_Counter>0 && fFFB_holdoff_Counter<=fFFB_holdoff) ){
     fFFB_ErrorFlag = (kGlobalCut+kBModErrorFlag+kBModFFBErrorFlag+kEventCutMode3);
     fFFB_holdoff_Counter--;
     if(fFFB_holdoff_Counter==0)
       fFFB_Flag=kTRUE;
-  }else
-    fFFB_ErrorFlag=0;
-
-
-  
+  }
+  else
+  fFFB_ErrorFlag=0;*/
+     
+  //std::cout << "WordValue: " << fWord[fBmwObj_Index].GetValue() << std::endl;
+  //std::cout << "ErrorFlag: " << fFFB_ErrorFlag << std::endl;
   return test_Mod;
 
 }
@@ -494,6 +525,8 @@ void QwBeamMod::UpdateErrorFlag(const VQwSubsystem *ev_error)
   for(size_t i=0;i<fModChannel.size();i++){
     fModChannel[i]->UpdateErrorFlag(input->fModChannel[i]->GetEventcutErrorFlag());
   }
+  //  fFFB_ErrorFlag = input->fFFB_ErrorFlag;
+
 }
 
 UInt_t QwBeamMod::GetEventcutErrorFlag(){//return the error flag
@@ -540,6 +573,8 @@ void QwBeamMod::ClearEventData()
 
    for (size_t i=0;i<fWord.size();i++)
     fWord[i].ClearEventData();
+   
+   fFFB_ErrorFlag=0;
 }
 
 //*****************************************************************
@@ -556,13 +591,22 @@ Int_t QwBeamMod::GetDetectorIndex(TString name)
   for(size_t i=0;i<fModChannelID.size();i++)
     {
 
-	if(fModChannelID[i].fmodulename==name)
+      if(fModChannelID[i].fmodulename==name){
 	  result=fModChannelID[i].fIndex;
+      }
+   
       if(ldebug)
 	{
 	  std::cout<<"testing against ("<<fModChannelID[i].fTypeID
 		   <<","<<fModChannelID[i].fmodulename<<")=>"<<result<<"\n";
 	}
+    }
+  //do it over the words, fWords
+   for(size_t i=0;i<fWord.size();i++) {
+
+      if(fWord[i].fWordName==name){
+	  result=i;
+      }    
     }
 
   return result;
@@ -570,7 +614,7 @@ Int_t QwBeamMod::GetDetectorIndex(TString name)
 //*****************************************************************
 VQwSubsystem&  QwBeamMod::operator=  (VQwSubsystem *value)
 {
-  //std::cout<<" here in QwBeamMod::operator= \n";
+  // std::cout<<" here in QwBeamMod::operator= \n";
   if(Compare(value))
     {
 
@@ -584,6 +628,7 @@ VQwSubsystem&  QwBeamMod::operator=  (VQwSubsystem *value)
       for(size_t i=0;i<input->fWord.size();i++)
   	this->fWord[i].fValue=input->fWord[i].fValue;
       this->fFFB_ErrorFlag=input->fFFB_ErrorFlag;
+      //  std::cout << "ErrorFlag: " << this->fFFB_ErrorFlag << std::endl;
     }
   return *this;
 }

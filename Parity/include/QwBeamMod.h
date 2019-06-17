@@ -54,6 +54,8 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
       fFFB_Flag=kTRUE;
       fRampChannelIndex = -1;
       fPatternWordIndex = -1;
+      fBmwObj_Index = -1;
+
     };
   /// Copy constructor
   QwBeamMod(const QwBeamMod& source)
@@ -161,6 +163,8 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
 
  Int_t fRampChannelIndex;
  Int_t fPatternWordIndex;
+ UInt_t fBmwObj_Index;
+ UInt_t fBmwObj_ErrorFlag;
 
 };
 

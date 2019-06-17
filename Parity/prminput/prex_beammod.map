@@ -28,3 +28,10 @@ WORD, 0,  0,  roc23_scandata2
 WORD, 0,  0,  roc23_ioctime
 WORD, 0,  0,  roc23_ncnt
 
+ROC=26
+Bank=0x5
+vqwk_buffer_offset=1
+
+sample_size=16564
+
+ VQWK, 1, 0, bmwsam1
