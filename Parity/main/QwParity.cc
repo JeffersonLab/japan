@@ -202,11 +202,11 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     datahandlerarray.ConstructTreeBranches(treerootfile);
 
-    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", patternsum_per_burst);
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", patternsum_per_burst, "|stat");
 
-    treerootfile->ConstructTreeBranches("evts", "Running sum tree", eventsum);
-    treerootfile->ConstructTreeBranches("muls", "Running sum tree", patternsum);
-    burstrootfile->ConstructTreeBranches("bursts", "Burst running sum tree", burstsum);
+    treerootfile->ConstructTreeBranches("evts", "Running sum tree", eventsum, "|stat");
+    treerootfile->ConstructTreeBranches("muls", "Running sum tree", patternsum, "|stat");
+    burstrootfile->ConstructTreeBranches("bursts", "Burst running sum tree", burstsum, "|stat");
 
     // Summarize the ROOT file structure
     //treerootfile->PrintTrees();
@@ -365,6 +365,10 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     } // end of loop over events
     
+    // Unwind event ring
+    QwMessage << "Unwinding event ring" << QwLog::endl;
+    eventring.Unwind();
+
     //  Perform actions at the end of the event loop on the
     //  detectors object, which ought to have handles for the
     //  MPS based histograms.

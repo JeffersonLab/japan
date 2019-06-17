@@ -57,6 +57,9 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   std::string fAlphaOutputFileBase;
   std::string fAlphaOutputFileSuff;
   std::string fAlphaOutputPath;
+
+  std::string fAliasOutputFileBase;
+  std::string fAliasOutputFileSuff;
   std::string fAliasOutputPath;		
 
   Int_t fTotalCount;

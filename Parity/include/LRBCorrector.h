@@ -33,10 +33,11 @@ class LRBCorrector : public VQwDataHandler, public MQwDataHandlerCloneable<LRBCo
     void ProcessData();
 
   protected:
-    
     LRBCorrector() { }
 
-    std::string outPath;
+    std::string fAlphaFileBase;
+    std::string fAlphaFileSuff;
+    std::string fAlphaFilePath;
 
     std::vector< EQwHandleType > fIndependentType;
     std::vector< std::string > fIndependentName;

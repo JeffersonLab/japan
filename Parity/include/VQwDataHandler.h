@@ -70,7 +70,10 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
     void WritePromptSummary(QwPromptSummary *ps, TString type);
 
-    void ConstructTreeBranches(QwRootFile *treerootfile);
+    void ConstructTreeBranches(
+        QwRootFile *treerootfile,
+        const std::string& treeprefix = "",
+        const std::string& branchprefix = "");
     void FillTreeBranches(QwRootFile *treerootfile);
 
     // Fill the vector for this subsystem
