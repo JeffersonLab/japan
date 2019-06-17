@@ -354,6 +354,10 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     } // end of loop over events
     
+    // Unwind event ring
+    QwMessage << "Unwinding event ring" << QwLog::endl;
+    eventring.Unwind();
+
     //  Perform actions at the end of the event loop on the
     //  detectors object, which ought to have handles for the
     //  MPS based histograms.

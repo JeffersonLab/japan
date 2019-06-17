@@ -1386,8 +1386,7 @@ void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t cou
   } else if (n2 == -1) {
     // simple version for removal of single event from the sum
     fGoodEventCount--;
-    //QwMessage<<"Deaccumulate before "<<QwLog::endl;
-    if (n>0){
+    if (n > 1) {
       fHardwareBlockSum -= (M12 - M11) / n;
       fHardwareBlockSumM2 -= (M12 - M11)
         * (M12 - fHardwareBlockSum); // note: using updated mean
@@ -1399,11 +1398,43 @@ void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t cou
         fBlock[i] -= (M12 - M11) / n;
         fBlockM2[i] -= (M12 - M11) * (M12 - fBlock[i]); // note: using updated mean
       }
-    }else if (n==0){
-      //QwMessage<<"Deaccumulate at zero "<<QwLog::endl;
-      /* 
-      //Need any fail safe check for Deaccumulation????
-      */
+    } else if (n == 1) {
+      fHardwareBlockSum -= (M12 - M11) / n;
+      fHardwareBlockSumM2 -= (M12 - M11)
+        * (M12 - fHardwareBlockSum); // note: using updated mean
+      if (fabs(fHardwareBlockSumM2) < 10.*std::numeric_limits<double>::epsilon())
+        fHardwareBlockSumM2 = 0; // rounding
+      // and for individual blocks
+      for (Int_t i = 0; i < 4; i++) {
+        M11 = fBlock[i];
+        M12 = value.fBlock[i];
+        M22 = value.fBlockM2[i];
+        fBlock[i] -= (M12 - M11) / n;
+        fBlockM2[i] -= (M12 - M11) * (M12 - fBlock[i]); // note: using updated mean
+        if (fabs(fBlockM2[i]) < 10.*std::numeric_limits<double>::epsilon())
+          fBlockM2[i] = 0; // rounding
+      }
+    } else if (n == 0) {
+      fHardwareBlockSum -= M12;
+      fHardwareBlockSumM2 -= M22;
+      if (fabs(fHardwareBlockSum) < 10.*std::numeric_limits<double>::epsilon())
+        fHardwareBlockSum = 0; // rounding
+      if (fabs(fHardwareBlockSumM2) < 10.*std::numeric_limits<double>::epsilon())
+        fHardwareBlockSumM2 = 0; // rounding
+      // and for individual blocks
+      for (Int_t i = 0; i < 4; i++) {
+        M11 = fBlock[i];
+        M12 = value.fBlock[i];
+        M22 = value.fBlockM2[i];
+        fBlock[i] -= M12;
+        fBlockM2[i] -= M22;
+        if (fabs(fBlock[i]) < 10.*std::numeric_limits<double>::epsilon())
+          fBlock[i] = 0; // rounding
+        if (fabs(fBlockM2[i]) < 10.*std::numeric_limits<double>::epsilon())
+          fBlockM2[i] = 0; // rounding
+      }
+    } else {
+      QwWarning << "Running sum has deaccumulated to negative good events." << QwLog::endl;
     }
 
   } else if (n2 == 1) {
@@ -1438,10 +1469,6 @@ void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t cou
   // Nanny
   if (fHardwareBlockSum != fHardwareBlockSum)
     QwWarning << "Angry Nanny: NaN detected in " << GetElementName() << QwLog::endl;
-
-
-   
-
 }
 
 
