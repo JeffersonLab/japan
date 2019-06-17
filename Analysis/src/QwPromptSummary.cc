@@ -172,13 +172,13 @@ PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, 
       this->SetAsymmetry(a/unit);
       this->SetAsymmetryError(a_err/unit);
       this->SetAsymmetryWidth(a_width/unit);
-    }else{
+    }else {
       this->SetAsymmetryUnit("ppm");
       unit=Qw::ppm;
       this->SetAsymmetry(a/unit);
       this->SetAsymmetryError(a_err/unit);
-      this->SetAsymmetryError(a_width/unit);
-    }
+      this->SetAsymmetryWidth(a_width/unit);
+    } 
   } 
   else if(type.Contains("difference")) {
   } 
@@ -326,15 +326,16 @@ QwPromptSummary::PrintTextSummaryTailer()
 
 
 TString
-QwPromptSummary::PrintCSVHeader() 
+QwPromptSummary::PrintCSVHeader(Int_t nEvents, TString start_time, TString end_time)
 {
   TString out = "";
    
   
   out += Form("Distribution parameters for run %d \n",fRunNumber);
+  out += "Start Time: "+start_time+"\t End Time: "+end_time+"\n";
+  out += Form("Number of events processed: %i\n",nEvents);
   out += "================================================================\n";
-
-  out += "Yield Units: bcm*(uA), cav*q(uA), bpm*(mm), sam*(V/uA)\n";
+  out += "Yield Units: bcm*(uA), cav*q(uA), bpm*(mm), sam*(mV/uA)\n";
   out += "Asymmetry/Difference Units: bpm*(um), bcm*(ppm), cav*q(ppm) \n";
 
   out += "================================================================\n";
@@ -517,12 +518,12 @@ QwPromptSummary::FillDoubleDifference(TString type, TString name1, TString name2
 }
 
 void
-QwPromptSummary::PrintCSV()
+QwPromptSummary::PrintCSV(Int_t nEvents, TString start_time, TString end_time)
 {
   printf("-----------------------\n");
   TString filename = gQwOptions.GetValue<std::string>("rootfiles");
   filename+=Form("/summary_%d.txt", fRunNumber);
-  TString header= this->PrintCSVHeader();
+  TString header= this->PrintCSVHeader(nEvents, start_time, end_time);
   std::ofstream output;
   output.open(filename.Data());
   output<< header.Data();

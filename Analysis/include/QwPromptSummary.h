@@ -158,7 +158,7 @@ class QwPromptSummary  :  public TObject
   Int_t  HowManyElements() const {return fNElements;};
 
 
-  void PrintCSV();
+  void PrintCSV(Int_t nEvents, TString start_time, TString end_time);
   void PrintTextSummary();
 
 private:
@@ -168,7 +168,7 @@ private:
 
   TString PrintTextSummaryHeader();
   TString PrintTextSummaryTailer();
-  TString PrintCSVHeader();
+  TString PrintCSVHeader(Int_t nEvents, TString start_time, TString end_time);
 
   void    SetupElementList();
   
