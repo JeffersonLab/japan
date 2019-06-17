@@ -77,11 +77,13 @@ class QwEnergyCalculator : public VQwDataElement{
     Bool_t  ApplySingleEventCuts();//Check for good events by stting limits on the devices readings
     Int_t   SetSingleEventCuts(Double_t mean, Double_t sigma);//two limts and sample size
     /*! \brief Inherited from VQwDataElement to set the upper and lower limits (fULimit and fLLimit), stability % and the error flag on this channel */
-    void    SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability);
+    void    SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability, Double_t burplevel);
     void    SetEventCutMode(Int_t bcuts){
       bEVENTCUTMODE=bcuts;
       fEnergyChange.SetEventCutMode(bcuts);
     }
+    Bool_t CheckForBurpFail(const VQwDataElement *ev_error);
+
     void    IncrementErrorCounters();
     void    PrintErrorCounters() const;// report number of events failed due to HW and event cut faliure
     UInt_t   GetEventcutErrorFlag(){//return the error flag

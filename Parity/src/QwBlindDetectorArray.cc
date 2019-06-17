@@ -488,6 +488,7 @@ Int_t QwBlindDetectorArray::LoadEventCuts(TString filename)
 	    Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for IntegrationPMT value
 	    Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for IntegrationPMT value
 	    varvalue = mapstr.GetTypedNextToken<TString>();//global/local
+      Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
             varvalue.ToLower();
 	    Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
 	    QwMessage << "QwBlindDetectorArray Error Code passing to QwIntegrationPMT " << GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut) << QwLog::endl;
@@ -495,13 +496,14 @@ Int_t QwBlindDetectorArray::LoadEventCuts(TString filename)
 	    //std::cout<<"*****************************"<<std::endl;
 	    //std::cout<<" Type "<<device_type<<" Name "<<device_name<<" Index ["<<det_index <<"] "<<" device flag "<<check_flag<<std::endl;
 
-	    fIntegrationPMT[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut);
+	    fIntegrationPMT[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut,burplevel);
 	    //std::cout<<"*****************************"<<std::endl;
 
 	  } else if (device_type == GetQwPMTInstrumentTypeName(kQwCombinedPMT)){
 	    Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for CombinedPMT value
 	    Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for CombinedPMT value
 	    varvalue = mapstr.GetTypedNextToken<TString>();//global/local
+      Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
             varvalue.ToLower();
 	    Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
 	    QwMessage << "QwBlindDetectorArray Error Code passing to QwCombinedPMT " << GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut) << QwLog::endl;
@@ -509,7 +511,7 @@ Int_t QwBlindDetectorArray::LoadEventCuts(TString filename)
 	    //std::cout<<"*****************************"<<std::endl;
 	    //std::cout<<" Type "<<device_type<<" Name "<<device_name<<" Index ["<<det_index <<"] "<<" device flag "<<check_flag<<std::endl;
 
-	    fCombinedPMT[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut);
+	    fCombinedPMT[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut,burplevel);
 	    //std::cout<<"*****************************"<<std::endl;
 	    
 	  }

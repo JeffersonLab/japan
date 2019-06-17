@@ -113,6 +113,8 @@ public:
    *         error flag on this channel */
   void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability);
 
+  void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability, Double_t BurpLevel);
+
   Double_t GetEventCutUpperLimit() const { return fULimit; };
   Double_t GetEventCutLowerLimit() const { return fLLimit; };
 
@@ -235,6 +237,8 @@ protected:
   Double_t fBurpThreshold;
   Int_t fBurpCountdown;
   Int_t fBurpHoldoff;
+
+  Double_t fBurpLevel;
   //@}
 
 };   // class VQwHardwareChannel

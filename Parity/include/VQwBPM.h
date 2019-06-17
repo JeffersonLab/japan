@@ -90,7 +90,7 @@ class VQwBPM : public VQwDataElement {
   void   SetRotationOff();
 
   void    SetSingleEventCuts(TString, Double_t, Double_t);
-  void    SetSingleEventCuts(TString, UInt_t, Double_t, Double_t, Double_t);
+  void    SetSingleEventCuts(TString, UInt_t, Double_t, Double_t, Double_t, Double_t);
   virtual UInt_t UpdateErrorFlag() = 0;
   virtual void UpdateErrorFlag(const VQwBPM *ev_error) = 0;
 

@@ -71,7 +71,7 @@ class QwCombinedPMT : public VQwDataElement {
   Bool_t ApplySingleEventCuts();//Check for good events by stting limits on the devices readings
   void PrintErrorCounters() const;// report number of events failed due to HW and event cut faliure
   /*! \brief Inherited from VQwDataElement to set the upper and lower limits (fULimit and fLLimit), stability % and the error flag on this channel */
-  void SetSingleEventCuts(UInt_t errorflag, Double_t LL, Double_t UL, Double_t stability);
+  void SetSingleEventCuts(UInt_t errorflag, Double_t LL, Double_t UL, Double_t stability, Double_t burplevel);
 
   void SetDefaultSampleSize(Int_t sample_size);
   void SetEventCutMode(Int_t bcuts){

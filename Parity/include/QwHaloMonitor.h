@@ -97,8 +97,9 @@ class  QwHaloMonitor : public VQwDataElement{
 
   void PrintErrorCounters() const;// report number of events failed due to HW and event cut faliure
   Bool_t ApplyHWChecks();
-  void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability){
-    fHalo_Counter.SetSingleEventCuts(errorflag,min,max,stability);
+  void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability, Double_t burplevel){
+    QwError<<"***************************"<<QwLog::endl;
+    fHalo_Counter.SetSingleEventCuts(errorflag,min,max,stability,burplevel);
   };
   void SetEventCutMode(Int_t bcuts){
     fHalo_Counter.SetEventCutMode(bcuts);

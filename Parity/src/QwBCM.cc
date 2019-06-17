@@ -191,11 +191,12 @@ Int_t QwBCM<T>::SetSingleEventCuts(Double_t LL, Double_t UL){//std::vector<Doubl
 }
 
 template<typename T>
-void QwBCM<T>::SetSingleEventCuts(UInt_t errorflag, Double_t LL, Double_t UL, Double_t stability){
+void QwBCM<T>::SetSingleEventCuts(UInt_t errorflag, Double_t LL, Double_t UL, Double_t stability, Double_t burplevel){
   //set the unique tag to identify device type (bcm,bpm & etc)
   errorflag|=kBCMErrorFlag;
   QwMessage<<"QwBCM Error Code passing to QwVQWK_Ch "<<errorflag<<" "<<stability<<QwLog::endl;
-  fBeamCurrent.SetSingleEventCuts(errorflag,LL,UL,stability);
+  //QwError<<"***************************"<<typeid(fBeamCurrent).name()<<QwLog::endl;
+  fBeamCurrent.SetSingleEventCuts(errorflag,LL,UL,stability,burplevel);
 
 }
 

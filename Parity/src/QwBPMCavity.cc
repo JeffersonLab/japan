@@ -264,35 +264,68 @@ void QwBPMCavity::SetSingleEventCuts(TString ch_name, Double_t minX, Double_t ma
 
   }
 
-}
+}*/
 
-void QwBPMCavity::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t minX, Double_t maxX, Double_t stability){
+void QwBPMCavity::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t minX, Double_t maxX, Double_t stability, Double_t burplevel){
   errorflag|=kBPMErrorFlag;//update the device flag
   if (ch_name=="relx"){
     QwMessage<<"RelX LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-     fRelPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability); 
+     fRelPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel); 
 
   }else if (ch_name=="rely"){
     QwMessage<<"RelY LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fRelPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability); 
+    fRelPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel); 
 
   } else  if (ch_name=="absx"){
     QwMessage<<"AbsX LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fAbsPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability); 
+    fAbsPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel); 
 
   }else if (ch_name=="absy"){
     QwMessage<<"AbsY LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-      fAbsPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability);
+    fAbsPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
   }else if (ch_name=="effectivecharge"){
     QwMessage<<"EffectveQ LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-     fEffectiveCharge.SetSingleEventCuts(errorflag,minX,maxX,stability);
+    fEffectiveCharge.SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
+
+  }else if (ch_name=="wire1"){
+    QwMessage<<"wire1 " <<  minX <<" UL " << maxX <<QwLog::endl;
+    fWire[0].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
+
+  }else if (ch_name=="wire2"){
+    QwMessage<<"wire2 " <<  minX <<" UL " << maxX <<QwLog::endl;
+    fWire[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
   }
 
 }
 
-*/
+Bool_t QwBPMCavity::CheckForBurpFail(const VQwDataElement *ev_error){
+  Short_t i=0;
+  Bool_t burpstatus = kFALSE;
+  try {
+    if(typeid(*ev_error)==typeid(*this)) {
+      //std::cout<<" Here in QwBPMCavity::CheckForBurpFail \n";
+      if (this->GetElementName()!="") {
+        const QwBPMCavity* value_bpm = dynamic_cast<const QwBPMCavity* >(ev_error);
+        for(i=0;i<2;i++){
+          burpstatus |= fWire[i].CheckForBurpFail(&(value_bpm->fWire[i]));
+          burpstatus |= fRelPos[i].CheckForBurpFail(&(value_bpm->fRelPos[i]));
+          burpstatus |= fAbsPos[i].CheckForBurpFail(&(value_bpm->fAbsPos[i]));
+        }
+        burpstatus |= fEffectiveCharge.CheckForBurpFail(&(value_bpm->fEffectiveCharge));
+      }
+    } else {
+      TString loc="Standard exception from QwBPMCavity::CheckForBurpFail :"+
+        ev_error->GetElementName()+" "+this->GetElementName()+" are not of the "
+        +"same type";
+      throw std::invalid_argument(loc.Data());
+    }
+  } catch (std::exception& e) {
+    std::cerr<< e.what()<<std::endl;
+  }
+  return burpstatus;
+}
 
 void QwBPMCavity::UpdateErrorFlag(const VQwBPM *ev_error){
   Short_t i=0;

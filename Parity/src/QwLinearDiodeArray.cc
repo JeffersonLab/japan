@@ -230,25 +230,56 @@ void QwLinearDiodeArray::SetSingleEventCuts(TString ch_name, Double_t minX, Doub
 {
   QwWarning << "QwLinearDiodeArray::SetSingleEventCuts:  "
 	    << "Does not do anything yet." << QwLog::endl;
-}
+}*/
 
-void QwLinearDiodeArray::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t minX, Double_t maxX, Double_t stability){
+void QwLinearDiodeArray::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t minX, Double_t maxX, Double_t stability, Double_t burplevel){
   errorflag|=kBPMErrorFlag;//update the device flag (Do not have a error flag yet)
   //  QwWarning << "QwLinearDiodeArray::SetSingleEventCuts:  " << "Does not do anything yet." << QwLog::endl;
   if (ch_name=="relx"){
     QwMessage<<"RelX LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fRelPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability);
+    fRelPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
   }else if (ch_name=="rely"){
     QwMessage<<"RelY LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fRelPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability);
+    fRelPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
   } else if (ch_name=="effectivecharge"){
     QwMessage<<"EffectveQ LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fEffectiveCharge.SetSingleEventCuts(errorflag,minX,maxX,stability);
+    fEffectiveCharge.SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
+
+  } else if (ch_name=="photodiode"){
+    QwMessage<<"photodiode LL " <<  minX <<" UL " << maxX <<QwLog::endl;
+    fPhotodiode[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
   }
 }
-*/
+
+Bool_t QwLinearDiodeArray::CheckForBurpFail(const VQwDataElement *ev_error){
+  Short_t i=0;
+  Bool_t burpstatus = kFALSE;
+  try {
+    if(typeid(*ev_error)==typeid(*this)) {
+      //std::cout<<" Here in QwLinearDiodeArray::CheckForBurpFail \n";
+      if (this->GetElementName()!="") {
+        const QwLinearDiodeArray* value_lin = dynamic_cast<const QwLinearDiodeArray* >(ev_error);
+        for(i=kXAxis;i<kNumAxes;i++) {
+          burpstatus |= fRelPos[i].CheckForBurpFail(&(value_lin->fRelPos[i]));
+        }
+        for(i=0;i<8;i++){
+          burpstatus |= fPhotodiode[i].CheckForBurpFail(&(value_lin->fPhotodiode[i]));
+        }
+        burpstatus |= fEffectiveCharge.CheckForBurpFail(&(value_lin->fEffectiveCharge)); 
+      }
+    } else {
+      TString loc="Standard exception from QwLinearDiodeArray::CheckForBurpFail :"+
+        ev_error->GetElementName()+" "+this->GetElementName()+" are not of the "
+        +"same type";
+      throw std::invalid_argument(loc.Data());
+    }
+  } catch (std::exception& e) {
+    std::cerr<< e.what()<<std::endl;
+  }
+  return burpstatus;
+};
 
 void QwLinearDiodeArray::UpdateErrorFlag(const VQwBPM *ev_error){
   Short_t i=0;

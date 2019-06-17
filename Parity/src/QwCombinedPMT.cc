@@ -134,11 +134,11 @@ Bool_t QwCombinedPMT::ApplyHWChecks()
 }
 /********************************************************/
 
-void QwCombinedPMT::SetSingleEventCuts(UInt_t errorflag, Double_t LL=0, Double_t UL=0, Double_t stability=0){
+void QwCombinedPMT::SetSingleEventCuts(UInt_t errorflag, Double_t LL=0, Double_t UL=0, Double_t stability=0, Double_t burplevel=0){
   //set the unique tag to identify device type (Int.PMT & Comb. PMT)
   //errorflag|=kPMTErrorFlag;
   QwMessage<<"QwCombinedPMT Error Code passing to QwIntegrationPMT "<<errorflag<<QwLog::endl;
-  fSumADC.SetSingleEventCuts(errorflag,LL,UL,stability);
+  fSumADC.SetSingleEventCuts(errorflag,LL,UL,stability,burplevel);
   
 }
 

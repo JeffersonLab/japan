@@ -230,15 +230,15 @@ void QwBPMStripline<T>::UpdateErrorFlag(const VQwBPM *ev_error){
       // std::cout<<" Here in QwBPMStripline::UpdateErrorFlag \n";
       if (this->GetElementName()!="") {
         const QwBPMStripline<T>* value_bpm = dynamic_cast<const QwBPMStripline<T>* >(ev_error);
-	for(i=0;i<4;i++){
-	  fWire[i].UpdateErrorFlag(value_bpm->fWire[i]);
-	}
-	for(i=kXAxis;i<kNumAxes;i++) {
-	  fRelPos[i].UpdateErrorFlag(value_bpm->fRelPos[i]);
-	  fAbsPos[i].UpdateErrorFlag(value_bpm->fAbsPos[i]); 
-	}
-	fEffectiveCharge.UpdateErrorFlag(value_bpm->fEffectiveCharge); 
-	fEllipticity.UpdateErrorFlag(value_bpm->fEllipticity); 
+	      for(i=0;i<4;i++){
+	        fWire[i].UpdateErrorFlag(value_bpm->fWire[i]);
+	      }
+	      for(i=kXAxis;i<kNumAxes;i++) {
+	        fRelPos[i].UpdateErrorFlag(value_bpm->fRelPos[i]);
+	        fAbsPos[i].UpdateErrorFlag(value_bpm->fAbsPos[i]); 
+	      }
+	      fEffectiveCharge.UpdateErrorFlag(value_bpm->fEffectiveCharge); 
+	      fEllipticity.UpdateErrorFlag(value_bpm->fEllipticity); 
       }
     } else {
       TString loc="Standard exception from QwBPMStripline::UpdateErrorFlag :"+
@@ -363,52 +363,55 @@ void QwBPMStripline<T>::SetSingleEventCuts(TString ch_name, Double_t minX, Doubl
 	    << " LL " <<  minX <<" UL " << maxX <<QwLog::endl;
   tmpptr->SetSingleEventCuts(minX,maxX);
 }
-
+*/
 
 template<typename T>
-void QwBPMStripline<T>::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t minX, Double_t maxX, Double_t stability){
+void QwBPMStripline<T>::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t minX, Double_t maxX, Double_t stability, Double_t burplevel){
   errorflag|=kBPMErrorFlag;//update the device flag
   if (ch_name=="xp"){
     QwMessage<<"XP LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fWire[0].SetSingleEventCuts(errorflag,minX,maxX,stability);
+    QwError<<"***************************inside QwBPStripline "<<typeid(this).name()<<QwLog::endl;
+    fWire[0].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
   }else if (ch_name=="xm"){
     QwMessage<<"XM LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fWire[1].SetSingleEventCuts(errorflag,minX,maxX,stability);
+    fWire[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
   }else if (ch_name=="yp"){
     QwMessage<<"YP LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fWire[2].SetSingleEventCuts(errorflag,minX,maxX,stability);
+    fWire[2].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
   }else if (ch_name=="ym"){
     QwMessage<<"YM LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fWire[3].SetSingleEventCuts(errorflag,minX,maxX,stability);
+    fWire[3].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
   }else if (ch_name=="relx"){
     QwMessage<<"RelX LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fRelPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability);
+    fRelPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
   }else if (ch_name=="rely"){
     QwMessage<<"RelY LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fRelPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability);
+    fRelPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
   } else  if (ch_name=="absx"){
   //cuts for the absolute x and y
     QwMessage<<"AbsX LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fAbsPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability);
+    fAbsPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
   }else if (ch_name=="absy"){
     QwMessage<<"AbsY LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fAbsPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability);
+    fAbsPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
   }else if (ch_name=="effectivecharge"){
     QwMessage<<"EffectveQ LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fEffectiveCharge.SetSingleEventCuts(errorflag,minX,maxX,stability);
+    fEffectiveCharge.SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
+  }else if (ch_name=="effectivecharge"){
+    QwMessage<<"Ellipticity LL " <<  minX <<" UL " << maxX <<QwLog::endl;
+    fEllipticity.SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
   }
 }
 
-*/
 
 template<typename T>
 void  QwBPMStripline<T>::ProcessEvent()

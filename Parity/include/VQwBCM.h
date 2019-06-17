@@ -54,7 +54,7 @@ public:
   virtual void  ConstructHistograms(TDirectory *folder, TString &prefix) = 0;
   virtual void  FillHistograms() = 0;
   /*! \brief Inherited from VQwDataElement to set the upper and lower limits (fULimit and fLLimit), stability % and the error flag on this channel */
-  virtual void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability) = 0;
+  virtual void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability, Double_t burplevel) = 0;
   virtual void Ratio( const VQwBCM &numer, const VQwBCM &denom)
     { std::cerr << "Ratio not defined! (VQwBCM)" << std::endl; }
   virtual void ClearEventData() = 0;

@@ -356,13 +356,34 @@ Int_t QwEnergyCalculator::SetSingleEventCuts(Double_t minX, Double_t maxX){
   return 1;
 }
 
-void QwEnergyCalculator::SetSingleEventCuts(UInt_t errorflag, Double_t LL=0, Double_t UL=0, Double_t stability=0){
+void QwEnergyCalculator::SetSingleEventCuts(UInt_t errorflag, Double_t LL=0, Double_t UL=0, Double_t stability=0, Double_t burplevel=0){
   //set the unique tag to identify device type (bcm,bpm & etc)
   errorflag|=kBCMErrorFlag;//currently I use the same flag for bcm
   QwMessage<<"QwEnergyCalculator Error Code passing to QwVQWK_Ch "<<errorflag<<QwLog::endl;
-  fEnergyChange.SetSingleEventCuts(errorflag,LL,UL,stability);
+  fEnergyChange.SetSingleEventCuts(errorflag,LL,UL,stability,burplevel);
 }
 
+Bool_t QwEnergyCalculator::CheckForBurpFail(const VQwDataElement *ev_error){
+  Short_t i=0;
+  Bool_t burpstatus = kFALSE;
+  try {
+    if(typeid(*ev_error)==typeid(*this)) {
+      //std::cout<<" Here in QwEnergyCalculator::CheckForBurpFail \n";
+      if (this->GetElementName()!="") {
+        const QwEnergyCalculator* value_halo = dynamic_cast<const QwEnergyCalculator* >(ev_error);
+        burpstatus |= fEnergyChange.CheckForBurpFail(&(value_halo->fEnergyChange)); 
+      }
+    } else {
+      TString loc="Standard exception from QwEnergyCalculator::CheckForBurpFail :"+
+        ev_error->GetElementName()+" "+this->GetElementName()+" are not of the "
+        +"same type";
+      throw std::invalid_argument(loc.Data());
+    }
+  } catch (std::exception& e) {
+    std::cerr<< e.what()<<std::endl;
+  }
+  return burpstatus;
+}
 
 void  QwEnergyCalculator::ConstructHistograms(TDirectory *folder, TString &prefix){
   if (GetElementName()==""){

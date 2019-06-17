@@ -108,7 +108,7 @@ class QwBCM : public VQwBCM {
 
   Int_t SetSingleEventCuts(Double_t mean = 0, Double_t sigma = 0);//two limts and sample size
   /*! \brief Inherited from VQwDataElement to set the upper and lower limits (fULimit and fLLimit), stability % and the error flag on this channel */
-  void SetSingleEventCuts(UInt_t errorflag, Double_t min = 0, Double_t max = 0, Double_t stability = 0);
+  void SetSingleEventCuts(UInt_t errorflag, Double_t min = 0, Double_t max = 0, Double_t stability = 0, Double_t burplevel = 0);
 
   void SetDefaultSampleSize(Int_t sample_size);
   void SetEventCutMode(Int_t bcuts) {

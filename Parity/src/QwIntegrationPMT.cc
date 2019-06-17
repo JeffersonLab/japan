@@ -208,11 +208,11 @@ Int_t QwIntegrationPMT::SetSingleEventCuts(Double_t LL=0, Double_t UL=0){//std::
 }
 
 /********************************************************/
-void QwIntegrationPMT::SetSingleEventCuts(UInt_t errorflag, Double_t LL=0, Double_t UL=0, Double_t stability=0){
+void QwIntegrationPMT::SetSingleEventCuts(UInt_t errorflag, Double_t LL=0, Double_t UL=0, Double_t stability=0, Double_t burplevel=0){
   //set the unique tag to identify device type (bcm,bpm & etc)
   errorflag|=kPMTErrorFlag;
   QwMessage<<"QwIntegrationPMT Error Code passing to QwVQWK_Ch "<<errorflag<<QwLog::endl;
-  fTriumf_ADC.SetSingleEventCuts(errorflag,LL,UL,stability);
+  fTriumf_ADC.SetSingleEventCuts(errorflag,LL,UL,stability,burplevel);
 
 }
 
