@@ -59,6 +59,7 @@ namespace Qw {
   //@{
   // metric
   static const double mm = 1.0;
+  static const double um = 1.0e-3 * mm;
   static const double cm = 1.0e1 * mm;
   static const double m = 1.0e2 * cm;
   static const double km = 1.0e3 * m;
@@ -128,6 +129,12 @@ namespace Qw {
   /// Physical constants
   static const double c = 299792458. * m / sec;    ///< Speed of light
   static const double Mp = 938.272013 * MeV;    ///< Mass of the proton
+  //@}
+  
+  //@{
+  //Asymmetry: base unit is 1
+  static const double ppm=1e-6;
+  static const double ppb=1e-9;
   //@}
 
 } // namespace Qw

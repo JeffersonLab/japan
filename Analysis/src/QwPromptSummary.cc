@@ -124,23 +124,26 @@ return out;
 void 
 PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, const Double_t a_width)   
 {
-  Double_t asymmetry_ppm = 1e-6;
-  Double_t difference_um = 1e-3;
   Double_t unit= 1;
+  Bool_t bcm= fElementName.Contains("bcm");
+  Bool_t bpm= fElementName.Contains("bpm");
+  Bool_t sam= fElementName.Contains("sam");
+  Bool_t md= fElementName.Contains("md");
+  Bool_t dd=fElementName.Contains("_dd");
+  Bool_t da=fElementName.Contains("_da");
+  
 
   if (type.Contains("yield")){
-    if (fElementName.Contains("bcm")) {
+    if (bcm) {
       this->SetYieldUnit("uA");
+      unit=Qw::uA;
     }
-    else if (fElementName.Contains("bpm")) {
+    else if (bpm) {
       this->SetYieldUnit("mm");
+      unit=Qw::mm;
     }
-    else if (fElementName.Contains("MD")||fElementName.Contains("sam")) {
-      this->SetYieldUnit("V/uA");
-      unit=Qw::mV_uA;
-    }
-    else if (fElementName.Contains("lumi")) {
-      this->SetYieldUnit("V/uA");
+    else if (sam||md) {
+      this->SetYieldUnit("mV/uA");
       unit=Qw::mV_uA;
     }
     else {
@@ -151,19 +154,31 @@ PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, 
     this->SetYieldWidth(a_width/unit);
   }
   else if(type.Contains("asymmetry")) {
-    if (fElementName.Contains("bpm")) {
+    if (bpm) {
       this->SetDifferenceUnit("um");
-      this->SetDifference(a/difference_um);
-      this->SetDifferenceError(a_err/difference_um);
-      this->SetDifferenceWidth(a_width/difference_um);
+      unit=Qw::um;
+      this->SetDifference(a/unit);
+      this->SetDifferenceError(a_err/unit);
+      this->SetDifferenceWidth(a_width/unit);
     } 
-    else {
+    else if (sam) {
+      if (da) {
+          this->SetAsymmetryUnit("mV/uA");
+          unit=Qw::mV_uA;
+      } else  {
+          this->SetAsymmetryUnit("ppm");
+          unit=Qw::ppm;
+      }
+      this->SetAsymmetry(a/unit);
+      this->SetAsymmetryError(a_err/unit);
+      this->SetAsymmetryWidth(a_width/unit);
+    }else{
       this->SetAsymmetryUnit("ppm");
-      this->SetAsymmetry(a/asymmetry_ppm);
-      this->SetAsymmetryError(a_err/asymmetry_ppm);
-      this->SetAsymmetryWidth(a_width/asymmetry_ppm);
+      unit=Qw::ppm;
+      this->SetAsymmetry(a/unit);
+      this->SetAsymmetryError(a_err/unit);
+      this->SetAsymmetryError(a_width/unit);
     }
- 
   } 
   else if(type.Contains("difference")) {
   } 

@@ -31,18 +31,45 @@ asym:sam6, -1
 asym:sam2, 0.5
 asym:sam6, 0.5
 
-[asym:@sam_24_68_dd]
+[asym:@sam_26_48_dd]
 asym:sam2, 1
-asym:sam4, 1
-asym:sam6, -1
+asym:sam4, -1
+asym:sam6, 1
 asym:sam8, -1
 
-[diff:@sam_24_68_da]
+[diff:@sam_26_48_da]
 asym:sam2, 0.25
 asym:sam4, 0.25
 asym:sam6, 0.25
 asym:sam8, 0.25
 
+[asym:@sam_1_3_dd]
+asym:sam1, 1
+asym:sam3, -1
+
+[diff:@sam_1_3_da]
+asym:sam1, 0.5
+asym:sam3, 0.5
+
+[asym:@sam_5_7_dd]
+asym:sam5, 1
+asym:sam7, -1
+
+[diff:@sam_5_7_da]
+asym:sam5, 0.5
+asym:sam7, 0.5
+
+[asym:@sam_13_57_dd]
+asym:sam1, 1
+asym:sam5, -1
+asym:sam3, 1
+asym:sam7, -1
+
+[diff:@sam_13_57_da]
+asym:sam1, 0.25
+asym:sam3, 0.25
+asym:sam5, 0.25
+asym:sam7, 0.25
 
 [asym:@bpm_4aX_4eX_dd]
 asym:bpm4aX, 1
