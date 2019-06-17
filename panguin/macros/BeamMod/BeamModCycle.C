@@ -11,7 +11,7 @@
 
   void BeamModCycle(TString type="evt", TString ref="CodaEventNumber"){
   gStyle->SetOptStat(0);
-  TTree* tree = (TTree*)gDirectory->Get(type);
+  TTree* tree_R = (TTree*)gDirectory->Get(type);
 
 
   TString bmwcut = "bmwcycnum>0";
@@ -23,7 +23,7 @@
   TString evcuty = "ErrorFlag==0 && bmwobj==2 | bmwobj==4 | bmwobj==7";// cut for y modulations
   TString evcute = "ErrorFlag==0 && bmwobj==8";//cut for energy modulations
 
-  TPad *cBMWPlot = new TPad("cBMWPlot","cBMWPlot",1000,1000);
+  TPad *cBMWPlot = new TPad("cBMWPlot","cBMWPlot",0,0,1,1);
   cBMWPlot->Divide(2,3);
   cBMWPlot->Draw();
   TString coil[7] = {"bmod_trim1","bmod_trim2","bmod_trim3","bmod_trim4","bmod_trim6","bmod_trim7","bmod_trim8"};

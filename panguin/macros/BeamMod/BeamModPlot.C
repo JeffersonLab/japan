@@ -12,7 +12,7 @@
 
   void BeamModPlot(TString type="evt", TString ref="CodaEventNumber"){
   gStyle->SetOptStat(0);
-  TTree* tree = (TTree*)gDirectory->Get(type);
+  TTree* tree_R = (TTree*)gDirectory->Get(type);
 
 
   TString bmwcut = "bmwcycnum>0";
@@ -28,7 +28,7 @@
   TString coil[7] = {"bmod_trim1","bmod_trim2","bmod_trim3","bmod_trim4","bmod_trim6","bmod_trim7","bmod_trim8"};
 
 
-  TPad *cBMWPlot2 = new TPad("cBMWPlot2","cBMWPlot2",1000,1000);
+  TPad *cBMWPlot2 = new TPad("cBMWPlot2","cBMWPlot2",0,0,1,1);
   cBMWPlot2->Divide(1,3);
   cBMWPlot2->Draw();
 
