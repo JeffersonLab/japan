@@ -23,10 +23,29 @@ class LinRegBevPeb {
 
  public:
   TMatrixD mA, mAsig;  ///< found slopes + their stand errors
-  TMatrixD mRPP, mRPY, mRYY, mRYYprime; ///< found correlations for IV/IV, DV/IV, DV/DV
-  TMatrixD mMP, mMY, mMYprime;   ///< mean values accumulators
-  TMatrixD mVPP, mVPY, mVYY, mVYYprime; ///< variances accumulators
-  TMatrixD covYprime, sigYprime; ///< covariances after correction
+
+  /// correlations
+  TMatrixD mRPY, mRYP;
+  TMatrixD mRPP, mRYY;
+  TMatrixD mRYYprime;
+
+  /// unnormalized covariances
+  TMatrixD mVPY, mVYP;
+  TMatrixD mVPP, mVYY;
+  TMatrixD mVYYprime;
+
+  /// normalized covariances
+  TMatrixD sigXY, sigYX;
+  TMatrixD sigXX, sigYY;
+  TMatrixD sigYYprime;
+
+  /// mean values
+  TVectorD mMP, mMY, mMYprime;
+
+  /// sigmas
+  TVectorD sigX, sigY, sigYprime;
+
+  /// slopes
   TMatrixD Axy, Ayx;
 
   LinRegBevPeb();
