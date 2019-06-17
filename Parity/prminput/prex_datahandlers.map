@@ -27,6 +27,6 @@
   name        = MyAlarmHandler
   priority    = 20
   map         = prex_alarm_handler.map
-  alarm-output-file   = /adaqfs/home/apar/bin/japanAlarms.csv
+  alarm-output-file   = /adaqfs/home/apar/alarms/japanAlarms.csv
   alarm-loop-N-update = 350
   alarm-active        = 1
