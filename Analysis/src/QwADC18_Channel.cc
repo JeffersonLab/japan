@@ -1187,7 +1187,7 @@ Bool_t QwADC18_Channel::ApplySingleEventCuts()//This will check the limits and u
 
   if (bEVENTCUTMODE>=2){//Global switch to ON/OFF event cuts set at the event cut file
 
-    if (fULimit==0 && fLLimit==0){
+    if (fULimit < fLLimit){
       status=kTRUE;
     } else  if (GetValue()<=fULimit && GetValue()>=fLLimit){
       if ((fErrorFlag)==0)
