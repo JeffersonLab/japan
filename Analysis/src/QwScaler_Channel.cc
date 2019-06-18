@@ -209,10 +209,14 @@ void VQwScaler_Channel::ProcessEvent()
 
 void VQwScaler_Channel::PrintValue() const
 {
-  //  printf("Name %s %23.4f +/- %15.4f", GetElementName().Data(), fValue, fValueError);
-  QwMessage << std::setw(5) << std::left << GetElementName() << " , "
-	    << std::setprecision(4)
-	    << std::setw(5) << std::right << GetValue() << "  +/-  " << GetValueError() << " sigma "<<GetValueWidth()
+  QwMessage << std::setprecision(4)
+            << std::setw(18) << std::left << GetSubsystemName()  << " "
+            << std::setw(18) << std::left << GetModuleType()     << " "
+            << std::setw(18) << std::left << GetElementName()    << " "
+	    << std::setw(12) << std::left << GetValue()          << "  +/-  "
+	    << std::setw(12) << std::left << GetValueError()     << "  sig  "
+            << std::setw(12) << std::left << GetValueWidth()     << " "
+            << std::setw(12) << std::left << GetGoodEventCount() << " "
 	    << QwLog::endl;
 }
 
