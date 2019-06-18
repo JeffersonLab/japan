@@ -360,7 +360,7 @@ Int_t main(Int_t argc, Char_t* argv[])
     ringoutput.AtEndOfEventLoop();
 
     QwMessage << "Number of events processed at end of run: "
-              << eventbuffer.GetEventNumber() << QwLog::endl;
+              << eventbuffer.GetPhysicsEventNumber() << QwLog::endl;
 
 
     // Calculate running averages over helicity patterns

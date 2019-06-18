@@ -125,6 +125,7 @@ void
 PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, const Double_t a_width)   
 {
   Double_t unit= 1;
+  Bool_t qtarg=fElementName.EqualTo("bcm_an_ds3"); //Estimator for good events
   Bool_t bcm= fElementName.Contains("bcm");
   Bool_t bpm= fElementName.Contains("bpm");
   Bool_t sam= fElementName.Contains("sam");
@@ -152,6 +153,11 @@ PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, 
     this->SetYield(a/unit);
     this->SetYieldError(a_err/unit);
     this->SetYieldWidth(a_width/unit);
+
+    if (qtarg){
+      Double_t temp = (a_width/a_err);
+      this->SetNumGoodEvents(4*temp*temp);
+    }
   }
   else if(type.Contains("asymmetry")) {
     if (bpm) {
@@ -161,18 +167,7 @@ PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, 
       this->SetDifferenceError(a_err/unit);
       this->SetDifferenceWidth(a_width/unit);
     } 
-    else if (sam) {
-      if (da) {
-          this->SetAsymmetryUnit("mV/uA");
-          unit=Qw::mV_uA;
-      } else  {
-          this->SetAsymmetryUnit("ppm");
-          unit=Qw::ppm;
-      }
-      this->SetAsymmetry(a/unit);
-      this->SetAsymmetryError(a_err/unit);
-      this->SetAsymmetryWidth(a_width/unit);
-    }else {
+    else {
       this->SetAsymmetryUnit("ppm");
       unit=Qw::ppm;
       this->SetAsymmetry(a/unit);
@@ -330,13 +325,16 @@ QwPromptSummary::PrintCSVHeader(Int_t nEvents, TString start_time, TString end_t
 {
   TString out = "";
    
-  
+  Double_t goodEvents=  (this->GetElementByName("bcm_an_ds3"))->GetNumGoodEvents();
+
   out += Form("Distribution parameters for run %d \n",fRunNumber);
   out += "Start Time: "+start_time+"\t End Time: "+end_time+"\n";
   out += Form("Number of events processed: %i\n",nEvents);
+  out += Form("Number of events in good multiplicity patterns: %3.0f\n", goodEvents);
+  out += Form("Percentage of good events: %3.1f \%\n", goodEvents/nEvents*100);
   out += "================================================================\n";
   out += "Yield Units: bcm*(uA), cav*q(uA), bpm*(mm), sam*(mV/uA)\n";
-  out += "Asymmetry/Difference Units: bpm*(um), bcm*(ppm), cav*q(ppm) \n";
+  out += "Asymmetry/Difference Units: bpm*(um), bcm*(ppm), cav*q(ppm), sam(ppm) \n";
 
   out += "================================================================\n";
   
