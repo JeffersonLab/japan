@@ -63,7 +63,7 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
   Int_t LoadEventCuts(TString  filename);//Loads event cuts applicable to QwHelicity class, derived from VQwSubsystemParity
   Bool_t ApplySingleEventCuts();//Apply event cuts in the QwHelicity class, derived from VQwSubsystemParity
 
-  Bool_t  CheckForBurpFail(const VQwSubsystemParity *ev_error){
+  Bool_t  CheckForBurpFail(const VQwSubsystem *ev_error){
     return kFALSE;
   };
 

@@ -499,7 +499,7 @@ Bool_t QwScaler::ApplySingleEventCuts()
   return true;
 }
 
-Bool_t QwScaler::CheckForBurpFail(const VQwSubsystem *subsys){
+/*Bool_t QwScaler::CheckForBurpFail(const VQwSubsystem *subsys){
   Bool_t burpstatus = kFALSE;
   VQwSubsystem* tmp = const_cast<VQwSubsystem *>(subsys);
   if(Compare(tmp)) {
@@ -510,7 +510,7 @@ Bool_t QwScaler::CheckForBurpFail(const VQwSubsystem *subsys){
     }
   }
   return burpstatus;
-}
+}*/
 
 void QwScaler::IncrementErrorCounters()
 {

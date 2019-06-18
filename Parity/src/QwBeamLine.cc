@@ -467,7 +467,7 @@ Int_t QwBeamLine::LoadEventCuts(TString  filename)
 	Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
     Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
 	varvalue.ToLower();
-	QwMessage<<"QwBeamLine Error Code passing to QwBCM "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
+	QwMessage<<"QwBeamLine Error Code passing to QwBCM "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<", burp = "<<burplevel<<QwLog::endl;
     fBCM[det_index].get()->SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut,burplevel);//(fBCMEventCuts);
       }
       else if (device_type == GetQwBeamInstrumentTypeName(kQwHaloMonitor)){
@@ -589,9 +589,8 @@ Int_t QwBeamLine::LoadEventCuts(TString  filename)
   for (size_t i=0;i<fClock.size();i++)
     fClock[i].get()->SetEventCutMode(eventcut_flag);
 
-  for (size_t i=0;i<fHaloMonitor.size();i++){
+  for (size_t i=0;i<fHaloMonitor.size();i++)
     fHaloMonitor[i].SetEventCutMode(eventcut_flag);
-  }
 
   for (size_t i=0;i<fBCMCombo.size();i++)
     fBCMCombo[i].get()->SetEventCutMode(eventcut_flag);
@@ -1357,26 +1356,46 @@ Bool_t QwBeamLine::CheckForBurpFail(const VQwSubsystem *subsys){
   VQwSubsystem* tmp = const_cast<VQwSubsystem *>(subsys);
   if(Compare(tmp)) {
     const QwBeamLine* input = dynamic_cast<const QwBeamLine*>(subsys);
-    for(size_t i=0;i<input->fClock.size();i++)
+    for(size_t i=0;i<input->fClock.size();i++){
+      //QwError << "************* test Clock *****************" << QwLog::endl;
       burpstatus |= (this->fClock[i].get())->CheckForBurpFail(input->fClock[i].get());
-    for(size_t i=0;i<input->fStripline.size();i++)
+    }
+    for(size_t i=0;i<input->fStripline.size();i++){
+      //QwError << "************* test stripline *****************" << QwLog::endl;
       burpstatus |= (this->fStripline[i].get())->CheckForBurpFail(input->fStripline[i].get());
-    for(size_t i=0;i<input->fQPD.size();i++)
+    }
+    for(size_t i=0;i<input->fQPD.size();i++){
+      //QwError << "************* test QPD *****************" << QwLog::endl;
       burpstatus |= (this->fQPD[i]).CheckForBurpFail(&(input->fQPD[i]));
-    for(size_t i=0;i<input->fLinearArray.size();i++)
+    }
+    for(size_t i=0;i<input->fLinearArray.size();i++){
+      //QwError << "************* test Lin *****************" << QwLog::endl;
       burpstatus |= (this->fLinearArray[i]).CheckForBurpFail(&(input->fLinearArray[i]));
-    for(size_t i=0;i<input->fCavity.size();i++)
-      burpstatus |= (this->fCavity[i]).CheckForBurpFail(&(input->fCavity[i]));      
-    for(size_t i=0;i<input->fBCM.size();i++)
+    }
+    for(size_t i=0;i<input->fCavity.size();i++){
+      //QwError << "************* test Cavity *****************" << QwLog::endl;
+      burpstatus |= (this->fCavity[i]).CheckForBurpFail(&(input->fCavity[i]));
+    }
+    for(size_t i=0;i<input->fBCM.size();i++){
+      //QwError << "************* test BCM *****************" << QwLog::endl;
       burpstatus |= (this->fBCM[i].get())->CheckForBurpFail(input->fBCM[i].get());
-    for(size_t i=0;i<input->fBCMCombo.size();i++)
+    }
+    for(size_t i=0;i<input->fBCMCombo.size();i++){
+      //QwError << "************* test BCMC *****************" << QwLog::endl;
       burpstatus |= (this->fBCMCombo[i].get())->CheckForBurpFail(input->fBCMCombo[i].get()); 
-    for(size_t i=0;i<input->fBPMCombo.size();i++)
+    }
+    for(size_t i=0;i<input->fBPMCombo.size();i++){
+      //QwError << "************* test BPMC *****************" << QwLog::endl;
       burpstatus |= (this->fBPMCombo[i].get())->CheckForBurpFail(input->fBPMCombo[i].get()); 
-    for(size_t i=0;i<input->fECalculator.size();i++)
+    }
+    for(size_t i=0;i<input->fECalculator.size();i++){
+      //QwError << "************* test ECalc *****************" << QwLog::endl;
       burpstatus |= (this->fECalculator[i]).CheckForBurpFail(&(input->fECalculator[i]));
-    for(size_t i=0;i<input->fHaloMonitor.size();i++)
+    }
+    for(size_t i=0;i<input->fHaloMonitor.size();i++){
+      //QwError << "************* test Halo *****************" << QwLog::endl;
       burpstatus |= (this->fHaloMonitor[i]).CheckForBurpFail(&(input->fHaloMonitor[i]));
+    }
   }
   return burpstatus;
 }

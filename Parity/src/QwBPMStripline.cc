@@ -406,7 +406,7 @@ void QwBPMStripline<T>::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Dou
     QwMessage<<"EffectveQ LL " <<  minX <<" UL " << maxX <<QwLog::endl;
     fEffectiveCharge.SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
-  }else if (ch_name=="effectivecharge"){
+  }else if (ch_name=="ellipticity"){
     QwMessage<<"Ellipticity LL " <<  minX <<" UL " << maxX <<QwLog::endl;
     fEllipticity.SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
   }

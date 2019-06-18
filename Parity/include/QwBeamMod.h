@@ -92,6 +92,8 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
   void PrintErrorCounters() const;// report number of events failed due to HW and event cut faliures
   UInt_t GetEventcutErrorFlag();//return the error flag
 
+  Bool_t CheckForBurpFail(const VQwSubsystem *subsys);
+
   //update the error flag in the subsystem level from the top level routines related to stability checks. This will uniquely update the errorflag at each channel based on the error flag in the corresponding channel in the ev_error subsystem
   void UpdateErrorFlag(const VQwSubsystem *ev_error);
 

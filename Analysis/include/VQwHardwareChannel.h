@@ -92,15 +92,18 @@ public:
     if (fBurpThreshold>0){
       Double_t diff = this->GetValue() - event->GetValue();
       if (abs(diff)>fBurpThreshold){
-	foundburp = kTRUE;
-	fBurpCountdown = fBurpHoldoff;
+	      foundburp = kTRUE;
+	      fBurpCountdown = fBurpHoldoff;
       } else if (fBurpCountdown>0) {
-	foundburp = kTRUE;
-	fBurpCountdown--;
+	      foundburp = kTRUE;
+	      fBurpCountdown--;
       }
     }
     if (foundburp){
       fErrorFlag |= kErrorFlag_BurpCut;
+    }
+    if (foundburp){
+    QwError << "************* val1=" << this->GetValue() << "  val2=" << event->GetValue() << "  diff=" << this->GetValue() - event->GetValue() << "  threshold=" << fBurpThreshold << "  foundburp=" << foundburp << " *****************" << QwLog::endl;
     }
     return foundburp;
   }
@@ -111,8 +114,6 @@ public:
   /*! \brief Inherited from VQwDataElement to set the upper and lower 
    *         limits (fULimit and fLLimit), stability % and the 
    *         error flag on this channel */
-  void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability);
-
   void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability, Double_t BurpLevel);
 
   Double_t GetEventCutUpperLimit() const { return fULimit; };
@@ -238,7 +239,6 @@ protected:
   Int_t fBurpCountdown;
   Int_t fBurpHoldoff;
 
-  Double_t fBurpLevel;
   //@}
 
 };   // class VQwHardwareChannel

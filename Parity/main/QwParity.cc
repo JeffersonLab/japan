@@ -280,6 +280,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
         // Add event to the ring
         eventring.push(detectors);
+        //std::cout << "New Event" << std::endl;
 
         // Check to see ring is ready
         if (eventring.IsReady()) {

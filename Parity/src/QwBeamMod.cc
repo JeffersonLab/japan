@@ -276,6 +276,7 @@ Int_t QwBeamMod::LoadEventCuts(TString  filename)
 	Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for BCM value
 	Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for BCM value
 	varvalue = mapstr.GetTypedNextToken<TString>();//global/loacal
+  Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
 	varvalue.ToLower();
 	Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
 	QwMessage<<"QwBeamMod Error Code  "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
@@ -283,7 +284,7 @@ Int_t QwBeamMod::LoadEventCuts(TString  filename)
 	QwMessage << "*****************************" << QwLog::endl;
 	QwMessage << " Type " << device_type << " Name " << device_name << " Index [" << det_index << "] "
 	          << " device flag " << eventcut_flag << QwLog::endl;
-	fModChannel[det_index].SetSingleEventCuts((GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)|kBModErrorFlag),LLX,ULX,stabilitycut);
+	fModChannel[det_index].SetSingleEventCuts((GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)|kBModErrorFlag),LLX,ULX,stabilitycut,burplevel);
 	QwMessage << "*****************************" << QwLog::endl;
 
       }
@@ -301,6 +302,21 @@ Int_t QwBeamMod::LoadEventCuts(TString  filename)
 
   return 0;
 }
+
+//*****************************************************************
+Bool_t QwBeamMod::CheckForBurpFail(const VQwSubsystem *subsys){
+  Bool_t burpstatus = kFALSE;
+  VQwSubsystem* tmp = const_cast<VQwSubsystem *>(subsys);
+  if(Compare(tmp)) {
+    const QwBeamMod* input = dynamic_cast<const QwBeamMod*>(subsys);
+    for(size_t i=0;i<input->fModChannel.size();i++){
+      //QwError << "************* test Clock *****************" << QwLog::endl;
+      burpstatus |= (this->fModChannel[i]).CheckForBurpFail(&(input->fModChannel[i]));
+    }
+  }
+  return burpstatus;
+}
+
 
 
 //*****************************************************************

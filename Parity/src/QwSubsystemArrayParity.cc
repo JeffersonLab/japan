@@ -534,7 +534,7 @@ Bool_t QwSubsystemArrayParity::CheckForBurpFail(QwSubsystemArrayParity &event)
 	      if (typeid(*ptr1)==typeid(*(event.at(i).get()))){
 	        //*(ptr1) = event.at(i).get();//when =operator is used
 	        //pass the correct subsystem to update the errorflags at subsystem to devices to channel levels
-          //QwError << "************* test " << typeid(*ptr1).name() << "*****************" << QwLog::endl;
+          //wError << "************* test " << typeid(*ptr1).name() << "*****************" << QwLog::endl;
 	        burpstatus |= ptr1->CheckForBurpFail(event.at(i).get());
 	      } else {
 	        //  Subsystems don't match

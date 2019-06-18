@@ -85,7 +85,10 @@ class QwScaler: public VQwSubsystemParity, public MQwSubsystemCloneable<QwScaler
     Bool_t SingleEventCuts();
     Bool_t ApplySingleEventCuts();
 
-    Bool_t CheckForBurpFail(const VQwSubsystem *subsys);
+    Bool_t CheckForBurpFail(const VQwSubsystem *subsys){
+        //QwError << "************* test inside Scaler *****************" << QwLog::endl;
+        return kFALSE;
+    };
 
     void IncrementErrorCounters();
 

@@ -426,6 +426,7 @@ template<typename T>
 Bool_t QwBCM<T>::CheckForBurpFail(const VQwDataElement *ev_error){
   Short_t i=0;
   Bool_t burpstatus = kFALSE;
+  //QwError << "************* " << this->GetElementName() << "  <<<this, event>>>  " << ev_error->GetElementName() << " *****************" << QwLog::endl;
   try {
     if(typeid(*ev_error)==typeid(*this)) {
       //std::cout<<" Here in VQwBCM::CheckForBurpFail \n";
