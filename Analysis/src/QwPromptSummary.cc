@@ -106,13 +106,13 @@ Bool_t da= fElementName.Contains("_da");
 
 
 if (type.Contains("yield")&& !(dd||da)){     
-   		out = Form("%14s | Mean: %.2e +/- %.2e \t Width: %.2e\n", fElementName.Data(), fYield, fYieldError, fYieldWidth); 
+   		out = Form("%20s | Mean: %8.3f +/- %8.3f \t Width: %8.3f\n", fElementName.Data(), fYield, fYieldError, fYieldWidth); 
 }
 if (type.Contains("asy")&& !(dd||da)){
-      out = Form("%14s | Mean: %.2e +/- %.2e \t Width: %0.2e  \n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+      out = Form("%20s | Mean: %8.3f +/- %8.3f \t Width: %8.3f\n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
 }
 if (type.Contains("double")&& (dd||da)) {
-     	out = Form ("%14s | Mean: %.2e +/- %.2e \t Width: %0.2e  \n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+     	out = Form ("%20s | Mean: %8.3f +/- %8.3f \t Width: %8.3f\n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
 }     
 
 
@@ -315,7 +315,7 @@ QwPromptSummary::PrintTextSummaryTailer()
 {
   TString out = "";
   
-  out =  "======================END OF SUMMARY============================\n";
+  out =  "==================================================\n";
   return out;
 };
 
@@ -327,16 +327,16 @@ QwPromptSummary::PrintCSVHeader(Int_t nEvents, TString start_time, TString end_t
    
   Double_t goodEvents=  (this->GetElementByName("bcm_an_ds3"))->GetNumGoodEvents();
 
-  out += Form("Distribution parameters for run %d \n",fRunNumber);
-  out += "Start Time: "+start_time+"\t End Time: "+end_time+"\n";
+  out += Form("Run: %d \n",fRunNumber);
+  out += "Start Time: "+start_time+"\nEnd Time: "+end_time+"\n";
   out += Form("Number of events processed: %i\n",nEvents);
   out += Form("Number of events in good multiplicity patterns: %3.0f\n", goodEvents);
   out += Form("Percentage of good events: %3.1f \%\n", goodEvents/nEvents*100);
-  out += "================================================================\n";
-  out += "Yield Units: bcm*(uA), cav*q(uA), bpm*(mm), sam*(mV/uA)\n";
-  out += "Asymmetry/Difference Units: bpm*(um), bcm*(ppm), cav*q(ppm), sam(ppm) \n";
+  out += "=========================================================================\n";
+  out += "Yield Units: bcm(uA), cavq(uA), bpm(mm), sam(mV/uA)\n";
+  out += "Asymmetry/Difference Units: bcm(ppm), cavq(ppm), bpm(um), sam(ppm)\n";
 
-  out += "================================================================\n";
+  out += "=========================================================================\n";
   
   
 
@@ -526,9 +526,9 @@ QwPromptSummary::PrintCSV(Int_t nEvents, TString start_time, TString end_time)
   output.open(filename.Data());
   output<< header.Data();
   
-  TString secheader= "================================================================\n";
-  secheader+="\t\t\t Yields \t\t\t\n";
-  secheader+="================================================================\n" ;
+  TString secheader= "=========================================================================\n";
+  secheader+=Form("%40s \n","Yields");
+  secheader+="=========================================================================\n" ;
   output << secheader.Data() ;
  
   for (auto i=fElementList.begin(); i!=fElementList.end(); i++  )
@@ -537,9 +537,9 @@ QwPromptSummary::PrintCSV(Int_t nEvents, TString start_time, TString end_time)
     }
   
 
-  secheader= "================================================================\n";
-  secheader+="\t\t\t Asymmetries/Differences \t\t\t\n";
-  secheader+="================================================================\n";
+  secheader= "=========================================================================\n";
+  secheader+=Form("%50s\n","Asymmetries/Differences");
+  secheader+="=========================================================================\n";
   output << secheader.Data();
  
   for ( auto j=fElementList.begin(); j!=fElementList.end(); j++ )
@@ -549,9 +549,9 @@ QwPromptSummary::PrintCSV(Int_t nEvents, TString start_time, TString end_time)
 
 
 
-  secheader= "================================================================\n";
-  secheader+="\t\t\t Combined Differences/Averages \t\t\t\n";
-  secheader+="================================================================\n";
+  secheader= "=========================================================================\n";
+  secheader+=Form("%55s\n", "Combined Differences/Averages");
+  secheader+="=========================================================================\n";
   output << secheader.Data();
 
   for ( auto j=fElementList.begin(); j!=fElementList.end(); j++ )
@@ -559,8 +559,9 @@ QwPromptSummary::PrintCSV(Int_t nEvents, TString start_time, TString end_time)
       output << (*j)->GetCSVSummary("double");
     }
 
-  output<< "=======================END OF SUMMARY===========================\n";
-
+  output<< "=========================================================================\n";
+  output<< Form("%45s\n"," End of Summary");
+  output<< "=========================================================================\n";
   output.close();
   
   return;
