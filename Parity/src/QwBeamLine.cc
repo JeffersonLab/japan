@@ -2311,10 +2311,8 @@ void QwBeamLine::AccumulateRunningSum(VQwSubsystem* value1)
 void QwBeamLine::DeaccumulateRunningSum(VQwSubsystem* value1){
     if (Compare(value1)) {
     QwBeamLine* value = dynamic_cast<QwBeamLine*>(value1);
-    /*
-    for (size_t i = 0; i < fClock.size();       i++)
+    for (size_t i = 0; i < fClock.size(); i++)
       fClock[i].get()->DeaccumulateRunningSum(*(value->fClock[i].get()));
-    */
     for (size_t i = 0; i < fStripline.size(); i++)
       fStripline[i].get()->DeaccumulateRunningSum(*(value->fStripline[i].get()));    
     for (size_t i = 0; i < fCavity.size(); i++)

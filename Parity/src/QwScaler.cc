@@ -477,8 +477,23 @@ void QwScaler::Scale(Double_t factor)
 void QwScaler::AccumulateRunningSum(VQwSubsystem* value)
 {
   if (Compare(value)) {
-    fGoodEventCount++;
-    *this  += value;
+    QwScaler* scaler = dynamic_cast<QwScaler*>(value);
+    for (size_t i = 0; i < fScaler.size(); i++) {
+      fScaler.at(i)->AccumulateRunningSum(scaler->fScaler.at(i));
+    }
+  }
+}
+
+/**
+ * Deaccumulate the running sum
+ */
+void QwScaler::DeaccumulateRunningSum(VQwSubsystem* value)
+{
+  if (Compare(value)) {
+    QwScaler* scaler = dynamic_cast<QwScaler*>(value);
+    for (size_t i = 0; i < fScaler.size(); i++) {
+      fScaler.at(i)->DeaccumulateRunningSum(scaler->fScaler.at(i));
+    }
   }
 }
 
@@ -487,10 +502,8 @@ void QwScaler::AccumulateRunningSum(VQwSubsystem* value)
  */
 void QwScaler::CalculateRunningAverage()
 {
-  if (fGoodEventCount <= 0) {
-    Scale(0);
-  } else {
-    Scale(1.0/fGoodEventCount);
+  for (size_t i = 0; i < fScaler.size(); i++) {
+    fScaler.at(i)->CalculateRunningAverage();
   }
 }
 
@@ -567,6 +580,7 @@ void QwScaler::PrintInfo() const
  */
 void QwScaler::PrintValue() const
 {
+  QwMessage << "=== QwScaler: " << GetSubsystemName() << " ===" << QwLog::endl;
   for(size_t i = 0; i < fScaler.size(); i++) {
     fScaler.at(i)->PrintValue();
   }
