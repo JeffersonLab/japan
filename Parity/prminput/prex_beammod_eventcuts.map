@@ -1,0 +1,7 @@
+EVENTCUTS = 3
+
+
+
+WORD  bmwobj -2 0 g 0 
+
+WORD  bmod_trim2 -2 0 g 0

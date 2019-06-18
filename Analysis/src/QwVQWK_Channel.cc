@@ -190,8 +190,8 @@ void QwVQWK_Channel::InitializeChannel(TString name, TString datatosave)
   fMockGaussianSigma = 0.0;
 
   // Event cuts
-  fULimit=0;
-  fLLimit=0;
+  fULimit=-1;
+  fLLimit=1;
   fNumEvtsWithEventCutsRejected = 0;
 
   fErrorFlag=0;               //Initialize the error flag
@@ -676,7 +676,7 @@ void  QwVQWK_Channel::ConstructBranchAndVector(TTree *tree, TString &prefix, std
   //  Decide what to store based on prefix
   SetDataToSaveByPrefix(prefix);
 
-  TString basename = prefix(0,prefix.First("|")) + GetElementName();
+  TString basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix.Length()) + GetElementName();
   fTreeArrayIndex  = values.size();
 
   TString list = "";
@@ -1387,8 +1387,7 @@ void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t cou
   } else if (n2 == -1) {
     // simple version for removal of single event from the sum
     fGoodEventCount--;
-
-    if (n > 0) {
+    if (n > 1) {
       fHardwareBlockSum -= (M12 - M11) / n;
       fHardwareBlockSumM2 -= (M12 - M11)
         * (M12 - fHardwareBlockSum); // note: using updated mean
@@ -1400,16 +1399,42 @@ void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t cou
         fBlock[i] -= (M12 - M11) / n;
         fBlockM2[i] -= (M12 - M11) * (M12 - fBlock[i]); // note: using updated mean
       }
-    } else if (n == 0) {
-      QwWarning << "Running sum has deaccumulated to zero good events." << QwLog::endl;
-      fGoodEventCount = 0;
-      fHardwareBlockSum = 0;
-      fHardwareBlockSumM2 = 0;
+    } else if (n == 1) {
+      fHardwareBlockSum -= (M12 - M11) / n;
+      fHardwareBlockSumM2 -= (M12 - M11)
+        * (M12 - fHardwareBlockSum); // note: using updated mean
+      if (fabs(fHardwareBlockSumM2) < 10.*std::numeric_limits<double>::epsilon())
+        fHardwareBlockSumM2 = 0; // rounding
+      // and for individual blocks
       for (Int_t i = 0; i < 4; i++) {
-        fBlock[i] = 0;
-        fBlockM2[i] = 0;
+        M11 = fBlock[i];
+        M12 = value.fBlock[i];
+        M22 = value.fBlockM2[i];
+        fBlock[i] -= (M12 - M11) / n;
+        fBlockM2[i] -= (M12 - M11) * (M12 - fBlock[i]); // note: using updated mean
+        if (fabs(fBlockM2[i]) < 10.*std::numeric_limits<double>::epsilon())
+          fBlockM2[i] = 0; // rounding
       }
-    } else if (n < 0) {
+    } else if (n == 0) {
+      fHardwareBlockSum -= M12;
+      fHardwareBlockSumM2 -= M22;
+      if (fabs(fHardwareBlockSum) < 10.*std::numeric_limits<double>::epsilon())
+        fHardwareBlockSum = 0; // rounding
+      if (fabs(fHardwareBlockSumM2) < 10.*std::numeric_limits<double>::epsilon())
+        fHardwareBlockSumM2 = 0; // rounding
+      // and for individual blocks
+      for (Int_t i = 0; i < 4; i++) {
+        M11 = fBlock[i];
+        M12 = value.fBlock[i];
+        M22 = value.fBlockM2[i];
+        fBlock[i] -= M12;
+        fBlockM2[i] -= M22;
+        if (fabs(fBlock[i]) < 10.*std::numeric_limits<double>::epsilon())
+          fBlock[i] = 0; // rounding
+        if (fabs(fBlockM2[i]) < 10.*std::numeric_limits<double>::epsilon())
+          fBlockM2[i] = 0; // rounding
+      }
+    } else {
       QwWarning << "Running sum has deaccumulated to negative good events." << QwLog::endl;
     }
   } else if (n2 == 1) {
@@ -1588,7 +1613,7 @@ Bool_t QwVQWK_Channel::ApplySingleEventCuts(Double_t LL,Double_t UL)//only check
 {
   Bool_t status = kFALSE;
 
-  if (LL==0 && UL==0){
+  if (UL < LL){
     status=kTRUE;
   } else  if (GetHardwareSum()<=UL && GetHardwareSum()>=LL){
     if ((fErrorFlag & kPreserveError)!=0)
@@ -1606,7 +1631,7 @@ Bool_t QwVQWK_Channel::ApplySingleEventCuts()//This will check the limits and up
 
   if (bEVENTCUTMODE>=2){//Global switch to ON/OFF event cuts set at the event cut file
 
-    if (fULimit==0 && fLLimit==0){
+    if (fULimit < fLLimit){
       status=kTRUE;
     } else  if (GetHardwareSum()<=fULimit && GetHardwareSum()>=fLLimit){
       if ((fErrorFlag)==0)

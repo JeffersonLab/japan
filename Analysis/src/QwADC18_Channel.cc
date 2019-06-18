@@ -176,8 +176,8 @@ void QwADC18_Channel::InitializeChannel(TString name, TString datatosave)
   fMockGaussianSigma = 0.0;
 
   // Event cuts
-  fULimit=0;
-  fLLimit=0;
+  fULimit=-1;
+  fLLimit=1;
   fNumEvtsWithEventCutsRejected = 0;
 
   fErrorFlag=0;               //Initialize the error flag
@@ -572,7 +572,7 @@ void  QwADC18_Channel::ConstructBranchAndVector(TTree *tree, TString &prefix, st
     //  Decide what to store based on prefix
     SetDataToSaveByPrefix(prefix);
 
-    TString basename = prefix(0,prefix.First("|")) + GetElementName();
+    TString basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix.Length()) + GetElementName();
     fTreeArrayIndex  = values.size();
 
     TString list;
@@ -1169,7 +1169,7 @@ Bool_t QwADC18_Channel::ApplySingleEventCuts(Double_t LL,Double_t UL)
 {
   Bool_t status = kFALSE;
 
-  if (LL==0 && UL==0){
+  if (UL < LL){
     status=kTRUE;
   } else  if (GetValue()<=UL && GetValue()>=LL){
     if ((fErrorFlag & kPreserveError)!=0)

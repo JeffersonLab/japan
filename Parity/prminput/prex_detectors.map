@@ -34,3 +34,8 @@
   name  = SyncScalers
   map  = prex_scaler.map
   eventcut = prex_scaler_eventcuts.map
+
+[QwBeamMod]
+name = BeamMod
+map = prex_beammod.map
+eventcut = prex_beammod_eventcuts.map
