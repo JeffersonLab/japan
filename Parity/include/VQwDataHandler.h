@@ -48,6 +48,16 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
       return this->ConnectChannels(asym, diff);
     }
 
+    // Subsystems with support for subsystem arrays should override this
+    virtual Int_t ConnectChannels(QwSubsystemArrayParity& detectors) { return 0; }
+
+    Int_t ConnectChannels(QwHelicityPattern& helicitypattern) {
+      return this->ConnectChannels(
+          helicitypattern.GetYield(),
+          helicitypattern.GetAsymmetry(),
+          helicitypattern.GetDifference());
+    }
+
     virtual void ProcessData();
 
     virtual void FinishDataHandler(){};

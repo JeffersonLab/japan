@@ -110,6 +110,11 @@ class QwHelicityPattern {
   };
 
   // wish these could be const references, but ConstructBranchAndVector messes with object
+  QwSubsystemArrayParity& GetYield()      { return fYield; };
+  QwSubsystemArrayParity& GetDifference() { return fDifference; };
+  QwSubsystemArrayParity& GetAsymmetry()  { return fAsymmetry; };
+
+  // wish these could be const references, but ConstructBranchAndVector messes with object
   QwSubsystemArrayParity& GetBurstYield()      { return fBurstYield; };
   QwSubsystemArrayParity& GetBurstDifference() { return fBurstDifference; };
   QwSubsystemArrayParity& GetBurstAsymmetry()  { return fBurstAsymmetry; };
