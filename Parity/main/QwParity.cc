@@ -137,7 +137,8 @@ Int_t main(Int_t argc, Char_t* argv[])
     helicitypattern.ProcessOptions(gQwOptions);
     
     /// Create the data handler array
-    QwDataHandlerArray datahandlerarray(gQwOptions,helicitypattern,run_label);
+    QwDataHandlerArray datahandlerarray_evt(gQwOptions,detectors,run_label);
+    QwDataHandlerArray datahandlerarray_mul(gQwOptions,helicitypattern,run_label); // FIXME ringoutput?
     
     ///  Create the event ring with the subsystem array
     QwEventRing eventring(gQwOptions,detectors);
@@ -196,7 +197,7 @@ Int_t main(Int_t argc, Char_t* argv[])
     burstrootfile->ConstructTreeBranches("pr", "Pair tree", helicitypattern.GetPairAsymmetry(),"asym_");
     treerootfile->ConstructTreeBranches("slow", "EPICS and slow control tree", epicsevent);
 
-    datahandlerarray.ConstructTreeBranches(treerootfile);
+    datahandlerarray_mul.ConstructTreeBranches(treerootfile);
 
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstYield(), "yield_|stat");
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstAsymmetry(), "asym_|stat");
@@ -338,10 +339,10 @@ Int_t main(Int_t argc, Char_t* argv[])
               }
 
               // Process data handlers
-              datahandlerarray.ProcessDataHandlerEntry();
+              datahandlerarray_mul.ProcessDataHandlerEntry();
 	      
               // Fill regressed tree branches
-	      datahandlerarray.FillTreeBranches(treerootfile);
+	      datahandlerarray_mul.FillTreeBranches(treerootfile);
 
               // Clear the data
               helicitypattern.ClearEventData();
@@ -375,7 +376,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       }
     }
 
-    datahandlerarray.FinishDataHandler();
+    datahandlerarray_mul.FinishDataHandler();
 
     // This will calculate running averages over single helicity events
     runningsum.CalculateRunningAverage();
@@ -420,7 +421,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       //      runningsum.WritePromptSummary(&promptsummary, "yield");
       // runningsum.WritePromptSummary(&promptsummary, "asymmetry");
       //      runningsum.WritePromptSummary(&promptsummary, "difference");
-      datahandlerarray.WritePromptSummary(&promptsummary, "asymmetry");
+      datahandlerarray_mul.WritePromptSummary(&promptsummary, "asymmetry");
       patternsum.WritePromptSummary(&promptsummary);
       promptsummary.PrintCSV();
     }
