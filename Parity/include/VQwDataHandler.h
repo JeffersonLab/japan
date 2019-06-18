@@ -15,7 +15,7 @@ Last Modified: August 1, 2018 1:39 PM
 #define VQWDATAHANDLER_H_
 
 // Qweak headers
-//#include "QwHelicityPattern.h"
+#include "QwHelicityPattern.h"
 #include "QwSubsystemArrayParity.h"
 #include "VQwHardwareChannel.h"
 #include "QwFactory.h"
@@ -23,7 +23,6 @@ Last Modified: August 1, 2018 1:39 PM
 
 class QwParameterFile;
 class QwRootFile;
-class QwHelicityPattern;
 class QwPromptSummary;
 
 class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
