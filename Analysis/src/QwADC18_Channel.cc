@@ -622,18 +622,18 @@ void  QwADC18_Channel::FillTreeVector(std::vector<Double_t> &values) const
   if (IsNameEmpty()) {
     //  This channel is not used, so skip setting up the tree.
   } else if (fTreeArrayNumEntries < 0) {
-    QwError << "VQwScaler_Channel::FillTreeVector:  fTreeArrayNumEntries=="
+    QwError << "QwADC18_Channel::FillTreeVector:  fTreeArrayNumEntries=="
             << fTreeArrayNumEntries << QwLog::endl;
   } else if (fTreeArrayNumEntries == 0) {
     static bool warned = false;
     if (!warned) {
-      QwError << "VQwScaler_Channel::FillTreeVector:  fTreeArrayNumEntries=="
+      QwError << "QwADC18_Channel::FillTreeVector:  fTreeArrayNumEntries=="
               << fTreeArrayNumEntries << " (no branch constructed?)" << QwLog::endl;
       QwError << "Offending element is " << GetElementName() << QwLog::endl;
       warned = true;
     }
   } else if (values.size() < fTreeArrayIndex+fTreeArrayNumEntries) {
-    QwError << "VQwScaler_Channel::FillTreeVector:  values.size()=="
+    QwError << "QwADC18_Channel::FillTreeVector:  values.size()=="
             << values.size() << " name: " << fElementName
             << "; fTreeArrayIndex+fTreeArrayNumEntries=="
             << fTreeArrayIndex << '+' << fTreeArrayNumEntries << '='
