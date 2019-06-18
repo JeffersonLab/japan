@@ -10,7 +10,7 @@
 
 
 
-  void BeamModPlot(TString type="evt", TString ref="CodaEventNumber"){
+void BeamModPlot(TString type="evt", TString ref="CodaEventNumber"){
   gStyle->SetOptStat(0);
   TTree* tree_R = (TTree*)gDirectory->Get(type);
 

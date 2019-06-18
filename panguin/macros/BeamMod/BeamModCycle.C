@@ -14,11 +14,35 @@
   TTree* tree_R = (TTree*)gDirectory->Get(type);
 
 
+  tree_R->Draw(">>elist","bmwcycnum>0","entrylist");  //picks out unique cycle numbers
+  TEntryList *elist = (TEntryList*)gDirectory->Get("elist");
+  tree_R->SetEntryList(elist);
+  TLeaf *l_bmwcycnum = tree_R->GetLeaf("bmwcycnum");
+  int nonzero = tree_R->Draw("bmwcycnum","bmwcycnum>0","goff");
+  vector<Double_t> cycles;
+  for(int i=0;i<nonzero;i++){
+    l_bmwcycnum->GetBranch()->GetEntry(elist->GetEntry(i));
+    Double_t cyclenum = l_bmwcycnum->GetValue();
+    if(i==0){
+      cycles.push_back(cyclenum);
+    }
+    else{
+      int sizeVec = cycles.size();
+      if(cyclenum != cycles[sizeVec-1]){
+	cycles.push_back(cyclenum);
+      }
+    }
+  }
+  
+  TString cyclechoice = Form("%f",cycles[1]);
+
+
+
   TString bmwcut = "bmwcycnum>0";
   TString evcut = "ErrorFlag==0"; //basic cut, all events with beam on
   TString evcutxcorr = "ErrorFlag==0 && bpm4aX>2"; //cut for x sensitivities
   TString evcutycorr = "ErrorFlag==0"; //cut for y sensitivities
-  TString evcutbcm = "ErrorFlag==0 && bmwcycnum==23"; //cut to look at one supercycle
+  TString evcutbcm = "ErrorFlag==0 && bmwcycnum==" + cyclechoice; //cut to look at one supercycle
   TString evcutx = "ErrorFlag==0 && bmwobj==1 | bmwobj==3 | bmwobj==6";//cut for x modulations
   TString evcuty = "ErrorFlag==0 && bmwobj==2 | bmwobj==4 | bmwobj==7";// cut for y modulations
   TString evcute = "ErrorFlag==0 && bmwobj==8";//cut for energy modulations
