@@ -190,8 +190,8 @@ void QwVQWK_Channel::InitializeChannel(TString name, TString datatosave)
   fMockGaussianSigma = 0.0;
 
   // Event cuts
-  fULimit=0;
-  fLLimit=0;
+  fULimit=-1;
+  fLLimit=1;
   fNumEvtsWithEventCutsRejected = 0;
 
   fErrorFlag=0;               //Initialize the error flag
@@ -1614,7 +1614,7 @@ Bool_t QwVQWK_Channel::ApplySingleEventCuts(Double_t LL,Double_t UL)//only check
 {
   Bool_t status = kFALSE;
 
-  if (LL==0 && UL==0){
+  if (UL < LL){
     status=kTRUE;
   } else  if (GetHardwareSum()<=UL && GetHardwareSum()>=LL){
     if ((fErrorFlag & kPreserveError)!=0)
@@ -1632,7 +1632,7 @@ Bool_t QwVQWK_Channel::ApplySingleEventCuts()//This will check the limits and up
 
   if (bEVENTCUTMODE>=2){//Global switch to ON/OFF event cuts set at the event cut file
 
-    if (fULimit==0 && fLLimit==0){
+    if (fULimit < fLLimit){
       status=kTRUE;
     } else  if (GetHardwareSum()<=fULimit && GetHardwareSum()>=fLLimit){
       if ((fErrorFlag)==0)

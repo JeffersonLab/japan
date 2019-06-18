@@ -286,7 +286,7 @@ void QwScaler_Channel<data_mask,data_shift>::ConstructBranchAndVector(TTree *tre
 	list += ":header/D"; 
       }
     }
-
+    //std::cout << basename <<": first==" << fTreeArrayIndex << ", last==" << values.size() << std::endl;
     fTreeArrayNumEntries = values.size() - fTreeArrayIndex;
     if (gQwHists.MatchDeviceParamsFromList(basename.Data()))
       tree->Branch(basename, &(values[fTreeArrayIndex]), list);
@@ -307,6 +307,7 @@ void  VQwScaler_Channel::ConstructBranch(TTree *tree, TString &prefix)
 template<unsigned int data_mask, unsigned int data_shift>
 void QwScaler_Channel<data_mask,data_shift>::FillTreeVector(std::vector<Double_t> &values) const
 {
+  //std::cout<<"inside QwScaler_Channel::FillTreeVector"<< std::endl;
   if (IsNameEmpty()) {
     //  This channel is not used, so skip setting up the tree.
   } else if (fTreeArrayNumEntries < 0) {
@@ -343,7 +344,11 @@ void QwScaler_Channel<data_mask,data_shift>::FillTreeVector(std::vector<Double_t
       }
 
     }
+    //std::cout << fElementName <<": first==" << fTreeArrayIndex << ", last==" << index << std::endl;
+    //std::cout<<"value: "<< this->fValue << std::endl;
+    //std::cout <<"index: " << index  << std::endl;
   }
+  
 }
 
 
@@ -645,13 +650,16 @@ Int_t VQwScaler_Channel::ApplyHWChecks() {
 
 Bool_t VQwScaler_Channel::ApplySingleEventCuts()
 {
+  //std::cout << "Here in VQwScaler_Channel: "<< std::endl; 
   Bool_t status;
   //QwError<<" Single Event Check ! "<<QwLog::endl;
   if (bEVENTCUTMODE>=2){//Global switch to ON/OFF event cuts set at the event cut file
-
-    if (fULimit==0 && fLLimit==0){
+    //std::cout << "Upper : " << fULimit << " , Lower: " << fLLimit << std::endl;
+    if (fULimit <  fLLimit){
+      // std::cout << "First" << std::endl;
       status=kTRUE;
     } else  if (GetValue()<=fULimit && GetValue()>=fLLimit){
+      //std::cout << "Second" << std::endl;
       //QwError<<" Single Event Cut passed "<<GetElementName()<<" "<<GetValue()<<QwLog::endl;
       if (fErrorFlag !=0)
 	status=kFALSE;
@@ -659,6 +667,7 @@ Bool_t VQwScaler_Channel::ApplySingleEventCuts()
 	status=kTRUE;
     }
     else{
+      //std::cout << "Third" << std::endl;
       //QwError<<" Single Event Cut Failed "<<GetElementName()<<" "<<GetValue()<<QwLog::endl;
       if (GetValue()> fULimit)
 	fErrorFlag|=kErrorFlag_EventCut_U;
@@ -769,6 +778,16 @@ void VQwScaler_Channel::ScaledAdd(Double_t scale, const VQwHardwareChannel *valu
 	this->fErrorFlag |= (input->fErrorFlag);
     }
 }
+
+
+template<>
+VQwHardwareChannel* QwScaler_Channel<0x00ffffff,0>::Clone(){
+  return new QwSIS3801D24_Channel(*this);
+};
+template<>
+VQwHardwareChannel* QwScaler_Channel<0xffffffff,0>::Clone(){
+  return new QwSIS3801D32_Channel(*this);
+};
 
 //  These explicit class template instantiations should be the
 //  last thing in this file.  This list should cover all of the
