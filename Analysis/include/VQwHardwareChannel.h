@@ -91,7 +91,7 @@ public:
     Bool_t foundburp = kFALSE;
     if (fBurpThreshold>0){
       Double_t diff = this->GetValue() - event->GetValue();
-      if (abs(diff)>fBurpThreshold){
+      if (fabs(diff)>fBurpThreshold){
 	      foundburp = kTRUE;
 	      fBurpCountdown = fBurpHoldoff;
       } else if (fBurpCountdown>0) {
@@ -102,9 +102,7 @@ public:
     if (foundburp){
       fErrorFlag |= kErrorFlag_BurpCut;
     }
-    if (foundburp){
-    QwError << "************* val1=" << this->GetValue() << "  val2=" << event->GetValue() << "  diff=" << this->GetValue() - event->GetValue() << "  threshold=" << fBurpThreshold << "  foundburp=" << foundburp << " *****************" << QwLog::endl;
-    }
+    
     return foundburp;
   }
   
