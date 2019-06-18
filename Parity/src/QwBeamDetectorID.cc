@@ -80,9 +80,8 @@ QwBeamDetectorID::QwBeamDetectorID(Int_t subbankid,
     fSubelement = QwLinearDiodeArray::GetSubElementIndex(fSubelementName);
     break;
   case kQwBPMCavity:
-    fdetectorname   = fChannelName(0,namesize-2);
-    fSubelementName = fChannelName(namesize-2,1);
-    fSubelement = QwBPMCavity::GetSubElementIndex(fSubelementName);
+    QwBPMCavity::ParseChannelName(fChannelName,fdetectorname,
+				  fSubelementName, fSubelement);
     break;
   default:
     fdetectorname   = fChannelName;
