@@ -171,47 +171,62 @@ QwkRegBlueCorrelator::exportAlphas(TString outName, std::vector < TString > ivNa
 
   linReg.mA.Write("slopes");
   linReg.mAsig.Write("sigSlopes");
-  linReg.mRjk.Write("IV_correlation");
+
+  linReg.mRPP.Write("IV_IV_correlation");
+  linReg.mRPY.Write("IV_DV_correlation");
+  linReg.mRYY.Write("DV_DV_correlation");
+  linReg.mRYYprime.Write("DV_DV_correlation_prime");
+
   linReg.mMP.Write("IV_mean");
   linReg.mMY.Write("DV_mean");
+  linReg.mMYprime.Write("DV_mean_prime");
  
-  //add processed  matrices
-  double usedEve=linReg.getUsedEve();
+  // number of events
   TMatrixD Mstat(1,1);
-  Mstat(0,0)=usedEve;
+  Mstat(0,0)=linReg.getUsedEve();
   Mstat.Write("MyStat");
 
   //... IVs
-  TMatrixD MsigIV(nP,1);
   TH1D hiv("IVname","names of IVs",nP,-0.5,nP-0.5); 
-  double val;
-  for(int i=0;i<nP;i++){
-    Int_t testval = 0;
-    testval = linReg.getSigmaP(i,val);
-    assert(testval==0);
-    MsigIV(i,0)=val;
-    hiv.Fill(ivName[i],i);
-  }
-  MsigIV.Write("IV_sigma"); // of distribution
+  for (int i=0;i<nP;i++) hiv.Fill(ivName[i],i);
   hiv.Write();
 
   //... DVs
-  TMatrixD MsigDV(nY,1);
   TH1D hdv("DVname","names of IVs",nY,-0.5,nY-0.5); 
-  for(int i=0;i<nY;i++){
-    Int_t testval = 0;
-    testval = linReg.getSigmaY(i,val);
-    assert(testval==0);
-    MsigDV(i,0)=val;
-    hdv.Fill(dvName[i],i);
-  }
-  MsigDV.Write("DV_sigma"); // of distribution
+  for (int i=0;i<nY;i++) hdv.Fill(dvName[i],i);
   hdv.Write();
 
-  //raw matrices
-  linReg.mVPP.Write("IV_rawVariance");
+  // sigmas
+  linReg.sigX.Write("IV_sigma");
+  linReg.sigY.Write("DV_sigma");
+  linReg.sigYprime.Write("DV_sigma_prime");
+
+  // raw covariances
+  linReg.mVPP.Write("IV_IV_rawVariance");
   linReg.mVPY.Write("IV_DV_rawVariance");
-  linReg.mVY2.Write("DV_rawVariance");
+  linReg.mVYY.Write("DV_DV_rawVariance");
+  linReg.mVYYprime.Write("DV_DV_rawVariance_prime");
+  TVectorD mVY2(TMatrixDDiag(linReg.mVYY));
+  mVY2.Write("DV_rawVariance");
+  TVectorD mVP2(TMatrixDDiag(linReg.mVPP));
+  mVP2.Write("IV_rawVariance");
+  TVectorD mVY2prime(TMatrixDDiag(linReg.mVYYprime));
+  mVY2prime.Write("DV_rawVariance_prime");
+
+  // normalized covariances
+  linReg.sigXX.Write("IV_IV_normVariance");
+  linReg.sigXY.Write("IV_DV_normVariance");
+  linReg.sigYY.Write("DV_DV_normVariance");
+  linReg.sigYYprime.Write("DV_DV_normVariance_prime");
+  TVectorD sigY2(TMatrixDDiag(linReg.sigYY));
+  sigY2.Write("DV_normVariance");
+  TVectorD sigX2(TMatrixDDiag(linReg.sigXX));
+  sigX2.Write("IV_normVariance");
+  TVectorD sigY2prime(TMatrixDDiag(linReg.sigYYprime));
+  sigY2prime.Write("DV_normVariance_prime");
+
+  linReg.Axy.Write("A_xy");
+  linReg.Ayx.Write("A_yx");
 
   //  TMatrixD Mstats(1,0);
 
