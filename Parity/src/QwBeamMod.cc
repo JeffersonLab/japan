@@ -326,6 +326,13 @@ Int_t QwBeamMod::LoadEventCuts(TString  filename)
       else if (device_type == "WORD" && device_name== "FFB_STATUS"){
 	fFFB_holdoff=mapstr.GetTypedNextToken<UInt_t>();//Read the FFB OFF interval
       }
+      else if (device_type == "WORD" && device_name== "BMWOBJ"){
+	fBMWObj_LL=mapstr.GetTypedNextToken<Int_t>();
+	fBMWObj_UL=mapstr.GetTypedNextToken<Int_t>();
+	QwMessage << "bmwobj error cuts"
+		  << "LowerLimit=" << fBMWObj_LL
+		  << "UpperLimit=" << fBMWObj_UL <<QwLog::endl;
+      }
 
 
     }
@@ -482,8 +489,13 @@ Bool_t QwBeamMod::ApplySingleEventCuts(){
   */
 
   //copy for fBmwObj
-  if (fWord[fBmwObj_Index].GetValue()>0){
-    fFFB_ErrorFlag = (kGlobalCut+kBModErrorFlag+kBModFFBErrorFlag+kEventCutMode3);  
+  if (fBMWObj_LL < fBMWObj_UL) {
+    // Cuts are valid
+    if (fWord[fBmwObj_Index].GetValue()>fBMWObj_UL
+	|| fWord[fBmwObj_Index].GetValue()<fBMWObj_LL){
+      // Value is outside of cuts range.
+      fFFB_ErrorFlag = (kGlobalCut+kBModErrorFlag+kBModFFBErrorFlag+kEventCutMode3);
+    }
   }
   
   /*if (!fFFB_Flag &&  (fFFB_holdoff_Counter>0 && fFFB_holdoff_Counter<=fFFB_holdoff) ){

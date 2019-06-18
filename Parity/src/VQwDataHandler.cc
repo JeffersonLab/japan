@@ -201,6 +201,8 @@ pair<VQwDataHandler::EQwHandleType,string> VQwDataHandler::ParseHandledVariable(
       {type_name.first = kHandleTypeAsym;}
     else if (type == "diff")
       {type_name.first = kHandleTypeDiff;}
+    else if (type == "yield")
+      {type_name.first = kHandleTypeYield;} 
     else if (type == "mps")
       {type_name.first = kHandleTypeMps;}
     else
