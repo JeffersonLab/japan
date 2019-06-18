@@ -56,6 +56,9 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
       fPatternWordIndex = -1;
       fBmwObj_Index = -1;
 
+      // Initialize the bmwobj cuts with UL < LL to disable the cut
+      fBMWObj_LL = +1;
+      fBMWObj_UL = -1;
     };
   /// Copy constructor
   QwBeamMod(const QwBeamMod& source)
@@ -164,6 +167,8 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
  Int_t fRampChannelIndex;
  Int_t fPatternWordIndex;
  UInt_t fBmwObj_Index;
+ Int_t fBMWObj_LL;
+ Int_t fBMWObj_UL;
  UInt_t fBmwObj_ErrorFlag;
 
 };
