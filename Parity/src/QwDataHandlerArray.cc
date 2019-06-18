@@ -506,7 +506,8 @@ void QwDataHandlerArray::CalculateRunningAverage()
 void QwDataHandlerArray::AccumulateRunningSum()
 {
   if (!empty()) {
-    if (fHelicityPattern->GetEventcutErrorFlag() == 0){
+    if ((fHelicityPattern && fHelicityPattern->GetEventcutErrorFlag() == 0)
+     || (fSubsystemArray  && fSubsystemArray->GetEventcutErrorFlag() == 0)) {
       for (iterator handler = begin(); handler != end(); ++handler) {
 	VQwDataHandler* handler_parity = dynamic_cast<VQwDataHandler*>(handler->get());
 	handler_parity->AccumulateRunningSum();
