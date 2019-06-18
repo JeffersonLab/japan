@@ -712,6 +712,17 @@ void VQwScaler_Channel::AccumulateRunningSum(const VQwScaler_Channel& value, Int
   if (n2 == 0 && value.fErrorFlag == 0) {
     n2 = 1;
   }
+
+  // If a single event is removed from the sum, check all but stability fail flags
+  if (n2 == -1) {
+    if ((value.fErrorFlag & 0xFFFFFFF) == 0) {
+      n2 = -1;
+    } else {
+      n2 = 0;
+    }
+  }
+
+  // New total number of good events
   Int_t n = n1 + n2;
 
   // Set up variables
@@ -721,6 +732,29 @@ void VQwScaler_Channel::AccumulateRunningSum(const VQwScaler_Channel& value, Int
   if (n2 == 0) {
     // no good events for addition
     return;
+  } else if (n2 == -1) {
+    // simple version for removal of single event from the sum
+    fGoodEventCount--;
+    if (n > 1) {
+      fValue -= (M12 - M11) / n;
+      fValueM2 -= (M12 - M11)
+        * (M12 - fValue); // note: using updated mean
+    } else if (n == 1) {
+      fValue -= (M12 - M11) / n;
+      fValueM2 -= (M12 - M11)
+        * (M12 - fValue); // note: using updated mean
+      if (fabs(fValueM2) < 10.*std::numeric_limits<double>::epsilon())
+        fValueM2 = 0; // rounding
+    } else if (n == 0) {
+      fValue -= M12;
+      fValueM2 -= M22;
+      if (fabs(fValue) < 10.*std::numeric_limits<double>::epsilon())
+        fValue = 0; // rounding
+      if (fabs(fValueM2) < 10.*std::numeric_limits<double>::epsilon())
+        fValueM2 = 0; // rounding
+    } else {
+      QwWarning << "Running sum has deaccumulated to negative good events." << QwLog::endl;
+    }
   } else if (n2 == 1) {
     // simple version for addition of single event
     fGoodEventCount++;
