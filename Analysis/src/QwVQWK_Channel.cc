@@ -1366,7 +1366,7 @@ void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t cou
 
   // If a single event is removed from the sum, check all but stability fail flags
   if (n2 == -1) {
-    if (value.fErrorFlag & 0xFFFFFFF == 0) {
+    if ((value.fErrorFlag & 0xFFFFFFF) == 0) {
       n2 = -1;
     } else {
       n2 = 0;
