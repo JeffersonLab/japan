@@ -33,7 +33,7 @@ class QwAlarmHandler:public VQwDataHandler, public MQwDataHandlerCloneable<QwAla
     Int_t LoadChannelMap(const std::string& mapfile);
 
     /// \brief Connect to Channels (event only)
-    Int_t ConnectChannels(QwSubsystemArrayParity& event);
+    //Int_t ConnectChannels(QwSubsystemArrayParity& event);
     /// \brief Connect to Channels (asymmetry/difference only)
     Int_t ConnectChannels(
         QwSubsystemArrayParity& yield,
