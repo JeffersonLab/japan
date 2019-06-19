@@ -41,6 +41,8 @@ IBC3H00CRCUR4			slow_controls_data		float		! Beam Current (Hall C), Hall C Curre
 IGL1I00OD16_16			slow_controls_data		string		! another HWP, INSERTABLE waveplate
 IGL1I00DIOFLRD			slow_controls_data		float		! Fake Half-Wave Plate (8960=OUT)
 APEXPOS				slow_controls_data		float		! Target encoder position
+pcrex90BDSPOS.VAL  slow_controls_data		float		! Target encoder position
+pcrex90BDS_PullString.VAL  slow_controls_data		float		! Target encoder position
 HALLA:dpp			slow_controls_data		float		! Tiefenbach 6GeV orbit correction (dpp), Hall A momentum orbit correction (dpp)
 INJ:p				slow_controls_data		float		! Injector Measured Energy
 ARC1:p				slow_controls_data		float		! 
