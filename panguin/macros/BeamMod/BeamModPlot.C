@@ -10,14 +10,15 @@
 
 
 
-void BeamModPlot(TString type="evt", TString ref="CodaEventNumber"){
+void BeamModPlot(TString type="evt",TString type2="mul", TString ref="CodaEventNumber"){
   gStyle->SetOptStat(0);
   TTree* tree_R = (TTree*)gDirectory->Get(type);
+  TTree* tree_M = (TTree*)gDirectory->Get(type2);
 
 
   TString bmwcut = "bmwcycnum>0";
   TString evcut = "ErrorFlag==0"; //basic cut, all events with beam on
-  TString evcutxcorr = "ErrorFlag==0 && bpm4aX>2"; //cut for x sensitivities
+  TString evcutxcorr = "ErrorFlag==0"; //cut for x sensitivities
   TString evcutycorr = "ErrorFlag==0"; //cut for y sensitivities
   TString evcutbcm = "ErrorFlag==0 && bmwcycnum==23"; //cut to look at one supercycle
   TString evcutx = "ErrorFlag==0 && bmwobj==1 | bmwobj==3 | bmwobj==6";//cut for x modulations
@@ -63,10 +64,11 @@ void BeamModPlot(TString type="evt", TString ref="CodaEventNumber"){
  
 
   cBMWPlot2->cd(2);
-  tree_R->Draw("(bpm4eX+bpm4aX):(bpm4eX-bpm4aX)",evcutxcorr);
+  tree_M->Draw("(diff_bpm4eX-diff_bpm4aX):(diff_bpm4aX+diff_bpm4eX)","bmwobj<0")
+   
 
   cBMWPlot2->cd(3);
-  tree_R->Draw("(bpm4eY+bpm4aY):(bpm4eY-bpm4aY)",evcutycorr);
+  tree_M->Draw("(diff_bpm4eY-diff_bpm4aY):(diff_bpm4aY+diff_bpm4eY)","bmwobj<0")
 
   return 0;
 }
