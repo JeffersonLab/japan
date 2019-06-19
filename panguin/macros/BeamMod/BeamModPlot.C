@@ -10,9 +10,10 @@
 
 
 
-void BeamModPlot(TString type="evt", TString ref="CodaEventNumber"){
+void BeamModPlot(TString type="evt",TString type2="mul", TString ref="CodaEventNumber"){
   gStyle->SetOptStat(0);
   TTree* tree_R = (TTree*)gDirectory->Get(type);
+  TTree* tree_M = (TTree*)gDirectory->Get(type2);
 
 
   TString bmwcut = "bmwcycnum>0";
@@ -63,10 +64,11 @@ void BeamModPlot(TString type="evt", TString ref="CodaEventNumber"){
  
 
   cBMWPlot2->cd(2);
-  tree_R->Draw("(bpm4eX+bpm4aX):(bpm4eX-bpm4aX)",evcutxcorr);
+  tree_M->Draw("(diff_bpm4eX-diff_bpm4aX):(diff_bpm4aX+diff_bpm4eX)","bmwobj<0")
+   
 
   cBMWPlot2->cd(3);
-  tree_R->Draw("(bpm4eY+bpm4aY):(bpm4eY-bpm4aY)",evcutycorr);
+  tree_M->Draw("(diff_bpm4eY-diff_bpm4aY):(diff_bpm4aY+diff_bpm4eY)","bmwobj<0")
 
   return 0;
 }
