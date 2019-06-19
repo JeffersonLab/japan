@@ -835,7 +835,8 @@ void QwBeamMod::ConstructBranchAndVector(TTree *tree, TString & prefix, std::vec
   fTreeArrayIndex  = values.size();
   for (size_t i=0; i<fWord.size(); i++) {
     // 	  basename = fWord[i].fWordName;
-    basename = prefix+fWord[i].fWordName;
+    basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix.Length());
+    basename += fWord[i].fWordName;
     values.push_back(0.0);
     tree->Branch(basename, &(values.back()), basename+"/D");
   }
