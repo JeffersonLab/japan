@@ -345,7 +345,7 @@ void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
       element_value_width = 0.0;
      
    
-      local_add_these_elements=element_name.Contains("dd")||element_name.Contains("da"); // Need to change this to add other detectorss in summary
+      local_add_these_elements=element_name.Contains("dd")||element_name.Contains("da"); // Need to change this to add other detectors in summary
 
       if(local_add_these_elements && local_add_element){
         ps->AddElement(new PromptSummaryElement(element_name)); 

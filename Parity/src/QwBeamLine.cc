@@ -3153,7 +3153,6 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
       }
     }
   
-    
   char property[2][6]={"x","y"};
   local_ps_element=NULL;
   local_add_these_elements=false;
