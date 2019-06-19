@@ -138,7 +138,8 @@ class QwEventBuffer: public MQwCodaControlEvent{
   Bool_t IsEPICSEvent(){
     //  What are the correct codes for our EPICS events?
     //return (fEvtType>=160 && fEvtType<=170);// epics event type is only with tag="160"
-    return (fEvtType>=160 && fEvtType<=190);// epics event type is only with tag="180" from July 2010 running
+    // return (fEvtType>=160 && fEvtType<=190);// epics event type is only with tag="180" from July 2010 running
+    return (fEvtType==131);// epics event type is for 2019 summer PREX-II 
   };
 
   Bool_t FillSubsystemConfigurationData(QwSubsystemArray &subsystems);
