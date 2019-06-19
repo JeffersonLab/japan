@@ -17,7 +17,7 @@ void BeamModPlot(TString type="evt", TString ref="CodaEventNumber"){
 
   TString bmwcut = "bmwcycnum>0";
   TString evcut = "ErrorFlag==0"; //basic cut, all events with beam on
-  TString evcutxcorr = "ErrorFlag==0 && bpm4aX>2"; //cut for x sensitivities
+  TString evcutxcorr = "ErrorFlag==0"; //cut for x sensitivities
   TString evcutycorr = "ErrorFlag==0"; //cut for y sensitivities
   TString evcutbcm = "ErrorFlag==0 && bmwcycnum==23"; //cut to look at one supercycle
   TString evcutx = "ErrorFlag==0 && bmwobj==1 | bmwobj==3 | bmwobj==6";//cut for x modulations
