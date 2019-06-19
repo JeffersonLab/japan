@@ -3152,22 +3152,6 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
       }
     }
   
-  ///  Add the specific special case for q_targ
-  /*VQwHardwareChannel* tmp_qtarg;
-  if (RequestExternalValue("q_targ", tmp_qtarg)) {
-    ps->AddElement(new PromptSummaryElement("q_targ"));
-    local_ps_element=ps->GetElementByName("q_targ");
-    if(local_ps_element) {
-      element_value       = tmp_qtarg->GetValue();
-      element_value_err   = tmp_qtarg->GetValueError();
-      element_value_width = tmp_qtarg->GetValueWidth();
-      local_ps_element->Set(type, element_value, element_value_err, element_value_width);
-      printf("Type %12s, Element %32s, value %12.4e error %8.4e  width %12.4e\n", type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
-
-    }
-  }*/
-
-    
   char property[2][6]={"x","y"};
   local_ps_element=NULL;
   local_add_these_elements=false;
