@@ -59,7 +59,7 @@ void QwBlinder::DefineOptions(QwOptions &options){
 		       "Forces the blinder to interpret the target as being in a blindable position");
   options.AddOptions("Blinder")("blinder.force-target-out", po::value<bool>()->default_bool_value(false),
 		       "Forces the blinder to interpret the target position as target-out");
-  options.AddOptions("Blinder")("blinder.beam-current-threshold", po::value<double>()->default_value(1.0),
+  options.AddOptions("Blinder")("blinder.beam-current-threshold", po::value<double>()->default_value(2.5),
 		       "Beam current in microamps below which data will not be blinded");
 }
 
