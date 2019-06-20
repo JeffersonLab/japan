@@ -37,17 +37,45 @@ class plotobj:
     self.error=self.error+error
     self.status=self.status+status
   def returngraph(self):
-    mg=R.TMultiGraph()
     style={'Good':20,'Invalid':47}
     color={'Good':3, 'Invalid':2}
     n=len(self.run)
     d={'RunID':self.run, 'CycleID':self.cycle, 'coeff':self.coeff, 'error':self.error, 'status':self.status, 'row':range(0,n)}
     df=pd.DataFrame(d)
-    run=df.RunID.tolist()
-    cycle=df.CycleID.tolist()
-    coeff=df.coeff.tolist()
-    error=df.error.tolist()
-    graph=R.TGraphErrors(n,array('f',range(0,n)), array('f',coeff), array('f',[0]*n), array('f',error)  )
+    row={}
+    run={}
+    cycle={}
+    coeff={}
+    error={}
+    m={}
+    graph={}
+    mg=R.TMultiGraph()
+    for status in ['Good','Invalid']:
+      run[status]=df[df.status==status].RunID.tolist()
+      cycle[status]=df[df.status==status].CycleID.tolist()
+      coeff[status]=df[df.status==status].coeff.tolist()
+      error[status]=df[df.status==status].error.tolist()
+      row[status]=df[df.status==status].row.tolist()
+      m[status]= len(run[status])
+      graph[status]=R.TGraphErrors(m[status], array('f',row[status]), array('f',coeff[status]), array('f',[0]*m[status]), array('f',error[status]) )
+      graph[status].SetMarkerColor(color[status])
+      graph[status].SetLineColor(color[status])
+      graph[status].SetMarkerStyle(style[status])
+      mg.Add(graph[status])
+    
+    axis=mg.GetXaxis()
+    axis.Set(n,-0.5,n+0.5)
+    axis.SetNdivisions(-n)
+    for i in range(0,n):
+      binindex=axis.FindBin(i)
+      axis.SetBinLabel(binindex,"R"+str(self.run[i])+"C"+str(self.cycle[i]))
+    mg.SetTitle(self.name+" vs run/cycle")
+
+      
+    return mg
+'''
+    graph.Add(good)
+    graph.Add(invalid)
     axis=graph.GetXaxis()
     axis.Set(n,-0.5,n+0.5)
     axis.SetNdivisions(-n)
@@ -56,11 +84,9 @@ class plotobj:
         axis.SetBinLabel(binindex,"R"+str(self.run[i])+"C"+str(self.cycle[i]))
         axis.ChangeLabel(i+1, 40.0)
     graph.SetTitle(self.name+" vs run/cycle")
-    graph.SetMarkerStyle(style['Good'])
-    graph.SetMarkerColor(color['Good'])
-    graph.SetLineColor(3)
     graph.SetMarkerSize(2)
-    return graph
+'''    
+  
 
 
 filelist= ['res/prexRespin1_1473_dither.res','res/prexRespin1_1474_dither.res']
