@@ -49,7 +49,7 @@ class plotobj:
     error={}
     m={}
     graph={}
-    mg=R.TMultiGraph()
+    mg=R.TMultiGraph(self.name,self.name+" vs run/cycle")
     for status in ['Good','Invalid']:
       run[status]=df[df.status==status].RunID.tolist()
       cycle[status]=df[df.status==status].CycleID.tolist()
@@ -61,6 +61,7 @@ class plotobj:
       graph[status].SetMarkerColor(color[status])
       graph[status].SetLineColor(color[status])
       graph[status].SetMarkerStyle(style[status])
+      graph[status].SetMarkerSize(1)
       mg.Add(graph[status])
     
     axis=mg.GetXaxis()
@@ -68,24 +69,9 @@ class plotobj:
     axis.SetNdivisions(-n)
     for i in range(0,n):
       binindex=axis.FindBin(i)
-      axis.SetBinLabel(binindex,"R"+str(self.run[i])+"C"+str(self.cycle[i]))
-    mg.SetTitle(self.name+" vs run/cycle")
-
-      
+      axis.SetBinLabel(binindex,"R"+str(self.run[i])+"C"+str(self.cycle[i]))        
     return mg
-'''
-    graph.Add(good)
-    graph.Add(invalid)
-    axis=graph.GetXaxis()
-    axis.Set(n,-0.5,n+0.5)
-    axis.SetNdivisions(-n)
-    for i in range(0,n):
-        binindex= axis.FindBin(i)
-        axis.SetBinLabel(binindex,"R"+str(self.run[i])+"C"+str(self.cycle[i]))
-        axis.ChangeLabel(i+1, 40.0)
-    graph.SetTitle(self.name+" vs run/cycle")
-    graph.SetMarkerSize(2)
-'''    
+    
   
 
 
@@ -113,22 +99,6 @@ for l in range(0,varcount):
     c=R.TCanvas(pobj[l].name, pobj[l].name, 800,600)
     c.SetGrid()
     graph=plotobj.returngraph(pobj[l])    
-    '''
-    n=len(pobj[l].run)
-    graph=R.TGraphErrors(n,array('f',range(0,n)), array('f',pobj[l].coeff), array('f',[0]*n), array('f',pobj[l].error)  )
-    axis=graph.GetXaxis()
-    axis.Set(n,-0.5,n+0.5)
-    axis.SetNdivisions(-n)
-    for i in range(0,n):
-      binindex= axis.FindBin(i)
-      axis.SetBinLabel(binindex,"R"+str(pobj[l].run[i])+"C"+str(pobj[l].cycle[i]))
-      axis.ChangeLabel(i+1, 40.0)
-    graph.SetTitle(pobj[l].name+" vs run/cycle")
-    graph.SetMarkerStyle(20)
-    graph.SetMarkerColor(3)
-    graph.SetLineColor(3)
-    graph.SetMarkerSize(2)
-    '''
     graph.Draw("AP")
     c.Print("fig/"+pobj[l].name+".png")
     #graph.Write(pobj[l].name)
