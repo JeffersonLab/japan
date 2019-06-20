@@ -17,7 +17,7 @@ class bmoddata:
     self.df=self.df.drop(["#comment","DV_name","IV_name","unit"],axis=1) #Getting rid of unnecesary columns may be
   #function returns slope table if parameter specified is 'slope' or returns sensitivity
   def returndf(self): #return the data frame with coefficient and values
-    return self.df.loc[:,['RunID','CycleID','Variable','coeff','error']]
+    return self.df.loc[:,['RunID','CycleID','Variable','coeff','error','status']]
   #function returns unique list of variables
   def returnlov(self):
     return self.df['Variable'].unique().tolist()
@@ -29,12 +29,39 @@ class plotobj:
     self.cycle=[]
     self.coeff=[]
     self.error=[]
-  def updatelist(self,run,cycle,coeff,error):
+    self.status=[]
+  def updatelist(self,run,cycle,coeff,error,status):
     self.run=self.run+run
     self.cycle=self.cycle+cycle
     self.coeff=self.coeff+coeff
     self.error=self.error+error
-    
+    self.status=self.status+status
+  def returngraph(self):
+    mg=R.TMultiGraph()
+    style={'Good':20,'Invalid':47}
+    color={'Good':3, 'Invalid':2}
+    n=len(self.run)
+    d={'RunID':self.run, 'CycleID':self.cycle, 'coeff':self.coeff, 'error':self.error, 'status':self.status, 'row':range(0,n)}
+    df=pd.DataFrame(d)
+    run=df.RunID.tolist()
+    cycle=df.CycleID.tolist()
+    coeff=df.coeff.tolist()
+    error=df.error.tolist()
+    graph=R.TGraphErrors(n,array('f',range(0,n)), array('f',coeff), array('f',[0]*n), array('f',error)  )
+    axis=graph.GetXaxis()
+    axis.Set(n,-0.5,n+0.5)
+    axis.SetNdivisions(-n)
+    for i in range(0,n):
+        binindex= axis.FindBin(i)
+        axis.SetBinLabel(binindex,"R"+str(self.run[i])+"C"+str(self.cycle[i]))
+        axis.ChangeLabel(i+1, 40.0)
+    graph.SetTitle(self.name+" vs run/cycle")
+    graph.SetMarkerStyle(style['Good'])
+    graph.SetMarkerColor(color['Good'])
+    graph.SetLineColor(3)
+    graph.SetMarkerSize(2)
+    return graph
+
 
 filelist= ['res/prexRespin1_1473_dither.res','res/prexRespin1_1474_dither.res']
 filecount=len(filelist);
@@ -52,15 +79,16 @@ for f in range(0,filecount):
 
   for l in range(0,varcount):
     df_varcut=df[df.Variable==varlist[l]]
-    plotobj.updatelist(pobj[l],df_varcut['RunID'].tolist(), df_varcut['CycleID'].tolist(), df_varcut['coeff'].tolist(),df_varcut['error'].tolist())
+    plotobj.updatelist(pobj[l],df_varcut['RunID'].tolist(), df_varcut['CycleID'].tolist(), df_varcut['coeff'].tolist(),df_varcut['error'].tolist(),df_varcut['status'].tolist())
 
-print(df_varcut)
 output=R.TFile("bmod_agg_summary.root","recreate")
 
 for l in range(0,varcount):
-    n=len(pobj[l].run)
     c=R.TCanvas(pobj[l].name, pobj[l].name, 800,600)
     c.SetGrid()
+    graph=plotobj.returngraph(pobj[l])    
+    '''
+    n=len(pobj[l].run)
     graph=R.TGraphErrors(n,array('f',range(0,n)), array('f',pobj[l].coeff), array('f',[0]*n), array('f',pobj[l].error)  )
     axis=graph.GetXaxis()
     axis.Set(n,-0.5,n+0.5)
@@ -74,8 +102,8 @@ for l in range(0,varcount):
     graph.SetMarkerColor(3)
     graph.SetLineColor(3)
     graph.SetMarkerSize(2)
+    '''
     graph.Draw("AP")
-    axis.Draw()
     c.Print("fig/"+pobj[l].name+".png")
     #graph.Write(pobj[l].name)
 
