@@ -2,7 +2,7 @@ import sys
 import os
 import ROOT as R
 import pandas as pd
-
+import matplotlib.pyplot as plt
 
 class bmoddata:
   #parses Tao's csv file output and initializes a bmod structure storing the information
@@ -15,7 +15,6 @@ class bmoddata:
     self.df=self.df.drop(["#comment","DV_name","IV_name","unit","status"],axis=1) #Getting rid of unnecesary columns may be
   #function returns slope table if parameter specified is 'slope' or returns sensitivity
   def returndf(self): #return the data frame with coefficient and values
-    print(self.df)
     return self.df.loc[:,['RunID','CycleID','Variable','coeff','error']]
   #function returns unique list of variables
   def returnlov(self):
@@ -24,11 +23,15 @@ class bmoddata:
 class plotobj:
   def __init__(self,name):
     self.name=name
+    self.run=[]
+    self.cycle=[]
     self.coeff=[]
     self.error=[]
-  def updatelist(self,coeff,error):
-    self.coeff.append(coeff)
-    self.error.append(error)
+  def updatelist(self,run,cycle,coeff,error):
+    self.run=self.run+run
+    self.cycle=self.cycle+cycle
+    self.coeff=self.coeff+coeff
+    self.error=self.error+error
     
 
 filelist= ['res/prexRespin1_1473_dither.res','res/prexRespin1_1474_dither.res']
@@ -38,11 +41,16 @@ pobj=[]
 for f in range(0,filecount):
   bmod=bmoddata(filelist[f])
   df=bmoddata.returndf(bmod) 
-  if filecount==0:
-    list_var=bmoddata.returnlov(bmod)
-    for l in range(0,len(list_var)):
-      pobj.append(plotobj(list_var[l]))
 
+  if f==0:
+    varlist=bmoddata.returnlov(bmod)
+    varcount=len(varlist)
+    for l in range(0,varcount):
+      pobj.append(plotobj(varlist[l]))
+
+  for l in range(0,varcount):
+    df_varcut=df[df.Variable==varlist[l]]
+   
 
   
 
