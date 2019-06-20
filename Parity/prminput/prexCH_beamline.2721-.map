@@ -99,7 +99,7 @@ header=0
 ! module.type  module.num  chan.num, det.type, det.name
   SIS3801D32, 0,   4,  bcm, ch_MPS_single
   SIS3801D32, 0,   5,  bcm, ch_TI_busy
-  SIS3801D32, 0,   6,  clock, ch_clock_13kHz
+  !!!  SIS3801D32, 0,   6,  clock, ch_clock_13kHz  !!!!  Not connected
   SIS3801D32, 0,   7,  clock, ch_clock_4mhz
   SIS3801D32, 0,   8,  bcm, hallc_bcm_1
   !!!  SIS3801D32, 0,   9,  bcmscal, hallc_bcm_2  !!!!  Not connected
