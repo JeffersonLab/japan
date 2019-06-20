@@ -74,8 +74,12 @@ class plotobj:
     
   
 
-
-filelist= ['res/prexRespin1_1473_dither.res','res/prexRespin1_1474_dither.res']
+path=sys.argv[1]
+allfiles= os.listdir(path)
+filelist=[]
+for i in allfiles:
+  if ".res" in i:
+    filelist.append(path+"/"+i)
 filecount=len(filelist);
 pobj=[]
 
