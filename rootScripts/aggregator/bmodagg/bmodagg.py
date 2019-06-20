@@ -14,7 +14,7 @@ class bmoddata:
     self.df=pd.read_csv(filepath_or_buffer=source, engine="python",delimiter='\t',header=0, skiprows=5)
     self.df.insert(0,'RunID',self.runinfo.iloc[0][0])
     self.df['Variable']=self.df.DV_name+'_vs_'+self.df.IV_name
-    self.df=self.df.drop(["#comment","DV_name","IV_name","unit","status"],axis=1) #Getting rid of unnecesary columns may be
+    self.df=self.df.drop(["#comment","DV_name","IV_name","unit"],axis=1) #Getting rid of unnecesary columns may be
   #function returns slope table if parameter specified is 'slope' or returns sensitivity
   def returndf(self): #return the data frame with coefficient and values
     return self.df.loc[:,['RunID','CycleID','Variable','coeff','error']]
@@ -54,14 +54,28 @@ for f in range(0,filecount):
     df_varcut=df[df.Variable==varlist[l]]
     plotobj.updatelist(pobj[l],df_varcut['RunID'].tolist(), df_varcut['CycleID'].tolist(), df_varcut['coeff'].tolist(),df_varcut['error'].tolist())
 
+print(df_varcut)
 output=R.TFile("bmod_agg_summary.root","recreate")
 
 for l in range(0,varcount):
     n=len(pobj[l].run)
     c=R.TCanvas(pobj[l].name, pobj[l].name, 800,600)
-    graph=R.TGraphErrors(n,array('f',pobj[l].run), array('f',pobj[l].coeff), array('f',[0]*n), array('f',pobj[l].error)  )
+    c.SetGrid()
+    graph=R.TGraphErrors(n,array('f',range(0,n)), array('f',pobj[l].coeff), array('f',[0]*n), array('f',pobj[l].error)  )
+    axis=graph.GetXaxis()
+    axis.Set(n,-0.5,n+0.5)
+    axis.SetNdivisions(-n)
+    for i in range(0,n):
+      binindex= axis.FindBin(i)
+      axis.SetBinLabel(binindex,"R"+str(pobj[l].run[i])+"C"+str(pobj[l].cycle[i]))
+      axis.ChangeLabel(i+1, 40.0)
     graph.SetTitle(pobj[l].name+" vs run/cycle")
+    graph.SetMarkerStyle(20)
+    graph.SetMarkerColor(3)
+    graph.SetLineColor(3)
+    graph.SetMarkerSize(2)
     graph.Draw("AP")
+    axis.Draw()
     c.Print("fig/"+pobj[l].name+".png")
     #graph.Write(pobj[l].name)
 
