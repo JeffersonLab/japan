@@ -630,14 +630,14 @@ QwMessage<<"................slope............."<<fPITASlope<<QwLog::endl;
     //fPITASetpointPOS=fPrevPITASetpointPOS + correction;
     //fPITASetpointNEG=fPrevPITASetpointNEG - correction;
     //amali2019
-    fPITASetpoint1=fPrevPITASetpoint1 + correction;
-    fPITASetpoint2=fPrevPITASetpoint2 + correction;
-    fPITASetpoint3=fPrevPITASetpoint3 + correction;
-    fPITASetpoint4=fPrevPITASetpoint4 + correction;
-    fPITASetpoint5=fPrevPITASetpoint5 - correction;
-    fPITASetpoint6=fPrevPITASetpoint6 - correction;
-    fPITASetpoint7=fPrevPITASetpoint7 - correction;
-    fPITASetpoint8=fPrevPITASetpoint8 - correction;
+    fPITASetpoint1=fPrevPITASetpoint1 - correction;
+    fPITASetpoint2=fPrevPITASetpoint2 - correction;
+    fPITASetpoint3=fPrevPITASetpoint3 - correction;
+    fPITASetpoint4=fPrevPITASetpoint4 - correction;
+    fPITASetpoint5=fPrevPITASetpoint5 + correction;
+    fPITASetpoint6=fPrevPITASetpoint6 + correction;
+    fPITASetpoint7=fPrevPITASetpoint7 + correction;
+    fPITASetpoint8=fPrevPITASetpoint8 + correction;
 
   } else {
     //fPITASetpointPOS=fPrevPITASetpointPOS;
@@ -773,10 +773,10 @@ QwMessage<<"................slope............."<<fPITAPOSUSlope<<QwLog::endl;
     
    
     //amali2019
-    fPITAPOSUSetpoint1=fPrevPITAPOSUSetpoint1 + correction;
-    fPITAPOSUSetpoint2=fPrevPITAPOSUSetpoint2 - correction;
-    fPITAPOSUSetpoint5=fPrevPITAPOSUSetpoint5 + correction;
-    fPITAPOSUSetpoint6=fPrevPITAPOSUSetpoint6 - correction;
+    fPITAPOSUSetpoint1=fPrevPITAPOSUSetpoint1 - correction;
+    fPITAPOSUSetpoint2=fPrevPITAPOSUSetpoint2 + correction;
+    fPITAPOSUSetpoint5=fPrevPITAPOSUSetpoint5 - correction;
+    fPITAPOSUSetpoint6=fPrevPITAPOSUSetpoint6 + correction;
   
 
   } else {
@@ -870,10 +870,10 @@ QwMessage<<"................slope............."<<fPITAPOSVSlope<<QwLog::endl;
     
    
     //amali2019
-    fPITAPOSVSetpoint3=fPrevPITAPOSVSetpoint3 + correction;
-    fPITAPOSVSetpoint4=fPrevPITAPOSVSetpoint4 - correction;
-    fPITAPOSVSetpoint7=fPrevPITAPOSVSetpoint7 + correction;
-    fPITAPOSVSetpoint8=fPrevPITAPOSVSetpoint8 - correction;
+    fPITAPOSVSetpoint3=fPrevPITAPOSVSetpoint3 - correction;
+    fPITAPOSVSetpoint4=fPrevPITAPOSVSetpoint4 + correction;
+    fPITAPOSVSetpoint7=fPrevPITAPOSVSetpoint7 - correction;
+    fPITAPOSVSetpoint8=fPrevPITAPOSVSetpoint8 + correction;
   
 
   } else {
@@ -1107,10 +1107,10 @@ QwMessage<<"................slope............."<<fHCIASlope<<QwLog::endl;
    
 
 
-    fHCIASetpoint1=fPrevHCIASetpoint1 + correction;
-    fHCIASetpoint2=fPrevHCIASetpoint2 + correction;
-    fHCIASetpoint3=fPrevHCIASetpoint3 + correction;
-    fHCIASetpoint4=fPrevHCIASetpoint4 + correction;
+    fHCIASetpoint1=fPrevHCIASetpoint1 - correction;
+    fHCIASetpoint2=fPrevHCIASetpoint2 - correction;
+    fHCIASetpoint3=fPrevHCIASetpoint3 - correction;
+    fHCIASetpoint4=fPrevHCIASetpoint4 - correction;
 
 
   } else {
@@ -1192,10 +1192,10 @@ QwMessage<<"................slope............."<<fHAIASlope<<QwLog::endl;
    
 
 
-    fHAIASetpoint1=fPrevHAIASetpoint1 + correction2;
-    fHAIASetpoint2=fPrevHAIASetpoint2 + correction2;
-    fHAIASetpoint3=fPrevHAIASetpoint3 + correction2;
-    fHAIASetpoint4=fPrevHAIASetpoint4 + correction2;
+    fHAIASetpoint1=fPrevHAIASetpoint1 - correction2;
+    fHAIASetpoint2=fPrevHAIASetpoint2 - correction2;
+    fHAIASetpoint3=fPrevHAIASetpoint3 - correction2;
+    fHAIASetpoint4=fPrevHAIASetpoint4 - correction2;
 
 
   } else {
@@ -1278,10 +1278,10 @@ QwMessage<<"................slope............."<<fHBIASlope<<QwLog::endl;
    
 
 
-    fHBIASetpoint1=fPrevHBIASetpoint1 + correction3;
-    fHBIASetpoint2=fPrevHBIASetpoint2 + correction3;
-    fHBIASetpoint3=fPrevHBIASetpoint3 + correction3;
-    fHBIASetpoint4=fPrevHBIASetpoint4 + correction3;
+    fHBIASetpoint1=fPrevHBIASetpoint1 - correction3;
+    fHBIASetpoint2=fPrevHBIASetpoint2 - correction3;
+    fHBIASetpoint3=fPrevHBIASetpoint3 - correction3;
+    fHBIASetpoint4=fPrevHBIASetpoint4 - correction3;
 
 
   } else {
