@@ -65,8 +65,7 @@ SKIP 1
 WORD, 0,  0, helicitydata,  inj_timebrd_data
 WORD, 0,  0, helicitydata,  inj_timebrd_rampdelay
 WORD, 0,  0, helicitydata,  inj_timebrd_integrationtime
-WORD, 0,  0, helicitydata,  inj_timebrd_oversamplecurrent
-WORD, 0,  0, helicitydata,  inj_timebrd_oversample
+WORD, 0,  0, helicitydata,  inj_timebrd_oversampleword
 WORD, 0,  0, helicitydata,  inj_timebrd_dac16
 WORD, 0,  0, helicitydata,  inj_timebrd_dac12
 
@@ -78,8 +77,7 @@ SKIP 1
 WORD, 0,  0, helicitydata,  ch_timebrd_data
 WORD, 0,  0, helicitydata,  ch_timebrd_rampdelay
 WORD, 0,  0, helicitydata,  ch_timebrd_integrationtime
-WORD, 0,  0, helicitydata,  ch_timebrd_oversamplecurrent
-WORD, 0,  0, helicitydata,  ch_timebrd_oversample
+WORD, 0,  0, helicitydata,  ch_timebrd_oversampleword
 WORD, 0,  0, helicitydata,  ch_timebrd_dac16
 WORD, 0,  0, helicitydata,  ch_timebrd_dac12
 
