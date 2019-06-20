@@ -31,7 +31,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
   public:
   
     enum EQwHandleType {
-      kHandleTypeUnknown=0, kHandleTypeMps, kHandleTypeAsym, kHandleTypeDiff
+      kHandleTypeUnknown=0, kHandleTypeMps, kHandleTypeAsym, kHandleTypeDiff, kHandleTypeYield
     };
     
     typedef std::vector< VQwHardwareChannel* >::iterator Iterator_HdwChan;
@@ -45,7 +45,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
     void SetPointer(QwHelicityPattern *ptr){fHelicityPattern = ptr;};
     void SetPointer(QwSubsystemArrayParity *ptr){fSubsystemArray = ptr;};
 
-    Int_t ConnectChannels(QwSubsystemArrayParity& yield, QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff){
+    virtual Int_t ConnectChannels(QwSubsystemArrayParity& yield, QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff){
       return this->ConnectChannels(asym, diff);
     }
 
@@ -70,7 +70,10 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
     void WritePromptSummary(QwPromptSummary *ps, TString type);
 
-    void ConstructTreeBranches(QwRootFile *treerootfile);
+    void ConstructTreeBranches(
+        QwRootFile *treerootfile,
+        const std::string& treeprefix = "",
+        const std::string& branchprefix = "");
     void FillTreeBranches(QwRootFile *treerootfile);
 
     // Fill the vector for this subsystem

@@ -545,20 +545,35 @@ void OnlineConfig::OverrideRootFile(UInt_t runnumber)
 
     DIR *dirSearch;
     struct dirent *entSearch;
-    const string daqConfigs[3] = {"CH","INJ","ALL"};
+    const string daqConfigs[3] = {"CH","inj","ALL"};
     int found=0;
     string partialname = "";
     if ((dirSearch = opendir (fnmRoot.c_str())) != NULL) {
       while ((entSearch = readdir (dirSearch)) != NULL) {
 	for(int i=0;i<3;i++){
 	  partialname = Form("prex%s_%d.root",daqConfigs[i].c_str(),runnumber);
-	  if(fMonitor)
-	    partialname = Form("prex%s_%d.adaq3",daqConfigs[i].c_str(),runnumber);
-
 	  std::string fullname = entSearch->d_name;
 	  if(fullname.find(partialname) != std::string::npos){
 	    rootfilename = fnmRoot + "/" + fullname;
 	    found++;
+	  }
+	  if(found==0 && fMonitor){
+	    partialname = Form("prex%s_%d.adaq1",daqConfigs[i].c_str(),runnumber);
+	    std::string fullname = entSearch->d_name;
+	    if(fullname.find(partialname) != std::string::npos){
+	      rootfilename = fnmRoot + "/" + fullname;
+	      found++;
+	    }
+	  }else if(!fMonitor && found==0){
+	    partialname = Form("prex%s_%d.000.root",daqConfigs[i].c_str(),runnumber);
+	    if(fVerbosity>=1)
+	      cout<<__PRETTY_FUNCTION__<<"\t"<<__LINE__<<endl
+		  <<"Looking for a segmented output. Looking at segment 000 only"<<endl;
+	    std::string fullname = entSearch->d_name;
+	    if(fullname.find(partialname) != std::string::npos){
+	      rootfilename = fnmRoot + "/" + fullname;
+	      found++;
+	    }
 	  }
 	}
 	if(found) break;

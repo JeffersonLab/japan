@@ -198,9 +198,9 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     datahandlerarray.ConstructTreeBranches(treerootfile);
 
-    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstYield(),"yield_");
-    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstAsymmetry(),"asym_");
-    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstDifference(),"diff_");
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstYield(), "yield_|stat");
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstAsymmetry(), "asym_|stat");
+    burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", helicitypattern.GetBurstDifference(), "diff_|stat");
 
     // Summarize the ROOT file structure
     //treerootfile->PrintTrees();
@@ -355,13 +355,17 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     } // end of loop over events
     
+    // Unwind event ring
+    QwMessage << "Unwinding event ring" << QwLog::endl;
+    eventring.Unwind();
+
     //  Perform actions at the end of the event loop on the
     //  detectors object, which ought to have handles for the
     //  MPS based histograms.
     ringoutput.AtEndOfEventLoop();
 
     QwMessage << "Number of events processed at end of run: "
-              << eventbuffer.GetEventNumber() << QwLog::endl;
+              << eventbuffer.GetPhysicsEventNumber() << QwLog::endl;
 
 
     // Calculate running averages over helicity patterns
@@ -419,7 +423,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       //      runningsum.WritePromptSummary(&promptsummary, "difference");
       datahandlerarray.WritePromptSummary(&promptsummary, "asymmetry");
       patternsum.WritePromptSummary(&promptsummary);
-      promptsummary.PrintCSV();
+      promptsummary.PrintCSV(eventbuffer.GetPhysicsEventNumber(),eventbuffer.GetStartSQLTime(), eventbuffer.GetEndSQLTime());
     }
     //  Read from the database
     #ifdef __USE_DATABASE__

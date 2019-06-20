@@ -1552,7 +1552,7 @@ void QwDetectorArray::WritePromptSummary(QwPromptSummary *ps, TString type)
       element_value_width = 0.0;
     
 
-      local_add_these_elements=element_name.Contains("sam2")||element_name.Contains("sam4")||element_name.Contains("sam6")||element_name.Contains("sam8"); // Need to change this to add other detectorss in summary
+      local_add_these_elements=element_name.Contains("sam"); // Need to change this to add other detectorss in summary
 
       if(local_add_these_elements&&local_add_element){
       	ps->AddElement(new PromptSummaryElement(element_name));     

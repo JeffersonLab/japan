@@ -27,7 +27,7 @@ EVENTCUTS = 3
 !***************************************************
 !for bcm devices
 !device_type, device_name,      lower limit, upper limit, local(l)/global(g), stability percentage, burplevel
- bcm, bcm_an_ds3,		48.0,  55.0,	g,	0.5, 0.8
+ bcm, bcm_an_ds3,		35.0,  1e6,	g,	0.8  0.8
 
 !for parity mock data run 1000 9.98608e+06
 !bcm, qwk_bcm0l03, 	8.00e+06, 	1.20e+07, 1, 0 
@@ -48,17 +48,17 @@ EVENTCUTS = 3
 ! the following line is an example
 !bpmstripline, qwk_qpd, relx, 2.67319, 	4.45531
 
-  bpmstripline, bpm4a, absx, -18.81, 18.81, l, 0.05, 1000
-  bpmstripline, bpm4a, absy, -18.81, 18.81, l, 0.02, 1000
+!  bpmstripline, bpm4a, absx, -18.81, 18.81, g, 0.1
+!  bpmstripline, bpm4a, absy, -18.81, 18.81, g, 0.1
 
-  bpmstripline, bpm4e, absx, -18.81, 18.81, l, 0.05, 1000
-  bpmstripline, bpm4e, absy, -18.81, 18.81, l, 0.01, 1000
+!  bpmstripline, bpm4e, absx, -18.81, 18.81, g, 0.1
+!  bpmstripline, bpm4e, absy, -18.81, 18.81, g, 0.1
 
-  bpmstripline, bpm14, absx, -18.81, 18.81, l, 0.04, 1000
-  bpmstripline, bpm14, absy, -18.81, 18.81, l, 0.015, 1000
+!  bpmstripline, bpm14, absx, -18.81, 18.81, l, 0.04
+!  bpmstripline, bpm14, absy, -18.81, 18.81, l, 0.015
 
-  bpmstripline, bpm18, absx, -18.81, 18.81, l, 0.09, 1000
-  bpmstripline, bpm18, absy, -18.81, 18.81, l, 0.01, 1000
+!  bpmstripline, bpm18, absx, -18.81, 18.81, l, 0.09
+!  bpmstripline, bpm18, absy, -18.81, 18.81, l, 0.01
 
 !This file contains beamline event cut properties
 

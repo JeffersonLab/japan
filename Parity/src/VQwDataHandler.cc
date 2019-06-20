@@ -201,6 +201,8 @@ pair<VQwDataHandler::EQwHandleType,string> VQwDataHandler::ParseHandledVariable(
       {type_name.first = kHandleTypeAsym;}
     else if (type == "diff")
       {type_name.first = kHandleTypeDiff;}
+    else if (type == "yield")
+      {type_name.first = kHandleTypeYield;} 
     else if (type == "mps")
       {type_name.first = kHandleTypeMps;}
     else
@@ -211,10 +213,13 @@ pair<VQwDataHandler::EQwHandleType,string> VQwDataHandler::ParseHandledVariable(
   
 }
 
-void VQwDataHandler::ConstructTreeBranches(QwRootFile *treerootfile)
+void VQwDataHandler::ConstructTreeBranches(
+    QwRootFile *treerootfile,
+    const std::string& treeprefix,
+    const std::string& branchprefix)
 {
   if (fTreeName.size()>0){
-    treerootfile->ConstructTreeBranches(fTreeName, fTreeComment, *this, fPrefix);
+    treerootfile->ConstructTreeBranches(treeprefix + fTreeName, fTreeComment, *this, branchprefix + fPrefix);
   }
 }
 
@@ -340,7 +345,7 @@ void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
       element_value_width = 0.0;
      
    
-      local_add_these_elements=element_name.Contains("dd")||element_name.Contains("da"); // Need to change this to add other detectorss in summary
+      local_add_these_elements=element_name.Contains("dd")||element_name.Contains("da"); // Need to change this to add other detectors in summary
 
       if(local_add_these_elements && local_add_element){
         ps->AddElement(new PromptSummaryElement(element_name)); 

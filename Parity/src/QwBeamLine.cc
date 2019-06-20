@@ -975,7 +975,7 @@ Int_t QwBeamLine::LoadInputParameters(TString pedestalfile)
 	      }	    
 	    for(size_t i=0;i<fCavity.size();i++)
 	      {
-		for(int j=0;j<2;j++)
+		for(size_t j=0;j<QwBPMCavity::kNumElements;j++)
 		  {
 		    TString localname = fCavity[i].GetSubElementName(j);
 		    localname.ToLower();
@@ -1712,6 +1712,9 @@ Bool_t QwBeamLine::PublishByRequest(TString device_name)
   if (device_name.EndsWith("WS")){
     name = device_name(0,device_name.Length()-2);
     device_prop = "ef";
+  } else if (device_name.EndsWith("Q")){
+    name = device_name(0,device_name.Length()-1);
+    device_prop = "ef";
   } else if (device_name.EndsWith("XSlope")){
     name = device_name(0,device_name.Length()-6);
     device_prop = "xp";
@@ -2365,10 +2368,8 @@ void QwBeamLine::AccumulateRunningSum(VQwSubsystem* value1)
 void QwBeamLine::DeaccumulateRunningSum(VQwSubsystem* value1){
     if (Compare(value1)) {
     QwBeamLine* value = dynamic_cast<QwBeamLine*>(value1);
-    /*
-    for (size_t i = 0; i < fClock.size();       i++)
+    for (size_t i = 0; i < fClock.size(); i++)
       fClock[i].get()->DeaccumulateRunningSum(*(value->fClock[i].get()));
-    */
     for (size_t i = 0; i < fStripline.size(); i++)
       fStripline[i].get()->DeaccumulateRunningSum(*(value->fStripline[i].get()));    
     for (size_t i = 0; i < fCavity.size(); i++)
@@ -3209,7 +3210,6 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
       }
     }
   
-    
   char property[2][6]={"x","y"};
   local_ps_element=NULL;
   local_add_these_elements=false;

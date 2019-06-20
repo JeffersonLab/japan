@@ -11,8 +11,8 @@ VQwHardwareChannel::VQwHardwareChannel():
   fNumberOfDataWords(0),
   fNumberOfSubElements(0), fDataToSave(kRaw)
 {
-  fULimit = 0.0;
-  fLLimit = 0.0;
+  fULimit = -1;
+  fLLimit = 1;
   fErrorFlag = 0;
   fErrorConfigFlag = 0;
   fBurpHoldoff = 10;

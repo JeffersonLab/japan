@@ -26,6 +26,7 @@
 #include "QwWord.h"
 
 
+
 //enum EBeamInstrumentType{kBPMStripline = 0,
 //			 kBCM,
 //			 kCombinedBCM,
@@ -49,29 +50,32 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
   QwBeamMod(const TString& name)
   : VQwSubsystem(name),VQwSubsystemParity(name)
     {
-      // these declaration need to be coherent with the enum vector EBeamInstrumentType
-      fgModTypeNames.push_back(""); // Need to define these wrt to our detector types.
-      fgModTypeNames.push_back("");
-      fgModTypeNames.push_back("");
-      fgModTypeNames.push_back("");
-      for(size_t i=0;i<fgModTypeNames.size();i++)
-        fgModTypeNames[i].ToLower();
       fFFB_holdoff_Counter=0;
       fFFB_Flag=kTRUE;
       fRampChannelIndex = -1;
       fPatternWordIndex = -1;
+      fBmwObj_Index = -1;
+
+      // Initialize the bmwobj cuts with UL < LL to disable the cut
+      fBMWObj_LL = +1;
+      fBMWObj_UL = -1;
     };
   /// Copy constructor
   QwBeamMod(const QwBeamMod& source)
   : VQwSubsystem(source),VQwSubsystemParity(source),
-    fModChannel(source.fModChannel),fWord(source.fWord),
-    fMonitorNames(source.fMonitorNames),fMonitors(source.fMonitors),
-    fBPMPosition(source.fBPMPosition)
-  { }
+    fWord(source.fWord)
+  { 
+    // std::cout<< "Here in the copy constructor" << std::endl;
+    this->fModChannel.reserve(source.fModChannel.size());
+    for(size_t i=0;i< source.fModChannel.size();i++) {
+      this->fModChannel.push_back(source.fModChannel[i]->Clone());
+      *(this->fModChannel[i]) = *(source.fModChannel[i]);
+      //source.fModChannel[i]->PrintValue();
+    }
+  }
   /// Virtual destructor
   virtual ~QwBeamMod() {};
 
-  std::vector<TString> fgModTypeNames;
   /* derived from VQwSubsystem */
 
   //Handle command line options
@@ -104,7 +108,6 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
   void  ClearEventData();
 
   void  ProcessEvent();
-  void  ExchangeProcessedData();
   void  ProcessEvent_2();
 
   VQwSubsystem&  operator=  (VQwSubsystem *value);
@@ -143,20 +146,11 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
 
   void Print();
 
-  void AtEndOfEventLoop();
-  void AnalyzeOpticsPlots();
-  void ResizeOpticsDataContainers(Int_t);
-  void ClearVectors();
-
-  Double_t GetAmplitudeSign(Double_t, Double_t, Double_t, Double_t);
-
  protected:
- Int_t GetDetectorTypeID(TString name);
- Int_t GetDetectorIndex(Int_t TypeID, TString name);    // when the type and the name is passed the detector index from appropriate vector will be returned
- Int_t fTreeArrayIndex; 						        // for example if TypeID is bcm  then the index of the detector from fBCM vector for given name will be returnd.
+ Int_t GetDetectorIndex(TString name);
+ Int_t fTreeArrayIndex;
 
-
- std::vector <QwVQWK_Channel> fModChannel;
+ std::vector <VQwHardwareChannel*> fModChannel;
  std::vector <QwModChannelID> fModChannelID;
  std::vector <QwWord> fWord;
  std::vector < std::pair<Int_t, Int_t> > fWordsPerSubbank;
@@ -172,27 +166,12 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
  Bool_t fFFB_Flag;
  static const Bool_t bDEBUG=kFALSE;
 
- static const Int_t fNumberPatterns = 5;
-
- // List of monitor channels
-
- std::vector<TString> fMonitorNames;
- std::vector<QwVQWK_Channel> fMonitors;
- std::vector<Double_t> fBPMPosition;
-
- std::vector <std::vector <Double_t> > fAmplitude;
- std::vector <std::vector <Double_t> > fOffset;
- std::vector <std::vector <Double_t> > fPhase;
-
- std::vector <std::vector <Double_t> > fAmplitudeError;
- std::vector <std::vector <Double_t> > fOffsetError;
- std::vector <std::vector <Double_t> > fPhaseError;
-
- std::vector <std::vector <Double_t> > fChisquare;
- std::vector <std::vector <Int_t> > fNFitPoints;
-
  Int_t fRampChannelIndex;
  Int_t fPatternWordIndex;
+ UInt_t fBmwObj_Index;
+ Int_t fBMWObj_LL;
+ Int_t fBMWObj_UL;
+ UInt_t fBmwObj_ErrorFlag;
 
 };
 
@@ -205,8 +184,11 @@ class QwModChannelID
   QwModChannelID(Int_t subbankid, Int_t wordssofar,TString name,
 		   TString modtype ,QwBeamMod * obj);
 
+   QwModChannelID(Int_t subbankid, QwParameterFile &paramfile);
+  
 
-/*     QwModChannelID():fSubbankIndex(-1),fWordInSubbank(-1),fTypeID(-1),fIndex(-1), */
+
+/*     QwModChannelID):fSubbankIndex(-1),fWordInSubbank(-1),fTypeID(-1),fIndex(-1), */
 /*     fSubelement(999999),fmoduletype(""),fmodulename("") */
 /*     {}; */
 
@@ -219,7 +201,10 @@ class QwModChannelID
 
   TString fmoduletype; // eg: VQWK, SCALER
   TString fmodulename;
- // TString fdetectortype;
+  Int_t modnum;
+  Int_t channum;
+  
+  // TString fdetectortype;
 
   Int_t  kUnknownDeviceType;
   Int_t  fTypeID;           // type of detector eg: lumi or stripline, etc..

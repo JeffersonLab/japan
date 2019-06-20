@@ -11,6 +11,9 @@ std::string QwRootFile::fDefaultRootFileStem = "Qweak_";
 const Long64_t QwRootFile::kMaxTreeSize = 100000000000LL;
 const Int_t QwRootFile::kMaxMapFileSize = 0x3fffffff; // 1 GiB
 
+const TString QwRootTree::kUnitsName = "ppm/D:ppb/D:um/D:mm/D:mV_uA/D:V_uA/D";
+Double_t QwRootTree::kUnitsValue[] = { 1e-6, 1e-9, 1e-3, 1 , 1e-3, 1};
+
 /**
  * Constructor with relative filename
  */
@@ -51,16 +54,21 @@ QwRootFile::QwRootFile(const TString& run_label)
 
     fPermanentName = rootfilename
       + Form("/%s%s.root", fRootFileStem.Data(), run_label.Data());
-    rootfilename += Form("/%s%s.%s.%d.root",
-			 fRootFileStem.Data(), run_label.Data(),
-			 hostname.Data(), pid);
+    if (fUseTemporaryFile){
+      rootfilename += Form("/%s%s.%s.%d.root",
+			   fRootFileStem.Data(), run_label.Data(),
+			   hostname.Data(), pid);
+    } else {
+      rootfilename = fPermanentName;
+    }
     fRootFile = new TFile(rootfilename.Data(), "RECREATE", "myfile1");
     if (! fRootFile) {
       QwError << "ROOT file " << rootfilename
               << " could not be opened!" << QwLog::endl;
       return;
     } else {
-      QwMessage << "Opened temporary rootfile " << rootfilename << QwLog::endl;
+      QwMessage << "Opened "<< (fUseTemporaryFile?"temporary ":"")
+		<<"rootfile " << rootfilename << QwLog::endl;
     }
 
     TString run_condition_name = Form("%s_condition", run_label.Data());
@@ -110,20 +118,22 @@ QwRootFile::~QwRootFile()
 
     int err;
     const char* action;
-    if (fMakePermanent) {
-      action = " rename ";
-      err = rename( rootfilename.Data(), fPermanentName.Data() );
-    } else {
-      action = " remove ";
-      err = remove( rootfilename.Data() );
-    }
-    // It'd be proper to "extern int errno" and strerror() here,
-    // but that doesn't seem very C++-ish.
-    if (err) {
-      QwWarning << "Couldn't" << action << rootfilename << QwLog::endl;
-    } else {
-      QwMessage << "Was able to" << action << rootfilename << QwLog::endl;
-      QwMessage << "Root file is " << fPermanentName << QwLog::endl;
+    if (fUseTemporaryFile){
+      if (fMakePermanent) {
+	action = " rename ";
+	err = rename( rootfilename.Data(), fPermanentName.Data() );
+      } else {
+	action = " remove ";
+	err = remove( rootfilename.Data() );
+      }
+      // It'd be proper to "extern int errno" and strerror() here,
+      // but that doesn't seem very C++-ish.
+      if (err) {
+	QwWarning << "Couldn't" << action << rootfilename << QwLog::endl;
+      } else {
+	QwMessage << "Was able to" << action << rootfilename << QwLog::endl;
+	QwMessage << "Root file is " << fPermanentName << QwLog::endl;
+      }
     }
   }
 
@@ -157,6 +167,9 @@ void QwRootFile::DefineOptions(QwOptions &options)
   options.AddOptions()
     ("enable-mapfile", po::value<bool>()->default_bool_value(false),
      "enable output to memory-mapped file\n(likely requires circular-buffer too)");
+  options.AddOptions()
+    ("write-temporary-rootfiles", po::value<bool>()->default_bool_value(true),
+     "When writing ROOT files, use the PID to create a temporary filename");
 
   // Define the histogram and tree options
   options.AddOptions("ROOT output options")
@@ -230,6 +243,7 @@ void QwRootFile::ProcessOptions(QwOptions &options)
 
   // Option 'mapfile' to enable memory-mapped ROOT file
   fEnableMapFile = options.GetValue<bool>("enable-mapfile");
+  fUseTemporaryFile = options.GetValue<bool>("write-temporary-rootfiles");
 
   // Options 'disable-trees' and 'disable-histos' for disabling
   // tree and histogram output

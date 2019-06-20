@@ -26,16 +26,16 @@ EVENTCUTS = 3
 
 !***************************************************
 !for bcm devices
-!device_type, device_name,      lower limit, upper limit, local(l)/global(g), stability percentage, burplevel
- bcm, bcm_an_ds3,		1.0,	1e6,	g,	0.5, 0.4
+!device_type, device_name,      lower limit, upper limit, local(l)/global(g), stabilitylevel, burplevel
+ bcm, bcm_an_ds3,		5.0,	1e6,	g,	0.8  0.4
 
 !for parity mock data run 1000 9.98608e+06
-!bcm, qwk_bcm0l03, 	8.00e+06, 	1.20e+07, 1, 0, 1
+!bcm, qwk_bcm0l03, 	8.00e+06, 	1.20e+07, 1, 0 
 
  
-!bcm, qwk_batery6,  	0,	0, 1, 0, 1
-!bcm, qwk_batery7, 	95.57778e+9,	95.5788e+9, 1, 0, 1
-!bcm, phasemonitor, 	0,	0, 1, 0, 1
+!bcm, qwk_batery6,  	0,	0, 1, 0 
+!bcm, qwk_batery7, 	95.57778e+9,	95.5788e+9, 1, 0 
+!bcm, phasemonitor, 	0,	0, 1, 0
 
 !****************************************************				
 !for bpmstrpline devices

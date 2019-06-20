@@ -41,6 +41,7 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
   public:
 
     friend class VQwDataHandler;
+    friend class QwAlarmHandler;
     friend class QwCombiner;
     friend class QwCorrelator;
     friend class LRBCorrector;

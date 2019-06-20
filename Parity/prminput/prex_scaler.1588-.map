@@ -1,0 +1,40 @@
+ROC=23
+bank=0x2
+! module.type  module.num  chan.num, det.type, det.name
+  SIS3801D32, 0,   0, syncscal, chouse_fr
+  SIS3801D32, 0,   1, syncscal, chouse_f1
+  SIS3801D32, 0,   2, syncscal, chouse_f2
+  SIS3801D32, 0,   4, syncscal, MPS_single
+  SIS3801D32, 0,   5, syncscal, TI_busy
+  SIS3801D32, 0,   6, syncscal, clock_13kHz
+  SIS3801D32, 0,   7, syncscal, clock_4mhz
+  SIS3801D32, 0,   10, bcmscal, BCM_scal_unser
+  SIS3801D32, 0,   11, bcmscal, BCM_scal_AAA
+  SIS3801D32, 0,   12, bcmscal, BCM_scal_BBB
+  SIS3801D32, 0,   13, bcmscal, BCM_scal_CCC
+  SIS3801D32, 0,   14, bcmscal, BCM_scal_DDD
+
+!  The following bmod scalers should be removed frmo here and decoded in their own class.
+  SIS3801D32, 0,   3, syncscal, bmod_trig
+  SIS3801D32, 0,   16, syncscal, bmod_trim1
+  SIS3801D32, 0,   17, syncscal, bmod_trim2
+  SIS3801D32, 0,   18, syncscal, bmod_trim3
+  SIS3801D32, 0,   19, syncscal, bmod_trim4
+  SIS3801D32, 0,   20, syncscal, bmod_trim5
+  SIS3801D32, 0,   21, syncscal, bmod_trim6
+  SIS3801D32, 0,   22, syncscal, bmod_trim7
+  SIS3801D32, 0,   23, syncscal, bmod_trim8
+
+ROC=25
+bank=0x2
+! module.type  module.num  chan.num, det.type, det.name
+  SIS3801D32, 0,   30, syncscal, lhrs_f1
+  SIS3801D32, 0,   31, syncscal, lhrs_f2
+
+ROC=26
+bank=0x2
+! module.type  module.num  chan.num, det.type, det.name
+  SIS3801D32, 0,   30, syncscal, rhrs_f1
+  SIS3801D32, 0,   31, syncscal, rhrs_f2
+
+!!!  Also should be scalers in the injector...

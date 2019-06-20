@@ -1,0 +1,16 @@
+ROC=23
+bank=0x2
+! module.type  module.num  chan.num, det.type, det.name
+  SIS3801D32, 0,   4,  bcmscal, ch_MPS_single
+  SIS3801D32, 0,   5,  bcmscal, ch_TI_busy
+  SIS3801D32, 0,   6,  bcmscal, ch_clock_13kHz
+  SIS3801D32, 0,   7,  bcmscal, ch_clock_4mhz
+  SIS3801D32, 0,   8,  bcmscal, hallc_bcm_1
+  SIS3801D32, 0,   9,  bcmscal, hallc_bcm_2
+  SIS3801D32, 0,   10, bcmscal, BCM_scal_unser
+  SIS3801D32, 0,   11, bcmscal, BCM_scal_AAA
+  SIS3801D32, 0,   12, bcmscal, BCM_scal_BBB
+  SIS3801D32, 0,   13, bcmscal, BCM_scal_CCC
+  SIS3801D32, 0,   14, bcmscal, BCM_scal_DDD
+
+
