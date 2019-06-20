@@ -90,20 +90,28 @@ sample_size=4084
     VQWK, 7, 6,  bpmstripline,  BPM4ecYM
     VQWK, 7, 7,  bpmstripline,  BPM4ecYP
 
-!!!  Actually, the combined BPM mechanic doesn't do what
-!!!  we want it to do here, as it is designed for BPMs at
-!!!  different Z, so we can do a projection to the target.
-!!!begin=combinedbpm
-!!!name=bpmavg4a
-!!!BPM4a, bpmstripline, 1.0, 1.0, 1.0
-!!!BPM4ac, bpmstripline, 1.0, 1.0, 1.0
-!!!end=combinedbpm
-!!!
-!!!begin=combinedbpm
-!!!name=bpmavg4e
-!!!BPM4e, bpmstripline, 1.0, 1.0, 1.0
-!!!BPM4ec, bpmstripline, 1.0, 1.0, 1.0
-!!!end=combinedbpm
+ROC=23
+bank=0x2
+
+scaler_buffer_offset=1
+header=0
+
+! module.type  module.num  chan.num, det.type, det.name
+  SIS3801D32, 0,   4,  bcm, ch_MPS_single
+  SIS3801D32, 0,   5,  bcm, ch_TI_busy
+  SIS3801D32, 0,   6,  clock, ch_clock_13kHz
+  SIS3801D32, 0,   7,  clock, ch_clock_4mhz
+  SIS3801D32, 0,   8,  bcm, hallc_bcm_1
+  !!!  SIS3801D32, 0,   9,  bcmscal, hallc_bcm_2  !!!!  Not connected
+  SIS3801D32, 0,   10, bcm, BCM_scal_unser
+  SIS3801D32, 0,   11, bcm, BCM_scal_AAA
+  SIS3801D32, 0,   12, bcm, BCM_scal_BBB
+  SIS3801D32, 0,   13, bcm, BCM_scal_CCC
+  SIS3801D32, 0,   14, bcm, BCM_scal_DDD
+  SIS3801D32, 1,   0,  clock, ch_tstable_clock_4mhz
+
+
+
 
 
 [PUBLISH]
