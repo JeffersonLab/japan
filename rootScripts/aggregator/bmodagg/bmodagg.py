@@ -14,8 +14,7 @@ class bmoddata:
     self.df=pd.read_csv(filepath_or_buffer=source, engine="python",delimiter='\t',header=0, skiprows=5)
     self.df.insert(0,'RunID',self.runinfo.iloc[0][0])
     self.df['Variable']=self.df.DV_name+'_vs_'+self.df.IV_name
-    self.df=self.df.drop(["#comment","DV_name","IV_name","unit"],axis=1) #Getting rid of unnecesary columns may be
-  #function returns slope table if parameter specified is 'slope' or returns sensitivity
+    self.df=self.df.drop(["#comment","DV_name","IV_name","unit"],axis=1) #Getting rid of unnecesary columns 
   def returndf(self): #return the data frame with coefficient and values
     return self.df.loc[:,['RunID','CycleID','Variable','coeff','error','status']]
   #function returns unique list of variables
@@ -57,6 +56,8 @@ class plotobj:
       error[status]=df[df.status==status].error.tolist()
       row[status]=df[df.status==status].row.tolist()
       m[status]= len(run[status])
+      if m[status]==0:
+        continue
       graph[status]=R.TGraphErrors(m[status], array('f',row[status]), array('f',coeff[status]), array('f',[0]*m[status]), array('f',error[status]) )
       graph[status].SetMarkerColor(color[status])
       graph[status].SetLineColor(color[status])
@@ -75,6 +76,7 @@ class plotobj:
   
 
 path=sys.argv[1]
+outputpath=sys.argv[2]
 allfiles= os.listdir(path)
 filelist=[]
 for i in allfiles:
@@ -97,7 +99,7 @@ for f in range(0,filecount):
     df_varcut=df[df.Variable==varlist[l]]
     plotobj.updatelist(pobj[l],df_varcut['RunID'].tolist(), df_varcut['CycleID'].tolist(), df_varcut['coeff'].tolist(),df_varcut['error'].tolist(),df_varcut['status'].tolist())
 
-output=R.TFile("bmod_agg_summary.root","recreate")
+output=R.TFile(outputpath,"recreate")
 
 for l in range(0,varcount):
     c=R.TCanvas(pobj[l].name, pobj[l].name, 800,600)
@@ -105,7 +107,7 @@ for l in range(0,varcount):
     graph=plotobj.returngraph(pobj[l])    
     graph.Draw("AP")
     c.Print("fig/"+pobj[l].name+".png")
-    #graph.Write(pobj[l].name)
+    graph.Write(pobj[l].name)
 
     
 output.Close()
