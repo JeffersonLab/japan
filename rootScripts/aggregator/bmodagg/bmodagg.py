@@ -99,14 +99,14 @@ for f in range(0,filecount):
     df_varcut=df[df.Variable==varlist[l]]
     plotobj.updatelist(pobj[l],df_varcut['RunID'].tolist(), df_varcut['CycleID'].tolist(), df_varcut['coeff'].tolist(),df_varcut['error'].tolist(),df_varcut['status'].tolist())
 
-output=R.TFile(outputpath,"recreate")
+output=R.TFile(outputpath+"/bmod_aggregator.root","recreate")
 
 for l in range(0,varcount):
     c=R.TCanvas(pobj[l].name, pobj[l].name, 800,600)
     c.SetGrid()
     graph=plotobj.returngraph(pobj[l])    
     graph.Draw("AP")
-    c.Print("fig/"+pobj[l].name+".png")
+    c.Print(outputpath+"/"+pobj[l].name+".png")
     graph.Write(pobj[l].name)
 
     
