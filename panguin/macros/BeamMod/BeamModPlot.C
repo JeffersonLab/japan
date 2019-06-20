@@ -64,11 +64,11 @@ void BeamModPlot(TString type="evt",TString type2="mul", TString ref="CodaEventN
  
 
   cBMWPlot2->cd(2);
-  tree_M->Draw("(diff_bpm4eX-diff_bpm4aX):(diff_bpm4aX+diff_bpm4eX)","bmwobj<0")
+  tree_M->Draw("(diff_bpm4eX-diff_bpm4aX):(diff_bpm4aX+diff_bpm4eX)","bmwobj<0");
    
 
   cBMWPlot2->cd(3);
-  tree_M->Draw("(diff_bpm4eY-diff_bpm4aY):(diff_bpm4aY+diff_bpm4eY)","bmwobj<0")
+  tree_M->Draw("(diff_bpm4eY-diff_bpm4aY):(diff_bpm4aY+diff_bpm4eY)","bmwobj<0");
 
   return 0;
 }
