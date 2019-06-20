@@ -6,14 +6,10 @@ sample_size=4084
 !
 !  Force all channels to be "not_blindable" during testing
 !
-  VQWK, 0, 0,  IntegrationPMT,  usl           not_blindable
-  VQWK, 0, 1,  IntegrationPMT,  dsl           not_blindable
-  VQWK, 0, 2,  IntegrationPMT,  atl1          not_blindable
-  VQWK, 0, 3,  IntegrationPMT,  atl2          not_blindable
-  VQWK, 0, 4,  IntegrationPMT,  vqwk_25_0ch4  not_blindable
-  VQWK, 0, 5,  IntegrationPMT,  vqwk_25_0ch5  not_blindable
-  VQWK, 0, 6,  IntegrationPMT,  vqwk_25_0ch6  not_blindable
-  VQWK, 0, 7,  IntegrationPMT,  vqwk_25_0ch7  not_blindable
+  VQWK, 0, 0,  IntegrationPMT,  usl        
+  VQWK, 0, 1,  IntegrationPMT,  dsl        
+  VQWK, 0, 2,  IntegrationPMT,  atl_in   
+  VQWK, 0, 3,  IntegrationPMT,  atl_out  
 
 ROC=26
 Bank=0x5
@@ -22,12 +18,8 @@ sample_size=4084
 !
 !  Force all channels to be "not_blindable" during testing
 !
-  VQWK, 0, 0,  IntegrationPMT,  usr           not_blindable
-  VQWK, 0, 1,  IntegrationPMT,  dsr           not_blindable
-  VQWK, 0, 2,  IntegrationPMT,  atr1          not_blindable
-  VQWK, 0, 3,  IntegrationPMT,  atr2          not_blindable
-  VQWK, 0, 4,  IntegrationPMT,  vqwk_26_0ch4  not_blindable
-  VQWK, 0, 5,  IntegrationPMT,  vqwk_26_0ch5  not_blindable
-  VQWK, 0, 6,  IntegrationPMT,  vqwk_26_0ch6  not_blindable
-  VQWK, 0, 7,  IntegrationPMT,  vqwk_26_0ch7  not_blindable
+  VQWK, 0, 0,  IntegrationPMT,  usr        
+  VQWK, 0, 1,  IntegrationPMT,  dsr        
+  VQWK, 0, 2,  IntegrationPMT,  atr_in       
+  VQWK, 0, 3,  IntegrationPMT,  atr_out       
 

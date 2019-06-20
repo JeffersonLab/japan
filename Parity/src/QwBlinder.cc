@@ -223,50 +223,23 @@ void QwBlinder::Update(const QwEPICSEvent& epics)
   // Pressure:
   //     QW_PT3 in [20,35] && QW_PT4 in [20,35]
   if (fBlindingStrategy != kDisabled && !(fTargetPositionForced) ) {
-    TString  position  = epics.GetDataString("QWtgt_name");
-    Double_t tgt_pos   = epics.GetDataValue("QWTGTPOS");
-    Double_t tgt_temperture  = epics.GetDataValue("QWT_miB");
-    Double_t tgt_temperture2 = epics.GetDataValue("QWT_moB");
-    Double_t tgt_pressure    = epics.GetDataValue("QW_PT3");
-    Double_t tgt_pressure2   = epics.GetDataValue("QW_PT4");
+    //TString  position  = epics.GetDataString("QWtgt_name");
+    Double_t tgt_pos   = epics.GetDataValue("pcrex90BDSPOS.VAL");
     QwDebug << "Target parameters used by the blinder: "
-	    << "QWtgt_name=" << position << " "
+//	  << "QWtgt_name=" << position << " "
 	    << "QWTGTPOS=" << tgt_pos << " "
-	    << "QWT_miB=" << tgt_temperture << " "
-	    << "QWT_moB=" << tgt_temperture2 << " "
-	    << "QW_PT3=" << tgt_pressure << " "
-	    << "QW_PT4=" << tgt_pressure2 << " "
 	    << QwLog::endl;
-    if (position == "HYDROGEN-CELL"
-	&& tgt_pos > 350. 
-	&& (tgt_temperture>18.0 && tgt_temperture<22.0)
-	&& (tgt_temperture2>18.0 && tgt_temperture2<22.0)
-	&& (tgt_pressure>20.0 && tgt_pressure < 35.0)
-	&& (tgt_pressure2>20.0 && tgt_pressure2 < 35.0)){
+    if ((tgt_pos > 3e6 && tgt_pos < 6.8e6) || (tgt_pos > 7.2e6 && tgt_pos < 8.5e6)) {
       SetTargetBlindability(QwBlinder::kBlindable);
-    } else if ((position == "HYDROGEN-CELL"
-		&& tgt_pos > 350.)
-	       && (tgt_temperture > 22.0)
-	       && (tgt_temperture2 > 22.0)
-	       && (tgt_pressure > 35.0)
-	       && (tgt_pressure2 > 35.0)){
-      //  Hydrogen cell is in, but temperature and pressures
-      //  are all higher than they should be for LH2.
-      SetTargetBlindability(QwBlinder::kNotBlindable);
-    } else if ((position != "HYDROGEN-CELL"
-		&& tgt_pos < 350.)){
+    } else if ((tgt_pos > -1000000 && tgt_pos < 3e6) || (tgt_pos > 6.8e6 && tgt_pos < 7.2e6)){
       //  Name and position agree that this isn't the hydrogen
       //  cell.
       SetTargetBlindability(QwBlinder::kNotBlindable);
     } else {
       SetTargetBlindability(QwBlinder::kIndeterminate);
       QwWarning << "Target parameters used by the blinder are indeterminate: "
-		<< "QWtgt_name=" << position << " "
+//  << "QWtgt_name=" << position << " "
 		<< "QWTGTPOS=" << tgt_pos << " "
-		<< "QWT_miB=" << tgt_temperture << " "
-		<< "QWT_moB=" << tgt_temperture2 << " "
-		<< "QW_PT3=" << tgt_pressure << " "
-		<< "QW_PT4=" << tgt_pressure2 << " "
 		<< QwLog::endl;
 
 
