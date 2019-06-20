@@ -114,7 +114,7 @@ public:
   /*! \brief Inherited from VQwDataElement to set the upper and lower 
    *         limits (fULimit and fLLimit), stability % and the 
    *         error flag on this channel */
-  void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability, Double_t BurpLevel);
+  void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability=-1.0, Double_t BurpLevel=-1.0);
 
   Double_t GetEventCutUpperLimit() const { return fULimit; };
   Double_t GetEventCutLowerLimit() const { return fLLimit; };

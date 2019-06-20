@@ -299,15 +299,15 @@ void QwBPMCavity::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t 
 
   }else if (ch_name=="effectivecharge"){
     QwMessage<<"EffectveQ LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fEffectiveCharge.SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
+    fElement[kQElem].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
-  }else if (ch_name=="wire1"){
-    QwMessage<<"wire1 " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fWire[0].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
+  }else if (ch_name=="xi"){
+    QwMessage<<"XI " <<  minX <<" UL " << maxX <<QwLog::endl;
+    fElement[0].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
-  }else if (ch_name=="wire2"){
-    QwMessage<<"wire2 " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fWire[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
+  }else if (ch_name=="yi"){
+    QwMessage<<"YI " <<  minX <<" UL " << maxX <<QwLog::endl;
+    fElement[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
   }
 
@@ -322,11 +322,11 @@ Bool_t QwBPMCavity::CheckForBurpFail(const VQwDataElement *ev_error){
       if (this->GetElementName()!="") {
         const QwBPMCavity* value_bpm = dynamic_cast<const QwBPMCavity* >(ev_error);
         for(i=0;i<2;i++){
-          burpstatus |= fWire[i].CheckForBurpFail(&(value_bpm->fWire[i]));
+          burpstatus |= fElement[i].CheckForBurpFail(&(value_bpm->fElement[i]));
           burpstatus |= fRelPos[i].CheckForBurpFail(&(value_bpm->fRelPos[i]));
           burpstatus |= fAbsPos[i].CheckForBurpFail(&(value_bpm->fAbsPos[i]));
         }
-        burpstatus |= fEffectiveCharge.CheckForBurpFail(&(value_bpm->fEffectiveCharge));
+        burpstatus |= fElement[kQElem].CheckForBurpFail(&(value_bpm->fElement[kQElem]));
       }
     } else {
       TString loc="Standard exception from QwBPMCavity::CheckForBurpFail :"+
