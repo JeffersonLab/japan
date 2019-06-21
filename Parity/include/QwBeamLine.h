@@ -189,8 +189,7 @@ protected:
   std::vector <QwEnergyCalculator> fECalculator;
   std::vector <QwBeamDetectorID> fBeamDetectorID;
 
-  std::vector<TString> fStoredBCMs;
-  std::vector<TString> fStoredBPMs;
+  
 
 /////
 private:

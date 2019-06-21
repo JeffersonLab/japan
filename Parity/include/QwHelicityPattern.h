@@ -17,10 +17,6 @@
 #include "QwSubsystemArrayParity.h"
 #include "QwEPICSEvent.h"
 #include "QwBlinder.h"
-//#include "VQwDataHandler.h"
-#include "QwCorrelator.h"
-#include "QwCombiner.h"
-#include "LRBCorrector.h"
 
 // Forward declarations
 class QwHelicity;
@@ -137,6 +133,9 @@ class QwHelicityPattern {
   void  PrintRunningAverage() const;
   void  PrintBurstAverage() const;
 
+  void  ConstructObjects(){ConstructObjects((TDirectory*)NULL);};
+  void  ConstructObjects(TDirectory *folder);
+
   void  ConstructHistograms(){ConstructHistograms((TDirectory*)NULL);};
   void  ConstructHistograms(TDirectory *folder);
   void  FillHistograms();
@@ -163,23 +162,6 @@ class QwHelicityPattern {
   void  ClearRunningSum();
 
   void  Print() const;
-
-  void get_run_label(TString x) {
-    run_label = x;
-  }
-
-  void ProcessDataHandlerEntry();
-  void FinishDataHandler();
-
-  LRBCorrector& return_regress_from_LRB() {
-    return regress_from_LRB;
-  }
-  QwCombiner& return_regression() {
-    return regression;
-  }
-  QwCombiner& return_running_regression() {
-    return running_regression;
-  }
 
  protected:
   Bool_t fDEBUG;
@@ -248,20 +230,11 @@ class QwHelicityPattern {
 
   TString run_label;
 
-  QwCorrelator correlator;
-  LRBCorrector regress_from_LRB;
-  QwCombiner regression;
-  QwCombiner running_regression;
-
   // Flag to indicate that the pattern contains data
   Bool_t fIsDataLoaded;
   void SetDataLoaded(Bool_t flag) { fIsDataLoaded = flag; };
 
-  friend class VQwDataHandler;
-  friend class QwCombiner;
-  friend class QwCorrelator;
-  friend class LRBCorrector;
-
+  friend class QwDataHandlerArray;
 };
 
 

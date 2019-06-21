@@ -5,10 +5,14 @@
 #include <unistd.h>
 #include <cstdio>
 
+std::string QwRootFile::fDefaultRootFileDir = ".";
 std::string QwRootFile::fDefaultRootFileStem = "Qweak_";
 
 const Long64_t QwRootFile::kMaxTreeSize = 100000000000LL;
 const Int_t QwRootFile::kMaxMapFileSize = 0x3fffffff; // 1 GiB
+
+const TString QwRootTree::kUnitsName = "ppm/D:ppb/D:um/D:mm/D:mV_uA/D:V_uA/D";
+Double_t QwRootTree::kUnitsValue[] = { 1e-6, 1e-9, 1e-3, 1 , 1e-3, 1};
 
 /**
  * Constructor with relative filename
@@ -20,18 +24,11 @@ QwRootFile::QwRootFile(const TString& run_label)
 {
   // Process the configuration options
   ProcessOptions(gQwOptions);
-  
+
   // Check for the memory-mapped file flag
   if (fEnableMapFile) {
-    
+
     TString mapfilename = "/dev/shm/";
-    
-    // if( host_name.Contains("cdaql4") and (not user_name.CompareTo("cdaq", TString::kExact)) ) {
-    //   mapfilename = "/local/scratch/qweak/";
-    // }
-    // else {
-    //   mapfilename = getenv_safe_TString("QW_ROOTFILES");
-    // }
 
     mapfilename += "/QwMemMapFile.map";
 
@@ -49,28 +46,8 @@ QwRootFile::QwRootFile(const TString& run_label)
 
   } else {
 
-    //TString rootfilename = getenv_safe_TString("QW_ROOTFILES");
+    TString rootfilename = fRootFileDir;
     TString hostname = gSystem -> HostName();
-    TString rootfilename;
-    TString localRootFileName = gSystem->Getenv("QW_ROOTFILES_LOCAL");
-
-//     std::cout << "---------------------------------------------------------------------------------" << std::endl;
-//     printf("\n\n\n\n\n\n");
-//     printf("%s %s \n", hostname.Data(), localRootFileName.Data());
-//     printf("\n\n\n\n\n\n");
-//     std::cout << "---------------------------------------------------------------------------------" << std::endl;
-//     //    if( localRootFileName.CompareTo("") == 0 ) {
-    if (localRootFileName.IsNull()) {
-        rootfilename = getenv_safe_TString("QW_ROOTFILES");
-    } else {
-        rootfilename = localRootFileName;
-    }
-//     std::cout << "---------------------------------------------------------------------------------" << std::endl;
-//     printf("\n\n\n\n\n\n");
-//     printf("%s %s \n", hostname.Data(), localRootFileName.Data());
-//     printf("\n\n\n\n\n\n");
-//     std::cout << "---------------------------------------------------------------------------------" << std::endl;
-
 
     // Use a probably-unique temporary file name.
     pid_t pid = getpid();
@@ -176,6 +153,11 @@ QwRootFile::~QwRootFile()
  */
 void QwRootFile::DefineOptions(QwOptions &options)
 {
+  // Define the ROOT files directory
+  options.AddOptions("Default options")
+    ("rootfiles", po::value<std::string>()->default_value(fDefaultRootFileDir),
+     "directory of the output ROOT files");
+
   // Define the ROOT filename stem
   options.AddOptions("Default options")
     ("rootfile-stem", po::value<std::string>()->default_value(fDefaultRootFileStem),
@@ -253,6 +235,9 @@ void QwRootFile::DefineOptions(QwOptions &options)
  */
 void QwRootFile::ProcessOptions(QwOptions &options)
 {
+  // Option 'rootfiles' to specify ROOT files dir
+  fRootFileDir = TString(options.GetValue<std::string>("rootfiles"));
+
   // Option 'root-stem' to specify ROOT file stem
   fRootFileStem = TString(options.GetValue<std::string>("rootfile-stem"));
 

@@ -225,6 +225,8 @@ class QwScaler_Channel: public VQwScaler_Channel
     QwScaler_Channel(TString name, TString datatosave = "raw")
     : VQwScaler_Channel(name,datatosave) { };
 
+  VQwHardwareChannel* Clone();
+
   public:
 
   // Implement the templated methods
@@ -236,7 +238,6 @@ class QwScaler_Channel: public VQwScaler_Channel
 
 
 };
-
 
 //  These typedef's should be the last things in the file.
 //  Class template instationation must be made in the source

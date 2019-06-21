@@ -83,6 +83,11 @@ class QwVQWK_Channel: public VQwHardwareChannel, public MQwMockable {
   };
   virtual ~QwVQWK_Channel() { };
 
+  VQwHardwareChannel* Clone(){
+    return new QwVQWK_Channel(*this);
+  };
+
+
   /// \brief Initialize the fields in this object
   void  InitializeChannel(TString name, TString datatosave);
 
@@ -274,9 +279,6 @@ private:
   static const Bool_t kDEBUG;
   static const Int_t  kWordsPerChannel; //no.of words per channel in the CODA buffer
   static const Int_t  kMaxChannels;     //no.of channels per module
-
-  /// Pointer to the running sum for this channel
-  QwVQWK_Channel* fRunningSum;
 
   /*! \name ADC Calibration                    */
   // @{

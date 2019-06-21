@@ -45,8 +45,10 @@ std::vector<std::string> QwEPICSEvent::fDefaultAutogainList;
 /*************************************
  *  Constructors/Destructors.
  *************************************/
-QwEPICSEvent::QwEPICSEvent():fBlinderReversalForRunTwo(kFALSE),
-			     fPrecessionReversal(kFALSE),fNominalWienAngle(30.0)
+QwEPICSEvent::QwEPICSEvent():fNumberEPICSVariables(0),
+			     fBlinderReversalForRunTwo(kFALSE),
+			     fPrecessionReversal(kFALSE),
+			     fNominalWienAngle(30.0)
 {
   SetDataLoaded(kFALSE);
   QwEPICSEvent::InitDefaultAutogainList();
@@ -1342,13 +1344,15 @@ void QwEPICSEvent::WriteEPICSStringValues()
 
 Int_t QwEPICSEvent::DetermineIHWPPolarity() const{
   Int_t ihwppolarity = 0;
-  if (GetDataString("IGL1I00DI24_24M")=="OUT"){
+  if (GetDataString("IGL1I00DI24_24M")=="OUT"
+      || GetDataString("IGL1I00DI24_24M")=="1"){
     ihwppolarity = 1;
-  } else if (GetDataString("IGL1I00DI24_24M")=="IN"){
+  } else if (GetDataString("IGL1I00DI24_24M")=="IN"
+	     || GetDataString("IGL1I00DI24_24M")=="0"){
     ihwppolarity = -1;
   } else {
-    QwWarning << "IHWP state is not well defined: "
-	      << GetDataString("IGL1I00DI24_24M")
+    QwWarning << "IHWP state is not well defined: '"
+	      << GetDataString("IGL1I00DI24_24M") << "'"
 	      << QwLog::endl;
   }
   QwDebug << "QwEPICSEvent::DetermineIHWPPolarity: "

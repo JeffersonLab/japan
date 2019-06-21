@@ -12,12 +12,12 @@ sample_size=4084
 !ADC0
     VQWK, 0, 0,  bcm,  BCM_AN_US
     VQWK, 0, 1,  bcm,  BCM_DG_US
-    VQWK, 0, 2,  bcm,  CAV4BX
-    VQWK, 0, 3,  bcm,  CAV4BY
-    VQWK, 0, 4,  bcm,  CAV4BQ
-    VQWK, 0, 5,  bcm,  CAV4CX
-    VQWK, 0, 6,  bcm,  CAV4CY
-    VQWK, 0, 7,  bcm,  CAV4CQ
+    VQWK, 0, 2,  bpmcavity,  CAV4BXI
+    VQWK, 0, 3,  bpmcavity,  CAV4BYI
+    VQWK, 0, 4,  bpmcavity,  CAV4BQ
+    VQWK, 0, 5,  bpmcavity,  CAV4CXI
+    VQWK, 0, 6,  bpmcavity,  CAV4CYI
+    VQWK, 0, 7,  bpmcavity,  CAV4CQ
 
 !ADC1
     VQWK, 1, 0,  bpmstripline,  BPM4Exp
@@ -34,9 +34,9 @@ sample_size=4084
     VQWK, 2, 1,  bpmstripline,  BPM4Axm
     VQWK, 2, 2,  bpmstripline,  BPM4Ayp
     VQWK, 2, 3,  bpmstripline,  BPM4Aym
-    VQWK, 2, 4,  bcm,  CAV4DX
-    VQWK, 2, 5,  bcm,  CAV4DY
-    VQWK, 2, 6,  bcm,  CAV4DQ
+    VQWK, 2, 4,  bpmcavity,  CAV4DXI
+    VQWK, 2, 5,  bpmcavity,  CAV4DYI
+    VQWK, 2, 6,  bpmcavity,  CAV4DQ
     VQWK, 3, 7,  bcm,  UNSER
 
 !ADC3
@@ -90,20 +90,27 @@ sample_size=4084
     VQWK, 7, 6,  bpmstripline,  BPM4ecYM
     VQWK, 7, 7,  bpmstripline,  BPM4ecYP
 
-!!!  Actually, the combined BPM mechanic doesn't do what
-!!!  we want it to do here, as it is designed for BPMs at
-!!!  different Z, so we can do a projection to the target.
-!!!begin=combinedbpm
-!!!name=bpmavg4a
-!!!BPM4a, bpmstripline, 1.0, 1.0, 1.0
-!!!BPM4ac, bpmstripline, 1.0, 1.0, 1.0
-!!!end=combinedbpm
-!!!
-!!!begin=combinedbpm
-!!!name=bpmavg4e
-!!!BPM4e, bpmstripline, 1.0, 1.0, 1.0
-!!!BPM4ec, bpmstripline, 1.0, 1.0, 1.0
-!!!end=combinedbpm
+
+!! bank=0x2 
+!!
+!! scaler_buffer_offset=1 
+!!
+!! ! module.type  module.num  chan.num, det.type, det.name 
+!!   SCALER, 0,   4,  bcm, ch_MPS_single 
+!!   SCALER, 0,   5,  bcm, ch_TI_busy 
+!!   !!!  SCALER, 0,   6,  clock, ch_clock_13kHz  !!!!  Not connected 
+!!   SCALER, 0,   7,  clock, ch_clock_4mhz 
+!!   SCALER, 0,   8,  bcm, hallc_bcm_1 
+!!   !!!  SCALER, 0,   9,  bcmscal, hallc_bcm_2  !!!!  Not connected 
+!!   SCALER, 0,   10, bcm, BCM_scal_unser 
+!!   SCALER, 0,   11, bcm, BCM_scal_AAA 
+!!   SCALER, 0,   12, bcm, BCM_scal_BBB 
+!!   SCALER, 0,   13, bcm, BCM_scal_CCC 
+!!   SCALER, 0,   14, bcm, BCM_scal_DDD 
+!!   SCALER, 1,   0,  clock, ch_tstable_clock_4mhz 
+
+
+
 
 
 [PUBLISH]

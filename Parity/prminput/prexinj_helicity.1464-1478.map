@@ -62,23 +62,23 @@ SKIP 1
 !END
 
 
-!!!!  HACK to decode BMW words
-ROC=23
-Bank=0x4
-
-SKIP 8
-WORD, 0,  0, helicitydata,  bmwphase
-WORD, 0,  0, helicitydata,  bmwperiod
-WORD, 0,  0, helicitydata,  bmwobj
-WORD, 0,  0, helicitydata,  bmwfreq
-WORD, 0,  0, helicitydata,  bmwcycnum
-!!
-WORD, 0,  0, helicitydata,  roc23_cleandata
-WORD, 0,  0, helicitydata,  roc23_scandata1
-WORD, 0,  0, helicitydata,  roc23_scandata2
-!!
-WORD, 0,  0, helicitydata,  roc23_ioctime
-WORD, 0,  0, helicitydata,  roc23_ncnt
+!!!!!  HACK to decode BMW words
+!ROC=23
+!Bank=0x4
+!
+!SKIP 8
+!WORD, 0,  0, helicitydata,  bmwphase
+!WORD, 0,  0, helicitydata,  bmwperiod
+!WORD, 0,  0, helicitydata,  bmwobj
+!WORD, 0,  0, helicitydata,  bmwfreq
+!WORD, 0,  0, helicitydata,  bmwcycnum
+!!!
+!WORD, 0,  0, helicitydata,  roc23_cleandata
+!WORD, 0,  0, helicitydata,  roc23_scandata1
+!WORD, 0,  0, helicitydata,  roc23_scandata2
+!!!
+!WORD, 0,  0, helicitydata,  roc23_ioctime
+!WORD, 0,  0, helicitydata,  roc23_ncnt
 
 
 ! 

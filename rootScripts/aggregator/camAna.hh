@@ -1,4 +1,35 @@
+#ifndef __CAMANA__
+#define __CAMANA__
+#include "camguin.hh"
+#include <TLeaf.h>
 using namespace std;
+void writeNEvents_Loop_h(TString tree = "mul", TString branch = "ErrorFlag", Int_t runNumber = 0, Int_t nRuns = -1){
+  // Any branch will do, we are just counting the number of events that pass the global EventCuts, not device error codes too
+  runNumber = getRunNumber_h(runNumber);
+  nRuns     = getNruns_h(nRuns);
+  // Make an instance of the relevant data source 
+  TChain  * Chain   = getTree_h(tree, runNumber, nRuns);
+  TLeaf *ErrorFlag = getBranchLeaf_h(tree,branch,runNumber,nRuns);
+  if (!ErrorFlag){
+    return;
+  }
+  TTree   *Tree   = ErrorFlag->GetBranch()->GetTree();
+  Int_t    numEntries = Tree->GetEntries();
+
+  Int_t    n_data   = 0;
+  TString  number_total_events = "number_total_events";
+  TString  number_good_events = "number_good_events";
+
+  for (int j = 0; j < numEntries; j++) 
+  { // Loop over the input file's entries
+    Tree->GetEntry(j);
+    if ( ErrorFlag->GetValue(0) == 0 ){
+      n_data+=1;
+    }
+  }
+  writeFile_h(number_total_events,numEntries,runNumber,nRuns);
+  writeFile_h(number_good_events,n_data,runNumber,nRuns);
+}
 void writeMean_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", Int_t runNumber = 0, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
   nRuns     = getNruns_h(nRuns);
@@ -6,7 +37,7 @@ void writeMean_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
   // Make an instance of the relevant data source 
   TLeaf   *Leaf   = getLeaf_h(tree,branch,leaf,runNumber,nRuns);
   if (!Leaf){
-    return 0;
+    return;
   }
   TBranch *Branch = Leaf->GetBranch();
   TTree   *Tree   = Branch->GetTree();
@@ -16,7 +47,6 @@ void writeMean_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
   Int_t    n_data   = 0;
   Double_t data_mean = 0.0;
   TString  analysis = "mean_"+channel;
-  TBranch *dataBranch;
 
   for (int j = 0; j < numEntries; j++) 
   { // Loop over the input file's entries
@@ -51,7 +81,6 @@ void writeInt_loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",
   Double_t data     = 0.0;
   Int_t    n_data   = 0;
   TString  analysis = "integral_"+channel;
-  TBranch *dataBranch;
 
   for (int j = 0; j < numEntries; j++) 
   { // Loop over the input file's entries
@@ -112,3 +141,4 @@ void writeMean_leafHist_h(TString mode = "default", TString tree = "mul", TStrin
   writeFile_h(rms,data_rms,runNumber,nRuns);
   //writeFile_h("test",1.0,runNumber,nRuns);
 }*/
+#endif // __CAMANA__

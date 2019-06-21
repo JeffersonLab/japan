@@ -70,7 +70,7 @@ WORD, 0,  0, helicitydata,  inj_timebrd_dac16
 WORD, 0,  0, helicitydata,  inj_timebrd_dac12
 
 
-!!!  Try to the CH timing board words too!
+!!!  Add the CH and HRS timing board words too!
 ROC=23
 Bank=0x4
 SKIP 1
@@ -80,6 +80,26 @@ WORD, 0,  0, helicitydata,  ch_timebrd_integrationtime
 WORD, 0,  0, helicitydata,  ch_timebrd_oversampleword
 WORD, 0,  0, helicitydata,  ch_timebrd_dac16
 WORD, 0,  0, helicitydata,  ch_timebrd_dac12
+
+ROC=25
+Bank=0x4
+SKIP 1
+WORD, 0,  0, helicitydata,  rhrs_timebrd_data
+WORD, 0,  0, helicitydata,  rhrs_timebrd_rampdelay
+WORD, 0,  0, helicitydata,  rhrs_timebrd_integrationtime
+WORD, 0,  0, helicitydata,  rhrs_timebrd_oversampleword
+WORD, 0,  0, helicitydata,  rhrs_timebrd_dac16
+WORD, 0,  0, helicitydata,  rhrs_timebrd_dac12
+
+ROC=26
+Bank=0x4
+SKIP 1
+WORD, 0,  0, helicitydata,  lhrs_timebrd_data
+WORD, 0,  0, helicitydata,  lhrs_timebrd_rampdelay
+WORD, 0,  0, helicitydata,  lhrs_timebrd_integrationtime
+WORD, 0,  0, helicitydata,  lhrs_timebrd_oversampleword
+WORD, 0,  0, helicitydata,  lhrs_timebrd_dac16
+WORD, 0,  0, helicitydata,  lhrs_timebrd_dac12
 
 
 !END

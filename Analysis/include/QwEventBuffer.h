@@ -35,6 +35,9 @@ class QwSubsystemArray;
 class QwEventBuffer: public MQwCodaControlEvent{
  public:
   static void DefineOptions(QwOptions &options);
+  static void SetDefaultDataDirectory(const std::string& dir) {
+	fDefaultDataDirectory = dir;
+  }
   static void SetDefaultDataFileStem(const std::string& stem) {
 	fDefaultDataFileStem = stem;
   }
@@ -115,6 +118,7 @@ class QwEventBuffer: public MQwCodaControlEvent{
     return ((fIDBankNum == 0xCC) && ( /* fEvtType >= 0 && */ fEvtType <= 15));
   };
 
+  Int_t GetPhysicsEventNumber() {return fNumPhysicsEvents;};
   Int_t GetEventNumber() { return fEvtNumber; };
 
   Bool_t GetNextEventRange();
@@ -135,7 +139,8 @@ class QwEventBuffer: public MQwCodaControlEvent{
   Bool_t IsEPICSEvent(){
     //  What are the correct codes for our EPICS events?
     //return (fEvtType>=160 && fEvtType<=170);// epics event type is only with tag="160"
-    return (fEvtType>=160 && fEvtType<=190);// epics event type is only with tag="180" from July 2010 running
+    // return (fEvtType>=160 && fEvtType<=190);// epics event type is only with tag="180" from July 2010 running
+    return (fEvtType==131);// epics event type is for 2019 summer PREX-II 
   };
 
   Bool_t FillSubsystemConfigurationData(QwSubsystemArray &subsystems);
@@ -168,6 +173,7 @@ class QwEventBuffer: public MQwCodaControlEvent{
   TString fETSession;
   TString fETStationName;
   Int_t   fETWaitMode;
+  Bool_t  fExitOnEnd;
 
   Bool_t fAllowLowSubbankIDs;
 
@@ -186,6 +192,7 @@ class QwEventBuffer: public MQwCodaControlEvent{
 
  protected:
 
+  static std::string fDefaultDataDirectory;
   static std::string fDefaultDataFileStem;
   static std::string fDefaultDataFileExtension;
 

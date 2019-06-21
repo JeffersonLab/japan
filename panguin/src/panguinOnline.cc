@@ -8,6 +8,9 @@
 #include <fstream>
 #include <iostream>
 #include <list>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <ctime>
 #include <TMath.h>
 #include <TBranch.h>
 #include <TGClient.h>
@@ -39,7 +42,8 @@ using namespace std;
 
 OnlineGUI::OnlineGUI(OnlineConfig& config, Bool_t printonly=0, int ver=0):
   runNumber(0),
-  timer(0),
+  timer(0), 
+  timerNow(0),
   fFileAlive(kFALSE),
   fVerbosity(ver)
 {
@@ -166,6 +170,22 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
 						      kLHintsCenterY,5,5,3,4));
     fRadioPage[i]->Connect("Pressed()", "OnlineGUI", this, "DoRadio()");
   }
+
+  // heartbeat below the picture, watchfile only
+  if(fConfig->IsMonitor()){
+    fRootFileLastUpdated = new TGTextButton(vframe, "File updated at: XX:XX:XX");
+    // fRootFileLastUpdated->SetWidth(156);
+    vframe->AddFrame(fRootFileLastUpdated, new TGLayoutHints(kLHintsBottom | kLHintsRight, 5, 5, 3, 4));
+
+    fLastUpdated = new TGTextButton(vframe, "Plots updated at: XX:XX:XX");
+    // fLastUpdated->SetWidth(156);
+    vframe->AddFrame(fLastUpdated, new TGLayoutHints(kLHintsBottom | kLHintsRight, 5, 5, 3, 4));
+
+    fNow = new TGTextButton(vframe, "Current time: XX:XX:XX");
+    // fNow->SetWidth(156);
+    vframe->AddFrame(fNow, new TGLayoutHints(kLHintsBottom | kLHintsRight, 5, 5, 3, 4));
+  }
+
   if(!fConfig->IsMonitor()) {
     wile = 
       new TGPictureButton(vframe,gClient->GetPicture(guiDirectory+"/genius.xpm"));
@@ -258,6 +278,12 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
   if(fFileAlive) DoDraw();
 
   if(fConfig->IsMonitor()) {
+    timerNow = new TTimer();
+    timerNow->Connect(timerNow, "Timeout()", "OnlineGUI", this, "UpdateCurrentTime()");
+    timerNow->Start(1000);  // update every second
+  }
+
+  if(fConfig->IsMonitor()) {
     timer = new TTimer();
     if(fFileAlive) {
       timer->Connect(timer,"Timeout()","OnlineGUI",this,"TimerUpdate()");
@@ -319,6 +345,10 @@ void OnlineGUI::DoDraw()
     fCanvas->cd(i+1);
     if (drawcommand[0] == "macro") {
       MacroDraw(drawcommand);
+    } else if (drawcommand[0] == "loadmacro") {
+      LoadDraw(drawcommand);
+    } else if (drawcommand[0] == "loadlib") {
+      LoadLib(drawcommand);
     } else if (IsHistogram(drawcommand[0])) {
       HistDraw(drawcommand);
     } else {
@@ -328,6 +358,32 @@ void OnlineGUI::DoDraw()
       
   fCanvas->cd();
   fCanvas->Update();
+
+  if(fConfig->IsMonitor()) {
+    char buffer[9]; // HH:MM:SS
+    time_t t = time(0);
+    TString sLastUpdated("Plots updated at: ");
+    strftime(buffer, 9, "%T", localtime(&t));
+    sLastUpdated += buffer;
+    fLastUpdated->SetText(sLastUpdated);
+
+    struct stat result;
+    stat(fConfig->GetRootFile().Data(), &result);
+    time_t tf = result.st_mtime;
+    strftime(buffer, 9, "%T", localtime(&tf));
+
+    TString sRootFileLastUpdated("File updated at: ");
+    sRootFileLastUpdated += buffer;
+    fRootFileLastUpdated->SetText(sRootFileLastUpdated);
+    
+    if(fVerbosity>=4)
+      cout<<"Updating plots (current, file, diff[s]):\t"<<t<<"\t"<<tf<<"\t"<<t - tf<<endl;
+    if( t - tf > 60 ){
+      ULong_t red;
+      gClient->GetColorByName("red",red);
+      fRootFileLastUpdated->SetBackgroundColor(red);//FIXME
+    }
+  }
 
   if(!fPrintOnly) {
     CheckPageButtons();
@@ -599,6 +655,37 @@ void OnlineGUI::MacroDraw(vector <TString> command) {
 
 }
 
+void OnlineGUI::LoadDraw(vector <TString> command) {
+  // Called by DoDraw(), this will load a shared object library 
+  // and then make a call to the defined macro, and
+  // plot it in it's own pad.  One plot per macro, please.
+
+  if(command[1].IsNull()) {
+    cout << "load command doesn't contain a command to execute" << endl;
+    return;
+  }
+
+  if(doGolden) fRootFile->cd();
+  gSystem->Load(command[1]);
+  gROOT->Macro(command[2]);
+  
+
+}
+
+void OnlineGUI::LoadLib(vector <TString> command) {
+  // Called by DoDraw(), this will load a shared object library
+
+  if(command[1].IsNull()) {
+    cout << "load command doesn't contain a shared object library path" << endl;
+    return;
+  }
+
+  if(doGolden) fRootFile->cd();
+  gSystem->Load(command[1]);
+
+
+}
+
 void OnlineGUI::DoDrawClear() {
   // Utility to grab the number of entries in each tree.  This info is
   // then used, if watching a file, to "clear" the TreeDraw
@@ -681,6 +768,16 @@ void OnlineGUI::TimerUpdate() {
 
 #endif
 
+}
+
+void OnlineGUI::UpdateCurrentTime() {
+  char buffer[9];
+  time_t t = time(0);
+  strftime(buffer, 9, "%T", localtime(&t));
+  TString sNow("Current time: ");
+  sNow += buffer;
+  fNow->SetText(sNow); 
+  timerNow->Reset();
 }
 
 void OnlineGUI::BadDraw(TString errMessage) {

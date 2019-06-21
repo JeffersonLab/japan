@@ -77,9 +77,8 @@ class QwScaler: public VQwSubsystemParity, public MQwSubsystemCloneable<QwScaler
 
     void AccumulateRunningSum(VQwSubsystem* value);
     //remove one entry from the running sums for devices
-    void DeaccumulateRunningSum(VQwSubsystem* value){
-    };
-   void CalculateRunningAverage();
+    void DeaccumulateRunningSum(VQwSubsystem* value);
+    void CalculateRunningAverage();
 
     Int_t LoadEventCuts(TString filename);
     Bool_t SingleEventCuts();

@@ -114,7 +114,7 @@ void QwHaloMonitor::AccumulateRunningSum(const QwHaloMonitor& value) {
 }
 
 void QwHaloMonitor::DeaccumulateRunningSum(QwHaloMonitor& value) {
-  //fHalo_Counter.DeccumulateRunningSum(value.fHalo_Counter);
+  fHalo_Counter.DeaccumulateRunningSum(value.fHalo_Counter);
 }
 
 void QwHaloMonitor::CalculateRunningAverage(){

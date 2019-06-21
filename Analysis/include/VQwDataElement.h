@@ -52,7 +52,7 @@ class VQwDataElement: public MQwHistograms {
  public:
   /// Flag to be used to decide which data needs to be histogrammed and
   /// entered in the tree
-  enum EDataToSave {kRaw = 0, kDerived};
+  enum EDataToSave {kRaw = 0, kDerived, kMoments};
 
 
  public:
@@ -127,7 +127,7 @@ class VQwDataElement: public MQwHistograms {
     { std::cerr << "Difference not defined!" << std::endl; }
   /*! \brief Ratio operator */
   virtual void Ratio(const VQwDataElement &numer, const VQwDataElement &denom)
-    { std::cerr << "Ratio not defined!" << std::endl; }
+  { std::cerr << "Ratio not defined for element"<< fElementName<< "!" << std::endl; }
 
   /*! \brief Construct the histograms for this data element */
   virtual void  ConstructHistograms(TDirectory *folder, TString &prefix) = 0;

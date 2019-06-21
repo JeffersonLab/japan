@@ -12,20 +12,26 @@
 
 #include <csignal>
 Bool_t globalEXIT;
+Bool_t onlineRestart;
 void sigint_handler(int sig)
 {
-        std::cout << "handling signal no. " << sig << " ";
-        std::cout << "(press ctrl-\\ to abort now)\n";
-        globalEXIT=1;
+  std::cout << "handling signal no. " << sig << " ";
+  std::cout << "(press ctrl-\\ to abort now)\n";
+  globalEXIT=1;
 }
-
-
+void sigusr_handler(int sig)
+{
+  std::cout << "handling signal no. " << sig << "\n";
+  std::cout << "Restarts the event loop in online mode." << std::endl;
+  onlineRestart = 1;
+}
 
 #include "THaCodaFile.h"
 #ifdef __CODA_ET
 #include "THaEtClient.h"
 #endif
 
+std::string QwEventBuffer::fDefaultDataDirectory = "/adaq1/data1/apar";
 std::string QwEventBuffer::fDefaultDataFileStem = "QwRun_";
 std::string QwEventBuffer::fDefaultDataFileExtension = "log";
 
@@ -43,6 +49,7 @@ QwEventBuffer::QwEventBuffer()
   :    fRunListFile(NULL),
        fDataFileStem(fDefaultDataFileStem),
        fDataFileExtension(fDefaultDataFileExtension),
+       fDataDirectory(fDefaultDataDirectory),
        fEvStreamMode(fEvStreamNull),
        fEvStream(NULL),
        fCurrentRun(-1),
@@ -56,14 +63,8 @@ QwEventBuffer::QwEventBuffer()
   signal(SIGINT,  sigint_handler);// ctrl+c
   signal(SIGTERM, sigint_handler);// kill in shell // 15
   //  signal(SIGTSTP, sigint_handler);// ctrl+z // 20
-
-  fDataDirectory = getenv_safe("QW_DATA");
-  if (fDataDirectory.Length() == 0){
-    QwError << "ERROR:  Can't get the data directory in the QwEventBuffer creator."
-	    << QwLog::endl;
-  } else if (! fDataDirectory.EndsWith("/")) {
-      fDataDirectory.Append("/");
-  }
+  onlineRestart=0;
+  signal(SIGUSR1, sigusr_handler);
 
   fCleanParameter[0] = 0.0;
   fCleanParameter[1] = 0.0;
@@ -88,6 +89,9 @@ void QwEventBuffer::DefineOptions(QwOptions &options)
   options.AddDefaultOptions()
     ("run,r", po::value<string>()->default_value("0:0"),
      "run range in format #[:#]");
+  options.AddDefaultOptions()
+    ("data,d", po::value<string>()->default_value(fDefaultDataDirectory),
+     "data directory, also $QW_DATA");
   options.AddDefaultOptions()
     ("runlist", po::value<string>()->default_value(""),
      "run list file name");
@@ -123,6 +127,9 @@ void QwEventBuffer::DefineOptions(QwOptions &options)
   options.AddOptions("ET system options")
     ("ET.waitmode", po::value<int>()->default_value(0),
      "ET system wait mode: 0 is wait-forever, 1 is timeout \"quickly\"  --- Only used in online mode"); 
+  options.AddOptions("ET system options")
+    ("ET.exit-on-end", po::value<bool>()->default_value(false),
+     "Exit the event loop if the end event is found.  --- Only used in online mode");
 }
 
 void QwEventBuffer::ProcessOptions(QwOptions &options)
@@ -130,6 +137,7 @@ void QwEventBuffer::ProcessOptions(QwOptions &options)
   fOnline     = options.GetValue<bool>("online");
   if (fOnline){
     fETWaitMode  = options.GetValue<int>("ET.waitmode");
+    fExitOnEnd  = options.GetValue<bool>("ET.exit-on-end");
 #ifndef __CODA_ET
     QwError << "Online mode will not work without the CODA libraries!"
 	    << QwLog::endl;
@@ -170,6 +178,15 @@ void QwEventBuffer::ProcessOptions(QwOptions &options)
     }
 #endif
   }
+
+  fDataDirectory = options.GetValue<string>("data");
+  if (fDataDirectory.Length() == 0){
+    QwError << "ERROR:  Can't get the data directory in the QwEventBuffer creator."
+	    << QwLog::endl;
+  } else if (! fDataDirectory.EndsWith("/")) {
+      fDataDirectory.Append("/");
+  }
+
   fRunRange = options.GetIntValuePair("run");
   fEventRange = options.GetIntValuePair("event");
   fSegmentRange = options.GetIntValuePair("segment");
@@ -417,6 +434,15 @@ Int_t QwEventBuffer::GetNextEvent()
     if (fRunIsSegmented && GetSegmentNumber() < fSegmentRange.first) {
       fEventRange.first = fEvtNumber + 1;
       if (fEvtNumber > 1000) status = EOF;
+    }
+    if (fOnline && fExitOnEnd && fEndTime>0){
+      QwMessage << "Caught End Event (end time=="<< fEndTime 
+		<< ").  Exit event loop." << QwLog::endl;
+      status = EOF;
+    }
+    if (fOnline && onlineRestart){
+      onlineRestart=0;
+      status = EOF;
     }
   } while (status == CODA_OK  &&
            IsPhysicsEvent()   &&
