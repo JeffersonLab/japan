@@ -19,23 +19,25 @@ Last Modified: August 1, 2018 1:43 PM
 #include "VQwDataHandler.h"
 
 // LinRegBlue Correlator Class
-#include "QwkRegBlueCorrelator.h"
+#include "LinReg_Bevington_Pebay.h"
 
-class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCorrelator>{
+// Forward declarations
+class TH1D;
+class TH2D;
+
+class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCorrelator>
+{
  public:
   /// \brief Constructor with name
   QwCorrelator(const TString& name);
+  virtual ~QwCorrelator();
 
   void ParseConfigFile(QwParameterFile& file);
 
   Int_t LoadChannelMap(const std::string& mapfile);
-  	
-  void readConfig(const char * configFName);
-  	
+
   /// \brief Connect to Channels (asymmetry/difference only)
   Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
-		
-  void unpackEvent();
 
   void AccumulateRunningSum();
   void ProcessData(){};
@@ -69,11 +71,28 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 
  private:
 		
-  //Default Constructor
-  QwCorrelator():corA("input") { };
-		
-  QwkRegBlueCorrelator corA;
-		
+  TString fNameNoSpaces;
+  int nP, nY;
+
+  // histograms
+  enum {mxHA=4};
+  TH1D* hA[mxHA];
+
+  // monitoring histos for iv & dv
+  TH1D **fH1iv, **fH1dv;
+  TH2D **fH2iv, **fH2dv;
+
+  LinRegBevPeb linReg;
+
+  void init(std::vector<std::string> ivName, std::vector<std::string> dvName);
+  void initHistos(std::vector<std::string> ivName, std::vector<std::string> dvName);
+  void addEvent(double *Pvec, double *Yvec);
+  void exportAlphas(TString outPath, std::vector < TString > ivName, std::vector < TString > dvName);
+  void exportAlias(TString outPath, TString macroName, std::vector < TString > ivName, std::vector < TString > dvName);
+
+  // Default constructor
+  QwCorrelator();
+
 };
 
 
