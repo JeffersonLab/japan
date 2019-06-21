@@ -134,8 +134,6 @@ void QwCorrelator::CalcCorrelations()
 }
 
 
-//******************************************************************************************************************************************************
-
 /** Load the channel map
  *
  * @param mapfile Filename of map file
@@ -299,7 +297,10 @@ void QwCorrelator::initHistos(std::vector<std::string> Pname, std::vector<std::s
   //..... 1D,  iv
   fH1iv = new TH1D*[nP];
   for(int i=0;i<nP;i++) {
-    TH1D* h = fH1iv[i] = new TH1D(Form(fNameNoSpaces+"P%d",i),Form("iv P%d=%s, pass=%s ;iv=%s (ppm)",i,Pname[i].c_str(),fNameNoSpaces.Data(),Pname[i].c_str()),128,0.,0.);
+    TH1D* h = fH1iv[i] = new TH1D(
+        Form(fNameNoSpaces+"P%d",i),
+        Form("iv P%d=%s, pass=%s ;iv=%s (ppm)",i,Pname[i].c_str(),fNameNoSpaces.Data(),Pname[i].c_str()),
+        128,0.,0.);
     h->GetXaxis()->SetNdivisions(4);
   }
 
@@ -308,7 +309,12 @@ void QwCorrelator::initHistos(std::vector<std::string> Pname, std::vector<std::s
   fH2iv = new TH2D*[nP*nP]; // not all are used
   for(int i=0;i<nP;i++) {
     for(int j=i+1;j<nP;j++) {
-      TH2D* h = fH2iv[i*nP+j] = new TH2D(Form(fNameNoSpaces+"P%d_P%d",i,j),Form("iv correlation  P%d_P%d, pass=%s ;P%d=%s (ppm);P%d=%s   (ppm)  ",i,j,fNameNoSpaces.Data(),i,Pname[i].c_str(),j,Pname[j].c_str()),64,-x1,x1,64,-x1,x1);
+      TH2D* h = fH2iv[i*nP+j] = new TH2D(
+          Form(fNameNoSpaces+"P%d_P%d",i,j),
+          Form("iv correlation  P%d_P%d, pass=%s ;P%d=%s (ppm);P%d=%s   (ppm)  ",
+              i,j,fNameNoSpaces.Data(),i,Pname[i].c_str(),j,Pname[j].c_str()),
+          64,-x1,x1,
+          64,-x1,x1);
       h->GetXaxis()->SetTitleColor(kBlue);
       h->GetYaxis()->SetTitleColor(kBlue);
       h->GetXaxis()->SetNdivisions(4);
@@ -319,7 +325,10 @@ void QwCorrelator::initHistos(std::vector<std::string> Pname, std::vector<std::s
   //..... 1D,  dv
   fH1dv = new TH1D*[nY];
   for(int i=0;i<nY;i++) {
-    TH1D* h = fH1dv[i] = new TH1D(Form(fNameNoSpaces+"Y%d",i),Form("dv Y%d=%s, pass=%s ;dv=%s (ppm)",i,Yname[i].c_str(),fNameNoSpaces.Data(),Yname[i].c_str()),128,0.,0.);
+    TH1D* h = fH1dv[i] = new TH1D(
+        Form(fNameNoSpaces+"Y%d",i),
+        Form("dv Y%d=%s, pass=%s ;dv=%s (ppm)",i,Yname[i].c_str(),fNameNoSpaces.Data(),Yname[i].c_str()),
+        128,0.,0.);
     h->GetXaxis()->SetNdivisions(4);
   }
 
@@ -328,7 +337,12 @@ void QwCorrelator::initHistos(std::vector<std::string> Pname, std::vector<std::s
   fH2dv = new TH2D*[nP*nY]; // not all are used
   for(int i=0;i<nP;i++) {
     for(int j=0;j<nY;j++) {
-      TH2D* h = fH2dv[i*nY+j] = new TH2D(Form(fNameNoSpaces+"P%d_Y%d",i,j),Form("iv-dv correlation  P%d_Y%d, pass=%s ;P%d=%s (ppm);Y%d=%s   (ppm)  ",i,j,fNameNoSpaces.Data(),i,Pname[i].c_str(),j,Yname[j].c_str()),64,-x1,x1,64,-y1,y1);
+      TH2D* h = fH2dv[i*nY+j] = new TH2D(
+          Form(fNameNoSpaces+"P%d_Y%d",i,j),
+          Form("iv-dv correlation  P%d_Y%d, pass=%s ;P%d=%s (ppm);Y%d=%s   (ppm)  ",
+              i,j,fNameNoSpaces.Data(),i,Pname[i].c_str(),j,Yname[j].c_str()),
+          64,-x1,x1,
+          64,-y1,y1);
       h->GetXaxis()->SetTitleColor(kBlue);
       h->GetYaxis()->SetTitleColor(kBlue);
       h->GetXaxis()->SetNdivisions(4);
