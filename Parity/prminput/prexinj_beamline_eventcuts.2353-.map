@@ -1,11 +1,9 @@
-
-!This file contains beamline event cut properties
 !*********************************************************************************************
 !Global switch to turn ON and OFF eventcut check
 !Available settings
 !***************************************************
 !To turn OFF all checks
-!EVENTCUTS = 0 
+! EVENTCUTS = 0 
 
 !***************************************************
 !To turn OFF event cuts and perform only HW checks
@@ -27,8 +25,16 @@ EVENTCUTS = 3
 !***************************************************
 !for bcm devices
 !device_type, device_name,      lower limit, upper limit, local(l)/global(g), stability percentage
- bcm, bcm_an_ds3,		48.0,  55.0,	g,	0.5
+ 
+!bcm, qwk_bcm0l02,		1,	1000000,	l,	0
+!bcm, empty1,	 	-2.420e+6,	-2.390e+6
+!bcm, empty1, 		0, 	0, 1, 0
+!bcm, empty2, 		0, 	0, 1, 0
+ 
+!bcm, qwk_batext1, 	0, 	0, 1, 0
 
+!bcm, qwk_batext2,  	0, 	0, 1, 0
+!for 752 & 755 
 !for parity mock data run 1000 9.98608e+06
 !bcm, qwk_bcm0l03, 	8.00e+06, 	1.20e+07, 1, 0 
 
@@ -45,20 +51,9 @@ EVENTCUTS = 3
 !So pedestals are applied before appyling the cuts.
 
 !device_type,  device_name, channel_name, lower limit, upper limit, local(l)/global(g), stability percentage
-! the following line is an example
-!bpmstripline, qwk_qpd, relx, 2.67319, 	4.45531
 
-  bpmstripline, bpm4a, absx, -18.81, 18.81, l, 0.05
-  bpmstripline, bpm4a, absy, -18.81, 18.81, l, 0.02
+!bpmstripline, bpm2i01, charge,  90000, 	10000000000, g, 2000 
 
-  bpmstripline, bpm4e, absx, -18.81, 18.81, l, 0.05
-  bpmstripline, bpm4e, absy, -18.81, 18.81, l, 0.01
-
-  bpmstripline, bpm14, absx, -18.81, 18.81, l, 0.04
-  bpmstripline, bpm14, absy, -18.81, 18.81, l, 0.015
-
-  bpmstripline, bpm18, absx, -18.81, 18.81, l, 0.09
-  bpmstripline, bpm18, absy, -18.81, 18.81, l, 0.01
 
 !This file contains beamline event cut properties
 

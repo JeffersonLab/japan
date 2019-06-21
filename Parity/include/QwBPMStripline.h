@@ -64,7 +64,7 @@ class QwBPMStripline : public VQwBPM {
   QwBPMStripline(const QwBPMStripline& source)
   : VQwBPM(source),
     fWire(source.fWire),fRelPos(source.fRelPos),fAbsPos(source.fAbsPos),
-    fEffectiveCharge(source.fEffectiveCharge)
+    fEffectiveCharge(source.fEffectiveCharge),fEllipticity(source.fEllipticity)
   { }
   virtual ~QwBPMStripline() { };
 
@@ -98,6 +98,7 @@ class QwBPMStripline : public VQwBPM {
     return &fAbsPos[axis];
   }
   const VQwHardwareChannel* GetEffectiveCharge() const {return &fEffectiveCharge;}
+  const VQwHardwareChannel* GetEllipticity() const {return &fEllipticity;}
 
   TString GetSubElementName(Int_t subindex);
   void    GetAbsolutePosition();
@@ -194,6 +195,7 @@ class QwBPMStripline : public VQwBPM {
   //  fAbsPos_base and fEffectiveCharge_base are pointers.
   T fAbsPos[2];
   T fEffectiveCharge;
+  T fEllipticity;
 
 private: 
   // Functions to be removed

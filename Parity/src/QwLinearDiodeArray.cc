@@ -39,7 +39,7 @@ void  QwLinearDiodeArray::InitializeChannel(TString name)
   }
   
 
-  fEffectiveCharge.InitializeChannel(name+"_EffectiveCharge","derived");
+  fEffectiveCharge.InitializeChannel(name+"WS","derived");
 
   //  We don't initialize the photodiode channels yet.
   fRelPos[0].InitializeChannel(name+"RelMean","derived");
@@ -64,7 +64,7 @@ void  QwLinearDiodeArray::InitializeChannel(TString subsystem, TString name)
       std::cout<<" photodiode ["<<i<<"]="<<fPhotodiode[i].GetElementName()<<"\n";
   }
 
-  fEffectiveCharge.InitializeChannel(subsystem, "QwLinearDiodeArray", name+"_EffectiveCharge","derived");
+  fEffectiveCharge.InitializeChannel(subsystem, "QwLinearDiodeArray", name+"WS","derived");
 
   //  We don't initialize the photodiode channels yet.
 

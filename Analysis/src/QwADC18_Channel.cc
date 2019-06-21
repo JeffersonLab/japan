@@ -176,8 +176,8 @@ void QwADC18_Channel::InitializeChannel(TString name, TString datatosave)
   fMockGaussianSigma = 0.0;
 
   // Event cuts
-  fULimit=0;
-  fLLimit=0;
+  fULimit=-1;
+  fLLimit=1;
   fNumEvtsWithEventCutsRejected = 0;
 
   fErrorFlag=0;               //Initialize the error flag
@@ -569,13 +569,22 @@ void  QwADC18_Channel::ConstructBranchAndVector(TTree *tree, TString &prefix, st
   if (IsNameEmpty()){
     //  This channel is not used, so skip setting up the tree.
   } else {
-    TString basename = prefix + GetElementName();
+    //  Decide what to store based on prefix
+    SetDataToSaveByPrefix(prefix);
+
+    TString basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix.Length()) + GetElementName();
     fTreeArrayIndex  = values.size();
 
     TString list;
 
     values.push_back(0.0);
     list = "value/D";
+    if (fDataToSave == kMoments) {
+      values.push_back(0.0);
+      list += ":value_m2/D";
+      values.push_back(0.0);
+      list += ":value_err/D";
+    }
 
     values.push_back(0.0);
     list += ":Device_Error_Code/D";
@@ -613,18 +622,18 @@ void  QwADC18_Channel::FillTreeVector(std::vector<Double_t> &values) const
   if (IsNameEmpty()) {
     //  This channel is not used, so skip setting up the tree.
   } else if (fTreeArrayNumEntries < 0) {
-    QwError << "VQwScaler_Channel::FillTreeVector:  fTreeArrayNumEntries=="
+    QwError << "QwADC18_Channel::FillTreeVector:  fTreeArrayNumEntries=="
             << fTreeArrayNumEntries << QwLog::endl;
   } else if (fTreeArrayNumEntries == 0) {
     static bool warned = false;
     if (!warned) {
-      QwError << "VQwScaler_Channel::FillTreeVector:  fTreeArrayNumEntries=="
+      QwError << "QwADC18_Channel::FillTreeVector:  fTreeArrayNumEntries=="
               << fTreeArrayNumEntries << " (no branch constructed?)" << QwLog::endl;
       QwError << "Offending element is " << GetElementName() << QwLog::endl;
       warned = true;
     }
   } else if (values.size() < fTreeArrayIndex+fTreeArrayNumEntries) {
-    QwError << "VQwScaler_Channel::FillTreeVector:  values.size()=="
+    QwError << "QwADC18_Channel::FillTreeVector:  values.size()=="
             << values.size() << " name: " << fElementName
             << "; fTreeArrayIndex+fTreeArrayNumEntries=="
             << fTreeArrayIndex << '+' << fTreeArrayNumEntries << '='
@@ -633,6 +642,10 @@ void  QwADC18_Channel::FillTreeVector(std::vector<Double_t> &values) const
   } else {
     size_t index = fTreeArrayIndex;
     values[index++] = this->fValue;
+    if (fDataToSave == kMoments) {
+      values[index++] = fValueM2;
+      values[index++] = fValueError;
+    }
     values[index++] = this->fErrorFlag;
     if(fDataToSave==kRaw){
       values[index++] = this->fValue_Raw;
@@ -1156,7 +1169,7 @@ Bool_t QwADC18_Channel::ApplySingleEventCuts(Double_t LL,Double_t UL)
 {
   Bool_t status = kFALSE;
 
-  if (LL==0 && UL==0){
+  if (UL < LL){
     status=kTRUE;
   } else  if (GetValue()<=UL && GetValue()>=LL){
     if ((fErrorFlag & kPreserveError)!=0)
@@ -1174,7 +1187,7 @@ Bool_t QwADC18_Channel::ApplySingleEventCuts()//This will check the limits and u
 
   if (bEVENTCUTMODE>=2){//Global switch to ON/OFF event cuts set at the event cut file
 
-    if (fULimit==0 && fLLimit==0){
+    if (fULimit < fLLimit){
       status=kTRUE;
     } else  if (GetValue()<=fULimit && GetValue()>=fLLimit){
       if ((fErrorFlag)==0)

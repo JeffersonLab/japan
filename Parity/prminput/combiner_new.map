@@ -8,7 +8,7 @@
 
 # Double differences
 [asym:@bpmdd_charge_targetcharge]
-asym:bpm_target_EffectiveCharge, 1
+asym:bpm_targetWS, 1
 asym:bcm_target, -1
 
 

@@ -6,14 +6,13 @@
  */
 
 
-#ifndef __QWREGRESSIONSUBSYSTEM__
-#define __QWREGRESSIONSUBSYSTEM__
+#ifndef __QWCOMBINERSUBSYSTEM__
+#define __QWCOMBINERSUBSYSTEM__
 
 // Boost headers
 #include <boost/shared_ptr.hpp>
 
 // headers
-#include "QwOptions.h"
 #include "VQwSubsystemParity.h"
 #include "QwSubsystemArrayParity.h"
 #include "QwCombiner.h"
@@ -35,16 +34,8 @@ class QwCombinerSubsystem: public VQwSubsystemParity,
   public:
       // Constructors
       /// \brief Constructor with just name.
-      /// (use gQwOptions to initialize the QwCombiner baseclass)
-      QwCombinerSubsystem(TString name)
-      : VQwSubsystem(name), VQwSubsystemParity(name), QwCombiner(gQwOptions) { }
-      /// \brief Constructor with only options
-      QwCombinerSubsystem(QwOptions &options, TString name)
-      : VQwSubsystem(name), VQwSubsystemParity(name), QwCombiner(options) { }
-      /// \brief Constructor with single event
-      QwCombinerSubsystem(QwOptions &options, QwSubsystemArrayParity& event, TString name)
-      : VQwSubsystem(name), VQwSubsystemParity(name), QwCombiner(options, event)
-      { QwMessage << "Constructing QwCombinerSubsystem" << QwLog::endl; }
+      QwCombinerSubsystem(const TString name)
+      : VQwSubsystem(name), VQwSubsystemParity(name), QwCombiner(name) { }
 
       // Copy Constructor
       QwCombinerSubsystem(const QwCombinerSubsystem &source)
@@ -55,8 +46,6 @@ class QwCombinerSubsystem: public VQwSubsystemParity,
 
       boost::shared_ptr<VQwSubsystem> GetSharedPointerToStaticObject();
 
-      void ProcessOptions(QwOptions &options){QwCombiner::ProcessOptions(options);};
-
       /// \brief Update the running sums
       void AccumulateRunningSum(VQwSubsystem* input);
       void DeaccumulateRunningSum(VQwSubsystem* value);
@@ -65,10 +54,9 @@ class QwCombinerSubsystem: public VQwSubsystemParity,
       /// \brief Print values for all channels
       void PrintValue() const;
 
-      void LinearRegression(){
-        QwCombiner::LinearRegression(QwCombiner::kRegTypeMps);
+      void ProcessData(){
+        QwCombiner::ProcessData();
       }
-
 
       /// \brief Overloaded Operators
       VQwSubsystem& operator=  (VQwSubsystem *value);
@@ -146,5 +134,5 @@ class QwCombinerSubsystem: public VQwSubsystemParity,
 }; // class QwCombinerSubsystem
 
 
-#endif // __QWREGRESSIONSUBSYSTEM__
+#endif // __QWCOMBINERSUBSYSTEM__
 

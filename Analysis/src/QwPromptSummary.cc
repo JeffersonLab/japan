@@ -94,54 +94,86 @@ PromptSummaryElement::GetTextSummary()
   TString test;
   return test;
 };
+
 TString
-PromptSummaryElement::GetCSVSummary()
+PromptSummaryElement::GetCSVSummary(TString type)
 {
-  return Form("%14s | Yield:  %.2e +/-  %.2e \t Width:  %.2e | Difference/Asymmetry:  %.2e +/-  %.2e \t Width:  %0.2e  \n", fElementName.Data(), fYield, fYieldError, fYieldWidth, fAsymDiff, fAsymDiffError, fAsymDiffWidth);
-  //return Form("%s,%e,%e,%e,%e,%e,%e", fElementName.Data(), fYield, fYieldError, fYieldWidth, fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+
+TString out = "";
+
+Bool_t dd= fElementName.Contains("_dd");
+Bool_t da= fElementName.Contains("_da");
+
+
+if (type.Contains("yield")&& !(dd||da)){     
+   		out = Form("%20s | Mean: %8.3f +/- %8.3f \t Width: %8.3f\n", fElementName.Data(), fYield, fYieldError, fYieldWidth); 
+}
+if (type.Contains("asy")&& !(dd||da)){
+      out = Form("%20s | Mean: %8.3f +/- %8.3f \t Width: %8.3f\n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+}
+if (type.Contains("double")&& (dd||da)) {
+     	out = Form ("%20s | Mean: %8.3f +/- %8.3f \t Width: %8.3f\n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+}     
+
+
+return out;
+ 
 };
 
 
 void 
-PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, const Double_t a_width)    // Fix Me - This function could use some cleaning up. Use maps.
+PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, const Double_t a_width)   
 {
-  Double_t asymmetry_ppm = 1e-6;
+  Double_t unit= 1;
+  Bool_t qtarg=fElementName.EqualTo("bcm_an_ds3"); //Estimator for good events
+  Bool_t bcm= fElementName.Contains("bcm");
+  Bool_t bpm= fElementName.Contains("bpm");
+  Bool_t sam= fElementName.Contains("sam");
+  Bool_t md= fElementName.Contains("md");
+  Bool_t dd=fElementName.Contains("_dd");
+  Bool_t da=fElementName.Contains("_da");
+  
 
-  if(type.Contains("yield")) {
-    if (fElementName.Contains("bcm")) {
+  if (type.Contains("yield")){
+    if (bcm) {
       this->SetYieldUnit("uA");
+      unit=Qw::uA;
     }
-    else if (fElementName.Contains("bpm")) {
+    else if (bpm) {
       this->SetYieldUnit("mm");
+      unit=Qw::mm;
     }
-    else if (fElementName.Contains("MD")) {
-      this->SetYieldUnit("V/uA");
-    }
-    else if (fElementName.Contains("lumi")) {
-      this->SetYieldUnit("V/uA");
+    else if (sam||md) {
+      this->SetYieldUnit("mV/uA");
+      unit=Qw::mV_uA;
     }
     else {
       this->SetYieldUnit("---");
     }
-    this->SetYield(a);
-    this->SetYieldError(a_err);
-    this->SetYieldWidth(a_width);
-  } 
+    this->SetYield(a/unit);
+    this->SetYieldError(a_err/unit);
+    this->SetYieldWidth(a_width/unit);
+
+    if (qtarg){
+      Double_t temp = (a_width/a_err);
+      this->SetNumGoodEvents(4*temp*temp);
+    }
+  }
   else if(type.Contains("asymmetry")) {
-    
-    if (fElementName.Contains("bpm")) {
-      this->SetDifferenceUnit("nm");
-      this->SetDifference(a);
-      this->SetDifferenceError(a_err);
-      this->SetDifferenceWidth(a_width);
+    if (bpm) {
+      this->SetDifferenceUnit("um");
+      unit=Qw::um;
+      this->SetDifference(a/unit);
+      this->SetDifferenceError(a_err/unit);
+      this->SetDifferenceWidth(a_width/unit);
     } 
     else {
       this->SetAsymmetryUnit("ppm");
-      this->SetAsymmetry(a/asymmetry_ppm);
-      this->SetAsymmetryError(a_err/asymmetry_ppm);
-      this->SetAsymmetryWidth(a_width/asymmetry_ppm);
-    }
- 
+      unit=Qw::ppm;
+      this->SetAsymmetry(a/unit);
+      this->SetAsymmetryError(a_err/unit);
+      this->SetAsymmetryWidth(a_width/unit);
+    } 
   } 
   else if(type.Contains("difference")) {
   } 
@@ -154,11 +186,8 @@ QwPromptSummary::QwPromptSummary()
 {
   fRunNumber    = 0;
   fRunletNumber = 0;
-  fElementList = new TObjArray();
  
-  fElementList -> Clear();
-  fElementList -> SetOwner(kTRUE);
-
+ 
   fNElements = 0;
 
   fLocalDebug = kTRUE;
@@ -173,11 +202,7 @@ QwPromptSummary::QwPromptSummary(Int_t run_number, Int_t runlet_number)
   fRunNumber    = run_number;
   fRunletNumber = runlet_number;
 
-  fElementList = new TObjArray();
  
-  fElementList -> Clear();
-  fElementList -> SetOwner(kTRUE);
-
   fNElements = 0;
 
   fLocalDebug = kFALSE;
@@ -189,8 +214,12 @@ QwPromptSummary::QwPromptSummary(Int_t run_number, Int_t runlet_number)
 
 QwPromptSummary::~QwPromptSummary()
 {
-  if(fElementList) delete fElementList;
-  fElementList = NULL;
+
+  for (auto i=fElementList.begin() ; i!=fElementList.end();i++){
+  	delete *i;
+  }
+  fElementList.clear();
+
 };
 
 
@@ -232,7 +261,7 @@ QwPromptSummary::AddElement(PromptSummaryElement *in)
 {
   Int_t pos = 0;
 
-  pos = fElementList -> AddAtFree(in);
+  fElementList.push_back(in);
   if(fLocalDebug) {
     printf("AddElement at pos %d\n", pos);
   }
@@ -246,16 +275,14 @@ PromptSummaryElement *
 QwPromptSummary::GetElementByName(TString name)
 {
 
-  PromptSummaryElement* an_element = NULL;
-  TObjArrayIter next(fElementList);
-  TObject* obj = NULL;
+  
   TString get_name = "";
 
-  while ( (obj = next()) )
+  for (auto i=fElementList.begin(); i!=fElementList.end(); i++  )
     {
-      an_element = (PromptSummaryElement*) obj;
+      PromptSummaryElement* an_element = *i;
       get_name   = an_element->GetName();
-      if( get_name.Contains(name) ) {
+      if( get_name.EqualTo(name) ) {
 	if(fLocalDebug) {
 	  std::cout << "System " << an_element->GetName()
 		    << " QwPromptSummary::GetElementByName address at" << an_element << std::endl;
@@ -288,28 +315,28 @@ QwPromptSummary::PrintTextSummaryTailer()
 {
   TString out = "";
   
-  out =  " ======== END of SUMMARY======== \n";
-  out += " ======== END ======== \n\n";
-  out += " Please contact Rakitha Beminiwattha for any queries and suggestions \n";
-  out += " rakithab@jlab.org \n";
+  out =  "==================================================\n";
   return out;
 };
 
 
 TString
-QwPromptSummary::PrintCSVHeader() 
+QwPromptSummary::PrintCSVHeader(Int_t nEvents, TString start_time, TString end_time)
 {
   TString out = "";
    
-  
-  out += Form("Distribution parameters for run %d \n",fRunNumber);
-  out += "===================================================================================\n";
+  Double_t goodEvents=  (this->GetElementByName("bcm_an_ds3"))->GetNumGoodEvents();
 
-  out += "Please follow the following guidance on units \n";
-  out += "Yields: bcm* (uA), cav*q(uA), cav*x/y(mm-uA?), bpm*WS(?), bpm*(mm), sam*(V/uA?)\n";
-  out += "Asymmetries: bpm*(nm), bpm*WS(?), cav*x/y(?), In general (ppm) \n";
+  out += Form("Run: %d \n",fRunNumber);
+  out += "Start Time: "+start_time+"\nEnd Time: "+end_time+"\n";
+  out += Form("Number of events processed: %i\n",nEvents);
+  out += Form("Number of events in good multiplicity patterns: %3.0f\n", goodEvents);
+  out += Form("Percentage of good events: %3.1f \%\n", goodEvents/nEvents*100);
+  out += "=========================================================================\n";
+  out += "Yield Units: bcm(uA), cavq(uA), bpm(mm), sam(mV/uA)\n";
+  out += "Asymmetry/Difference Units: bcm(ppm), cavq(ppm), bpm(um), sam(ppm)\n";
 
-  out += "===================================================================================\n";
+  out += "=========================================================================\n";
   
   
 
@@ -489,41 +516,60 @@ QwPromptSummary::FillDoubleDifference(TString type, TString name1, TString name2
 }
 
 void
-QwPromptSummary::PrintCSV()
+QwPromptSummary::PrintCSV(Int_t nEvents, TString start_time, TString end_time)
 {
   printf("-----------------------\n");
-  TString filename = getenv_safe_TString("QW_ROOTFILES"); 
+  TString filename = gQwOptions.GetValue<std::string>("rootfiles");
   filename+=Form("/summary_%d.txt", fRunNumber);
-  TString header= this->PrintCSVHeader();
+  TString header= this->PrintCSVHeader(nEvents, start_time, end_time);
   std::ofstream output;
   output.open(filename.Data());
-  output<< header.Data() << "\n";
+  output<< header.Data();
+  
+  TString secheader= "=========================================================================\n";
+  secheader+=Form("%40s \n","Yields");
+  secheader+="=========================================================================\n" ;
+  output << secheader.Data() ;
+ 
+  for (auto i=fElementList.begin(); i!=fElementList.end(); i++  )
+    {
+      output << (*i)->GetCSVSummary("yield") ;
+    }
   
 
-  TObjArrayIter next(fElementList);
-  TObject* obj = NULL;
-  while ( (obj = next()) )
+  secheader= "=========================================================================\n";
+  secheader+=Form("%50s\n","Asymmetries/Differences");
+  secheader+="=========================================================================\n";
+  output << secheader.Data();
+ 
+  for ( auto j=fElementList.begin(); j!=fElementList.end(); j++ )
     {
-      PromptSummaryElement* an_element = (PromptSummaryElement*) obj;
-      output << an_element -> GetCSVSummary() << "\n";
+      output << (*j)->GetCSVSummary("asymmetry");
     }
+
+
+
+  secheader= "=========================================================================\n";
+  secheader+=Form("%55s\n", "Combined Differences/Averages");
+  secheader+="=========================================================================\n";
+  output << secheader.Data();
+
+  for ( auto j=fElementList.begin(); j!=fElementList.end(); j++ )
+    {
+      output << (*j)->GetCSVSummary("double");
+    }
+
+  output<< "=========================================================================\n";
+  output<< Form("%45s\n"," End of Summary");
+  output<< "=========================================================================\n";
   output.close();
-  printf("-----------------------\n");
+  
   return;
 };
 
 void
 QwPromptSummary::PrintTextSummary()
-{
-  printf("-----------------------\n");
-  TObjArrayIter next(fElementList);
-  TObject* obj = NULL;
-  while ( (obj = next()) )
-    {
-      PromptSummaryElement* an_element = (PromptSummaryElement*) obj;
-      std::cout << an_element -> GetTextSummary() << std::endl;
-    }
-  printf("-----------------------\n");
+{  
   return;
 };
 
