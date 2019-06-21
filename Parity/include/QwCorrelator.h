@@ -44,6 +44,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   void CalcCorrelations();
 		
  protected:
+
   bool fDisableHistos;
   
   std::vector< TString > fIndependentFull;
@@ -59,6 +60,8 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   std::string fAlphaOutputFileBase;
   std::string fAlphaOutputFileSuff;
   std::string fAlphaOutputPath;
+  TFile* fAlphaOutputFile;
+  TTree* fAlphaOutputTree;
 
   std::string fAliasOutputFileBase;
   std::string fAliasOutputFileSuff;
@@ -87,7 +90,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   void init(std::vector<std::string> ivName, std::vector<std::string> dvName);
   void initHistos(std::vector<std::string> ivName, std::vector<std::string> dvName);
   void addEvent(double *Pvec, double *Yvec);
-  void exportAlphas(TString outPath, std::vector < TString > ivName, std::vector < TString > dvName);
+  void exportAlphas(std::vector < TString > ivName, std::vector < TString > dvName);
   void exportAlias(TString outPath, TString macroName, std::vector < TString > ivName, std::vector < TString > dvName);
 
   // Default constructor

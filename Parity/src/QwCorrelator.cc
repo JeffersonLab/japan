@@ -41,6 +41,8 @@ QwCorrelator::QwCorrelator(const TString& name)
   fAlphaOutputFileBase("blueR"),
   fAlphaOutputFileSuff("new.slope.root"),
   fAlphaOutputPath("."),
+  fAlphaOutputFile(0),
+  fAlphaOutputTree(0),
   fAliasOutputFileBase("regalias_"),
   fAliasOutputFileSuff(""),
   fAliasOutputPath("."),
@@ -63,6 +65,10 @@ QwCorrelator::~QwCorrelator()
     delete[] fH1dv;
     delete[] fH2dv;
   }
+
+  // Close output file
+  fAlphaOutputFile->Write();
+  fAlphaOutputFile->Close();
 }
 
 void QwCorrelator::ParseConfigFile(QwParameterFile& file)
@@ -126,11 +132,14 @@ void QwCorrelator::CalcCorrelations()
   std::string SlopeFileName = fAlphaOutputFileBase + run_label.Data() + fAlphaOutputFileSuff;
   std::string SlopeFilePath = fAlphaOutputPath + "/";
   std::string SlopeFile = SlopeFilePath + SlopeFileName;
-  exportAlphas(TString(SlopeFile), fIndependentFull, fDependentFull);
+  exportAlphas(fIndependentFull, fDependentFull);
 
   std::string MacroFileName = fAliasOutputFileBase + run_label.Data() + fAliasOutputFileSuff;
   std::string MacroFilePath = fAliasOutputPath + "/";
   exportAlias(TString(MacroFilePath), TString(MacroFileName), fIndependentFull, fDependentFull);
+
+  // Fill tree
+  fAlphaOutputTree->Fill();
 }
 
 
@@ -283,6 +292,13 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
 
 void QwCorrelator::init(std::vector<std::string> ivName, std::vector<std::string> dvName)
 {
+  // Create ROOT file
+  std::string SlopeFileName = fAlphaOutputFileBase + run_label.Data() + fAlphaOutputFileSuff;
+  std::string SlopeFilePath = fAlphaOutputPath + "/";
+  std::string SlopeFile = SlopeFilePath + SlopeFileName;
+
+  fAlphaOutputFile = new TFile(SlopeFile.c_str(), "RECREATE", "correlation coefficients");
+
   nP = ivName.size();
   nY = dvName.size();
 
@@ -290,10 +306,27 @@ void QwCorrelator::init(std::vector<std::string> ivName, std::vector<std::string
 
   linReg.setDims(nP, nY);
   linReg.init();
+
+  // Set up tree and branches
+  fAlphaOutputTree = new TTree("lrb", fTreeComment.c_str());
+
+  fAlphaOutputTree->Branch("A",    "TMatrixD", &(linReg.mA));
+  fAlphaOutputTree->Branch("Asig", "TMatrixD", &(linReg.mAsig));
+
+  fAlphaOutputTree->Branch("RPP",  "TMatrixD", &(linReg.mRPP));
+  fAlphaOutputTree->Branch("RPY",  "TMatrixD", &(linReg.mRPY));
+  fAlphaOutputTree->Branch("RYY",  "TMatrixD", &(linReg.mRYY));
+  fAlphaOutputTree->Branch("RYYp", "TMatrixD", &(linReg.mRYYprime));
+
+  fAlphaOutputTree->Branch("MP",   "TVectorD", &(linReg.mMP));
+  fAlphaOutputTree->Branch("MY",   "TVectorD", &(linReg.mMY));
+  fAlphaOutputTree->Branch("MYp",  "TVectorD", &(linReg.mMYprime));
 }
 
 void QwCorrelator::initHistos(std::vector<std::string> Pname, std::vector<std::string> Yname)
 {
+  fAlphaOutputFile->cd();
+
   //..... 1D,  iv
   fH1iv = new TH1D*[nP];
   for(int i=0;i<nP;i++) {
@@ -359,7 +392,6 @@ void QwCorrelator::initHistos(std::vector<std::string> Pname, std::vector<std::s
     hA[1]->Fill(Yname[i].c_str(),i*1.);
 }
 
-
 void QwCorrelator::addEvent(double *Pvec, double *Yvec)
 {
   linReg.accumulate(Pvec, Yvec);
@@ -378,11 +410,10 @@ void QwCorrelator::addEvent(double *Pvec, double *Yvec)
 }
 
 void QwCorrelator::exportAlphas(
-    TString outName,
     std::vector < TString > ivName,
     std::vector < TString > dvName)
 {
-  TFile*  hFile=new TFile(outName,"RECREATE","correlation coefficents");
+  fAlphaOutputFile->cd();
 
   linReg.mA.Write("slopes");
   linReg.mAsig.Write("sigSlopes");
@@ -442,8 +473,6 @@ void QwCorrelator::exportAlphas(
 
   linReg.Axy.Write("A_xy");
   linReg.Ayx.Write("A_yx");
-
-  hFile->Close();
 }
 
 
