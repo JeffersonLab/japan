@@ -4,7 +4,7 @@
 strategy = additive
 
 # seed = unquoted string without starting or ending spaces
-seed = This is more or less the right value
+seed = Roadkill stew sounds mighty good right NOW. --- Unspecified collaborator
 
 # max_asymmetry = positive float in ppm such that additive blinding asymmetry is between 0 +/- (this value)
 max_asymmetry = 0.150

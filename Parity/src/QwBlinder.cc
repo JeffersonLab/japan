@@ -154,10 +154,8 @@ void QwBlinder::ProcessOptions(QwOptions& options)
     fTargetPositionForced = kTRUE;
     SetTargetBlindability(QwBlinder::kNotBlindable);
   }
-  if (options.HasValue("blinder.beam-current-threshold")){
-    fBeamCurrentThreshold = options.GetValue<double>("blinder.beam-current-threshold");
-  }
 
+  fBeamCurrentThreshold = options.GetValue<double>("blinder.beam-current-threshold");
 }
 
 /**
@@ -226,19 +224,22 @@ void QwBlinder::Update(const QwEPICSEvent& epics)
     //TString  position  = epics.GetDataString("QWtgt_name");
     Double_t tgt_pos   = epics.GetDataValue("pcrex90BDSPOS.VAL");
     QwDebug << "Target parameters used by the blinder: "
-//	  << "QWtgt_name=" << position << " "
+      //	  << "QWtgt_name=" << position << " "
 	    << "QWTGTPOS=" << tgt_pos << " "
 	    << QwLog::endl;
-    if ((tgt_pos > 3e6 && tgt_pos < 6.8e6) || (tgt_pos > 7.2e6 && tgt_pos < 8.5e6)) {
+    if ((tgt_pos > 3e6 && tgt_pos < 6.9e6) 
+	|| (tgt_pos > 7.3e6 && tgt_pos < 7.7e6)) {
+      //  Lead-208 target positions
       SetTargetBlindability(QwBlinder::kBlindable);
-    } else if ((tgt_pos > -1000000 && tgt_pos < 3e6) || (tgt_pos > 6.8e6 && tgt_pos < 7.2e6)){
-      //  Name and position agree that this isn't the hydrogen
-      //  cell.
+    } else if ((tgt_pos > -1e3 && tgt_pos < 3e6) 
+	       || (tgt_pos > 6.8e6 && tgt_pos < 7.2e6)
+	       || (tgt_pos > 7.7e6 && tgt_pos < 10e6)){
+      //  Positions are not lead-208 targets.
       SetTargetBlindability(QwBlinder::kNotBlindable);
     } else {
       SetTargetBlindability(QwBlinder::kIndeterminate);
       QwWarning << "Target parameters used by the blinder are indeterminate: "
-//  << "QWtgt_name=" << position << " "
+	//  << "QWtgt_name=" << position << " "
 		<< "QWTGTPOS=" << tgt_pos << " "
 		<< QwLog::endl;
 
@@ -1166,7 +1167,7 @@ QwBlinder::EQwBlinderStatus QwBlinder::CheckBlindability(std::vector<Int_t> &fCo
   } else if (fTargetBlindability==kBlindable 
 	     && (! fBeamIsPresent) ) {
     //  This is a blindable target but there is insufficent beam present
-    status = QwBlinder::kBlindableFail;
+    status = QwBlinder::kNotBlindable;
     fCounters.at(kBlinderCount_NoBeam)++;
   } else {
     QwError << "QwBlinder::CheckBlindability:  The pattern blindability is unclear.  "

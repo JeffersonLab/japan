@@ -16,7 +16,7 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  Special keywords
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-NominalWienAngle = 30.0   ! This is the "nominal" Wien launch angle in degrees needed to have the spin pointing FORWARD for H+ when IHWP OUT & the Wien is Flip-Right (or Horizontal-Only)
+NominalWienAngle = 74.5   ! This is the "nominal" Wien launch angle in degrees, NOT the HWienAngle.  This is what HWienAngle would need to be if we were using it alone.
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! NAME				DB_TABLE			TYPE		!  COMMENT

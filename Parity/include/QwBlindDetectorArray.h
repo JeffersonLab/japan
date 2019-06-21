@@ -197,6 +197,7 @@ class QwBlindDetectorArray:
   Bool_t bIsExchangedDataValid;
 
   Bool_t bNormalization;
+  Double_t fNormThreshold;
 
  private:
 

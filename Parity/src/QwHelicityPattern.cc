@@ -387,7 +387,7 @@ void  QwHelicityPattern::CalculatePairAsymmetry()
   if (fPairIsGood){
     if (! fIgnoreHelicity){
       //      // Update the blinder if conditions have changed
-      //      UpdateBlinder(fPairYield);
+      UpdateBlinder(fPairYield);
       //  Only blind the difference if we're using the real helicity.
       fBlinder.BlindPair(fPairDifference,fPairYield);
       //  Update the global error code in fDifference, and use it
@@ -397,7 +397,7 @@ void  QwHelicityPattern::CalculatePairAsymmetry()
       fPairYield.UpdateErrorFlag(fPairDifference);
     }
     fPairAsymmetry.Ratio(fPairDifference,fPairYield);
-    //    fAsymmetry.IncrementErrorCounters();
+    fPairAsymmetry.IncrementErrorCounters();
   }
 }
 
