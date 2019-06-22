@@ -8,9 +8,9 @@ TGraphErrors gDraw(TTree *T, TString var, TString plot, Bool_t  good)
 TString ok="";
 Int_t nEntries=0;
 if (good){
-  ok += Form("%s_%s>-1e99 && %s_%s<1e99",plot.Data(), var.Data(),plot.Data(), var.Data());
+  ok += Form("%s_%s>-1.0e6 && %s_%s<1.0e6",plot.Data(), var.Data(),plot.Data(), var.Data());
 } else {
-  ok += Form("%s_%s==-1e99 || %s_%s==1e99", plot.Data(), var.Data(), plot.Data(), var.Data());
+  ok += Form("%s_%s==-1.0e6 || %s_%s==1.0e6", plot.Data(), var.Data(), plot.Data(), var.Data());
 }
 
 nEntries=T->Draw(Form("run_number:%s_%s:%s_%s_error", plot.Data(),var.Data(),plot.Data(),var.Data()),ok.Data(), "goff");
