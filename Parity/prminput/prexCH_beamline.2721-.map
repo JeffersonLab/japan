@@ -37,7 +37,7 @@ sample_size=4084
     VQWK, 2, 4,  bpmcavity,  CAV4DXI
     VQWK, 2, 5,  bpmcavity,  CAV4DYI
     VQWK, 2, 6,  bpmcavity,  CAV4DQ
-    VQWK, 3, 7,  bcm,  UNSER
+    VQWK, 2, 7,  bcm,  UNSER
 
 !ADC3
     VQWK, 3, 0,  bcm,  QWK_3_0 
