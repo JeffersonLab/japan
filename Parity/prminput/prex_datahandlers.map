@@ -6,7 +6,7 @@
   map        = prex_corrolator.conf
   slope-file-base = blueR
   slope-file-suff = new.slope.root
-  slope-path = . 
+  slope-path = ./LRBoutput/
   tree-name  = mulc_lrb
   tree-comment = Helicity event data tree (corrected by LinRegBlue)
 
@@ -16,23 +16,23 @@
   map        = prex_corrolator.conf
   slope-file-base = blueR
   slope-file-suff = new.slope.root
-  slope-path = . 
+  slope-path = ./LRBoutput/
   alias-file-base = regalias_
   alias-file-suff = 
-  alias-path = .
+  alias-path = ./LRBoutput/
   disable-histos = true
 
-[QwCorrelator]
-  name       = MyMassiveCorrelator
-  priority   = 50
-  map        = prex_corrolator_all.conf
-  slope-file-base = blueR
-  slope-file-suff = all.slope.root
-  slope-path = . 
-  alias-file-base = regalias_
-  alias-file-suff = all
-  alias-path = .
-  disable-histos = true
+#[QwCorrelator]
+#  name       = MyMassiveCorrelator
+#  priority   = 50
+#  map        = prex_corrolator_all.conf
+#  slope-file-base = blueR
+#  slope-file-suff = all.slope.root
+#  slope-path = . 
+#  alias-file-base = regalias_
+#  alias-file-suff = all
+#  alias-path = .
+#  disable-histos = true
 
 [QwCombiner]
   name       = MyCombiner
