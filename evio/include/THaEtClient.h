@@ -18,7 +18,8 @@
 
 #include "THaCodaData.h"
 
-#define ET_CHUNK_SIZE 5000
+#define ET_CHUNK_SIZE 2000
+// Default ET queue length set at 10,000 events at this time - 6-22-2019 Cameron Clarke
 //#define ET_CHUNK_SIZE 150
 #include "et.h"
 #include <iostream>
