@@ -25,12 +25,12 @@ ClassImp(THaEtClient)
 THaEtClient::THaEtClient() {        // Uses default mode=1 and a default server
    initflags();
    int smode = 1;
-   TString defaultcomputer(ADAQ3);
+   TString defaultcomputer(ADAQ1);
    codaOpen(defaultcomputer,smode);
 }
 THaEtClient::THaEtClient(int smode) {      // uses default server (where CODA runs)
    initflags();
-   TString defaultcomputer(ADAQ3);
+   TString defaultcomputer(ADAQ1);
    codaOpen(defaultcomputer,smode);
 }
 
