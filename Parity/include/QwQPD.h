@@ -118,10 +118,10 @@ class QwQPD : public VQwBPM {
   virtual QwQPD& operator+= (const QwQPD &value);
   virtual QwQPD& operator-= (const QwQPD &value);
 
-  void    AccumulateRunningSum(const QwQPD& value);
-  void    AccumulateRunningSum(const VQwBPM& value);
-  void    DeaccumulateRunningSum(VQwBPM &value);
-  void    DeaccumulateRunningSum(QwQPD& value);
+  void    AccumulateRunningSum(const QwQPD& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void    AccumulateRunningSum(const VQwBPM& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void    DeaccumulateRunningSum(VQwBPM &value, Int_t ErrorMask=0xFFFFFFF);
+  void    DeaccumulateRunningSum(QwQPD& value, Int_t ErrorMask=0xFFFFFFF);
   void    CalculateRunningAverage();
 
   void    ConstructHistograms(TDirectory *folder, TString &prefix);

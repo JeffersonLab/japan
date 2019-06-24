@@ -474,12 +474,12 @@ void QwScaler::Scale(Double_t factor)
 /**
  * Accumulate the running sum
  */
-void QwScaler::AccumulateRunningSum(VQwSubsystem* value)
+void QwScaler::AccumulateRunningSum(VQwSubsystem* value, Int_t count, Int_t ErrorMask)
 {
   if (Compare(value)) {
     QwScaler* scaler = dynamic_cast<QwScaler*>(value);
     for (size_t i = 0; i < fScaler.size(); i++) {
-      fScaler.at(i)->AccumulateRunningSum(scaler->fScaler.at(i));
+      fScaler.at(i)->AccumulateRunningSum(scaler->fScaler.at(i), count, ErrorMask);
     }
   }
 }
@@ -487,12 +487,12 @@ void QwScaler::AccumulateRunningSum(VQwSubsystem* value)
 /**
  * Deaccumulate the running sum
  */
-void QwScaler::DeaccumulateRunningSum(VQwSubsystem* value)
+void QwScaler::DeaccumulateRunningSum(VQwSubsystem* value, Int_t ErrorMask)
 {
   if (Compare(value)) {
     QwScaler* scaler = dynamic_cast<QwScaler*>(value);
     for (size_t i = 0; i < fScaler.size(); i++) {
-      fScaler.at(i)->DeaccumulateRunningSum(scaler->fScaler.at(i));
+      fScaler.at(i)->DeaccumulateRunningSum(scaler->fScaler.at(i), ErrorMask);
     }
   }
 }

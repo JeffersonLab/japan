@@ -80,9 +80,9 @@ class QwBeamMod: public VQwSubsystemParity, public MQwSubsystemCloneable<QwBeamM
 
   //Handle command line options
   void ProcessOptions(QwOptions &options);
-  void AccumulateRunningSum(VQwSubsystem*);
+  void AccumulateRunningSum(VQwSubsystem*, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
   //remove one entry from the running sums for devices
-  void DeaccumulateRunningSum(VQwSubsystem* value){
+  void DeaccumulateRunningSum(VQwSubsystem* value, Int_t ErrorMask=0xFFFFFFF){
   };
 
   Int_t LoadChannelMap(TString mapfile);

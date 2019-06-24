@@ -269,10 +269,10 @@ void VQwDataHandler::AccumulateRunningSum()
   }
 }
 
-void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value)
+void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value, Int_t count, Int_t ErrorMask)
 {
   for (size_t i = 0; i < fOutputVar.size(); i++){
-    this->fOutputVar[i]->AccumulateRunningSum(value.fOutputVar[i]);
+    this->fOutputVar[i]->AccumulateRunningSum(value.fOutputVar[i], count, ErrorMask);
   }
 }
 

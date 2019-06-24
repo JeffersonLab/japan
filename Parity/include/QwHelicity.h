@@ -124,9 +124,9 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
   void  Ratio(VQwSubsystem *numer, VQwSubsystem *denom);
   // end of "empty" functions
 
-  void  AccumulateRunningSum(VQwSubsystem* value) { };
+  void  AccumulateRunningSum(VQwSubsystem* value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF) { };
   //remove one entry from the running sums for devices
-  void DeaccumulateRunningSum(VQwSubsystem* value){
+  void DeaccumulateRunningSum(VQwSubsystem* value, Int_t ErrorMask=0xFFFFFFF){
   };
   void  CalculateRunningAverage() { };
 

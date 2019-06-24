@@ -489,14 +489,14 @@ void QwIntegrationPMT::CalculateRunningAverage()
   fTriumf_ADC.CalculateRunningAverage();
 }
 
-void QwIntegrationPMT::AccumulateRunningSum(const QwIntegrationPMT& value)
+void QwIntegrationPMT::AccumulateRunningSum(const QwIntegrationPMT& value, Int_t count, Int_t ErrorMask)
 {
-  fTriumf_ADC.AccumulateRunningSum(value.fTriumf_ADC);
+  fTriumf_ADC.AccumulateRunningSum(value.fTriumf_ADC, count, ErrorMask);
 }
 
-void QwIntegrationPMT::DeaccumulateRunningSum(QwIntegrationPMT& value)
+void QwIntegrationPMT::DeaccumulateRunningSum(QwIntegrationPMT& value, Int_t ErrorMask)
 {
-  fTriumf_ADC.DeaccumulateRunningSum(value.fTriumf_ADC);
+  fTriumf_ADC.DeaccumulateRunningSum(value.fTriumf_ADC, ErrorMask);
 }
 
 

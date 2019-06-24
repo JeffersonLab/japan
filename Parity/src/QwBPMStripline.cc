@@ -756,42 +756,42 @@ void QwBPMStripline<T>::CalculateRunningAverage()
 
 
 template<typename T>
-void QwBPMStripline<T>::AccumulateRunningSum(const VQwBPM& value)
+void QwBPMStripline<T>::AccumulateRunningSum(const VQwBPM& value, Int_t count, Int_t ErrorMask)
 {
-  AccumulateRunningSum(*dynamic_cast<const QwBPMStripline<T>* >(&value));
+  AccumulateRunningSum(*dynamic_cast<const QwBPMStripline<T>* >(&value), count, ErrorMask);
 }
 
 template<typename T>
-void QwBPMStripline<T>::AccumulateRunningSum(const QwBPMStripline<T>& value)
+void QwBPMStripline<T>::AccumulateRunningSum(const QwBPMStripline<T>& value, Int_t count, Int_t ErrorMask)
 {
   Short_t i = 0;
   for (i = 0; i < 4; i++){
-    fWire[i].AccumulateRunningSum(value.fWire[i]);
+    fWire[i].AccumulateRunningSum(value.fWire[i], count, ErrorMask);
   }
   for (i = 0; i < 2; i++){
-    fRelPos[i].AccumulateRunningSum(value.fRelPos[i]);
-    fAbsPos[i].AccumulateRunningSum(value.fAbsPos[i]);
+    fRelPos[i].AccumulateRunningSum(value.fRelPos[i], count, ErrorMask);
+    fAbsPos[i].AccumulateRunningSum(value.fAbsPos[i], count, ErrorMask);
   }
-  fEffectiveCharge.AccumulateRunningSum(value.fEffectiveCharge);
-  fEllipticity.AccumulateRunningSum(value.fEllipticity);
+  fEffectiveCharge.AccumulateRunningSum(value.fEffectiveCharge, count, ErrorMask);
+  fEllipticity.AccumulateRunningSum(value.fEllipticity, count, ErrorMask);
 }
 template<typename T>
-void    QwBPMStripline<T>::DeaccumulateRunningSum(VQwBPM& value){
-  DeaccumulateRunningSum(*dynamic_cast<QwBPMStripline<T>* >(&value));
+void    QwBPMStripline<T>::DeaccumulateRunningSum(VQwBPM& value, Int_t ErrorMask){
+  DeaccumulateRunningSum(*dynamic_cast<QwBPMStripline<T>* >(&value), ErrorMask);
 };
 
 template<typename T>
-void    QwBPMStripline<T>::DeaccumulateRunningSum(QwBPMStripline<T>& value){
+void    QwBPMStripline<T>::DeaccumulateRunningSum(QwBPMStripline<T>& value, Int_t ErrorMask){
   Short_t i = 0;
   for (i = 0; i < 4; i++){
-    fWire[i].DeaccumulateRunningSum(value.fWire[i]);
+    fWire[i].DeaccumulateRunningSum(value.fWire[i], ErrorMask);
   }
   for (i = 0; i < 2; i++){
-    fRelPos[i].DeaccumulateRunningSum(value.fRelPos[i]);
-    fAbsPos[i].DeaccumulateRunningSum(value.fAbsPos[i]);
+    fRelPos[i].DeaccumulateRunningSum(value.fRelPos[i], ErrorMask);
+    fAbsPos[i].DeaccumulateRunningSum(value.fAbsPos[i], ErrorMask);
   }
-  fEffectiveCharge.DeaccumulateRunningSum(value.fEffectiveCharge);
-  fEllipticity.DeaccumulateRunningSum(value.fEllipticity);  
+  fEffectiveCharge.DeaccumulateRunningSum(value.fEffectiveCharge, ErrorMask);
+  fEllipticity.DeaccumulateRunningSum(value.fEllipticity, ErrorMask);  
 };
 
 template<typename T>

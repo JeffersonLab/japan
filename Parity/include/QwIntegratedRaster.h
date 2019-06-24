@@ -96,9 +96,9 @@ class QwIntegratedRaster : public VQwSubsystemParity, public MQwSubsystemCloneab
   void UpdateErrorFlag(const VQwSubsystem *ev_error){
   };
 
-  void AccumulateRunningSum(VQwSubsystem* value);
+  void AccumulateRunningSum(VQwSubsystem* value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
   //remove one entry from the running sums for devices
-  void DeaccumulateRunningSum(VQwSubsystem* value){
+  void DeaccumulateRunningSum(VQwSubsystem* value, Int_t ErrorMask=0xFFFFFFF){
   };
   void CalculateRunningAverage();
 

@@ -68,9 +68,9 @@ class VQwSubsystemParity: virtual public VQwSubsystem {
     virtual void Scale(Double_t factor) = 0;
 
     /// \brief Update the running sums for devices
-    virtual void AccumulateRunningSum(VQwSubsystem* value) = 0;
+    virtual void AccumulateRunningSum(VQwSubsystem* value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF) = 0;
     /// \brief remove one entry from the running sums for devices
-    virtual void DeaccumulateRunningSum(VQwSubsystem* value) = 0;
+    virtual void DeaccumulateRunningSum(VQwSubsystem* value, Int_t ErrorMask=0xFFFFFFF) = 0;
 
     /// \brief Calculate the average for all good events
     virtual void CalculateRunningAverage() = 0;

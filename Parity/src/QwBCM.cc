@@ -447,14 +447,14 @@ Bool_t QwBCM<T>::CheckForBurpFail(const VQwDataElement *ev_error){
 }
 
 template<typename T>
-void QwBCM<T>::AccumulateRunningSum(const VQwBCM& value) {
+void QwBCM<T>::AccumulateRunningSum(const VQwBCM& value, Int_t count, Int_t ErrorMask) {
   fBeamCurrent.AccumulateRunningSum(
-      dynamic_cast<const QwBCM<T>* >(&value)->fBeamCurrent);
+      dynamic_cast<const QwBCM<T>* >(&value)->fBeamCurrent, count, ErrorMask);
 }
 
 template<typename T>
-void QwBCM<T>::DeaccumulateRunningSum(VQwBCM& value) {
-  fBeamCurrent.DeaccumulateRunningSum(dynamic_cast<QwBCM<T>* >(&value)->fBeamCurrent);
+void QwBCM<T>::DeaccumulateRunningSum(VQwBCM& value, Int_t ErrorMask) {
+  fBeamCurrent.DeaccumulateRunningSum(dynamic_cast<QwBCM<T>* >(&value)->fBeamCurrent, ErrorMask);
 }
 template<typename T>
 void QwBCM<T>::PrintValue() const

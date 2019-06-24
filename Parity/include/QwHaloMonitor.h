@@ -80,8 +80,8 @@ class  QwHaloMonitor : public VQwDataElement{
 
   void     SetPedestal(Double_t ped) { fHalo_Counter.SetPedestal(ped); };
   void     SetCalibrationFactor(Double_t factor) { fHalo_Counter.SetCalibrationFactor(factor); };
-  void AccumulateRunningSum(const QwHaloMonitor& value);
-  void DeaccumulateRunningSum(QwHaloMonitor& value);
+  void AccumulateRunningSum(const QwHaloMonitor& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void DeaccumulateRunningSum(QwHaloMonitor& value, Int_t ErrorMask=0xFFFFFFF);
   void CalculateRunningAverage();
 
   Bool_t ApplySingleEventCuts();//check values read from modules are at desired level

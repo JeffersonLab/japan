@@ -550,29 +550,29 @@ void QwLinearDiodeArray::CalculateRunningAverage()
   return;
 }
 
-void QwLinearDiodeArray::AccumulateRunningSum(const VQwBPM& value){
-  AccumulateRunningSum(*dynamic_cast<const QwLinearDiodeArray* >(&value));
+void QwLinearDiodeArray::AccumulateRunningSum(const VQwBPM& value, Int_t count, Int_t ErrorMask){
+  AccumulateRunningSum(*dynamic_cast<const QwLinearDiodeArray* >(&value), count, ErrorMask);
 }
 
-void QwLinearDiodeArray::AccumulateRunningSum(const QwLinearDiodeArray& value)
+void QwLinearDiodeArray::AccumulateRunningSum(const QwLinearDiodeArray& value, Int_t count, Int_t ErrorMask)
 {
   size_t i = 0;
-  for(i=0;i<8;i++) fPhotodiode[i].AccumulateRunningSum(value.fPhotodiode[i]);
-  for (i = 0; i < 2; i++) fRelPos[i].AccumulateRunningSum(value.fRelPos[i]);
-  fEffectiveCharge.AccumulateRunningSum(value.fEffectiveCharge);
+  for(i=0;i<8;i++) fPhotodiode[i].AccumulateRunningSum(value.fPhotodiode[i], count, ErrorMask);
+  for (i = 0; i < 2; i++) fRelPos[i].AccumulateRunningSum(value.fRelPos[i], count, ErrorMask);
+  fEffectiveCharge.AccumulateRunningSum(value.fEffectiveCharge, count, ErrorMask);
   return;
 }
 
-void QwLinearDiodeArray::DeaccumulateRunningSum(VQwBPM& value){
-  DeaccumulateRunningSum(*dynamic_cast<QwLinearDiodeArray* >(&value));
+void QwLinearDiodeArray::DeaccumulateRunningSum(VQwBPM& value, Int_t ErrorMask){
+  DeaccumulateRunningSum(*dynamic_cast<QwLinearDiodeArray* >(&value), ErrorMask);
 }
 
-void QwLinearDiodeArray::DeaccumulateRunningSum(QwLinearDiodeArray& value)
+void QwLinearDiodeArray::DeaccumulateRunningSum(QwLinearDiodeArray& value, Int_t ErrorMask)
 {
   size_t i = 0;
-  for(i=0;i<8;i++) fPhotodiode[i].DeaccumulateRunningSum(value.fPhotodiode[i]);
-  for (i = 0; i < 2; i++) fRelPos[i].DeaccumulateRunningSum(value.fRelPos[i]);
-  fEffectiveCharge.DeaccumulateRunningSum(value.fEffectiveCharge);
+  for(i=0;i<8;i++) fPhotodiode[i].DeaccumulateRunningSum(value.fPhotodiode[i], ErrorMask);
+  for (i = 0; i < 2; i++) fRelPos[i].DeaccumulateRunningSum(value.fRelPos[i], ErrorMask);
+  fEffectiveCharge.DeaccumulateRunningSum(value.fEffectiveCharge, ErrorMask);
   return;
 }
 

@@ -616,40 +616,40 @@ void QwQPD::CalculateRunningAverage()
   return;
 }
 
-void QwQPD::AccumulateRunningSum(const VQwBPM& value)
+void QwQPD::AccumulateRunningSum(const VQwBPM& value, Int_t count, Int_t ErrorMask)
 {
-  AccumulateRunningSum(*dynamic_cast<const QwQPD* >(&value));
+  AccumulateRunningSum(*dynamic_cast<const QwQPD* >(&value), count, ErrorMask);
 }
 
-void QwQPD::AccumulateRunningSum(const QwQPD& value)
+void QwQPD::AccumulateRunningSum(const QwQPD& value, Int_t count, Int_t ErrorMask)
 {
   Short_t i = 0;
-  for(i=0;i<4;i++) fPhotodiode[i].AccumulateRunningSum(value.fPhotodiode[i]);
+  for(i=0;i<4;i++) fPhotodiode[i].AccumulateRunningSum(value.fPhotodiode[i], count, ErrorMask);
   for (i = 0; i < 2; i++){    
-    fRelPos[i].AccumulateRunningSum(value.fRelPos[i]);
-    fAbsPos[i].AccumulateRunningSum(value.fAbsPos[i]);
+    fRelPos[i].AccumulateRunningSum(value.fRelPos[i], count, ErrorMask);
+    fAbsPos[i].AccumulateRunningSum(value.fAbsPos[i], count, ErrorMask);
   }
-  fEffectiveCharge.AccumulateRunningSum(value.fEffectiveCharge);
+  fEffectiveCharge.AccumulateRunningSum(value.fEffectiveCharge, count, ErrorMask);
   return;
 
 
 }
 
-void QwQPD::DeaccumulateRunningSum(VQwBPM& value)
+void QwQPD::DeaccumulateRunningSum(VQwBPM& value, Int_t ErrorMask)
 {
-  DeaccumulateRunningSum(*dynamic_cast<QwQPD* >(&value));
+  DeaccumulateRunningSum(*dynamic_cast<QwQPD* >(&value), ErrorMask);
 }
 
-void QwQPD::DeaccumulateRunningSum(QwQPD& value)
+void QwQPD::DeaccumulateRunningSum(QwQPD& value, Int_t ErrorMask)
 {
 
   Short_t i = 0;
   for(i=0;i<4;i++) fPhotodiode[i].DeaccumulateRunningSum(value.fPhotodiode[i]);
   for (i = 0; i < 2; i++){    
-    fRelPos[i].DeaccumulateRunningSum(value.fRelPos[i]);
-    fAbsPos[i].DeaccumulateRunningSum(value.fAbsPos[i]);
+    fRelPos[i].DeaccumulateRunningSum(value.fRelPos[i], ErrorMask);
+    fAbsPos[i].DeaccumulateRunningSum(value.fAbsPos[i], ErrorMask);
   }
-  fEffectiveCharge.DeaccumulateRunningSum(value.fEffectiveCharge);
+  fEffectiveCharge.DeaccumulateRunningSum(value.fEffectiveCharge, ErrorMask);
   return;
 
 

@@ -304,14 +304,14 @@ void QwCombinedPMT::Sum(QwCombinedPMT &value1, QwCombinedPMT &value2)
 //  this->fAvgADC += value2.fAvgADC;
 }
 
-void QwCombinedPMT::AccumulateRunningSum(const QwCombinedPMT& value)
+void QwCombinedPMT::AccumulateRunningSum(const QwCombinedPMT& value, Int_t count, Int_t ErrorMask)
 {
-  fSumADC.AccumulateRunningSum(value.fSumADC);
+  fSumADC.AccumulateRunningSum(value.fSumADC, count, ErrorMask);
 }
 
-void QwCombinedPMT::DeaccumulateRunningSum(QwCombinedPMT& value)
+void QwCombinedPMT::DeaccumulateRunningSum(QwCombinedPMT& value, Int_t ErrorMask)
 {
-  fSumADC.DeaccumulateRunningSum(value.fSumADC);
+  fSumADC.DeaccumulateRunningSum(value.fSumADC, ErrorMask);
 }
 
 

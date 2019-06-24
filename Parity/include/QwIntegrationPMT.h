@@ -140,8 +140,8 @@ void RandomizeMollerEvent(int helicity, const QwBeamCharge& charge, const QwBeam
   void Ratio(QwIntegrationPMT &numer, QwIntegrationPMT &denom);
   void Scale(Double_t factor);
   void Normalize(VQwDataElement* denom);
-  void AccumulateRunningSum(const QwIntegrationPMT& value);
-  void DeaccumulateRunningSum(QwIntegrationPMT& value);
+  void AccumulateRunningSum(const QwIntegrationPMT& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void DeaccumulateRunningSum(QwIntegrationPMT& value, Int_t ErrorMask=0xFFFFFFF);
   void CalculateRunningAverage();
 
   void SetPedestal(Double_t ped);

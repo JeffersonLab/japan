@@ -115,8 +115,8 @@ class QwOmnivore: public VQwSubsystem_t {
     void ConstructBranch(TTree*, TString&, QwParameterFile&) { };
 
     /// \brief Update the running sums for devices
-    void AccumulateRunningSum(VQwSubsystem* value) { };
-    void DeaccumulateRunningSum(VQwSubsystem* value) { };
+    void AccumulateRunningSum(VQwSubsystem* value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF) { };
+    void DeaccumulateRunningSum(VQwSubsystem* value, Int_t ErrorMask=0xFFFFFFF) { };
     /// \brief Calculate the average for all good events
     void CalculateRunningAverage() { };
 };

@@ -120,10 +120,10 @@ class QwLinearDiodeArray : public VQwBPM {
   virtual QwLinearDiodeArray& operator+= (const QwLinearDiodeArray &value);
   virtual QwLinearDiodeArray& operator-= (const QwLinearDiodeArray &value);
 
-  void    AccumulateRunningSum(const QwLinearDiodeArray& value);
-  void    AccumulateRunningSum(const VQwBPM& value);
-  void    DeaccumulateRunningSum(QwLinearDiodeArray& value);
-  void    DeaccumulateRunningSum(VQwBPM& value);
+  void    AccumulateRunningSum(const QwLinearDiodeArray& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void    AccumulateRunningSum(const VQwBPM& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void    DeaccumulateRunningSum(QwLinearDiodeArray& value, Int_t ErrorMask=0xFFFFFFF);
+  void    DeaccumulateRunningSum(VQwBPM& value, Int_t ErrorMask=0xFFFFFFF);
   void    CalculateRunningAverage();
 
   void    ConstructHistograms(TDirectory *folder, TString &prefix);

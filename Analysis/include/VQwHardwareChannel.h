@@ -170,12 +170,15 @@ public:
   virtual void AddErrEntriesToList(std::vector<QwErrDBInterface> &row_list) {};
 
   
-  virtual void AccumulateRunningSum(const VQwHardwareChannel *value, Int_t count) = 0;
-  virtual void AccumulateRunningSum(const VQwHardwareChannel *value){
-    AccumulateRunningSum(value, value->fGoodEventCount);
+  virtual void AccumulateRunningSum(const VQwHardwareChannel *value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF){
+    if(count==0){
+      count = value->fGoodEventCount;
+    }
+    if(ErrorMask ==  kPreserveError){QwError << "VQwHardwareChannel count=" << count << QwLog::endl;}
+    AccumulateRunningSum(value, count, ErrorMask);
   };
-  virtual void DeaccumulateRunningSum(const VQwHardwareChannel *value){
-    AccumulateRunningSum(value, -1);
+  virtual void DeaccumulateRunningSum(const VQwHardwareChannel *value, Int_t ErrorMask=0xFFFFFFF){
+    AccumulateRunningSum(value, -1, ErrorMask);
   };
 
   virtual void AddValueFrom(const VQwHardwareChannel* valueptr) = 0;

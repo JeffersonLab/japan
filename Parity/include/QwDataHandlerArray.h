@@ -119,9 +119,9 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     void AccumulateRunningSum();
 
     /// \brief Update the running sums for devices accumulated for the global error non-zero events/patterns
-    void AccumulateRunningSum(const QwDataHandlerArray& value);
+    void AccumulateRunningSum(const QwDataHandlerArray& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
     /// \brief Update the running sums for devices check only the error flags at the channel level. Only used for stability checks
-    void AccumulateAllRunningSum(const QwDataHandlerArray& value);
+    void AccumulateAllRunningSum(const QwDataHandlerArray& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
 
     /// \brief Calculate the average for all good events
     void CalculateRunningAverage();

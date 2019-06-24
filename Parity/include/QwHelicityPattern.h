@@ -122,7 +122,7 @@ class QwHelicityPattern {
   void  AccumulateBurstSum();
   void  AccumulateRunningBurstSum();
   void  AccumulateRunningSum(){AccumulateRunningSum(*this);};
-  void  AccumulateRunningSum(QwHelicityPattern &entry);
+  void  AccumulateRunningSum(QwHelicityPattern &entry, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
   void  AccumulatePairRunningSum(QwHelicityPattern &entry);
 
   void  CalculateBurstAverage();

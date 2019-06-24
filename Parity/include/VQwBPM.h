@@ -159,11 +159,11 @@ public:
 /*   void PrintValue() const; */
 /*   void PrintInfo() const; */
   virtual void CalculateRunningAverage() = 0;
-  virtual void AccumulateRunningSum(const VQwBPM& value) {
+  virtual void AccumulateRunningSum(const VQwBPM& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF) {
     std::cerr << "AccumulateRunningSum not implemented for BPM named="
       <<GetElementName()<<"\n";
   };
-  virtual void DeaccumulateRunningSum(VQwBPM& value) = 0;
+  virtual void DeaccumulateRunningSum(VQwBPM& value, Int_t ErrorMask=0xFFFFFFF) = 0;
 
   virtual void ConstructHistograms(TDirectory *folder, TString &prefix) = 0;
   virtual void FillHistograms() = 0;

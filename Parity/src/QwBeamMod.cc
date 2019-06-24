@@ -749,7 +749,7 @@ void QwBeamMod::Scale(Double_t factor)
 
 void QwBeamMod::CalculateRunningAverage() { }
 
-void QwBeamMod::AccumulateRunningSum(VQwSubsystem*) { }
+void QwBeamMod::AccumulateRunningSum(VQwSubsystem*, Int_t count, Int_t ErrorMask) { }
 
 Bool_t QwBeamMod::Compare(VQwSubsystem *value)
 {

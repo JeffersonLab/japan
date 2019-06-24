@@ -109,8 +109,8 @@ class QwClock : public VQwClock {
   void Ratio(const QwClock &numer, const QwClock &denom);
   void Scale(Double_t factor);
 
-  void AccumulateRunningSum(const VQwClock& value);
-  void DeaccumulateRunningSum(VQwClock& value);
+  void AccumulateRunningSum(const VQwClock& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void DeaccumulateRunningSum(VQwClock& value, Int_t ErrorMask=0xFFFFFFF);
   void CalculateRunningAverage();
 
   void SetPedestal(Double_t ped);

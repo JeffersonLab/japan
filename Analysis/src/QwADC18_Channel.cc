@@ -1034,8 +1034,13 @@ void QwADC18_Channel::DivideBy(const QwADC18_Channel &denom)
  * @param value Object (single event or accumulated) to add to running moments
  * @param count Number of good events in value
  */
-void QwADC18_Channel::AccumulateRunningSum(const QwADC18_Channel& value, Int_t count)
+void QwADC18_Channel::AccumulateRunningSum(const QwADC18_Channel& value, Int_t count, Int_t ErrorMask)
 {
+
+  if(count==0){
+    count = value.fGoodEventCount;
+  }
+  
   // Moment calculations
   Int_t n1 = fGoodEventCount;
   Int_t n2 = count;
@@ -1045,6 +1050,16 @@ void QwADC18_Channel::AccumulateRunningSum(const QwADC18_Channel& value, Int_t c
     n2 = 1;
   }
   Int_t n = n1 + n2;
+
+  if (ErrorMask ==  kPreserveError){
+    n = 1;
+    if (n2 == 0) {
+      n2 = 1;
+    }
+    if (count == -1) {
+      n2 = -1;
+    }
+  }
 
   // Set up variables
   Double_t M11 = fValue;

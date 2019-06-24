@@ -277,12 +277,12 @@ void QwEnergyCalculator::CalculateRunningAverage(){
 
 
 
-void QwEnergyCalculator::AccumulateRunningSum(const QwEnergyCalculator& value){
-  fEnergyChange.AccumulateRunningSum(value.fEnergyChange);
+void QwEnergyCalculator::AccumulateRunningSum(const QwEnergyCalculator& value, Int_t count, Int_t ErrorMask){
+  fEnergyChange.AccumulateRunningSum(value.fEnergyChange, count, ErrorMask);
 }
 
-void QwEnergyCalculator::DeaccumulateRunningSum(QwEnergyCalculator& value){
-  fEnergyChange.DeaccumulateRunningSum(value.fEnergyChange);
+void QwEnergyCalculator::DeaccumulateRunningSum(QwEnergyCalculator& value, Int_t ErrorMask){
+  fEnergyChange.DeaccumulateRunningSum(value.fEnergyChange, ErrorMask);
 }
 
 

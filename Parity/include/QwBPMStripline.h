@@ -142,10 +142,10 @@ class QwBPMStripline : public VQwBPM {
   virtual QwBPMStripline& operator+= (const QwBPMStripline &value);
   virtual QwBPMStripline& operator-= (const QwBPMStripline &value);
 
-  void    AccumulateRunningSum(const QwBPMStripline& value);
-  void    AccumulateRunningSum(const VQwBPM& value);
-  void    DeaccumulateRunningSum(VQwBPM& value);
-  void    DeaccumulateRunningSum(QwBPMStripline& value);
+  void    AccumulateRunningSum(const QwBPMStripline& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void    AccumulateRunningSum(const VQwBPM& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void    DeaccumulateRunningSum(VQwBPM& value, Int_t ErrorMask=0xFFFFFFF);
+  void    DeaccumulateRunningSum(QwBPMStripline& value, Int_t ErrorMask=0xFFFFFFF);
 
   void    CalculateRunningAverage();
 

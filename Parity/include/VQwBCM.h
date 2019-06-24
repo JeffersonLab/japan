@@ -83,8 +83,8 @@ public:
   virtual void  ProcessEvent() = 0;
   virtual void Scale(Double_t factor) = 0;
   virtual void CalculateRunningAverage() = 0;
-  virtual void AccumulateRunningSum(const VQwBCM& value) = 0;
-  virtual void DeaccumulateRunningSum(VQwBCM& value) = 0;
+  virtual void AccumulateRunningSum(const VQwBCM& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF) = 0;
+  virtual void DeaccumulateRunningSum(VQwBCM& value, Int_t ErrorMask=0xFFFFFFF) = 0;
   virtual void ConstructBranchAndVector(TTree *tree, TString &prefix, std::vector<Double_t> &values) = 0;
   virtual void ConstructBranch(TTree *tree, TString &prefix) = 0;
   virtual void ConstructBranch(TTree *tree, TString &prefix, QwParameterFile& modulelist) = 0;

@@ -580,35 +580,35 @@ void QwBPMCavity::CalculateRunningAverage()
   return;
 }
 
-void QwBPMCavity::AccumulateRunningSum(const VQwBPM &value){
-  AccumulateRunningSum(*dynamic_cast<const QwBPMCavity* >(&value));
+void QwBPMCavity::AccumulateRunningSum(const VQwBPM &value, Int_t count, Int_t ErrorMask){
+  AccumulateRunningSum(*dynamic_cast<const QwBPMCavity* >(&value), count, ErrorMask);
 };
 
-void QwBPMCavity::AccumulateRunningSum(const QwBPMCavity& value)
+void QwBPMCavity::AccumulateRunningSum(const QwBPMCavity& value, Int_t count, Int_t ErrorMask)
 {
 
   size_t i = 0;
   for(i=0;i<kNumElements;i++)
-    fElement[i].AccumulateRunningSum(value.fElement[i]);
+    fElement[i].AccumulateRunningSum(value.fElement[i], count, ErrorMask);
   for (i = 0; i < 2; i++){
-    fRelPos[i].AccumulateRunningSum(value.fRelPos[i]);
-    fAbsPos[i].AccumulateRunningSum(value.fAbsPos[i]);
+    fRelPos[i].AccumulateRunningSum(value.fRelPos[i], count, ErrorMask);
+    fAbsPos[i].AccumulateRunningSum(value.fAbsPos[i], count, ErrorMask);
   }
   return;
 }
 
-void QwBPMCavity::DeaccumulateRunningSum(VQwBPM &value){
-  DeaccumulateRunningSum(*dynamic_cast<QwBPMCavity* >(&value));
+void QwBPMCavity::DeaccumulateRunningSum(VQwBPM &value, Int_t ErrorMask){
+  DeaccumulateRunningSum(*dynamic_cast<QwBPMCavity* >(&value), ErrorMask);
 };
 
-void QwBPMCavity::DeaccumulateRunningSum(QwBPMCavity& value)
+void QwBPMCavity::DeaccumulateRunningSum(QwBPMCavity& value, Int_t ErrorMask)
 {
   size_t i = 0;
   for(i=0;i<kNumElements;i++)
-    fElement[i].DeaccumulateRunningSum(value.fElement[i]);
+    fElement[i].DeaccumulateRunningSum(value.fElement[i], ErrorMask);
   for (i = 0; i < kNumAxes; i++){
-    fRelPos[i].DeaccumulateRunningSum(value.fRelPos[i]);
-    fAbsPos[i].DeaccumulateRunningSum(value.fAbsPos[i]);
+    fRelPos[i].DeaccumulateRunningSum(value.fRelPos[i], ErrorMask);
+    fAbsPos[i].DeaccumulateRunningSum(value.fAbsPos[i], ErrorMask);
   }
   return;
 }

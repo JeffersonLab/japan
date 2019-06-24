@@ -102,8 +102,8 @@ class QwCombinedPMT : public VQwDataElement {
   void Ratio(QwCombinedPMT &numer, QwCombinedPMT &denom);
   void Scale(Double_t factor);
   void Normalize(VQwDataElement* denom);
-  void AccumulateRunningSum(const QwCombinedPMT& value);
-  void DeaccumulateRunningSum(QwCombinedPMT& value);
+  void AccumulateRunningSum(const QwCombinedPMT& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void DeaccumulateRunningSum(QwCombinedPMT& value, Int_t ErrorMask=0xFFFFFFF);
   void CalculateRunningAverage();
 
   void SetBlindability(Bool_t isblindable){fSumADC.SetBlindability(isblindable);};

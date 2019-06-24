@@ -1267,26 +1267,26 @@ void QwBlindDetectorArray::CalculateRunningAverage()
   return;
 }
 
-void QwBlindDetectorArray::AccumulateRunningSum(VQwSubsystem* value1)
+void QwBlindDetectorArray::AccumulateRunningSum(VQwSubsystem* value1, Int_t count, Int_t ErrorMask)
 {
   if (Compare(value1)) {
     QwBlindDetectorArray* value = dynamic_cast<QwBlindDetectorArray*>(value1);
 
     for (size_t i = 0; i < fIntegrationPMT.size(); i++)
-      fIntegrationPMT[i].AccumulateRunningSum(value->fIntegrationPMT[i]);
+      fIntegrationPMT[i].AccumulateRunningSum(value->fIntegrationPMT[i], count, ErrorMask);
     for (size_t i = 0; i < fCombinedPMT.size(); i++)
-      fCombinedPMT[i].AccumulateRunningSum(value->fCombinedPMT[i]);
+      fCombinedPMT[i].AccumulateRunningSum(value->fCombinedPMT[i], count, ErrorMask);
   }
 }
 
-void QwBlindDetectorArray::DeaccumulateRunningSum(VQwSubsystem* value1){
+void QwBlindDetectorArray::DeaccumulateRunningSum(VQwSubsystem* value1, Int_t ErrorMask){
   if (Compare(value1)) {
     QwBlindDetectorArray* value = dynamic_cast<QwBlindDetectorArray*>(value1);
 
     for (size_t i = 0; i < fIntegrationPMT.size(); i++)
-      fIntegrationPMT[i].DeaccumulateRunningSum(value->fIntegrationPMT[i]);
+      fIntegrationPMT[i].DeaccumulateRunningSum(value->fIntegrationPMT[i], ErrorMask);
     for (size_t i = 0; i < fCombinedPMT.size(); i++)
-      fCombinedPMT[i].DeaccumulateRunningSum(value->fCombinedPMT[i]);
+      fCombinedPMT[i].DeaccumulateRunningSum(value->fCombinedPMT[i], ErrorMask);
   }  
 };
 

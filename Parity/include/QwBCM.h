@@ -153,8 +153,8 @@ public:
   void Ratio(const QwBCM &numer, const QwBCM &denom);
   void Scale(Double_t factor);
 
-  void AccumulateRunningSum(const VQwBCM& value);
-  void DeaccumulateRunningSum(VQwBCM& value);
+  void AccumulateRunningSum(const VQwBCM&, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void DeaccumulateRunningSum(VQwBCM& value, Int_t ErrorMask=0xFFFFFFF);
   void CalculateRunningAverage();
 
   Bool_t CheckForBurpFail(const VQwDataElement *ev_error);

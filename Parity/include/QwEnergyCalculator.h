@@ -102,8 +102,8 @@ class QwEnergyCalculator : public VQwDataElement{
     virtual QwEnergyCalculator& operator+= (const QwEnergyCalculator &value);
     virtual QwEnergyCalculator& operator-= (const QwEnergyCalculator &value);
 
-    void    AccumulateRunningSum(const QwEnergyCalculator& value);
-    void    DeaccumulateRunningSum(QwEnergyCalculator& value);
+    void    AccumulateRunningSum(const QwEnergyCalculator& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+    void    DeaccumulateRunningSum(QwEnergyCalculator& value, Int_t ErrorMask=0xFFFFFFF);
     void    CalculateRunningAverage();
 
     void    ConstructHistograms(TDirectory *folder, TString &prefix);

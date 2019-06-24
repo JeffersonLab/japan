@@ -2335,59 +2335,59 @@ void QwBeamLine::PrintValue() const
 }
 
 //*****************************************************************//
-void QwBeamLine::AccumulateRunningSum(VQwSubsystem* value1)
+void QwBeamLine::AccumulateRunningSum(VQwSubsystem* value1, Int_t count, Int_t ErrorMask)
 {
   if (Compare(value1)) {
     QwBeamLine* value = dynamic_cast<QwBeamLine*>(value1);
 
     for (size_t i = 0; i < fClock.size();       i++)
-      fClock[i].get()->AccumulateRunningSum(*(value->fClock[i].get()));
+      fClock[i].get()->AccumulateRunningSum(*(value->fClock[i].get()), count, ErrorMask);
     for (size_t i = 0; i < fStripline.size(); i++)
-      fStripline[i].get()->AccumulateRunningSum(*(value->fStripline[i].get()));
+      fStripline[i].get()->AccumulateRunningSum(*(value->fStripline[i].get()), count, ErrorMask);
     for (size_t i = 0; i < fCavity.size(); i++)
-      fCavity[i].AccumulateRunningSum(value->fCavity[i]);
+      fCavity[i].AccumulateRunningSum(value->fCavity[i], count, ErrorMask);
     for (size_t i = 0; i < fBCM.size();       i++)
-      fBCM[i].get()->AccumulateRunningSum(*(value->fBCM[i].get()));    
+      fBCM[i].get()->AccumulateRunningSum(*(value->fBCM[i].get()), count, ErrorMask);    
     for (size_t i = 0; i < fBCMCombo.size();  i++)
-      fBCMCombo[i].get()->AccumulateRunningSum(*(value->fBCMCombo[i].get()));
+      fBCMCombo[i].get()->AccumulateRunningSum(*(value->fBCMCombo[i].get()), count, ErrorMask);
     for (size_t i = 0; i < fBPMCombo.size();  i++)
-      fBPMCombo[i].get()->AccumulateRunningSum(*(value->fBPMCombo[i].get()));
+      fBPMCombo[i].get()->AccumulateRunningSum(*(value->fBPMCombo[i].get()), count, ErrorMask);
     for (size_t i = 0; i < fECalculator.size();  i++)
-      fECalculator[i].AccumulateRunningSum(value->fECalculator[i]);
+      fECalculator[i].AccumulateRunningSum(value->fECalculator[i], count, ErrorMask);
     for (size_t i = 0; i < fQPD.size();  i++)
-      fQPD[i].AccumulateRunningSum(value->fQPD[i]);
+      fQPD[i].AccumulateRunningSum(value->fQPD[i], count, ErrorMask);
     for (size_t i = 0; i < fLinearArray.size();  i++)
-      fLinearArray[i].AccumulateRunningSum(value->fLinearArray[i]);
+      fLinearArray[i].AccumulateRunningSum(value->fLinearArray[i], count, ErrorMask);
     for (size_t i = 0; i <fHaloMonitor.size();  i++)
-      fHaloMonitor[i].AccumulateRunningSum(value->fHaloMonitor[i]);
+      fHaloMonitor[i].AccumulateRunningSum(value->fHaloMonitor[i], count, ErrorMask);
     
   }
 }
 
 //*****************************************************************//
-void QwBeamLine::DeaccumulateRunningSum(VQwSubsystem* value1){
+void QwBeamLine::DeaccumulateRunningSum(VQwSubsystem* value1, Int_t ErrorMask){
     if (Compare(value1)) {
     QwBeamLine* value = dynamic_cast<QwBeamLine*>(value1);
     for (size_t i = 0; i < fClock.size(); i++)
-      fClock[i].get()->DeaccumulateRunningSum(*(value->fClock[i].get()));
+      fClock[i].get()->DeaccumulateRunningSum(*(value->fClock[i].get()), ErrorMask);
     for (size_t i = 0; i < fStripline.size(); i++)
-      fStripline[i].get()->DeaccumulateRunningSum(*(value->fStripline[i].get()));    
+      fStripline[i].get()->DeaccumulateRunningSum(*(value->fStripline[i].get()), ErrorMask);    
     for (size_t i = 0; i < fCavity.size(); i++)
-      fCavity[i].DeaccumulateRunningSum(value->fCavity[i]);    
+      fCavity[i].DeaccumulateRunningSum(value->fCavity[i], ErrorMask);    
     for (size_t i = 0; i < fBCM.size();       i++)
-      fBCM[i].get()->DeaccumulateRunningSum(*(value->fBCM[i].get()));
+      fBCM[i].get()->DeaccumulateRunningSum(*(value->fBCM[i].get()), ErrorMask);
     for (size_t i = 0; i < fBCMCombo.size();  i++)
-      fBCMCombo[i].get()->DeaccumulateRunningSum(*(value->fBCMCombo[i].get()));    
+      fBCMCombo[i].get()->DeaccumulateRunningSum(*(value->fBCMCombo[i].get()), ErrorMask);    
     for (size_t i = 0; i < fBPMCombo.size();  i++)
-      fBPMCombo[i].get()->DeaccumulateRunningSum(*(value->fBPMCombo[i].get()));
+      fBPMCombo[i].get()->DeaccumulateRunningSum(*(value->fBPMCombo[i].get()), ErrorMask);
     for (size_t i = 0; i < fQPD.size();  i++)
-      fQPD[i].DeaccumulateRunningSum(value->fQPD[i]);
+      fQPD[i].DeaccumulateRunningSum(value->fQPD[i], ErrorMask);
     for (size_t i = 0; i < fLinearArray.size();  i++)
-      fLinearArray[i].DeaccumulateRunningSum(value->fLinearArray[i]);    
+      fLinearArray[i].DeaccumulateRunningSum(value->fLinearArray[i], ErrorMask);    
     for (size_t i = 0; i < fECalculator.size();  i++)
-      fECalculator[i].DeaccumulateRunningSum(value->fECalculator[i]);
+      fECalculator[i].DeaccumulateRunningSum(value->fECalculator[i], ErrorMask);
     for (size_t i = 0; i <fHaloMonitor.size();  i++)
-      fHaloMonitor[i].DeaccumulateRunningSum(value->fHaloMonitor[i]);
+      fHaloMonitor[i].DeaccumulateRunningSum(value->fHaloMonitor[i], ErrorMask);
     
   }
 };
