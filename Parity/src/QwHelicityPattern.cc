@@ -46,7 +46,7 @@ void QwHelicityPattern::DefineOptions(QwOptions &options)
      "print running sum of subsystems");
 
   options.AddOptions("Helicity pattern")
-    ("burstlength", po::value<int>()->default_value(240),
+    ("burstlength", po::value<int>()->default_value(9000),
      "number of patterns per burst");
 
   QwBlinder::DefineOptions(options);
