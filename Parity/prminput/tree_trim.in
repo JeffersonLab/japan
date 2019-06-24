@@ -7,14 +7,20 @@
   <QwBCM>
         hw_sum
         Device_Error_Code
+#        hw_sum_raw
+#        num_samples
 
   <QwBPMStripline>
        hw_sum
        Device_Error_Code
+#        hw_sum_raw
+#        num_samples
 
   <QwBPMCavity>
        hw_sum
        Device_Error_Code
+#        hw_sum_raw
+#        num_samples
 
   <QwCombinedBPM>
        hw_sum
@@ -34,6 +40,8 @@
    <QwIntegrationPMT>
        hw_sum
        Device_Error_Code
+#       hw_sum_raw
+#       num_samples
 
    <QwCombinedPMT>
        hw_sum
