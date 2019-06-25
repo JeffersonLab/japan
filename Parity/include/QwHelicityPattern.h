@@ -97,6 +97,13 @@ class QwHelicityPattern {
   /// Status of storing pattern differences flag
   Bool_t IsDifferenceEnabled() { return fEnableDifference; };
 
+  /// Enable/disable storing pair differences
+  void  EnablePairs(const Bool_t flag = kTRUE) { fEnablePairs = flag; };
+  /// Disable storing pair differences
+  void  DisablePairs() { fEnablePairs = kFALSE; };
+  /// Status of storing pair differences flag
+  Bool_t IsPairsEnabled() { return fEnablePairs; };
+
 #ifdef __USE_DATABASE__
   /// Update the blinder status with new external information
   void UpdateBlinder(QwParityDB* db){
@@ -189,6 +196,7 @@ class QwHelicityPattern {
   QwSubsystemArrayParity fAsymmetry2;
 
   // Yield and asymmetry of a single helicity pair
+  Bool_t fEnablePairs;
   QwSubsystemArrayParity fPairYield;
   QwSubsystemArrayParity fPairDifference;
   QwSubsystemArrayParity fPairAsymmetry;

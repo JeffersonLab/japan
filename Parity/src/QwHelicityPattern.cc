@@ -90,6 +90,7 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
     fEnableAlternateAsym(kFALSE), 
     fAsymmetry1(event), 
     fAsymmetry2(event),
+    fEnablePairs(kTRUE),
     fPairYield(event), 
     fPairDifference(event), 
     fPairAsymmetry(event),
@@ -696,11 +697,13 @@ void  QwHelicityPattern::CalculateRunningAverage()
     fAsymmetry1.CalculateRunningAverage();
     fAsymmetry2.CalculateRunningAverage();
   }
-  //  Pair averages
-  fPairYield.CalculateRunningAverage();
-  fPairAsymmetry.CalculateRunningAverage();
-  if (fEnableDifference){
-    fPairDifference.CalculateRunningAverage();
+  if (fEnablePairs) {
+    //  Pair averages
+    fPairYield.CalculateRunningAverage();
+    fPairAsymmetry.CalculateRunningAverage();
+    if (fEnableDifference){
+      fPairDifference.CalculateRunningAverage();
+    }
   }
 }
 
@@ -728,20 +731,19 @@ void  QwHelicityPattern::PrintValue() const
     QwMessage << " ==============================" << QwLog::endl;
     fDifference.PrintValue();
   }
-
-  // Pair
-  QwMessage << " Pair yield " << QwLog::endl;
-  QwMessage << " ==============================" << QwLog::endl;
-  fPairYield.PrintValue();
-  QwMessage << " Pair asymmetry " << QwLog::endl;
-  QwMessage << " ==============================" << QwLog::endl;
-  fPairAsymmetry.PrintValue();
-  if (fEnableDifference) {
-    QwMessage << " Pair difference " << QwLog::endl;
+  if (fEnablePairs){
+    QwMessage << " Pair yield " << QwLog::endl;
     QwMessage << " ==============================" << QwLog::endl;
-    fPairDifference.PrintValue();
+    fPairYield.PrintValue();
+    QwMessage << " Pair asymmetry " << QwLog::endl;
+    QwMessage << " ==============================" << QwLog::endl;
+    fPairAsymmetry.PrintValue();
+    if (fEnableDifference) {
+      QwMessage << " Pair difference " << QwLog::endl;
+      QwMessage << " ==============================" << QwLog::endl;
+      fPairDifference.PrintValue();
+    }
   }
-
 }
 
 //*****************************************************************
