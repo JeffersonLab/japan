@@ -147,11 +147,17 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     ///  Create the burst sum
     QwHelicityPattern patternsum_per_burst(helicitypattern);
+    patternsum_per_burst.EnableDifference();
+    patternsum_per_burst.DisablePairs();
 
     ///  Create the running sum
     QwSubsystemArrayParity eventsum(detectors);
     QwHelicityPattern patternsum(helicitypattern);
+    patternsum.EnableDifference();
+    patternsum.DisablePairs();
     QwHelicityPattern burstsum(helicitypattern);
+    burstsum.EnableDifference();
+    burstsum.DisablePairs();
 
     //  Initialize the database connection.
     #ifdef __USE_DATABASE__
@@ -339,6 +345,12 @@ Int_t main(Int_t argc, Char_t* argv[])
 
                 // Fill the burst into the sum over all bursts
                 burstsum.AccumulateRunningSum(patternsum_per_burst);
+
+                if (gQwOptions.GetValue<bool>("print-burstsum")) {
+                  QwMessage << " Running average of this burst" << QwLog::endl;
+                  QwMessage << " =============================" << QwLog::endl;
+                  patternsum_per_burst.PrintValue();
+                }
 
                 // Fill burst tree branches
                 burstrootfile->FillTreeBranches(patternsum_per_burst);
