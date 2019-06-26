@@ -387,7 +387,7 @@ Int_t main(Int_t argc, Char_t* argv[])
     ringoutput.AtEndOfEventLoop();
 
     QwMessage << "Number of events processed at end of run: "
-              << eventbuffer.GetEventNumber() << QwLog::endl;
+              << eventbuffer.GetPhysicsEventNumber() << QwLog::endl;
 
     datahandlerarray.FinishDataHandler();
 
@@ -457,7 +457,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       //      runningsum.WritePromptSummary(&promptsummary, "difference");
       datahandlerarray.WritePromptSummary(&promptsummary, "asymmetry");
       patternsum.WritePromptSummary(&promptsummary);
-      promptsummary.PrintCSV();
+      promptsummary.PrintCSV(eventbuffer.GetPhysicsEventNumber(),eventbuffer.GetStartSQLTime(), eventbuffer.GetEndSQLTime());
     }
     //  Read from the database
     #ifdef __USE_DATABASE__
