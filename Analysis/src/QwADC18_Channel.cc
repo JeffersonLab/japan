@@ -1049,10 +1049,9 @@ void QwADC18_Channel::AccumulateRunningSum(const QwADC18_Channel& value, Int_t c
   if (n2 == 0 && value.fErrorFlag == 0) {
     n2 = 1;
   }
-  Int_t n = n1 + n2;
 
   if (ErrorMask ==  kPreserveError){
-    n = 1;
+    //n = 1;
     if (n2 == 0) {
       n2 = 1;
     }
@@ -1060,6 +1059,8 @@ void QwADC18_Channel::AccumulateRunningSum(const QwADC18_Channel& value, Int_t c
       n2 = -1;
     }
   }
+
+  Int_t n = n1 + n2;
 
   // Set up variables
   Double_t M11 = fValue;

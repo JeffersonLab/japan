@@ -29,7 +29,7 @@ void QwEventRing::DefineOptions(QwOptions &options)
       "QwEventRing: ring/buffer size");
 
   options.AddOptions()("burp.extent",
-      po::value<int>()->default_value(20),
+      po::value<int>()->default_value(10),
       "QwEventRing: burp extent");
 
   options.AddOptions()("burp.precut",
@@ -167,7 +167,7 @@ void QwEventRing::CheckBurpCut(Int_t thisevent)
 	      fEvent_Ring[i].UpdateErrorFlag();
       }
     }
-    Int_t beforeburp = (thisevent+fRING_SIZE-fBurpExtent)%fRING_SIZE;
+    Int_t beforeburp = (thisevent+fRING_SIZE-fBurpExtent-1)%fRING_SIZE;
     fBurpAvg.DeaccumulateRunningSum(fEvent_Ring[beforeburp], kPreserveError);
   }
   fBurpAvg.AccumulateAllRunningSum(fEvent_Ring[thisevent], 0, kPreserveError);

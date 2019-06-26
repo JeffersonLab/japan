@@ -1370,18 +1370,15 @@ void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t cou
 
   // If a single event is removed from the sum, check all but stability fail flags
   if (n2 == -1) {
-    if ((value.fErrorFlag & 0xFFFFFFF) == 0) {
+    if ((value.fErrorFlag & ErrorMask) == 0) {
       n2 = -1;
     } else {
       n2 = 0;
     }
   }
 
-  // New total number of good events
-  Int_t n = n1 + n2;
-
   if (ErrorMask ==  kPreserveError){
-    n = 1;
+    //n = 1;
     if (n2 == 0) {
       n2 = 1;
     }
@@ -1390,11 +1387,15 @@ void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t cou
     }
   }
 
+  // New total number of good events
+  Int_t n = n1 + n2;
+
   // Set up variables
   Double_t M11 = fHardwareBlockSum;
   Double_t M12 = value.fHardwareBlockSum;
   Double_t M22 = value.fHardwareBlockSumM2;
 
+  //if(this->GetElementName() == "bcm_an_ds3" && ErrorMask == kPreserveError){QwError << "count=" << fGoodEventCount << "  n=" << n << QwLog::endl;    }
   if (n2 == 0) {
     // no good events for addition
     return;
