@@ -26,27 +26,37 @@ void BeamModPlot(TString type="evt",TString type2="mul", TString ref="CodaEventN
   TString evcute = "ErrorFlag==0 && bmwobj==8";//cut for energy modulations
 
 
-  TString coil[7] = {"bmod_trim1","bmod_trim2","bmod_trim3","bmod_trim4","bmod_trim6","bmod_trim7","bmod_trim8"};
+  TString coil[7] = {"bmod_trim1","bmod_trim2","bmod_trim3","bmod_trim4","bmod_trim5","bmod_trim6","bmod_trim7"};
 
 
   TPad *cBMWPlot2 = new TPad("cBMWPlot2","cBMWPlot2",0,0,1,1);
   cBMWPlot2->Divide(1,3);
   cBMWPlot2->Draw();
 
-  TGraph *tGraphBMWPlot3[7];  //plots trim cards for the whole run
-  for (int i=0;i<7; i++){
-    int npt = tree_R->Draw(Form("%s:CodaEventNumber>>hc%d",coil[i].Data(),i),evcut,"goff");
-    tGraphBMWPlot3[i] = new TGraph(npt,tree_R->GetV2(),tree_R->GetV1());
-    tGraphBMWPlot3[i]->SetLineStyle(1);
-    tGraphBMWPlot3[i]->SetLineColor(i+1);
-    tGraphBMWPlot3[i]->SetTitle("Trim Cards vs CodaEventNumber");
-    tGraphBMWPlot3[i]->GetXaxis()->SetTitle("CodaEventNumber");
-    tGraphBMWPlot3[i]->GetYaxis()->SetTitle("Trim Cards");
+  TGraph *tGraphBMWPlot3[8];  //plots trim cards for the whole run
+  for (int i=0;i<8; i++){
+    if(i<7){
+      int npt = tree_R->Draw(Form("%s:CodaEventNumber>>hc%d",coil[i].Data(),i),evcut,"goff");
+      tGraphBMWPlot3[i] = new TGraph(npt,tree_R->GetV2(),tree_R->GetV1());
+      tGraphBMWPlot3[i]->SetLineStyle(1);
+      tGraphBMWPlot3[i]->SetLineColor(i+1);
+      tGraphBMWPlot3[i]->SetTitle("Trim Cards vs CodaEventNumber");
+      tGraphBMWPlot3[i]->GetXaxis()->SetTitle("CodaEventNumber");
+      tGraphBMWPlot3[i]->GetYaxis()->SetTitle("Trim Cards");
+    }
+    else{
+      int npt = tree_R->Draw("bcm_an_ds3*150:CodaEventNumber","","goff");
+      tGraphBMWPlot3[i] = new TGraph(npt,tree_R->GetV2(),tree_R->GetV1());
+      tGraphBMWPlot3[i]->SetLineStyle(1);
+      tGraphBMWPlot3[i]->SetLineColor(i+1);
+      tGraphBMWPlot3[i]->SetTitle("Trim Cards vs CodaEventNumber");
+      tGraphBMWPlot3[i]->GetXaxis()->SetTitle("CodaEventNumber");
+      tGraphBMWPlot3[i]->GetYaxis()->SetTitle("Trim Cards");
+    }
   }
-
   cBMWPlot2->cd(1);
   tGraphBMWPlot3[0]->Draw("AL");
-  for(int i=1;i<7;i++){
+  for(int i=1;i<8;i++){
     tGraphBMWPlot3[i]->Draw("same");
   }
  
@@ -57,9 +67,10 @@ void BeamModPlot(TString type="evt",TString type2="mul", TString ref="CodaEventN
   legend2->AddEntry(tGraphBMWPlot3[1],"Trim2","l");
   legend2->AddEntry(tGraphBMWPlot3[2],"Trim3","l");
   legend2->AddEntry(tGraphBMWPlot3[3],"Trim4","l");
-  legend2->AddEntry(tGraphBMWPlot3[4],"Trim6","l");
-  legend2->AddEntry(tGraphBMWPlot3[5],"Trim7","l");
-  legend2->AddEntry(tGraphBMWPlot3[6],"Trim8","l");
+  legend2->AddEntry(tGraphBMWPlot3[4],"Trim5","l");
+  legend2->AddEntry(tGraphBMWPlot3[5],"Trim6","l");
+  legend2->AddEntry(tGraphBMWPlot3[6],"Trim7","l");
+  legend2->AddEntry(tGraphBMWPlot3[7],"Beam Current","l");
   legend2->Draw();
  
 

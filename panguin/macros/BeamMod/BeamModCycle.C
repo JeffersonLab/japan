@@ -1,4 +1,4 @@
-/////////BeamModCycle.C
+////////BeamModCycle.C
 ///// ---  Victoria Owen ----
 /////---- Quinn Campgana ----
 //// ----- June 2019 --------
@@ -43,14 +43,14 @@
   TString evcutxcorr = "ErrorFlag==0 && bpm4aX>2"; //cut for x sensitivities
   TString evcutycorr = "ErrorFlag==0"; //cut for y sensitivities
   TString evcutbcm = "ErrorFlag==0 && bmwcycnum==" + cyclechoice; //cut to look at one supercycle
-  TString evcutx = "ErrorFlag==0 && bmwobj==1 | bmwobj==3 | bmwobj==6";//cut for x modulations
-  TString evcuty = "ErrorFlag==0 && bmwobj==2 | bmwobj==4 | bmwobj==7";// cut for y modulations
+  TString evcutx = "ErrorFlag==0 && bmwobj==1 | bmwobj==3 | bmwobj==5";//cut for x modulations
+  TString evcuty = "ErrorFlag==0 && bmwobj==2 | bmwobj==4 | bmwobj==6";// cut for y modulations
   TString evcute = "ErrorFlag==0 && bmwobj==8";//cut for energy modulations
 
   TPad *cBMWPlot = new TPad("cBMWPlot","cBMWPlot",0,0,1,1);
   cBMWPlot->Divide(2,3);
   cBMWPlot->Draw();
-  TString coil[7] = {"bmod_trim1","bmod_trim2","bmod_trim3","bmod_trim4","bmod_trim6","bmod_trim7","bmod_trim8"};
+  TString coil[7] = {"bmod_trim1","bmod_trim2","bmod_trim3","bmod_trim4","bmod_trim5","bmod_trim6","bmod_trim7"};
 
   TGraph *tGraphBMWPlot[7];  //plots one super cycle
   for (int i=0;i<7; i++){
