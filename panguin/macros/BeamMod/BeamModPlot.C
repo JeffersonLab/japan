@@ -15,15 +15,30 @@ void BeamModPlot(TString type="evt",TString type2="mul", TString ref="CodaEventN
   TTree* tree_R = (TTree*)gDirectory->Get(type);
   TTree* tree_M = (TTree*)gDirectory->Get(type2);
 
+  if (tree_R->GetEntries("bmwcycnum>0")<=0){
+    std::cerr << "No entries with 'bmwcycnum>0' in this run."
+	      <<std::endl;
+    return;
+  }
+  if (tree_R->GetEntries("bmwobj>0")<=0){
+    std::cerr << "No entries with 'bmwobj>0' in this run."
+	      <<std::endl;
+    return;
+  }
+
+
 
   TString bmwcut = "bmwcycnum>0";
-  TString evcut = "ErrorFlag==0"; //basic cut, all events with beam on
-  TString evcutxcorr = "ErrorFlag==0"; //cut for x sensitivities
-  TString evcutycorr = "ErrorFlag==0"; //cut for y sensitivities
-  TString evcutbcm = "ErrorFlag==0 && bmwcycnum==23"; //cut to look at one supercycle
-  TString evcutx = "ErrorFlag==0 && bmwobj==1 | bmwobj==3 | bmwobj==6";//cut for x modulations
-  TString evcuty = "ErrorFlag==0 && bmwobj==2 | bmwobj==4 | bmwobj==7";// cut for y modulations
-  TString evcute = "ErrorFlag==0 && bmwobj==8";//cut for energy modulations
+  TString evcut = "ErrorFlag && 0xffff5fff"; //basic cut, all events with beam on
+  TString evcutxcorr = "ErrorFlag && 0xffff5fff && bpm4aX>2"; //cut for x sensitivities
+  TString evcutycorr = "ErrorFlag && 0xffff5fff"; //cut for y sensitivities
+  TString evcutbcm = "ErrorFlag && 0xffff5fff && bmwcycnum==" + cyclechoice; //cut to look at one supercycle
+  TString evcutx = "ErrorFlag && 0xffff5fff && bmwobj==1 | bmwobj==3 | bmwobj==5";//cut for x modulations
+  TString evcuty = "ErrorFlag && 0xffff5fff && bmwobj==2 | bmwobj==4 | bmwobj==6";// cut for y modulations
+  TString evcute = "ErrorFlag && 0xffff5fff bmwobj==8";//cut for energy modulations
+  
+
+
 
 
   TString coil[7] = {"bmod_trim1","bmod_trim2","bmod_trim3","bmod_trim4","bmod_trim5","bmod_trim6","bmod_trim7"};
@@ -75,11 +90,11 @@ void BeamModPlot(TString type="evt",TString type2="mul", TString ref="CodaEventN
  
 
   cBMWPlot2->cd(2);
-  tree_M->Draw("(diff_bpm4eX-diff_bpm4aX):(diff_bpm4aX+diff_bpm4eX)","bmwobj<0");
+  tree_M->Draw("(diff_bpm4eX-diff_bpm4aX):(diff_bpm4aX+diff_bpm4eX)","yield_bmwobj<0");
    
 
   cBMWPlot2->cd(3);
-  tree_M->Draw("(diff_bpm4eY-diff_bpm4aY):(diff_bpm4aY+diff_bpm4eY)","bmwobj<0");
+  tree_M->Draw("(diff_bpm4eY-diff_bpm4aY):(diff_bpm4aY+diff_bpm4eY)","yield_bmwobj<0");
 
   return 0;
 }

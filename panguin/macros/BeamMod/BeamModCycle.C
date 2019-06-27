@@ -12,6 +12,20 @@
   void BeamModCycle(TString type="evt", TString ref="CodaEventNumber"){
   gStyle->SetOptStat(0);
   TTree* tree_R = (TTree*)gDirectory->Get(type);
+  if (tree_R==NULL){
+    std::cerr << "Tree "<<type<< " was not found."<<std::endl;
+    return;
+  }
+  if (tree_R->GetEntries("bmwcycnum>0")<=0){
+    std::cerr << "No entries with 'bmwcycnum>0' in this run."
+	      <<std::endl;
+    return;
+  }
+  if (tree_R->GetEntries("bmwobj>0")<=0){
+    std::cerr << "No entries with 'bmwobj>0' in this run."
+	      <<std::endl;
+    return;
+  }
 
 
   tree_R->Draw(">>elist","bmwcycnum>0","entrylist");  //picks out unique cycle numbers
@@ -39,13 +53,13 @@
 
 
   TString bmwcut = "bmwcycnum>0";
-  TString evcut = "ErrorFlag==0"; //basic cut, all events with beam on
-  TString evcutxcorr = "ErrorFlag==0 && bpm4aX>2"; //cut for x sensitivities
-  TString evcutycorr = "ErrorFlag==0"; //cut for y sensitivities
-  TString evcutbcm = "ErrorFlag==0 && bmwcycnum==" + cyclechoice; //cut to look at one supercycle
-  TString evcutx = "ErrorFlag==0 && bmwobj==1 | bmwobj==3 | bmwobj==5";//cut for x modulations
-  TString evcuty = "ErrorFlag==0 && bmwobj==2 | bmwobj==4 | bmwobj==6";// cut for y modulations
-  TString evcute = "ErrorFlag==0 && bmwobj==8";//cut for energy modulations
+  TString evcut = "ErrorFlag && 0xffff5fff"; //basic cut, all events with beam on
+  TString evcutxcorr = "ErrorFlag && 0xffff5fff && bpm4aX>2"; //cut for x sensitivities
+  TString evcutycorr = "ErrorFlag && 0xffff5fff"; //cut for y sensitivities
+  TString evcutbcm = "ErrorFlag && 0xffff5fff && bmwcycnum==" + cyclechoice; //cut to look at one supercycle
+  TString evcutx = "ErrorFlag && 0xffff5fff && bmwobj==1 | bmwobj==3 | bmwobj==5";//cut for x modulations
+  TString evcuty = "ErrorFlag && 0xffff5fff && bmwobj==2 | bmwobj==4 | bmwobj==6";// cut for y modulations
+  TString evcute = "ErrorFlag && 0xffff5fff bmwobj==8";//cut for energy modulations
 
   TPad *cBMWPlot = new TPad("cBMWPlot","cBMWPlot",0,0,1,1);
   cBMWPlot->Divide(2,3);
