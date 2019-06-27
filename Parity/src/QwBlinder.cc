@@ -395,11 +395,11 @@ Int_t QwBlinder::ReadRandomSeed()
   // Initialize random number generator.
   srand(time(0));
   //get  a "random" positive integer 
-  fSeedID=rand();
+  
   for (int i = 0; i < 20; ++i) {
-        randomchar[i] = alphanum[fSeedID % strLen];
+    randomchar[i] = alphanum[rand() % strLen];
   }
-
+  fSeedID=rand();
   TString frandomSeed(randomchar);
   fSeed=frandomSeed;//a random string
   return fSeedID;
