@@ -99,7 +99,10 @@ class QwHelicityPattern {
     fBlinder.Update(db);
   };
 #endif
-
+  /// Update the blinder status using a random number generator
+  void UpdateBlinder(){
+    fBlinder.Update();
+  };
   /// Update the blinder status with new external information
   void UpdateBlinder(const QwSubsystemArrayParity& detectors) {
     fBlinder.Update(detectors);
