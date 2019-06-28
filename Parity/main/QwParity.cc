@@ -255,8 +255,10 @@ Int_t main(Int_t argc, Char_t* argv[])
         eventbuffer.FillSubsystemConfigurationData(detectors);
       }
 
-      //  Secondly, process EPICS events
-      if (eventbuffer.IsEPICSEvent()) {
+      //  Secondly, process EPICS events, but not for online running,
+      //  because the EPICS events get messed up by our 32-bit to 64-bit
+      //  double ET system.
+      if (! eventbuffer.IsOnline() && eventbuffer.IsEPICSEvent()) {
         eventbuffer.FillEPICSData(epicsevent);
 	if (epicsevent.HasDataLoaded()){
 	  epicsevent.CalculateRunningValues();

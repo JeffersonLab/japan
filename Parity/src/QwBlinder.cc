@@ -47,7 +47,7 @@ const TString QwBlinder::fStatusName[4] = {"Indeterminate", "NotBlindable",
 					   "Blindable", "BlindableFail"};
 
 // Maximum blinding asymmetry for additive blinding
-const Double_t QwBlinder::kDefaultMaximumBlindingAsymmetry = 0.06; // ppm
+const Double_t QwBlinder::kDefaultMaximumBlindingAsymmetry = 0.150; // ppm
 const Double_t QwBlinder::kDefaultMaximumBlindingFactor = 0.0; // [fraction]
 
 // Default seed, associated with seed_id 0
@@ -189,6 +189,11 @@ void QwBlinder::Update()
   //  Update the seed ID then tell us if it has changed.
   UInt_t old_seed_id = fSeedID;
   ReadRandomSeed();
+  //  Force the target to blindable, Wien to be forward,
+  //  and IHWP polarity to be +1
+  SetTargetBlindability(QwBlinder::kBlindable);
+  SetWienState(kWienForward);
+  SetIHWPPolarity(+1);
   // If the blinding seed has changed, re-initialize the blinder
   if (fSeedID != old_seed_id ||
       (fSeedID==0 && fSeed!=kDefaultSeed) ) {
