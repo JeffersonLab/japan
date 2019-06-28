@@ -39,8 +39,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   /// \brief Connect to Channels (asymmetry/difference only)
   Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
 
-  void AccumulateRunningSum();
-  void ProcessData(){};
+  void ProcessData();
   void CalcCorrelations();
 		
  protected:

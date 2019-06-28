@@ -83,7 +83,7 @@ void QwCorrelator::ParseConfigFile(QwParameterFile& file)
   file.PopValue("disable-histos", fDisableHistos);
 }
 
-void QwCorrelator::AccumulateRunningSum()
+void QwCorrelator::ProcessData()
 {
   UInt_t error = 0;
 
