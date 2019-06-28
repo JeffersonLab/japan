@@ -62,7 +62,7 @@ void QwCorrelator::ParseConfigFile(QwParameterFile& file)
   corA.SetDisableHistogramFlag(fDisableHistos);
 }
 
-void QwCorrelator::AccumulateRunningSum()
+void QwCorrelator::ProcessData()
 {
   UInt_t error = 0;
 
