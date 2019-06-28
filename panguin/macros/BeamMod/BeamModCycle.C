@@ -9,21 +9,21 @@
 //if trim card readback for single cycle is good, bpm response should be good
 
 
-  void BeamModCycle(TString type="evt", TString ref="CodaEventNumber"){
+void BeamModCycle(TString type="evt", TString ref="CodaEventNumber", Bool_t ldebug = kFALSE){
   gStyle->SetOptStat(0);
   TTree* tree_R = (TTree*)gDirectory->Get(type);
   if (tree_R==NULL){
-    std::cerr << "Tree "<<type<< " was not found."<<std::endl;
+    if (ldebug) std::cerr << "Tree "<<type<< " was not found."<<std::endl;
     return;
   }
   if (tree_R->GetEntries("bmwcycnum>0")<=0){
-    std::cerr << "No entries with 'bmwcycnum>0' in this run."
+    if (ldebug) std::cerr << "No entries with 'bmwcycnum>0' in this run."
 	      <<std::endl;
     return;
   }
   if (tree_R->GetEntries("bmwobj>0")<=0){
-    std::cerr << "No entries with 'bmwobj>0' in this run."
-	      <<std::endl;
+    if (ldebug) std::cerr << "No entries with 'bmwobj>0' in this run."
+			  <<std::endl;
     return;
   }
 
@@ -49,6 +49,7 @@
   }
   
   TString cyclechoice = Form("%f",cycles[1]);
+  int Ncycles = cycles.size();
 
 
 
@@ -61,102 +62,124 @@
   TString evcuty = "ErrorFlag && 0xffff5fff && bmwobj==2 | bmwobj==4 | bmwobj==6";// cut for y modulations
   TString evcute = "ErrorFlag && 0xffff5fff bmwobj==8";//cut for energy modulations
 
-  TPad *cBMWPlot = new TPad("cBMWPlot","cBMWPlot",0,0,1,1);
-  cBMWPlot->Divide(2,3);
-  cBMWPlot->Draw();
+  
+  
   TString coil[7] = {"bmod_trim1","bmod_trim2","bmod_trim3","bmod_trim4","bmod_trim5","bmod_trim6","bmod_trim7"};
+  TString bpms[5]={"bpm4aX","bpm4aY","bpm4eX","bpm4eY", "bpm12X"};
 
-  TGraph *tGraphBMWPlot[7];  //plots one super cycle
-  for (int i=0;i<7; i++){
-    int npt = tree_R->Draw(Form("%s:CodaEventNumber>>hc%d",coil[i].Data(),i),evcutbcm,"goff");
-    tGraphBMWPlot[i]= new TGraph(npt,tree_R->GetV2(),tree_R->GetV1());
-    tGraphBMWPlot[i]->SetLineStyle(1);
-    if(i==6){
-      tGraphBMWPlot[i]->SetLineColor(8);
-    }
-    else{
-      if(i==0||i==2||i==4){
-	tGraphBMWPlot[i]->SetLineColor(4);
+  if(Ncycles==0){
+    TPad *cBMWPlot = new TPad("cBMWPlot","cBMWPlot",0,0,1,1);
+    cBMWPlot->Divide(1,3);
+    cBMWPlot->Draw();
+
+    TLatex line1;
+    TLatex line2;
+    TLatex line3;
+    line1.SetTextSize(.2);
+    line1.SetTextAlign(12);
+    line2.SetTextSize(.2);
+    line2.SetTextAlign(12);
+    line3.SetTextSize(.2);
+    line3.SetTextAlign(12);
+
+    cBMWPlot->cd(1);
+    line1.DrawLatex(.2,.5,"No Beam Mod");
+
+    cBMWPlot->cd(2);
+    line2.DrawLatex(.2,.5,"this run");
+
+    cBMWPlot->cd(3);
+    line3.DrawLatex(.2,.5,":(");
+  }
+  else{
+    TPad *cBMWPlot = new TPad("cBMWPlot","cBMWPlot",0,0,1,1);
+    cBMWPlot->Divide(2,3);
+    cBMWPlot->Draw();
+
+    TGraph *tGraphBMWPlot[7];  //plots one super cycle
+    for (int i=0;i<7; i++){
+      int npt = tree_R->Draw(Form("%s:CodaEventNumber>>hc%d",coil[i].Data(),i),evcutbcm,"goff");
+      tGraphBMWPlot[i]= new TGraph(npt,tree_R->GetV2(),tree_R->GetV1());
+      tGraphBMWPlot[i]->SetLineStyle(1);
+      if(i==6){
+	tGraphBMWPlot[i]->SetLineColor(8);
       }
       else{
-	if(i==1||i==3||i==5){
-	  tGraphBMWPlot[i]->SetLineColor(2);
+	if(i==0||i==2||i==4){
+	  tGraphBMWPlot[i]->SetLineColor(4);
+	}
+	else{
+	  if(i==1||i==3||i==5){
+	    tGraphBMWPlot[i]->SetLineColor(2);
+	  }
 	}
       }
+      tGraphBMWPlot[i]->SetTitle("Trim Cards vs CodaEventNumber");
+      tGraphBMWPlot[i]->GetXaxis()->SetTitle("CodaEventNumber");
+      tGraphBMWPlot[i]->GetYaxis()->SetTitle("Trim Cards");
     }
-    tGraphBMWPlot[i]->SetTitle("Trim Cards vs CodaEventNumber");
-    tGraphBMWPlot[i]->GetXaxis()->SetTitle("CodaEventNumber");
-    tGraphBMWPlot[i]->GetYaxis()->SetTitle("Trim Cards");
-  }
-
-  TString bpms[5]={"bpm4aX","bpm4aY","bpm4eX","bpm4eY", "bpm12X"};
   
-  TGraph *tGraphBMWPlot2[5]; //plots bpms vs CodaEventNumber
-  for(int i=0;i<5;i++){
-    cBMWPlot->cd(i+1);
-    int npt = tree_R->Draw(Form("%s:CodaEventNumber>>h%d",bpms[i].Data(),i),
+    TGraph *tGraphBMWPlot2[5]; //plots bpms vs CodaEventNumber
+    for(int i=0;i<5;i++){
+      cBMWPlot->cd(i+1);
+      int npt = tree_R->Draw(Form("%s:CodaEventNumber>>h%d",bpms[i].Data(),i),
 			evcutbcm,"goff");
-    tGraphBMWPlot2[i] = new TGraph(npt,tree_R->GetV2(),tree_R->GetV1());
-    tGraphBMWPlot2[i]->SetLineStyle(3);
-    tGraphBMWPlot2[i]->SetLineColor(1);
-    tGraphBMWPlot2[i]->Draw("Ap");
-    tGraphBMWPlot2[i]->SetTitle(Form(" %s",bpms[i].Data() ));
-    tGraphBMWPlot2[i]->GetYaxis()->SetTitle(Form(" %s",bpms[i].Data()));
-    tGraphBMWPlot2[i]->GetXaxis()->SetTitle("CodaEventNumber");
+      tGraphBMWPlot2[i] = new TGraph(npt,tree_R->GetV2(),tree_R->GetV1());
+      tGraphBMWPlot2[i]->SetLineStyle(3);
+      tGraphBMWPlot2[i]->SetLineColor(1);
+      tGraphBMWPlot2[i]->Draw("Ap");
+      tGraphBMWPlot2[i]->SetTitle(Form(" %s",bpms[i].Data() ));
+      tGraphBMWPlot2[i]->GetYaxis()->SetTitle(Form(" %s",bpms[i].Data()));
+      tGraphBMWPlot2[i]->GetXaxis()->SetTitle("CodaEventNumber");
+    }
+    
+    for(int i=0;i<5;i++){ //color codes y modulations
+      cBMWPlot->cd(i+1);
+      int npt = tree_R->Draw(Form("%s:CodaEventNumber>>h%d",bpms[i].Data(),i),
+			     evcuty,"goff");
+      tGraphBMWPlot2[i] = new TGraph(npt,tree_R->GetV2(),tree_R->GetV1());
+      tGraphBMWPlot2[i]->SetLineStyle(3);
+      tGraphBMWPlot2[i]->SetLineColor(2);
+      tGraphBMWPlot2[i]->SetLineWidth(1);
+      tGraphBMWPlot2[i]->Draw("SAME");
+    }
+    
+    for(int i=0;i<5;i++){ //color codes x modulations
+      cBMWPlot->cd(i+1);
+      int npt = tree_R->Draw(Form("%s:CodaEventNumber>>h%d",bpms[i].Data(),i),
+			     evcutx,"goff");
+      tGraphBMWPlot2[i] = new TGraph(npt,tree_R->GetV2(),tree_R->GetV1());
+      tGraphBMWPlot2[i]->SetLineStyle(3);
+      tGraphBMWPlot2[i]->SetLineColor(4);
+      tGraphBMWPlot2[i]->SetLineWidth(1);
+      tGraphBMWPlot2[i]->Draw("SAME");
+    }
+    
+    for(int i=0;i<5;i++){ //color codes energy modulations
+      cBMWPlot->cd(i+1);
+      int npt = tree_R->Draw(Form("%s:CodaEventNumber>>h%d",bpms[i].Data(),i),
+			     evcute,"goff");
+      tGraphBMWPlot2[i] = new TGraph(npt,tree_R->GetV2(),tree_R->GetV1());
+      tGraphBMWPlot2[i]->SetLineStyle(3);
+      tGraphBMWPlot2[i]->SetLineColor(8);
+      tGraphBMWPlot2[i]->SetLineWidth(1);
+      tGraphBMWPlot2[i]->Draw("SAME");
+    }
+    
+    cBMWPlot->cd(6);
+    tGraphBMWPlot[0]->Draw("AL");
+    for(int i=1;i<7;i++){
+      tGraphBMWPlot[i]->Draw("same");
+    }
+    
+    auto legend = new TLegend(0.1,0.7,0.4,0.9);
+    legend->SetHeader("Trim Cards","C");
+    legend->SetNColumns(2);
+    legend->AddEntry(tGraphBMWPlot[0],"X mod","l");
+    legend->AddEntry(tGraphBMWPlot[1],"Y mod","l");
+    legend->AddEntry(tGraphBMWPlot[6],"E mod","l");
+    legend->Draw();
   }
-  
-  for(int i=0;i<5;i++){ //color codes y modulations
-    cBMWPlot->cd(i+1);
-    int npt = tree_R->Draw(Form("%s:CodaEventNumber>>h%d",bpms[i].Data(),i),
-			   evcuty,"goff");
-    tGraphBMWPlot2[i] = new TGraph(npt,tree_R->GetV2(),tree_R->GetV1());
-    tGraphBMWPlot2[i]->SetLineStyle(3);
-    tGraphBMWPlot2[i]->SetLineColor(2);
-    tGraphBMWPlot2[i]->SetLineWidth(1);
-    tGraphBMWPlot2[i]->Draw("SAME");
-  }
-
-  for(int i=0;i<5;i++){ //color codes x modulations
-    cBMWPlot->cd(i+1);
-    int npt = tree_R->Draw(Form("%s:CodaEventNumber>>h%d",bpms[i].Data(),i),
-			   evcutx,"goff");
-    tGraphBMWPlot2[i] = new TGraph(npt,tree_R->GetV2(),tree_R->GetV1());
-    tGraphBMWPlot2[i]->SetLineStyle(3);
-    tGraphBMWPlot2[i]->SetLineColor(4);
-    tGraphBMWPlot2[i]->SetLineWidth(1);
-    tGraphBMWPlot2[i]->Draw("SAME");
-  }
-
-  for(int i=0;i<5;i++){ //color codes energy modulations
-    cBMWPlot->cd(i+1);
-    int npt = tree_R->Draw(Form("%s:CodaEventNumber>>h%d",bpms[i].Data(),i),
-			   evcute,"goff");
-    tGraphBMWPlot2[i] = new TGraph(npt,tree_R->GetV2(),tree_R->GetV1());
-    tGraphBMWPlot2[i]->SetLineStyle(3);
-    tGraphBMWPlot2[i]->SetLineColor(8);
-    tGraphBMWPlot2[i]->SetLineWidth(1);
-    tGraphBMWPlot2[i]->Draw("SAME");
-  }
-
-  cBMWPlot->cd(6);
-  tGraphBMWPlot[0]->Draw("AL");
-  for(int i=1;i<7;i++){
-    tGraphBMWPlot[i]->Draw("same");
-  }
-  
-  auto legend = new TLegend(0.1,0.7,0.4,0.9);
-  legend->SetHeader("Trim Cards","C");
-  legend->SetNColumns(2);
-  legend->AddEntry(tGraphBMWPlot[0],"X mod","l");
-  legend->AddEntry(tGraphBMWPlot[1],"Y mod","l");
-  legend->AddEntry(tGraphBMWPlot[6],"E mod","l");
-  legend->Draw();
-
-  // TPaveText *message1 = new TPaveText(.05,.1,.95,.8);
-  //message1->AddText("Run Number: 1474");
-  //message1->AddText("Cycle Number: 23");
-  //message1->Print();
-
 
   return 0;
 }
