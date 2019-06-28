@@ -321,6 +321,12 @@ void QwClock<T>::AccumulateRunningSum(const VQwClock& value) {
 }
 
 template<typename T>
+void QwClock<T>::DeaccumulateRunningSum(VQwClock& value) {
+  fClock.DeaccumulateRunningSum(
+      dynamic_cast<const QwClock<T>* >(&value)->fClock);
+}
+
+template<typename T>
 void QwClock<T>::PrintValue() const
 {
   fClock.PrintValue();

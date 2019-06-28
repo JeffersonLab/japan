@@ -13,14 +13,4 @@ bank=0x2
   SIS3801D32, 0,   13, bcmscal, BCM_scal_CCC
   SIS3801D32, 0,   14, bcmscal, BCM_scal_DDD
 
-!  The following bmod scalers should be removed frmo here and decoded in their own class.
-  SIS3801D32, 0,   3,  syncscal, bmod_trig
-  SIS3801D32, 0,   16, syncscal, bmod_trim1
-  SIS3801D32, 0,   17, syncscal, bmod_trim2
-  SIS3801D32, 0,   18, syncscal, bmod_trim3
-  SIS3801D32, 0,   19, syncscal, bmod_trim4
-  SIS3801D32, 0,   20, syncscal, bmod_trim5
-  SIS3801D32, 0,   21, syncscal, bmod_trim6
-  SIS3801D32, 0,   22, syncscal, bmod_trim7
-  SIS3801D32, 0,   23, syncscal, bmod_trim8
 

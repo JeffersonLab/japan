@@ -52,7 +52,7 @@ EVENTCUTS = 3
 
 !device_type,  device_name, channel_name, lower limit, upper limit, local(l)/global(g), stability percentage
 
-bpmstripline, bpm2i01, charge,  90000, 	10000000, g, 2000 
+!bpmstripline, bpm2i01, charge,  90000, 	10000000000, g, 2000 
 
 
 !This file contains beamline event cut properties

@@ -34,4 +34,4 @@ vqwk_buffer_offset=1
 
 sample_size=16564
 
- VQWK, 1, 0, bmwsam1
+! VQWK, 1, 0, bmwsam1 ! Tested bmw hardware channel with SAM
