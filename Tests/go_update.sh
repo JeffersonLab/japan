@@ -1,13 +1,14 @@
 #!/bin/bash
 
 function usage() {
-  echo "Usage: $0 [-h] [-r run]"
+  echo "Usage: $0 [-h] [-r run=1296]"
 }
 
 if [ $# -lt 2 ] ; then
   usage
 fi
 
+run=1296
 while getopts “:h:r:” opt; do
   case $opt in
     h) usage && exit ;;
