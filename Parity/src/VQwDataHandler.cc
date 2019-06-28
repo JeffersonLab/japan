@@ -255,19 +255,6 @@ void VQwDataHandler::FillTreeVector(std::vector<Double_t>& values) const
   }
 }
 
-    
-void VQwDataHandler::AccumulateRunningSum()
-{
-  if (fKeepRunningSum){
-    //  Create the running sum object if it doesn't exist.
-    if (fRunningSum == NULL){
-      fRunningSum = this->Clone();
-      fRunningSum->fKeepRunningSum = kFALSE;
-      fRunningSum->ClearEventData();
-    }
-    fRunningSum->AccumulateRunningSum(*this);
-  }
-}
 
 void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value)
 {
@@ -279,22 +266,10 @@ void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value)
 
 void VQwDataHandler::CalculateRunningAverage()
 {
-  if (fKeepRunningSum && (fRunningSum != NULL)){
-    for(size_t i = 0; i < fRunningSum->fOutputVar.size(); i++) {
-      // calling CalculateRunningAverage in scope of VQwHardwareChannel
-      fRunningSum->fOutputVar[i]->CalculateRunningAverage();
-    }
-  }
-  return;
-}
-
-void VQwDataHandler::PrintRunningAverage()
-{
-  if (fKeepRunningSum && (fRunningSum != NULL)){
-    fRunningSum->PrintValue();
+  for(size_t i = 0; i < fOutputVar.size(); i++) {
+    this->fOutputVar[i]->CalculateRunningAverage();
   }
 }
-
 
 void VQwDataHandler::PrintValue() const
 {
@@ -314,9 +289,6 @@ void VQwDataHandler::ClearEventData()
 
 void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
 {
-  //  Only do something, if we have the running sum variables
-  if (!fKeepRunningSum || (fRunningSum == NULL)) return;
-
      Bool_t local_print_flag = false;
      Bool_t local_add_element= type.Contains("asy");
   
@@ -339,13 +311,13 @@ void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
   for (size_t i = 0; i < fOutputVar.size();  i++) 
     {
       element_name        = fOutputVar[i]->GetElementName(); 
-      tmp_channel=fRunningSum->fOutputVar[i];
+      tmp_channel         = fOutputVar[i];
       element_value       = 0.0;
       element_value_err   = 0.0;
       element_value_width = 0.0;
      
    
-      local_add_these_elements=element_name.Contains("dd")||element_name.Contains("da"); // Need to change this to add other detectorss in summary
+      local_add_these_elements=element_name.Contains("dd")||element_name.Contains("da"); // Need to change this to add other detectors in summary
 
       if(local_add_these_elements && local_add_element){
         ps->AddElement(new PromptSummaryElement(element_name)); 

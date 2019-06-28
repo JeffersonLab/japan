@@ -35,6 +35,10 @@ void QwDetectorArray::DefineOptions(QwOptions &options){
     ("QwDetectorArray.normalize",
      po::value<bool>()->default_bool_value(true),
      "Normalize the detectors by beam current");
+  options.AddOptions()
+    ("QwDetectorArray.norm_threshold",
+     po::value<double>()->default_value(2.5),
+     "Normalize the detectors for currents above this value");
 }
 
 
@@ -51,6 +55,7 @@ void QwDetectorArray::ProcessOptions(QwOptions &options){
 	      << "Detector yields WILL NOT be normalized."
 	      << QwLog::endl;
   }
+  fNormThreshold = options.GetValue<double>("QwDetectorArray.norm_threshold");
 }
 
 
@@ -973,8 +978,9 @@ void  QwDetectorArray::ProcessEvent_2()
           std::cout<<"QwDetectorArray::ProcessEvent_2(): processing with exchanged data"<<std::endl;
           std::cout<<"pedestal, calfactor, average volts = "<<pedestal<<", "<<calfactor<<", "<<volts<<std::endl;
         }
-
-      if (bNormalization) this->DoNormalization();
+      
+      if (bNormalization && fTargetCharge.GetValue()>fNormThreshold)
+	this->DoNormalization();
     }
   else
     {
@@ -1536,7 +1542,7 @@ void QwDetectorArray::WritePromptSummary(QwPromptSummary *ps, TString type)
       element_value_width = 0.0;
     
 
-      local_add_these_elements=element_name.Contains("sam2")||element_name.Contains("sam4")||element_name.Contains("sam6")||element_name.Contains("sam8"); // Need to change this to add other detectorss in summary
+      local_add_these_elements=element_name.Contains("sam"); // Need to change this to add other detectorss in summary
 
       if(local_add_these_elements&&local_add_element){
       	ps->AddElement(new PromptSummaryElement(element_name));     

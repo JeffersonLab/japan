@@ -35,6 +35,10 @@ void QwBlindDetectorArray::DefineOptions(QwOptions &options){
     ("QwBlindDetectorArray.normalize",
      po::value<bool>()->default_bool_value(true),
      "Normalize the detectors by beam current");
+  options.AddOptions()
+    ("QwBlindDetectorArray.norm_threshold",
+     po::value<double>()->default_value(2.5),
+     "Normalize the detectors for currents above this value");
 }
 
 
@@ -51,6 +55,7 @@ void QwBlindDetectorArray::ProcessOptions(QwOptions &options){
 	      << "Detector yields WILL NOT be normalized."
 	      << QwLog::endl;
   }
+  fNormThreshold = options.GetValue<double>("QwDetectorArray.norm_threshold");
 }
 
 
@@ -1005,7 +1010,8 @@ void  QwBlindDetectorArray::ProcessEvent_2()
           std::cout<<"pedestal, calfactor, average volts = "<<pedestal<<", "<<calfactor<<", "<<volts<<std::endl;
         }
 
-      if (bNormalization) this->DoNormalization();
+      if (bNormalization && fTargetCharge.GetValue()>fNormThreshold)
+	this->DoNormalization();
     }
   else
     {

@@ -101,17 +101,19 @@ PromptSummaryElement::GetCSVSummary(TString type)
 
 TString out = "";
 
-Bool_t isDouble= fElementName.Contains("_dd") || fElementName.Contains("_da");
+Bool_t dd= fElementName.Contains("_dd");
+Bool_t da= fElementName.Contains("_da");
 
-        if (type.Contains("yield")&& !isDouble){     
-   		out = Form("%14s | Mean: %.2e +/- %.2e \t Width: %.2e\n", fElementName.Data(), fYield, fYieldError, fYieldWidth); 
-   	}
-        if (type.Contains("asy")&& !isDouble){
- 	        out = Form("%14s | Mean: %.2e +/- %.2e \t Width: %0.2e  \n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
-        }
-        if (type.Contains("double")&& isDouble) {
-	       	out = Form ("%14s | Mean: %.2e +/- %.2e \t Width: %0.2e  \n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
-	}
+
+if (type.Contains("yield")&& !(dd||da)){     
+   		out = Form("%20s | Mean: %8.3f +/- %8.3f \t Width: %8.3f\n", fElementName.Data(), fYield, fYieldError, fYieldWidth); 
+}
+if (type.Contains("asy")&& !(dd||da)){
+      out = Form("%20s | Mean: %8.3f +/- %8.3f \t Width: %8.3f\n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+}
+if (type.Contains("double")&& (dd||da)) {
+     	out = Form ("%20s | Mean: %8.3f +/- %8.3f \t Width: %8.3f\n", fElementName.Data(), fAsymDiff, fAsymDiffError, fAsymDiffWidth);
+}     
 
 
 return out;
@@ -120,45 +122,58 @@ return out;
 
 
 void 
-PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, const Double_t a_width)    // Fix Me - This function could use some cleaning up. Use maps.
+PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, const Double_t a_width)   
 {
-  Double_t asymmetry_ppm = 1e-6;
+  Double_t unit= 1;
+  Bool_t qtarg=fElementName.EqualTo("bcm_an_ds3"); //Estimator for good events
+  Bool_t bcm= fElementName.Contains("bcm");
+  Bool_t bpm= fElementName.Contains("bpm");
+  Bool_t sam= fElementName.Contains("sam");
+  Bool_t md= fElementName.Contains("md");
+  Bool_t dd=fElementName.Contains("_dd");
+  Bool_t da=fElementName.Contains("_da");
+  
 
-  if(type.Contains("yield")) {
-    if (fElementName.Contains("bcm")) {
+  if (type.Contains("yield")){
+    if (bcm) {
       this->SetYieldUnit("uA");
+      unit=Qw::uA;
     }
-    else if (fElementName.Contains("bpm")) {
+    else if (bpm) {
       this->SetYieldUnit("mm");
+      unit=Qw::mm;
     }
-    else if (fElementName.Contains("MD")) {
-      this->SetYieldUnit("V/uA");
-    }
-    else if (fElementName.Contains("lumi")) {
-      this->SetYieldUnit("V/uA");
+    else if (sam||md) {
+      this->SetYieldUnit("mV/uA");
+      unit=Qw::mV_uA;
     }
     else {
       this->SetYieldUnit("---");
     }
-    this->SetYield(a);
-    this->SetYieldError(a_err);
-    this->SetYieldWidth(a_width);
-  } 
+    this->SetYield(a/unit);
+    this->SetYieldError(a_err/unit);
+    this->SetYieldWidth(a_width/unit);
+
+    if (qtarg){
+      Double_t temp = (a_width/a_err);
+      this->SetNumGoodEvents(4*temp*temp);
+    }
+  }
   else if(type.Contains("asymmetry")) {
-    
-    if (fElementName.Contains("bpm")) {
-      this->SetDifferenceUnit("nm");
-      this->SetDifference(a);
-      this->SetDifferenceError(a_err);
-      this->SetDifferenceWidth(a_width);
+    if (bpm) {
+      this->SetDifferenceUnit("um");
+      unit=Qw::um;
+      this->SetDifference(a/unit);
+      this->SetDifferenceError(a_err/unit);
+      this->SetDifferenceWidth(a_width/unit);
     } 
     else {
       this->SetAsymmetryUnit("ppm");
-      this->SetAsymmetry(a/asymmetry_ppm);
-      this->SetAsymmetryError(a_err/asymmetry_ppm);
-      this->SetAsymmetryWidth(a_width/asymmetry_ppm);
-    }
- 
+      unit=Qw::ppm;
+      this->SetAsymmetry(a/unit);
+      this->SetAsymmetryError(a_err/unit);
+      this->SetAsymmetryWidth(a_width/unit);
+    } 
   } 
   else if(type.Contains("difference")) {
   } 
@@ -300,24 +315,28 @@ QwPromptSummary::PrintTextSummaryTailer()
 {
   TString out = "";
   
-  out =  "======================END OF SUMMARY============================\n";
+  out =  "==================================================\n";
   return out;
 };
 
 
 TString
-QwPromptSummary::PrintCSVHeader() 
+QwPromptSummary::PrintCSVHeader(Int_t nEvents, TString start_time, TString end_time)
 {
   TString out = "";
    
-  
-  out += Form("Distribution parameters for run %d \n",fRunNumber);
-  out += "================================================================\n";
+  Double_t goodEvents=  (this->GetElementByName("bcm_an_ds3"))->GetNumGoodEvents();
 
-  out += "Yield Units: bcm*(uA), cav*q(uA), bpm*(mm), sam*(V/uA)\n";
-  out += "Asymmetry/Difference Units: bpm*(nm), bcm*(ppm), cav*q(ppm) \n";
+  out += Form("Run: %d \n",fRunNumber);
+  out += "Start Time: "+start_time+"\nEnd Time: "+end_time+"\n";
+  out += Form("Number of events processed: %i\n",nEvents);
+  out += Form("Number of events in good multiplicity patterns: %3.0f\n", goodEvents);
+  out += Form("Percentage of good events: %3.1f \%\n", goodEvents/nEvents*100);
+  out += "=========================================================================\n";
+  out += "Yield Units: bcm(uA), cavq(uA), bpm(mm), sam(mV/uA)\n";
+  out += "Asymmetry/Difference Units: bcm(ppm), cavq(ppm), bpm(um), sam(ppm)\n";
 
-  out += "================================================================\n";
+  out += "=========================================================================\n";
   
   
 
@@ -497,19 +516,19 @@ QwPromptSummary::FillDoubleDifference(TString type, TString name1, TString name2
 }
 
 void
-QwPromptSummary::PrintCSV()
+QwPromptSummary::PrintCSV(Int_t nEvents, TString start_time, TString end_time)
 {
   printf("-----------------------\n");
   TString filename = gQwOptions.GetValue<std::string>("rootfiles");
   filename+=Form("/summary_%d.txt", fRunNumber);
-  TString header= this->PrintCSVHeader();
+  TString header= this->PrintCSVHeader(nEvents, start_time, end_time);
   std::ofstream output;
   output.open(filename.Data());
   output<< header.Data();
   
-  TString secheader= "================================================================\n";
-  secheader+="\t\t\t Yields \t\t\t\n";
-  secheader+="================================================================\n" ;
+  TString secheader= "=========================================================================\n";
+  secheader+=Form("%40s \n","Yields");
+  secheader+="=========================================================================\n" ;
   output << secheader.Data() ;
  
   for (auto i=fElementList.begin(); i!=fElementList.end(); i++  )
@@ -518,9 +537,9 @@ QwPromptSummary::PrintCSV()
     }
   
 
-  secheader= "================================================================\n";
-  secheader+="\t\t\t Asymmetries/Differences \t\t\t\n";
-  secheader+="================================================================\n";
+  secheader= "=========================================================================\n";
+  secheader+=Form("%50s\n","Asymmetries/Differences");
+  secheader+="=========================================================================\n";
   output << secheader.Data();
  
   for ( auto j=fElementList.begin(); j!=fElementList.end(); j++ )
@@ -530,9 +549,9 @@ QwPromptSummary::PrintCSV()
 
 
 
-  secheader= "================================================================\n";
-  secheader+="\t\t\t Combined Differences/Averages \t\t\t\n";
-  secheader+="================================================================\n";
+  secheader= "=========================================================================\n";
+  secheader+=Form("%55s\n", "Combined Differences/Averages");
+  secheader+="=========================================================================\n";
   output << secheader.Data();
 
   for ( auto j=fElementList.begin(); j!=fElementList.end(); j++ )
@@ -540,8 +559,9 @@ QwPromptSummary::PrintCSV()
       output << (*j)->GetCSVSummary("double");
     }
 
-  output<< "=======================END OF SUMMARY===========================\n";
-
+  output<< "=========================================================================\n";
+  output<< Form("%45s\n"," End of Summary");
+  output<< "=========================================================================\n";
   output.close();
   
   return;

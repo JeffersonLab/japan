@@ -60,10 +60,12 @@ CodaEventType
 .*bpm.*X
 .*bpm.*Y
 .*bpm.*WS
-.*bcm_.*
+.*bcm.*
 .*cav.*x
 .*cav.*y
 .*cav.*q
 
 #  Wildcarded pattern for the SAM element branch names
 .*sam.*
+#EVERYTHING
+.*

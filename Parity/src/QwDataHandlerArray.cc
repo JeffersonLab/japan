@@ -475,27 +475,8 @@ void QwDataHandlerArray::CalculateRunningAverage()
       VQwDataHandler* handler_parity = dynamic_cast<VQwDataHandler*>(handler->get());
       handler_parity->CalculateRunningAverage();
     }
-    if (fPrintRunningSum){
-      for (iterator handler = begin(); handler != end(); ++handler) {
-	VQwDataHandler* handler_parity = dynamic_cast<VQwDataHandler*>(handler->get());
-	handler_parity->PrintRunningAverage();
-      }
-    }
   }
 }
-
-void QwDataHandlerArray::AccumulateRunningSum()
-{
-  if (!empty()) {
-    if (fDataSource->GetEventcutErrorFlag() == 0){
-      for (iterator handler = begin(); handler != end(); ++handler) {
-	VQwDataHandler* handler_parity = dynamic_cast<VQwDataHandler*>(handler->get());
-	handler_parity->AccumulateRunningSum();
-      }
-    }
-  }
-}
-
 
 void QwDataHandlerArray::AccumulateRunningSum(const QwDataHandlerArray& value)
 {
@@ -663,7 +644,6 @@ void QwDataHandlerArray::ProcessDataHandlerEntry()
     for(iterator handler = begin(); handler != end(); ++handler){
       (*handler)->ProcessData();
     }
-    this->AccumulateRunningSum();
   }
 }
 

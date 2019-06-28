@@ -118,6 +118,7 @@ class QwEventBuffer: public MQwCodaControlEvent{
     return ((fIDBankNum == 0xCC) && ( /* fEvtType >= 0 && */ fEvtType <= 15));
   };
 
+  Int_t GetPhysicsEventNumber() {return fNumPhysicsEvents;};
   Int_t GetEventNumber() { return fEvtNumber; };
 
   Bool_t GetNextEventRange();

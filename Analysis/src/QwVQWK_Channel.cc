@@ -1502,7 +1502,6 @@ void QwVQWK_Channel::CalculateRunningAverage()
 	} else
 	  fErrorFlag = 0;
       }
-          
     }
 }
 
