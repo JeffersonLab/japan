@@ -65,7 +65,7 @@ OnlineGUI::OnlineGUI(OnlineConfig& config, Bool_t printonly=0, int ver=0):
     PrintPages();
   } else {
     fPrintOnly=kFALSE;
-    CreateGUI(gClient->GetRoot(),200,200);
+    CreateGUI(gClient->GetRoot(),800,600);
   }
 }
 
@@ -93,7 +93,7 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
     GetTreeVars();
     for(UInt_t i=0; i<fRootTree.size(); i++) {
       if(fRootTree[i]==0) {
-	fRootTree.erase(fRootTree.begin() + i);
+  fRootTree.erase(fRootTree.begin() + i);
       }
     }
 
@@ -146,14 +146,14 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
   fMain->SetBackgroundColor(mainguicolor);
 
   // Top frame, to hold page buttons and canvas
-  fTopframe = new TGHorizontalFrame(fMain,200,200);
+  fTopframe = new TGHorizontalFrame(fMain,w,UInt_t(h*0.9));
   fTopframe->SetBackgroundColor(mainguicolor);
   fMain->AddFrame(fTopframe, new TGLayoutHints(kLHintsExpandX 
 					       | kLHintsExpandY,10,10,10,1));
 
   // Create a verticle frame widget with radio buttons
   //  This will hold the page buttons
-  vframe = new TGVerticalFrame(fTopframe,40,200);
+  vframe = new TGVerticalFrame(fTopframe,UInt_t(w*0.3),UInt_t(h*0.9));
   vframe->SetBackgroundColor(mainguicolor);
   TString buff;
   for(UInt_t i=0; i<fConfig->GetPageCount(); i++) {
@@ -200,24 +200,25 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
   vframe->AddFrame(wile,new TGLayoutHints(kLHintsBottom|kLHintsLeft,5,10,4,2));
 
 
-  fTopframe->AddFrame(vframe,new TGLayoutHints(kLHintsCenterX|
+  fTopframe->AddFrame(vframe,new TGLayoutHints(kLHintsLeft|
                                                kLHintsCenterY,2,2,2,2));
   
   // Create canvas widget
-  fEcanvas = new TRootEmbeddedCanvas("Ecanvas", fTopframe, 800, 600);
+  fEcanvas = new TRootEmbeddedCanvas("Ecanvas", fTopframe, UInt_t(w*0.7), UInt_t(h*0.9));
   fEcanvas->SetBackgroundColor(mainguicolor);
-  fTopframe->AddFrame(fEcanvas, new TGLayoutHints(kLHintsExpandY,10,10,10,1));
+  fTopframe->AddFrame(fEcanvas, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY
+              ,10,10,10,1));
   fCanvas = fEcanvas->GetCanvas();
 
   // Create the bottom frame.  Contains control buttons
-  fBottomFrame = new TGHorizontalFrame(fMain,1200,200);
+  fBottomFrame = new TGHorizontalFrame(fMain,w,UInt_t(h*0.1));
   fBottomFrame->SetBackgroundColor(mainguicolor);
   fMain->AddFrame(fBottomFrame, new TGLayoutHints(kLHintsExpandX,10,10,10,10));
   
   // Create a horizontal frame widget with buttons
   hframe = new TGHorizontalFrame(fBottomFrame,1200,40);
   hframe->SetBackgroundColor(mainguicolor);
-  fBottomFrame->AddFrame(hframe,new TGLayoutHints(kLHintsExpandX,200,20,2,2));
+  fBottomFrame->AddFrame(hframe,new TGLayoutHints(kLHintsExpandX,2,2,2,2));
 
   fPrev = new TGTextButton(hframe,"Prev");
   fPrev->SetBackgroundColor(mainguicolor);
@@ -363,12 +364,23 @@ void OnlineGUI::DoDraw()
 
     struct stat result;
     stat(fConfig->GetRootFile().Data(), &result);
-    t = result.st_mtime;
-    strftime(buffer, 9, "%T", localtime(&t));
+    time_t tf = result.st_mtime;
+    strftime(buffer, 9, "%T", localtime(&tf));
 
     TString sRootFileLastUpdated("File updated at: ");
     sRootFileLastUpdated += buffer;
     fRootFileLastUpdated->SetText(sRootFileLastUpdated);
+    ULong_t backgroundColor = fLastUpdated->GetBackground();
+    if(fVerbosity>=4)
+      cout<<"Updating plots (current, file, diff[s]):\t"<<t<<"\t"<<tf<<"\t"<<t - tf<<endl;
+    if( t - tf > 60 ){
+      ULong_t red;
+      gClient->GetColorByName("red",red);
+      fRootFileLastUpdated->SetBackgroundColor(red);
+    }
+    else{
+      fRootFileLastUpdated->SetBackgroundColor(backgroundColor);
+    }
   }
 
   if(!fPrintOnly) {
@@ -519,7 +531,7 @@ void OnlineGUI::GetTreeVars()
     for(UInt_t iTree=0; iTree<treeVars.size(); iTree++) {
       cout << "In Tree " << iTree << ": " << endl;
       for(UInt_t i=0; i<treeVars[iTree].size(); i++) {
-	cout << treeVars[iTree][i] << endl;
+        cout << treeVars[iTree][i] << endl;
       }
     }
   }
@@ -925,8 +937,8 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
     vector <TString> cutIdents = fConfig->GetCutIdent();
     for(UInt_t i=0; i<cutIdents.size(); i++) {
       if(tempCut.Contains(cutIdents[i])) {
-	TString cut_found = (TString)fConfig->GetDefinedCut(cutIdents[i]);
-	tempCut.ReplaceAll(cutIdents[i],cut_found);
+        TString cut_found = (TString)fConfig->GetDefinedCut(cutIdents[i]);
+        tempCut.ReplaceAll(cutIdents[i],cut_found);
       }
     }
     cut = (TCut)tempCut;
@@ -937,11 +949,11 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
   if(command[4].IsNull()) {
     iTree = GetTreeIndex(var);
     if(fVerbosity>=2)
-      cout<<"got index from variable "<<iTree<<endl;
+      cout<<"got tree index from variable: "<<iTree<<endl;
   } else {
     iTree = GetTreeIndexFromName(command[4]);
     if(fVerbosity>=2)
-      cout<<"got index from command "<<iTree<<endl;
+      cout<<"got tree index from command: "<<iTree<<endl;
   }
   TString drawopt = command[2];
 
@@ -952,14 +964,17 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
     if(fVerbosity>=1){
       cout<<__PRETTY_FUNCTION__<<"\t"<<__LINE__<<endl;
       cout<<command[0]<<"\t"<<command[1]<<"\t"<<command[2]<<"\t"<<command[3]
-	  <<"\t"<<command[4]<<endl;
+      <<"\t"<<command[4]<<endl;
       if(fVerbosity>=2)
-	cout<<"\tProcessing from tree: "<<iTree<<"\t"<<fRootTree[iTree]->GetTitle()<<"\t"
+      cout<<"\tProcessing from tree: "<<iTree<<"\t"<<fRootTree[iTree]->GetTitle()<<"\t"
 	    <<fRootTree[iTree]->GetName()<<endl;
     }
     errcode = fRootTree[iTree]->Draw(var,cut,drawopt);
+    if (command[5].EqualTo("grid")){
+      gPad->SetGrid();
+    }
 
-    TObject *hobj = (TObject*)gROOT->FindObject(histoname);
+    TObject *hobj = (TObject*)gPad->FindObject(histoname);
     if(fVerbosity>=3)
       cout<<"Finished drawing with error code "<<errcode<<endl;
 
@@ -977,8 +992,8 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
         tmpstring += drawopt;
         tmpstring += command[3];
         TString myMD5 = tmpstring.MD5();
-	TH1* thathist = (TH1*)hobj;
-	thathist->SetNameTitle(myMD5,command[3]);
+        TH1* thathist = (TH1*)hobj;
+        thathist->SetNameTitle(myMD5,command[3]);
       }
     } else {
       BadDraw("Empty Histogram");
@@ -1037,7 +1052,7 @@ void OnlineGUI::PrintPages() {
     GetTreeVars();
     for(UInt_t i=0; i<fRootTree.size(); i++) {
       if(fRootTree[i]==0) {
-	fRootTree.erase(fRootTree.begin() + i);
+        fRootTree.erase(fRootTree.begin() + i);
       }
     }
     
@@ -1096,11 +1111,11 @@ void OnlineGUI::PrintPages() {
   //  pagehead += ": ";
 
   gStyle->SetPalette(1);
-  gStyle->SetTitleX(0.15);
-  gStyle->SetTitleY(0.9);
+//  gStyle->SetTitleX(0.15);
+//  gStyle->SetTitleY(0.9);
   gStyle->SetPadBorderMode(0);
   gStyle->SetHistLineColor(1);
-  gStyle->SetHistFillColor(1);
+//  gStyle->SetHistFillColor(1);
   if(!pagePrint) fCanvas->Print(filename+"[");
   TString origFilename = filename;
   for(UInt_t i=0; i<fConfig->GetPageCount(); i++) {
