@@ -308,7 +308,7 @@ out_file_HB_IA = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback
     void CalculateAsymmetry();
     void ClearRunningSum();
  void ClearHCRunningSum();
-    void AccumulateRunningSum();
+    void AccumulateRunningSum(QwHelicityCorrelatedFeedback& entry);
     void CalculateRunningAverage();
     void ConstructBranchAndVector(TTree *tree, TString &prefix, std::vector<Double_t> &values);
     void FillTreeVector(std::vector<Double_t> &values) const;

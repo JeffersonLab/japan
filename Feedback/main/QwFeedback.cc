@@ -144,7 +144,8 @@ gQwOptions.Parse(kTRUE);
 
     QwError << "*** Before loading feedback param file" << QwLog::endl;
     helicitypattern.LoadParameterFile("qweak_fb_prm.in");
-   
+
+    QwHelicityCorrelatedFeedback patternsum(helicitypattern);
     /*
       helicitypattern.UpdateGMClean(0);
       helicitypattern.FeedIASetPoint(0);
@@ -166,13 +167,10 @@ gQwOptions.Parse(kTRUE);
     //  Clear the single-event running sum at the beginning of the runlet
     runningsum.ClearEventData();
     helicitypattern.ClearRunningSum();
-    //  Clear the running sum of the burst values at the beginning of the runlet
-    helicitypattern.ClearBurstSum();
 
+    QwEventRing eventring(gQwOptions,detectors);
 
-        QwEventRing eventring(gQwOptions,detectors);
-
-	QwError << "*** Before starting event loop" << QwLog::endl;
+    QwError << "*** Before starting event loop" << QwLog::endl;
 
     // Loop over events in this CODA file
     while (eventbuffer.GetNextEvent() == CODA_OK) {
@@ -233,12 +231,12 @@ gQwOptions.Parse(kTRUE);
             // Calculate the asymmetry
             helicitypattern.CalculateAsymmetry();
             if (helicitypattern.IsGoodAsymmetry()) {
-	      helicitypattern.ApplyFeedbackCorrections();//apply IA feedback
-           
-              // Clear the data
-              helicitypattern.ClearEventData();	      
-            }
-
+	      patternsum.AccumulateRunningSum(helicitypattern);
+	      patternsum.ApplyFeedbackCorrections();//apply IA feedback
+	    }
+	    // Clear the data
+	    helicitypattern.ClearEventData();	      
+            
           } // helicitypattern.IsCompletePattern()
 
         } // eventring.IsReady()
