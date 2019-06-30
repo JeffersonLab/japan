@@ -307,7 +307,6 @@ Bool_t OnlineConfig::IsLogy(UInt_t page) {
 
 }
 
-
 pair <UInt_t, UInt_t> OnlineConfig::GetPageDim(UInt_t page) 
 {
   // If defined in the config, will return those dimensions
@@ -411,8 +410,9 @@ vector <TString> OnlineConfig::GetDrawCommand(UInt_t page, UInt_t nCommand)
   //  2: type
   //  3: title
   //  4: treename
+  //  5: grid
 
-  vector <TString> out_command(5);
+  vector <TString> out_command(6);
   vector <UInt_t> command_vector = GetDrawIndex(page);
   UInt_t index = command_vector[nCommand];
 
@@ -431,48 +431,85 @@ vector <TString> OnlineConfig::GetDrawCommand(UInt_t page, UInt_t nCommand)
     out_command[0] = sConfFile[index][0];
   }
 
-  if(sConfFile[index].size()>=2) {
-    if((sConfFile[index][1] != "-type") &&
-       (sConfFile[index][1] != "-title") &&
-       (sConfFile[index][1] != "-tree"))
-      out_command[1] = sConfFile[index][1];
-  }
-
   // Now go through the rest of that line..
   for (UInt_t i=1; i<sConfFile[index].size(); i++) {
     if(sConfFile[index][i]=="-type") {
-      out_command[2] = sConfFile[index][i+1];
-      i = i+1;
+      if(out_command[2].IsNull()){
+        out_command[2] = sConfFile[index][i+1];
+        i = i+1;
+      } else {
+        cout << "Error: Multiple types in line: " << index << endl;
+        exit(1);
+      }
     } else if(sConfFile[index][i]=="-title") {
-      // Put the entire title, surrounded by quotes, as one TString
+      // Put the entire title, (must be) surrounded by quotes, as one TString
       TString title;
       UInt_t j=0;
-      for(j=i+1; j<sConfFile[index].size(); j++) {
-	TString word = sConfFile[index][j];
-	if( (word.BeginsWith("\"")) && (word.EndsWith("\"")) ) {
-	  title = word.ReplaceAll("\"","");
-	  i = j;
-	  break;
-	} else if(word.BeginsWith("\"")) {
-	  title = word.ReplaceAll("\"","");
-	} else if(word.EndsWith("\"")) {
-	  title += " " + word.ReplaceAll("\"","");
-	  i = j;
-	  break;
-	} else if (title.Length()==0){
-	  title = word;
-	} else {
-	  //  This case uses neither "i = j;" or "break;", because
-	  //  we want to be able to include all the words in the title.
-	  //  The title will end before the end of the line only if
-	  //  it is delimited by quotes.
-	  title += " " + word;
-	}
+      if (!sConfFile[index][i+1].BeginsWith("\"")) {
+          cout << "Error: title must be surrounded by double quotes. Page: " << page << "--" << GetPageTitle(page).Data() << "\t coomand: " << nCommand << endl;
+          exit(1);
       }
-      out_command[3] = title;
+      for(j=i+1; j<sConfFile[index].size(); j++) {
+        TString word = sConfFile[index][j];
+        if( word.EqualTo("\"") ){ // single " surrounded by space
+          if (title.Length() == 0) continue;  // beginning "
+          else {  // ending "
+            i = j;
+            break;
+          }
+        } else if( (word.BeginsWith("\"")) && (word.EndsWith("\"")) ) {
+          title += word.ReplaceAll("\"","");
+          i = j;
+          break;
+        } else if(word.BeginsWith("\"")) {
+          title = word.ReplaceAll("\"","");
+        } else if(word.EndsWith("\"")) {
+          title += " " + word.ReplaceAll("\"","");
+          i = j;
+          break;
+        } else if (title.Length()==0){
+          title = word;
+        } else {
+          //  This case uses neither "i = j;" or "break;", because
+          //  we want to be able to include all the words in the title.
+          //  The title will end before the end of the line only if
+          //  it is delimited by quotes.
+          title += " " + word;
+        }
+      }
+      if (i==sConfFile[index].size() && !(sConfFile[index][i-1].EndsWith("\"")) ){
+        // unmatched double quote
+        cout << "Error, unmatched double quote, please check you config file. Quitting" << endl;  
+        exit(1);
+      }
+      if (out_command[3].IsNull()){
+        out_command[3] = title;
+      } else {
+        cout << "Error: Multiple titles in Page: " << page << "--" << GetPageTitle(page).Data() << "\t coomand: " << nCommand << endl;
+        exit(1);
+      }
     } else if(sConfFile[index][i]=="-tree") {
-      out_command[4] = sConfFile[index][i+1];
-      i = i+1;
+      if (out_command[4].IsNull()){
+        out_command[4] = sConfFile[index][i+1];
+        i = i+1;
+      } else {
+        cout << "Error: Multiple trees in Page: " << page << "--" << GetPageTitle(page).Data() << "\t coomand: " << nCommand << endl;
+        exit(1);
+      }
+    } else if(sConfFile[index][i]=="-grid") {
+      if (out_command[5].IsNull()){ // grid option only works with TreeDraw
+        out_command[5] = "grid";
+      } else {
+        cout << "Error: Multiple setup of grid in Page: " << page << "--" << GetPageTitle(page).Data() << "\t coomand: " << nCommand << endl;
+        exit(1);
+      }
+    } else {  // every thing else is regarded as cut
+      if (out_command[1].IsNull()) {
+        out_command[1] = sConfFile[index][i];
+      } else {
+        cout << "Error: Multiple cut conditions in Page: " << page << "--" << GetPageTitle(page).Data() << "\t coomand: " << nCommand << endl;
+        exit(1);
+      }
     }
   }
 
@@ -534,6 +571,7 @@ void OnlineConfig::OverrideRootFile(UInt_t runnumber)
     rootfilename = protorootfile;
     TString temp = rootfilename(rootfilename.Last('_')+1,rootfilename.Length());
     fRunNumber = atoi(temp(0,temp.Last('.')).Data());
+    cout << "Protorootfile set, use it: " << rootfilename.Data() << endl;
   } else {
     string fnmRoot="/adaq1/work1/apar/japanOutput";
     if(getenv("QW_ROOTFILES"))
