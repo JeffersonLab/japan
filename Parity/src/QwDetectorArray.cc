@@ -35,6 +35,10 @@ void QwDetectorArray::DefineOptions(QwOptions &options){
     ("QwDetectorArray.normalize",
      po::value<bool>()->default_bool_value(true),
      "Normalize the detectors by beam current");
+  options.AddOptions()
+    ("QwDetectorArray.norm_threshold",
+     po::value<double>()->default_value(2.5),
+     "Normalize the detectors for currents above this value");
 }
 
 
@@ -51,6 +55,7 @@ void QwDetectorArray::ProcessOptions(QwOptions &options){
 	      << "Detector yields WILL NOT be normalized."
 	      << QwLog::endl;
   }
+  fNormThreshold = options.GetValue<double>("QwDetectorArray.norm_threshold");
 }
 
 
@@ -174,8 +179,8 @@ Int_t QwDetectorArray::LoadChannelMap(TString mapfile)
   Int_t wordsofar=0;
   Int_t currentsubbankindex=-1;
   Int_t sample_size=0;
-
-
+  Double_t abs_saturation_limit = 8.5; // default saturation limit(volt)
+  Bool_t bAssignedLimit = kFALSE;
 
   // Open the file
   QwParameterFile mapstr(mapfile.Data());
@@ -191,6 +196,10 @@ Int_t QwDetectorArray::LoadChannelMap(TString mapfile)
   while (mapstr.ReadNextLine())
     {
       RegisterRocBankMarker(mapstr);
+      if (mapstr.PopValue("abs_saturation_limit",value)) {
+	abs_saturation_limit=value;
+	bAssignedLimit = kTRUE;
+      }
       if (mapstr.PopValue("sample_size",value)) {
 	sample_size=value;
       }
@@ -317,6 +326,8 @@ Int_t QwDetectorArray::LoadChannelMap(TString mapfile)
 		  	localIntegrationPMT.SetNormalizability(kTRUE);
 		  fIntegrationPMT.push_back(localIntegrationPMT);
                   fIntegrationPMT[fIntegrationPMT.size()-1].SetDefaultSampleSize(sample_size);
+		  if(bAssignedLimit)
+		    fIntegrationPMT[fIntegrationPMT.size()-1].SetSaturationLimit(abs_saturation_limit);
 		  localMainDetID.fIndex=fIntegrationPMT.size()-1;
                 }
 
@@ -967,8 +978,9 @@ void  QwDetectorArray::ProcessEvent_2()
           std::cout<<"QwDetectorArray::ProcessEvent_2(): processing with exchanged data"<<std::endl;
           std::cout<<"pedestal, calfactor, average volts = "<<pedestal<<", "<<calfactor<<", "<<volts<<std::endl;
         }
-
-      if (bNormalization) this->DoNormalization();
+      
+      if (bNormalization && fTargetCharge.GetValue()>fNormThreshold)
+	this->DoNormalization();
     }
   else
     {
@@ -1532,11 +1544,8 @@ void QwDetectorArray::WritePromptSummary(QwPromptSummary *ps, TString type)
 
       local_add_these_elements=element_name.Contains("sam"); // Need to change this to add other detectorss in summary
 
-      if(local_add_these_elements){
-	if(local_add_element){
-      	ps->AddElement(new PromptSummaryElement(element_name)); 
-	}
-	fStoredDets.push_back(element_name);    
+      if(local_add_these_elements&&local_add_element){
+      	ps->AddElement(new PromptSummaryElement(element_name));     
       }
 
 
@@ -1557,22 +1566,7 @@ void QwDetectorArray::WritePromptSummary(QwPromptSummary *ps, TString type)
       }
     }
 
-	/*------Filling Double Differences ---------*/
-     for (auto i=fStoredDets.begin(); i!=fStoredDets.end(); i++)
-    {
-    	for (auto j = i+1; j!=fStoredDets.end();  j++) 
-    	{
-	    if(local_add_element){
-	    ps->AddElement(new PromptSummaryElement(Form("%s-%s",(*i).Data(),(*j).Data())));
-	    }
-	    
-	    ps->FillDoubleDifference(type,(*i),(*j));
-		
-	}
-     } 
-       		 
-     /*-----------------------------------------*/
-  
+
 
   return;
 }

@@ -1,0 +1,71 @@
+! adc sample size  16564
+!----
+!END	    		        
+
+! Unser calibration based on Run 1214 , HAPLOG 3609, also consistent with dave mack 3.7mV/uA halog entry 3689440 
+UNSER,   -174.1,     2.066e-2	    
+
+  ! BCM Calibration from run 2769~ 50-70 uA (based on UNSER) and ands10 at 20 -30uA
+bcm_an_us, -510.43, 0.002693 
+bcm_an_ds, -214.37, 0.002798 
+bcm_an_ds3, -1226.03, 0.000799 
+bcm_an_ds10, -2139.74, 0.000277 
+bcm_dg_us, -219.36, 0.002928 
+bcm_dg_ds, -531.44, 0.002709 
+
+  
+  ! ds10x is saturated at this current range, pedestal is copied from 20-30 uA current scan
+  bcm_an_ds10,  -2589.54,  0.000267 
+
+  ! BPM pedestal from run 2770 current scan with gains off at ~50-70uA (based on UNSER)
+bpm4aXP, 980.60, 1.0 
+bpm4aXM, 491.76, 1.0 
+bpm4aYP, 1226.04, 1.0 
+bpm4aYM, 312.54, 1.0 
+bpm4eXP, 1599.21, 1.0 
+bpm4eXM, 1080.04, 1.0 
+bpm4eYP, 1321.27, 1.0 
+bpm4eYM, 549.00, 1.0 
+bpm12XP, 3381.30, 1.0 
+bpm12XM, 4278.13, 1.0 
+bpm12YP, 4129.82, 1.0 
+bpm12YM, 3191.24, 1.0 
+bpm14XP, 356.75, 1.0 
+bpm14XM, 863.20, 1.0 
+bpm14YP, 665.76, 1.0 
+bpm14YM, 689.91, 1.0 
+bpm8XP, 1204.34, 1.0 
+bpm8XM, 579.23, 1.0 
+bpm8YP, 195.80, 1.0 
+bpm8YM, -45.86, 1.0 
+bpm4acXP, -417.66, 1.0 
+bpm4acXM, -1163.10, 1.0 
+bpm4acYP, 709.30, 1.0 
+bpm4acYM, 78.00, 1.0 
+bpm4ecXP, 1474.34, 1.0 
+bpm4ecXM, 1095.42, 1.0 
+bpm4ecYP, 1878.14, 1.0 
+bpm4ecYM, 1069.94, 1.0 
+!bpm1p02bXP, -17199.95, 1.0 
+!bpm1p02bXM, -748629.32, 1.0 
+!bpm1p02bYP, -78433.90, 1.0 
+!bpm1p02bYM, -20079.82, 1.0 
+!bpm1p03aXP, -664159.99, 1.0 
+!bpm1p03aXM, -8870.07, 1.0 
+!bpm1p03aYP, -11885.71, 1.0 
+!bpm1p03aYM, -9728.28, 1.0 
+
+
+! cavity BPMs pedestal calibration from zero gain run 1219
+  cav4bq,  -167.527,    0.00529310
+  cav4BXI,  -379.812,    0.00089542
+  cav4BYI,  -550.257,    0.00060837
+
+  cav4cq,  -403.997,    0.0071337
+  cav4CXI,  -634.063,    0.0007546 
+  cav4CYI,  -357.001,    0.0008082
+
+  cav4dq,  -216.942,    0.0078974
+  cav4DXI,  -242.757,    0.0007698
+  cav4DYI,  -203.538,    0.0006942
+

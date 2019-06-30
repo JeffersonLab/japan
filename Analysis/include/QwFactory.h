@@ -12,6 +12,7 @@
 // Forward declarations
 class VQwSubsystem;
 class VQwDataElement;
+class VQwDataHandler;
 
 // Exceptions
 struct QwException_TypeUnknown {
@@ -123,10 +124,14 @@ class QwFactory: public VQwFactory<base_t> {
 
 }; // class QwFactory
 
+
+/// Factory type with functionality for data handlers
+typedef class VQwFactory<VQwDataHandler> VQwDataHandlerFactory;
 /// Factory type with functionality for subsystems
 typedef class VQwFactory<VQwSubsystem> VQwSubsystemFactory;
 /// Factory type with functionality for data elements
 typedef class VQwFactory<VQwDataElement> VQwDataElementFactory;
+
 
 // TODO It would be nice to be able to define something like
 //   template <class type_t>
@@ -138,10 +143,13 @@ typedef class VQwFactory<VQwDataElement> VQwDataElementFactory;
 //   typedef <class type_t> using QwSubsystemFactory = QwFactory<VQwSubsystem,type_t>;
 //
 // For now the following will do as well, but adds a layer of inheritance
+template <class handler_t>
+class QwHandlerFactory: public QwFactory<VQwDataHandler,handler_t> { };
 template <class subsystem_t>
 class QwSubsystemFactory: public QwFactory<VQwSubsystem,subsystem_t> { };
 template <class dataelement_t>
 class QwDataElementFactory: public QwFactory<VQwDataElement,dataelement_t> { };
+
 
 
 /// Polymorphic copy constructor virtual base class
@@ -215,6 +223,10 @@ class MQwCloneable: virtual public VQwCloneable<base_t> {
 
 }; // class MQwCloneable
 
+/// Mix-in factory functionality for datahandlers
+typedef class VQwCloneable<VQwDataHandler> VQwDataHandlerCloneable;
+template <class subsystem_t>
+class MQwDataHandlerCloneable: public MQwCloneable<VQwDataHandler,subsystem_t> { };
 /// Mix-in factory functionality for subsystems
 typedef class VQwCloneable<VQwSubsystem> VQwSubsystemCloneable;
 template <class subsystem_t>
@@ -224,6 +236,10 @@ typedef class VQwCloneable<VQwDataElement> VQwDataElementCloneable;
 template <class dataelement_t>
 class MQwDataElementCloneable: public MQwCloneable<VQwDataElement,dataelement_t> { };
 
+
+/// Macros to create and register the subsystem factory of type A
+/// Note: a call to this macro should be followed by a semi-colon!
+#define RegisterHandlerFactory(A) template<> const VQwDataHandlerFactory* MQwCloneable<VQwDataHandler,A>::fFactory = new QwFactory<VQwDataHandler,A>(#A)
 
 /// Macros to create and register the subsystem factory of type A
 /// Note: a call to this macro should be followed by a semi-colon!

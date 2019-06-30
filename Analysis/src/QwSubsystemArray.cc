@@ -406,6 +406,16 @@ void  QwSubsystemArray::EncodeEventData(std::vector<UInt_t> &buffer)
 
 
 //*****************************************************************
+void  QwSubsystemArray::ConstructObjects(TDirectory *folder, TString &prefix)
+{
+  if (!empty()) {
+    for (iterator subsys = begin(); subsys != end(); ++subsys){
+      (*subsys)->ConstructObjects(folder,prefix);
+    }
+  }
+}
+
+//*****************************************************************
 void  QwSubsystemArray::ConstructHistograms(TDirectory *folder, TString &prefix)
 {
   if (!empty()) {

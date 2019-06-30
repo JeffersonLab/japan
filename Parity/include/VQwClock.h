@@ -68,6 +68,7 @@ public:
   virtual void Scale(Double_t factor) = 0;
   virtual void CalculateRunningAverage() = 0;
   virtual void AccumulateRunningSum(const VQwClock& value) = 0;
+  virtual void DeaccumulateRunningSum(VQwClock& value) = 0;
   virtual void ConstructBranchAndVector(TTree *tree, TString &prefix, std::vector<Double_t> &values) = 0;
   virtual void ConstructBranch(TTree *tree, TString &prefix) = 0;
   virtual void ConstructBranch(TTree *tree, TString &prefix, QwParameterFile& modulelist) = 0;

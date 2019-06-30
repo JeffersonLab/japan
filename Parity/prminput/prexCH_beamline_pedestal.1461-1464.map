@@ -34,16 +34,16 @@ bcm_an_ds10,  -255.9,     0.00031405
 
 ! cavity BPMs pedestal calibration from zero gain run 1219
   cav4bq,  -167.527,    1
-  cav4bx,  -379.812,    1
-  cav4by,  -550.257,    1
+  cav4BXI,  -379.812,    1
+  cav4BYI,  -550.257,    1
 
   cav4cq,  -403.997,    1
-  cav4cx,  -634.063,    1
-  cav4cy,  -357.001,    1
+  cav4CXI,  -634.063,    1
+  cav4CYI,  -357.001,    1
 
   cav4dq,  -216.942,    1
-  cav4dx,  -242.757,    1
-  cav4dy,  -203.538,    1
+  cav4DXI,  -242.757,    1
+  cav4DYI,  -203.538,    1
 
 
 

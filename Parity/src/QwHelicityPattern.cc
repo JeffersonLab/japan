@@ -107,11 +107,7 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
     fLastWindowNumber(0),
     fLastPatternNumber(0),
     fLastPhaseNumber(0),
-    fNextPair(0),
-    correlator(gQwOptions,*this, run),
-    regress_from_LRB(gQwOptions,*this, run),
-    regression(gQwOptions,*this),
-    running_regression(regression)
+    fNextPair(0)
 {
   // Retrieve the helicity subsystem to query for
   std::vector<VQwSubsystem*> subsys_helicity = event.GetSubsystemByType("QwHelicity");
@@ -199,11 +195,7 @@ QwHelicityPattern::QwHelicityPattern(const QwHelicityPattern &source)
     fAlternateDiff(source.fYield),
     fPositiveHelicitySum(source.fYield), 
     fNegativeHelicitySum(source.fYield),
-    fNextPair(source.fNextPair),
-    correlator(gQwOptions,*this, 999999),
-    regress_from_LRB(gQwOptions,*this,999999),
-    regression(gQwOptions,*this),
-    running_regression(regression)
+    fNextPair(source.fNextPair)
 {
 };
 
@@ -395,7 +387,7 @@ void  QwHelicityPattern::CalculatePairAsymmetry()
   if (fPairIsGood){
     if (! fIgnoreHelicity){
       //      // Update the blinder if conditions have changed
-      //      UpdateBlinder(fPairYield);
+      UpdateBlinder(fPairYield);
       //  Only blind the difference if we're using the real helicity.
       fBlinder.BlindPair(fPairDifference,fPairYield);
       //  Update the global error code in fDifference, and use it
@@ -405,7 +397,7 @@ void  QwHelicityPattern::CalculatePairAsymmetry()
       fPairYield.UpdateErrorFlag(fPairDifference);
     }
     fPairAsymmetry.Ratio(fPairDifference,fPairYield);
-    //    fAsymmetry.IncrementErrorCounters();
+    fPairAsymmetry.IncrementErrorCounters();
   }
 }
 
@@ -891,6 +883,29 @@ void  QwHelicityPattern::PrintBurstAverage() const
 }
 
 //*****************************************************************
+void  QwHelicityPattern::ConstructObjects(TDirectory *folder)
+{
+  TString prefix = "blinder_";
+  fBlinder.ConstructObjects(folder,prefix);
+
+  prefix = "yield_";
+  fYield.ConstructObjects(folder,prefix);
+  prefix = "asym_";
+  fAsymmetry.ConstructObjects(folder,prefix);
+
+  if (fEnableDifference) {
+    prefix = "diff_";
+    fDifference.ConstructObjects(folder,prefix);
+  }
+  if (fEnableAlternateAsym) {
+    prefix = "asym1_";
+    fAsymmetry1.ConstructObjects(folder,prefix);
+    prefix = "asym2_";
+    fAsymmetry2.ConstructObjects(folder,prefix);
+  }
+}
+
+//*****************************************************************
 void  QwHelicityPattern::ConstructHistograms(TDirectory *folder)
 {
   TString prefix = "yield_";
@@ -1041,24 +1056,6 @@ void QwHelicityPattern::Print() const
           << fEventLoaded[i] << ", " << fHelicity[i] << QwLog::endl;
   QwOut << "Is a complete pattern? (n/y:0/1) " << IsCompletePattern() << QwLog::endl;
 }
-
-void QwHelicityPattern::ProcessDataHandlerEntry() {
-
-	regression.LinearRegression(QwCombiner::kRegTypeAsym);
-	running_regression.AccumulateRunningSum(regression);
-  regress_from_LRB.LinearRegression(QwCombiner::kRegTypeAsym);
-  correlator.FillCorrelator();
-
-}
-
-void QwHelicityPattern::FinishDataHandler() {
-
-  correlator.CalcCorrelations();
-  running_regression.CalculateRunningAverage();
-  running_regression.PrintValue();
-
-}
-
 
 
 

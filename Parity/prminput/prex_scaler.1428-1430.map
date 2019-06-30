@@ -6,17 +6,6 @@ bank=0x2
   SIS3801D32, 0,   18, syncscal, chouse_f2
   SIS3801D32, 0,   23, syncscal, clock_4mhz
 
-!  The following bmod scalers should be removed frmo here and decoded in their own class.
-  SIS3801D32, 0,   19, syncscal, bmod_trig
-  SIS3801D32, 0,   24, syncscal, bmod_trim1
-  SIS3801D32, 0,   25, syncscal, bmod_trim2
-  SIS3801D32, 0,   26, syncscal, bmod_trim3
-  SIS3801D32, 0,   27, syncscal, bmod_trim4
-  SIS3801D32, 0,   28, syncscal, bmod_trim5
-  SIS3801D32, 0,   29, syncscal, bmod_trim6
-  SIS3801D32, 0,   30, syncscal, bmod_trim7
-  SIS3801D32, 0,   31, syncscal, bmod_trim8
-
 ROC=25
 bank=0x2
 ! module.type  module.num  chan.num, det.type, det.name

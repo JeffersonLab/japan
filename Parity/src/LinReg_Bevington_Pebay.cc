@@ -15,6 +15,8 @@ using namespace std;
 
 #include "LinReg_Bevington_Pebay.h"
 
+#include "QwLog.h"
+
 //=================================================
 //=================================================
 LinRegBevPeb::LinRegBevPeb() {
@@ -25,14 +27,37 @@ LinRegBevPeb::LinRegBevPeb() {
 //=================================================
 void LinRegBevPeb::init(){
   printf("Init LinReg dims: nP=%d nY=%d\n",par_nP,par_nY);
-  mMY.ResizeTo(par_nY,1); 
-  mMP.ResizeTo(par_nP,1);
+
+  mMP.ResizeTo(par_nP);
+  mMY.ResizeTo(par_nY);
+  mMYprime.ResizeTo(par_nY);
+
   mVPP.ResizeTo(par_nP,par_nP);
   mVPY.ResizeTo(par_nP,par_nY);
-  mVY2.ResizeTo(par_nY,1); 
+  mVYP.ResizeTo(par_nY,par_nP);
+  mVYY.ResizeTo(par_nY,par_nY);
+  mVYYprime.ResizeTo(par_nY,par_nY);
+
+  sigXX.ResizeTo(mVPP);
+  sigXY.ResizeTo(mVPY);
+  sigYX.ResizeTo(mVYP);
+  sigYY.ResizeTo(mVYY);
+  sigYYprime.ResizeTo(mVYYprime);
+
   mA.ResizeTo(par_nP,par_nY);
+  Axy.ResizeTo(par_nP,par_nY);
+  Ayx.ResizeTo(par_nY,par_nP);
   mAsig.ResizeTo(mA);
-  mRjk.ResizeTo(mVPP);
+
+  sigX.ResizeTo(par_nP);
+  sigY.ResizeTo(par_nY);
+  sigYprime.ResizeTo(par_nY);
+
+  mRPP.ResizeTo(mVPP);
+  mRPY.ResizeTo(mVPY);
+  mRYP.ResizeTo(mVYP);
+  mRYY.ResizeTo(mVYY);
+  mRYYprime.ResizeTo(mVYYprime);
 
   fGoodEventNumber=0;
  
@@ -43,8 +68,12 @@ void LinRegBevPeb::init(){
 void LinRegBevPeb::print(){
   printf("LinReg dims:  nP=%d nY=%d\n",par_nP,par_nY);
 
-  cout<<"MP:"; mMP.Print(); cout<<"MY: ="; mMY.Print();
-  cout<<"VPP:";mVPP.Print();  cout<<"VPY:";mVPY.Print();  cout<<"VY2:=";mVY2.Print();
+  cout<<"MP:"; mMP.Print();
+  cout<<"MY:"; mMY.Print();
+  cout<<"VPP:"; mVPP.Print();
+  cout<<"VPY:"; mVPY.Print();
+  cout<<"VYY:"; mVYY.Print();
+  cout<<"VYYprime:"; mVYYprime.Print();
 }
 
 
@@ -64,10 +93,10 @@ void LinRegBevPeb::accumulate(double *P, double *Y){
   //   Do this first, so the mMY and mMP variables are the previous means, not including this point.
   for (int j = 0; j <par_nY; j++)   {
     double v=Y[j];
-    double vdel=v-mMY(j,0);
+    double vdel=v-mMY(j);
     for (int i = 0; i <par_nP; i++) {
       double u=P[i];
-      double udel=u-mMP(i,0);
+      double udel=u-mMP(i);
       if(fGoodEventNumber<=1) mVPY(i,j)=0;
       else mVPY(i,j)+=udel*vdel*(fGoodEventNumber-1.)/fGoodEventNumber;
     }
@@ -76,34 +105,49 @@ void LinRegBevPeb::accumulate(double *P, double *Y){
   //....... P-only matrices ......
   for (int i = 0; i <par_nP; i++) {
     double u=P[i];
-    double udel=u-mMP(i,0);
+    double udel=u-mMP(i);
  
-    if(fGoodEventNumber<=1) mMP(i,0)=u;
-    else mMP(i,0)+=udel/fGoodEventNumber;
+    if(fGoodEventNumber<=1) mMP(i)=u;
+    else mMP(i)+=udel/fGoodEventNumber;
 
     if(fGoodEventNumber<=1)  mVPP(i,i)=0;
-    else mVPP(i,i)+=(u-mMP(i,0))*udel; // Note, it uses pre & post incremented means!
+    else mVPP(i,i)+=(u-mMP(i))*udel; // Note, it uses pre & post incremented means!
     
     for (int j = i+1; j < par_nP; j++) {// only upper triangle
       double v=P[j];
-      double vdel=v-mMP(j,0);
+      double vdel=v-mMP(j);
       
       if(fGoodEventNumber<=1) mVPP(i,j)=0;
       else mVPP(i,j)+=udel*vdel*(fGoodEventNumber-1.)/fGoodEventNumber;
-      }// end of cov-PP
+
+      // lower triangle
+      mVPP(j,i) = mVPP(i,j);
+    }// end of cov-PP
   } // end of P-only
 
 
   //....... Y-only matrices
   for (int i = 0; i <par_nY; i++)  {
     double u=Y[i]; 
-    double udel=u-mMY(i,0);
+    double udel=u-mMY(i);
  
-    if(fGoodEventNumber<=1) mMY(i,0)=u;
-    else mMY(i,0)+=udel/fGoodEventNumber;
+    if(fGoodEventNumber<=1) mMY(i)=u;
+    else mMY(i)+=udel/fGoodEventNumber;
 
-    if(fGoodEventNumber<=1)  mVY2(i,0)=0; // only diagonal elements are needed for linReg
-    else mVY2(i,0)+=(u-mMY(i,0))*udel; // Note, it uses pre & post incremented means!
+    if(fGoodEventNumber<=1)  mVYY(i,i)=0;
+    else mVYY(i,i)+=(u-mMY(i))*udel; // Note, it uses pre & post incremented means!
+
+    for (int j = i+1; j < par_nY; j++) {// only upper triangle
+      double v=Y[j];
+      double vdel=v-mMY(j);
+
+      if(fGoodEventNumber<=1) mVYY(i,j)=0;
+      else mVYY(i,j)+=udel*vdel*(fGoodEventNumber-1.)/fGoodEventNumber;
+
+      // lower triangle
+      mVYY(j,i) = mVYY(i,j);
+    }// end of cov-YY
+
   } // end of Y-only
 
 
@@ -116,7 +160,7 @@ Int_t  LinRegBevPeb::getMeanP(const int i, Double_t &mean ){
    mean=-1e50;
    if(i<0 || i >= par_nP ) return -1;
    if( fGoodEventNumber<1) return -3;
-   mean=mMP(i,0);    return 0;
+   mean = mMP(i);    return 0;
 }
 
 
@@ -126,7 +170,17 @@ Int_t  LinRegBevPeb::getMeanY(const int i, Double_t &mean ){
   mean=-1e50;
   if(i<0 || i >= par_nY ) return -1;
   if( fGoodEventNumber<1) return -3;
-  mean=mMY(i,0);    return 0;
+  mean = mMY(i);    return 0;
+}
+
+
+//==========================================================
+//==========================================================
+Int_t  LinRegBevPeb::getMeanYprime(const int i, Double_t &mean ){
+  mean=-1e50;
+  if(i<0 || i >= par_nY ) return -1;
+  if( fGoodEventNumber<1) return -3;
+  mean = mMYprime(i);    return 0;
 }
 
 
@@ -147,7 +201,17 @@ Int_t   LinRegBevPeb::getSigmaY(const int i, Double_t &sigma ){
   sigma=-1e50;
   if(i<0 || i >= par_nY ) return -1;
   if( fGoodEventNumber<2) return -3;
-  sigma=sqrt(mVY2(i,0)/(fGoodEventNumber-1.));
+  sigma=sqrt(mVYY(i,i)/(fGoodEventNumber-1.));
+  return 0;
+}
+
+//==========================================================
+//==========================================================
+Int_t   LinRegBevPeb::getSigmaYprime(const int i, Double_t &sigma ){
+  sigma=-1e50;
+  if(i<0 || i >= par_nY ) return -1;
+  if( fGoodEventNumber<2) return -3;
+  sigma=sqrt(mVYYprime(i,i)/(fGoodEventNumber-1.));
   return 0;
 }
 
@@ -175,7 +239,17 @@ Int_t  LinRegBevPeb::getCovariancePY(  int ip, int iy, Double_t &covar ){
     return 0;
 }
 
-
+//==========================================================
+//==========================================================
+Int_t  LinRegBevPeb::getCovarianceY( int i, int j, Double_t &covar ){
+    covar=-1e50;
+    if( i>j) { int k=i; i=j; j=k; }//swap i & j
+    //... now we need only upper right triangle
+    if(i<0 || i >= par_nY ) return -11;
+    if( fGoodEventNumber<2) return -14;
+    covar=mVYY(i,j)/(fGoodEventNumber-1.);
+    return 0;
+}
 
 //==========================================================
 //==========================================================
@@ -190,9 +264,12 @@ void LinRegBevPeb::printSummaryP(){
     }
     cout << Form("\n           mean     sig(distrib)   nSig(mean)       corelation-matrix ....\n");
     for (size_t i = 0; i <dim; i++) {
+      Int_t testval;
       double meanI,sigI;
-      assert( getMeanP(i,meanI)==0);
-      assert( getSigmaP(i,sigI)==0);
+      testval = getMeanP(i,meanI);
+      assert(testval==0);
+      testval = getSigmaP(i,sigI);
+      assert(testval==0);
       double nSig=-1;
       double err=sigI/sqrt(fGoodEventNumber);
       if(sigI>0.) nSig=meanI/err;
@@ -200,8 +277,12 @@ void LinRegBevPeb::printSummaryP(){
       cout << Form("P%d:  %+12.4g  %12.3g      %.1f    ",(int)i,meanI,sigI,nSig);
       for (size_t j = 1; j <dim; j++) {
         if( j<=i) { cout << Form("  %12s","._._._."); continue;}
-        double sigJ,cov; assert( getSigmaP(j,sigJ)==0);
-        assert( getCovarianceP(i,j,cov)==0);
+        Int_t testval;
+        double sigJ,cov;
+        testval = getSigmaP(j,sigJ);
+        assert(testval==0);
+        testval = getCovarianceP(i,j,cov);
+        assert(testval==0);
         double corel=cov/sigI/sigJ;
         
         cout << Form("  %12.3g",corel);
@@ -219,9 +300,12 @@ void LinRegBevPeb::printSummaryY(){
   cout << Form("  j,       mean,     sig(mean),   nSig(mean),  sig(distribution)    \n");
   
   for (int i = 0; i <par_nY; i++) {
+    Int_t testval;
     double meanI,sigI;
-    assert( getMeanY(i,meanI)==0);
-    assert( getSigmaY(i,sigI)==0);
+    testval = getMeanY(i,meanI);
+    assert(testval==0);
+    testval = getSigmaY(i,sigI);
+    assert(testval==0);
     double err=sigI/sqrt(fGoodEventNumber);
     double nSigErr=meanI/err;
     cout << Form("Y%02d, %+11.4g, %12.4g, %8.1f, %12.4g "" ",i,meanI,err,nSigErr,sigI)<<endl;
@@ -255,21 +339,28 @@ void LinRegBevPeb::printSummaryAlphas(){
 void LinRegBevPeb::printSummaryYP(){
   cout << Form("\nLinRegBevPeb::printSummaryYP seen good eve=%lld",fGoodEventNumber)<<endl;
 
-  if(fGoodEventNumber>2) { cout<<"  too fiew events, skip"<<endl; return;}
+  if(fGoodEventNumber<2) { cout<<"  too fiew events, skip"<<endl; return;}
   cout << Form("\n         name:             ");
   for (int i = 0; i <par_nP; i++) {
     cout << Form(" %10sP%d "," ",i);
   }
   cout << Form("\n  j                   meanY         sigY      corelation with Ps ....\n");
   for (int iy = 0; iy <par_nY; iy++) {
+    Int_t testval;
     double meanI,sigI;
-    assert( getMeanY(iy,meanI)==0);
-    assert( getSigmaY(iy,sigI)==0);
+    testval = getMeanY(iy,meanI);
+    assert(testval==0);
+    testval = getSigmaY(iy,sigI);
+    assert(testval==0);
     
     cout << Form(" %3d %6sY%d:  %+12.4g  %12.4g ",iy," ",iy,meanI,sigI);
     for (int ip = 0; ip <par_nP; ip++) {
-      double sigJ,cov; assert( getSigmaP(ip,sigJ)==0);
-      assert( getCovariancePY(ip,iy,cov)==0);
+      Int_t testval;
+      double sigJ,cov; 
+      testval = getSigmaP(ip,sigJ);
+      assert(testval==0);
+      testval = getCovariancePY(ip,iy,cov);
+      assert(testval==0);
       double corel=cov/sigI/sigJ;      
       cout << Form("  %12.3g",corel);
     }
@@ -283,77 +374,107 @@ void LinRegBevPeb::printSummaryYP(){
 //==========================================================
 void LinRegBevPeb::solve() {
   cout << Form("\n********LinRegBevPeb::solve...invert Rjk")<<endl;
-  TMatrixD S2jk;S2jk.ResizeTo(mVPP);
-  for (int j = 0; j < par_nP; j++) {
-    double Sj; assert( getSigmaP(j,Sj)==0);
-    for (int k = 0; k <par_nP; k++) {
-       double Sk,s2jk; assert( getSigmaP(k,Sk)==0);
-       assert( getCovarianceP(j,k,s2jk)==0);
-       S2jk(j,k)=s2jk;
-       mRjk(j,k)=s2jk/Sj/Sk;
-    }
-  }
-  //cout << "new Rjk:"; mRjk.Print();
-  
-  TMatrixD invRjk(mRjk); double det;
-   //cout<<"0 invRkl:"; invRjk.Print();
-   invRjk.Invert(&det);
-   cout<<Form("det=%f\n",det); //invRjk.Print();
-   /* test
-   TMatrixD M; M.ResizeTo(mRjk);//cout<<"0 M:"; M.Print();
-   M.Mult(invRjk,mRjk);
-   cout<<"check M*invM"; M.Print();
-   */
-   cout << Form("\n********LinRegBevPeb::solve... alphas ")<<endl;
-   TMatrixD Rky;Rky.ResizeTo(mVPY); 
+
+  TMatrixD invmVPP(TMatrixD::kUnit, mVPP);
+  invmVPP *= TMatrixDDiag(mVPP);
+  invmVPP.Invert();
+  invmVPP.Sqrt();
+
+  TMatrixD invmVYY(TMatrixD::kUnit, mVYY);
+  invmVYY *= TMatrixDDiag(mVYY);
+  invmVYY.Invert();
+  invmVYY.Sqrt();
+
+  mRPP = invmVPP * mVPP * invmVPP;
+  mRYY = invmVYY * mVYY * invmVYY;
+  mRPY = invmVPP * mVPY * invmVYY;
+
+  QwMessage << "det=" << mRPP.Determinant() << QwLog::endl;
+  TMatrixD invRPP(TMatrixD::kInverted, mRPP);
+
+   TMatrixD Djy; Djy.ResizeTo(mRPY);
+   Djy.Mult(invRPP,mRPY);
+
    for (int iy = 0; iy <par_nY; iy++) {
-     double Sy; assert( getSigmaY(iy,Sy)==0);
-     for (int ip = 0; ip <par_nP; ip++) {
-       double Sk,Syk2; assert( getSigmaP(ip,Sk)==0);
-       assert( getCovariancePY(ip,iy,Syk2)==0);
-       Rky(ip,iy)=Syk2/Sy/Sk;
-       //if(ip==0 && iy==0) printf("Syk2=%f  Sy=%f Sk=%f\n", Syk2,Sy,Sk); 
-     }
-   }
-   //cout<<"new Rky:"; Rky.Print();
-   TMatrixD Djy; Djy.ResizeTo(Rky);	
-   Djy.Mult(invRjk,Rky);
-   //   cout<<"Djy:"; Djy.Print();
-   for (int iy = 0; iy <par_nY; iy++) {
-    double Sy; assert( getSigmaY(iy,Sy)==0);
+    double Sy;
+    Int_t testval;
+    testval = getSigmaY(iy,Sy);
+    assert(testval==0);
     for (int ip = 0; ip <par_nP; ip++) {
-      double Sk; assert( getSigmaP(ip,Sk)==0);
+      Int_t testval;
+      double Sk;
+      testval = getSigmaP(ip,Sk);
+      assert(testval==0);
       mA(ip,iy)= Djy(ip,iy)*Sy/Sk;
     }
   }
-  
-  //cout<<"mA:"; mA.Print();
+
+  /// normalized covariances
+  sigYY = mVYY * (1.0 / (fGoodEventNumber - 1.));
+  sigXX = mVPP * (1.0 / (fGoodEventNumber - 1.));
+  sigXY = mVPY * (1.0 / (fGoodEventNumber - 1.));
+  sigYX.Transpose(sigXY);
+
+  // slopes
+  Axy = mA;
+  Ayx.Transpose(Axy);
+
+  // new means
+  mMYprime = mMY - Ayx * mMP;
+
+  // new covariance
+  mVYP.Transpose(mVPY);
+  mVYYprime = mVYY + Ayx * mVPP * Axy - (Ayx * mVPY + mVYP * Axy);
+
+  // new normalized covariance
+  sigYYprime = sigYY + Ayx * sigXX * Axy - (Ayx * sigXY + sigYX * Axy);
+
+  // old sigmas
+  sigX = TMatrixDDiag(sigXX);
+  sigX.Sqrt();
+  sigY = TMatrixDDiag(sigYY);
+  sigY.Sqrt();
+
+  // new sigmas
+  sigYprime = TMatrixDDiag(sigYYprime);
+  sigYprime.Sqrt();
+
+  // invert sigmas and determine correlation matrix
+  TMatrixD invsigYprime(TMatrixD::kUnit, sigYYprime);
+  invsigYprime *= TMatrixDDiag(sigYYprime);
+  invsigYprime.Invert();
+  invsigYprime.Sqrt();
+  mRYYprime = invsigYprime * sigYYprime * invsigYprime;
+
+  QwMessage << "Uncorrected Y values:" << QwLog::endl;
+  QwMessage << "     mean          sig" << QwLog::endl;
+  for (int i = 0; i < par_nY; i++){
+    QwMessage << "Y" << i << ":  " << mMY(i) << " +- " << sigY(i) << QwLog::endl;
+  }
+  QwMessage << QwLog::endl;
+
+  QwMessage << "Corrected Y values:" << endl;
+  QwMessage << "     mean          sig" << endl;
+  for (int i = 0; i < par_nY; i++){
+    QwMessage << "Y" << i << ":  " << mMYprime(i) << " +- " << sigYprime(i) << QwLog::endl;
+  }
+  QwMessage << QwLog::endl;
 
   cout << "Compute errors of alphas ..."<<endl;
-  double norm=1./(fGoodEventNumber - par_nP -1);
-  for (int iy = 0; iy <par_nY; iy++) {
-    
+  double norm = 1. / (fGoodEventNumber - par_nP - 1);
+  for (int iy = 0; iy < par_nY; iy++) {
     /* compute s^2= Vy + Vx -2*Vxy 
        where Vy~var(y), Vx~var(x), Vxy~cov(y,x)     */
-    double Sy; assert( getSigmaY(iy,Sy)==0);  
-    
     double Vx=0,Vxy=0;
     for (int j = 0; j < par_nP; j++) {
-      for (int k = 0; k <par_nP; k++) 
-	Vx+=S2jk(j,k)*mA(j,iy)*mA(k,iy);
-      double Syk2; assert( getCovariancePY(j,iy,Syk2)==0);
-      Vxy+=Syk2*mA(j,iy);
+      for (int k = 0; k < par_nP; k++)
+	Vx += sigXX(j,k) * mA(j,iy) * mA(k,iy);
+      Vxy += sigXY(j,iy) * mA(j,iy);
     }
-    //cout<<"iy="<<iy<<"  Vx="<<Vx<<"  Vxy="<<Vxy<<endl;
-    //    printf(" errAl:  iy=%d Vy=%f\n",iy,Sy*Sy);
-    double s2=Sy*Sy + Vx -2*Vxy; // consistent w/ Bevington
-    
-    //   cout <<" iy="<<iy<<" s2="<<s2<<endl;
+    double s2 = sigY(iy) * sigY(iy) + Vx - 2 * Vxy; // consistent w/ Bevington
     for (int j = 0; j < par_nP; j++) {
-      double Sj; assert( getSigmaP(j,Sj)==0);
-      mAsig(j,iy)= sqrt(norm * invRjk(j,j) * s2) / Sj;
+      mAsig(j,iy)= sqrt(norm * invRPP(j,j) * s2) / sigX(j);
     }
   }
-  //cout<<"mAsig:"; mAsig.Print();
 }
 
