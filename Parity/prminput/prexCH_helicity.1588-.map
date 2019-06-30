@@ -1,0 +1,65 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!  input file for decoding the helicity subsystem
+!!  Of note in this file:
+!!  HelicityDecodingMode : will tell which mode of decoding is in use
+!!  			 : for now it can be  InputRegisterMode, UserbitMode
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+ROC=23
+!!! MarkerWord=0xffb0b444
+Bank=0x1
+
+!INPUT REGISTER MODE
+HelicityDecodingMode=InputRegisterMode
+
+! Set the patternPhase (number of windows in a pattern) for each run range.
+! If patternPhase!=4, then also set the NumberPatternsDelayed
+! so the reported helicity is delayed by 8 windows (default 2).
+NumberPatternsDelayed=2
+PatternPhase=4
+
+!!!  Specify the bitmasks for the patternsync, helicity, and  pairsync if needed.
+InputRegMask_PattSync=0x20
+InputRegMask_Helicity=0x40
+InputRegMask_PairSync=0x80
+InputRegMask_FakeMPS=0   !!!  Do not use a input register bit to indicate a "fake" set of helicity bits
+
+
+!Need to set PATTERNPHASEOFFSET = 1 (when pattern phase starts with 1) or 0 (when pattern phase starts with 0)
+!default value for PATTERNPHASEOFFSET = 1 is set within the code itself which works fine with regular injector/beamline/parity mock data
+!uncomment below line only if phase number start from 0
+PATTERNPHASEOFFSET=0
+
+
+!
+! module.type, module.num  chan.num, det.type, det.name
+!
+SKIP 2
+WORD, 0,  0, helicitydata,  input_register
+!WORD, 0,  0, helicitydata,  output_register
+!END
+! 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!
+!
+!
+!HelicityDecodingMode= UserbitMode    
+!PatternPhase=4
+!seed size is either 24 bit or 30 bit. default is 24 bit
+!RandSeedBits=24
+!RandSeedBits=30
+!ROC=31
+!Bank=0x3101
+!
+! module.type, module.num  chan.num, det.type, det.name
+! 
+!WORD, 0,  0, helicitydata,  cleandata
+!WORD, 0,  0, helicitydata,  scandata1
+!WORD, 0,  0, helicitydata,  scandata2
+!WORD, 0,  0, helicitydata,  scalerheader
+!WORD, 0,  0, helicitydata,  scalercounter
+!WORD, 0,  0, helicitydata,  userbit 
+!END
+

@@ -28,10 +28,19 @@ private:
   std::vector <UInt_t> GetDrawIndex(UInt_t);
   Bool_t fFoundCfg;
   Bool_t fMonitor;
-  
+  int fVerbosity;
+  int hist2D_nBinsX,hist2D_nBinsY;
+  TString fPlotFormat;
+  int fRunNumber;
+
 public:
   OnlineConfig();
   OnlineConfig(TString);
+  int GetRunNumber(){return fRunNumber;}
+  TString GetConfFileName(){return confFileName;}
+  void Get2DnumberBins(int &nX, int &nY){nX = hist2D_nBinsX; nY = hist2D_nBinsY;}
+  void SetVerbosity(int ver){fVerbosity=ver;}
+  TString GetPlotFormat(){return fPlotFormat;}
   Bool_t ParseConfig();
   TString GetRootFile() { return rootfilename; };
   TString GetGoldenFile() { return goldenrootfilename; };

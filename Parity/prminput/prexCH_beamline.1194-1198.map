@@ -1,0 +1,65 @@
+
+ROC=23
+Bank=0x05
+vqwk_buffer_offset = 1
+!same sample size for ADCs in a given bank
+sample_size=1984
+!Sample size should be unchanged - ask Paul King
+!
+! module.type, module.num  chan.num, det.type, det.name, if unrotated then last column ->UNROTATED
+
+
+!ADC0
+    VQWK, 0, 0,  bcm,  QWK_0_0
+    VQWK, 0, 1,  bcm,  QWK_0_1
+    VQWK, 0, 2,  bcm,  BCM_US
+    VQWK, 0, 3,  bcm,  BCM_DS
+    VQWK, 0, 4,  bcm,  QWK_0_4
+    VQWK, 0, 5,  bcm,  QWK_0_5
+    VQWK, 0, 6,  bcm,  QWK_0_6
+    VQWK, 0, 7,  bcm,  QWK_0_7
+
+!ADC1
+    VQWK, 1, 0,  bpmstripline,  BPM4Exp
+    VQWK, 1, 1,  bpmstripline,  BPM4Exm
+    VQWK, 1, 2,  bpmstripline,  BPM4Eyp
+    VQWK, 1, 3,  bpmstripline,  BPM4Eym
+    VQWK, 1, 4,  bcm,  QWK_1_4
+    VQWK, 1, 5,  bcm,  QWK_1_5
+    VQWK, 1, 6,  bcm,  QWK_1_6
+    VQWK, 1, 7,  bcm,  QWK_1_7
+
+!ADC2
+    VQWK, 2, 0,  bcm,  QWK_2_0
+    VQWK, 2, 1,  bcm,  QWK_2_1
+    VQWK, 2, 2,  bcm,  QWK_2_2
+    VQWK, 2, 3,  bcm,  QWK_2_3
+    VQWK, 2, 4,  bpmstripline,  BPM4Axp
+    VQWK, 2, 5,  bpmstripline,  BPM4Axm
+    VQWK, 2, 6,  bpmstripline,  BPM4Ayp
+    VQWK, 2, 7,  bpmstripline,  BPM4Aym
+
+!ADC3
+    VQWK, 3, 0,  bpmcavity,  CAV4BXI
+    VQWK, 3, 1,  bpmcavity,  CAV4BYI
+    VQWK, 3, 2,  bpmcavity,  CAV4BQ
+    VQWK, 3, 3,  bcm,  QWK_3_3
+    VQWK, 3, 4,  bpmcavity,  CAV4CXI
+    VQWK, 3, 5,  bpmcavity,  CAV4CYI
+    VQWK, 3, 6,  bpmcavity,  CAV4CQ
+    VQWK, 3, 7,  bcm,  unser
+
+!ADC4
+    VQWK, 4, 0,  bpmcavity,  CAV4DXI
+    VQWK, 4, 1,  bpmcavity,  CAV4DYI
+    VQWK, 4, 2,  bpmcavity,  CAV4DQ
+    VQWK, 4, 3,  bcm,  QWK_4_3
+    VQWK, 4, 4,  bcm,  QWK_4_4
+    VQWK, 4, 5,  bcm,  QWK_4_5
+    VQWK, 4, 6,  bcm,  QWK_4_6
+    VQWK, 4, 7,  bcm,  QWK_4_7
+
+
+[PUBLISH]
+! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
+  q_targ, bcm, bcm_us, c

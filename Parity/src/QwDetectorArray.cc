@@ -35,6 +35,10 @@ void QwDetectorArray::DefineOptions(QwOptions &options){
     ("QwDetectorArray.normalize",
      po::value<bool>()->default_bool_value(true),
      "Normalize the detectors by beam current");
+  options.AddOptions()
+    ("QwDetectorArray.norm_threshold",
+     po::value<double>()->default_value(2.5),
+     "Normalize the detectors for currents above this value");
 }
 
 
@@ -51,6 +55,7 @@ void QwDetectorArray::ProcessOptions(QwOptions &options){
 	      << "Detector yields WILL NOT be normalized."
 	      << QwLog::endl;
   }
+  fNormThreshold = options.GetValue<double>("QwDetectorArray.norm_threshold");
 }
 
 
@@ -174,8 +179,8 @@ Int_t QwDetectorArray::LoadChannelMap(TString mapfile)
   Int_t wordsofar=0;
   Int_t currentsubbankindex=-1;
   Int_t sample_size=0;
-
-
+  Double_t abs_saturation_limit = 8.5; // default saturation limit(volt)
+  Bool_t bAssignedLimit = kFALSE;
 
   // Open the file
   QwParameterFile mapstr(mapfile.Data());
@@ -191,6 +196,10 @@ Int_t QwDetectorArray::LoadChannelMap(TString mapfile)
   while (mapstr.ReadNextLine())
     {
       RegisterRocBankMarker(mapstr);
+      if (mapstr.PopValue("abs_saturation_limit",value)) {
+	abs_saturation_limit=value;
+	bAssignedLimit = kTRUE;
+      }
       if (mapstr.PopValue("sample_size",value)) {
 	sample_size=value;
       }
@@ -317,6 +326,8 @@ Int_t QwDetectorArray::LoadChannelMap(TString mapfile)
 		  	localIntegrationPMT.SetNormalizability(kTRUE);
 		  fIntegrationPMT.push_back(localIntegrationPMT);
                   fIntegrationPMT[fIntegrationPMT.size()-1].SetDefaultSampleSize(sample_size);
+		  if(bAssignedLimit)
+		    fIntegrationPMT[fIntegrationPMT.size()-1].SetSaturationLimit(abs_saturation_limit);
 		  localMainDetID.fIndex=fIntegrationPMT.size()-1;
                 }
 
@@ -967,8 +978,9 @@ void  QwDetectorArray::ProcessEvent_2()
           std::cout<<"QwDetectorArray::ProcessEvent_2(): processing with exchanged data"<<std::endl;
           std::cout<<"pedestal, calfactor, average volts = "<<pedestal<<", "<<calfactor<<", "<<volts<<std::endl;
         }
-
-      if (bNormalization) this->DoNormalization();
+      
+      if (bNormalization && fTargetCharge.GetValue()>fNormThreshold)
+	this->DoNormalization();
     }
   else
     {
@@ -1502,14 +1514,59 @@ void QwDetectorArray::FillErrDB(QwParityDB *db, TString datatype)
 void QwDetectorArray::WritePromptSummary(QwPromptSummary *ps, TString type)
 {
 
-  Bool_t local_print_flag = true;
+  Bool_t local_print_flag = false;
+  Bool_t local_add_element= type.Contains("yield");
+  
+
   if(local_print_flag){
     QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
     QwMessage << "        QwDetectorArrayID::WritePromptSummary()          " << QwLog::endl;
     QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
   }
 
-  //  ps->PrintCSV();
+  const VQwHardwareChannel* tmp_channel = 0;
+  TString  element_name        = "";
+  Double_t element_value       = 0.0;
+  Double_t element_value_err   = 0.0;
+  Double_t element_value_width = 0.0;
+
+  PromptSummaryElement *local_ps_element = NULL;
+  Bool_t local_add_these_elements= false;
+
+  for (size_t i = 0; i < fMainDetID.size();  i++) 
+    {
+      element_name        = fMainDetID[i].fdetectorname;
+      tmp_channel=GetIntegrationPMT(element_name)->GetChannel(element_name);	
+      element_value       = 0.0;
+      element_value_err   = 0.0;
+      element_value_width = 0.0;
+    
+
+      local_add_these_elements=element_name.Contains("sam"); // Need to change this to add other detectorss in summary
+
+      if(local_add_these_elements&&local_add_element){
+      	ps->AddElement(new PromptSummaryElement(element_name));     
+      }
+
+
+      local_ps_element=ps->GetElementByName(element_name);
+
+      
+      if(local_ps_element) {
+	element_value       = tmp_channel->GetValue();
+	element_value_err   = tmp_channel->GetValueError();
+	element_value_width = tmp_channel->GetValueWidth();
+	
+	local_ps_element->Set(type, element_value, element_value_err, element_value_width);
+      }
+      
+      if( local_print_flag && local_ps_element) {
+	printf("Type %12s, Element %32s, value %12.4e error %8.4e  width %12.4e\n", 
+	       type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
+      }
+    }
+
+
 
   return;
 }

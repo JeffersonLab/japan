@@ -123,7 +123,10 @@ class VQwBPM : public VQwDataElement {
 
    virtual const VQwHardwareChannel* GetPosition(EBeamPositionMonitorAxis axis) const{
      return const_cast<VQwBPM*>(this)->GetPosition(axis);
-   } 
+   }
+
+   
+ 
 
 protected:
    virtual VQwHardwareChannel* GetPosition(EBeamPositionMonitorAxis axis){
@@ -272,6 +275,7 @@ public:
 /*     fAbsPos_base[1] = NULL; */
 /*     fEffectiveCharge_base = NULL; */
     fQwStriplineCalibration = 18.81; // adc counts/mm default value
+    fQwStriplineCorrection = 0.250014;
     for(Short_t i=0;i<2;i++) {
       fRelativeGains[i]=1.0;
       fGains[i]=1.0;
@@ -296,6 +300,7 @@ public:
   // Position calculation related paramters
   Double_t fPositionCenter[3];
   Double_t fQwStriplineCalibration;
+  Double_t fQwStriplineCorrection;
   Double_t fRelativeGains[2];
   Double_t fGains[2];
   static const TString axis[3];

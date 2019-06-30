@@ -968,7 +968,7 @@ Int_t QwBeamLine::LoadInputParameters(TString pedestalfile)
 	      }	    
 	    for(size_t i=0;i<fCavity.size();i++)
 	      {
-		for(int j=0;j<2;j++)
+		for(size_t j=0;j<QwBPMCavity::kNumElements;j++)
 		  {
 		    TString localname = fCavity[i].GetSubElementName(j);
 		    localname.ToLower();
@@ -1653,7 +1653,10 @@ Bool_t QwBeamLine::PublishByRequest(TString device_name)
   TString name = device_name;
   TString device_prop = "value";
   if (device_name.EndsWith("WS")){
-    name = device_name(0,device_name.Length()-16);
+    name = device_name(0,device_name.Length()-2);
+    device_prop = "ef";
+  } else if (device_name.EndsWith("Q")){
+    name = device_name(0,device_name.Length()-1);
     device_prop = "ef";
   } else if (device_name.EndsWith("XSlope")){
     name = device_name(0,device_name.Length()-6);
@@ -2308,10 +2311,8 @@ void QwBeamLine::AccumulateRunningSum(VQwSubsystem* value1)
 void QwBeamLine::DeaccumulateRunningSum(VQwSubsystem* value1){
     if (Compare(value1)) {
     QwBeamLine* value = dynamic_cast<QwBeamLine*>(value1);
-    /*
-    for (size_t i = 0; i < fClock.size();       i++)
+    for (size_t i = 0; i < fClock.size(); i++)
       fClock[i].get()->DeaccumulateRunningSum(*(value->fClock[i].get()));
-    */
     for (size_t i = 0; i < fStripline.size(); i++)
       fStripline[i].get()->DeaccumulateRunningSum(*(value->fStripline[i].get()));    
     for (size_t i = 0; i < fCavity.size(); i++)
@@ -3100,50 +3101,48 @@ void QwBeamLine::FillErrDB(QwParityDB *db, TString datatype)
 
 void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type) 
 {
-  Bool_t local_print_flag = true;
-
+  Bool_t local_print_flag = false;
+  Bool_t local_add_element= type.Contains("yield");
+  
+  
+  
   if(local_print_flag) {
     printf("---------------------------------------------------------------\n");
     printf("QwBeamLine::WritePromptSummary()  Type : %12s\n", type.Data());
     printf("---------------------------------------------------------------\n");
   }
   
+  const VQwHardwareChannel* tmp_channel = 0;
   TString  element_name        = "";
   Double_t element_value       = 0.0;
   Double_t element_value_err   = 0.0;
   Double_t element_value_width = 0.0;
 
   PromptSummaryElement *local_ps_element = NULL;
-
-  //  Double_t asymmetry_ppm = 1e-6;
+  Bool_t local_add_these_elements= false;
 
   for (size_t i = 0; i < fBCM.size();  i++) 
     {
-      element_name        = fBCM[i].get()->GetElementName();
+      tmp_channel=GetChannel(kQwBCM, i,"");	
+      element_name        = tmp_channel->GetElementName();
       element_value       = 0.0;
       element_value_err   = 0.0;
       element_value_width = 0.0;
-      
-      if (element_name.Contains("qwk_bcm1")) {
-	local_ps_element = ps-> GetElementByName("bcm1");
-      } else if (element_name.Contains("qwk_bcm2")) {
-	local_ps_element = ps-> GetElementByName("bcm2");
-      } else if (element_name.Contains("qwk_bcm5")) {
-	local_ps_element = ps-> GetElementByName("bcm5");
-      } else if (element_name.Contains("qwk_bcm6")) {
-	local_ps_element = ps-> GetElementByName("bcm6");
-      } else if (element_name.Contains("qwk_bcm7")) {
-	local_ps_element = ps-> GetElementByName("bcm7");
-      } else if (element_name.Contains("qwk_bcm8")) {
-	local_ps_element = ps-> GetElementByName("bcm8");
-      } else {
-	local_ps_element = NULL;
+
+      local_add_these_elements =  element_name.EqualTo("bcm_an_us")||element_name.EqualTo("bcm_an_ds")||element_name.EqualTo("bcm_an_ds3")|| (element_name.Contains("cav4") ); // Need to change this to add other BCMs in summary
+
+      if(local_add_these_elements && local_add_element){
+      	ps->AddElement(new PromptSummaryElement(element_name)); 
       }
+
+
+      local_ps_element=ps->GetElementByName(element_name);
+
       
       if(local_ps_element) {
-	element_value       = fBCM[i].get()->GetValue();
-	element_value_err   = fBCM[i].get()->GetValueError();
-	element_value_width = fBCM[i].get()->GetValueWidth();
+	element_value       = tmp_channel->GetValue();
+	element_value_err   = tmp_channel->GetValueError();
+	element_value_width = tmp_channel->GetValueWidth();
 	
 	local_ps_element->Set(type, element_value, element_value_err, element_value_width);
       }
@@ -3153,57 +3152,84 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
 	       type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
       }
     }
-  
-  ps->FillDoubleDifference(type, "bcm1", "bcm2");
-  ps->FillDoubleDifference(type, "bcm1", "bcm5");
-  ps->FillDoubleDifference(type, "bcm1", "bcm6");
-  ps->FillDoubleDifference(type, "bcm2", "bcm5");
-  ps->FillDoubleDifference(type, "bcm2", "bcm6");
-  ps->FillDoubleDifference(type, "bcm5", "bcm6");
-  
-  ps->FillDoubleDifference(type, "bcm1", "bcm7");
-  ps->FillDoubleDifference(type, "bcm1", "bcm8");
 
-  ps->FillDoubleDifference(type, "bcm5", "bcm7");
-  ps->FillDoubleDifference(type, "bcm7", "bcm8");
+//Add BPM Cavity
+  for (size_t i = 0; i < fCavity.size();  i++) 
+    {
+      tmp_channel=GetChannel(kQwBPMCavity, i,"ef");	
+      element_name        = tmp_channel->GetElementName();
+      element_value       = 0.0;
+      element_value_err   = 0.0;
+      element_value_width = 0.0;
+
+      local_add_these_elements =  (element_name.EqualTo("cav4bQ")||element_name.EqualTo("cav4cQ")|| element_name.EqualTo("cav4dQ") ); // Need to change this to add other cavities in summary
+
+      if(local_add_these_elements && local_add_element){
+      	ps->AddElement(new PromptSummaryElement(element_name)); 
+      }
 
 
+      local_ps_element=ps->GetElementByName(element_name);
 
-  // for(size_t i=0; i< fStripline.size(); i++) 
-  //   {
-  //     element_name        = fStripline[i].get()->GetElementName();
-  //     element_value       = 0.0;
-  //     element_value_err   = 0.0;
-  //     element_value_width = 0.0;
       
-
-  //     printf("Strip BPM %d, name %s\n", (Int_t) i, element_name.Data());
-  //     // if (element_name.Contains("qwk_bcm1")) {
-  //     // 	local_ps_element = ps-> GetElementByName("bcm1");
-  //     // } else if (element_name.Contains("qwk_bcm2")) {
-  //     // 	local_ps_element = ps-> GetElementByName("bcm2");
-  //     // } else if (element_name.Contains("qwk_bcm5")) {
-  //     // 	local_ps_element = ps-> GetElementByName("bcm5");
-  //     // } else if (element_name.Contains("qwk_bcm6")) {
-  //     // 	local_ps_element = ps-> GetElementByName("bcm6");
-  //     // } else if (element_name.Contains("qwk_bcm7")) {
-  //     // 	local_ps_element = ps-> GetElementByName("bcm7");
-  //     // } else if (element_name.Contains("qwk_bcm8")) {
-  //     // 	local_ps_element = ps-> GetElementByName("bcm8");
-  //     // } else {
-  //     // 	local_ps_element = NULL;
-  //     // }
+      if(local_ps_element) {
+	element_value       = tmp_channel->GetValue();
+	element_value_err   = tmp_channel->GetValueError();
+	element_value_width = tmp_channel->GetValueWidth();
+	
+	local_ps_element->Set(type, element_value, element_value_err, element_value_width);
+      }
       
-  //   }
+      if( local_print_flag && local_ps_element) {
+	printf("Type %12s, Element %32s, value %12.4e error %8.4e  width %12.4e\n", 
+	       type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
+      }
+    }
 
-  // for(size_t i=0; i< fBPMCombo.size(); i++) 
-  //   {
-  //     element_name        = fBPMCombo[i].get()->GetElementName();
-  //     element_value       = 0.0;
-  //     element_value_err   = 0.0;
-  //     element_value_width = 0.0;
-  //     printf("Combo  BPM %d, name %s\n", (Int_t) i, element_name.Data());
-  //   }
+//////
 
-  return;
+
+  
+  char property[2][6]={"x","y"};
+  local_ps_element=NULL;
+  local_add_these_elements=false;
+  
+  
+  for(size_t i=0; i< fStripline.size(); i++) 
+     {
+     for (Int_t j=0;j<2;j++){
+      tmp_channel= GetChannel(kQwBPMStripline, i,property[j]);   
+      element_name= tmp_channel->GetElementName();
+      element_value       = 0.0;
+      element_value_err   = 0.0;
+      element_value_width = 0.0;
+
+      local_add_these_elements=element_name.Contains("bpm4")||element_name.Contains("bpm18")||element_name.Contains("bpm14")||element_name.Contains("bpm12"); //Need to change this to add other stripline BPMs in summary
+
+      if( local_add_these_elements && local_add_element){
+      	ps->AddElement(new PromptSummaryElement(element_name)); 
+      }
+
+      local_ps_element=ps->GetElementByName(element_name);
+
+          
+     
+      if(local_ps_element) {
+	element_value       = tmp_channel->GetValue();
+	element_value_err   = tmp_channel->GetValueError();
+	element_value_width = tmp_channel->GetValueWidth();
+	local_ps_element->Set(type, element_value, element_value_err, element_value_width);
+      }
+      
+      if( local_print_flag && local_ps_element) {
+	printf("Type %12s, Element %32s, value %12.4e error %8.4e  width %12.4e\n", 
+	       type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
+      }
+
+      }
+    }
+
+  
+  
+    return;
 };

@@ -110,7 +110,9 @@ class QwBlinder {
 
 
     void  WriteFinalValuesToDB(QwParityDB* db);
-    void  PrintFinalValues();
+    void  PrintCountersValues(std::vector<Int_t> fCounters, TString counter_type);
+    void  PrintFinalValues(Int_t kVerbosity=1);
+
 
 #ifdef __USE_DATABASE__
     /// Write to the database
@@ -176,9 +178,16 @@ class QwBlinder {
 
     /// Blind the asymmetry of an array of subsystems
     void  Blind(QwSubsystemArrayParity& diff) {
-      if (CheckBlindability()!=kNotBlindable)
+      if (CheckBlindability(fPatternCounters)!=kNotBlindable)
 	diff.Blind(this);
     };
+    /// Blind the pair asymmetry 
+    /// and only check fBlindingStrategy to avoid  overcounting fPatternCounters
+    void  BlindPair(QwSubsystemArrayParity& diff) {
+      if (CheckBlindability(fPairCounters)!=kNotBlindable)
+	diff.Blind(this);
+    };
+
     /// Unblind the asymmetry of an array of subsystems
     void  UnBlind(QwSubsystemArrayParity& diff) {
       diff.UnBlind(this);
@@ -186,15 +195,37 @@ class QwBlinder {
 
     /// Blind the difference of an array of subsystems
     void  Blind(QwSubsystemArrayParity& diff, const QwSubsystemArrayParity& yield) {
-      if (CheckBlindability()!=kNotBlindable)
+      if (CheckBlindability(fPatternCounters)!=kNotBlindable)
 	diff.Blind(this, yield);
     };
+    /// Blind the pair difference of an array of subsystems
+    void  BlindPair(QwSubsystemArrayParity& diff, const QwSubsystemArrayParity& yield) {
+      if (CheckBlindability(fPairCounters)!=kNotBlindable)
+	diff.Blind(this, yield);
+    };
+
     /// Unblind the difference of an array of subsystems
     void  UnBlind(QwSubsystemArrayParity& diff, const QwSubsystemArrayParity& yield) {
       diff.UnBlind(this, yield);
     };
 
     const Bool_t& IsBlinderOkay() const {return fBlinderIsOkay;};
+
+    void ConstructObjects(TDirectory *folder, TString &prefix) {
+      if (folder != NULL) folder->cd();
+      const TObjString* seed = new TObjString(fSeed);
+      folder->WriteTObject(seed, prefix + "seed", "WriteDelete");
+      const TObjString* seedID = new TObjString(Form("%u",fSeedID));
+      folder->WriteTObject(seedID, prefix + "seedID", "WriteDelete");
+      const TObjString* strategy = new TObjString(Form("%u", fBlindingStrategy));
+      folder->WriteTObject(strategy, prefix + "strategy", "WriteDelete");
+      const TObjString* max_asymmetry = new TObjString(Form("%f",fMaximumBlindingAsymmetry));
+      folder->WriteTObject(max_asymmetry, prefix + "max_asymmetry", "WriteDelete");
+      const TObjString* max_factor = new TObjString(Form("%f",fMaximumBlindingFactor));
+      folder->WriteTObject(max_factor, prefix + "max_factor", "WriteDelete");
+      const TObjString* checksum = new TObjString(fChecksum.c_str());
+      folder->WriteTObject(checksum, prefix + "checksum", "WriteDelete");
+    };
 
  private:
     ///  Indicates the first value recieved of the blindability of the target 
@@ -213,7 +244,7 @@ class QwBlinder {
     Double_t fBeamCurrentThreshold;
     Bool_t fBeamIsPresent;
 
-    EQwBlinderStatus CheckBlindability();
+    EQwBlinderStatus CheckBlindability(std::vector<Int_t> &fCounters);
     Bool_t fBlinderIsOkay;
 
     
@@ -227,14 +258,17 @@ class QwBlinder {
     const QwBlinder& operator= (const QwBlinder& __attribute__((unused)) blinder) { return *this; };
 
     //  Variables and functions used in blinding the detector asymmetries
-    const EQwBlindingStrategy fBlindingStrategy; /// Blinding strategy
+    EQwBlindingStrategy fBlindingStrategy; /// Blinding strategy
     Double_t fBlindingOffset; /// The term to be added to detector asymmetries
     Double_t fBlindingOffset_Base; /// The term to be added to detector asymmetries, before polarity correction
     Double_t fBlindingFactor; /// The factor to be mutliplied to detector asymmetries
 
 
-    static const Double_t kMaximumBlindingAsymmetry; /// Maximum blinding asymmetry (in ppm)
-    static const Double_t kMaximumBlindingFactor;    /// Maximum blinding factor (in % from identity)
+    static const Double_t kDefaultMaximumBlindingAsymmetry; /// Default maximum blinding asymmetry (in ppm)
+    static const Double_t kDefaultMaximumBlindingFactor;    /// Default maximum blinding factor (in fraction from identity)
+
+    Double_t fMaximumBlindingAsymmetry; /// Maximum blinding asymmetry (in ppm)
+    Double_t fMaximumBlindingFactor;    /// Maximum blinding factor (in fraction from identity)
 
     UInt_t fSeedID;      /// ID of seed used (seeds.seed_id)
     TString fSeed;       /// Seed string (seeds.seed)
@@ -275,6 +309,7 @@ class QwBlinder {
     std::vector<UChar_t> GenerateDigest(const TString& input) const;
 
     std::vector<Int_t> fPatternCounters; ///< Counts the number of events in each failure mode
+    std::vector<Int_t> fPairCounters; ///< Counts the number of helicity pairs in each failure mode
 };
 
 #endif //__QWBLINDER__

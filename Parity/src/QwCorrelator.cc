@@ -29,125 +29,94 @@ using namespace std;
 #include "QwParityDB.h"
 #endif // __USE_DATABASE__
 
+// Register this handler with the factory
+RegisterHandlerFactory(QwCorrelator);
 
 //******************************************************************************************************************************************************
 
-QwCorrelator::QwCorrelator(QwOptions &options, QwHelicityPattern& helicitypattern, const TString &run): corA("input") {
-
-  run_label = run;
+QwCorrelator::QwCorrelator(const TString& name):VQwDataHandler(name),
+                                               fDisableHistos(true),
+                                               fAlphaOutputFileBase("blueR"),
+                                               fAlphaOutputFileSuff("new.slope.root"),
+					       fAlphaOutputPath("."),
+                                               fAliasOutputFileBase("regalias_"),
+                                               fAliasOutputFileSuff(""),
+					       fAliasOutputPath("."),
+					       corA("input")
+{
   ParseSeparator = "_";
-  fEnableCorrelation = false;
-  ProcessOptions(options);
-  init("blueReg.conf");
+  fTotalCount = 0;
+  fGoodCount  = 0;
+}
+
+void QwCorrelator::ParseConfigFile(QwParameterFile& file)
+{
+  VQwDataHandler::ParseConfigFile(file);
+  file.PopValue("slope-file-base", fAlphaOutputFileBase);
+  file.PopValue("slope-file-suff", fAlphaOutputFileSuff);
+  file.PopValue("slope-path", fAlphaOutputPath);
+  file.PopValue("alias-file-base", fAliasOutputFileBase);
+  file.PopValue("alias-file-suff", fAliasOutputFileSuff);
+  file.PopValue("alias-path", fAliasOutputPath);
+  file.PopValue("disable-histos", fDisableHistos);
   corA.SetDisableHistogramFlag(fDisableHistos);
-  QwSubsystemArrayParity& asym = helicitypattern.fAsymmetry;
-  QwSubsystemArrayParity& diff = helicitypattern.fDifference;
-  ConnectChannels(asym, diff);
-
-  if (fEnableCorrelation == true) {
-
-    vector<TString> fIndependentName_t;
-    vector<TString> fDependentName_t;
- 
-    for (size_t i = 0; i < fIndependentName.size(); ++i) {
-      fIndependentName_t.push_back(TString(fIndependentName.at(i)));
-    }
-    for (size_t i = 0; i < fDependentName.size(); ++i) {
-      fDependentName_t.push_back(TString(fDependentName.at(i)));
-    }
- 
-    corA.init(fIndependentName_t, fDependentName_t);
-
-  }
-  
 }
 
-void QwCorrelator::init(const std::string configFName) {
-	
-  LoadChannelMap(configFName);
+void QwCorrelator::ProcessData()
+{
+  UInt_t error = 0;
 
-}
-
-
-void QwCorrelator::FillCorrelator() {
-
-  if (! fEnableCorrelation) return;
-
-  UInt_t error;
+  fTotalCount++;
 
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     error |= fDependentVar.at(i)->GetErrorCode();
     fDependentValues.at(i) = (fDependentVar[i]->GetValue());
     //QwMessage << "Loading DV " << fDependentVar.at(i) << " into fDependentValues." << QwLog::endl;
+    if ( fDependentVar.at(i)->GetErrorCode() !=0)  (fErrCounts_DV.at(i))++;
   }
   for (size_t i = 0; i < fIndependentVar.size(); ++i) {
     error |= fIndependentVar.at(i)->GetErrorCode();
     fIndependentValues.at(i) = (fIndependentVar[i]->GetValue());
     //QwMessage << "Loading IV " << fIndependentVar.at(i) << " into fIndependentValues." << QwLog::endl;
+    if ( fIndependentVar.at(i)->GetErrorCode() !=0)  (fErrCounts_IV.at(i))++;
   }
 
   //QwMessage << "fDependentVar has a size of: " << fDependentVar.size() << QwLog::endl;
   //QwMessage << "fIndependentVar has a size of: " << fIndependentVar.size() << QwLog::endl;
 
   if (error == 0) {
+    fGoodCount++;
     corA.addEvent(&fIndependentValues[0],&fDependentValues[0]);
   }
   
 }
 
 
-void QwCorrelator::CalcCorrelations() {
-
-  if (! fEnableCorrelation) return;
-
-	corA.finish();
+void QwCorrelator::CalcCorrelations()
+{
+  QwMessage << "QwCorrelator:  Total entries: " << fTotalCount <<", good entries: "<< fGoodCount << QwLog::endl;
+  for (size_t i = 0; i < fDependentVar.size(); ++i) {
+    if (fErrCounts_DV.at(i) >0) QwMessage << "   Entries failed due to " << fDependentVar.at(i)->GetElementName()
+					  << ": " <<  fErrCounts_DV.at(i) << QwLog::endl;
+  }
+  for (size_t i = 0; i < fIndependentVar.size(); ++i) {
+    if (fErrCounts_IV.at(i) >0) QwMessage << "   Entries failed due to " << fIndependentVar.at(i)->GetElementName()
+					  << ": " <<  fErrCounts_IV.at(i) << QwLog::endl;
+  }
+  corA.finish();
 	
-  std::string TmpRunLabel = run_label.Data();
-  std::string fSlopeFileName = "blueR" + TmpRunLabel + "new.slope.root";
-  std::string fSlopeFilePath = fAlphaOutputPath + "/";
-  std::string tmp = fSlopeFilePath + fSlopeFileName;
+  std::string SlopeFileName = fAlphaOutputFileBase + run_label.Data() + fAlphaOutputFileSuff;
+  std::string SlopeFilePath = fAlphaOutputPath + "/";
+  std::string SlopeFile = SlopeFilePath + SlopeFileName;
+  corA.exportAlphas(TString(SlopeFile), fIndependentFull, fDependentFull);
 
-  TString outAlphas=Form(tmp.c_str());
-  corA.exportAlphas(outAlphas, fIndependentFull, fDependentFull);
-  corA.exportAlias(fAliasOutputPath, "/regalias_"+run_label, fIndependentFull, fDependentFull);
-
+  std::string MacroFileName = fAliasOutputFileBase + run_label.Data() + fAliasOutputFileSuff;
+  std::string MacroFilePath = fAliasOutputPath + "/";
+  corA.exportAlias(TString(MacroFilePath), TString(MacroFileName), fIndependentFull, fDependentFull);
 }
 
 
 //******************************************************************************************************************************************************
-
-
-void QwCorrelator::DefineOptions(QwOptions &options) {
-	
-  options.AddOptions("Correlator")
-    ("enable-correlator", po::value<bool>()->zero_tokens()->default_value(false),
-     "enables correlator");
-  options.AddOptions("Correlator")
-    ("correlator-map", po::value<std::string>()->default_value("regression.map"),
-     "variables and sensitivities for regression");
-  
-  options.AddOptions("Correlator")
-    ("slope-file-path", po::value<std::string>()->default_value("."),
-     "Path for the slop files, also used for lrb (alpha)");
-  options.AddOptions("Correlator")
-    ("alias-output-path", po::value<std::string>()->default_value("."),
-     "Path for the final correlation output file (alias)");
-	
-}
-
-
-void QwCorrelator::ProcessOptions(QwOptions &options) {
-	
-  fEnableCorrelation = options.GetValue<bool>("enable-correlator");
-  fCorrelatorMapFile = options.GetValue<std::string>("correlator-map");
-	  
-  fAlphaOutputPath = options.GetValue<std::string>("slope-file-path");
-  fAliasOutputPath = options.GetValue<std::string>("alias-output-path");
-
-  fDisableHistos = options.GetValue<bool>("disable-histos");
-	  
-}
-
 
 /** Load the channel map
  *
@@ -156,14 +125,11 @@ void QwCorrelator::ProcessOptions(QwOptions &options) {
  */
 Int_t QwCorrelator::LoadChannelMap(const std::string& mapfile)
 {
-  // Return if regression is not enabled
-  if (! fEnableCorrelation) return 0;
-
   // Open the file
   QwParameterFile map(mapfile);
 
   // Read the sections of dependent variables
-  std::pair<EQwRegType,std::string> type_name;
+  std::pair<EQwHandleType,std::string> type_name;
 
   // Add independent variables and sensitivities
   while (map.ReadNextLine()) {
@@ -175,7 +141,7 @@ Int_t QwCorrelator::LoadChannelMap(const std::string& mapfile)
     string primary_token = map.GetNextToken(" ");
     string current_token = map.GetNextToken(" ");
     // Parse current token into independent variable type and name
-    type_name = ParseRegressionVariable(current_token);
+    type_name = ParseHandledVariable(current_token);
 
     if (primary_token == "iv") {
       fIndependentType.push_back(type_name.first);
@@ -204,13 +170,13 @@ Int_t QwCorrelator::LoadChannelMap(const std::string& mapfile)
   //QwMessage << "fDependentType has a size of: " << fDependentType.size() << QwLog::endl;
   //QwMessage << "fDependentName has a size of: " << fDependentName.size() << QwLog::endl;
 
+  return 0;
 }
 
 
 Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff) {
 	
-	// Return if regression is not enabled
-  if (! fEnableCorrelation) return 0;
+	// Return if correlator is not enabled
 
   /// Fill vector of pointers to the relevant data elements
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
@@ -222,23 +188,23 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
     string name = "";
     string reg = "reg_";
     
-    if (fDependentType.at(dv)==kRegTypeMps){
+    if (fDependentType.at(dv)==kHandleTypeMps){
       //  Quietly ignore the MPS type when we're connecting the asym & diff
       continue;
     } else if(fDependentName.at(dv).at(0) == '@' ){
       name = fDependentName.at(dv).substr(1,fDependentName.at(dv).length());
     }else{
       switch (fDependentType.at(dv)) {
-        case kRegTypeAsym:
+        case kHandleTypeAsym:
           dv_ptr = asym.ReturnInternalValueForFriends(fDependentName.at(dv));
           break;
-        case kRegTypeDiff:
+        case kHandleTypeDiff:
           dv_ptr = diff.ReturnInternalValueForFriends(fDependentName.at(dv));
           break;
         default:
           QwWarning << "QwCombiner::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
 	          	      << fDependentName.at(dv)
-		                << ", for asym/diff regression does not have proper type, type=="
+		                << ", for asym/diff correlator does not have proper type, type=="
 		                << fDependentType.at(dv) << "."<< QwLog::endl;
           break;
         }
@@ -278,14 +244,14 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
     // Get the independent variables
     const VQwHardwareChannel* iv_ptr = 0;
     switch (fIndependentType.at(iv)) {
-      case kRegTypeAsym:
+      case kHandleTypeAsym:
         iv_ptr = asym.ReturnInternalValue(fIndependentName.at(iv));
         break;
-      case kRegTypeDiff:
+      case kHandleTypeDiff:
         iv_ptr = diff.ReturnInternalValue(fIndependentName.at(iv));
         break;
       default:
-        QwWarning << "Independent variable for regression has unknown type."
+        QwWarning << "Independent variable for correlator has unknown type."
                   << QwLog::endl;
         break;
     }
@@ -293,15 +259,30 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
       //QwMessage << " iv: " << fIndependentName.at(iv) << QwLog::endl;
       fIndependentVar.push_back(iv_ptr);
     } else {
-      QwWarning << "Independent variable " << fIndependentName.at(iv) << " for regression of could not be found."
+      QwWarning << "Independent variable " << fIndependentName.at(iv) << " for correlator could not be found."
                 << QwLog::endl;
     }
       
   }
   fIndependentValues.resize(fIndependentVar.size());
   fDependentValues.resize(fDependentVar.size());
+
+  //  Restructure the lists for the corA object
+  vector<TString> fIndependentName_t;
+  vector<TString> fDependentName_t;
+ 
+  for (size_t i = 0; i < fIndependentName.size(); ++i) {
+    fIndependentName_t.push_back(TString(fIndependentName.at(i)));
+  }
+  for (size_t i = 0; i < fDependentName.size(); ++i) {
+    fDependentName_t.push_back(TString(fDependentName.at(i)));
+  }
+  corA.init(fIndependentName_t, fDependentName_t);
+
+  fErrCounts_IV.resize(fIndependentVar.size(),0);
+  fErrCounts_DV.resize(fDependentVar.size(),0);
+
   return 0;
-	
 }
 
 

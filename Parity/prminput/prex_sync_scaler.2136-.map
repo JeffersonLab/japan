@@ -1,0 +1,27 @@
+ROC=23
+bank=0x2
+! module.type  module.num  chan.num, det.type, det.name
+  SIS3801D32, 0,   0, syncscal, chouse_fr
+  SIS3801D32, 0,   1, syncscal, chouse_f1
+  SIS3801D32, 0,   2, syncscal, chouse_f2
+
+ROC=25
+bank=0x2
+! module.type  module.num  chan.num, det.type, det.name
+  SIS3801D32, 0,   30, syncscal, lhrs_f1
+  SIS3801D32, 0,   31, syncscal, lhrs_f2
+
+ROC=26
+bank=0x2
+! module.type  module.num  chan.num, det.type, det.name
+  SIS3801D32, 0,   30, syncscal, rhrs_f1
+  SIS3801D32, 0,   31, syncscal, rhrs_f2
+
+ROC=24
+bank=0x1
+! module.type  module.num  chan.num, det.type, det.name
+  header=7
+!  scaler_buffer_offset=6
+  SIS3801D24, 0,   29, syncscal, inj_f1
+  SIS3801D24, 0,   30, syncscal, inj_f2
+

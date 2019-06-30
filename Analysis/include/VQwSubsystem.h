@@ -204,6 +204,27 @@ class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms {
   virtual void  EncodeEventData(std::vector<UInt_t> &buffer) { };
 
 
+  /// \name Objects construction and maintenance
+  // @{
+  /// Construct the objects for this subsystem
+  virtual void  ConstructObjects() {
+    TString tmpstr("");
+    ConstructObjects((TDirectory*) NULL, tmpstr);
+  };
+  /// Construct the objects for this subsystem in a folder
+  virtual void  ConstructObjects(TDirectory *folder) {
+    TString tmpstr("");
+    ConstructObjects(folder, tmpstr);
+  };
+  /// Construct the objects for this subsystem with a prefix
+  virtual void  ConstructObjects(TString &prefix) {
+    ConstructObjects((TDirectory*) NULL, prefix);
+  };
+  /// \brief Construct the objects for this subsystem in a folder with a prefix
+  virtual void  ConstructObjects(TDirectory *folder, TString &prefix) { };
+  // @}
+
+
   /// \name Histogram construction and maintenance
   // @{
   /// Construct the histograms for this subsystem

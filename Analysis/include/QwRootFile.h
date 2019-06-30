@@ -61,6 +61,9 @@ class QwRootTree {
       // Construct tree
       ConstructNewTree();
 
+      // Construct branch
+      ConstructUnitsBranch();
+
       // Construct branches and vector
       ConstructBranchAndVector(object);
     }
@@ -83,10 +86,18 @@ class QwRootTree {
 
   private:
 
+    static const TString kUnitsName;
+    static Double_t kUnitsValue[];
+
     /// Construct the tree
     void ConstructNewTree() {
       QwMessage << "New tree: " << fName << ", " << fDesc << QwLog::endl;
       fTree = new TTree(fName.c_str(), fDesc.c_str());
+    }
+
+    void ConstructUnitsBranch() {
+      std::string name = "units";
+      fTree->Branch(name.c_str(), &kUnitsValue, kUnitsName);
     }
 
     /// Construct index from this tree to another tree
@@ -296,6 +307,10 @@ class QwRootFile {
     static void DefineOptions(QwOptions &options);
     /// \brief Process the configuration options
     void ProcessOptions(QwOptions &options);
+    /// \brief Set default ROOT files dir
+    static void SetDefaultRootFileDir(const std::string& dir) {
+      fDefaultRootFileDir = dir;
+    }
     /// \brief Set default ROOT file stem
     static void SetDefaultRootFileStem(const std::string& stem) {
       fDefaultRootFileStem = stem;
@@ -324,6 +339,10 @@ class QwRootFile {
     template < class T >
       Int_t WriteParamFileList(const TString& name, T& object);
 
+
+    /// \brief Construct the histograms of a generic object
+    template < class T >
+    void ConstructObjects(const std::string& name, T& object);
 
     /// \brief Construct the histograms of a generic object
     template < class T >
@@ -473,6 +492,11 @@ class QwRootFile {
     /// ROOT file
     TFile* fRootFile;
 
+    /// ROOT files dir
+    TString fRootFileDir;
+    /// Default ROOT files dir
+    static std::string fDefaultRootFileDir;
+
     /// ROOT file stem
     TString fRootFileStem;
     /// Default ROOT file stem
@@ -482,6 +506,7 @@ class QwRootFile {
     /// change to a permanent name when closing the file.
     TString fPermanentName;
     Bool_t fMakePermanent;
+    Bool_t fUseTemporaryFile;
 
     /// Search for non-empty trees or histograms in the file
     Bool_t HasAnyFilled(void);
@@ -720,6 +745,40 @@ void QwRootFile::FillTreeBranches(
 
 
 /**
+ * Construct the objects directory of a generic object
+ * @param name Name for objects directory
+ * @param object Subsystem array
+ */
+template < class T >
+void QwRootFile::ConstructObjects(const std::string& name, T& object)
+{
+  // Create the objects in a directory
+  if (fRootFile) {
+    std::string type = typeid(object).name();
+    fDirsByName[name] =
+        fRootFile->GetDirectory(("/" + name).c_str()) ?
+            fRootFile->GetDirectory(("/" + name).c_str()) :
+            fRootFile->GetDirectory("/")->mkdir(name.c_str());
+    fDirsByType[type].push_back(name);
+    object.ConstructObjects(fDirsByName[name]);
+  }
+
+  // No support for directories in a map file
+  if (fMapFile) {
+    QwMessage << "QwRootFile::ConstructObjects::detectors address "
+	      << &object
+	      << " and its name " << name
+	      << QwLog::endl;
+
+    std::string type = typeid(object).name();
+    fDirsByName[name] = fMapFile->GetDirectory()->mkdir(name.c_str());
+    fDirsByType[type].push_back(name);
+    object.ConstructObjects();
+  }
+}
+
+
+/**
  * Construct the histogram of a generic object
  * @param name Name for histogram directory
  * @param object Subsystem array
@@ -733,7 +792,10 @@ void QwRootFile::ConstructHistograms(const std::string& name, T& object)
   // Create the histograms in a directory
   if (fRootFile) {
     std::string type = typeid(object).name();
-    fDirsByName[name] = fRootFile->GetDirectory("/")->mkdir(name.c_str());
+    fDirsByName[name] =
+        fRootFile->GetDirectory(("/" + name).c_str()) ?
+            fRootFile->GetDirectory(("/" + name).c_str()) :
+            fRootFile->GetDirectory("/")->mkdir(name.c_str());
     fDirsByType[type].push_back(name);
     object.ConstructHistograms(fDirsByName[name]);
   }
@@ -744,7 +806,7 @@ void QwRootFile::ConstructHistograms(const std::string& name, T& object)
 	      << &object  
 	      << " and its name " << name 
 	      << QwLog::endl;
-    
+
     std::string type = typeid(object).name();
     fDirsByName[name] = fMapFile->GetDirectory()->mkdir(name.c_str());
     fDirsByType[type].push_back(name);

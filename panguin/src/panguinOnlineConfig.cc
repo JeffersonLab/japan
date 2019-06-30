@@ -7,33 +7,26 @@
 #include <unistd.h>
 #include <dirent.h>
 
-//#define DEBUG
-//#define DEBUG2
-//#define NOISY
-//#define OLDTIMERUPDATE
-
 using namespace std;
 
-///////////////////////////////////////////////////////////////////
-//  Class: OnlineConfig
-//
-//     Utility class that reads in a text file (.cfg) and
-//     stores it's contents.
-//
-
 OnlineConfig::OnlineConfig() 
+  :hist2D_nBinsX(0),hist2D_nBinsY(0), 
+   fPlotFormat(""),fRunNumber(0)
 {
   // Constructor.  Without an argument, will use default "standard" config
   fMonitor = kFALSE;
+  fVerbosity = 0;
   OnlineConfig("standard");
 }
 
-OnlineConfig::OnlineConfig(TString anatype) 
+OnlineConfig::OnlineConfig(TString anatype): 
+  confFileName(anatype),fVerbosity(0),
+  hist2D_nBinsX(0),hist2D_nBinsY(0), 
+  fPlotFormat(""),fRunNumber(0)
 {
   // Constructor.  Takes the config anatype as the only argument.
   //  Loads up the configuration file, and stores it's contents for access.
   
-  confFileName = anatype;
   //confFileName += ".cfg";//Not sure what this would be needed DELETEME cg
   fMonitor = kFALSE;
   fFoundCfg = kFALSE;
@@ -96,15 +89,15 @@ void OnlineConfig::ParseFile()
     sConfFile.push_back(strvect);
   }
 
-#ifdef DEBUG
-  cout << "OnlineConfig::ParseFile()\n";
-  for(UInt_t ii=0; ii<sConfFile.size(); ii++) {
-    cout << "Line " << ii << endl << "  ";
-    for(UInt_t jj=0; jj<sConfFile[ii].size(); jj++) 
-      cout << sConfFile[ii][jj] << " ";
-    cout << endl;
+  if(fVerbosity>=1){
+    cout << "OnlineConfig::ParseFile()\n";
+    for(UInt_t ii=0; ii<sConfFile.size(); ii++) {
+      cout << "Line " << ii << endl << "  ";
+      for(UInt_t jj=0; jj<sConfFile[ii].size(); jj++) 
+	cout << sConfFile[ii][jj] << " ";
+      cout << endl;
+    }
   }
-#endif
 
   cout << "     " << sConfFile.size() << " lines read from " 
        << confFileName << endl;
@@ -140,13 +133,18 @@ Bool_t OnlineConfig::ParseConfig()
     if(sConfFile[i][0] == "watchfile") {
       fMonitor = kTRUE;
     }
+    if(sConfFile[i][0] == "2DbinsX") {
+      hist2D_nBinsX = atoi(sConfFile[i][1]);
+    }
+    if(sConfFile[i][0] == "2DbinsY") {
+      hist2D_nBinsY = atoi(sConfFile[i][1]);
+    }
     if(sConfFile[i][0] == "definecut") {
       if(sConfFile[i].size()>3) {
 	cerr << "cut command has too many arguments" << endl;
 	continue;
       }
       TCut tempCut(sConfFile[i][1],sConfFile[i][2]);
-      //      cutList.push_back(make_pair(sConfFile[i][1],sConfFile[i][2]));
       cutList.push_back(tempCut);
     }
     if(sConfFile[i][0] == "rootfile") {
@@ -163,6 +161,8 @@ Bool_t OnlineConfig::ParseConfig()
 	continue;
       }
       rootfilename = sConfFile[i][1];
+      TString temp = sConfFile[i][1](sConfFile[i][1].Last('_')+1,sConfFile[i][1].Length());
+      fRunNumber = atoi(temp(0,temp.Last('.')).Data());
     }
     if(sConfFile[i][0] == "goldenrootfile") {
       if(sConfFile[i].size() != 2) {
@@ -224,17 +224,26 @@ Bool_t OnlineConfig::ParseConfig()
       }
       plotsdir = sConfFile[i][1];
     }
+    if(sConfFile[i][0] == "plotFormat") {
+      if(sConfFile[i].size() != 2) {
+	cerr << "WARNING: plotsdir command does not have the "
+	     << "correct number of arguments (needs 1)"
+	     << endl;
+	continue;
+      }
+      fPlotFormat = sConfFile[i][1];
+    }
 
   }
 
-#ifdef NOISY
-  cout << "OnlineConfig::ParseConfig()\n";
-  for(UInt_t i=0; i<GetPageCount(); i++) {
-    cout << "Page " << i << " (" << GetPageTitle(i) << ")"
-	 << " will draw " << GetDrawCount(i) 
-	 << " histograms." << endl;
+  if(fVerbosity>=3){
+    cout << "OnlineConfig::ParseConfig()\n";
+    for(UInt_t i=0; i<GetPageCount(); i++) {
+      cout << "Page " << i << " (" << GetPageTitle(i) << ")"
+	   << " will draw " << GetDrawCount(i) 
+	   << " histograms." << endl;
+    }
   }
-#endif
 
   cout << "Number of pages defined = " << GetPageCount() << endl;
   cout << "Number of cuts defined = " << cutList.size() << endl;
@@ -286,13 +295,14 @@ Bool_t OnlineConfig::IsLogy(UInt_t page) {
     printf("\nFound a logy!!!\n\n");
     return kTRUE;
   }
-#ifdef DEBUG
-  cout << "OnlineConfig::IsLogy()     " << option << " " << page_index << " " << word_index 
-       << " " << sConfFile[page_index].size() << endl;
-  for (Int_t i= 0; i < sConfFile[page_index].size(); i++) {
-    cout << sConfFile[page_index][i] << " ";
+  if(fVerbosity>=1){
+    cout << "OnlineConfig::IsLogy()     " << option << " " << page_index << " " << word_index 
+	 << " " << sConfFile[page_index].size() << endl;
+    for (Int_t i= 0; i < sConfFile[page_index].size(); i++) {
+      cout << sConfFile[page_index][i] << " ";
+    }
   }
-#endif
+
   return kFALSE;
 
 }
@@ -406,19 +416,21 @@ vector <TString> OnlineConfig::GetDrawCommand(UInt_t page, UInt_t nCommand)
   vector <UInt_t> command_vector = GetDrawIndex(page);
   UInt_t index = command_vector[nCommand];
 
-#ifdef DEBUG
-  cout << "OnlineConfig::GetDrawCommand(" << page << "," 
-       << nCommand << ")" << endl;
-#endif
+  if(fVerbosity > 1){
+    cout<<__PRETTY_FUNCTION__<<"\t"<<__LINE__<<endl;
+    cout << "OnlineConfig::GetDrawCommand(" << page << "," 
+	 << nCommand << ")" << endl;
+  }
+
   for(UInt_t i=0; i<out_command.size(); i++) {
     out_command[i] = "";
   }
-
 
   // First line is the variable
   if(sConfFile[index].size()>=1) {
     out_command[0] = sConfFile[index][0];
   }
+
   if(sConfFile[index].size()>=2) {
     if((sConfFile[index][1] != "-type") &&
        (sConfFile[index][1] != "-title") &&
@@ -439,39 +451,42 @@ vector <TString> OnlineConfig::GetDrawCommand(UInt_t page, UInt_t nCommand)
 	TString word = sConfFile[index][j];
 	if( (word.BeginsWith("\"")) && (word.EndsWith("\"")) ) {
 	  title = word.ReplaceAll("\"","");
-	  out_command[3] = title;
 	  i = j;
 	  break;
 	} else if(word.BeginsWith("\"")) {
 	  title = word.ReplaceAll("\"","");
 	} else if(word.EndsWith("\"")) {
 	  title += " " + word.ReplaceAll("\"","");
-	  out_command[3] = title;
 	  i = j;
 	  break;
+	} else if (title.Length()==0){
+	  title = word;
 	} else {
+	  //  This case uses neither "i = j;" or "break;", because
+	  //  we want to be able to include all the words in the title.
+	  //  The title will end before the end of the line only if
+	  //  it is delimited by quotes.
 	  title += " " + word;
 	}
       }
+      out_command[3] = title;
     } else if(sConfFile[index][i]=="-tree") {
       out_command[4] = sConfFile[index][i+1];
       i = i+1;
     }
+  }
 
-#ifdef DEBUG
+  if(fVerbosity>=1){
+    cout << sConfFile[index].size() << ": ";
+    for(UInt_t i=0; i<sConfFile[index].size(); i++) {
+      cout << sConfFile[index][i] << " ";
+    }
     cout << endl;
-#endif
+    for(UInt_t i=0; i<out_command.size(); i++) {
+      cout << i << ": " << out_command[i] << endl;
+    }
   }
-#ifdef DEBUG
-  cout << sConfFile[index].size() << ": ";
-  for(UInt_t i=0; i<sConfFile[index].size(); i++) {
-    cout << sConfFile[index][i] << " ";
-  }
-  cout << endl;
-  for(UInt_t i=0; i<out_command.size(); i++) {
-    cout << i << ": " << out_command[i] << endl;
-  }
-#endif
+
   return out_command;
 }
 
@@ -517,6 +532,8 @@ void OnlineConfig::OverrideRootFile(UInt_t runnumber)
     sprintf(runnostr,"%04i",runnumber);
     protorootfile.ReplaceAll("XXXXX",runnostr);
     rootfilename = protorootfile;
+    TString temp = rootfilename(rootfilename.Last('_')+1,rootfilename.Length());
+    fRunNumber = atoi(temp(0,temp.Last('.')).Data());
   } else {
     string fnmRoot="/adaq1/work1/apar/japanOutput";
     if(getenv("QW_ROOTFILES"))
@@ -528,20 +545,35 @@ void OnlineConfig::OverrideRootFile(UInt_t runnumber)
 
     DIR *dirSearch;
     struct dirent *entSearch;
-    const string daqConfigs[3] = {"CH","INJ","ALL"};
+    const string daqConfigs[3] = {"CH","inj","ALL"};
     int found=0;
     string partialname = "";
     if ((dirSearch = opendir (fnmRoot.c_str())) != NULL) {
       while ((entSearch = readdir (dirSearch)) != NULL) {
 	for(int i=0;i<3;i++){
 	  partialname = Form("prex%s_%d.root",daqConfigs[i].c_str(),runnumber);
-	  if(fMonitor)
-	    partialname = Form("prex%s_%d.adaq3",daqConfigs[i].c_str(),runnumber);
-
 	  std::string fullname = entSearch->d_name;
 	  if(fullname.find(partialname) != std::string::npos){
 	    rootfilename = fnmRoot + "/" + fullname;
 	    found++;
+	  }
+	  if(found==0 && fMonitor){
+	    partialname = Form("prex%s_%d.adaq1",daqConfigs[i].c_str(),runnumber);
+	    std::string fullname = entSearch->d_name;
+	    if(fullname.find(partialname) != std::string::npos){
+	      rootfilename = fnmRoot + "/" + fullname;
+	      found++;
+	    }
+	  }else if(!fMonitor && found==0){
+	    partialname = Form("prex%s_%d.000.root",daqConfigs[i].c_str(),runnumber);
+	    if(fVerbosity>=1)
+	      cout<<__PRETTY_FUNCTION__<<"\t"<<__LINE__<<endl
+		  <<"Looking for a segmented output. Looking at segment 000 only"<<endl;
+	    std::string fullname = entSearch->d_name;
+	    if(fullname.find(partialname) != std::string::npos){
+	      rootfilename = fnmRoot + "/" + fullname;
+	      found++;
+	    }
 	  }
 	}
 	if(found) break;
@@ -549,9 +581,10 @@ void OnlineConfig::OverrideRootFile(UInt_t runnumber)
       closedir (dirSearch);
     }
 
-    if(found)
+    if(found){
       cout<<"\t found file "<< rootfilename<<endl;
-    else{
+      fRunNumber = runnumber;
+    }else{
       cout<<"double check your configurations and files. Quitting"<<endl;
       exit(1);
     }

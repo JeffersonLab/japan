@@ -1,0 +1,56 @@
+! adc sample size  16564
+!----
+!END	    		        
+
+! Unser calibration based on Run 1214 , HAPLOG 3609
+UNSER,   -174.1,     2.066e-2	    
+
+  ! BCM Calibration from run 1280~ 20-30 uA (based on UNSER)
+  bcm_an_us, 	 -309.92, 	 0.002889 
+  bcm_an_ds, 	 -553.58, 	 0.002758 
+  bcm_an_ds3, 	 -268.32, 	 0.000808 
+  bcm_an_ds10,  -2589.54,  0.000267 
+  bcm_dg_us, 	 -145.22, 	 0.003020 
+  bcm_dg_ds, 	 -596.17, 	 0.003003 
+
+  ! BPM pedestal from run 1280 current scan, 20-30 uA (based on UNSER)
+  ! with 4A and 4E at forced gain 
+  bpm4aXP,	 1317.46,	 1.0 
+  bpm4aXM,	 -412.32,	 1.0 
+  bpm4aYP,	 -128.90,	 1.0 
+  bpm4aYM,	 1074.41,	 1.0 
+
+  bpm4eXP,	 952.60,	 1.0 
+  bpm4eXM,	 721.65,	 1.0 
+  bpm4eYP,	 189.11,	 1.0 
+  bpm4eYM,	 940.38,	 1.0 
+
+  ! BPM 12, 14 and 18 were kept at auto-gain mode, 12 XM has no signal
+  bpm12XP,	 3143.56,	 1.0 
+
+  bpm12YP,	 4568.11,	 1.0 
+  bpm12YM,	 3316.37,	 1.0 
+
+  bpm14XP,	 244.58,	 1.0 
+  bpm14XM,	 -59.63,	 1.0 
+  bpm14YP,	 396.28,	 1.0 
+  bpm14YM,	 1436.64,	 1.0 
+
+  bpm18XP,	 -1104.84,	 1.0 
+  bpm18XM,	 -2769.28,	 1.0 
+  bpm18YP,	 -2337.71,	 1.0 
+  bpm18YM,	 -1348.61,	 1.0 
+
+! cavity BPMs pedestal calibration from zero gain run 1219
+  cav4bq,  -167.527,    0.00529310
+  cav4BXI,  -379.812,    0.00089542
+  cav4BYI,  -550.257,    0.00060837
+
+  cav4cq,  -403.997,    0.0071337
+  cav4CXI,  -634.063,    0.0007546 
+  cav4CYI,  -357.001,    0.0008082
+
+  cav4dq,  -216.942,    0.0078974
+  cav4DXI,  -242.757,    0.0007698
+  cav4DYI,  -203.538,    0.0006942
+

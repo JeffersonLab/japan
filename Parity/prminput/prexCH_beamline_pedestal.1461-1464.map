@@ -1,0 +1,49 @@
+! adc sample size  16564
+!----
+!END	    		        
+
+! Unser calibration based on Run 1214 , HAPLOG 3609
+UNSER,   -174.1,     2.066e-2	    
+
+!  Rough BCM calibration from 2uA and 5uA during run 1224.
+bcm_an_us,    -634.1      0.00306062
+bcm_an_ds,    -810.6      0.00300731
+bcm_an_ds3,   -662.6      0.00088747
+bcm_an_ds10,  -255.9,     0.00031405
+
+! BPM pedestal from run 1245
+  bpm4aXM,	3597,	1
+  bpm4aXP,	3316,	1
+  bpm4aYM,	-537.1,	1
+  bpm4aYP,	-531.5,	1
+
+  bpm4eXM,	-1584,	1
+  bpm4eXP,	-1512,	1
+  bpm4eYM,	-1293,	1
+  bpm4eYP,	-1168,	1
+
+  bpm18XM,	-3190,	1
+  bpm18XP,	-2872,	1
+  bpm18YM,	-2744,	1
+  bpm18YP,	-2850,	1
+
+  bpm14XM,	-3976,	1
+  bpm14XP,	-4184,	1
+  bpm14YM,	-3868,	1
+  bpm14YP,	-3587,	1
+
+! cavity BPMs pedestal calibration from zero gain run 1219
+  cav4bq,  -167.527,    1
+  cav4BXI,  -379.812,    1
+  cav4BYI,  -550.257,    1
+
+  cav4cq,  -403.997,    1
+  cav4CXI,  -634.063,    1
+  cav4CYI,  -357.001,    1
+
+  cav4dq,  -216.942,    1
+  cav4DXI,  -242.757,    1
+  cav4DYI,  -203.538,    1
+
+
+
