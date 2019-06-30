@@ -1,10 +1,16 @@
-!! SAM Pedestal using beam off.
-!! Will update with pedestal scan resutls. Tao Ye
-sam1 , 12400 , 76.293e-6
-sam2 , 12730. , 76.293e-6
-sam3 , 15780 , 76.293e-6
-sam4 , 13020 , 76.293e-6
-sam5 , 12660 , 76.293e-6
-sam6 , 12930 , 76.293e-6
-sam7 , 18600 , 76.293e-6 
-sam8 , 12320 , 76.293e-6
+!! SAM Pedestal
+sam1, 11739.64, 76.293e-6
+sam2, 1829.20, 76.293e-6
+sam3, 11993.51,76.293e-6
+sam4, 8026.65, 76.293e-6
+sam5, 12027.42,76.293e-6
+sam6, 8456.49, 76.293e-6
+sam8, 5786.52,76.293e-6
+
+
+
+
+
+
+
+
