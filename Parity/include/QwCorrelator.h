@@ -37,8 +37,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 		
   void unpackEvent();
 
-  void AccumulateRunningSum();
-  void ProcessData(){};
+  void ProcessData();
   void CalcCorrelations();
 		
  protected:

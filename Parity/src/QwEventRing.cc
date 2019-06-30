@@ -14,6 +14,7 @@ QwEventRing::QwEventRing(QwOptions &options, QwSubsystemArrayParity &event)
   fNumberOfEvents = 0;
   fNextToBeFilled = 0;
   fNextToBeRead = 0;
+  countdown = 0;
 
   //open the log file
   if (bDEBUG_Write)
@@ -42,6 +43,9 @@ void QwEventRing::DefineOptions(QwOptions &options)
   options.AddOptions()("ring.print-after-unwind",
       po::value<bool>()->default_bool_value(false),
       "QwEventRing: print rolling avg after unwind");
+  options.AddOptions()("ring.holdoff",
+      po::value<int>()->default_value(200),
+      "QwEventRing: number of events ignored after the beam trips");
 }
 
 void QwEventRing::ProcessOptions(QwOptions &options)
@@ -59,6 +63,9 @@ void QwEventRing::ProcessOptions(QwOptions &options)
 
   if (gQwOptions.HasValue("ring.stability_cut"))
     stability=gQwOptions.GetValue<double>("ring.stability_cut");
+
+  if(gQwOptions.HasValue("ring.holdoff"))
+    holdoff=gQwOptions.GetValue<int>("ring.holdoff");
 
   if (stability>0.0)
     bStability=kTRUE;
@@ -101,30 +108,36 @@ void QwEventRing::push(QwSubsystemArrayParity &event)
 
       //check for current ramps
     if (bRING_READY && bStability){
-	fRollingAvg.CalculateRunningAverage();
-	/*
-	//The fRollingAvg dose not contain any regular errorcodes since it only accumulate rolling sum for errorflag==0 event.
-	//The only errorflag it generates is the stability cut faliure error when the rolling avg is computed. 
-	//Therefore when fRollingAvg.GetEventcutErrorFlag() is called it will return non-zero error code only if a global stability cut has failed
-	//When fRollingAvg.GetEventcutErrorFlag() is called the fErrorFlag of the subsystemarrayparity object will be updated with any global
-	//stability cut faliures
-	*/
-	fRollingAvg.UpdateErrorFlag(); //to update the global error code in the fRollingAvg
-	if ( fRollingAvg.GetEventcutErrorFlag() != 0 ) {
-	  //  This test really needs to determine in any of the subelements
-	  //  might have a local stability cut failure, instead of just this
-	  //  global stability cut failure.
-	  for(Int_t i=0;i<fRING_SIZE;i++){
-	    fEvent_Ring[i].UpdateErrorFlag(fRollingAvg);
-	    fEvent_Ring[i].UpdateErrorFlag();
-	  }
-	}
-	if ((fEvent_Ring[thisevent].GetEventcutErrorFlag() & kBCMErrorFlag)!=0 &&
-	    (fEvent_Ring[prevevent].GetEventcutErrorFlag() & kBCMErrorFlag)!=0){
-	  for(Int_t i=0;i<fRING_SIZE;i++){
-	    fEvent_Ring[i].UpdateErrorFlag(kBeamTripError);
-	  }
-	}
+	    fRollingAvg.CalculateRunningAverage();
+    	/*
+	    //The fRollingAvg dose not contain any regular errorcodes since it only accumulate rolling sum for errorflag==0 event.
+	    //The only errorflag it generates is the stability cut faliure error when the rolling avg is computed. 
+	    //Therefore when fRollingAvg.GetEventcutErrorFlag() is called it will return non-zero error code only if a global stability cut has failed
+	    //When fRollingAvg.GetEventcutErrorFlag() is called the fErrorFlag of the subsystemarrayparity object will be updated with any global
+	    //stability cut faliures
+	    */
+	    fRollingAvg.UpdateErrorFlag(); //to update the global error code in the fRollingAvg
+	    if ( fRollingAvg.GetEventcutErrorFlag() != 0 ) {
+	      //  This test really needs to determine in any of the subelements
+	      //  might have a local stability cut failure, instead of just this
+	      //  global stability cut failure.
+	      for(Int_t i=0;i<fRING_SIZE;i++){
+	        fEvent_Ring[i].UpdateErrorFlag(fRollingAvg);
+	        fEvent_Ring[i].UpdateErrorFlag();
+	      }
+	    }
+	    if ((fEvent_Ring[thisevent].GetEventcutErrorFlag() & kBCMErrorFlag)!=0 &&
+	        (fEvent_Ring[prevevent].GetEventcutErrorFlag() & kBCMErrorFlag)!=0){
+        countdown = holdoff;
+      }
+      if (countdown > 0) {
+        --countdown;
+  	    for(Int_t i=0;i<fRING_SIZE;i++){
+	        fEvent_Ring[i].UpdateErrorFlag(kBeamTripError);
+	      }
+    	}
+      
+
     }
     //ring processing is done at a separate location
   }

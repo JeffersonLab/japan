@@ -4,7 +4,7 @@ Bank=0x02
 vqwk_buffer_offset=1
 
 !same sample size for ADCs in a given bank
-sample_size=4096
+sample_size=4084
 !
 !
 ! module.type, module.num  chan.num, det.type, det.name
@@ -151,9 +151,9 @@ normclock=clk4MHz_1
   SCALER,  0,  9, clock, inj_laser_table_battery_2
   SCALER,  0, 10, clock, inj_bpm_trigger
 
-  SCALER,  0, 17, clock, clk4MHz_1
-  SCALER,  0, 18, clock, clk4MHz_2
-  SCALER,  0, 19, clock, clk4MHz_3
+  SCALER,  0, 31, clock, clk4MHz_1
+! SCALER,  0, 30, clock, clk4MHz_2 ! This clock has been unplugged for some time
+  SCALER,  0, 29, clock, clk4MHz_3
 
 
 [PUBLISH]

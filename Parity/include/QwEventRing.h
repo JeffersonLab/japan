@@ -88,6 +88,10 @@ class QwEventRing {
   //State of the stability check - ON/OFF
   Bool_t bStability;
 
+  //Beam Trip Variables
+  int holdoff;    //the amount of events that are ignored when the beam trips
+  int countdown;   //the amount of current events that are to be ignored
+
   //  Burp cut variables
   Int_t fBurpExtent;
   Int_t fBurpPrecut;

@@ -3186,7 +3186,7 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
       element_value_err   = 0.0;
       element_value_width = 0.0;
 
-      local_add_these_elements =  element_name.EqualTo("bcm_an_us")||element_name.EqualTo("bcm_an_ds")||element_name.EqualTo("bcm_an_ds3")|| (element_name.Contains("cav4")&& element_name.Contains("q")  && !element_name.Contains("adc")); // Need to change this to add other BCMs in summary
+      local_add_these_elements =  element_name.EqualTo("bcm_an_us")||element_name.EqualTo("bcm_an_ds")||element_name.EqualTo("bcm_an_ds3")|| (element_name.Contains("cav4") ); // Need to change this to add other BCMs in summary
 
       if(local_add_these_elements && local_add_element){
       	ps->AddElement(new PromptSummaryElement(element_name)); 
@@ -3209,6 +3209,43 @@ void QwBeamLine::WritePromptSummary(QwPromptSummary *ps, TString type)
 	       type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
       }
     }
+
+//Add BPM Cavity
+  for (size_t i = 0; i < fCavity.size();  i++) 
+    {
+      tmp_channel=GetChannel(kQwBPMCavity, i,"ef");	
+      element_name        = tmp_channel->GetElementName();
+      element_value       = 0.0;
+      element_value_err   = 0.0;
+      element_value_width = 0.0;
+
+      local_add_these_elements =  (element_name.EqualTo("cav4bQ")||element_name.EqualTo("cav4cQ")|| element_name.EqualTo("cav4dQ") ); // Need to change this to add other cavities in summary
+
+      if(local_add_these_elements && local_add_element){
+      	ps->AddElement(new PromptSummaryElement(element_name)); 
+      }
+
+
+      local_ps_element=ps->GetElementByName(element_name);
+
+      
+      if(local_ps_element) {
+	element_value       = tmp_channel->GetValue();
+	element_value_err   = tmp_channel->GetValueError();
+	element_value_width = tmp_channel->GetValueWidth();
+	
+	local_ps_element->Set(type, element_value, element_value_err, element_value_width);
+      }
+      
+      if( local_print_flag && local_ps_element) {
+	printf("Type %12s, Element %32s, value %12.4e error %8.4e  width %12.4e\n", 
+	       type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
+      }
+    }
+
+//////
+
+
   
   char property[2][6]={"x","y"};
   local_ps_element=NULL;
