@@ -1,5 +1,4 @@
-#!/bin/bash
-#
+#!/bin/tcsh
 
 if ($?QWSCRATCH) then
   ##  The QWSCRATCH variable is defined.
