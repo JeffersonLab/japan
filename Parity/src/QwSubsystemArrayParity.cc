@@ -93,6 +93,7 @@ QwSubsystemArrayParity& QwSubsystemArrayParity::operator= (const QwSubsystemArra
     if (this->size() == source.size()){
       this->fErrorFlag=source.fErrorFlag;
       this->fCodaEventNumber=source.fCodaEventNumber;
+      this->fCodaEventType=source.fCodaEventType;
       for(size_t i=0;i<source.size();i++){
 	if (source.at(i)==NULL || this->at(i)==NULL){
 	  //  Either the source or the destination subsystem
