@@ -58,32 +58,7 @@ void LRBCorrector::ParseConfigFile(QwParameterFile& file)
 
 Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
 {
-  std::string SlopeFileName = fAlphaFileBase + run_label.Data() + fAlphaFileSuff;
-  std::string SlopeFilePath = fAlphaFilePath + "/";
-  std::string SlopeFile = SlopeFilePath + SlopeFileName;
-  TString corFileName(SlopeFile);
-  QwMessage << "Trying to open " << corFileName << QwLog::endl;
-  TFile*  corFile=new TFile(corFileName);
-  if( !corFile->IsOpen()) {
-    printf("Failed to open %s, slopes NOT found\n",corFile->GetName());
-    return 0;
-  }
-
-  TMatrixD *alphasM=0;
-  alphasM=(TMatrixD *) corFile->Get("slopes");
-  assert(alphasM);
-
-  TH1 *dvnames = (TH1 *) corFile->Get("DVname");
-  assert(dvnames);
-  TH1 *ivnames = (TH1 *) corFile->Get("IVname");
-  assert(ivnames);
-
-  std::pair<EQwHandleType, string> type_name_dv;
-  std::pair<EQwHandleType, string> type_name_iv;
-
-  QwMessage << mapfile << QwLog::endl;
-
-    // Open the file
+  // Open the file
   QwParameterFile map(mapfile);
 
   // Read the sections of dependent variables
@@ -104,14 +79,10 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
     if (primary_token == "iv") {
       fIndependentType.push_back(type_name.first);
       fIndependentName.push_back(type_name.second);
-      //QwMessage << "IV Type: " << type_name.first << QwLog::endl;
-      //QwMessage << "IV Name: " << type_name.second << QwLog::endl;
     }
     else if (primary_token == "dv") {
       fDependentType.push_back(type_name.first);
       fDependentName.push_back(type_name.second);
-      //QwMessage << "DV Type: " << type_name.first << QwLog::endl;
-      //QwMessage << "DV Name: " << type_name.second << QwLog::endl;
     }
     else if (primary_token == "treetype") {
       QwMessage << "Tree Type read, ignoring." << QwLog::endl;
@@ -121,29 +92,91 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
     }
   }
 
-  //  Loop through ivnames to get IV type and name
-  //    Loop over # of dep variables
-  //      Push-back the sensitiivity, IV type and IVnames into their respective vectors for each DV
-
-  /*for (Int_t i = 0; i < dvnames->GetXaxis()->GetNbins(); ++i){
-    type_name_dv = ParseHandledVariable(dvnames->GetXaxis()->GetBinLabel(i+1));
-    fDependentType.push_back(type_name_dv.first);
-    fDependentName.push_back(type_name_dv.second);
-  }*/
-
+  // Resize sensitivity with all zeros
   fSensitivity.resize(fDependentType.size());
+  for (size_t i = 0; i != fDependentType.size(); i++)
+    fSensitivity.at(i).resize(fIndependentType.size());
 
+  // Construct slope file name
+  std::string SlopeFileName = fAlphaFileBase + run_label.Data() + fAlphaFileSuff;
+  std::string SlopeFilePath = fAlphaFilePath + "/";
+  std::string SlopeFile = SlopeFilePath + SlopeFileName;
+  TString corFileName(SlopeFile);
+
+  QwMessage << "Trying to open " << corFileName << QwLog::endl;
+  TFile* corFile = new TFile(corFileName);
+  if (! corFile->IsOpen()) {
+    QwWarning << "Failed to open " << corFileName << ", slopes NOT found" << QwLog::endl;
+    return 0;
+  }
+
+  // Slope matrix
+  TMatrixD *alphasM = (TMatrixD *) corFile->Get("slopes");
+  if (alphasM == 0) {
+    QwWarning << "Slope matrix is null" << QwLog::endl;
+    corFile->Close();
+    return 0;
+  }
+  if (alphasM->GetNrows() != Int_t(fIndependentType.size())) {
+    QwWarning << "Slope matrix has wrong number of rows: "
+              << alphasM->GetNrows() << " != " << fIndependentType.size()
+              << QwLog::endl;
+    corFile->Close();
+    return 0;
+  }
+  if (alphasM->GetNcols() != Int_t(fDependentType.size())) {
+    QwWarning << "Slope matrix has wrong number of cols: "
+              << alphasM->GetNcols() << " != " << fDependentType.size()
+              << QwLog::endl;
+    corFile->Close();
+    return 0;
+  }
+
+  // DV names
+  TH1 *dvnames = (TH1 *) corFile->Get("DVname");
+  if (dvnames == 0) {
+    QwWarning << "DV names matrix is null" << QwLog::endl;
+    corFile->Close();
+    return 0;
+  }
+  for (size_t i = 0; i != fDependentName.size(); i++) {
+    TString name = dvnames->GetXaxis()->GetBinLabel(i+1);
+    name.Remove(0, name.First("_") + 1);
+    if (fDependentName[i] != name) {
+      QwWarning << "DV name expected differs from found: "
+                << fDependentName[i] << " != " << name
+                << QwLog::endl;
+      corFile->Close();
+      return 0;
+    }
+  }
+
+  // IV names
+  TH1 *ivnames = (TH1 *) corFile->Get("IVname");
+  if (ivnames == 0) {
+    QwWarning << "IV names matrix is null" << QwLog::endl;
+    corFile->Close();
+    return 0;
+  }
+  for (size_t i = 0; i != fIndependentName.size(); i++) {
+    TString name = ivnames->GetXaxis()->GetBinLabel(i+1);
+    name.Remove(0, name.First("_") + 1);
+    if (fIndependentName[i] != name) {
+      QwWarning << "IV name expected differs from found: "
+                << fIndependentName[i] << " != " << name
+                << QwLog::endl;
+      corFile->Close();
+      return 0;
+    }
+  }
+
+  // Assign sensitivities
   for (Int_t i = 0; i < ivnames->GetXaxis()->GetNbins(); ++i) {
-    //type_name_iv = ParseHandledVariable(ivnames->GetXaxis()->GetBinLabel(i+1));
-    //fIndependentType.push_back(type_name_iv.first);
-    //fIndependentName.push_back(type_name_iv.second);
     for (Int_t j = 0; j < dvnames->GetXaxis()->GetNbins(); ++j) {
       fSensitivity[j].push_back(-1.0*(*alphasM)(i,j));
     }
   }
 
-  //printf("opened %s, slopes found, dump:\n",corFile->GetName());
-  //alphasM->Print();
   corFile->Close();
   return 0;
 }
@@ -159,9 +192,6 @@ Int_t LRBCorrector::ConnectChannels(
   for (size_t iv = 0; iv < fIndependentName.size(); iv++) {
     // Get the independent variables
     const VQwHardwareChannel* iv_ptr = 0;
-    //QwMessage << "fInpedententType[" << iv << "] = " << fIndependentType.at(iv) 
-    //          << "; fInpedententName[" << iv << "] = " << fIndependentName.at(iv)
-    //          << QwLog::endl;
     switch (fIndependentType.at(iv)) {
       case kHandleTypeAsym:
         iv_ptr = asym.ReturnInternalValue(fIndependentName.at(iv));
