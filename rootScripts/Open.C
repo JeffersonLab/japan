@@ -8,10 +8,21 @@ Description:  This macro opens the root output file for the given run number
               and then friends the mulc and mulc_lrd trees to the mul tree
               for ease of creating plots.
 
-Last Modified: June 28, 2019
+Examples: 'Open(2964)' will open the segment zero of the default rootfile
+               for run 2964 in the $QW_ROOTFILES directory.
+
+          'Open(1234,"junk_",0)' will open the file "junk_1234.000.root"
+               in the $QW_ROOTFILES directory.
+
+          'TFile* _run1234 = Open(1234,"junk_",0)' will open the file
+               "junk_1234.000.root" in the $QW_ROOTFILES directory as the
+               "_run1234" pointer, so you can swtich between open files
+               by doing "_run1234->cd()".
+
+Last Modified: July 1, 2019
 *****************************************************************************/
 
-TFile* Open(int runnum, TString filestem = "") {
+TFile* Open(int runnum, TString filestem = "", Int_t segment=0) {
 
   TFile* myfile;
   TTree* mymul;
@@ -20,22 +31,33 @@ TFile* Open(int runnum, TString filestem = "") {
 
   const char* FILE_PATH = "$QW_ROOTFILES";    //path to folder that contains rootfiles
 
+  TString filename;
+
   if(filestem != "") {
-    myfile = new TFile(Form("%s/%s",FILE_PATH,filestem.Data()));
+    filename = Form("%s/%s%d.%03d.root",FILE_PATH,
+		    filestem.Data(),runnum,segment);
+    myfile = new TFile(filename);
     if (!(myfile->IsOpen())) {
-      cout << "File not found" << endl;
+      std::cout << "File, "<< filename <<", not found" << std::endl;
       return NULL;
     }
+  } else {
+    TString stemlist[4] = {"prexPrompt_pass2_",
+			   "prexPrompt_pass1_", 
+			   "prexALL_",
+			   "prexinj_"};
+    for  (int i=0; i<4; i++){
+      filename = Form("%s/%s%d.%03d.root",FILE_PATH,
+		      stemlist[i].Data(),runnum,segment);
+      myfile = new TFile(filename);
+      if (myfile->IsOpen()) {break;}
+    }
   }
-
-  while(1) {
-    myfile = new TFile(Form("%s/prexPrompt_pass2_%d.000.root",FILE_PATH,runnum));
-    if (myfile->IsOpen()) {break;}
-    myfile = new TFile(Form("%s/prexPrompt_pass1_%d.000.root",FILE_PATH,runnum));
-    if (myfile->IsOpen()) {break;}
-    myfile = new TFile(Form("%s/prexALL_%d.000.root",FILE_PATH,runnum));
-    if (myfile->IsOpen()) {break;}
-    cout << endl << "No file found for run " << runnum << " in path " << FILE_PATH << endl << endl;
+  if (myfile->IsOpen()) {
+    std::cout << "Opened file "<< filename << std::endl;
+  } else {
+    std::cout << "No file found for run " << runnum << " in path " 
+	      << FILE_PATH << std::endl;
     return NULL;
   }
 
@@ -45,7 +67,6 @@ TFile* Open(int runnum, TString filestem = "") {
 
   mymul->AddFriend(mymulc);
   mymul->AddFriend(mymulc_lrb);
-
+  
   return myfile;
-
 }
