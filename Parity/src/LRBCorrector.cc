@@ -13,7 +13,6 @@ Last Modified: August 1, 2018 1:41 PM
 ********************************************************************/
 
 #include <iostream>
-using namespace std;
 
 #include "QwHelicityPattern.h"
 
@@ -79,8 +78,8 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
   TH1 *ivnames = (TH1 *) corFile->Get("IVname");
   assert(ivnames);
 
-  pair<EQwHandleType, string> type_name_dv;
-  pair<EQwHandleType, string> type_name_iv;
+  std::pair<EQwHandleType, string> type_name_dv;
+  std::pair<EQwHandleType, string> type_name_iv;
 
   QwMessage << mapfile << QwLog::endl;
 
