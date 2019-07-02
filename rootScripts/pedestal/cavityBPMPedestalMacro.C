@@ -14,6 +14,7 @@ TFile* myfile;
 TTree* mytree;
 TH2* myhisto;
 TF1* myfit;
+TF1* myfunc = new TF1("myfunc","[0]+[1]/x");
 
 void cavityBPMPedestalMacro(int runnum, int pass = 1) {
 
@@ -22,7 +23,7 @@ void cavityBPMPedestalMacro(int runnum, int pass = 1) {
   //IF YOU SEE FIT DATA IS EMPTY, DECREASE CHARGE MIN
   //*****************************************************************************************************
 
-  const char* FILE_PATH = "/adaqfs/home/apar/mrvallee/rootFiles";    //path to folder that contains rootfiles
+  const char* FILE_PATH = "$QW_ROOTFILES";    //path to folder that contains rootfiles
   const char* CAV_LETTER[3] = {"b","c","d"};    //contains all of the letters used for the cav4 channels
   const char* AXIS[2] = {"X","Y"};    //contains X and Y for use in the channel names
   Double_t p0[9];    //stores zeroth order term in fit line for each plot. 0-2 for x, 3-5 for y, 6-8 for q
@@ -44,7 +45,7 @@ void cavityBPMPedestalMacro(int runnum, int pass = 1) {
 
       //draw inital plot
       mytree->Draw(Form("cav4%sQ.hw_sum_raw/cav4%sQ.num_samples:bcm_an_ds3>>myhisto",CAV_LETTER[i%3],CAV_LETTER[i%3]),
-                        Form("ErrorFlag==0 && cav4cQ>%d",CHARGE_MIN));
+                        Form("ErrorFlag==0 && bcm_an_ds3>%d",CHARGE_MIN));
       myhisto = (TH2*)gROOT->FindObject("myhisto");
       //fit plot
       myhisto->Fit("pol1");
@@ -60,17 +61,28 @@ void cavityBPMPedestalMacro(int runnum, int pass = 1) {
   //loop over all cav4XI and cav4YI plots
   else if (pass == 2) {
     for(size_t i = 0; i < 6; ++i) {
-      //draw inital plot
-      mytree->Draw(Form("cav4%s%sI.hw_sum_raw/cav4%s%sI.num_samples:%s_cav_%s*cav4%sQ>>myhisto",CAV_LETTER[i%3],AXIS[i/3],
-                        CAV_LETTER[i%3],AXIS[i/3],AXIS[i/3],CAV_LETTER[i%3],CAV_LETTER[i%3]),
-                        Form("ErrorFlag==0 && cav4cQ>%d",CHARGE_MIN));
+      //draw first plot
+      mytree->Draw(Form("(cav4%s%sI.hw_sum_raw/cav4%s%sI.num_samples)/cav4%sQ:cav4%sQ>>myhisto",CAV_LETTER[i%3],AXIS[i/3],
+                        CAV_LETTER[i%3],AXIS[i/3],CAV_LETTER[i%3],CAV_LETTER[i%3]),
+                        Form("ErrorFlag==0 && bcm_an_ds3>%d",CHARGE_MIN));
+      myhisto = (TH2*)gROOT->FindObject("myhisto");
+      //fit plot
+      myhisto->Fit("myfunc");
+      //load fit line parameters into array
+      myfit = myhisto->GetFunction("myfunc");
+      p0[i] = myfit->GetParameter(1); //Due to the way this code was changed to function, p1 of this function is stored in p0
+      myhisto->Delete();
+
+      //draw second plot
+      mytree->Draw(Form("((cav4%s%sI.hw_sum_raw/cav4%s%sI.num_samples)-%f)/cav4%sQ:%s_cav_%s>>myhisto",CAV_LETTER[i%3],AXIS[i/3],
+                        CAV_LETTER[i%3],AXIS[i/3],p0[i],CAV_LETTER[i%3],AXIS[i/3],CAV_LETTER[i%3]),
+                        Form("ErrorFlag==0 && bcm_an_ds3>%d",CHARGE_MIN));
       myhisto = (TH2*)gROOT->FindObject("myhisto");
       //fit plot
       myhisto->Fit("pol1");
       //load fit line parameters into array
       myfit = myhisto->GetFunction("pol1");
-      p0[i] = myfit->GetParameter(0);
-      p1[i] = myfit->GetParameter(1);
+      p1[i] = myfit->GetParameter(1);  //store p1 of this function in p1 so that both p1s can be used at the same time
       myhisto->Delete();
     }
   }
