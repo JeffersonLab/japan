@@ -63,6 +63,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 
   Int_t fTotalCount;
   Int_t fGoodCount;
+  Int_t fErrCounts_EF;
   std::vector< Int_t > fErrCounts_IV;
   std::vector< Int_t > fErrCounts_DV;
 

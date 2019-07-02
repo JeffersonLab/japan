@@ -47,6 +47,7 @@ QwCorrelator::QwCorrelator(const TString& name):VQwDataHandler(name),
   ParseSeparator = "_";
   fTotalCount = 0;
   fGoodCount  = 0;
+  fErrCounts_EF = 0;
 }
 
 void QwCorrelator::ParseConfigFile(QwParameterFile& file)
@@ -67,6 +68,9 @@ void QwCorrelator::ProcessData()
   UInt_t error = 0;
 
   fTotalCount++;
+
+  error |= GetEventcutErrorFlag();
+  if ( GetEventcutErrorFlag() != 0) fErrCounts_EF++;
 
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     error |= fDependentVar.at(i)->GetErrorCode();
@@ -95,6 +99,8 @@ void QwCorrelator::ProcessData()
 void QwCorrelator::CalcCorrelations()
 {
   QwMessage << "QwCorrelator:  Total entries: " << fTotalCount <<", good entries: "<< fGoodCount << QwLog::endl;
+  QwMessage << "   Entries failed due to error flag: "
+            << fErrCounts_EF << QwLog::endl;
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     if (fErrCounts_DV.at(i) >0) QwMessage << "   Entries failed due to " << fDependentVar.at(i)->GetElementName()
 					  << ": " <<  fErrCounts_DV.at(i) << QwLog::endl;
