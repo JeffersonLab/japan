@@ -117,8 +117,11 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
     /// \brief Report the number of events failed due to HW and event cut failures
     void PrintErrorCounters() const;
     /// \brief Return the error flag to the main routine
-    UInt_t GetEventcutErrorFlag() const{
+    UInt_t GetEventcutErrorFlag() const {
       return fErrorFlag;
+    };
+    const UInt_t* GetEventcutErrorFlagPointer() const {
+      return &fErrorFlag;
     };
 
     /// \brief Update the error flag internally from all the subsystems
