@@ -175,7 +175,8 @@ Int_t QwCorrelator::LoadChannelMap(const std::string& mapfile)
 
 
 Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff) {
-	
+  SetEventcutErrorFlagPointer(asym.GetEventcutErrorFlagPointer());
+
 	// Return if correlator is not enabled
 
   /// Fill vector of pointers to the relevant data elements
