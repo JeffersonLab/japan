@@ -478,7 +478,8 @@ void QwDataHandlerArray::CalculateRunningAverage()
   }
 }
 
-void QwDataHandlerArray::AccumulateRunningSum(const QwDataHandlerArray& value)
+
+void QwDataHandlerArray::AccumulateRunningSum(const QwDataHandlerArray& value, Int_t count, Int_t ErrorMask)
 {
   if (!value.empty()) {
     if (this->size() == value.size()) {
@@ -490,7 +491,7 @@ void QwDataHandlerArray::AccumulateRunningSum(const QwDataHandlerArray& value)
 	    VQwDataHandler *ptr1 =
 	      dynamic_cast<VQwDataHandler*>(this->at(i).get());
 	    if (typeid(*ptr1) == typeid(*(value.at(i).get()))) {
-	      ptr1->AccumulateRunningSum(*(value.at(i).get()));
+	      ptr1->AccumulateRunningSum(*(value.at(i).get()), count, ErrorMask);
 	    } else {
 	      QwError << "QwDataHandlerArray::AccumulateRunningSum here where types don't match" << QwLog::endl;
 	      QwError << " typeid(ptr1)=" << typeid(ptr1).name()
@@ -510,7 +511,7 @@ void QwDataHandlerArray::AccumulateRunningSum(const QwDataHandlerArray& value)
   }
 }
 
-void QwDataHandlerArray::AccumulateAllRunningSum(const QwDataHandlerArray& value)
+void QwDataHandlerArray::AccumulateAllRunningSum(const QwDataHandlerArray& value, Int_t count, Int_t ErrorMask)
 {
   if (!value.empty()) {
     if (this->size() == value.size()) {
@@ -522,7 +523,7 @@ void QwDataHandlerArray::AccumulateAllRunningSum(const QwDataHandlerArray& value
 	    VQwDataHandler *ptr1 =
 	      dynamic_cast<VQwDataHandler*>(this->at(i).get());
 	    if (typeid(*ptr1) == typeid(*(value.at(i).get()))) {
-	      ptr1->AccumulateRunningSum(*(value.at(i).get()));
+	      ptr1->AccumulateRunningSum(*(value.at(i).get()), count, ErrorMask);
 	    } else {
 	      QwError << "QwDataHandlerArray::AccumulateRunningSum here where types don't match" << QwLog::endl;
 	      QwError << " typeid(ptr1)=" << typeid(ptr1).name()

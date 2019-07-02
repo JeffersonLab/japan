@@ -87,11 +87,11 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
 
 
     /// \brief Update the running sums for devices accumulated for the global error non-zero events/patterns
-    void AccumulateRunningSum(const QwSubsystemArrayParity& value);
+    void AccumulateRunningSum(const QwSubsystemArrayParity& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
     /// \brief Update the running sums for devices check only the error flags at the channel level. Only used for stability checks
-    void AccumulateAllRunningSum(const QwSubsystemArrayParity& value);
+    void AccumulateAllRunningSum(const QwSubsystemArrayParity& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
     /// \brief Remove the entry value from the running sums for devices
-    void DeaccumulateRunningSum(const QwSubsystemArrayParity& value);
+    void DeaccumulateRunningSum(const QwSubsystemArrayParity& value, Int_t ErrorMask=0xFFFFFFF);
 
     /// \brief Calculate the average for all good events
     void CalculateRunningAverage();
@@ -113,6 +113,8 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
     /// \brief Update the data elements' error counters based on their
     ///        internal error flags.
     void IncrementErrorCounters();
+
+    Bool_t CheckForBurpFail(QwSubsystemArrayParity &event);
 
     /// \brief Report the number of events failed due to HW and event cut failures
     void PrintErrorCounters() const;

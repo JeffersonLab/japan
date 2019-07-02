@@ -706,8 +706,13 @@ void VQwScaler_Channel::IncrementErrorCounters()
 }
 
 
-void VQwScaler_Channel::AccumulateRunningSum(const VQwScaler_Channel& value, Int_t count)
+void VQwScaler_Channel::AccumulateRunningSum(const VQwScaler_Channel& value, Int_t count, Int_t ErrorMask)
 {
+
+  if(count==0){
+    count = value.fGoodEventCount;
+  }
+  
   // Moment calculations
   Int_t n1 = fGoodEventCount;
   Int_t n2 = count;
@@ -719,10 +724,20 @@ void VQwScaler_Channel::AccumulateRunningSum(const VQwScaler_Channel& value, Int
 
   // If a single event is removed from the sum, check all but stability fail flags
   if (n2 == -1) {
-    if ((value.fErrorFlag & 0xFFFFFFF) == 0) {
+    if ((value.fErrorFlag & ErrorMask) == 0) {
       n2 = -1;
     } else {
       n2 = 0;
+    }
+  }
+
+  if (ErrorMask ==  kPreserveError){
+    //n = 1;
+    if (n2 == 0) {
+      n2 = 1;
+    }
+    if (count == -1) {
+      n2 = -1;
     }
   }
 
