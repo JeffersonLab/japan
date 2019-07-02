@@ -41,6 +41,7 @@ VQwDataHandler::VQwDataHandler(const VQwDataHandler &source):
   fPrefix(source.fPrefix),
   fKeepRunningSum(source.fKeepRunningSum)
 {
+  fErrorFlagPtr  = source.fErrorFlagPtr;
   fDependentVar  = source.fDependentVar;
   fDependentType = source.fDependentType;
   fDependentName = source.fDependentName;
@@ -120,6 +121,7 @@ void VQwDataHandler::ProcessData() {
 
 
 Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff) {
+  SetEventcutErrorFlagPointer(asym.GetEventcutErrorFlagPointer());
 
   /// Fill vector of pointers to the relevant data elements
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
