@@ -99,8 +99,9 @@ void QwCorrelator::ProcessData()
 void QwCorrelator::CalcCorrelations()
 {
   QwMessage << "QwCorrelator:  Total entries: " << fTotalCount <<", good entries: "<< fGoodCount << QwLog::endl;
-  QwMessage << "   Entries failed due to error flag: "
-            << fErrCounts_EF << QwLog::endl;
+  if (fErrCounts_EF > 0)
+    QwMessage << "   Entries failed due to error flag: "
+              << fErrCounts_EF << QwLog::endl;
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     if (fErrCounts_DV.at(i) >0) QwMessage << "   Entries failed due to " << fDependentVar.at(i)->GetElementName()
 					  << ": " <<  fErrCounts_DV.at(i) << QwLog::endl;
