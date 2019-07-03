@@ -32,13 +32,28 @@ using namespace std;
 #endif // __USE_DATABASE__
 
 
-VQwDataHandler::VQwDataHandler(const VQwDataHandler &source):
-  fPriority(source.fPriority),
+VQwDataHandler::VQwDataHandler(const TString& name)
+: fPriority(0),
+  fName(name),
+  fMapFile(""),
+  fTreeName(""),
+  fTreeComment(""),
+  fPrefix(""),
+  fErrorFlagPtr(0),
+  fSubsystemArray(0),
+  fHelicityPattern(0),
+  fKeepRunningSum(kFALSE)
+{ }
+
+VQwDataHandler::VQwDataHandler(const VQwDataHandler &source)
+: fPriority(source.fPriority),
   fName(source.fName),
   fMapFile(source.fMapFile),
   fTreeName(source.fTreeName),
   fTreeComment(source.fTreeComment),
   fPrefix(source.fPrefix),
+  fSubsystemArray(source.fSubsystemArray),
+  fHelicityPattern(source.fHelicityPattern),
   fKeepRunningSum(source.fKeepRunningSum)
 {
   fErrorFlagPtr  = source.fErrorFlagPtr;
