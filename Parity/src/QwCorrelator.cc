@@ -55,6 +55,7 @@ QwCorrelator::QwCorrelator(const TString& name)
   ParseSeparator = "_";
   fTotalCount = 0;
   fGoodCount  = 0;
+  fErrCounts_EF = 0;
 }
 
 QwCorrelator::~QwCorrelator()
@@ -93,6 +94,9 @@ void QwCorrelator::ProcessData()
 
   fTotalCount++;
 
+  error |= GetEventcutErrorFlag();
+  if ( GetEventcutErrorFlag() != 0) fErrCounts_EF++;
+
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     error |= fDependentVar.at(i)->GetErrorCode();
     fDependentValues.at(i) = (fDependentVar[i]->GetValue());
@@ -115,6 +119,9 @@ void QwCorrelator::ProcessData()
 void QwCorrelator::CalcCorrelations()
 {
   QwMessage << "QwCorrelator:  Total entries: " << fTotalCount <<", good entries: "<< fGoodCount << QwLog::endl;
+  if (fErrCounts_EF > 0)
+    QwMessage << "   Entries failed due to error flag: "
+              << fErrCounts_EF << QwLog::endl;
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     if (fErrCounts_DV.at(i) >0) QwMessage << "   Entries failed due to " << fDependentVar.at(i)->GetElementName()
 					  << ": " <<  fErrCounts_DV.at(i) << QwLog::endl;
@@ -196,6 +203,8 @@ Int_t QwCorrelator::LoadChannelMap(const std::string& mapfile)
 
 Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff)
 {
+  SetEventcutErrorFlagPointer(asym.GetEventcutErrorFlagPointer());
+
   // Return if correlator is not enabled
 
   /// Fill vector of pointers to the relevant data elements

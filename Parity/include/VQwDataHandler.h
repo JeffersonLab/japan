@@ -36,7 +36,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
     typedef std::vector< VQwHardwareChannel* >::iterator Iterator_HdwChan;
     typedef std::vector< VQwHardwareChannel* >::const_iterator ConstIterator_HdwChan;
 
-    VQwDataHandler(const TString& name):fName(name),fPrefix(""),fKeepRunningSum(kFALSE) {}
+    VQwDataHandler(const TString& name);
     VQwDataHandler(const VQwDataHandler &source);
 
     virtual void ParseConfigFile(QwParameterFile& file);
@@ -101,6 +101,16 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
     
     virtual Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
     
+    void SetEventcutErrorFlagPointer(const UInt_t* errorflagptr) {
+      fErrorFlagPtr = errorflagptr;
+    }
+    UInt_t GetEventcutErrorFlag() const {
+      if (fErrorFlagPtr)
+        return *fErrorFlagPtr;
+      else
+        return -1;
+    };
+
     std::pair<EQwHandleType,std::string> ParseHandledVariable(const std::string& variable);
 
    void CalcOneOutput(const VQwHardwareChannel* dv, VQwHardwareChannel* output,
@@ -123,6 +133,9 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
    std::string fPrefix;
 
    TString run_label;
+
+   /// Error flag pointer
+   const UInt_t* fErrorFlagPtr;
 
    /// Single event pointer
    QwSubsystemArrayParity* fSubsystemArray;
