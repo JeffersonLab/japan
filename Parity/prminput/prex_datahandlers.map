@@ -23,11 +23,24 @@
   disable-histos = true
 
 [QwCorrelator]
+  name       = MyCorrelator_block0
+  priority   = 50
+  map        = prex_corrolator.conf
+  slope-file-base = blueR
+  slope-file-suff = .block0.new.slope.root
+  slope-path = . 
+  alias-file-base = regalias_
+  alias-file-suff = 
+  alias-path = .
+  block = 0
+  disable-histos = true
+
+[QwCorrelator]
   name       = MyCorrelator_block1
   priority   = 50
   map        = prex_corrolator.conf
   slope-file-base = blueR
-  slope-file-suff = .1.new.slope.root
+  slope-file-suff = .block1.new.slope.root
   slope-path = . 
   alias-file-base = regalias_
   alias-file-suff = 
@@ -40,7 +53,7 @@
   priority   = 50
   map        = prex_corrolator.conf
   slope-file-base = blueR
-  slope-file-suff = .2.new.slope.root
+  slope-file-suff = .block2.new.slope.root
   slope-path = . 
   alias-file-base = regalias_
   alias-file-suff = 
@@ -53,25 +66,12 @@
   priority   = 50
   map        = prex_corrolator.conf
   slope-file-base = blueR
-  slope-file-suff = .3.new.slope.root
+  slope-file-suff = .block3.new.slope.root
   slope-path = . 
   alias-file-base = regalias_
   alias-file-suff = 
   alias-path = .
   block = 3
-  disable-histos = true
-
-[QwCorrelator]
-  name       = MyCorrelator_block4
-  priority   = 50
-  map        = prex_corrolator.conf
-  slope-file-base = blueR
-  slope-file-suff = .4.new.slope.root
-  slope-path = . 
-  alias-file-base = regalias_
-  alias-file-suff = 
-  alias-path = .
-  block = 4
   disable-histos = true
 
 [QwCorrelator]

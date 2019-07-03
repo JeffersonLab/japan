@@ -44,7 +44,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 		
  protected:
 
-  size_t fBlock;
+  Int_t fBlock;
 
   bool fDisableHistos;
   

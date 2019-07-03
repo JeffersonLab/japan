@@ -2,8 +2,8 @@ void PlotByBlock(const char* matrix, const char* filename, Int_t run)
 {
   TCanvas c;
   c.Divide(2,2);
-  for (size_t block = 1; block <= 4; block++) {
-    c.cd(block);
+  for (size_t block = 0; block < 4; block++) {
+    c.cd(block+1);
     TFile file(Form(filename, run, block));
     TMatrixD* m = (TMatrixD*) file.Get(matrix);
     if (m != 0) {
