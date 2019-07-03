@@ -35,8 +35,6 @@ Int_t QwMollerDetector::LoadChannelMap(TString mapfile)
   TString varname, varvalue;
   TString modtype, dettype, name, keyword;
   Int_t modnum, channum;
-  Int_t currentrocread = 0;
-  Int_t currentbankread = 0;
   Int_t wordsofar = 0;
   Int_t currentsubbankindex = -1;
   
