@@ -280,7 +280,7 @@ void QwSubsystemArrayParity::CalculateRunningAverage()
 
 
 
-void QwSubsystemArrayParity::AccumulateRunningSum(const QwSubsystemArrayParity& value)
+void QwSubsystemArrayParity::AccumulateRunningSum(const QwSubsystemArrayParity& value, Int_t count, Int_t ErrorMask)
 {
   if (!value.empty()) {
     if (this->size() == value.size()) {
@@ -293,7 +293,7 @@ void QwSubsystemArrayParity::AccumulateRunningSum(const QwSubsystemArrayParity& 
 	    VQwSubsystemParity *ptr1 =
 	      dynamic_cast<VQwSubsystemParity*>(this->at(i).get());
 	    if (typeid(*ptr1) == typeid(*(value.at(i).get()))) {
-	      ptr1->AccumulateRunningSum(value.at(i).get());
+	      ptr1->AccumulateRunningSum(value.at(i).get(), count, ErrorMask);
 	    } else {
 	      QwError << "QwSubsystemArrayParity::AccumulateRunningSum here where types don't match" << QwLog::endl;
 	      QwError << " typeid(ptr1)=" << typeid(ptr1).name()
@@ -314,7 +314,7 @@ void QwSubsystemArrayParity::AccumulateRunningSum(const QwSubsystemArrayParity& 
   }
 }
 
-void QwSubsystemArrayParity::AccumulateAllRunningSum(const QwSubsystemArrayParity& value)
+void QwSubsystemArrayParity::AccumulateAllRunningSum(const QwSubsystemArrayParity& value, Int_t count, Int_t ErrorMask)
 {
   if (!value.empty()) {
     if (this->size() == value.size()) {
@@ -327,7 +327,7 @@ void QwSubsystemArrayParity::AccumulateAllRunningSum(const QwSubsystemArrayParit
 	    VQwSubsystemParity *ptr1 =
 	      dynamic_cast<VQwSubsystemParity*>(this->at(i).get());
 	    if (typeid(*ptr1) == typeid(*(value.at(i).get()))) {
-	      ptr1->AccumulateRunningSum(value.at(i).get());
+	      ptr1->AccumulateRunningSum(value.at(i).get(), count, ErrorMask);
 	    } else {
 	      QwError << "QwSubsystemArrayParity::AccumulateRunningSum here where types don't match" << QwLog::endl;
 	      QwError << " typeid(ptr1)=" << typeid(ptr1).name()
@@ -350,7 +350,7 @@ void QwSubsystemArrayParity::AccumulateAllRunningSum(const QwSubsystemArrayParit
 }
 
 
-void QwSubsystemArrayParity::DeaccumulateRunningSum(const QwSubsystemArrayParity& value)
+void QwSubsystemArrayParity::DeaccumulateRunningSum(const QwSubsystemArrayParity& value, Int_t ErrorMask)
 {
   //Bool_t berror=kTRUE;//only needed for deaccumulation (stability check purposes)
   //if (value.fErrorFlag>0){//check the error is global
@@ -367,7 +367,7 @@ void QwSubsystemArrayParity::DeaccumulateRunningSum(const QwSubsystemArrayParity
 	    VQwSubsystemParity *ptr1 =
 	      dynamic_cast<VQwSubsystemParity*>(this->at(i).get());
 	    if (typeid(*ptr1) == typeid(*(value.at(i).get()))) {
-	      ptr1->DeaccumulateRunningSum(value.at(i).get());
+	      ptr1->DeaccumulateRunningSum(value.at(i).get(), ErrorMask);
 	    } else {
 	      QwError << "QwSubsystemArrayParity::AccumulateRunningSum here where types don't match" << QwLog::endl;
 	      QwError << " typeid(ptr1)=" << typeid(ptr1).name()
@@ -523,6 +523,33 @@ void QwSubsystemArrayParity::IncrementErrorCounters()
       subsys_parity->IncrementErrorCounters();
     }
   }
+}
+
+Bool_t QwSubsystemArrayParity::CheckForBurpFail(QwSubsystemArrayParity &event)
+{
+  Bool_t burpstatus = kFALSE;
+  if (!event.empty() && this->size() == event.size()){
+    for(size_t i=0;i<event.size();i++){
+      if (event.at(i)!=NULL && this->at(i)!=NULL){
+	      VQwSubsystemParity *ptr1 = dynamic_cast<VQwSubsystemParity*>(this->at(i).get());
+	      if (typeid(*ptr1)==typeid(*(event.at(i).get()))){
+	        //*(ptr1) = event.at(i).get();//when =operator is used
+	        //pass the correct subsystem to update the errorflags at subsystem to devices to channel levels
+          //wError << "************* test " << typeid(*ptr1).name() << "*****************" << QwLog::endl;
+	        burpstatus |= ptr1->CheckForBurpFail(event.at(i).get());
+	      } else {
+	        //  Subsystems don't match
+	        QwError << " QwSubsystemArrayParity::CheckForBurpFail types do not mach" << QwLog::endl;
+	        QwError << " typeid(ptr1)=" << typeid(*ptr1).name()
+		      << " but typeid(*(event.at(i).get()))=" << typeid(*(event.at(i).get())).name()
+		      << QwLog::endl;
+	      }
+      }
+    }
+  } else {
+    //  The source is empty
+  }
+  return burpstatus;
 }
 
 

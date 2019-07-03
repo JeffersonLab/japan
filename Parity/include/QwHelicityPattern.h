@@ -130,7 +130,7 @@ class QwHelicityPattern {
   QwSubsystemArrayParity& GetPairDifference() { return fPairDifference; };
   QwSubsystemArrayParity& GetPairAsymmetry()  { return fPairAsymmetry; };
 
-  void  AccumulateRunningSum(QwHelicityPattern &entry);
+  void  AccumulateRunningSum(QwHelicityPattern &entry, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
   void  AccumulatePairRunningSum(QwHelicityPattern &entry);
 
   void  CalculateRunningAverage();
@@ -192,7 +192,6 @@ class QwHelicityPattern {
   QwSubsystemArrayParity fYield;
   QwSubsystemArrayParity fDifference;
   QwSubsystemArrayParity fAsymmetry;
-
   // Alternate asymmetry calculations
   Bool_t fEnableAlternateAsym;
   QwSubsystemArrayParity fAsymmetry1;
