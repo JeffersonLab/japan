@@ -59,16 +59,20 @@ QwCorrelator::QwCorrelator(const TString& name)
 
 QwCorrelator::~QwCorrelator()
 {
+  // Close output file
+  if (fAlphaOutputFile) {
+    fAlphaOutputFile->Write();
+    fAlphaOutputFile->Close();
+  } else
+    QwWarning << "Cannot close slopes ROOT file for "
+              << GetDataHandlerName() << QwLog::endl;
+
   if (fH1iv) { // only if previously allocated
     delete[] fH1iv;
     delete[] fH2iv;
     delete[] fH1dv;
     delete[] fH2dv;
   }
-
-  // Close output file
-  fAlphaOutputFile->Write();
-  fAlphaOutputFile->Close();
 }
 
 void QwCorrelator::ParseConfigFile(QwParameterFile& file)
@@ -302,7 +306,8 @@ void QwCorrelator::init(std::vector<std::string> ivName, std::vector<std::string
   nP = ivName.size();
   nY = dvName.size();
 
-  initHistos(ivName,dvName);
+  if (fDisableHistos == false)
+    initHistos(ivName,dvName);
 
   linReg.setDims(nP, nY);
   linReg.init();
