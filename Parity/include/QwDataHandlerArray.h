@@ -55,23 +55,27 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     QwDataHandlerArray(); // not implement, will thrown linker error on use
 
   public:
-    /// Constructor with options
+    /// Constructor from helicity pattern with options
     QwDataHandlerArray(QwOptions& options, QwHelicityPattern& helicitypattern, const TString &run);
+    /// Constructor from subsystem array with options
+    QwDataHandlerArray(QwOptions& options, QwSubsystemArrayParity& detectors, const TString &run);
     /// Copy constructor by reference
     QwDataHandlerArray(const QwDataHandlerArray& source);
     /// Default destructor
     virtual ~QwDataHandlerArray();
 
-  /// \brief Define configuration options for global array
-  static void DefineOptions(QwOptions &options);
-  /// \brief Process configuration options for the datahandler array itself
-  void ProcessOptions(QwOptions &options);
+    /// \brief Define configuration options for global array
+    static void DefineOptions(QwOptions &options);
+    /// \brief Process configuration options for the datahandler array itself
+    void ProcessOptions(QwOptions &options);
 
-  void LoadDataHandlersFromParameterFile(QwParameterFile& detectors, QwHelicityPattern& helicitypattern, const TString &run);
+    /// \brief Load from mapfile with T = helicity pattern or subsystem array
+    template<class T>
+    void LoadDataHandlersFromParameterFile(QwParameterFile& mapfile, T& detectors, const TString &run);
 
-  /// \brief Add the datahandler to this array
-  void push_back(VQwDataHandler* handler);
-  void push_back(boost::shared_ptr<VQwDataHandler> handler);
+    /// \brief Add the datahandler to this array
+    void push_back(VQwDataHandler* handler);
+    void push_back(boost::shared_ptr<VQwDataHandler> handler);
 
     /// \brief Get the handler with the specified name
     VQwDataHandler* GetDataHandlerByName(const TString& name);
@@ -139,17 +143,27 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     void ProcessDataHandlerEntry();
 
     void FinishDataHandler();
+
   protected:
-  /// Filename of the global detector map
-  std::string fDataHandlersMapFile;
 
-  /// Pointer for the original data source
-  QwHelicityPattern *fDataSource;
+    void SetPointer(QwHelicityPattern& helicitypattern) {
+      fHelicityPattern = &helicitypattern;
+    }
+    void SetPointer(QwSubsystemArrayParity& detectors) {
+      fSubsystemArray = &detectors;
+    }
 
-  std::vector<std::string> fDataHandlersDisabledByName; ///< List of disabled types
-  std::vector<std::string> fDataHandlersDisabledByType; ///< List of disabled names
+    /// Pointer for the original data source
+    QwHelicityPattern *fHelicityPattern;
+    QwSubsystemArrayParity *fSubsystemArray;
 
-  Bool_t fPrintRunningSum;
+    /// Filename of the global detector map
+    std::string fDataHandlersMapFile;
+
+    std::vector<std::string> fDataHandlersDisabledByName; ///< List of disabled types
+    std::vector<std::string> fDataHandlersDisabledByType; ///< List of disabled names
+
+    Bool_t fPrintRunningSum;
 
     /// Test whether this handler array can contain a particular handler
     static Bool_t CanContain(VQwDataHandler* handler) {

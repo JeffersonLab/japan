@@ -15,7 +15,7 @@ Last Modified: August 1, 2018 1:39 PM
 #define VQWDATAHANDLER_H_
 
 // Qweak headers
-//#include "QwHelicityPattern.h"
+#include "QwHelicityPattern.h"
 #include "QwSubsystemArrayParity.h"
 #include "VQwHardwareChannel.h"
 #include "QwFactory.h"
@@ -23,7 +23,6 @@ Last Modified: August 1, 2018 1:39 PM
 
 class QwParameterFile;
 class QwRootFile;
-class QwHelicityPattern;
 class QwPromptSummary;
 
 class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
@@ -47,6 +46,16 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
     virtual Int_t ConnectChannels(QwSubsystemArrayParity& yield, QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff){
       return this->ConnectChannels(asym, diff);
+    }
+
+    // Subsystems with support for subsystem arrays should override this
+    virtual Int_t ConnectChannels(QwSubsystemArrayParity& detectors) { return 0; }
+
+    Int_t ConnectChannels(QwHelicityPattern& helicitypattern) {
+      return this->ConnectChannels(
+          helicitypattern.GetYield(),
+          helicitypattern.GetAsymmetry(),
+          helicitypattern.GetDifference());
     }
 
     virtual void ProcessData();
