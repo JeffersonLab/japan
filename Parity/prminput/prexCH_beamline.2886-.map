@@ -50,12 +50,13 @@ sample_size=4084
     VQWK, 3, 7,  bpmstripline,  BPM14ym
 
 !ADC4
+!Caryn edit BPM8 7/3/2019. XP was 4_5 and XM was 4_4 which is backwards so swapped them to correct mapping
     VQWK, 4, 0,  bpmstripline,  BPM1xp
     VQWK, 4, 1,  bpmstripline,  BPM1xm
     VQWK, 4, 2,  bpmstripline,  BPM1yp 
     VQWK, 4, 3,  bpmstripline,  BPM1ym
-    VQWK, 4, 4,  bpmstripline,  BPM8xm
-    VQWK, 4, 5,  bpmstripline,  BPM8xp
+    VQWK, 4, 4,  bpmstripline,  BPM8xp
+    VQWK, 4, 5,  bpmstripline,  BPM8xm
     VQWK, 4, 6,  bpmstripline,  BPM8yp
     VQWK, 4, 7,  bpmstripline,  BPM8ym
 
