@@ -37,6 +37,7 @@ RegisterHandlerFactory(QwCorrelator);
 
 QwCorrelator::QwCorrelator(const TString& name)
 : VQwDataHandler(name),
+  fBlock(-1),
   fDisableHistos(true),
   fAlphaOutputFileBase("blueR"),
   fAlphaOutputFileSuff("new.slope.root"),
@@ -86,6 +87,10 @@ void QwCorrelator::ParseConfigFile(QwParameterFile& file)
   file.PopValue("alias-file-suff", fAliasOutputFileSuff);
   file.PopValue("alias-path", fAliasOutputPath);
   file.PopValue("disable-histos", fDisableHistos);
+  file.PopValue("block", fBlock);
+  if (fBlock >= 4)
+    QwWarning << "QwCorrelator: expect 0 <= block <= 3 but block = "
+              << fBlock << QwLog::endl;
 }
 
 void QwCorrelator::ProcessData()
@@ -99,12 +104,12 @@ void QwCorrelator::ProcessData()
 
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     error |= fDependentVar.at(i)->GetErrorCode();
-    fDependentValues.at(i) = (fDependentVar[i]->GetValue());
+    fDependentValues.at(i) = (fDependentVar[i]->GetValue(fBlock+1));
     if ( fDependentVar.at(i)->GetErrorCode() !=0)  (fErrCounts_DV.at(i))++;
   }
   for (size_t i = 0; i < fIndependentVar.size(); ++i) {
     error |= fIndependentVar.at(i)->GetErrorCode();
-    fIndependentValues.at(i) = (fIndependentVar[i]->GetValue());
+    fIndependentValues.at(i) = (fIndependentVar[i]->GetValue(fBlock+1));
     if ( fIndependentVar.at(i)->GetErrorCode() !=0)  (fErrCounts_IV.at(i))++;
   }
 

@@ -44,6 +44,8 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 		
  protected:
 
+  Int_t fBlock;
+
   bool fDisableHistos;
   
   std::vector< TString > fIndependentFull;
