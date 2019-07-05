@@ -46,8 +46,6 @@ Int_t QwBeamMod::LoadChannelMap(TString mapfile){
   //  std::cout <<"Here in LoadChannelMap" << std::endl;
   Bool_t ldebug=kFALSE;
 
-  Int_t currentrocread=0;
-  Int_t currentbankread=0;
   Int_t wordsofar=0;
   Int_t bankindex=-1;
  

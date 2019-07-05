@@ -174,8 +174,6 @@ Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
 
   std::vector<TString> combinedchannelnames;
   std::vector<Double_t> weight;
-  Int_t currentrocread=0;
-  Int_t currentbankread=0;
   Int_t wordsofar=0;
   Int_t currentsubbankindex=-1;
   Int_t sample_size=0;
