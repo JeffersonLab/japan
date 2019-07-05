@@ -12,7 +12,7 @@ sample_size=4084
 !ADC0
     VQWK, 0, 0,  bcm,  BCM_AN_US
     VQWK, 0, 1,  bcm,  BCM_DG_US
-    VQWK, 0, 2,  bpmcavity,  CAV4BXI
+    VQWK, 0, 2,  bcm,  QWK_0_2
     VQWK, 0, 3,  bpmcavity,  CAV4BYI
     VQWK, 0, 4,  bpmcavity,  CAV4BQ
     VQWK, 0, 5,  bpmcavity,  CAV4CXI
@@ -40,7 +40,7 @@ sample_size=4084
     VQWK, 2, 7,  bcm,  UNSER
 
 !ADC3
-    VQWK, 3, 0,  bcm,  QWK_3_0 
+    VQWK, 3, 0,  bpmcavity,  CAV4BXI 
     VQWK, 3, 1,  bcm,  QWK_3_1 
     VQWK, 3, 2,  bcm,  QWK_3_2 
     VQWK, 3, 3,  bcm,  ch_battery_1

@@ -23,15 +23,15 @@
   disable-histos = true
 
 #[QwCorrelator]
-#  name       = MyMassiveCorrelator
+# name       = MyMassiveCorrelator
 #  priority   = 50
 #  map        = prex_corrolator_all.conf
 #  slope-file-base = blueR
 #  slope-file-suff = all.slope.root
-#  slope-path = . 
+#  slope-path = ./ 
 #  alias-file-base = regalias_
 #  alias-file-suff = all
-#  alias-path = .
+#  alias-path = ./
 #  disable-histos = true
 
 [QwCombiner]
@@ -40,11 +40,3 @@
   map        = prex_combiner.map
   tree-name  = mulc
   tree-comment = Helicity event data tree (corrected)
-
-[QwAlarmHandler]
-  name        = MyAlarmHandler
-  priority    = 20
-  map         = prex_alarm_handler.map
-  alarm-output-file   = /adaqfs/home/apar/alarms/japanAlarms.csv
-  alarm-loop-N-update = 350
-  alarm-active        = 1

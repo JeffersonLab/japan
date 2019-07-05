@@ -229,10 +229,17 @@ Int_t main(Int_t argc, Char_t* argv[])
     patternsum_per_burst.ClearEventData();
 
 
-    //  Load the blinder seed from the database for this runlet.
-    #ifdef __USE_DATABASE__
-    helicitypattern.UpdateBlinder(&database);
-    #endif // __USE_DATABASE__
+
+    //  Load the blinder seed from a random number generator for online mode
+    if (eventbuffer.IsOnline() ){      
+      helicitypattern.UpdateBlinder();//this routine will call update blinder mechanism using a random number
+    }else{
+      //  Load the blinder seed from the database for this runlet.
+#ifdef __USE_DATABASE__
+      helicitypattern.UpdateBlinder(&database);
+#endif // __USE_DATABASE__      
+    }
+    
 
     //  Find the first EPICS event and try to initialize
     //  the blinder, but only for disk files, not online.
@@ -263,8 +270,10 @@ Int_t main(Int_t argc, Char_t* argv[])
         eventbuffer.FillSubsystemConfigurationData(detectors);
       }
 
-      //  Secondly, process EPICS events
-      if (eventbuffer.IsEPICSEvent()) {
+      //  Secondly, process EPICS events, but not for online running,
+      //  because the EPICS events get messed up by our 32-bit to 64-bit
+      //  double ET system.
+      if (! eventbuffer.IsOnline() && eventbuffer.IsEPICSEvent()) {
         eventbuffer.FillEPICSData(epicsevent);
 	if (epicsevent.HasDataLoaded()){
 	  epicsevent.CalculateRunningValues();
