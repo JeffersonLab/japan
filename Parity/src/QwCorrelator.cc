@@ -316,6 +316,11 @@ void QwCorrelator::init(std::vector<std::string> ivName, std::vector<std::string
   std::string SlopeFile = SlopeFilePath + SlopeFileName;
 
   fAlphaOutputFile = new TFile(SlopeFile.c_str(), "RECREATE", "correlation coefficients");
+  if (! fAlphaOutputFile->IsWritable()) {
+    QwError << "QwCorrelator could not create output file " << SlopeFile << QwLog::endl;
+    delete fAlphaOutputFile;
+    fAlphaOutputFile = 0;
+  }
 
   nP = ivName.size();
   nY = dvName.size();
@@ -344,7 +349,7 @@ void QwCorrelator::init(std::vector<std::string> ivName, std::vector<std::string
 
 void QwCorrelator::initHistos(std::vector<std::string> Pname, std::vector<std::string> Yname)
 {
-  fAlphaOutputFile->cd();
+  if (fAlphaOutputFile) fAlphaOutputFile->cd();
 
   //..... 1D,  iv
   fH1iv = new TH1D*[nP];
@@ -432,7 +437,7 @@ void QwCorrelator::exportAlphas(
     std::vector < TString > ivName,
     std::vector < TString > dvName)
 {
-  fAlphaOutputFile->cd();
+  if (fAlphaOutputFile) fAlphaOutputFile->cd();
 
   linReg.mA.Write("slopes");
   linReg.mAsig.Write("sigSlopes");
@@ -502,6 +507,10 @@ void QwCorrelator::exportAlias(
     std::vector < TString > Yname)
 {
   FILE *fd=fopen(outPath+macroName+".C","w");
+  if (fd == 0) {
+    QwError << "QwCorrelator could not create alias file " << outPath+macroName+".C" << QwLog::endl;
+    return;
+  }
   fprintf(fd,"void %s() {\n",macroName.Data());
   fprintf(fd,"  TTree* tree = (TTree*) gDirectory->Get(\"mul\");\n");
   for (int iy = 0; iy <nY; iy++) {
