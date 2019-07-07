@@ -194,9 +194,10 @@ void writeInt_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
   if (h1_int ==0)
   { 
     Printf("Error, Histogram failed");
-    return;
   }
-  data_integral = h1_int->Integral();
+  else {
+    data_integral = h1_int->Integral();
+  }
   if (debug>1) Printf("Run %d integral %s: %f",runNumber,(const char*)integral,data_integral);
   if (aggregatorStatus){
     writeFile_h(integral,data_integral,runNumber,splitNumber,nRuns);
@@ -228,20 +229,21 @@ void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_0
     rms = "rms_" + branch + "_" + leaf;
     rms_error = "rms_" + branch + "_" + leaf + "_error";
   }
-  Double_t data_mean = -1e6;
-  Double_t data_mean_error = -1e6;
-  Double_t data_rms = -1e6;
-  Double_t data_rms_error = -1e6;
+  Double_t data_mean = 0;
+  Double_t data_mean_error = 0;
+  Double_t data_rms = 0;
+  Double_t data_rms_error = 0;
   TH1 * hMeanRms = getHistogram_h(tree,branch,leaf,cut,overWriteCut,mode,runNumber,splitNumber,nRuns);
   if (hMeanRms==0)
   {
     Printf("Error, Histogram failed");
-    return;
   }
-  data_mean = hMeanRms->GetMean(1);
-  data_mean_error = hMeanRms->GetMeanError(1);
-  data_rms = hMeanRms->GetRMS(1);
-  data_rms_error = hMeanRms->GetRMSError(1);
+  else {
+    data_mean = hMeanRms->GetMean(1);
+    data_mean_error = hMeanRms->GetMeanError(1);
+    data_rms = hMeanRms->GetRMS(1);
+    data_rms_error = hMeanRms->GetRMSError(1);
+  }
 
   if (debug>1) Printf("Run %d mean %s: %f+-%f",runNumber,(const char*)mean,data_mean,data_mean_error);
   if (debug>1) Printf("Run %d rms %s: %f+-%f",runNumber,(const char*)rms,data_rms,data_rms_error);
@@ -276,16 +278,17 @@ void writeMean_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
     mean = "mean_" + branch + "_" + leaf;
     mean_error = "mean_" + branch + "_" + leaf + "_error";
   }
-  Double_t data_mean = -1e6;
-  Double_t data_mean_error = -1e6;
+  Double_t data_mean = 0;
+  Double_t data_mean_error = 0;
   TH1 * hMean = getHistogram_h(tree,branch,leaf,cut,overWriteCut,mode,runNumber,splitNumber,nRuns);
   if (hMean==0)
   {
     Printf("Error, Histogram failed");
-    return;
   }
-  data_mean = hMean->GetMean(1);
-  data_mean_error = hMean->GetMeanError(1);
+  else {
+    data_mean = hMean->GetMean(1);
+    data_mean_error = hMean->GetMeanError(1);
+  }
 
   if (debug>1) Printf("Run %d mean %s: %f+-%f",runNumber,(const char*)mean,data_mean,data_mean_error);
   if (aggregatorStatus){
@@ -317,16 +320,17 @@ void writeRMS_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
     rms = "rms_" + branch + "_" + leaf;
     rms_error = "rms_" + branch + "_" + leaf + "_error";
   }
-  Double_t data_rms = -1e6;
-  Double_t data_rms_error = -1e6;
+  Double_t data_rms = 0;
+  Double_t data_rms_error = 0;
   TH1 * hRms = getHistogram_h(tree,branch,leaf,cut,overWriteCut,mode,runNumber,splitNumber,nRuns);
   if (hRms==0)
   {
     Printf("Error, Histogram failed");
-    return;
   }
-  data_rms = hRms->GetRMS(1);
-  data_rms_error = hRms->GetRMSError(1);
+  else {
+    data_rms = hRms->GetRMS(1);
+    data_rms_error = hRms->GetRMSError(1);
+  }
 
   if (debug>1) Printf("Run %d rms %s: %f+-%f",runNumber,(const char*)rms,data_rms,data_rms_error);
   if (aggregatorStatus){

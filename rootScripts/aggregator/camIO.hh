@@ -197,17 +197,19 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber 
   TString fileNameBase  = filenamebase; // placeholder string
   if (debug>4) Printf("Tree to add to chain = %s",(const char*)tree);
   TChain * newTChain = new TChain(tree);
+  TChain *friendTChain = new TChain("mul");
+
   Bool_t foundFile = false;
 
   for(Int_t i = 0; i < (n_runs); i++){
 
-    TString daqConfigs[5] = {"prexRespin1","prexCH","prexINJ","prexALL","prex_tedf"}; // Potentially replace this with a config file read in array or map;
+    TString daqConfigs[4] = {"prexPrompt_pass2","prexCH","prexINJ","prex_tedf"}; // Potentially replace this with a config file read in array or map;
     TString analyses[3] = {".","_regress_prFIXME.","_regress_mul."};
     TString suffix[2] = {"root",Form("%03d.root",splitNumber)};
     // FIXME remove this "FIXME" once there is a non-degeneracy in the tree names between the regress_pr and _mul root file's tree names
     if (debug>0) Printf("Looping over candidate rootfile prefixes and suffixes");
     for(Int_t ana=0;ana<3;ana++){
-      for(Int_t j=0;j<5;j++){
+      for(Int_t j=0;j<4;j++){
         for(Int_t suf=0;suf<2;suf++){
           filenamebase = Form("%s/%s_%d%s%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber+i,(const char*)analyses[ana],(const char*) suffix[suf]);
           filename     = filenamebase;
@@ -230,6 +232,8 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber 
         if (candidateFile->GetListOfKeys()->Contains(tree)){
           if (debug>0) Printf("File added to Chain: \"%s\"",(const char*)filename);
           newTChain->Add(filename);
+          friendTChain->Add(filename);
+          newTChain->AddFriend(friendTChain);
         }
         else {
           if (debug>1) Printf("File %s doesn't contain tree: \"%s\"",(const char*)filename,(const char*)tree);
