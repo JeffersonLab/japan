@@ -6,6 +6,64 @@
 #   They should also be all lower case.
 #
 
+## Combined Detector Asymmetries 
+############################## Up and Down-stream combo on Left Arm 
+[asym:@asym_left_avg]
+asym:usl, 0.5
+asym:dsl, 0.5
+[asym:@asym_left_dd]
+asym:usl, 0.5
+asym:dsl, -0.5
+############################## Up and Down-stream combo on Right Arm 
+[asym:@asym_right_avg]
+asym:usr, 0.5
+asym:dsr, 0.5
+[asym:@asym_right_dd]
+asym:usr, 0.5
+asym:dsr, -0.5
+############################## Left and Right Combo on Upstream Quartz
+[asym:@asym_us_avg]
+asym:usl, 0.5
+asym:usr, 0.5
+[asym:@asym_us_dd]
+asym:usl, 0.5
+asym:usr, -0.5
+############################## Left and Right Combo on Downstream Quartz
+[asym:@asym_ds_avg]
+asym:dsl, 0.5
+asym:dsr, 0.5
+[asym:@asym_ds_dd]
+asym:dsl, 0.5
+asym:dsr, -0.5
+############################## SAM 1 and 5
+[asym:@asym_sam_15_dd]
+asym:sam1, 0.5
+asym:sam5, -0.5
+[asym:@asym_sam_15_avg]
+asym:sam1, 0.5
+asym:sam5, 0.5
+############################## SAM 3 and 7
+[asym:@asym_sam_37_dd]
+asym:sam3, 0.5
+asym:sam7, -0.5
+[asym:@asym_sam_37_avg]
+asym:sam3, 0.5
+asym:sam7, 0.5
+############################## SAM 2 and 6
+[asym:@asym_sam_26_dd]
+asym:sam2, 0.5
+asym:sam6, -0.5
+[asym:@asym_sam_26_avg]
+asym:sam2, 0.5
+asym:sam6, 0.5
+############################## SAM 4 and 8
+[asym:@asym_sam_48_dd]
+asym:sam4, 0.5
+asym:sam8, -0.5
+[asym:@asym_sam_48_avg]
+asym:sam4, 0.5
+asym:sam8, 0.5
+
 # Double differences
 [asym:@bcm_an_us_ds_dd]
 asym:bcm_an_us, 1
