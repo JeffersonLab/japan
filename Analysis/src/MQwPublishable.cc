@@ -125,16 +125,19 @@ Bool_t MQwPublishable<U,T>::PublishByRequest(TString device_name)
             << QwLog::endl;
     ListPublishedValues();
     status = kTRUE;
-  } else if (not this->U::empty()) {
-    for (auto subsys = this->U::begin(); subsys != this->U::end(); ++subsys)
+  } else {
+    U* u = dynamic_cast<U*>(this);
+    if (not u->empty()) {
+      for (auto subsys = u->begin(); subsys != u->end(); ++subsys)
       {
         status = (*subsys)->PublishByRequest(device_name);
         if (status) break;
       }
-    // Report failure to publish
-    if (! status) {
-      QwError << "MQwPublishable::PublishByRequest: Failed to publish channel name: "
-              << device_name << QwLog::endl;
+      // Report failure to publish
+      if (! status) {
+        QwError << "MQwPublishable::PublishByRequest: Failed to publish channel name: "
+            << device_name << QwLog::endl;
+      }
     }
   }
   return status;
