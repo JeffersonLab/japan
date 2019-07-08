@@ -27,7 +27,7 @@ void BeamModPlot(TString type="evt",TString type2="mul", TString ref="CodaEventN
   }
 
    tree_R->Draw(">>elist","bmwcycnum>0","entrylist");  //picks out unique cycle numbers
-  TEntryList *elist = (TEntryList*)gDirectory->Get("elist");
+  TEntryList *elist = (TEntryList*)gROOT->FindObject("elist");
   tree_R->SetEntryList(elist);
   TLeaf *l_bmwcycnum = tree_R->GetLeaf("bmwcycnum");
   int nonzero = tree_R->Draw("bmwcycnum","bmwcycnum>0","goff");
@@ -49,17 +49,17 @@ void BeamModPlot(TString type="evt",TString type2="mul", TString ref="CodaEventN
   int Ncycles = cycles.size();
 
   TString bmwcut = "bmwcycnum>0";
-  TString evcut = "ErrorFlag && 0xffff5fff"; //basic cut, all events with beam on
-  TString evcutxcorr = "ErrorFlag && 0xffff5fff && bpm4aX>2"; //cut for x sensitivities
-  TString evcutycorr = "ErrorFlag && 0xffff5fff"; //cut for y sensitivities
-  TString evcutbcm = "ErrorFlag && 0xffff5fff && bmwcycnum==1"; //cut to look at one supercycle
-  TString evcutx = "ErrorFlag && 0xffff5fff && bmwobj==1 | bmwobj==3 | bmwobj==5";//cut for x modulations
-  TString evcuty = "ErrorFlag && 0xffff5fff && bmwobj==2 | bmwobj==4 | bmwobj==6";// cut for y modulations
-  TString evcute = "ErrorFlag && 0xffff5fff && bmwobj==8";//cut for energy modulations
+  TString evcut = "(ErrorFlag & 0x7bfe6fff)==0"; //basic cut, all events with beam on
+  TString evcutxcorr = "(ErrorFlag & 0x7bfe6fff)==0"; //cut for x sensitivities
+  TString evcutycorr = "(ErrorFlag & 0x7bfe6fff)==0"; //cut for y sensitivities
+  TString evcutbcm = "(ErrorFlag & 0x7bfe6fff)==0 && bmwcycnum==1"; //cut to look at one supercycle
+  TString evcutx = "(ErrorFlag & 0x7bfe6fff)==0 && bmwobj==1 | bmwobj==3 | bmwobj==5";//cut for x modulations
+  TString evcuty = "(ErrorFlag & 0x7bfe6fff)==0 && bmwobj==2 | bmwobj==4 | bmwobj==6";// cut for y modulations
+  TString evcute = "(ErrorFlag & 0x7bfe6fff)==0 && bmwobj==8";//cut for energy modulations
 
   TString coil[7] = {"bmod_trim1","bmod_trim2","bmod_trim3","bmod_trim4","bmod_trim5","bmod_trim6","bmod_trim7"};
 
-  if(Ncycles==0){
+  /*if(Ncycles==0){
     TPad *cBMWPlot2 = new TPad("cBMWPlot2","cBMWPlot2",0,0,1,1);
     cBMWPlot2->Divide(1,3);
     cBMWPlot2->Draw();
@@ -83,7 +83,7 @@ void BeamModPlot(TString type="evt",TString type2="mul", TString ref="CodaEventN
     cBMWPlot2->cd(3);
     line3.DrawLatex(.2,.5,":(");
   }
-  else{
+  else{*/
     TPad *cBMWPlot2 = new TPad("cBMWPlot2","cBMWPlot2",0,0,1,1);
     cBMWPlot2->Divide(1,3);
     cBMWPlot2->Draw();
@@ -134,7 +134,7 @@ void BeamModPlot(TString type="evt",TString type2="mul", TString ref="CodaEventN
    
     cBMWPlot2->cd(3);
     tree_M->Draw("(diff_bpm4eY-diff_bpm4aY):(diff_bpm4aY+diff_bpm4eY)","yield_bmwobj<0");
-  }
+    // }
 
   return 0;
 }
