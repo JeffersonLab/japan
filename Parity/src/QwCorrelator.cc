@@ -418,9 +418,11 @@ void QwCorrelator::initHistos(std::vector<std::string> Pname, std::vector<std::s
 
 void QwCorrelator::addEvent(double *Pvec, double *Yvec)
 {
-  linReg.accumulate(Pvec, Yvec);
-  // .... monitoring
+  TVectorD P(nP, Pvec);
+  TVectorD Y(nY, Yvec);
+  linReg.accumulate(P, Y);
 
+  // .... monitoring
   if (fDisableHistos == false) {
     for(int i=0;i<nP;i++) {
       fH1iv[i]->Fill(Pvec[i]);
