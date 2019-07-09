@@ -120,6 +120,13 @@ void QwCorrelator::ProcessData()
   
 }
 
+void QwCorrelator::AccumulateRunningSum(VQwDataHandler &value, Int_t count, Int_t ErrorMask)
+{
+  QwCorrelator* correlator = dynamic_cast<QwCorrelator*>(&value);
+  if (correlator) {
+    linReg += correlator->linReg;
+  }
+}
 
 void QwCorrelator::CalcCorrelations()
 {

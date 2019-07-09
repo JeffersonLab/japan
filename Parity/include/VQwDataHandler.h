@@ -70,7 +70,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
     void ClearEventData();
 
-    void AccumulateRunningSum(VQwDataHandler &value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+    virtual void AccumulateRunningSum(VQwDataHandler &value, Int_t count = 0, Int_t ErrorMask = 0xFFFFFFF);
     void CalculateRunningAverage();
     void PrintValue() const;
     void FillDB(QwParityDB *db, TString datatype){};
