@@ -69,6 +69,44 @@ QwSubsystemArray::QwSubsystemArray(const QwSubsystemArray& source)
 
 
 /**
+ * Assignment operator
+ * @param source Subsystem array to assign to this array
+ * @return This subsystem array after assignment
+ */
+QwSubsystemArray& QwSubsystemArray::operator=(const QwSubsystemArray& source)
+{
+  this->fCodaEventNumber = source.fCodaEventNumber;
+  this->fCodaEventType   = source.fCodaEventType;
+  if (!source.empty()){
+    if (this->size() == source.size()){
+      for(size_t i=0;i<source.size();i++){
+        if (source.at(i)==NULL || this->at(i)==NULL){
+          //  Either the source or the destination subsystem
+          //  are null
+        } else {
+          VQwSubsystem *ptr1 =
+            dynamic_cast<VQwSubsystem*>(this->at(i).get());
+          if (typeid(*ptr1)==typeid(*(source.at(i).get()))){
+            *(ptr1) = source.at(i).get();
+          } else {
+            //  Subsystems don't match
+            QwError << " QwSubsystemArray::operator= types do not mach" << QwLog::endl;
+            QwError << " typeid(ptr1)=" << typeid(*ptr1).name()
+                    << " but typeid(*(source.at(i).get()))=" << typeid(*(source.at(i).get())).name()
+                    << QwLog::endl;
+          }
+        }
+      }
+    } else {
+      //  Array sizes don't match
+    }
+  } else {
+    //  The source is empty
+  }
+  return *this;
+}
+
+/**
  * Fill the subsystem array with the contents of a map file
  * @param detectors Map file
  */
