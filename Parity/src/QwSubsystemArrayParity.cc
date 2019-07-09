@@ -95,38 +95,8 @@ void QwSubsystemArrayParity::WritePromptSummary(QwPromptSummary *ps, TString typ
  */
 QwSubsystemArrayParity& QwSubsystemArrayParity::operator= (const QwSubsystemArrayParity &source)
 {
-  Bool_t localdebug=kFALSE;
-  if(localdebug)  std::cout<<"QwSubsystemArrayParity::operator= \n";
-  if (!source.empty()){
-    if (this->size() == source.size()){
-      this->fErrorFlag=source.fErrorFlag;
-      this->fCodaEventNumber=source.fCodaEventNumber;
-      this->fCodaEventType=source.fCodaEventType;
-      for(size_t i=0;i<source.size();i++){
-	if (source.at(i)==NULL || this->at(i)==NULL){
-	  //  Either the source or the destination subsystem
-	  //  are null
-	} else {
-	  VQwSubsystemParity *ptr1 =
-	    dynamic_cast<VQwSubsystemParity*>(this->at(i).get());
-	  if (typeid(*ptr1)==typeid(*(source.at(i).get()))){
-	    if(localdebug) std::cout<<" here in QwSubsystemArrayParity::operator= types mach \n";
-	    *(ptr1) = source.at(i).get();
-	  } else {
-	    //  Subsystems don't match
-	      QwError << " QwSubsystemArrayParity::operator= types do not mach" << QwLog::endl;
-	      QwError << " typeid(ptr1)=" << typeid(*ptr1).name()
-                      << " but typeid(*(source.at(i).get()))=" << typeid(*(source.at(i).get())).name()
-                      << QwLog::endl;
-	  }
-	}
-      }
-    } else {
-      //  Array sizes don't match
-    }
-  } else {
-    //  The source is empty
-  }
+  QwSubsystemArray::operator=(source);
+  this->fErrorFlag = source.fErrorFlag;
   return *this;
 }
 
