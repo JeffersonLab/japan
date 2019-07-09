@@ -10,8 +10,6 @@
 
 #include <assert.h>
 #include <math.h>
-#include <iostream>
-using namespace std;
 
 #include "LinReg_Bevington_Pebay.h"
 
@@ -28,7 +26,7 @@ LinRegBevPeb::LinRegBevPeb()
 //=================================================
 void LinRegBevPeb::init()
 {
-  printf("Init LinReg dims: nP=%d nY=%d\n",nP,nY);
+  QwMessage << "Init LinReg dims: nP=" << nP << " nY=" << nY << QwLog::endl;
 
   mMP.ResizeTo(nP);
   mMY.ResizeTo(nY);
@@ -61,7 +59,8 @@ void LinRegBevPeb::init()
   mRYY.ResizeTo(mVYY);
   mRYYprime.ResizeTo(mVYYprime);
 
-  fGoodEventNumber=0;
+  fGoodEventNumber = 0;
+}
 
 void LinRegBevPeb::clear()
 {
@@ -75,15 +74,16 @@ void LinRegBevPeb::clear()
 
 //=================================================
 //=================================================
-void LinRegBevPeb::print(){
-  printf("LinReg dims:  nP=%d nY=%d\n",nP,nY);
+void LinRegBevPeb::print()
+{
+  QwMessage << "LinReg dims:  nP=" << nP << " nY=" << nY << QwLog::endl;
 
-  cout<<"MP:"; mMP.Print();
-  cout<<"MY:"; mMY.Print();
-  cout<<"VPP:"; mVPP.Print();
-  cout<<"VPY:"; mVPY.Print();
-  cout<<"VYY:"; mVYY.Print();
-  cout<<"VYYprime:"; mVYYprime.Print();
+  QwMessage << "MP:"; mMP.Print();
+  QwMessage << "MY:"; mMY.Print();
+  QwMessage << "VPP:"; mVPP.Print();
+  QwMessage << "VPY:"; mVPY.Print();
+  QwMessage << "VYY:"; mVYY.Print();
+  QwMessage << "VYYprime:"; mVYYprime.Print();
 }
 
 
@@ -220,40 +220,34 @@ Int_t  LinRegBevPeb::getCovarianceY( int i, int j, Double_t &covar ){
 //==========================================================
 //==========================================================
 void LinRegBevPeb::printSummaryP(){
-  cout << Form("\nLinRegBevPeb::printSummaryP seen good eve=%lld",fGoodEventNumber)<<endl;
+  QwMessage << Form("\nLinRegBevPeb::printSummaryP seen good eve=%lld",fGoodEventNumber)<<QwLog::endl;
 
   size_t dim=nP;
   if(fGoodEventNumber>2) { // print full matrix
-    cout << Form("\nname:                                               ");
+    QwMessage << Form("\nname:                                               ");
     for (size_t i = 1; i <dim; i++) {
-      cout << Form("P%d%11s",(int)i," ");
+      QwMessage << Form("P%d%11s",(int)i," ");
     }
-    cout << Form("\n           mean     sig(distrib)   nSig(mean)       corelation-matrix ....\n");
+    QwMessage << Form("\n           mean     sig(distrib)   nSig(mean)       corelation-matrix ....\n");
     for (size_t i = 0; i <dim; i++) {
-      Int_t testval;
       double meanI,sigI;
-      testval = getMeanP(i,meanI);
-      assert(testval==0);
-      testval = getSigmaP(i,sigI);
-      assert(testval==0);
+      if (getMeanP(i,meanI) < 0) QwWarning << "LRB::getMeanP failed" << QwLog::endl;
+      if (getSigmaP(i,sigI) < 0) QwWarning << "LRB::getSigmaP failed" << QwLog::endl;
       double nSig=-1;
       double err=sigI/sqrt(fGoodEventNumber);
       if(sigI>0.) nSig=meanI/err;
 
-      cout << Form("P%d:  %+12.4g  %12.3g      %.1f    ",(int)i,meanI,sigI,nSig);
+      QwMessage << Form("P%d:  %+12.4g  %12.3g      %.1f    ",(int)i,meanI,sigI,nSig);
       for (size_t j = 1; j <dim; j++) {
-        if( j<=i) { cout << Form("  %12s","._._._."); continue;}
-        Int_t testval;
+        if( j<=i) { QwMessage << Form("  %12s","._._._."); continue;}
         double sigJ,cov;
-        testval = getSigmaP(j,sigJ);
-        assert(testval==0);
-        testval = getCovarianceP(i,j,cov);
-        assert(testval==0);
-        double corel=cov/sigI/sigJ;
+        if (getSigmaP(j,sigJ) < 0) QwWarning << "LRB::getSigmaP failed" << QwLog::endl;
+        if (getCovarianceP(i,j,cov) < 0) QwWarning << "LRB::getCovarianceP failed" << QwLog::endl;
+        double corel=cov / sigI / sigJ;
         
-        cout << Form("  %12.3g",corel);
+        QwMessage << Form("  %12.3g",corel);
       }
-      cout << Form("\n");
+      QwMessage << Form("\n");
     }
   }
 }
@@ -262,19 +256,16 @@ void LinRegBevPeb::printSummaryP(){
 //==========================================================
 //==========================================================
 void LinRegBevPeb::printSummaryY(){
-  cout << Form("\nLinRegBevPeb::printSummaryY seen good eve=%lld  (CSV-format)",fGoodEventNumber)<<endl;
-  cout << Form("  j,       mean,     sig(mean),   nSig(mean),  sig(distribution)    \n");
+  QwMessage << Form("\nLinRegBevPeb::printSummaryY seen good eve=%lld  (CSV-format)",fGoodEventNumber)<<QwLog::endl;
+  QwMessage << Form("  j,       mean,     sig(mean),   nSig(mean),  sig(distribution)    \n");
   
   for (int i = 0; i <nY; i++) {
-    Int_t testval;
     double meanI,sigI;
-    testval = getMeanY(i,meanI);
-    assert(testval==0);
-    testval = getSigmaY(i,sigI);
-    assert(testval==0);
-    double err=sigI/sqrt(fGoodEventNumber);
-    double nSigErr=meanI/err;
-    cout << Form("Y%02d, %+11.4g, %12.4g, %8.1f, %12.4g "" ",i,meanI,err,nSigErr,sigI)<<endl;
+    if (getMeanY(i,meanI) < 0) QwWarning << "LRB::getMeanY failed" << QwLog::endl;
+    if (getSigmaY(i,sigI) < 0) QwWarning << "LRB::getSigmaY failed" << QwLog::endl;
+    double err = sigI / sqrt(fGoodEventNumber);
+    double nSigErr = meanI / err;
+    QwMessage << Form("Y%02d, %+11.4g, %12.4g, %8.1f, %12.4g "" ",i,meanI,err,nSigErr,sigI)<<QwLog::endl;
 
   }
 }
@@ -284,17 +275,17 @@ void LinRegBevPeb::printSummaryY(){
 //==========================================================
 //==========================================================
 void LinRegBevPeb::printSummaryAlphas(){
-  cout << Form("\nLinRegBevPeb::printSummaryAlphas seen good eve=%lld",fGoodEventNumber)<<endl;
-  cout << Form("\n  j                slope         sigma     mean/sigma\n");
+  QwMessage << Form("\nLinRegBevPeb::printSummaryAlphas seen good eve=%lld",fGoodEventNumber)<<QwLog::endl;
+  QwMessage << Form("\n  j                slope         sigma     mean/sigma\n");
   for (int iy = 0; iy <nY; iy++) {
-    cout << Form("dv=Y%d: ",iy)<<endl;
+    QwMessage << Form("dv=Y%d: ",iy)<<QwLog::endl;
     for (int j = 0; j < nP; j++) {
       double val=mA(j,iy);
       double err=mAsig(j,iy);
       double nSig=val/err;
       char x=' ';
       if(fabs(nSig)>3.) x='*';
-      cout << Form("  slope_%d = %11.3g  +/-%11.3g  (nSig=%.2f) %c\n",j,val, err,nSig,x);
+      QwMessage << Form("  slope_%d = %11.3g  +/-%11.3g  (nSig=%.2f) %c\n",j,val, err,nSig,x);
     }
   }
 }
@@ -303,34 +294,28 @@ void LinRegBevPeb::printSummaryAlphas(){
 //==========================================================
 //==========================================================
 void LinRegBevPeb::printSummaryYP(){
-  cout << Form("\nLinRegBevPeb::printSummaryYP seen good eve=%lld",fGoodEventNumber)<<endl;
+  QwMessage << Form("\nLinRegBevPeb::printSummaryYP seen good eve=%lld",fGoodEventNumber)<<QwLog::endl;
 
-  if(fGoodEventNumber<2) { cout<<"  too fiew events, skip"<<endl; return;}
-  cout << Form("\n         name:             ");
+  if(fGoodEventNumber<2) { QwMessage<<"  too fiew events, skip"<<QwLog::endl; return;}
+  QwMessage << Form("\n         name:             ");
   for (int i = 0; i <nP; i++) {
-    cout << Form(" %10sP%d "," ",i);
+    QwMessage << Form(" %10sP%d "," ",i);
   }
-  cout << Form("\n  j                   meanY         sigY      corelation with Ps ....\n");
+  QwMessage << Form("\n  j                   meanY         sigY      corelation with Ps ....\n");
   for (int iy = 0; iy <nY; iy++) {
-    Int_t testval;
     double meanI,sigI;
-    testval = getMeanY(iy,meanI);
-    assert(testval==0);
-    testval = getSigmaY(iy,sigI);
-    assert(testval==0);
+    if (getMeanY(iy,meanI) < 0) QwWarning << "LRB::getMeanY failed" << QwLog::endl;
+    if (getSigmaY(iy,sigI) < 0) QwWarning << "LRB::getSigmaY failed" << QwLog::endl;
     
-    cout << Form(" %3d %6sY%d:  %+12.4g  %12.4g ",iy," ",iy,meanI,sigI);
+    QwMessage << Form(" %3d %6sY%d:  %+12.4g  %12.4g ",iy," ",iy,meanI,sigI);
     for (int ip = 0; ip <nP; ip++) {
-      Int_t testval;
       double sigJ,cov; 
-      testval = getSigmaP(ip,sigJ);
-      assert(testval==0);
-      testval = getCovariancePY(ip,iy,cov);
-      assert(testval==0);
-      double corel=cov/sigI/sigJ;      
-      cout << Form("  %12.3g",corel);
+      if (getSigmaP(ip,sigJ) < 0) QwWarning << "LRB::getSigmaP failed" << QwLog::endl;
+      if (getCovariancePY(ip,iy,cov) < 0) QwWarning << "LRB::getCovariancePY failed" << QwLog::endl;
+      double corel = cov / sigI / sigJ;
+      QwMessage << Form("  %12.3g",corel);
     }
-    cout << Form("\n");
+    QwMessage << Form("\n");
   }
 }
 
@@ -339,7 +324,7 @@ void LinRegBevPeb::printSummaryYP(){
 //==========================================================
 //==========================================================
 void LinRegBevPeb::solve() {
-  cout << Form("\n********LinRegBevPeb::solve...invert Rjk")<<endl;
+  QwMessage << Form("\n********LinRegBevPeb::solve...invert Rjk")<<QwLog::endl;
 
   TMatrixD invmVPP(TMatrixD::kUnit, mVPP);
   invmVPP *= TMatrixDDiag(mVPP);
@@ -363,14 +348,10 @@ void LinRegBevPeb::solve() {
 
    for (int iy = 0; iy <nY; iy++) {
     double Sy;
-    Int_t testval;
-    testval = getSigmaY(iy,Sy);
-    assert(testval==0);
+    if (getSigmaY(iy,Sy) < 0) QwWarning << "LRB::getSigmaY failed" << QwLog::endl;
     for (int ip = 0; ip <nP; ip++) {
-      Int_t testval;
       double Sk;
-      testval = getSigmaP(ip,Sk);
-      assert(testval==0);
+      if (getSigmaP(ip,Sk) < 0) QwWarning << "LRB::getSigmaP failed" << QwLog::endl;
       mA(ip,iy)= Djy(ip,iy)*Sy/Sk;
     }
   }
@@ -419,14 +400,14 @@ void LinRegBevPeb::solve() {
   }
   QwMessage << QwLog::endl;
 
-  QwMessage << "Corrected Y values:" << endl;
-  QwMessage << "     mean          sig" << endl;
+  QwMessage << "Corrected Y values:" << QwLog::endl;
+  QwMessage << "     mean          sig" << QwLog::endl;
   for (int i = 0; i < nY; i++){
     QwMessage << "Y" << i << ":  " << mMYprime(i) << " +- " << sigYprime(i) << QwLog::endl;
   }
   QwMessage << QwLog::endl;
 
-  cout << "Compute errors of alphas ..."<<endl;
+  QwMessage << "Compute errors of alphas ..."<<QwLog::endl;
   double norm = 1. / (fGoodEventNumber - nP - 1);
   for (int iy = 0; iy < nY; iy++) {
     /* compute s^2= Vy + Vx -2*Vxy 
