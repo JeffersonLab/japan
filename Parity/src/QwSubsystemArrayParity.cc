@@ -30,9 +30,6 @@ QwSubsystemArrayParity::QwSubsystemArrayParity(QwOptions& options)
 QwSubsystemArrayParity::QwSubsystemArrayParity(const QwSubsystemArrayParity& source)
 : QwSubsystemArray(source)
 {
-  // Store pointer to source
-  dummy_source = &source;
-
   // Copy error flags
   fErrorFlag = source.fErrorFlag;
   fErrorFlagTreeIndex = source.fErrorFlagTreeIndex;

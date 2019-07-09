@@ -68,7 +68,6 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
     /// \brief Fill the database
     void FillDB(QwParityDB *db, TString type);
     void FillErrDB(QwParityDB *db, TString type);
-    const QwSubsystemArrayParity *dummy_source;
 
     /// \brief Assignment operator
     QwSubsystemArrayParity& operator=  (const QwSubsystemArrayParity &value);
