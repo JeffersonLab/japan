@@ -15,6 +15,17 @@
 
 //*****************************************************************//
 
+/// Default constructor
+QwSubsystemArrayParity::QwSubsystemArrayParity(QwOptions& options)
+: QwSubsystemArray(options, CanContain),
+  fErrorFlag(0),
+  fErrorFlagTreeIndex(-1)
+{
+
+}
+
+//*****************************************************************//
+
 /// Copy constructor
 QwSubsystemArrayParity::QwSubsystemArrayParity(const QwSubsystemArrayParity& source)
 : QwSubsystemArray(source)

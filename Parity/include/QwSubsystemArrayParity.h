@@ -47,7 +47,7 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
     friend class LRBCorrector;
 
     /// Constructor with options
-    QwSubsystemArrayParity(QwOptions& options): QwSubsystemArray(options, CanContain),fErrorFlag(0),fErrorFlagTreeIndex(-1) { };
+    QwSubsystemArrayParity(QwOptions& options);
     /// Copy constructor by reference
     QwSubsystemArrayParity(const QwSubsystemArrayParity& source);
     /// Default destructor
