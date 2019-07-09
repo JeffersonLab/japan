@@ -15,8 +15,8 @@
 
 //-----------------------------------------
 class LinRegBevPeb {
-  int  par_nP; // number of independent variables
-  int  par_nY; // number of   dependent variables
+  int  nP; // number of independent variables
+  int  nY; // number of   dependent variables
  
  private:
   Long64_t fGoodEventNumber;    ///< accumulated so far  
@@ -53,7 +53,8 @@ class LinRegBevPeb {
   virtual ~LinRegBevPeb(){};
 
   /// processing single events
-  void  accumulate(double *P, double *Y);
+  void  accumulate(TVectorD P, TVectorD Y);
+
   void  solve();
   double Alpha(int ip, int iy){ return mA(ip,iy);} //ok
   bool   failed(){ return  fGoodEventNumber<2;}
@@ -66,7 +67,7 @@ class LinRegBevPeb {
 
   void print();
   void init();
-  void setDims(int a, int b){ par_nP=a; par_nY=b;}
+  void setDims(int a, int b){ nP=a; nY=b;}
 
   /// Get mean value of a variable, returns error code
   Int_t getMeanP(const int i, Double_t &mean );
