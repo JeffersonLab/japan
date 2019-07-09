@@ -68,7 +68,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
     TString GetDataHandlerName(){return fName;}
 
-    void ClearEventData();
+    virtual void ClearEventData();
 
     virtual void AccumulateRunningSum(VQwDataHandler &value, Int_t count = 0, Int_t ErrorMask = 0xFFFFFFF);
     void CalculateRunningAverage();
