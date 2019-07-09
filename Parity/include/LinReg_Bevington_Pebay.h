@@ -67,6 +67,7 @@ class LinRegBevPeb {
 
   void print();
   void init();
+  void clear();
   void setDims(int a, int b){ nP=a; nY=b;}
 
   /// Get mean value of a variable, returns error code

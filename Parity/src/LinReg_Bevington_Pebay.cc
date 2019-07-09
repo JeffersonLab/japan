@@ -62,6 +62,15 @@ void LinRegBevPeb::init()
   mRYYprime.ResizeTo(mVYYprime);
 
   fGoodEventNumber=0;
+
+void LinRegBevPeb::clear()
+{
+  mVPP.Zero();
+  mVPY.Zero();
+  mVYY.Zero();
+  mMP.Zero();
+  mMY.Zero();
+  fGoodEventNumber = 0;
 }
 
 //=================================================
