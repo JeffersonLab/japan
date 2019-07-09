@@ -104,15 +104,14 @@ void VQwBPM::SetSingleEventCuts(TString ch_name, Double_t minX, Double_t maxX)
   tmpptr->SetSingleEventCuts(minX,maxX);
 }
 
-void VQwBPM::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t minX, Double_t maxX, Double_t stability)
+void VQwBPM::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t minX, Double_t maxX, Double_t stability, Double_t burplevel)
 {
   VQwHardwareChannel* tmpptr = GetSubelementByName(ch_name);
   errorflag|=kBPMErrorFlag;//update the device flag
   QwMessage << GetElementName() << " " << ch_name 
 	    << " LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-  tmpptr->SetSingleEventCuts(errorflag,minX,maxX,stability);
+  tmpptr->SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 }
-
 
 VQwBPM& VQwBPM::operator= (const VQwBPM &value)
 {

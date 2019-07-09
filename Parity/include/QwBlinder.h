@@ -97,6 +97,8 @@ class QwBlinder {
 
     /// \brief Update the status with new external information
     void ProcessOptions(QwOptions& options);
+    /// \brief Update the status using a random number
+    void Update();
     /// \brief Update the status with new external information
     void Update(QwParityDB* db);
     /// \brief Update the status with new external information
@@ -302,6 +304,9 @@ class QwBlinder {
 
     ///  Reads the seed from the database object
     Int_t ReadSeed(QwParityDB* db);
+
+    ///  Read the seed string generated utilizing a random number generator
+    Int_t ReadRandomSeed();
 
     void WriteChecksum(QwParityDB* db);     ///  Writes fSeedID and fBFChecksum to DB for this analysis ID
     void WriteTestValues(QwParityDB* db);   ///  Writes fTestNumber and fBlindTestValue to DB for this analysis ID

@@ -88,6 +88,25 @@ public:
   void SetEventCutMode(Int_t bcuts){bEVENTCUTMODE=bcuts;};
 
   virtual Bool_t ApplySingleEventCuts() = 0;//check values read from modules are at desired level
+
+  virtual Bool_t CheckForBurpFail(const VQwHardwareChannel *event){
+    Bool_t foundburp = kFALSE;
+    if (fBurpThreshold>0){
+      Double_t diff = this->GetValue() - event->GetValue();
+      if (fabs(diff)>fBurpThreshold){
+	      foundburp = kTRUE;
+	      fBurpCountdown = fBurpHoldoff;
+      } else if (fBurpCountdown>0) {
+	      foundburp = kTRUE;
+	      fBurpCountdown--;
+      }
+    }
+    if (foundburp){
+      fErrorFlag |= kErrorFlag_BurpCut;
+    }
+    
+    return foundburp;
+  }
   
   /*! \brief Set the upper and lower limits (fULimit and fLLimit) 
    *         for this channel */
@@ -95,7 +114,7 @@ public:
   /*! \brief Inherited from VQwDataElement to set the upper and lower 
    *         limits (fULimit and fLLimit), stability % and the 
    *         error flag on this channel */
-  void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability);
+  void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability=-1.0, Double_t BurpLevel=-1.0);
 
   Double_t GetEventCutUpperLimit() const { return fULimit; };
   Double_t GetEventCutLowerLimit() const { return fLLimit; };
@@ -151,12 +170,15 @@ public:
   virtual void AddErrEntriesToList(std::vector<QwErrDBInterface> &row_list) {};
 
   
-  virtual void AccumulateRunningSum(const VQwHardwareChannel *value, Int_t count) = 0;
-  virtual void AccumulateRunningSum(const VQwHardwareChannel *value){
-    AccumulateRunningSum(value, value->fGoodEventCount);
+  virtual void AccumulateRunningSum(const VQwHardwareChannel *value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF){
+    if(count==0){
+      count = value->fGoodEventCount;
+    }
+    if(ErrorMask ==  kPreserveError){QwError << "VQwHardwareChannel count=" << count << QwLog::endl;}
+    AccumulateRunningSum(value, count, ErrorMask);
   };
-  virtual void DeaccumulateRunningSum(const VQwHardwareChannel *value){
-    AccumulateRunningSum(value, -1);
+  virtual void DeaccumulateRunningSum(const VQwHardwareChannel *value, Int_t ErrorMask=0xFFFFFFF){
+    AccumulateRunningSum(value, -1, ErrorMask);
   };
 
   virtual void AddValueFrom(const VQwHardwareChannel* valueptr) = 0;
@@ -241,6 +263,11 @@ protected:
   Int_t bEVENTCUTMODE;/*!<If this set to kFALSE then Event cuts are OFF*/
   Double_t fULimit, fLLimit;/*!<this sets the upper and lower limits*/
   Double_t fStability;/*!<how much deviaton from the stable reading is allowed*/
+
+  Double_t fBurpThreshold;
+  Int_t fBurpCountdown;
+  Int_t fBurpHoldoff;
+
   //@}
 
 };   // class VQwHardwareChannel

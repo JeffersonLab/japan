@@ -35,8 +35,6 @@ Int_t QwMollerDetector::LoadChannelMap(TString mapfile)
   TString varname, varvalue;
   TString modtype, dettype, name, keyword;
   Int_t modnum, channum;
-  Int_t currentrocread = 0;
-  Int_t currentbankread = 0;
   Int_t wordsofar = 0;
   Int_t currentsubbankindex = -1;
   
@@ -310,13 +308,13 @@ void QwMollerDetector::Scale(Double_t factor){
   }
 }
 
-void QwMollerDetector::AccumulateRunningSum(VQwSubsystem* value){
+void QwMollerDetector::AccumulateRunningSum(VQwSubsystem* value, Int_t count, Int_t ErrorMask){
   if (Compare(value)) {
     QwMollerDetector* v = dynamic_cast<QwMollerDetector*>(value);
 
     for (size_t i = 0; i < fSTR7200_Channel.size(); i++){
       for (size_t j = 0; j < fSTR7200_Channel[i].size(); j++){
-        fSTR7200_Channel[i][j].AccumulateRunningSum(v->fSTR7200_Channel[i][j]);
+        fSTR7200_Channel[i][j].AccumulateRunningSum(v->fSTR7200_Channel[i][j], count, ErrorMask);
       }
     }
 

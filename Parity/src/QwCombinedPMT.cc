@@ -134,11 +134,11 @@ Bool_t QwCombinedPMT::ApplyHWChecks()
 }
 /********************************************************/
 
-void QwCombinedPMT::SetSingleEventCuts(UInt_t errorflag, Double_t LL=0, Double_t UL=0, Double_t stability=0){
+void QwCombinedPMT::SetSingleEventCuts(UInt_t errorflag, Double_t LL=0, Double_t UL=0, Double_t stability=0, Double_t burplevel=0){
   //set the unique tag to identify device type (Int.PMT & Comb. PMT)
   //errorflag|=kPMTErrorFlag;
   QwMessage<<"QwCombinedPMT Error Code passing to QwIntegrationPMT "<<errorflag<<QwLog::endl;
-  fSumADC.SetSingleEventCuts(errorflag,LL,UL,stability);
+  fSumADC.SetSingleEventCuts(errorflag,LL,UL,stability,burplevel);
   
 }
 
@@ -163,6 +163,28 @@ void QwCombinedPMT::PrintErrorCounters() const
 {
   fSumADC.PrintErrorCounters();
 }
+/*********************************************************/
+Bool_t QwCombinedPMT::CheckForBurpFail(const VQwDataElement *ev_error){
+  Bool_t burpstatus = kFALSE;
+  try {
+    if(typeid(*ev_error)==typeid(*this)) {
+      //std::cout<<" Here in QwCombinedPMT::CheckForBurpFail \n";
+      if (this->GetElementName()!="") {
+        const QwCombinedPMT* value_pmt = dynamic_cast<const QwCombinedPMT* >(ev_error);
+        burpstatus |= fSumADC.CheckForBurpFail(&(value_pmt->fSumADC)); 
+      }
+    } else {
+      TString loc="Standard exception from QwCombinedPMT::CheckForBurpFail :"+
+        ev_error->GetElementName()+" "+this->GetElementName()+" are not of the "
+        +"same type";
+      throw std::invalid_argument(loc.Data());
+    }
+  } catch (std::exception& e) {
+    std::cerr<< e.what()<<std::endl;
+  }
+  return burpstatus;
+};
+
 
 /********************************************************/
 UInt_t QwCombinedPMT::UpdateErrorFlag()
@@ -282,14 +304,14 @@ void QwCombinedPMT::Sum(QwCombinedPMT &value1, QwCombinedPMT &value2)
 //  this->fAvgADC += value2.fAvgADC;
 }
 
-void QwCombinedPMT::AccumulateRunningSum(const QwCombinedPMT& value)
+void QwCombinedPMT::AccumulateRunningSum(const QwCombinedPMT& value, Int_t count, Int_t ErrorMask)
 {
-  fSumADC.AccumulateRunningSum(value.fSumADC);
+  fSumADC.AccumulateRunningSum(value.fSumADC, count, ErrorMask);
 }
 
-void QwCombinedPMT::DeaccumulateRunningSum(QwCombinedPMT& value)
+void QwCombinedPMT::DeaccumulateRunningSum(QwCombinedPMT& value, Int_t ErrorMask)
 {
-  fSumADC.DeaccumulateRunningSum(value.fSumADC);
+  fSumADC.DeaccumulateRunningSum(value.fSumADC, ErrorMask);
 }
 
 

@@ -1,0 +1,38 @@
+# This is an example of a detector definition file.
+
+[QwBeamLine]
+ name      = Injector
+ map       = DAQ_Checkout_inj_beamline.map
+ eventcut  = prexinj_beamline_eventcuts.map
+ param     = DAQ_Checkout_inj_beamline_pedestal.map
+
+[QwHelicity]
+ name      = Helicity info
+ map       = prexinj_helicity.map
+
+[QwBeamLine]
+ name      = CountingHouse
+ map       = DAQ_Checkout_CH_beamline.map
+ eventcut  = prexCH_beamline_eventcuts.map
+ param     = DAQ_Checkout_CH_beamline_pedestal.map
+
+[QwBeamLine]
+ name     = MainDets
+ map      = DAQ_Checkout_main.map
+ eventcut = prex_maindet_eventcuts.map
+ param    = DAQ_Checkout_main_pedestal.map
+
+[QwScaler]
+  name     = SyncScalers
+  map      = prex_sync_scaler.map
+  eventcut = prex_scaler_eventcuts.map
+
+[QwScaler]
+  name     = CHScalers
+  map      = prexCH_scaler.map
+  eventcut = prex_scaler_eventcuts.map
+
+[QwScaler]
+  name     = InjScalers
+  map      = prexinj_scaler.map
+  eventcut = prex_scaler_eventcuts.map

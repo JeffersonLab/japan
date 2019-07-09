@@ -159,17 +159,15 @@ class QwVQWK_Channel: public VQwHardwareChannel, public MQwMockable {
   void AddChannelOffset(Double_t Offset);
   void Scale(Double_t Offset);
 
-  inline void AccumulateRunningSum(const QwVQWK_Channel& value){
-    AccumulateRunningSum(value, value.fGoodEventCount);
-  }
-  void AccumulateRunningSum(const QwVQWK_Channel& value, Int_t count);
-  void AccumulateRunningSum(const VQwHardwareChannel *value, Int_t count){
+
+  void AccumulateRunningSum(const QwVQWK_Channel& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void AccumulateRunningSum(const VQwHardwareChannel *value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF){
     const QwVQWK_Channel *tmp_ptr = dynamic_cast<const QwVQWK_Channel*>(value);
-    if (tmp_ptr != NULL) AccumulateRunningSum(*tmp_ptr, count);
+    if (tmp_ptr != NULL) AccumulateRunningSum(*tmp_ptr, count, ErrorMask);
   };
   ////deaccumulate one value from the running sum
-  inline void DeaccumulateRunningSum(const QwVQWK_Channel& value){
-    AccumulateRunningSum(value, -1);
+  inline void DeaccumulateRunningSum(const QwVQWK_Channel& value, Int_t ErrorMask=0xFFFFFFF){
+    AccumulateRunningSum(value, -1, ErrorMask);
   };
   /*
   void DeaccumulateRunningSum(VQwHardwareChannel *value){

@@ -40,6 +40,9 @@ class QwOmnivore: public VQwSubsystem_t {
     Int_t LoadEventCuts(TString filename) { return 0; };
     /// Apply the single event cuts
     Bool_t ApplySingleEventCuts() { return kTRUE; };
+
+    Bool_t CheckForBurpFail(const VQwSubsystem *subsys){return kFALSE;};
+
     /// Report the number of events failed due to HW and event cut failures
     void PrintErrorCounters() const { };
     /// Return the error flag to the main routine
@@ -112,8 +115,8 @@ class QwOmnivore: public VQwSubsystem_t {
     void ConstructBranch(TTree*, TString&, QwParameterFile&) { };
 
     /// \brief Update the running sums for devices
-    void AccumulateRunningSum(VQwSubsystem* value) { };
-    void DeaccumulateRunningSum(VQwSubsystem* value) { };
+    void AccumulateRunningSum(VQwSubsystem* value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF) { };
+    void DeaccumulateRunningSum(VQwSubsystem* value, Int_t ErrorMask=0xFFFFFFF) { };
     /// \brief Calculate the average for all good events
     void CalculateRunningAverage() { };
 };

@@ -47,7 +47,7 @@ const TString QwBlinder::fStatusName[4] = {"Indeterminate", "NotBlindable",
 					   "Blindable", "BlindableFail"};
 
 // Maximum blinding asymmetry for additive blinding
-const Double_t QwBlinder::kDefaultMaximumBlindingAsymmetry = 0.06; // ppm
+const Double_t QwBlinder::kDefaultMaximumBlindingAsymmetry = 0.150; // ppm
 const Double_t QwBlinder::kDefaultMaximumBlindingFactor = 0.0; // [fraction]
 
 // Default seed, associated with seed_id 0
@@ -179,6 +179,30 @@ void QwBlinder::Update(QwParityDB* db)
   }
 }
 #endif // __USE_DATABASE__
+
+/**
+ * Update the blinder status using a random number
+ *
+ */
+void QwBlinder::Update()
+{
+  //  Update the seed ID then tell us if it has changed.
+  UInt_t old_seed_id = fSeedID;
+  ReadRandomSeed();
+  //  Force the target to blindable, Wien to be forward,
+  //  and IHWP polarity to be +1
+  SetTargetBlindability(QwBlinder::kBlindable);
+  SetWienState(kWienForward);
+  SetIHWPPolarity(+1);
+  // If the blinding seed has changed, re-initialize the blinder
+  if (fSeedID != old_seed_id ||
+      (fSeedID==0 && fSeed!=kDefaultSeed) ) {
+    QwWarning << "Changing blinder seed to " << fSeedID
+              << " from " << old_seed_id << "." << QwLog::endl;
+    InitBlinders(fSeedID);
+    InitTestValues(10);
+  }
+}
 
 /**
  * Update the blinder status with new external information
@@ -352,6 +376,39 @@ Int_t QwBlinder::ReadSeed(QwParityDB* db)
   return fSeedID;
 }
 #endif // __USE_DATABASE__
+
+/*!-----------------------------------------------------------
+ *------------------------------------------------------------
+ * Function to read the seed string generated utilizing a random number generator
+ *
+ * Parameters: none
+ *
+ * Return: Int_t 
+ *
+ *------------------------------------------------------------
+ *------------------------------------------------------------*/
+Int_t QwBlinder::ReadRandomSeed()
+{
+  static const Char_t alphanum[] =
+    "0123456789"
+    "!@#$%^&*"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz";
+
+  Int_t strLen = sizeof(alphanum) - 1;
+  Char_t randomchar[20];
+  // Initialize random number generator.
+  srand(time(0));
+  //get  a "random" positive integer 
+  
+  for (int i = 0; i < 20; ++i) {
+    randomchar[i] = alphanum[rand() % strLen];
+  }
+  fSeedID=rand();
+  TString frandomSeed(randomchar);
+  fSeed=frandomSeed;//a random string
+  return fSeedID;
+}
 
 /*!-----------------------------------------------------------
  *------------------------------------------------------------

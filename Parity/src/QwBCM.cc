@@ -191,11 +191,12 @@ Int_t QwBCM<T>::SetSingleEventCuts(Double_t LL, Double_t UL){//std::vector<Doubl
 }
 
 template<typename T>
-void QwBCM<T>::SetSingleEventCuts(UInt_t errorflag, Double_t LL, Double_t UL, Double_t stability){
+void QwBCM<T>::SetSingleEventCuts(UInt_t errorflag, Double_t LL, Double_t UL, Double_t stability, Double_t burplevel){
   //set the unique tag to identify device type (bcm,bpm & etc)
   errorflag|=kBCMErrorFlag;
   QwMessage<<"QwBCM Error Code passing to QwVQWK_Ch "<<errorflag<<" "<<stability<<QwLog::endl;
-  fBeamCurrent.SetSingleEventCuts(errorflag,LL,UL,stability);
+  //QwError<<"***************************"<<typeid(fBeamCurrent).name()<<QwLog::endl;
+  fBeamCurrent.SetSingleEventCuts(errorflag,LL,UL,stability,burplevel);
 
 }
 
@@ -422,14 +423,38 @@ void QwBCM<T>::CalculateRunningAverage()
 }
 
 template<typename T>
-void QwBCM<T>::AccumulateRunningSum(const VQwBCM& value) {
-  fBeamCurrent.AccumulateRunningSum(
-      dynamic_cast<const QwBCM<T>* >(&value)->fBeamCurrent);
+Bool_t QwBCM<T>::CheckForBurpFail(const VQwDataElement *ev_error){
+  Short_t i=0;
+  Bool_t burpstatus = kFALSE;
+  //QwError << "************* " << this->GetElementName() << "  <<<this, event>>>  " << ev_error->GetElementName() << " *****************" << QwLog::endl;
+  try {
+    if(typeid(*ev_error)==typeid(*this)) {
+      //std::cout<<" Here in VQwBCM::CheckForBurpFail \n";
+      if (this->GetElementName()!="") {
+        const QwBCM<T>* value_bcm = dynamic_cast<const QwBCM<T>* >(ev_error);
+        burpstatus |= fBeamCurrent.CheckForBurpFail(&(value_bcm->fBeamCurrent)); 
+      }
+    } else {
+      TString loc="Standard exception from QwBCM::CheckForBurpFail :"+
+        ev_error->GetElementName()+" "+this->GetElementName()+" are not of the "
+        +"same type";
+      throw std::invalid_argument(loc.Data());
+    }
+  } catch (std::exception& e) {
+    std::cerr<< e.what()<<std::endl;
+  }
+  return burpstatus;
 }
 
 template<typename T>
-void QwBCM<T>::DeaccumulateRunningSum(VQwBCM& value) {
-  fBeamCurrent.DeaccumulateRunningSum(dynamic_cast<QwBCM<T>* >(&value)->fBeamCurrent);
+void QwBCM<T>::AccumulateRunningSum(const VQwBCM& value, Int_t count, Int_t ErrorMask) {
+  fBeamCurrent.AccumulateRunningSum(
+      dynamic_cast<const QwBCM<T>* >(&value)->fBeamCurrent, count, ErrorMask);
+}
+
+template<typename T>
+void QwBCM<T>::DeaccumulateRunningSum(VQwBCM& value, Int_t ErrorMask) {
+  fBeamCurrent.DeaccumulateRunningSum(dynamic_cast<QwBCM<T>* >(&value)->fBeamCurrent, ErrorMask);
 }
 template<typename T>
 void QwBCM<T>::PrintValue() const
