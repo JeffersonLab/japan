@@ -12,6 +12,7 @@
 void BeamModCycle(TString type="evt", TString ref="CodaEventNumber", Bool_t ldebug = kFALSE){
   gStyle->SetOptStat(0);
   TTree* tree_R = (TTree*)gDirectory->Get(type);
+
   if (tree_R==NULL){
     if (ldebug) std::cerr << "Tree "<<type<< " was not found."<<std::endl;
     return;
@@ -26,6 +27,7 @@ void BeamModCycle(TString type="evt", TString ref="CodaEventNumber", Bool_t ldeb
 			  <<std::endl;
     return;
   }
+
 
 
   tree_R->Draw(">>elist","bmwcycnum>0","entrylist");  //picks out unique cycle numbers
@@ -50,52 +52,49 @@ void BeamModCycle(TString type="evt", TString ref="CodaEventNumber", Bool_t ldeb
   
   TString cyclechoice = Form("%f",cycles[1]);
   int Ncycles = cycles.size();
-
-
+  if (Ncycles<=0){
+    std::cerr << "No Beam Mod in this run."
+	      <<std::endl;
+  }
+ if (Ncycles>0){
+   std::cerr << "Something went wrong."
+	     <<std::endl;
+ }
 
   TString bmwcut = "bmwcycnum>0";
-  TString evcut = "ErrorFlag && 0xffff5fff"; //basic cut, all events with beam on
-  TString evcutxcorr = "ErrorFlag && 0xffff5fff && bpm4aX>2"; //cut for x sensitivities
-  TString evcutycorr = "ErrorFlag && 0xffff5fff"; //cut for y sensitivities
-  TString evcutbcm = "ErrorFlag && 0xffff5fff && bmwcycnum==" + cyclechoice; //cut to look at one supercycle
-  TString evcutx = "ErrorFlag && 0xffff5fff && bmwobj==1 | bmwobj==3 | bmwobj==5";//cut for x modulations
-  TString evcuty = "ErrorFlag && 0xffff5fff && bmwobj==2 | bmwobj==4 | bmwobj==6";// cut for y modulations
-  TString evcute = "ErrorFlag && 0xffff5fff bmwobj==8";//cut for energy modulations
+  TString evcut = "(ErrorFlag & 0x7bfe6fff)==0"; //basic cut, all events with beam on
+  TString evcutxcorr = "(ErrorFlag & 0x7bfe6fff)==0"; //cut for x sensitivities
+  TString evcutycorr = "(ErrorFlag & 0x7bfe6fff)==0"; //cut for y sensitivities
+  TString evcutbcm = "(ErrorFlag & 0x7bfe6fff)==0 && bmwcycnum==" + cyclechoice; //cut to look at one supercycle
+  TString evcutx = "(ErrorFlag & 0x7bfe6fff)==0 && bmwobj==1 | bmwobj==3 | bmwobj==5";//cut for x modulations
+  TString evcuty = "(ErrorFlag & 0x7bfe6fff)==0 && bmwobj==2 | bmwobj==4 | bmwobj==6";// cut for y modulations
+  TString evcute = "(ErrorFlag & 0x7bfe6fff)==0 && bmwobj==8";//cut for energy modulations
 
   
   
   TString coil[7] = {"bmod_trim1","bmod_trim2","bmod_trim3","bmod_trim4","bmod_trim5","bmod_trim6","bmod_trim7"};
   TString bpms[5]={"bpm4aX","bpm4aY","bpm4eX","bpm4eY", "bpm12X"};
+  TPad *cBMWPlot = new TPad("cBMWPlot","cBMWPlot",0,0,1,1);
+  cBMWPlot->Divide(2,3);
+  cBMWPlot->Draw();
 
-  if(Ncycles==0){
+  /*if(Ncycles==0){
+    std::cout<<"No Beam Mod"<<std::endl;
+
     TPad *cBMWPlot = new TPad("cBMWPlot","cBMWPlot",0,0,1,1);
     cBMWPlot->Divide(1,3);
     cBMWPlot->Draw();
 
-    TLatex line1;
-    TLatex line2;
-    TLatex line3;
-    line1.SetTextSize(.2);
-    line1.SetTextAlign(12);
-    line2.SetTextSize(.2);
-    line2.SetTextAlign(12);
-    line3.SetTextSize(.2);
-    line3.SetTextAlign(12);
-
     cBMWPlot->cd(1);
-    line1.DrawLatex(.2,.5,"No Beam Mod");
+    cBMWPlot->PaintText(5,5,"No Beam Mod");
 
-    cBMWPlot->cd(2);
-    line2.DrawLatex(.2,.5,"this run");
+    //cBMWPlot->cd(2);
+    //line2.DrawLatex(.2,.5,"this run");
 
-    cBMWPlot->cd(3);
-    line3.DrawLatex(.2,.5,":(");
-  }
-  else{
-    TPad *cBMWPlot = new TPad("cBMWPlot","cBMWPlot",0,0,1,1);
-    cBMWPlot->Divide(2,3);
-    cBMWPlot->Draw();
-
+    //cBMWPlot->cd(3);
+    //line3.DrawLatex(.2,.5,":(");
+    }*/
+  //else{
     TGraph *tGraphBMWPlot[7];  //plots one super cycle
     for (int i=0;i<7; i++){
       int npt = tree_R->Draw(Form("%s:CodaEventNumber>>hc%d",coil[i].Data(),i),evcutbcm,"goff");
@@ -179,7 +178,7 @@ void BeamModCycle(TString type="evt", TString ref="CodaEventNumber", Bool_t ldeb
     legend->AddEntry(tGraphBMWPlot[1],"Y mod","l");
     legend->AddEntry(tGraphBMWPlot[6],"E mod","l");
     legend->Draw();
-  }
+    //}
 
   return 0;
 }

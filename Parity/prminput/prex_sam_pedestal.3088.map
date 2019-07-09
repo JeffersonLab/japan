@@ -1,0 +1,17 @@
+!! SAM Pedestal
+!! For 20 uA runs, we are using the beam off pedestal .
+
+!! Current Scan using bcm_an_ds3
+  sam1, 12128.6,76.293e-6
+  sam2, 12859.2,76.293e-6
+  sam3, 12767.7,76.293e-6
+  sam4, 12287.3,76.293e-6
+  sam5, 12485.5,76.293e-6
+  sam6, 14221.9,76.293e-6
+  sam7, 12504.8,76.293e-6
+  sam8, 10074.6,76.293e-6
+
+
+
+
+
