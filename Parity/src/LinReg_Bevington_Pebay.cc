@@ -24,10 +24,17 @@ LinRegBevPeb::LinRegBevPeb()
 
 //=================================================
 //=================================================
+LinRegBevPeb::LinRegBevPeb(const LinRegBevPeb& source)
+: nP(source.nP),nY(source.nY),
+  fGoodEventNumber(0)
+{
+  QwMessage << fGoodEventNumber << QwLog::endl;
+}
+
+//=================================================
+//=================================================
 void LinRegBevPeb::init()
 {
-  QwMessage << "Init LinReg dims: nP=" << nP << " nY=" << nY << QwLog::endl;
-
   mMP.ResizeTo(nP);
   mMY.ResizeTo(nY);
   mMYprime.ResizeTo(nY);
@@ -45,9 +52,9 @@ void LinRegBevPeb::init()
   sigYYprime.ResizeTo(mVYYprime);
 
   mA.ResizeTo(nP,nY);
+  mAsig.ResizeTo(mA);
   Axy.ResizeTo(nP,nY);
   Ayx.ResizeTo(nY,nP);
-  mAsig.ResizeTo(mA);
 
   sigX.ResizeTo(nP);
   sigY.ResizeTo(nY);
@@ -64,11 +71,37 @@ void LinRegBevPeb::init()
 
 void LinRegBevPeb::clear()
 {
-  mVPP.Zero();
-  mVPY.Zero();
-  mVYY.Zero();
   mMP.Zero();
   mMY.Zero();
+  mMYprime.Zero();
+
+  mVPP.Zero();
+  mVPY.Zero();
+  mVYP.Zero();
+  mVYY.Zero();
+  mVYYprime.Zero();
+
+  sigXX.Zero();
+  sigXY.Zero();
+  sigYX.Zero();
+  sigYY.Zero();
+  sigYYprime.Zero();
+
+  mA.Zero();
+  mAsig.Zero();
+  Axy.Zero();
+  Ayx.Zero();
+
+  sigX.Zero();
+  sigY.Zero();
+  sigYprime.Zero();
+
+  mRPP.Zero();
+  mRPY.Zero();
+  mRYP.Zero();
+  mRYY.Zero();
+  mRYYprime.Zero();
+
   fGoodEventNumber = 0;
 }
 
@@ -402,6 +435,11 @@ void LinRegBevPeb::printSummaryMeansWithUncCorrected() const
   QwMessage << QwLog::endl;
 }
 
+
+//==========================================================
+//==========================================================
+void LinRegBevPeb::solve()
+{
   TMatrixD invmVPP(TMatrixD::kUnit, mVPP);
   invmVPP *= TMatrixDDiag(mVPP);
   invmVPP.Invert();

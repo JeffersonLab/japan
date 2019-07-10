@@ -25,7 +25,6 @@ class LinRegBevPeb {
  private:
   Long64_t fGoodEventNumber;    ///< accumulated so far  
 
- public:
   TMatrixD mA, mAsig;  ///< found slopes + their stand errors
 
   /// correlations
@@ -52,13 +51,14 @@ class LinRegBevPeb {
   /// slopes
   TMatrixD Axy, Ayx;
 
-  LinRegBevPeb();
-  
-  virtual ~LinRegBevPeb(){};
+ public:
 
-  void  solve();
-  double Alpha(int ip, int iy){ return mA(ip,iy);} //ok
-  bool   failed(){ return  fGoodEventNumber<2;}
+  LinRegBevPeb();
+  LinRegBevPeb(const LinRegBevPeb& source);
+  virtual ~LinRegBevPeb() { };
+
+  void solve();
+  bool failed() { return fGoodEventNumber <= 2; }
 
   // after last event
   void printSummaryP() const;
