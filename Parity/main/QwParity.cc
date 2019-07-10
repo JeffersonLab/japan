@@ -145,7 +145,6 @@ Int_t main(Int_t argc, Char_t* argv[])
     /// Create the data handler arrays
     QwDataHandlerArray datahandlerarray_evt(gQwOptions,detectors,run_label);
     QwDataHandlerArray datahandlerarray_mul(gQwOptions,helicitypattern,run_label);
-    QwDataHandlerArray datahandlerarray_run(gQwOptions,helicitypattern,run_label);
     QwDataHandlerArray datahandlerarray_burst(gQwOptions,helicitypattern,run_label);
 
     ///  Create the burst sum
@@ -210,9 +209,12 @@ Int_t main(Int_t argc, Char_t* argv[])
     treerootfile->ConstructTreeBranches("slow", "EPICS and slow control tree", epicsevent);
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", patternsum_per_burst, "|stat");
 
+    historootfile->ConstructHistograms("evt_histo",   datahandlerarray_evt);
+    historootfile->ConstructHistograms("mul_histo",   datahandlerarray_mul);
+    historootfile->ConstructHistograms("burst_histo", datahandlerarray_burst);
+
     datahandlerarray_evt.ConstructTreeBranches(treerootfile, "evt_");
     datahandlerarray_mul.ConstructTreeBranches(treerootfile, "mul_");
-    datahandlerarray_run.ConstructTreeBranches(burstrootfile, "run_");
     datahandlerarray_burst.ConstructTreeBranches(burstrootfile, "burst_");
 
     treerootfile->ConstructTreeBranches("evts", "Running sum tree", eventsum, "|stat");
@@ -358,18 +360,25 @@ Int_t main(Int_t argc, Char_t* argv[])
 
               // Process data handlers
               datahandlerarray_mul.ProcessDataHandlerEntry();
+              datahandlerarray_burst.ProcessDataHandlerEntry();
 
-              // Fill regressed tree branches
+              // Fill data handler histograms
+              //datahandlerarray_mul.FillHistograms();
+
+              // Fill data handler tree branches
               datahandlerarray_mul.FillTreeBranches(treerootfile);
 
               // Fill the pattern into the sum for this burst
               patternsum_per_burst.AccumulateRunningSum(helicitypattern);
 
               // Accumulate data handler arrays
-              datahandlerarray_burst.AccumulateRunningSum(datahandlerarray_mul);
+              //datahandlerarray_burst.AccumulateRunningSum(datahandlerarray_mul);
 
               // Burst mode
               if (helicitypattern.IsEndOfBurst()) {
+
+                static int burst = 0;
+                QwMessage << "Processing burst " << burst++ << QwLog::endl;
 
                 // Calculate average over this burst
                 patternsum_per_burst.CalculateRunningAverage();
@@ -425,8 +434,11 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     // Finish data handlers
     datahandlerarray_evt.FinishDataHandler();
+    datahandlerarray_evt.FillTreeBranches(treerootfile);
     datahandlerarray_mul.FinishDataHandler();
+    datahandlerarray_mul.FillTreeBranches(treerootfile);
     datahandlerarray_burst.FinishDataHandler();
+    datahandlerarray_burst.FillTreeBranches(burstrootfile);
 
     // Calculate running averages
     eventsum.CalculateRunningAverage();
