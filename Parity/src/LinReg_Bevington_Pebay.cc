@@ -145,9 +145,9 @@ LinRegBevPeb& LinRegBevPeb::operator+=(const std::pair<TVectorD,TVectorD>& rhs)
 
     // Update covariances
     Double_t alpha = (fGoodEventNumber - 1.0) / fGoodEventNumber;
-    mVPP.Rank1Update(delta_p, delta_p, alpha);
+    mVPP.Rank1Update(delta_p, alpha);
     mVPY.Rank1Update(delta_p, delta_y, alpha);
-    mVYY.Rank1Update(delta_y, delta_y, alpha);
+    mVYY.Rank1Update(delta_y, alpha);
 
     // Update means
     Double_t beta = 1.0 / fGoodEventNumber;
