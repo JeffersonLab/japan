@@ -471,16 +471,16 @@ void LinRegBevPeb::solve()
   }
   TMatrixD invRPP(TMatrixD::kInverted, mRPP);
 
-   TMatrixD Djy; Djy.ResizeTo(mRPY);
-   Djy.Mult(invRPP,mRPY);
+  TMatrixD Djy; Djy.ResizeTo(mRPY);
+  Djy.Mult(invRPP,mRPY);
 
-   for (int iy = 0; iy <nY; iy++) {
+  for (int iy = 0; iy <nY; iy++) {
     double Sy;
     if (getSigmaY(iy,Sy) < 0) QwWarning << "LRB::getSigmaY failed" << QwLog::endl;
     for (int ip = 0; ip <nP; ip++) {
       double Sk;
       if (getSigmaP(ip,Sk) < 0) QwWarning << "LRB::getSigmaP failed" << QwLog::endl;
-      mA(ip,iy)= Djy(ip,iy)*Sy/Sk;
+      mA(ip,iy)= Djy(ip,iy) * Sy / Sk;
     }
   }
 
