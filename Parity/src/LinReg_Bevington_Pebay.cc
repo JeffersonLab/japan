@@ -454,8 +454,8 @@ void LinRegBevPeb::solve()
   mRYY = invmVYY * mVYY * invmVYY;
   mRPY = invmVPP * mVPY * invmVYY;
 
-  // Warn if determinant close to zero
-  if (mRPP.Determinant() < 1e-5) {
+  // Warn if determinant close to zero (heuristic)
+  if (mRPP.Determinant() < std::pow(10,-nP)) {
     QwWarning << "LRB: correlation matrix nearly singular, "
               << "determinant = " << mRPP.Determinant()
               << " (set includes highly correlated variable pairs)"
