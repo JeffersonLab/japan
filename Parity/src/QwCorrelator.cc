@@ -143,6 +143,17 @@ void QwCorrelator::ProcessData()
 
 void QwCorrelator::ClearEventData()
 {
+  // Clear error counters
+  fErrCounts_EF = 0;
+  std::fill(fErrCounts_DV.begin(), fErrCounts_DV.end(), 0);
+  std::fill(fErrCounts_IV.begin(), fErrCounts_IV.end(), 0);
+
+  // Clear event counts
+  fTotalCount = 0;
+  fGoodCount = 0;
+  fGoodEvent = -1;
+
+  // Clear regression
   linReg.clear();
 }
 
