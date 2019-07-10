@@ -333,11 +333,30 @@ void LinRegBevPeb::printSummaryYP() const
 }
 
 
+//==========================================================
+//==========================================================
+void LinRegBevPeb::printSummaryMeansWithUnc() const
+{
+  QwMessage << "Uncorrected Y values:" << QwLog::endl;
+  QwMessage << "     mean          sig" << QwLog::endl;
+  for (int i = 0; i < nY; i++){
+    QwMessage << "Y" << i << ":  " << mMY(i) << " +- " << sigY(i) << QwLog::endl;
+  }
+  QwMessage << QwLog::endl;
+}
+
 
 //==========================================================
 //==========================================================
-void LinRegBevPeb::solve() {
-  QwMessage << Form("\n********LinRegBevPeb::solve...invert Rjk")<<QwLog::endl;
+void LinRegBevPeb::printSummaryMeansWithUncCorrected() const
+{
+  QwMessage << "Corrected Y values:" << QwLog::endl;
+  QwMessage << "     mean          sig" << QwLog::endl;
+  for (int i = 0; i < nY; i++){
+    QwMessage << "Y" << i << ":  " << mMYprime(i) << " +- " << sigYprime(i) << QwLog::endl;
+  }
+  QwMessage << QwLog::endl;
+}
 
   TMatrixD invmVPP(TMatrixD::kUnit, mVPP);
   invmVPP *= TMatrixDDiag(mVPP);
@@ -406,21 +425,7 @@ void LinRegBevPeb::solve() {
   invsigYprime.Sqrt();
   mRYYprime = invsigYprime * sigYYprime * invsigYprime;
 
-  QwMessage << "Uncorrected Y values:" << QwLog::endl;
-  QwMessage << "     mean          sig" << QwLog::endl;
-  for (int i = 0; i < nY; i++){
-    QwMessage << "Y" << i << ":  " << mMY(i) << " +- " << sigY(i) << QwLog::endl;
-  }
-  QwMessage << QwLog::endl;
-
-  QwMessage << "Corrected Y values:" << QwLog::endl;
-  QwMessage << "     mean          sig" << QwLog::endl;
-  for (int i = 0; i < nY; i++){
-    QwMessage << "Y" << i << ":  " << mMYprime(i) << " +- " << sigYprime(i) << QwLog::endl;
-  }
-  QwMessage << QwLog::endl;
-
-  QwMessage << "Compute errors of alphas ..."<<QwLog::endl;
+  // slope uncertainties
   double norm = 1. / (fGoodEventNumber - nP - 1);
   for (int iy = 0; iy < nY; iy++) {
     /* compute s^2= Vy + Vx -2*Vxy 

@@ -64,6 +64,8 @@ class LinRegBevPeb {
   void printSummaryY() const;
   void printSummaryYP() const;
   void printSummaryAlphas() const;
+  void printSummaryMeansWithUnc() const;
+  void printSummaryMeansWithUncCorrected() const;
 
   void print();
   void init();
