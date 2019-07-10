@@ -454,7 +454,21 @@ void LinRegBevPeb::solve()
   mRYY = invmVYY * mVYY * invmVYY;
   mRPY = invmVPP * mVPY * invmVYY;
 
-  QwMessage << "det=" << mRPP.Determinant() << QwLog::endl;
+  // Warn if determinant close to zero
+  if (mRPP.Determinant() < 1e-5) {
+    QwWarning << "LRB: correlation matrix nearly singular, "
+              << "determinant = " << mRPP.Determinant()
+              << " (set includes highly correlated variable pairs)"
+              << QwLog::endl;
+    if (fGoodEventNumber > 10) {
+      QwMessage << fGoodEventNumber << " events" << QwLog::endl;
+      QwMessage << "Covariance matrix: " << QwLog::endl; mVPP.Print();
+      QwMessage << "Correlation matrix: " << QwLog::endl; mRPP.Print();
+    }
+    QwWarning << "LRB: solving failed (this happens when only few events)."
+              << QwLog::endl;
+    return;
+  }
   TMatrixD invRPP(TMatrixD::kInverted, mRPP);
 
    TMatrixD Djy; Djy.ResizeTo(mRPY);
