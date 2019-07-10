@@ -23,6 +23,7 @@ class LinRegBevPeb {
   int  nY; // number of   dependent variables
  
  private:
+  Bool_t fErrorFlag;            ///< is information valid
   Long64_t fGoodEventNumber;    ///< accumulated so far  
 
   TMatrixD mA, mAsig;  ///< found slopes + their stand errors
