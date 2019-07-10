@@ -20,6 +20,8 @@
   alias-file-base = regalias_
   alias-file-suff = 
   alias-path = ./LRBoutput/
+  tree-name  = lrb
+  tree-comment = Helicity event correlations
   disable-histos = true
 
 [QwCorrelator]
@@ -33,6 +35,8 @@
   alias-file-suff = 
   alias-path = .
   block = 0
+  tree-name  = lrb_block0
+  tree-comment = Helicity event correlations
   disable-histos = true
 
 [QwCorrelator]
@@ -46,6 +50,8 @@
   alias-file-suff = 
   alias-path = .
   block = 1
+  tree-name  = lrb_block1
+  tree-comment = Helicity event correlations
   disable-histos = true
 
 [QwCorrelator]
@@ -59,6 +65,8 @@
   alias-file-suff = 
   alias-path = .
   block = 2
+  tree-name  = lrb_block2
+  tree-comment = Helicity event correlations
   disable-histos = true
 
 [QwCorrelator]
@@ -72,6 +80,8 @@
   alias-file-suff = 
   alias-path = .
   block = 3
+  tree-name  = lrb_block3
+  tree-comment = Helicity event correlations
   disable-histos = true
 
 [QwCorrelator]
@@ -84,6 +94,8 @@
   alias-file-base = regalias_
   alias-file-suff = all
   alias-path = .
+  tree-name  = lrb_all
+  tree-comment = Helicity event correlations
   disable-histos = true
 
 [QwCombiner]
