@@ -89,8 +89,12 @@ void LinRegBevPeb::print()
 
 //==========================================================
 //==========================================================
-void LinRegBevPeb::accumulate(TVectorD P, TVectorD Y)
+LinRegBevPeb& LinRegBevPeb::operator+=(const std::pair<TVectorD,TVectorD>& rhs)
 {
+  // Get independent and dependent components
+  const TVectorD& P = rhs.first;
+  const TVectorD& Y = rhs.second;
+
   // Update number of events
   fGoodEventNumber++;
 
@@ -117,6 +121,46 @@ void LinRegBevPeb::accumulate(TVectorD P, TVectorD Y)
     mMP += delta_p * beta;
     mMY += delta_y * beta;
   }
+
+  return *this;
+}
+
+
+//==========================================================
+//==========================================================
+LinRegBevPeb& LinRegBevPeb::operator+=(const LinRegBevPeb& rhs)
+{
+  // If set X = A + B, then
+  //   Cov[X] = Cov[A] + Cov[B]
+  //          + (E[x_A] - E[x_B]) * (E[y_A] - E[y_B]) * n_A * n_B / n_X
+  // Ref: E. Schubert, M. Gertz (9 July 2018).
+  // "Numerically stable parallel computation of (co-)variance".
+  // SSDBM '18 Proceedings of the 30th International Conference
+  // on Scientific and Statistical Database Management.
+  // https://doi.org/10.1145/3221269.3223036
+
+  // Deviations from mean
+  TVectorD delta_y(mMY - rhs.mMY);
+  TVectorD delta_p(mMP - rhs.mMP);
+
+  // Update covariances
+  Double_t alpha = fGoodEventNumber * rhs.fGoodEventNumber
+                / (fGoodEventNumber + rhs.fGoodEventNumber);
+  mVYY += rhs.mVYY;
+  mVYY.Rank1Update(delta_y, alpha);
+  mVPY += rhs.mVPY;
+  mVPY.Rank1Update(delta_p, delta_y, alpha);
+  mVPP += rhs.mVPP;
+  mVPP.Rank1Update(delta_p, alpha);
+
+  // Update means
+  Double_t beta = rhs.fGoodEventNumber / (fGoodEventNumber + rhs.fGoodEventNumber);
+  mMY += delta_y * beta;
+  mMP += delta_p * beta;
+
+  fGoodEventNumber += rhs.fGoodEventNumber;
+
+  return *this;
 }
 
 

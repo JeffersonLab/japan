@@ -10,6 +10,10 @@
  * "Formulas for Robust, One-Pass Parallel Computation of Covariances and Arbitrary-Order Statistical Moments" Philippe Peba, SANDIA REPORT SAND2008-6212, Unlimited Release, Printed September 2008
  *********************************************************************/
 
+// System headers
+#include <utility>
+
+// ROOT headers
 #include <TVectorD.h>
 #include <TMatrixD.h>
 
@@ -52,9 +56,6 @@ class LinRegBevPeb {
   
   virtual ~LinRegBevPeb(){};
 
-  /// processing single events
-  void  accumulate(TVectorD P, TVectorD Y);
-
   void  solve();
   double Alpha(int ip, int iy){ return mA(ip,iy);} //ok
   bool   failed(){ return  fGoodEventNumber<2;}
@@ -90,43 +91,11 @@ class LinRegBevPeb {
   double  getUsedEve() const { return fGoodEventNumber; };
 
   // Addition-assignment
-  LinRegBevPeb& operator+=(const LinRegBevPeb& rhs)
-  {
-    // If X = A + B, then
-    //   Cov[X] = Cov[A] + Cov[B] + (E[x_A] - E[x_B]) * (E[y_A] - E[y_B]) * n_A * n_B / n_X
-    // Ref: E. Schubert, M. Gertz (9 July 2018).
-    // "Numerically stable parallel computation of (co-)variance".
-    // SSDBM '18 Proceedings of the 30th International Conference
-    // on Scientific and Statistical Database Management.
-    // https://doi.org/10.1145/3221269.3223036
-
-    // Deviations from mean
-    TVectorD delta_y(mMY - rhs.mMY);
-    TVectorD delta_p(mMP - rhs.mMP);
-
-    // Update covariances
-    Double_t alpha = fGoodEventNumber * rhs.fGoodEventNumber
-                  / (fGoodEventNumber + rhs.fGoodEventNumber);
-    mVYY += rhs.mVYY;
-    mVYY.Rank1Update(delta_y, delta_y, alpha);
-    mVPY += rhs.mVPY;
-    mVPY.Rank1Update(delta_p, delta_y, alpha);
-    mVPP += rhs.mVPP;
-    mVPP.Rank1Update(delta_p, delta_p, alpha);
-
-    // Update means
-    Double_t beta = rhs.fGoodEventNumber / (fGoodEventNumber + rhs.fGoodEventNumber);
-    mMY += delta_y * beta;
-    mMP += delta_p * beta;
-
-    fGoodEventNumber += rhs.fGoodEventNumber;
-
-    return *this;
-  }
-
+  LinRegBevPeb& operator+=(const std::pair<TVectorD,TVectorD>& rhs);
+  LinRegBevPeb& operator+=(const LinRegBevPeb& rhs);
   // Addition using addition-assignment
-  // friends defined inside class body are inline and are hidden from non-ADL lookup
-  friend LinRegBevPeb operator+(LinRegBevPeb lhs,  // passing lhs by value helps optimize chained a+b+c
+  friend // friends defined inside class body are inline and are hidden from non-ADL lookup
+  LinRegBevPeb operator+(LinRegBevPeb lhs,  // passing lhs by value helps optimize chained a+b+c
                    const LinRegBevPeb& rhs) // otherwise, both parameters may be const references
   {
     lhs += rhs; // reuse compound assignment
