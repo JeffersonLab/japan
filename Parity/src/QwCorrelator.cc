@@ -56,11 +56,14 @@ QwCorrelator::QwCorrelator(const TString& name)
   fH1iv(0),fH1dv(0),
   fH2iv(0),fH2dv(0)
 {
+  // Set default tree name and descriptions (in VQwDataHandler)
+  fTreeName = "lrb";
+  fTreeComment = "Correlations";
+  // Parsing separator
   ParseSeparator = "_";
-  fTotalCount = 0;
-  fGoodCount  = 0;
-  fGoodEvent = 0;
-  fErrCounts_EF = 0;
+
+  // Clear all data
+  ClearEventData();
 }
 
 QwCorrelator::~QwCorrelator()
@@ -314,12 +317,12 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
           dv_ptr = diff.ReturnInternalValueForFriends(fDependentName.at(dv));
           break;
         default:
-          QwWarning << "QwCombiner::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
-	          	      << fDependentName.at(dv)
-		                << ", for asym/diff correlator does not have proper type, type=="
-		                << fDependentType.at(dv) << "."<< QwLog::endl;
+          QwWarning << "QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff): "
+                    << "Dependent variable, " << fDependentName.at(dv)
+                    << ", for asym/diff correlator does not have proper type, type=="
+                    << fDependentType.at(dv) << "." << QwLog::endl;
           break;
-        }
+      }
 
       vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
       name = vqwk->GetElementName().Data();
