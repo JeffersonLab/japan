@@ -416,6 +416,7 @@ void QwCorrelator::ConstructTreeBranches(
   fTree->Branch(TString(branchprefix + "good_count"),  &fGoodCount);
 
   fTree->Branch(TString(branchprefix + "n"), &(linReg.fGoodEventNumber));
+  fTree->Branch(TString(branchprefix + "ErrorFlag"), &(linReg.fErrorFlag));
 
   fTree->Branch(TString(branchprefix + "A"),    "TMatrixD", &(linReg.mA));
   fTree->Branch(TString(branchprefix + "dA"),   "TMatrixD", &(linReg.mAsig));
