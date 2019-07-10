@@ -221,7 +221,8 @@ void QwCorrelator::CalcCorrelations()
   }
 
   // Fill tree
-  fTree->Fill();
+  if (fTree) fTree->Fill();
+  else QwWarning << "No tree" << QwLog::endl;
 
   // Write alpha file
   std::string SlopeFileName = fAlphaOutputFileBase + run_label.Data() + fAlphaOutputFileSuff;
