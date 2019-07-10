@@ -19,7 +19,7 @@
 //=================================================
 LinRegBevPeb::LinRegBevPeb()
 : nP(0),nY(0),
-  fErrorFlag(false),
+  fErrorFlag(-1),
   fGoodEventNumber(0)
 { }
 
@@ -27,7 +27,7 @@ LinRegBevPeb::LinRegBevPeb()
 //=================================================
 LinRegBevPeb::LinRegBevPeb(const LinRegBevPeb& source)
 : nP(source.nP),nY(source.nY),
-  fErrorFlag(false),
+  fErrorFlag(-1),
   fGoodEventNumber(0)
 {
   QwMessage << fGoodEventNumber << QwLog::endl;
@@ -104,7 +104,7 @@ void LinRegBevPeb::clear()
   mRYY.Zero();
   mRYYprime.Zero();
 
-  fErrorFlag = false;
+  fErrorFlag = -1;
   fGoodEventNumber = 0;
 }
 
@@ -541,6 +541,6 @@ void LinRegBevPeb::solve()
     }
   }
 
-  fErrorFlag = true;
+  fErrorFlag = 0;
 }
 
