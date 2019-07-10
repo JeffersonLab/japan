@@ -460,7 +460,7 @@ void LinRegBevPeb::solve()
               << "determinant = " << mRPP.Determinant()
               << " (set includes highly correlated variable pairs)"
               << QwLog::endl;
-    if (fGoodEventNumber > 10) {
+    if (fGoodEventNumber > 10*nP) {
       QwMessage << fGoodEventNumber << " events" << QwLog::endl;
       QwMessage << "Covariance matrix: " << QwLog::endl; mVPP.Print();
       QwMessage << "Correlation matrix: " << QwLog::endl; mRPP.Print();
