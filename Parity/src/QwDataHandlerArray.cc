@@ -384,6 +384,23 @@ void  QwDataHandlerArray::FillTreeVector(std::vector <Double_t> &values) const
 }
 
 
+//*****************************************************************
+void  QwDataHandlerArray::ConstructHistograms(TDirectory *folder, TString &prefix)
+{
+  if (!empty()) {
+    for (iterator subsys = begin(); subsys != end(); ++subsys){
+      (*subsys)->ConstructHistograms(folder,prefix);
+    }
+  }
+}
+
+void  QwDataHandlerArray::FillHistograms()
+{
+  if (!empty())
+    std::for_each(begin(), end(), boost::mem_fn(&VQwDataHandler::FillHistograms));
+}
+
+
 //*****************************************************************//
 
 void  QwDataHandlerArray::FillDB(QwParityDB *db, TString type)
