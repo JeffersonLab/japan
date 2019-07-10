@@ -105,15 +105,15 @@ class LinRegBevPeb {
   /// \brief Output stream operator
   friend std::ostream& operator<< (std::ostream& stream, const LinRegBevPeb& h);
 
+  /// Friend class with correlator for ROOT tree output
+  friend class QwCorrelator;
 };
 
 /// Output stream operator
-inline std::ostream& operator<< (std::ostream& stream, const LinRegBevPeb& h) {
-  stream << Form("LinRegBevPeb::<< ");
-  //  stream << Form("  tag correlation>%.3f ", h.par_highCorr);
+inline std::ostream& operator<< (std::ostream& stream, const LinRegBevPeb& h)
+{
+  stream << "LRB: " << h.fGoodEventNumber << " events";
   return stream;
 }
-
-
 
 #endif
