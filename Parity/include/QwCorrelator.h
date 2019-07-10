@@ -24,6 +24,7 @@ Last Modified: August 1, 2018 1:43 PM
 // Forward declarations
 class TH1D;
 class TH2D;
+class QwRootFile;
 
 class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCorrelator>
 {
@@ -31,6 +32,12 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   /// \brief Constructor with name
   QwCorrelator(const TString& name);
   virtual ~QwCorrelator();
+
+ private:
+  static bool fPrintCorrelations;
+ public:
+  static void DefineOptions(QwOptions &options);
+  void ProcessOptions(QwOptions &options);
 
   void ParseConfigFile(QwParameterFile& file);
 
@@ -41,6 +48,16 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 
   void ProcessData();
   void CalcCorrelations();
+
+  void ConstructTreeBranches(
+      QwRootFile *treerootfile,
+      const std::string& treeprefix = "",
+      const std::string& branchprefix = "");
+
+  /// \brief Construct the histograms in a folder with a prefix
+  void  ConstructHistograms(TDirectory *folder, TString &prefix);
+  /// \brief Fill the histograms
+  void  FillHistograms();
 
   void ClearEventData();
   void AccumulateRunningSum(VQwDataHandler &value, Int_t count = 0, Int_t ErrorMask = 0xFFFFFFF);
@@ -65,21 +82,24 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   std::string fAlphaOutputFileSuff;
   std::string fAlphaOutputPath;
   TFile* fAlphaOutputFile;
-  TTree* fAlphaOutputTree;
+
+  TTree* fTree;
 
   std::string fAliasOutputFileBase;
   std::string fAliasOutputFileSuff;
   std::string fAliasOutputPath;		
 
-  Int_t fTotalCount;
-  Int_t fGoodCount;
-  Int_t fErrCounts_EF;
-  std::vector< Int_t > fErrCounts_IV;
-  std::vector< Int_t > fErrCounts_DV;
+  int fTotalCount;
+  int fGoodCount;
+
+  int fErrCounts_EF;
+  std::vector<int> fErrCounts_IV;
+  std::vector<int> fErrCounts_DV;
+
+  unsigned int fGoodEvent;
 
  private:
 		
-  TString fNameNoSpaces;
   int nP, nY;
 
   // histograms
@@ -93,8 +113,6 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   LinRegBevPeb linReg;
 
   void init(std::vector<std::string> ivName, std::vector<std::string> dvName);
-  void initHistos(std::vector<std::string> ivName, std::vector<std::string> dvName);
-  void addEvent(double *Pvec, double *Yvec);
   void exportAlphas(std::vector < TString > ivName, std::vector < TString > dvName);
   void exportAlias(TString outPath, TString macroName, std::vector < TString > ivName, std::vector < TString > dvName);
 
