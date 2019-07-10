@@ -60,10 +60,10 @@ class LinRegBevPeb {
   bool   failed(){ return  fGoodEventNumber<2;}
 
   // after last event
-  void printSummaryP();
-  void printSummaryY();
-  void printSummaryYP();
-  void printSummaryAlphas();
+  void printSummaryP() const;
+  void printSummaryY() const;
+  void printSummaryYP() const;
+  void printSummaryAlphas() const;
 
   void print();
   void init();
@@ -71,21 +71,21 @@ class LinRegBevPeb {
   void setDims(int a, int b){ nP=a; nY=b;}
 
   /// Get mean value of a variable, returns error code
-  Int_t getMeanP(const int i, Double_t &mean );
-  Int_t getMeanY(const int i, Double_t &mean );
-  Int_t getMeanYprime(const int i, Double_t &mean );
+  Int_t getMeanP(const int i, Double_t &mean) const;
+  Int_t getMeanY(const int i, Double_t &mean) const;
+  Int_t getMeanYprime(const int i, Double_t &mean) const;
 
   /// Get mean value of a variable, returns error code
-  Int_t getSigmaP(const int i, Double_t &sigma );
-  Int_t getSigmaY(const int i, Double_t &sigma );
-  Int_t getSigmaYprime(const int i, Double_t &sigma );
+  Int_t getSigmaP(const int i, Double_t &sigma) const;
+  Int_t getSigmaY(const int i, Double_t &sigma) const;
+  Int_t getSigmaYprime(const int i, Double_t &sigma) const;
 
   /// Get mean value of a variable, returns error code
-  Int_t getCovarianceP ( int i,  int j,  Double_t &covar );
-  Int_t getCovariancePY( int ip, int iy, Double_t &covar );
-  Int_t getCovarianceY ( int i,  int j,  Double_t &covar );
+  Int_t getCovarianceP (int i,  int j,  Double_t &covar) const;
+  Int_t getCovariancePY(int ip, int iy, Double_t &covar) const;
+  Int_t getCovarianceY (int i,  int j,  Double_t &covar) const;
 
-  double  getUsedEve(){ return fGoodEventNumber;}
+  double  getUsedEve() const { return fGoodEventNumber; };
 
   // Addition-assignment
   LinRegBevPeb& operator+=(const LinRegBevPeb& rhs)

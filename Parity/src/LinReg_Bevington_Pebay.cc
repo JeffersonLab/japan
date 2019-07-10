@@ -122,7 +122,8 @@ void LinRegBevPeb::accumulate(TVectorD P, TVectorD Y)
 
 //==========================================================
 //==========================================================
-Int_t  LinRegBevPeb::getMeanP(const int i, Double_t &mean ){
+Int_t LinRegBevPeb::getMeanP(const int i, Double_t &mean) const
+{
    mean=-1e50;
    if(i<0 || i >= nP ) return -1;
    if( fGoodEventNumber<1) return -3;
@@ -132,7 +133,8 @@ Int_t  LinRegBevPeb::getMeanP(const int i, Double_t &mean ){
 
 //==========================================================
 //==========================================================
-Int_t  LinRegBevPeb::getMeanY(const int i, Double_t &mean ){
+Int_t LinRegBevPeb::getMeanY(const int i, Double_t &mean) const
+{
   mean=-1e50;
   if(i<0 || i >= nY ) return -1;
   if( fGoodEventNumber<1) return -3;
@@ -142,7 +144,8 @@ Int_t  LinRegBevPeb::getMeanY(const int i, Double_t &mean ){
 
 //==========================================================
 //==========================================================
-Int_t  LinRegBevPeb::getMeanYprime(const int i, Double_t &mean ){
+Int_t LinRegBevPeb::getMeanYprime(const int i, Double_t &mean) const
+{
   mean=-1e50;
   if(i<0 || i >= nY ) return -1;
   if( fGoodEventNumber<1) return -3;
@@ -152,7 +155,8 @@ Int_t  LinRegBevPeb::getMeanYprime(const int i, Double_t &mean ){
 
 //==========================================================
 //==========================================================
-Int_t   LinRegBevPeb::getSigmaP(const int i, Double_t &sigma ){
+Int_t LinRegBevPeb::getSigmaP(const int i, Double_t &sigma) const
+{
   sigma=-1e50;
   if(i<0 || i >= nP ) return -1;
   if( fGoodEventNumber<2) return -3;
@@ -163,7 +167,8 @@ Int_t   LinRegBevPeb::getSigmaP(const int i, Double_t &sigma ){
 
 //==========================================================
 //==========================================================
-Int_t   LinRegBevPeb::getSigmaY(const int i, Double_t &sigma ){
+Int_t LinRegBevPeb::getSigmaY(const int i, Double_t &sigma) const
+{
   sigma=-1e50;
   if(i<0 || i >= nY ) return -1;
   if( fGoodEventNumber<2) return -3;
@@ -173,7 +178,8 @@ Int_t   LinRegBevPeb::getSigmaY(const int i, Double_t &sigma ){
 
 //==========================================================
 //==========================================================
-Int_t   LinRegBevPeb::getSigmaYprime(const int i, Double_t &sigma ){
+Int_t LinRegBevPeb::getSigmaYprime(const int i, Double_t &sigma) const
+{
   sigma=-1e50;
   if(i<0 || i >= nY ) return -1;
   if( fGoodEventNumber<2) return -3;
@@ -183,7 +189,8 @@ Int_t   LinRegBevPeb::getSigmaYprime(const int i, Double_t &sigma ){
 
 //==========================================================
 //==========================================================
-Int_t  LinRegBevPeb::getCovarianceP( int i, int j, Double_t &covar ){
+Int_t LinRegBevPeb::getCovarianceP( int i, int j, Double_t &covar) const
+{
     covar=-1e50;
     if( i>j) { int k=i; i=j; j=k; }//swap i & j
     //... now we need only upper right triangle
@@ -195,7 +202,8 @@ Int_t  LinRegBevPeb::getCovarianceP( int i, int j, Double_t &covar ){
 
 //==========================================================
 //==========================================================
-Int_t  LinRegBevPeb::getCovariancePY(  int ip, int iy, Double_t &covar ){
+Int_t LinRegBevPeb::getCovariancePY(  int ip, int iy, Double_t &covar) const
+{
     covar=-1e50;
     //... now we need only upper right triangle
     if(ip<0 || ip >= nP ) return -11;
@@ -207,7 +215,8 @@ Int_t  LinRegBevPeb::getCovariancePY(  int ip, int iy, Double_t &covar ){
 
 //==========================================================
 //==========================================================
-Int_t  LinRegBevPeb::getCovarianceY( int i, int j, Double_t &covar ){
+Int_t LinRegBevPeb::getCovarianceY( int i, int j, Double_t &covar) const
+{
     covar=-1e50;
     if( i>j) { int k=i; i=j; j=k; }//swap i & j
     //... now we need only upper right triangle
@@ -219,7 +228,8 @@ Int_t  LinRegBevPeb::getCovarianceY( int i, int j, Double_t &covar ){
 
 //==========================================================
 //==========================================================
-void LinRegBevPeb::printSummaryP(){
+void LinRegBevPeb::printSummaryP() const
+{
   QwMessage << Form("\nLinRegBevPeb::printSummaryP seen good eve=%lld",fGoodEventNumber)<<QwLog::endl;
 
   size_t dim=nP;
@@ -255,7 +265,8 @@ void LinRegBevPeb::printSummaryP(){
 
 //==========================================================
 //==========================================================
-void LinRegBevPeb::printSummaryY(){
+void LinRegBevPeb::printSummaryY() const
+{
   QwMessage << Form("\nLinRegBevPeb::printSummaryY seen good eve=%lld  (CSV-format)",fGoodEventNumber)<<QwLog::endl;
   QwMessage << Form("  j,       mean,     sig(mean),   nSig(mean),  sig(distribution)    \n");
   
@@ -274,7 +285,8 @@ void LinRegBevPeb::printSummaryY(){
 
 //==========================================================
 //==========================================================
-void LinRegBevPeb::printSummaryAlphas(){
+void LinRegBevPeb::printSummaryAlphas() const
+{
   QwMessage << Form("\nLinRegBevPeb::printSummaryAlphas seen good eve=%lld",fGoodEventNumber)<<QwLog::endl;
   QwMessage << Form("\n  j                slope         sigma     mean/sigma\n");
   for (int iy = 0; iy <nY; iy++) {
@@ -293,7 +305,8 @@ void LinRegBevPeb::printSummaryAlphas(){
 
 //==========================================================
 //==========================================================
-void LinRegBevPeb::printSummaryYP(){
+void LinRegBevPeb::printSummaryYP() const
+{
   QwMessage << Form("\nLinRegBevPeb::printSummaryYP seen good eve=%lld",fGoodEventNumber)<<QwLog::endl;
 
   if(fGoodEventNumber<2) { QwMessage<<"  too fiew events, skip"<<QwLog::endl; return;}
