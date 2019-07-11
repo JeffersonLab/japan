@@ -184,6 +184,9 @@ void QwRootFile::DefineOptions(QwOptions &options)
     ("disable-mps-tree", po::value<bool>()->default_bool_value(false),
      "disable helicity window output");
   options.AddOptions("ROOT output options")
+    ("disable-pair-tree", po::value<bool>()->default_bool_value(false),
+     "disable helicity pairs output");
+  options.AddOptions("ROOT output options")
     ("disable-hel-tree", po::value<bool>()->default_bool_value(false),
      "disable helicity pattern output");
   options.AddOptions("ROOT output options")
@@ -253,6 +256,7 @@ void QwRootFile::ProcessOptions(QwOptions &options)
   // Options 'disable-mps' and 'disable-hel' for disabling
   // helicity window and helicity pattern output
   if (options.GetValue<bool>("disable-mps-tree"))  DisableTree("evt");
+  if (options.GetValue<bool>("disable-pair-tree"))  DisableTree("pr");
   if (options.GetValue<bool>("disable-hel-tree"))  DisableTree("mul");
   if (options.GetValue<bool>("disable-burst-tree"))  DisableTree("burst");
   if (options.GetValue<bool>("disable-slow-tree")) DisableTree("slow");
