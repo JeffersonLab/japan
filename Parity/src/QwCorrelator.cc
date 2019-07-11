@@ -174,6 +174,11 @@ void QwCorrelator::AccumulateRunningSum(VQwDataHandler &value, Int_t count, Int_
 
 void QwCorrelator::CalcCorrelations()
 {
+  // Check if any channels are active
+  if (fIndependentValues.size() == 0 || fDependentValues.size() == 0) {
+    return;
+  }
+
   // Print entry summary
   QwVerbose << "QwCorrelator: "
             << "total entries: " << fTotalCount << ", "
@@ -413,6 +418,12 @@ void QwCorrelator::ConstructTreeBranches(
   // Check if tree name is specified
   if (fTreeName == "") {
     QwWarning << "QwCorrelator: no tree name specified, use 'tree-name = value'" << QwLog::endl;
+    return;
+  }
+
+  // Check if any channels are active
+  if (fIndependentValues.size() == 0 || fDependentValues.size() == 0) {
+    QwWarning << "QwCorrelator: no independent or dependent channels found" << QwLog::endl;
     return;
   }
 
