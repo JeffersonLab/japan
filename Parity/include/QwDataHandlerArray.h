@@ -22,6 +22,7 @@
 #include "VQwDataHandler.h"
 #include "QwOptions.h"
 #include "QwHelicityPattern.h"
+#include "MQwPublishable.h"
 
 // Forward declarations
 class QwParityDB;
@@ -39,7 +40,10 @@ class QwPromptSummary;
  *   with the CODA routines.
  *
  */
-class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> > {
+class QwDataHandlerArray:
+    public std::vector<boost::shared_ptr<VQwDataHandler> >,
+    public MQwPublishable<QwDataHandlerArray,VQwDataHandler>
+{
  private:
   typedef std::vector<boost::shared_ptr<VQwDataHandler> >  HandlerPtrs;
  public:
