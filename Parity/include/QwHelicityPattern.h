@@ -110,7 +110,10 @@ class QwHelicityPattern {
     fBlinder.Update(db);
   };
 #endif
-
+  /// Update the blinder status using a random number generator
+  void UpdateBlinder(){
+    fBlinder.Update();
+  };
   /// Update the blinder status with new external information
   void UpdateBlinder(const QwSubsystemArrayParity& detectors) {
     fBlinder.Update(detectors);
@@ -130,7 +133,7 @@ class QwHelicityPattern {
   QwSubsystemArrayParity& GetPairDifference() { return fPairDifference; };
   QwSubsystemArrayParity& GetPairAsymmetry()  { return fPairAsymmetry; };
 
-  void  AccumulateRunningSum(QwHelicityPattern &entry);
+  void  AccumulateRunningSum(QwHelicityPattern &entry, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
   void  AccumulatePairRunningSum(QwHelicityPattern &entry);
 
   void  CalculateRunningAverage();
@@ -157,8 +160,11 @@ class QwHelicityPattern {
   void  WritePromptSummary(QwPromptSummary *ps);
 
   Bool_t IsGoodAsymmetry();
-  UInt_t GetEventcutErrorFlag() const{
+  UInt_t GetEventcutErrorFlag() const {
     return fAsymmetry.GetEventcutErrorFlag();
+  };
+  const UInt_t* GetEventcutErrorFlagPointer() const {
+    return fAsymmetry.GetEventcutErrorFlagPointer();
   };
 
   void  ClearEventData();
@@ -189,7 +195,6 @@ class QwHelicityPattern {
   QwSubsystemArrayParity fYield;
   QwSubsystemArrayParity fDifference;
   QwSubsystemArrayParity fAsymmetry;
-
   // Alternate asymmetry calculations
   Bool_t fEnableAlternateAsym;
   QwSubsystemArrayParity fAsymmetry1;

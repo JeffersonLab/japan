@@ -132,10 +132,10 @@ class QwCombinedBPM : public VQwBPM {
   virtual QwCombinedBPM& operator+= (const QwCombinedBPM &value);
   virtual QwCombinedBPM& operator-= (const QwCombinedBPM &value);
 
-  void    AccumulateRunningSum(const VQwBPM& value);
-  void    AccumulateRunningSum(const QwCombinedBPM& value);
-  void    DeaccumulateRunningSum(VQwBPM& value);
-  void    DeaccumulateRunningSum(QwCombinedBPM& value);
+  void    AccumulateRunningSum(const VQwBPM& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void    AccumulateRunningSum(const QwCombinedBPM& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void    DeaccumulateRunningSum(VQwBPM& value, Int_t ErrorMask=0xFFFFFFF);
+  void    DeaccumulateRunningSum(QwCombinedBPM& value, Int_t ErrorMask=0xFFFFFFF);
   void    CalculateRunningAverage();
 
   void    ConstructHistograms(TDirectory *folder, TString &prefix);

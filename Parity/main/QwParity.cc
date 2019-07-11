@@ -137,7 +137,8 @@ Int_t main(Int_t argc, Char_t* argv[])
     helicitypattern.ProcessOptions(gQwOptions);
     
     /// Create the data handler array
-    QwDataHandlerArray datahandlerarray(gQwOptions,helicitypattern,run_label);
+    QwDataHandlerArray datahandlerarray_evt(gQwOptions,detectors,run_label);
+    QwDataHandlerArray datahandlerarray_mul(gQwOptions,helicitypattern,run_label); // FIXME ringoutput?
     
     ///  Create the event ring with the subsystem array
     QwEventRing eventring(gQwOptions,detectors);
@@ -206,7 +207,7 @@ Int_t main(Int_t argc, Char_t* argv[])
     burstrootfile->ConstructTreeBranches("pr", "Pair tree", helicitypattern.GetPairAsymmetry(),"asym_");
     treerootfile->ConstructTreeBranches("slow", "EPICS and slow control tree", epicsevent);
 
-    datahandlerarray.ConstructTreeBranches(treerootfile);
+    datahandlerarray_mul.ConstructTreeBranches(treerootfile);
 
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", patternsum_per_burst, "|stat");
 
@@ -228,10 +229,17 @@ Int_t main(Int_t argc, Char_t* argv[])
     patternsum_per_burst.ClearEventData();
 
 
-    //  Load the blinder seed from the database for this runlet.
-    #ifdef __USE_DATABASE__
-    helicitypattern.UpdateBlinder(&database);
-    #endif // __USE_DATABASE__
+
+    //  Load the blinder seed from a random number generator for online mode
+    if (eventbuffer.IsOnline() ){      
+      helicitypattern.UpdateBlinder();//this routine will call update blinder mechanism using a random number
+    }else{
+      //  Load the blinder seed from the database for this runlet.
+#ifdef __USE_DATABASE__
+      helicitypattern.UpdateBlinder(&database);
+#endif // __USE_DATABASE__      
+    }
+    
 
     //  Find the first EPICS event and try to initialize
     //  the blinder, but only for disk files, not online.
@@ -262,8 +270,10 @@ Int_t main(Int_t argc, Char_t* argv[])
         eventbuffer.FillSubsystemConfigurationData(detectors);
       }
 
-      //  Secondly, process EPICS events
-      if (eventbuffer.IsEPICSEvent()) {
+      //  Secondly, process EPICS events, but not for online running,
+      //  because the EPICS events get messed up by our 32-bit to 64-bit
+      //  double ET system.
+      if (! eventbuffer.IsOnline() && eventbuffer.IsEPICSEvent()) {
         eventbuffer.FillEPICSData(epicsevent);
 	if (epicsevent.HasDataLoaded()){
 	  epicsevent.CalculateRunningValues();
@@ -291,6 +301,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 	
         // Add event to the ring
         eventring.push(detectors);
+        //std::cout << "New Event" << std::endl;
 
         // Check to see ring is ready
         if (eventring.IsReady()) {
@@ -361,10 +372,10 @@ Int_t main(Int_t argc, Char_t* argv[])
               }
 
               // Process data handlers
-              datahandlerarray.ProcessDataHandlerEntry();
+              datahandlerarray_mul.ProcessDataHandlerEntry();
 	      
               // Fill regressed tree branches
-	      datahandlerarray.FillTreeBranches(treerootfile);
+	      datahandlerarray_mul.FillTreeBranches(treerootfile);
 
               // Clear the data
               helicitypattern.ClearEventData();
@@ -389,7 +400,7 @@ Int_t main(Int_t argc, Char_t* argv[])
     QwMessage << "Number of events processed at end of run: "
               << eventbuffer.GetPhysicsEventNumber() << QwLog::endl;
 
-    datahandlerarray.FinishDataHandler();
+    datahandlerarray_mul.FinishDataHandler();
 
     // Calculate running averages
     eventsum.CalculateRunningAverage();
@@ -455,7 +466,7 @@ Int_t main(Int_t argc, Char_t* argv[])
       //      runningsum.WritePromptSummary(&promptsummary, "yield");
       // runningsum.WritePromptSummary(&promptsummary, "asymmetry");
       //      runningsum.WritePromptSummary(&promptsummary, "difference");
-      datahandlerarray.WritePromptSummary(&promptsummary, "asymmetry");
+      datahandlerarray_mul.WritePromptSummary(&promptsummary, "asymmetry");
       patternsum.WritePromptSummary(&promptsummary);
       promptsummary.PrintCSV(eventbuffer.GetPhysicsEventNumber(),eventbuffer.GetStartSQLTime(), eventbuffer.GetEndSQLTime());
     }

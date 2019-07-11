@@ -177,10 +177,12 @@ QwHelicityPattern::QwHelicityPattern(const QwHelicityPattern &source)
   fPairYield(source.fYield),
   fPairDifference(source.fYield),
   fPairAsymmetry(source.fYield),
+  fBurstLength(source.fBurstLength),
+  fEnableBurstSum(source.fEnableBurstSum),
+  fPrintBurstSum(source.fPrintBurstSum),
   fEnableRunningSum(source.fEnableRunningSum),
   fPrintRunningSum(source.fPrintRunningSum),
   fEnableDifference(source.fEnableDifference),
-  fBurstLength(source.fBurstLength),
   fAlternateDiff(source.fYield),
   fPositiveHelicitySum(source.fYield),
   fNegativeHelicitySum(source.fYield),
@@ -648,18 +650,18 @@ void QwHelicityPattern::ClearEventData()
  * Accumulate the running sum by adding this helicity pattern to the
  * running sums of yield, difference and asymmetry.
  */
-void  QwHelicityPattern::AccumulateRunningSum(QwHelicityPattern &entry)
+void  QwHelicityPattern::AccumulateRunningSum(QwHelicityPattern &entry, Int_t count, Int_t ErrorMask)
 {
   if (entry.fPatternIsGood){
-    fYield.AccumulateRunningSum(entry.fYield);
-    fAsymmetry.AccumulateRunningSum(entry.fAsymmetry);
+    fYield.AccumulateRunningSum(entry.fYield, count, ErrorMask);
+    fAsymmetry.AccumulateRunningSum(entry.fAsymmetry, count, ErrorMask);
     if (fEnableDifference){
-      fDifference.AccumulateRunningSum(entry.fDifference);
+      fDifference.AccumulateRunningSum(entry.fDifference, count, ErrorMask);
       // The difference is blinded, so the running difference is also blinded.
     }
     if (fEnableAlternateAsym) {
-      fAsymmetry1.AccumulateRunningSum(entry.fAsymmetry1);
-      fAsymmetry2.AccumulateRunningSum(entry.fAsymmetry2);
+      fAsymmetry1.AccumulateRunningSum(entry.fAsymmetry1, count, ErrorMask);
+      fAsymmetry2.AccumulateRunningSum(entry.fAsymmetry2, count, ErrorMask);
     }
     fPatternIsGood = entry.fPatternIsGood;
   }

@@ -73,6 +73,9 @@ class QwBeamLine : public VQwSubsystemParity, public MQwSubsystemCloneable<QwBea
 
   Bool_t ApplySingleEventCuts();//derived from VQwSubsystemParity
   void   IncrementErrorCounters();
+
+  Bool_t CheckForBurpFail(const VQwSubsystem *subsys);
+
   void   PrintErrorCounters() const;// report number of events failed due to HW and event cut faliures
   UInt_t GetEventcutErrorFlag();//return the error flag
 
@@ -107,9 +110,9 @@ class QwBeamLine : public VQwSubsystemParity, public MQwSubsystemCloneable<QwBea
 
   void   Scale(Double_t factor);
 
-  void   AccumulateRunningSum(VQwSubsystem* value);
+  void   AccumulateRunningSum(VQwSubsystem* value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
   //remove one entry from the running sums for devices
-  void   DeaccumulateRunningSum(VQwSubsystem* value);
+  void   DeaccumulateRunningSum(VQwSubsystem* value, Int_t ErrorMask=0xFFFFFFF);
 
 
   void   CalculateRunningAverage();

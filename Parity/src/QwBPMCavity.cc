@@ -277,35 +277,68 @@ void QwBPMCavity::SetSingleEventCuts(TString ch_name, Double_t minX, Double_t ma
 
   }
 
-}
+}*/
 
-void QwBPMCavity::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t minX, Double_t maxX, Double_t stability){
+void QwBPMCavity::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t minX, Double_t maxX, Double_t stability, Double_t burplevel){
   errorflag|=kBPMErrorFlag;//update the device flag
   if (ch_name=="relx"){
     QwMessage<<"RelX LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-     fRelPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability); 
+     fRelPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel); 
 
   }else if (ch_name=="rely"){
     QwMessage<<"RelY LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fRelPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability); 
+    fRelPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel); 
 
   } else  if (ch_name=="absx"){
     QwMessage<<"AbsX LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fAbsPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability); 
+    fAbsPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel); 
 
   }else if (ch_name=="absy"){
     QwMessage<<"AbsY LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-      fAbsPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability);
+    fAbsPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
   }else if (ch_name=="effectivecharge"){
     QwMessage<<"EffectveQ LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-     fElement[kQElem].SetSingleEventCuts(errorflag,minX,maxX,stability);
+    fElement[kQElem].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
+
+  }else if (ch_name=="xi"){
+    QwMessage<<"XI " <<  minX <<" UL " << maxX <<QwLog::endl;
+    fElement[0].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
+
+  }else if (ch_name=="yi"){
+    QwMessage<<"YI " <<  minX <<" UL " << maxX <<QwLog::endl;
+    fElement[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 
   }
 
 }
 
-*/
+Bool_t QwBPMCavity::CheckForBurpFail(const VQwDataElement *ev_error){
+  Short_t i=0;
+  Bool_t burpstatus = kFALSE;
+  try {
+    if(typeid(*ev_error)==typeid(*this)) {
+      //std::cout<<" Here in QwBPMCavity::CheckForBurpFail \n";
+      if (this->GetElementName()!="") {
+        const QwBPMCavity* value_bpm = dynamic_cast<const QwBPMCavity* >(ev_error);
+        for(i=0;i<2;i++){
+          burpstatus |= fElement[i].CheckForBurpFail(&(value_bpm->fElement[i]));
+          burpstatus |= fRelPos[i].CheckForBurpFail(&(value_bpm->fRelPos[i]));
+          burpstatus |= fAbsPos[i].CheckForBurpFail(&(value_bpm->fAbsPos[i]));
+        }
+        burpstatus |= fElement[kQElem].CheckForBurpFail(&(value_bpm->fElement[kQElem]));
+      }
+    } else {
+      TString loc="Standard exception from QwBPMCavity::CheckForBurpFail :"+
+        ev_error->GetElementName()+" "+this->GetElementName()+" are not of the "
+        +"same type";
+      throw std::invalid_argument(loc.Data());
+    }
+  } catch (std::exception& e) {
+    std::cerr<< e.what()<<std::endl;
+  }
+  return burpstatus;
+}
 
 void QwBPMCavity::UpdateErrorFlag(const VQwBPM *ev_error){
   size_t i=0;
@@ -547,35 +580,35 @@ void QwBPMCavity::CalculateRunningAverage()
   return;
 }
 
-void QwBPMCavity::AccumulateRunningSum(const VQwBPM &value){
-  AccumulateRunningSum(*dynamic_cast<const QwBPMCavity* >(&value));
+void QwBPMCavity::AccumulateRunningSum(const VQwBPM &value, Int_t count, Int_t ErrorMask){
+  AccumulateRunningSum(*dynamic_cast<const QwBPMCavity* >(&value), count, ErrorMask);
 };
 
-void QwBPMCavity::AccumulateRunningSum(const QwBPMCavity& value)
+void QwBPMCavity::AccumulateRunningSum(const QwBPMCavity& value, Int_t count, Int_t ErrorMask)
 {
 
   size_t i = 0;
   for(i=0;i<kNumElements;i++)
-    fElement[i].AccumulateRunningSum(value.fElement[i]);
+    fElement[i].AccumulateRunningSum(value.fElement[i], count, ErrorMask);
   for (i = 0; i < 2; i++){
-    fRelPos[i].AccumulateRunningSum(value.fRelPos[i]);
-    fAbsPos[i].AccumulateRunningSum(value.fAbsPos[i]);
+    fRelPos[i].AccumulateRunningSum(value.fRelPos[i], count, ErrorMask);
+    fAbsPos[i].AccumulateRunningSum(value.fAbsPos[i], count, ErrorMask);
   }
   return;
 }
 
-void QwBPMCavity::DeaccumulateRunningSum(VQwBPM &value){
-  DeaccumulateRunningSum(*dynamic_cast<QwBPMCavity* >(&value));
+void QwBPMCavity::DeaccumulateRunningSum(VQwBPM &value, Int_t ErrorMask){
+  DeaccumulateRunningSum(*dynamic_cast<QwBPMCavity* >(&value), ErrorMask);
 };
 
-void QwBPMCavity::DeaccumulateRunningSum(QwBPMCavity& value)
+void QwBPMCavity::DeaccumulateRunningSum(QwBPMCavity& value, Int_t ErrorMask)
 {
   size_t i = 0;
   for(i=0;i<kNumElements;i++)
-    fElement[i].DeaccumulateRunningSum(value.fElement[i]);
+    fElement[i].DeaccumulateRunningSum(value.fElement[i], ErrorMask);
   for (i = 0; i < kNumAxes; i++){
-    fRelPos[i].DeaccumulateRunningSum(value.fRelPos[i]);
-    fAbsPos[i].DeaccumulateRunningSum(value.fAbsPos[i]);
+    fRelPos[i].DeaccumulateRunningSum(value.fRelPos[i], ErrorMask);
+    fAbsPos[i].DeaccumulateRunningSum(value.fAbsPos[i], ErrorMask);
   }
   return;
 }

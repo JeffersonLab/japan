@@ -1336,7 +1336,7 @@ void QwVQWK_Channel::DivideBy(const QwVQWK_Channel &denom)
  * @param value Object (single event or accumulated) to add to running moments
  * @param count Number of good events in value
  */
-void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t count)
+void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t count, Int_t ErrorMask)
 {
   /*
     note:
@@ -1355,7 +1355,11 @@ void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t cou
 
     Rakitha
   */
-  
+
+  if(count==0){
+    count = value.fGoodEventCount;
+  }
+
   Int_t n1 = fGoodEventCount;
   Int_t n2 = count;
 
@@ -1366,10 +1370,20 @@ void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t cou
 
   // If a single event is removed from the sum, check all but stability fail flags
   if (n2 == -1) {
-    if ((value.fErrorFlag & 0xFFFFFFF) == 0) {
+    if ((value.fErrorFlag & ErrorMask) == 0) {
       n2 = -1;
     } else {
       n2 = 0;
+    }
+  }
+
+  if (ErrorMask ==  kPreserveError){
+    //n = 1;
+    if (n2 == 0) {
+      n2 = 1;
+    }
+    if (count == -1) {
+      n2 = -1;
     }
   }
 
@@ -1381,6 +1395,7 @@ void QwVQWK_Channel::AccumulateRunningSum(const QwVQWK_Channel& value, Int_t cou
   Double_t M12 = value.fHardwareBlockSum;
   Double_t M22 = value.fHardwareBlockSumM2;
 
+  //if(this->GetElementName() == "bcm_an_ds3" && ErrorMask == kPreserveError){QwError << "count=" << fGoodEventCount << "  n=" << n << QwLog::endl;    }
   if (n2 == 0) {
     // no good events for addition
     return;

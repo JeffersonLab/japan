@@ -113,20 +113,20 @@ void QwCombinerSubsystem::Scale(Double_t value)
   
 };
 
-void QwCombinerSubsystem::AccumulateRunningSum(VQwSubsystem* input)
+void QwCombinerSubsystem::AccumulateRunningSum(VQwSubsystem* input, Int_t count, Int_t ErrorMask)
 {
   QwCombinerSubsystem* value = dynamic_cast<QwCombinerSubsystem*> (input);
   if (value!=NULL){
-    QwCombiner::AccumulateRunningSum(*value);
+    QwCombiner::AccumulateRunningSum(*value, count, ErrorMask);
   }
 }
 
-void QwCombinerSubsystem::DeaccumulateRunningSum(VQwSubsystem* input)
+void QwCombinerSubsystem::DeaccumulateRunningSum(VQwSubsystem* input, Int_t ErrorMask)
 {
   QwCombinerSubsystem* value = dynamic_cast<QwCombinerSubsystem*> (input);
   if (value!=NULL) {
     for (size_t i = 0; i < value-> fDependentVar.size(); i++) {
-      fOutputVar.at(i)->DeaccumulateRunningSum(value->fOutputVar.at(i));
+      fOutputVar.at(i)->DeaccumulateRunningSum(value->fOutputVar.at(i), ErrorMask);
     }
   }
 }

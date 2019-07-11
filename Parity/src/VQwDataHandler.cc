@@ -32,15 +32,31 @@ using namespace std;
 #endif // __USE_DATABASE__
 
 
-VQwDataHandler::VQwDataHandler(const VQwDataHandler &source):
-  fPriority(source.fPriority),
+VQwDataHandler::VQwDataHandler(const TString& name)
+: fPriority(0),
+  fName(name),
+  fMapFile(""),
+  fTreeName(""),
+  fTreeComment(""),
+  fPrefix(""),
+  fErrorFlagPtr(0),
+  fSubsystemArray(0),
+  fHelicityPattern(0),
+  fKeepRunningSum(kFALSE)
+{ }
+
+VQwDataHandler::VQwDataHandler(const VQwDataHandler &source)
+: fPriority(source.fPriority),
   fName(source.fName),
   fMapFile(source.fMapFile),
   fTreeName(source.fTreeName),
   fTreeComment(source.fTreeComment),
   fPrefix(source.fPrefix),
+  fSubsystemArray(source.fSubsystemArray),
+  fHelicityPattern(source.fHelicityPattern),
   fKeepRunningSum(source.fKeepRunningSum)
 {
+  fErrorFlagPtr  = source.fErrorFlagPtr;
   fDependentVar  = source.fDependentVar;
   fDependentType = source.fDependentType;
   fDependentName = source.fDependentName;
@@ -120,6 +136,7 @@ void VQwDataHandler::ProcessData() {
 
 
 Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff) {
+  SetEventcutErrorFlagPointer(asym.GetEventcutErrorFlagPointer());
 
   /// Fill vector of pointers to the relevant data elements
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
@@ -256,10 +273,10 @@ void VQwDataHandler::FillTreeVector(std::vector<Double_t>& values) const
 }
 
 
-void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value)
+void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value, Int_t count, Int_t ErrorMask)
 {
   for (size_t i = 0; i < fOutputVar.size(); i++){
-    this->fOutputVar[i]->AccumulateRunningSum(value.fOutputVar[i]);
+    this->fOutputVar[i]->AccumulateRunningSum(value.fOutputVar[i], count, ErrorMask);
   }
 }
 
