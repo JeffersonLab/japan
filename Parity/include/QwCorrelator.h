@@ -112,7 +112,6 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 
   LinRegBevPeb linReg;
 
-  void init(std::vector<std::string> ivName, std::vector<std::string> dvName);
   void exportAlphas(std::vector < TString > ivName, std::vector < TString > dvName);
   void exportAlias(TString outPath, TString macroName, std::vector < TString > ivName, std::vector < TString > dvName);
 

@@ -380,17 +380,6 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
   fIndependentValues.resize(fIndependentVar.size());
   fDependentValues.resize(fDependentVar.size());
  
-  init(fIndependentName, fDependentName);
-
-  fErrCounts_IV.resize(fIndependentVar.size(),0);
-  fErrCounts_DV.resize(fDependentVar.size(),0);
-
-  return 0;
-}
-
-
-void QwCorrelator::init(std::vector<std::string> ivName, std::vector<std::string> dvName)
-{
   // Create ROOT file
   std::string SlopeFileName = fAlphaOutputFileBase + run_label.Data() + fAlphaOutputFileSuff;
   std::string SlopeFilePath = fAlphaOutputPath + "/";
@@ -403,12 +392,18 @@ void QwCorrelator::init(std::vector<std::string> ivName, std::vector<std::string
     fAlphaOutputFile = 0;
   }
 
-  nP = ivName.size();
-  nY = dvName.size();
+  nP = fIndependentName.size();
+  nY = fDependentName.size();
 
   linReg.setDims(nP, nY);
   linReg.init();
+
+  fErrCounts_IV.resize(fIndependentVar.size(),0);
+  fErrCounts_DV.resize(fDependentVar.size(),0);
+
+  return 0;
 }
+
 
 void QwCorrelator::ConstructTreeBranches(
     QwRootFile *treerootfile,
