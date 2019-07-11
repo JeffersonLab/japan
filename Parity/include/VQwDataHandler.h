@@ -95,6 +95,37 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
     Int_t LoadChannelMap(){return this->LoadChannelMap(fMapFile);}
     virtual Int_t LoadChannelMap(const std::string& mapfile){return 0;};
 
+    /// \brief Publish a variable name to the parent subsystem array
+    Bool_t PublishInternalValue(const TString& name, const TString& desc, const VQwHardwareChannel* value) const;
+    /// \brief Publish all variables of the subsystem
+    virtual Bool_t PublishInternalValues() const {
+      return kTRUE; // when not implemented, this returns success
+    };
+    /// \brief Try to publish an internal variable matching the submitted name
+    virtual Bool_t PublishByRequest(TString device_name){
+      return kFALSE; // when not implemented, this returns failure
+    };
+
+    /// \brief Request a named value which is owned by an external subsystem;
+    ///        the request will be handled by the parent subsystem array
+    Bool_t RequestExternalValue(const TString& name, VQwHardwareChannel* value) const;
+
+    /// \brief Return a pointer to a varialbe to the parent subsystem array to be
+    ///        delivered to a different subsystem.
+
+   virtual const VQwHardwareChannel* ReturnInternalValue(const TString& name) const{
+       std::cout << " VQwHardwareChannel::ReturnInternalValue for value name, " << name.Data()
+                << " define the routine in the respective subsystem to process this!  " <<std::endl;
+      return 0;
+    };
+
+    /// \brief Return a named value to the parent subsystem array to be
+    ///        delivered to a different subsystem.
+    virtual Bool_t ReturnInternalValue(const TString& name,
+                                        VQwHardwareChannel* value) const {
+      return kFALSE;
+    };
+
   protected:
     
     VQwDataHandler() { }
