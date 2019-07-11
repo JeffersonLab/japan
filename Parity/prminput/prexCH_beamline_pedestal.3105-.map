@@ -19,6 +19,9 @@ bcm_dg_ds, -531.44, 0.002709
 !!bcm_an_ds3, -4427.00, 0.000774
 !!bcm_dg_us, -1341.94, 0.002793
 !!bcm_dg_ds, -1662.59, 0.002588 
+
+!!! Hall C bcm calibration from run 2946. Check halog 3695862. 
+hallc_bcm_1, 2247, 0.019030   
   
 ! ds10x is saturated at this current range, pedestal is copied from 20-30 uA current scan
 bcm_an_ds10,  -2589.54,  0.000267 
