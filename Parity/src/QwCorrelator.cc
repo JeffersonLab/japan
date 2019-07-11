@@ -439,31 +439,56 @@ void QwCorrelator::ConstructTreeBranches(
   fTree->Branch(TString(branchprefix + "n"), &(linReg.fGoodEventNumber));
   fTree->Branch(TString(branchprefix + "ErrorFlag"), &(linReg.fErrorFlag));
 
-  fTree->Branch(TString(branchprefix + "A"),    "TMatrixD", &(linReg.mA));
-  fTree->Branch(TString(branchprefix + "dA"),   "TMatrixD", &(linReg.mAsig));
+  auto bn = [&](const TString& n) {
+    return TString(branchprefix + n);
+  };
+  auto pm = [](TMatrixD& m) {
+    return m.GetMatrixArray();
+  };
+  auto lm = [](TMatrixD& m, const TString& n) {
+    return Form("%s[%d][%d]/D", n.Data(), m.GetNrows(), m.GetNcols());
+  };
+  auto branchm = [&](TTree* tree, TMatrixD& m, const TString& n) {
+    tree->Branch(bn(n),pm(m),lm(m,n));
+  };
+  auto pv = [](TVectorD& v) {
+    return v.GetMatrixArray();
+  };
+  auto lv = [](TVectorD& v, const TString& n) {
+    return Form("%s[%d]/D", n.Data(), v.GetNrows());
+  };
+  auto branchv = [&](TTree* tree, TVectorD& v, const TString& n) {
+    tree->Branch(bn(n),pv(v),lv(v,n));
+  };
 
-  fTree->Branch(TString(branchprefix + "VPP"),  "TMatrixD", &(linReg.mVPP));
-  fTree->Branch(TString(branchprefix + "VPY"),  "TMatrixD", &(linReg.mVPY));
-  fTree->Branch(TString(branchprefix + "VYY"),  "TMatrixD", &(linReg.mVYY));
-  fTree->Branch(TString(branchprefix + "VYYp"), "TMatrixD", &(linReg.mVYYprime));
+  branchm(fTree,linReg.mA,    "A");
+  branchm(fTree,linReg.mAsig, "dA");
 
-  fTree->Branch(TString(branchprefix + "SPP"),  "TMatrixD", &(linReg.sigXX));
-  fTree->Branch(TString(branchprefix + "SPY"),  "TMatrixD", &(linReg.sigXY));
-  fTree->Branch(TString(branchprefix + "SYY"),  "TMatrixD", &(linReg.sigYY));
-  fTree->Branch(TString(branchprefix + "SYYp"), "TMatrixD", &(linReg.sigYYprime));
+  branchm(fTree,linReg.mVPP,      "VPP");
+  branchm(fTree,linReg.mVPY,      "VPY");
+  branchm(fTree,linReg.mVYP,      "VYP");
+  branchm(fTree,linReg.mVYY,      "VYY");
+  branchm(fTree,linReg.mVYYprime, "VYYp");
 
-  fTree->Branch(TString(branchprefix + "RPP"),  "TMatrixD", &(linReg.mRPP));
-  fTree->Branch(TString(branchprefix + "RPY"),  "TMatrixD", &(linReg.mRPY));
-  fTree->Branch(TString(branchprefix + "RYY"),  "TMatrixD", &(linReg.mRYY));
-  fTree->Branch(TString(branchprefix + "RYYp"), "TMatrixD", &(linReg.mRYYprime));
+  branchm(fTree,linReg.sigXX,     "SPP");
+  branchm(fTree,linReg.sigXY,     "SPY");
+  branchm(fTree,linReg.sigYX,     "SYP");
+  branchm(fTree,linReg.sigYY,     "SYY");
+  branchm(fTree,linReg.sigYYprime,"SYYp");
 
-  fTree->Branch(TString(branchprefix + "MP"),   "TVectorD", &(linReg.mMP));
-  fTree->Branch(TString(branchprefix + "MY"),   "TVectorD", &(linReg.mMY));
-  fTree->Branch(TString(branchprefix + "MYp"),  "TVectorD", &(linReg.mMYprime));
+  branchm(fTree,linReg.mRPP,      "RPP");
+  branchm(fTree,linReg.mRPY,      "RPY");
+  branchm(fTree,linReg.mRYP,      "RYP");
+  branchm(fTree,linReg.mRYY,      "RYY");
+  branchm(fTree,linReg.mRYYprime, "RYYp");
 
-  fTree->Branch(TString(branchprefix + "dMP"),   "TVectorD", &(linReg.sigX));
-  fTree->Branch(TString(branchprefix + "dMY"),   "TVectorD", &(linReg.sigY));
-  fTree->Branch(TString(branchprefix + "dMYp"),  "TVectorD", &(linReg.sigYprime));
+  branchv(fTree,linReg.mMP,      "MP");
+  branchv(fTree,linReg.mMY,      "MY");
+  branchv(fTree,linReg.mMYprime, "MYp");
+
+  branchv(fTree,linReg.sigX,     "dMP");
+  branchv(fTree,linReg.sigY,     "dMY");
+  branchv(fTree,linReg.sigYprime,"dMYp");
 }
 
 /// \brief Construct the histograms in a folder with a prefix
