@@ -28,10 +28,10 @@
 #  map        = prex_corrolator_all.conf
 #  slope-file-base = blueR
 #  slope-file-suff = all.slope.root
-#  slope-path = ./ 
+#  slope-path = ./LRBoutput/
 #  alias-file-base = regalias_
 #  alias-file-suff = all
-#  alias-path = ./
+#  alias-path = ./LRBoutput/
 #  disable-histos = true
 
 [QwCombiner]
