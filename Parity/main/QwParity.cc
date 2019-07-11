@@ -377,9 +377,6 @@ Int_t main(Int_t argc, Char_t* argv[])
               // Burst mode
               if (helicitypattern.IsEndOfBurst()) {
 
-                static int burst = 0;
-                QwMessage << "Processing burst " << burst++ << QwLog::endl;
-
                 // Calculate average over this burst
                 patternsum_per_burst.CalculateRunningAverage();
 
