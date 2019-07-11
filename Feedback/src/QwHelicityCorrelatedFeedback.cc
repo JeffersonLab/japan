@@ -2232,6 +2232,16 @@ void QwHelicityCorrelatedFeedback::AccumulateRunningSum(QwHelicityCorrelatedFeed
   Bool_t b3C12YDiff=kFALSE;
   Bool_t b3C12YQ=kFALSE;
 
+  //  Get the current pattern number for reporting purposes
+  fCurrentPatternNumber = entry.fCurrentPatternNumber;
+
+  if (entry.fAsymmetry.GetEventcutErrorFlag()==0){//good pattern
+    //fPatternIsGood = kTRUE;
+    fGoodPatternCounter++;//increment the quartet number - reset after each PITA feedback operation
+    fQuartetNumber++;//Then increment the quartet number - continously count
+  } else
+    QwError << "fails on errorflag cut" << QwLog::endl;
+
   QwHelicityPattern::AccumulateRunningSum(entry);
 
   if(entry.fAsymmetry.RequestExternalValue("q_targC", &fTargetParameter)){
