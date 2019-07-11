@@ -3,6 +3,9 @@
 #include "QwSubsystemArray.h"
 #include "VQwSubsystem.h"
 
+#include "QwDataHandlerArray.h"
+#include "VQwDataHandler.h"
+
 /**
  * Retrieve the variable name from other subsystem arrays
  * @param name Variable name to be retrieved
@@ -169,3 +172,4 @@ VQwHardwareChannel* MQwPublishable<U,T>::ReturnInternalValueForFriends(const TSt
 
 // Force instantiation of template classes we will need
 template class MQwPublishable<QwSubsystemArray,VQwSubsystem>;
+template class MQwPublishable<QwDataHandlerArray,VQwDataHandler>;
