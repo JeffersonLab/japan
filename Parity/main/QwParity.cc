@@ -196,6 +196,7 @@ Int_t main(Int_t argc, Char_t* argv[])
     //  Construct histograms
     historootfile->ConstructHistograms("evt_histo", ringoutput);
     historootfile->ConstructHistograms("mul_histo", helicitypattern);
+    burstrootfile->ConstructHistograms("burst_histo", patternsum_per_burst);
     detectors.ShareHistograms(ringoutput);
 
     //  Construct tree branches
@@ -208,7 +209,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     historootfile->ConstructHistograms("evt_histo",   datahandlerarray_evt);
     historootfile->ConstructHistograms("mul_histo",   datahandlerarray_mul);
-    historootfile->ConstructHistograms("burst_histo", datahandlerarray_burst);
+    burstrootfile->ConstructHistograms("burst_histo", datahandlerarray_burst);
 
     datahandlerarray_evt.ConstructTreeBranches(treerootfile, "evt_");
     datahandlerarray_mul.ConstructTreeBranches(treerootfile);
@@ -388,6 +389,9 @@ Int_t main(Int_t argc, Char_t* argv[])
                   patternsum_per_burst.PrintValue();
                 }
 
+                // Fill histograms
+                burstrootfile->FillHistograms(patternsum_per_burst);
+
                 // Fill burst tree branches
                 burstrootfile->FillTreeBranches(patternsum_per_burst);
                 burstrootfile->FillTree("burst");
@@ -399,7 +403,7 @@ Int_t main(Int_t argc, Char_t* argv[])
                 datahandlerarray_burst.FillHistograms();
 
                 // Fill data handler tree branches
-                datahandlerarray_burst.FillTreeBranches(treerootfile);
+                datahandlerarray_burst.FillTreeBranches(burstrootfile);
 
                 // Clear the data
                 patternsum_per_burst.ClearEventData();
