@@ -56,6 +56,9 @@ class QwSubsystemArray:  public std::vector<boost::shared_ptr<VQwSubsystem> > {
   /// \brief Virtual destructor
   virtual ~QwSubsystemArray() { };
 
+  /// \brief Assignment operator
+  QwSubsystemArray& operator=(const QwSubsystemArray& value);
+
   /// \brief Set the internal record of the CODA run number
   void SetCodaRunNumber(UInt_t runnum) { fCodaRunNumber = runnum; };
   /// \brief Set the internal record of the CODA segment number
