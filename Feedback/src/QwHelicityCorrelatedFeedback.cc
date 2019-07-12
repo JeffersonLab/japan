@@ -704,6 +704,13 @@ QwMessage<<"................slope............."<<fPITASlope<<QwLog::endl;
   fEPICSCtrl.Set_RTP_PITA_8(fPITASetpoint8);
 
 
+  
+  int nBPM = vBPM.size();
+  for(int i=0;i<nBPM;i++){
+   
+    fEPICSCtrl.SetMeanWidth(2*i,vWireSumAsymmetry[i]);
+  }
+ 
 
 
 
@@ -2232,6 +2239,8 @@ void QwHelicityCorrelatedFeedback::AccumulateRunningSum(QwHelicityCorrelatedFeed
   Bool_t b3C12YDiff=kFALSE;
   Bool_t b3C12YQ=kFALSE;
 
+  QwHelicityPattern::AccumulateRunningSum(entry);
+
   //  Get the current pattern number for reporting purposes
   fCurrentPatternNumber = entry.fCurrentPatternNumber;
 
@@ -2241,8 +2250,6 @@ void QwHelicityCorrelatedFeedback::AccumulateRunningSum(QwHelicityCorrelatedFeed
     fQuartetNumber++;//Then increment the quartet number - continously count
   } else
     QwError << "fails on errorflag cut" << QwLog::endl;
-
-  QwHelicityPattern::AccumulateRunningSum(entry);
 
   if(entry.fAsymmetry.RequestExternalValue("q_targC", &fTargetParameter)){
     //fScalerChargeRunningSum.PrintValue();
@@ -2336,6 +2343,23 @@ void QwHelicityCorrelatedFeedback::CalculateRunningAverage(Int_t mode){
 */
 void QwHelicityCorrelatedFeedback::GetTargetChargeStat(){
   CalculateRunningAverage();
+
+
+Int_t nBPM = vBPM.size();
+ 
+  for(int i=0;i<nBPM;i++){
+    if (fAsymmetry.RequestExternalValue(vBPM[i],&fTargetParameter)){
+      Double_t this_mean =fTargetParameter.GetValue()*1.0e+6;
+      Double_t this_width=fTargetParameter.GetValueWidth()*1.0e+6;
+      std::pair<Double_t,Double_t> this_pair = std::make_pair(this_mean,this_width);
+      QwError << " QwHelicityCorrelatedFeedback::GetTargetChargeStat() loop"<<this_mean<<" "<< this_width<<QwLog::endl;
+      QwError << " QwHelicityCorrelatedFeedback::GetTargetChargeStat() loop"<<this_pair.first<<" "<< this_pair.second<<QwLog::endl;
+     
+      vWireSumAsymmetry.push_back(this_pair);
+    }
+  }
+
+
 
   if (fAsymmetry.RequestExternalValue("q_targ",&fTargetCharge)){
     QwMessage<<"Reading published charge value stats"<<QwLog::endl;

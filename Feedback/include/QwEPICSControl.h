@@ -369,6 +369,39 @@ std::cout << "HBIA4 HV value: " << value << std::endl;
 /*     std::cout << "Pockels Cell minus HW-count value: " << value << std::endl; */
 /*   }; */
 
+
+
+
+ 
+
+
+std::vector<const char*> vEpicsVar={"IPM1H04A_WireSumAsymMean","IPM1H04A_WireSumAsymWidth","IPM1H04E_WireSumAsymMean","IPM1H04E_WireSumAsymWidth"};
+
+  chid fIDbpm_4aWS_mean;
+  chid fIDbpm_4aWS_width;
+  chid fIDbpm_4eWS_mean;
+  chid fIDbpm_4eWS_width;
+
+  std::vector<chid> vCHID ={fIDbpm_4aWS_mean,
+  		       fIDbpm_4aWS_width,
+  		       fIDbpm_4eWS_mean,
+  		       fIDbpm_4eWS_width};
+
+  
+  void SetMeanWidth(int myIndex, std::pair<Double_t,Double_t> value_pair){
+    
+    Int_t status;
+    chid CHID_mean = vCHID[myIndex];
+    chid CHID_width = vCHID[myIndex+1];
+    status = ca_put(DBR_DOUBLE, CHID_mean, &(value_pair.first));// Mean
+  
+    status = ca_pend_io(10);
+    
+    status = ca_put(DBR_DOUBLE, CHID_width, &(value_pair.second)); //Width
+    status = ca_pend_io(10);
+  }
+
+
   void Set_RTP_PITA_1(Double_t &value){
     Int_t status;
     //#ifdef QWFEEDBACK_ALLOW_EPICS_CA_PUT

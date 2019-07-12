@@ -13,6 +13,13 @@ QwEPICSControl::QwEPICSControl()
   // status = ca_search("LC1068_QDAC02", &fIDPockels_Cell_minus);//PC (PITA) NEG 
   // status = ca_pend_io(10);
 
+Int_t nEpicsVar = vEpicsVar.size();
+
+ for(int i=0; i<nEpicsVar;i++){
+    status = ca_search(vEpicsVar[i],&(vCHID[i]));
+    status = ca_pend_io(10);
+  }
+
   //new RTP variables
   status = ca_search("IGL0I00C1068_DAC05", &fIDRTP_PITA_1);//PC (PITA) 1
   status = ca_pend_io(10);

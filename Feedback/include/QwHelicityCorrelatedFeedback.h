@@ -171,24 +171,14 @@ for(Int_t i=1;i<5;i++){
 /* fHCChargeAsymmetry0.InitializeChannel("q_targC","derived");//this is the charge asym at the beginning of the feedback loop */
 /*      fPreviousHCChargeAsymmetry.InitializeChannel("q_targC","derived");//charge asymmetry at the previous feedback loop */
 /*     fCurrentHCChargeAsymmetry.InitializeChannel("q_targC","derived");//current charge asymmetry  */
-fTargetParameter.InitializeChannel("q_targC","derived");
- fTargetHCChargeRunningSum.InitializeChannel("q_targC","derived");
+    fTargetParameter.InitializeChannel("tempvar","derived");
 
-fTargetParameter.InitializeChannel("q_targA","derived");
- fTargetHAChargeRunningSum.InitializeChannel("q_targA","derived");
+    fTargetHCChargeRunningSum.InitializeChannel("q_targC","derived");
+    fTargetHAChargeRunningSum.InitializeChannel("q_targA","derived");
+    fTargetHBChargeRunningSum.InitializeChannel("q_targB","derived");
+    fXYPosXDiffRunningSum.InitializeChannel("xy_pos_x","derived");
+    fXYPosYDiffRunningSum.InitializeChannel("xy_pos_y","derived");
 
-fTargetParameter.InitializeChannel("q_targB","derived");
- fTargetHBChargeRunningSum.InitializeChannel("q_targB","derived");
-
-fTargetParameter.InitializeChannel("xy_pos_x","derived");
- fXYPosXDiffRunningSum.InitializeChannel("xy_pos_x","derived");
-
-fTargetParameter.InitializeChannel("xy_pos_y","derived");
- fXYPosYDiffRunningSum.InitializeChannel("xy_pos_y","derived");
-
-
-    fTargetParameter.InitializeChannel("x_targ","derived");
-fTargetParameter.InitializeChannel("y_targ","derived");
      fTargetXDiffRunningSum.InitializeChannel("x_targ","derived");//to access the published Target X diff 
      /* fTargetXPDiffRunningSum.InitializeChannel("xp_targ","derived");//to access the published Target XP diff  */
      fTargetYDiffRunningSum.InitializeChannel("y_targ","derived");//to access the published Target Y diff 
@@ -538,6 +528,8 @@ Bool_t IsHBPatternsAccumulated(){
     Int_t fPreviousHelPat;
 
     Int_t fCurrentHelPatMode;
+    std::vector<const char*> vBPM ={"bpm4aWS","bpm4eWS"};
+    std::vector< std::pair<Double_t, Double_t> > vWireSumAsymmetry; //pair< mean, width>
     
     Double_t fChargeAsymmetry;//current charge asym
     Double_t fChargeAsymmetryError;//current charge asym precision
