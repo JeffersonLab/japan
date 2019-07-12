@@ -41,7 +41,10 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 
   void ProcessData();
   void CalcCorrelations();
-		
+
+  void ClearEventData();
+  void AccumulateRunningSum(VQwDataHandler &value, Int_t count = 0, Int_t ErrorMask = 0xFFFFFFF);
+
  protected:
 
   Int_t fBlock;

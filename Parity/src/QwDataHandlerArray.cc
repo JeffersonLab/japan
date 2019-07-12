@@ -324,9 +324,8 @@ std::vector<VQwDataHandler*> QwDataHandlerArray::GetDataHandlerByType(const std:
 void  QwDataHandlerArray::ClearEventData()
 {
   if (!empty()) {
-    /*    std::for_each(begin(), end(),
+    std::for_each(begin(), end(),
 		  boost::mem_fn(&VQwDataHandler::ClearEventData));
-    */
   }
 }
 
