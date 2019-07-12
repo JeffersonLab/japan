@@ -214,7 +214,7 @@ Int_t main(Int_t argc, Char_t* argv[])
     historootfile->ConstructHistograms("burst_histo", datahandlerarray_burst);
 
     datahandlerarray_evt.ConstructTreeBranches(treerootfile, "evt_");
-    datahandlerarray_mul.ConstructTreeBranches(treerootfile, "mul_");
+    datahandlerarray_mul.ConstructTreeBranches(treerootfile);
     datahandlerarray_burst.ConstructTreeBranches(burstrootfile, "burst_");
 
     treerootfile->ConstructTreeBranches("evts", "Running sum tree", eventsum, "|stat");
@@ -307,7 +307,6 @@ Int_t main(Int_t argc, Char_t* argv[])
 	
         // Add event to the ring
         eventring.push(detectors);
-        //std::cout << "New Event" << std::endl;
 
         // Check to see ring is ready
         if (eventring.IsReady()) {
@@ -328,7 +327,10 @@ Int_t main(Int_t argc, Char_t* argv[])
 	  // Process data handlers
           datahandlerarray_evt.ProcessDataHandlerEntry();
 
-          // Fill regressed tree branches
+          // Fill data handler histograms
+          datahandlerarray_evt.FillHistograms();
+
+          // Fill data handler tree branches
           datahandlerarray_evt.FillTreeBranches(treerootfile);
 
           // Load the event into the helicity pattern
@@ -363,7 +365,7 @@ Int_t main(Int_t argc, Char_t* argv[])
               datahandlerarray_burst.ProcessDataHandlerEntry();
 
               // Fill data handler histograms
-              //datahandlerarray_mul.FillHistograms();
+              datahandlerarray_mul.FillHistograms();
 
               // Fill data handler tree branches
               datahandlerarray_mul.FillTreeBranches(treerootfile);
@@ -395,6 +397,11 @@ Int_t main(Int_t argc, Char_t* argv[])
 
                 // Finish data handler for burst
                 datahandlerarray_burst.FinishDataHandler();
+
+                // Fill data handler histograms
+                datahandlerarray_burst.FillHistograms();
+
+                // Fill data handler tree branches
                 datahandlerarray_burst.FillTreeBranches(treerootfile);
 
                 // Clear the data
