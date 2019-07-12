@@ -43,7 +43,7 @@ bool QwCorrelator::fPrintCorrelations = false;
 QwCorrelator::QwCorrelator(const TString& name)
 : VQwDataHandler(name),
   fBlock(-1),
-  fDisableHistos(true),
+  fDisableHistos(false),
   fAlphaOutputFileBase("blueR"),
   fAlphaOutputFileSuff("new.slope.root"),
   fAlphaOutputPath("."),
@@ -52,9 +52,7 @@ QwCorrelator::QwCorrelator(const TString& name)
   fAliasOutputFileBase("regalias_"),
   fAliasOutputFileSuff(""),
   fAliasOutputPath("."),
-  nP(0),nY(0),
-  fH1iv(0),fH1dv(0),
-  fH2iv(0),fH2dv(0)
+  nP(0),nY(0)
 {
   // Set default tree name and descriptions (in VQwDataHandler)
   fTreeName = "lrb";
@@ -72,14 +70,6 @@ QwCorrelator::~QwCorrelator()
   if (fAlphaOutputFile) {
     fAlphaOutputFile->Write();
     fAlphaOutputFile->Close();
-  }
-
-  // Delete histograms if previously allocated
-  if (fH1iv) {
-    delete[] fH1iv;
-    delete[] fH2iv;
-    delete[] fH1dv;
-    delete[] fH2dv;
   }
 }
 
@@ -503,67 +493,69 @@ void QwCorrelator::ConstructHistograms(TDirectory *folder, TString &prefix)
   folder->mkdir(name)->cd();
 
   //..... 1D,  iv
-  fH1iv = new TH1D*[nP];
-  for(int i=0;i<nP;i++) {
-    TH1D* h = fH1iv[i] = new TH1D(
+  fH1iv.resize(nP);
+  for (int i = 0; i < nP; i++) {
+    fH1iv[i] = TH1D(
         Form("P%d",i),
         Form("iv P%d=%s, pass=%s ;iv=%s (ppm)",i,fIndependentName[i].c_str(),fName.Data(),fIndependentName[i].c_str()),
         128,0.,0.);
-    h->GetXaxis()->SetNdivisions(4);
+    fH1iv[i].GetXaxis()->SetNdivisions(4);
   }
 
   //..... 2D,  iv correlations
   Double_t x1 = 0;
-  fH2iv = new TH2D*[nP*nP]; // not all are used
-  for(int i=0;i<nP;i++) {
-    for(int j=i+1;j<nP;j++) {
-      TH2D* h = fH2iv[i*nP+j] = new TH2D(
+  fH2iv.resize(nP);
+  for (int i = 0; i < nP; i++) {
+    fH2iv[i].resize(nP);
+    for (int j = i+1; j < nP; j++) { // not all are used
+      fH2iv[i][j] = TH2D(
           Form("P%d_P%d",i,j),
           Form("iv correlation  P%d_P%d, pass=%s ;P%d=%s (ppm);P%d=%s   (ppm)  ",
               i,j,fName.Data(),i,fIndependentName[i].c_str(),j,fIndependentName[j].c_str()),
           64,-x1,x1,
           64,-x1,x1);
-      h->GetXaxis()->SetTitleColor(kBlue);
-      h->GetYaxis()->SetTitleColor(kBlue);
-      h->GetXaxis()->SetNdivisions(4);
-      h->GetYaxis()->SetNdivisions(4);
+      fH2iv[i][j].GetXaxis()->SetTitleColor(kBlue);
+      fH2iv[i][j].GetYaxis()->SetTitleColor(kBlue);
+      fH2iv[i][j].GetXaxis()->SetNdivisions(4);
+      fH2iv[i][j].GetYaxis()->SetNdivisions(4);
     }
   }
 
   //..... 1D,  dv
-  fH1dv = new TH1D*[nY];
-  for(int i=0;i<nY;i++) {
-    TH1D* h = fH1dv[i] = new TH1D(
+  fH1dv.resize(nY);
+  for (int i = 0; i < nY; i++) {
+    fH1dv[i] = TH1D(
         Form("Y%d",i),
         Form("dv Y%d=%s, pass=%s ;dv=%s (ppm)",i,fDependentName[i].c_str(),fName.Data(),fDependentName[i].c_str()),
         128,0.,0.);
-    h->GetXaxis()->SetNdivisions(4);
+    fH1dv[i].GetXaxis()->SetNdivisions(4);
   }
 
   //..... 2D,  dv-iv correlations
   Double_t y1 = 0;
-  fH2dv = new TH2D*[nP*nY]; // not all are used
-  for(int i=0;i<nP;i++) {
-    for(int j=0;j<nY;j++) {
-      TH2D* h = fH2dv[i*nY+j] = new TH2D(
+  fH2dv.resize(nP);
+  for (int i = 0; i < nP; i++) {
+    fH2dv[i].resize(nY);
+    for (int j = 0; j < nY; j++) {
+      fH2dv[i][j] = TH2D(
           Form("P%d_Y%d",i,j),
           Form("iv-dv correlation  P%d_Y%d, pass=%s ;P%d=%s (ppm);Y%d=%s   (ppm)  ",
               i,j,fName.Data(),i,fIndependentName[i].c_str(),j,fDependentName[j].c_str()),
           64,-x1,x1,
           64,-y1,y1);
-      h->GetXaxis()->SetTitleColor(kBlue);
-      h->GetYaxis()->SetTitleColor(kBlue);
-      h->GetXaxis()->SetNdivisions(4);
-      h->GetYaxis()->SetNdivisions(4);
+      fH2dv[i][j].GetXaxis()->SetTitleColor(kBlue);
+      fH2dv[i][j].GetYaxis()->SetTitleColor(kBlue);
+      fH2dv[i][j].GetXaxis()->SetNdivisions(4);
+      fH2dv[i][j].GetYaxis()->SetNdivisions(4);
     }
   }
 
   // store list of names to be archived
   hA[0] = new TH1D("NamesIV",Form("IV name list nIV=%d",nP),nP,0,1);
-  for(int i=0;i<nP;i++)
+  for (int i = 0; i < nP; i++)
     hA[0]->Fill(fIndependentName[i].c_str(),1.*i);
   hA[1] = new TH1D("NamesDV",Form("DV name list nIV=%d",nY),nY,0,1);
-  for(int i=0;i<nY;i++)
+  for (int i = 0; i < nY; i++)
     hA[1]->Fill(fDependentName[i].c_str(),i*1.);
 }
 
@@ -578,14 +570,14 @@ void QwCorrelator::FillHistograms()
 
   // Fill histograms
   for (size_t i = 0; i < fIndependentValues.size(); i++) {
-    fH1iv[i]->Fill(fIndependentValues[i]);
+    fH1iv[i].Fill(fIndependentValues[i]);
     for (size_t j = i+1; j < fIndependentValues.size(); j++)
-      fH2iv[i*fIndependentValues.size()+j]->Fill(fIndependentValues[i], fIndependentValues[j]);
+      fH2iv[i][j].Fill(fIndependentValues[i], fIndependentValues[j]);
   }
   for (size_t j = 0; j < fDependentValues.size(); j++) {
-    fH1dv[j]->Fill(fDependentValues[j]);
-    for (size_t i = 0; i < fDependentValues.size(); i++)
-      fH2dv[i*fDependentValues.size()+j]->Fill(fIndependentValues[i], fDependentValues[j]);
+    fH1dv[j].Fill(fDependentValues[j]);
+    for (size_t i = 0; i < fIndependentValues.size(); i++)
+      fH2dv[i][j].Fill(fIndependentValues[i], fDependentValues[j]);
   }
 }
 

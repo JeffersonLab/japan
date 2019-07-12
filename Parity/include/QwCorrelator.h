@@ -107,8 +107,10 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   TH1D* hA[mxHA];
 
   // monitoring histos for iv & dv
-  TH1D **fH1iv, **fH1dv;
-  TH2D **fH2iv, **fH2dv;
+  std::vector<TH1D> fH1iv;
+  std::vector<TH1D> fH1dv;
+  std::vector<std::vector<TH2D>> fH2iv;
+  std::vector<std::vector<TH2D>> fH2dv;
 
   LinRegBevPeb linReg;
 
