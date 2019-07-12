@@ -11,7 +11,7 @@
   tree-comment = Helicity event data tree (corrected by LinRegBlue)
 
 [QwCorrelator]
-  name       = MyCorrelator
+  name       = lrb_std
   priority   = 50
   map        = prex_corrolator.conf
   slope-file-base = blueR
@@ -20,12 +20,11 @@
   alias-file-base = regalias_
   alias-file-suff = 
   alias-path = ./LRBoutput/
-  tree-name  = lrb
-  tree-comment = Helicity event correlations
-  disable-histos = true
+  tree-name  = lrb_std
+  tree-comment = Correlations
 
 [QwCorrelator]
-  name       = MyCorrelator_block0
+  name       = lrb_std_block0
   priority   = 50
   map        = prex_corrolator.conf
   slope-file-base = blueR
@@ -35,12 +34,11 @@
   alias-file-suff = 
   alias-path = ./LRBoutput/
   block = 0
-  tree-name  = lrb_block0
-  tree-comment = Helicity event correlations
-  disable-histos = true
+  tree-name  = lrb_std_block0
+  tree-comment = Correlations (block0)
 
 [QwCorrelator]
-  name       = MyCorrelator_block1
+  name       = lrb_std_block1
   priority   = 50
   map        = prex_corrolator.conf
   slope-file-base = blueR
@@ -50,12 +48,11 @@
   alias-file-suff = 
   alias-path = ./LRBoutput/
   block = 1
-  tree-name  = lrb_block1
-  tree-comment = Helicity event correlations
-  disable-histos = true
+  tree-name  = lrb_std_block1
+  tree-comment = Correlations (block1)
 
 [QwCorrelator]
-  name       = MyCorrelator_block2
+  name       = lrb_std_block2
   priority   = 50
   map        = prex_corrolator.conf
   slope-file-base = blueR
@@ -65,12 +62,11 @@
   alias-file-suff = 
   alias-path = ./LRBoutput/
   block = 2
-  tree-name  = lrb_block2
-  tree-comment = Helicity event correlations
-  disable-histos = true
+  tree-name  = lrb_std_block2
+  tree-comment = Correlations (block2)
 
 [QwCorrelator]
-  name       = MyCorrelator_block3
+  name       = lrb_std_block3
   priority   = 50
   map        = prex_corrolator.conf
   slope-file-base = blueR
@@ -80,12 +76,11 @@
   alias-file-suff = 
   alias-path = ./LRBoutput/
   block = 3
-  tree-name  = lrb_block3
-  tree-comment = Helicity event correlations
-  disable-histos = true
+  tree-name  = lrb_std_block3
+  tree-comment = Correlations (block3)
 
 [QwCorrelator]
-  name       = MyMassiveCorrelator
+  name       = lrb_all
   priority   = 50
   map        = prex_corrolator_all.conf
   slope-file-base = blueR
@@ -95,8 +90,7 @@
   alias-file-suff = all
   alias-path = ./LRBoutput/
   tree-name  = lrb_all
-  tree-comment = Helicity event correlations
-  disable-histos = true
+  tree-comment = Correlations (all variables)
 
 [QwCombiner]
   name       = MyCombiner
