@@ -49,10 +49,13 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   void ProcessData();
   void CalcCorrelations();
 
+  /// \brief Construct the tree branches
   void ConstructTreeBranches(
       QwRootFile *treerootfile,
       const std::string& treeprefix = "",
       const std::string& branchprefix = "");
+  /// \brief Fill the tree branches
+  void FillTreeBranches(QwRootFile *treerootfile) { };
 
   /// \brief Construct the histograms in a folder with a prefix
   void  ConstructHistograms(TDirectory *folder, TString &prefix);
