@@ -255,11 +255,11 @@ void QwRootFile::ProcessOptions(QwOptions &options)
 
   // Options 'disable-mps' and 'disable-hel' for disabling
   // helicity window and helicity pattern output
-  if (options.GetValue<bool>("disable-mps-tree"))  DisableTree("evt");
-  if (options.GetValue<bool>("disable-pair-tree"))  DisableTree("pr");
-  if (options.GetValue<bool>("disable-hel-tree"))  DisableTree("mul");
-  if (options.GetValue<bool>("disable-burst-tree"))  DisableTree("burst");
-  if (options.GetValue<bool>("disable-slow-tree")) DisableTree("slow");
+  if (options.GetValue<bool>("disable-mps-tree"))  DisableTree("^evt$");
+  if (options.GetValue<bool>("disable-pair-tree"))  DisableTree("^pr$");
+  if (options.GetValue<bool>("disable-hel-tree"))  DisableTree("^mul$");
+  if (options.GetValue<bool>("disable-burst-tree"))  DisableTree("^burst$");
+  if (options.GetValue<bool>("disable-slow-tree")) DisableTree("^slow$");
 
   // Options 'num-accepted-events' and 'num-discarded-events' for
   // prescaling of the tree output
