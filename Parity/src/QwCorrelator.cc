@@ -165,7 +165,7 @@ void QwCorrelator::AccumulateRunningSum(VQwDataHandler &value, Int_t count, Int_
 void QwCorrelator::CalcCorrelations()
 {
   // Check if any channels are active
-  if (fIndependentValues.size() == 0 || fDependentValues.size() == 0) {
+  if (nP == 0 || nY == 0) {
     return;
   }
 
@@ -405,15 +405,14 @@ void QwCorrelator::ConstructTreeBranches(
     const std::string& treeprefix,
     const std::string& branchprefix)
 {
-  // Check if tree name is specified
-  if (fTreeName == "") {
-    QwWarning << "QwCorrelator: no tree name specified, use 'tree-name = value'" << QwLog::endl;
+  // Check if any channels are active
+  if (nP == 0 || nY == 0) {
     return;
   }
 
-  // Check if any channels are active
-  if (fIndependentValues.size() == 0 || fDependentValues.size() == 0) {
-    QwWarning << "QwCorrelator: no independent or dependent channels found" << QwLog::endl;
+  // Check if tree name is specified
+  if (fTreeName == "") {
+    QwWarning << "QwCorrelator: no tree name specified, use 'tree-name = value'" << QwLog::endl;
     return;
   }
 
@@ -486,6 +485,11 @@ void QwCorrelator::ConstructHistograms(TDirectory *folder, TString &prefix)
 {
   // Skip if disabled
   if (fDisableHistos) return;
+
+  // Check if any channels are active
+  if (nP == 0 || nY == 0) {
+    return;
+  }
 
   // Go to directory
   TString name(fName);
@@ -564,6 +568,11 @@ void QwCorrelator::FillHistograms()
 {
   // Skip if disabled
   if (fDisableHistos) return;
+
+  // Check if any channels are active
+  if (nP == 0 || nY == 0) {
+    return;
+  }
 
   // Skip if bad event
   if (fGoodEvent != 0) return;
