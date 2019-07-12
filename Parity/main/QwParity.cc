@@ -149,16 +149,13 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     ///  Create the burst sum
     QwHelicityPattern patternsum_per_burst(helicitypattern);
-    patternsum_per_burst.EnableDifference();
     patternsum_per_burst.DisablePairs();
 
     ///  Create the running sum
     QwSubsystemArrayParity eventsum(detectors);
     QwHelicityPattern patternsum(helicitypattern);
-    patternsum.EnableDifference();
     patternsum.DisablePairs();
     QwHelicityPattern burstsum(helicitypattern);
-    burstsum.EnableDifference();
     burstsum.DisablePairs();
 
     //  Initialize the database connection.
