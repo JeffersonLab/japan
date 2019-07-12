@@ -173,6 +173,9 @@ void QwRootFile::DefineOptions(QwOptions &options)
 
   // Define the histogram and tree options
   options.AddOptions("ROOT output options")
+    ("disable-tree", po::value<std::vector<std::string>>()->composing(),
+     "disable output to tree regex");
+  options.AddOptions("ROOT output options")
     ("disable-trees", po::value<bool>()->default_bool_value(false),
      "disable output to all trees");
   options.AddOptions("ROOT output options")
@@ -250,6 +253,8 @@ void QwRootFile::ProcessOptions(QwOptions &options)
 
   // Options 'disable-trees' and 'disable-histos' for disabling
   // tree and histogram output
+  auto v = options.GetValueVector<std::string>("disable-tree");
+  std::for_each(v.begin(), v.end(), [&](const std::string& s){ this->DisableTree(s); });
   if (options.GetValue<bool>("disable-trees"))  DisableTree(".*");
   if (options.GetValue<bool>("disable-histos")) DisableHisto(".*");
 
