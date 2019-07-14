@@ -15,7 +15,7 @@ bcm_dg_ds, -531.44, 0.002709
 
 
 !!! Hall C bcm calibration from run 2946. Check halog 3695862. 
-hallc_bcm_1, 2247, 0.019030   
+   
 
 !!!  Calibrations for 40-50uA from run 2965.  
 !!bcm_an_us, -1754.29, 0.002570
