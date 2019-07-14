@@ -41,7 +41,7 @@ sample_size=4096
 
 !ADC3
     VQWK, 3, 0,  bpmcavity,  CAV4BXI 
-    VQWK, 3, 1,  bpmstripline,  hallc_bcm_4c
+    VQWK, 3, 1,  bcm,  hallc_bcm_4c
     VQWK, 3, 2,  bpmstripline,  BPM14xp
     VQWK, 3, 3,  bcm,  ch_battery_1
     VQWK, 3, 4,  bpmstripline,  QWK_3_4
