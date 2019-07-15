@@ -21,6 +21,9 @@ Last Modified: August 1, 2018 1:43 PM
 // LinRegBlue Correlator Class
 #include "LinReg_Bevington_Pebay.h"
 
+// System headers
+#include <fstream>
+
 // Forward declarations
 class TH1D;
 class TH2D;
@@ -86,12 +89,19 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   std::string fAlphaOutputFileSuff;
   std::string fAlphaOutputPath;
   TFile* fAlphaOutputFile;
+  void OpenAlphaFile(const std::string& prefix);
+  void WriteAlphaFile();
+  void CloseAlphaFile();
 
   TTree* fTree;
 
   std::string fAliasOutputFileBase;
   std::string fAliasOutputFileSuff;
   std::string fAliasOutputPath;		
+  std::ofstream fAliasOutputFile;
+  void OpenAliasFile(const std::string& prefix);
+  void WriteAliasFile();
+  void CloseAliasFile();
 
   int fTotalCount;
   int fGoodCount;
@@ -117,9 +127,6 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   std::vector<std::vector<TH2D>> fH2dv;
 
   LinRegBevPeb linReg;
-
-  void exportAlphas(std::vector < TString > ivName, std::vector < TString > dvName);
-  void exportAlias(TString outPath, TString macroName, std::vector < TString > ivName, std::vector < TString > dvName);
 
   // Default constructor
   QwCorrelator();

@@ -86,11 +86,9 @@ QwCorrelator::QwCorrelator(const QwCorrelator& source)
 
 QwCorrelator::~QwCorrelator()
 {
-  // Close output file
-  if (fAlphaOutputFile) {
-    fAlphaOutputFile->Write();
-    fAlphaOutputFile->Close();
-  }
+  // Close alpha and alias file
+  CloseAlphaFile();
+  CloseAliasFile();
 }
 
 void QwCorrelator::DefineOptions(QwOptions &options)
@@ -242,16 +240,9 @@ void QwCorrelator::CalcCorrelations()
   if (fTree) fTree->Fill();
   else QwWarning << "No tree" << QwLog::endl;
 
-  // Write alpha file
-  std::string SlopeFileName = fAlphaOutputFileBase + run_label.Data() + fAlphaOutputFileSuff;
-  std::string SlopeFilePath = fAlphaOutputPath + "/";
-  std::string SlopeFile = SlopeFilePath + SlopeFileName;
-  exportAlphas(fIndependentFull, fDependentFull);
-
-  // Write macro file
-  std::string MacroFileName = fAliasOutputFileBase + run_label.Data() + fAliasOutputFileSuff;
-  std::string MacroFilePath = fAliasOutputPath + "/";
-  exportAlias(TString(MacroFilePath), TString(MacroFileName), fIndependentFull, fDependentFull);
+  // Write alpha and alias file
+  WriteAlphaFile();
+  WriteAliasFile();
 }
 
 
@@ -487,18 +478,9 @@ void QwCorrelator::ConstructTreeBranches(
   branchv(fTree,linReg.sigY,     "dMY");
   branchv(fTree,linReg.sigYprime,"dMYp");
 
-  // Create old-style blueR ROOT file
-  std::string SlopeFileName = treeprefix + fAlphaOutputFileBase + run_label.Data() + fAlphaOutputFileSuff;
-  std::string SlopeFilePath = fAlphaOutputPath + "/";
-  std::string SlopeFile = SlopeFilePath + SlopeFileName;
-
-  fAlphaOutputFile = new TFile(SlopeFile.c_str(), "RECREATE", "correlation coefficients");
-  if (! fAlphaOutputFile->IsWritable()) {
-    QwError << "QwCorrelator could not create output file " << SlopeFile << QwLog::endl;
-    delete fAlphaOutputFile;
-    fAlphaOutputFile = 0;
-  }
-
+  // Create alpha and alias files
+  OpenAlphaFile(treeprefix);
+  OpenAliasFile(treeprefix);
 }
 
 /// \brief Construct the histograms in a folder with a prefix
@@ -611,9 +593,7 @@ void QwCorrelator::FillHistograms()
   }
 }
 
-void QwCorrelator::exportAlphas(
-    std::vector < TString > ivName,
-    std::vector < TString > dvName)
+void QwCorrelator::WriteAlphaFile()
 {
   // Ensure in output file
   if (fAlphaOutputFile) fAlphaOutputFile->cd();
@@ -638,12 +618,12 @@ void QwCorrelator::exportAlphas(
 
   //... IVs
   TH1D hiv("IVname","names of IVs",nP,-0.5,nP-0.5);
-  for (int i=0;i<nP;i++) hiv.Fill(ivName[i],i);
+  for (int i=0;i<nP;i++) hiv.Fill(fIndependentFull[i],i);
   hiv.Write();
 
   //... DVs
   TH1D hdv("DVname","names of IVs",nY,-0.5,nY-0.5);
-  for (int i=0;i<nY;i++) hdv.Fill(dvName[i],i);
+  for (int i=0;i<nY;i++) hdv.Fill(fDependentFull[i],i);
   hdv.Write();
 
   // sigmas
@@ -679,31 +659,82 @@ void QwCorrelator::exportAlphas(
   linReg.Ayx.Write("A_yx");
 }
 
-
-void QwCorrelator::exportAlias(
-    TString outPath,
-    TString macroName,
-    std::vector < TString > Pname,
-    std::vector < TString > Yname)
+void QwCorrelator::OpenAlphaFile(const std::string& prefix)
 {
-  FILE *fd=fopen(outPath+macroName+".C","w");
-  if (fd == 0) {
-    QwError << "QwCorrelator could not create alias file " << outPath+macroName+".C" << QwLog::endl;
+  // Create old-style blueR ROOT file
+  std::string name = prefix + fAlphaOutputFileBase + run_label.Data() + fAlphaOutputFileSuff;
+  std::string path = fAlphaOutputPath + "/";
+  std::string file = path + name;
+  fAlphaOutputFile = new TFile(TString(file), "RECREATE", "correlation coefficients");
+  if (! fAlphaOutputFile->IsWritable()) {
+    QwError << "QwCorrelator could not create output file " << file << QwLog::endl;
+    delete fAlphaOutputFile;
+    fAlphaOutputFile = 0;
+  }
+}
+
+void QwCorrelator::OpenAliasFile(const std::string& prefix)
+{
+  // Turn "." into "_" in run_label (no "." allowed in function name, and must
+  // agree with the filename)
+  std::string label(run_label);
+  std::replace(label.begin(), label.end(), '.', '_');
+  // Create old-style regalias script
+  std::string name = prefix + fAliasOutputFileBase + label + fAliasOutputFileSuff;
+  std::string path = fAliasOutputPath + "/";
+  std::string file = path + name + ".C"; // add extension outside of file suffix
+  fAliasOutputFile.open(file, std::ofstream::out);
+  if (fAliasOutputFile.good()) {
+    fAliasOutputFile << Form("void %s(int i = 0) {", name.c_str()) << std::endl;
+  } else {
+    QwWarning << "QwCorrelator: Could not write to alias output file " << QwLog::endl;
+  }
+}
+
+void QwCorrelator::CloseAlphaFile()
+{
+  // Close slopes output file
+  if (fAlphaOutputFile) {
+    fAlphaOutputFile->Write();
+    fAlphaOutputFile->Close();
+  }
+}
+
+void QwCorrelator::CloseAliasFile()
+{
+  // Close alias output file
+  if (fAliasOutputFile.good()) {
+    fAliasOutputFile << "}" << std::endl << std::endl;
+    fAliasOutputFile.close();
+  } else {
+    QwWarning << "QwCorrelator: Unable to close alias output file." << QwLog::endl;
+  }
+}
+
+void QwCorrelator::WriteAliasFile()
+{
+  // Ensure output file is open
+  if (fAliasOutputFile.bad()) {
+    QwWarning << "QwCorrelator: Could not write to alias output file " << QwLog::endl;
     return;
   }
-  fprintf(fd,"void %s() {\n",macroName.Data());
-  fprintf(fd,"  TTree* tree = (TTree*) gDirectory->Get(\"mul\");\n");
-  for (int iy = 0; iy <nY; iy++) {
-    fprintf(fd,"  tree->SetAlias(\"reg_%s\",\n         \"%s",Yname[iy].Data(),Yname[iy].Data());
-    for (int j = 0; j < nP; j++) {
-      double val= -linReg.mA(j,iy);
-      if(val>0)  fprintf(fd,"+");
-      fprintf(fd,"%.4e*%s",val,Pname[j].Data());
-    }
-    fprintf(fd,"\");\n");
 
+  // Initialize call counter
+  static int i = 0;
+
+  fAliasOutputFile << " if (i == " << i << ") {" << std::endl;
+  fAliasOutputFile << Form("  TTree* tree = (TTree*) gDirectory->Get(\"mul\");") << std::endl;
+  for (int i = 0; i < nY; i++) {
+    fAliasOutputFile << Form("  tree->SetAlias(\"reg_%s\",",fDependentFull[i].Data()) << std::endl;
+    fAliasOutputFile << Form("         \"%s",fDependentFull[i].Data());
+    for (int j = 0; j < nP; j++) {
+      fAliasOutputFile << Form("%+.4e*%s", -linReg.mA(j,i), fIndependentFull[j].Data());
+    }
+    fAliasOutputFile << "\");" << std::endl;
   }
-  fprintf(fd,"}\n");
-  fclose(fd);
+  fAliasOutputFile << " }" << std::endl;
+
+  // Increment call counter
+  i++;
 }
 
