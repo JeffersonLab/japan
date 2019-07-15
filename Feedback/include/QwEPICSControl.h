@@ -371,21 +371,86 @@ std::cout << "HBIA4 HV value: " << value << std::endl;
 
 
 
-
- 
-
-
-std::vector<const char*> vEpicsVar={"IPM1H04A_WireSumAsymMean","IPM1H04A_WireSumAsymWidth","IPM1H04E_WireSumAsymMean","IPM1H04E_WireSumAsymWidth"};
+  std::vector<const char*> vEpicsVar={"IPM1H04A_WireSumAsymMean",
+				      "IPM1H04A_WireSumAsymWidth",
+				      "IPM1H04E_WireSumAsymMean",
+				      "IPM1H04E_WireSumAsymWidth",
+				      "IPM0I02A_WireSumAsymMean",
+				      "IPM0I02A_WireSumAsymWidth",
+				      "IPM1I06_WireSumAsymMean",
+				      "IPM1I06_WireSumAsymWidth",
+				      "IPM1C12_WireSumAsymMean",
+				      "IPM1C12_WireSumAsymWidth",
+				      "IPM0R05_WireSumAsymMean",
+				      "IPM0R05_WireSumAsymWidth",
+				      "IPM0L06_WireSumAsymMean",
+				      "IPM0L06_WireSumAsymWidth",
+				      "IPM0L05_WireSumAsymMean",
+				      "IPM0L05_WireSumAsymWidth",
+				      "IPM0I05_WireSumAsymMean",
+				      "IPM0I05_WireSumAsymWidth",
+				      "IPM2I02_WireSumAsymMean",
+				      "IPM2I02_WireSumAsymWidth",
+				      "IPM2I01_WireSumAsymMean",
+				      "IPM2I01_WireSumAsymWidth",
+				      "BCM0L02_AsymMean",
+				      "BCM0L02_AsymWidth",
+				      "BCM1H01_AsymMean",
+				      "BCM1H01_AsymWidth"};
 
   chid fIDbpm_4aWS_mean;
   chid fIDbpm_4aWS_width;
   chid fIDbpm_4eWS_mean;
   chid fIDbpm_4eWS_width;
+  chid fIDbpm0i02A_mean;
+  chid fIDbpm0i02A_width;
+  chid fIDbpm1i06_mean;
+  chid fIDbpm1i06_width;
+  chid fIDbpm12_mean;
+  chid fIDbpm12_width;
+  chid fIDbpm0R05_mean;
+  chid fIDbpm0R05_width;
+  chid fIDbpm0L06_mean;
+  chid fIDbpm0L06_width;
+  chid fIDbpm0L05_mean;
+  chid fIDbpm0L05_width;
+  chid fIDbpm0I05_mean;
+  chid fIDbpm0I05_width;
+  chid fIDbpm2I02_mean;
+  chid fIDbpm2I02_width;
+  chid fIDbpm2I01_mean;
+  chid fIDbpm2I01_width;
+  chid fIDbcm0L02_mean;
+  chid fIDbcm0L02_width;
+  chid fIDbcm_an_ds3_mean;
+  chid fIDbcm_an_ds3_width;
 
   std::vector<chid> vCHID ={fIDbpm_4aWS_mean,
-  		       fIDbpm_4aWS_width,
-  		       fIDbpm_4eWS_mean,
-  		       fIDbpm_4eWS_width};
+			    fIDbpm_4aWS_width,
+			    fIDbpm_4eWS_mean,
+			    fIDbpm_4eWS_width,
+			    fIDbpm0i02A_mean,
+			    fIDbpm0i02A_width,
+			    fIDbpm1i06_mean,
+			    fIDbpm1i06_width,
+			    fIDbpm12_mean,
+			    fIDbpm12_width,
+			    fIDbpm0R05_mean,
+			    fIDbpm0R05_width,
+			    fIDbpm0L06_mean,
+			    fIDbpm0L06_width,
+			    fIDbpm0L05_mean,
+			    fIDbpm0L05_width,
+			    fIDbpm0I05_mean,
+			    fIDbpm0I05_width,
+			    fIDbpm2I02_mean,
+			    fIDbpm2I02_width,
+			    fIDbpm2I01_mean,
+			    fIDbpm2I01_width,
+			    fIDbcm0L02_mean,
+			    fIDbcm0L02_width,
+			    fIDbcm_an_ds3_mean,
+			    fIDbcm_an_ds3_width};
 
   
   void SetMeanWidth(int myIndex, std::pair<Double_t,Double_t> value_pair){
@@ -400,6 +465,166 @@ std::vector<const char*> vEpicsVar={"IPM1H04A_WireSumAsymMean","IPM1H04A_WireSum
     status = ca_put(DBR_DOUBLE, CHID_width, &(value_pair.second)); //Width
     status = ca_pend_io(10);
   }
+
+
+
+
+  std::vector<const char*> vEpicsVar1={"IPM0I02A_xPosDiffMean",
+  				       "IPM0I02A_xPosDiffWidth",
+  				       "IPM0I02A_yPosDiffMean",
+  				       "IPM0I02A_yPosDiffWidth",
+  				       "IPM1I06_xPosDiffMean",
+  				       "IPM1I06_xPosDiffWidth",
+  				       "IPM1I06_yPosDiffMean",
+  				       "IPM1I06_yPosDiffWidth",
+  				       "IPM1H04E_xPosDiffMean",
+  				       "IPM1H04E_xPosDiffWidth",
+  				       "IPM1H04E_yPosDiffMean",
+  				       "IPM1H04E_yPosDiffWidth",
+  				       "IPM1H04A_xPosDiffMean",
+  				       "IPM1H04A_xPosDiffWidth",
+  				       "IPM1H04A_yPosDiffMean",
+  				       "IPM1H04A_yPosDiffWidth",
+  				       "IPM1C12_xPosDiffMean",
+  				       "IPM1C12_xPosDiffWidth",
+  				       "IPM1C12_yPosDiffMean",
+  				       "IPM1C12_yPosDiffWidth",
+  				       "IPM0R05_xPosDiffMean",
+  				       "IPM0R05_xPosDiffWidth",
+  				       "IPM0R05_yPosDiffMean",
+  				       "IPM0R05_yPosDiffWidth",
+  				       "IPM0L06_xPosDiffMean",
+  				       "IPM0L06_xPosDiffWidth",
+  				       "IPM0L06_yPosDiffMean",
+  				       "IPM0L06_yPosDiffWidth",
+  				       "IPM0L05_xPosDiffMean",
+  				       "IPM0L05_xPosDiffWidth",
+  				       "IPM0L05_yPosDiffMean",
+  				       "IPM0L05_yPosDiffWidth",
+  				       "IPM0I05_xPosDiffMean",
+  				       "IPM0I05_xPosDiffWidth",
+  				       "IPM0I05_yPosDiffMean",
+  				       "IPM0I05_yPosDiffWidth",
+  				       "IPM2I02_xPosDiffMean",
+  				       "IPM2I02_xPosDiffWidth",
+  				       "IPM2I02_yPosDiffMean",
+  				       "IPM2I02_yPosDiffWidth",
+  				       "IPM2I01_xPosDiffMean",
+  				       "IPM2I01_xPosDiffWidth",
+  				       "IPM2I01_yPosDiffMean",
+  				       "IPM2I01_yPosDiffWidth"};
+
+  
+
+  chid fIDbpm0I02AX_mean;
+  chid fIDbpm0I02AX_width;
+  chid fIDbpm0I02AY_mean;
+  chid fIDbpm0I02AY_width;
+  chid fIDbpm1I06X_mean;
+  chid fIDbpm1I06X_width;
+  chid fIDbpm1I06Y_mean;
+  chid fIDbpm1I06Y_width;
+  chid fIDbpm4eX_mean;
+  chid fIDbpm4eX_width;
+  chid fIDbpm4eY_mean;
+  chid fIDbpm4eY_width;
+  chid fIDbpm4aX_mean;
+  chid fIDbpm4aX_width;
+  chid fIDbpm4aY_mean;
+  chid fIDbpm4aY_width;
+  chid fIDbpm12X_mean;
+  chid fIDbpm12X_width;
+  chid fIDbpm12Y_mean;
+  chid fIDbpm12Y_width;
+  chid fIDbpm0r05X_mean;
+  chid fIDbpm0r05X_width;
+  chid fIDbpm0r05Y_mean;
+  chid fIDbpm0r05Y_width;
+  chid fIDbpm0l06X_mean;
+  chid fIDbpm0l06X_width;
+  chid fIDbpm0l06Y_mean;
+  chid fIDbpm0l06Y_width;
+  chid fIDbpm0l05X_mean;
+  chid fIDbpm0l05X_width;
+  chid fIDbpm0l05Y_mean;
+  chid fIDbpm0l05Y_width;
+  chid fIDbpm0i05X_mean;
+  chid fIDbpm0i05X_width;
+  chid fIDbpm0i05Y_mean;
+  chid fIDbpm0i05Y_width;
+  chid fIDbpm2I02X_mean;
+  chid fIDbpm2I02X_width;
+  chid fIDbpm2I02Y_mean;
+  chid fIDbpm2I02Y_width;
+  chid fIDbpm2I01X_mean;
+  chid fIDbpm2I01X_width;
+  chid fIDbpm2I01Y_mean;
+  chid fIDbpm2I01Y_width;
+
+  
+
+  std::vector<chid> v1CHID ={fIDbpm0I02AX_mean,
+  			     fIDbpm0I02AX_width,
+  			     fIDbpm0I02AY_mean,
+  			     fIDbpm0I02AY_width,
+  			     fIDbpm1I06X_mean,
+  			     fIDbpm1I06X_width,
+  			     fIDbpm1I06Y_mean,
+  			     fIDbpm1I06Y_width,
+  			     fIDbpm4eX_mean,
+  			     fIDbpm4eX_width,
+  			     fIDbpm4eY_mean,
+  			     fIDbpm4eY_width,
+  			     fIDbpm4aX_mean,
+  			     fIDbpm4aX_width,
+  			     fIDbpm4aY_mean,
+  			     fIDbpm4aY_width,
+  			     fIDbpm12X_mean,
+  			     fIDbpm12X_width,
+  			     fIDbpm12Y_mean,
+  			     fIDbpm0r05X_mean,
+  			     fIDbpm0r05X_width,
+  			     fIDbpm0r05Y_mean,
+  			     fIDbpm0r05Y_width,
+  			     fIDbpm12Y_width,
+  			     fIDbpm0l06X_mean,
+  			     fIDbpm0l06X_width,
+  			     fIDbpm0l06Y_mean,
+  			     fIDbpm0l06Y_width,
+  			     fIDbpm0l05X_mean,
+  			     fIDbpm0l05X_width,
+  			     fIDbpm0l05Y_mean,
+  			     fIDbpm0l05Y_width,
+  			     fIDbpm0i05X_mean,
+  			     fIDbpm0i05X_width,
+  			     fIDbpm0i05Y_mean,
+  			     fIDbpm0i05Y_width,
+  			     fIDbpm2I02X_mean,
+  			     fIDbpm2I02X_width,
+  			     fIDbpm2I02Y_mean,
+  			     fIDbpm2I02Y_width,
+  			     fIDbpm2I01X_mean,
+  			     fIDbpm2I01X_width,
+  			     fIDbpm2I01Y_mean,
+  			     fIDbpm2I01Y_width};
+
+
+
+
+
+  void SetMeanWidth1(int myIndex, std::pair<Double_t,Double_t> value_pair){
+    
+    Int_t status;
+    chid CHID_mean1 = v1CHID[myIndex];
+    chid CHID_width1 = v1CHID[myIndex+1];
+    status = ca_put(DBR_DOUBLE, CHID_mean1, &(value_pair.first));// Mean
+  
+    status = ca_pend_io(10);
+    
+    status = ca_put(DBR_DOUBLE, CHID_width1, &(value_pair.second)); //Width
+    status = ca_pend_io(10);
+  }
+
 
 
   void Set_RTP_PITA_1(Double_t &value){

@@ -611,7 +611,7 @@ void QwHelicityCorrelatedFeedback::FeedPITASetPoints(){
   if (fPITASlope!=0) {
     Double_t correction = fChargeAsymmetry/fPITASlope;
 QwMessage<<"................Correction............."<<fChargeAsymmetry/fPITASlope<<QwLog::endl;
-QwMessage<<"................Aq............."<<fChargeAsymmetry<<QwLog::endl;
+QwMessage<<"................Hall A Aq............."<<fChargeAsymmetry<<QwLog::endl;
 QwMessage<<"................slope............."<<fPITASlope<<QwLog::endl;
     //damp the correction when charge asymmetry is close to zero
     // if (fFeedbackDamping){
@@ -711,7 +711,11 @@ QwMessage<<"................slope............."<<fPITASlope<<QwLog::endl;
     fEPICSCtrl.SetMeanWidth(2*i,vWireSumAsymmetry[i]);
   }
  
-
+  int nBPM1 = vBPM1.size();
+  for(int j=0;j<nBPM1;j++){
+   
+    fEPICSCtrl.SetMeanWidth1(2*j,vWireSumPosition[j]);
+  }
 
 
 
@@ -1109,8 +1113,8 @@ void QwHelicityCorrelatedFeedback::FeedHCIASetPoints(){
   if (fHCIASlope!=0) {
     Double_t correction = fTargetHCCharge/fHCIASlope;
 QwMessage<<"................Correction............."<<fTargetHCCharge/fHCIASlope<<QwLog::endl;
-QwMessage<<"................Aq............."<<fTargetHCCharge<<QwLog::endl;
-QwMessage<<"................slope............."<<fHCIASlope<<QwLog::endl;
+QwMessage<<"................hall C Aq............."<<fTargetHCCharge<<QwLog::endl;
+QwMessage<<"................Hall C slope............."<<fHCIASlope<<QwLog::endl;
    
 
 
@@ -1280,8 +1284,8 @@ void QwHelicityCorrelatedFeedback::FeedHBIASetPoints(){
   if (fHBIASlope!=0) {
     Double_t correction3 = fTargetHBCharge/fHBIASlope;
 QwMessage<<"................Correction3............."<<fTargetHBCharge/fHBIASlope<<QwLog::endl;
-QwMessage<<"................Aq............."<<fTargetHBCharge<<QwLog::endl;
-QwMessage<<"................slope............."<<fHBIASlope<<QwLog::endl;
+QwMessage<<"................Hall B Aq............."<<fTargetHBCharge<<QwLog::endl;
+QwMessage<<"................hall B slope............."<<fHBIASlope<<QwLog::endl;
    
 
 
@@ -2352,10 +2356,24 @@ Int_t nBPM = vBPM.size();
       Double_t this_mean =fTargetParameter.GetValue()*1.0e+6;
       Double_t this_width=fTargetParameter.GetValueWidth()*1.0e+6;
       std::pair<Double_t,Double_t> this_pair = std::make_pair(this_mean,this_width);
-      QwError << " QwHelicityCorrelatedFeedback::GetTargetChargeStat() loop"<<this_mean<<" "<< this_width<<QwLog::endl;
-      QwError << " QwHelicityCorrelatedFeedback::GetTargetChargeStat() loop"<<this_pair.first<<" "<< this_pair.second<<QwLog::endl;
+   
      
       vWireSumAsymmetry.push_back(this_pair);
+    }
+  }
+
+
+
+Int_t nBPM1 = vBPM1.size();
+ 
+  for(int j=0;j<nBPM1;j++){
+    if (fAsymmetry.RequestExternalValue(vBPM1[j],&fTargetParameter)){
+      Double_t this_mean1 =fTargetParameter.GetValue()*1.0e+3;
+      Double_t this_width1=fTargetParameter.GetValueWidth()*1.0e+3;
+      std::pair<Double_t,Double_t> this_pair1 = std::make_pair(this_mean1,this_width1);
+     
+     
+      vWireSumPosition.push_back(this_pair1);
     }
   }
 
