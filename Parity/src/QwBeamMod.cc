@@ -310,7 +310,7 @@ Int_t QwBeamMod::LoadEventCuts(TString  filename)
       //std::cout << "device_name= "<< device_name << std::endl;
 
       if (device_type == "VQWK"||device_type=="SCALER" ||device_type=="SIS3801D24" ||device_type=="SIS3801D32"){
-
+	device_name.ToLower();
 	Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for BCM value
 	Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for BCM value
 	varvalue = mapstr.GetTypedNextToken<TString>();//global/loacal
