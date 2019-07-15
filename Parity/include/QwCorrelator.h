@@ -31,6 +31,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
  public:
   /// \brief Constructor with name
   QwCorrelator(const TString& name);
+  QwCorrelator(const QwCorrelator& name);
   virtual ~QwCorrelator();
 
  private:

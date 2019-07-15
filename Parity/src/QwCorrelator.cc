@@ -64,6 +64,26 @@ QwCorrelator::QwCorrelator(const TString& name)
   ClearEventData();
 }
 
+QwCorrelator::QwCorrelator(const QwCorrelator& source)
+: VQwDataHandler(source),
+  fBlock(source.fBlock),
+  fDisableHistos(source.fDisableHistos),
+  fAlphaOutputFileBase(source.fAlphaOutputFileBase),
+  fAlphaOutputFileSuff(source.fAlphaOutputFileSuff),
+  fAlphaOutputPath(source.fAlphaOutputPath),
+  fAlphaOutputFile(0),
+  fTree(0),
+  fAliasOutputFileBase(source.fAliasOutputFileBase),
+  fAliasOutputFileSuff(source.fAliasOutputFileSuff),
+  fAliasOutputPath(source.fAliasOutputPath),
+  nP(source.nP),nY(source.nY)
+{
+  QwWarning << "QwCorrelator copy constructor required but untested" << QwLog::endl;
+
+  // Clear all data
+  ClearEventData();
+}
+
 QwCorrelator::~QwCorrelator()
 {
   // Close output file
