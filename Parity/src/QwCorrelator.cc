@@ -375,18 +375,6 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
   fIndependentValues.resize(fIndependentVar.size());
   fDependentValues.resize(fDependentVar.size());
  
-  // Create ROOT file
-  std::string SlopeFileName = fAlphaOutputFileBase + run_label.Data() + fAlphaOutputFileSuff;
-  std::string SlopeFilePath = fAlphaOutputPath + "/";
-  std::string SlopeFile = SlopeFilePath + SlopeFileName;
-
-  fAlphaOutputFile = new TFile(SlopeFile.c_str(), "RECREATE", "correlation coefficients");
-  if (! fAlphaOutputFile->IsWritable()) {
-    QwError << "QwCorrelator could not create output file " << SlopeFile << QwLog::endl;
-    delete fAlphaOutputFile;
-    fAlphaOutputFile = 0;
-  }
-
   nP = fIndependentName.size();
   nY = fDependentName.size();
 
@@ -478,6 +466,19 @@ void QwCorrelator::ConstructTreeBranches(
   branchv(fTree,linReg.sigX,     "dMP");
   branchv(fTree,linReg.sigY,     "dMY");
   branchv(fTree,linReg.sigYprime,"dMYp");
+
+  // Create old-style blueR ROOT file
+  std::string SlopeFileName = treeprefix + fAlphaOutputFileBase + run_label.Data() + fAlphaOutputFileSuff;
+  std::string SlopeFilePath = fAlphaOutputPath + "/";
+  std::string SlopeFile = SlopeFilePath + SlopeFileName;
+
+  fAlphaOutputFile = new TFile(SlopeFile.c_str(), "RECREATE", "correlation coefficients");
+  if (! fAlphaOutputFile->IsWritable()) {
+    QwError << "QwCorrelator could not create output file " << SlopeFile << QwLog::endl;
+    delete fAlphaOutputFile;
+    fAlphaOutputFile = 0;
+  }
+
 }
 
 /// \brief Construct the histograms in a folder with a prefix
