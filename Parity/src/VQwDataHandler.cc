@@ -54,6 +54,7 @@ VQwDataHandler::VQwDataHandler(const VQwDataHandler &source)
   fPrefix(source.fPrefix),
   fSubsystemArray(source.fSubsystemArray),
   fHelicityPattern(source.fHelicityPattern),
+  ParseSeparator(source.ParseSeparator),
   fKeepRunningSum(source.fKeepRunningSum)
 {
   fErrorFlagPtr  = source.fErrorFlagPtr;
