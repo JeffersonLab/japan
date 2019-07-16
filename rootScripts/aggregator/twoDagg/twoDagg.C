@@ -3,6 +3,7 @@
 #include "TChain.h"
 
 
+
 TGraphErrors gDraw(TTree *T, TString var, TString plot, Bool_t  good)
 {
 TString ok="";
@@ -14,9 +15,28 @@ if (good){
 }
 
 nEntries=T->Draw(Form("run_number:%s_%s:%s_%s_error", plot.Data(),var.Data(),plot.Data(),var.Data()),ok.Data(), "goff");
-TGraphErrors g(nEntries, T->GetV1(), T->GetV2(), 0, T->GetV3());
+
+Double_t run[nEntries];
+for(int i=0; i<nEntries;i++){
+  run[i]=i;
+}
+
+gStyle->SetOptFit(1);
+TGraphErrors g(nEntries,run, T->GetV2(), 0, T->GetV3());
+TAxis* a = g.GetXaxis();
+a->SetNdivisions(-nEntries);
+double* d=T->GetV1();
+Int_t binindex= 0;
+for(int i=0; i<nEntries;i++){
+   binindex=a->FindBin(i);
+   a->SetBinLabel(binindex, Form("%3.0f",d[i]));
+}
+Double_t par;
+g.Fit("pol0");
 g.SetTitle(Form("%s_%s vs run", plot.Data(), var.Data()));
 g.SetMarkerStyle(20);
+//TF1 *fit=g.GetFunction("pol0");
+//printf("%3.1f",fit->GetParameter(0));
 return g;
 } 
 

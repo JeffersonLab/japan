@@ -236,7 +236,7 @@ void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_0
   TH1 * hMeanRms = getHistogram_h(tree,branch,leaf,cut,overWriteCut,mode,runNumber,splitNumber,nRuns);
   if (hMeanRms==0)
   {
-    Printf("Error, Histogram failed");
+    Printf("Error, writeMeanRms_leafHist_h: Histogram failed");
   }
   else {
     data_mean = hMeanRms->GetMean(1);

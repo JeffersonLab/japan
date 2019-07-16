@@ -17,7 +17,6 @@
 "meanRms","mul","yield_bcm_an_us","hw_sum","defaultCuts",0,"defaultHist",0
 "meanRms","mul","yield_bcm_an_ds","hw_sum","defaultCuts",0,"defaultHist",0
 "meanRms","mul","yield_bcm_an_ds3","hw_sum","defaultCuts",0,"defaultHist",0
-"meanRms","mul","yield_bcm_an_ds10","hw_sum","defaultCuts",0,"defaultHist",0
 "meanRms","mul","yield_bcm_dg_us","hw_sum","defaultCuts",0,"defaultHist",0
 "meanRms","mul","yield_bcm_dg_ds","hw_sum","defaultCuts",0,"defaultHist",0
 "meanRms","mul","yield_cav4bQ","hw_sum","defaultCuts",0,"defaultHist",0
@@ -26,7 +25,6 @@
 "meanRms","mul","asym_bcm_an_us","hw_sum","defaultCuts",0,"defaultHist",0
 "meanRms","mul","asym_bcm_an_ds","hw_sum","defaultCuts",0,"defaultHist",0
 "meanRms","mul","asym_bcm_an_ds3","hw_sum","defaultCuts",0,"defaultHist",0
-"meanRms","mul","asym_bcm_an_ds10","hw_sum","defaultCuts",0,"defaultHist",0
 "meanRms","mul","asym_bcm_dg_us","hw_sum","defaultCuts",0,"defaultHist",0
 "meanRms","mul","asym_bcm_dg_ds","hw_sum","defaultCuts",0,"defaultHist",0
 "meanRms","mul","asym_cav4bQ","hw_sum","defaultCuts",0,"defaultHist",0
@@ -68,6 +66,14 @@
 "meanRms","mul","diff_bpm14Y","hw_sum","defaultCuts",0,"defaultHist",0
 "meanRms","mul","diff_bpm12X","hw_sum","defaultCuts",0,"defaultHist",0
 "meanRms","mul","diff_bpm12Y","hw_sum","defaultCuts",0,"defaultHist",0
+"meanRms","mul","yield_usl","hw_sum","defaultCuts",0,"defaultHist",0
+"meanRms","mul","yield_usr","hw_sum","defaultCuts",0,"defaultHist",0
+"meanRms","mul","yield_dsl","hw_sum","defaultCuts",0,"defaultHist",0
+"meanRms","mul","yield_dsr","hw_sum","defaultCuts",0,"defaultHist",0
+"meanRms","mul","asym_usl","hw_sum","defaultCuts",0,"defaultHist",0
+"meanRms","mul","asym_usr","hw_sum","defaultCuts",0,"defaultHist",0
+"meanRms","mul","asym_dsl","hw_sum","defaultCuts",0,"defaultHist",0
+"meanRms","mul","asym_dsr","hw_sum","defaultCuts",0,"defaultHist",0
 "meanRms","mulc_lrb","cor_usl","hw_sum","defaultCuts",0,"defaultHist",0
 "meanRms","mulc_lrb","cor_usr","hw_sum","defaultCuts",0,"defaultHist",0
 "meanRms","mulc_lrb","cor_dsl","hw_sum","defaultCuts",0,"defaultHist",0

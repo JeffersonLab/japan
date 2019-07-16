@@ -234,6 +234,7 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber 
           newTChain->Add(filename);
           friendTChain->Add(filename);
           newTChain->AddFriend(friendTChain);
+          Int_t testVal = newTChain->GetEntries();
         }
         else {
           if (debug>1) Printf("File %s doesn't contain tree: \"%s\"",(const char*)filename,(const char*)tree);
@@ -248,7 +249,8 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber 
     Printf("Rootfile not found in %s with runs from %d to %d, split %03d, check your config and rootfiles",(const char*)fileNameBase,runNumber,runNumber+n_runs-1, splitNumber);
     return 0;
   }
-  if (debug>3) Printf("TChain total N Entries: %d",(int)newTChain->GetEntries());
+  //Printf("TChain total N Entries: %lld",newTChain->GetEntries());
+  if (debug>3) Printf("TChain total N Entries: %lld",newTChain->GetEntries());
   return newTChain;
 }
 
