@@ -68,10 +68,17 @@ TString getCuts_h(TString cut = "defaultCut", Int_t overWriteCut = 0, TString br
   if (cut == "noCut" || cut == "1"){
     return "1"; // Just return true
   }
-  if (cut == "minirun" || cut == "MINIRUN" || cut == "MiniRun" || cut == "miniRun"){
-    cut = "minirun==" + getMinirunNumber_h();
-    return cut;
-  }
+  if (cut == "minirun" || cut == "MINIRUN" || cut == "MiniRun" || cut == "miniRun"){ // Flag word by itself, then check env variable
+    Int_t minirunNumber = getMinirunNumber_h(-2); // Check the minirun number
+    if (minirunNumber >= 0){
+      cut = Form("minirun==%d",minirunNumber);
+      return cut;
+    }
+    else {
+      Printf("Error, invalid minirun number, using the default cut instead = %s",defaultCut.Data());
+      return defaultCut;
+    }
+  } // Else, if you want "minirun==#" that will still work by hand, this if is just a flag to check env variable method instead...
   if (overWriteCut == 1){
     return cut; // Just return the user's cut
   }
