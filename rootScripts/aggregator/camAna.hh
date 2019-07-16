@@ -3,14 +3,15 @@
 #include "camguin.hh"
 #include <TLeaf.h>
 using namespace std;
-Int_t writeNEvents_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, Int_t stabilityRingLength = 0, Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
+Int_t writeNEvents_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, Int_t stabilityRingLength = 0, Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
   // Any branch will do, we are just counting the number of events that pass the global EventCuts, not device error codes too
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
+  minirunNumber = getMinirunNumber_h(minirunNumber);
   nRuns     = getNruns_h(nRuns);
   TString channel = tree + "_" + branch + "_" + leaf;
   // Make an instance of the relevant data source 
-  TLeaf   *Leaf   = getLeaf_h(tree,branch,leaf,runNumber,splitNumber,nRuns);
+  TLeaf   *Leaf   = getLeaf_h(tree,branch,leaf,runNumber,minirunNumber,splitNumber,nRuns);
   if (!Leaf){
     Printf("Event counting terminated, branch not found");
     return 0;
@@ -69,8 +70,8 @@ Int_t writeNEvents_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
     }
   }
   if (aggregatorStatus){
-    writeFile_h(number_total_events,numEntries,runNumber,splitNumber,nRuns);
-    writeFile_h(number_good_events,n_data,runNumber,splitNumber,nRuns);
+    writeFile_h(number_total_events,numEntries,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(number_good_events,n_data,runNumber,minirunNumber,splitNumber,nRuns);
   }
   if (stabilityRingLength!=0){
     for (int k = numEntries-1; k > 0 ; k--)
@@ -87,8 +88,8 @@ Int_t writeNEvents_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
     }
     stabilityRingStart=numEntries-n_reverse_data+1; // +1 since events start on 1
     if (aggregatorStatus){
-      writeFile_h(number_stabilityRingStart,stabilityRingStart,runNumber,splitNumber,nRuns);
-      writeFile_h(number_stabilityRingLength,stabilityRingLength,runNumber,splitNumber,nRuns);
+      writeFile_h(number_stabilityRingStart,stabilityRingStart,runNumber,minirunNumber,splitNumber,nRuns);
+      writeFile_h(number_stabilityRingLength,stabilityRingLength,runNumber,minirunNumber,splitNumber,nRuns);
     }
     if (alarmStatus){
       // Then the alarm handler wants to receive the output in stdout
@@ -104,14 +105,15 @@ Int_t writeNEvents_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
   return stabilityRingStart;
 }
 
-Int_t writeEventLoopN_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, Int_t stabilityRingLength = 0, Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
+Int_t writeEventLoopN_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, Int_t stabilityRingLength = 0, Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
   // Any branch will do, we are just counting the number of events that pass the global EventCuts, not device error codes too
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
+  minirunNumber = getMinirunNumber_h(minirunNumber);
   nRuns     = getNruns_h(nRuns);
   TString channel = tree + "_" + branch + "_" + leaf;
   // Make an instance of the relevant data source 
-  TLeaf   *Leaf   = getLeaf_h(tree,branch,leaf,runNumber,splitNumber,nRuns);
+  TLeaf   *Leaf   = getLeaf_h(tree,branch,leaf,runNumber,minirunNumber,splitNumber,nRuns);
   if (!Leaf){
     Printf("Event counting terminated, branch not found");
     return 0;
@@ -162,7 +164,7 @@ Int_t writeEventLoopN_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_0
   TString  number_stabilityRingLength = channel+"_number_stability_ring_length"; // length of stabilityRing
 
   if (aggregatorStatus){
-    writeFile_h(number_total_events,numEntries,runNumber,splitNumber,nRuns);
+    writeFile_h(number_total_events,numEntries,runNumber,minirunNumber,splitNumber,nRuns);
   }
   if (stabilityRingLength!=0){
     for (int k = numEntries-1; k > 0 ; k--)
@@ -179,8 +181,8 @@ Int_t writeEventLoopN_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_0
     }
     stabilityRingStart=numEntries-n_reverse_data+1; // +1 since events start on 1
     if (aggregatorStatus){
-      writeFile_h(number_stabilityRingStart,stabilityRingStart,runNumber,splitNumber,nRuns);
-      writeFile_h(number_stabilityRingLength,stabilityRingLength,runNumber,splitNumber,nRuns);
+      writeFile_h(number_stabilityRingStart,stabilityRingStart,runNumber,minirunNumber,splitNumber,nRuns);
+      writeFile_h(number_stabilityRingLength,stabilityRingLength,runNumber,minirunNumber,splitNumber,nRuns);
     }
     if (alarmStatus){
       // Then the alarm handler wants to receive the output in stdout
@@ -191,13 +193,14 @@ Int_t writeEventLoopN_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_0
   return stabilityRingStart;
 }
 
-void writeMean_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
+void writeMean_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
+  minirunNumber = getMinirunNumber_h(minirunNumber);
   nRuns     = getNruns_h(nRuns);
   TString channel = tree + "_" + branch + "_" + leaf;
   // Make an instance of the relevant data source 
-  TLeaf   *Leaf   = getLeaf_h(tree,branch,leaf,runNumber,splitNumber,nRuns);
+  TLeaf   *Leaf   = getLeaf_h(tree,branch,leaf,runNumber,minirunNumber,splitNumber,nRuns);
   if (!Leaf){
     return;
   }
@@ -253,7 +256,7 @@ void writeMean_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
   }
   data_mean = data/(1.0*n_data);
   if (aggregatorStatus){
-    writeFile_h(analysis,data_mean,runNumber,splitNumber,nRuns);
+    writeFile_h(analysis,data_mean,runNumber,minirunNumber,splitNumber,nRuns);
   }
   if (alarmStatus){
     // Then the alarm handler wants to receive the output in stdout
@@ -261,13 +264,14 @@ void writeMean_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
   }
 }
 
-void writeInt_loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
+void writeInt_loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
+  minirunNumber = getMinirunNumber_h(minirunNumber);
   nRuns     = getNruns_h(nRuns);
   TString channel = tree + "_" + branch + "_" + leaf;
   // Make an instance of the relevant data source 
-  TLeaf   *Leaf   = getLeaf_h(tree,branch,leaf,runNumber,splitNumber,nRuns);
+  TLeaf   *Leaf   = getLeaf_h(tree,branch,leaf,runNumber,minirunNumber,splitNumber,nRuns);
   if (!Leaf){
     return;
   }
@@ -321,7 +325,7 @@ void writeInt_loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",
     }
   }
   if (aggregatorStatus){
-    writeFile_h(analysis,data,runNumber,splitNumber,nRuns);
+    writeFile_h(analysis,data,runNumber,minirunNumber,splitNumber,nRuns);
   }
   if (alarmStatus){
     // Then the alarm handler wants to receive the output in stdout
@@ -330,13 +334,14 @@ void writeInt_loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",
 }
 
 /*
-void writeMean_leafHist_h(TString mode = "default", TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", Int_t runNumber = 0, Int_t splitNumber = -1, Int_t nRuns = -1){
+void writeMean_leafHist_h(TString mode = "default", TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
+  minirunNumber = getMinirunNumber_h(minirunNumber);
   nRuns     = getNruns_h(nRuns);
 
   // Make an instance of the relevant data source 
-  TLeaf   *Leaf   = getLeaf_h(tree,branch,leaf,runNumber,splitNumber,nRuns);
+  TLeaf   *Leaf   = getLeaf_h(tree,branch,leaf,runNumber,minirunNumber,splitNumber,nRuns);
   if (!Leaf){
     return 0;
   }
@@ -376,9 +381,9 @@ void writeMean_leafHist_h(TString mode = "default", TString tree = "mul", TStrin
   Printf("Run %d mean %s: %f",runNumber,(const char*)mean,data_mean);
   Printf("Run %d rms %s: %f",runNumber,(const char*)rms,data_rms);
   if (aggregatorStatus){
-    writeFile_h(mean,data_mean,runNumber,splitNumber,nRuns);
-    writeFile_h(rms,data_rms,runNumber,splitNumber,nRuns);
-  //writeFile_h("test",1.0,runNumber,splitNumber,nRuns);
+    writeFile_h(mean,data_mean,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(rms,data_rms,runNumber,minirunNumber,splitNumber,nRuns);
+  //writeFile_h("test",1.0,runNumber,minirunNumber,splitNumber,nRuns);
   }
 }*/
 #endif // __CAMANA__
