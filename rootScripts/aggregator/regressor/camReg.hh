@@ -9,7 +9,7 @@
 #include <string>
 #include <TChain.h>
 using namespace std;
-void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInput.txt", char delim = ' '){
+void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInput.txt", char delim = ' '){
   Double_t speed = 0.66;
   Double_t nonLinearFit = 0.0; // 1.0 = nonLinear fit with fit parameter uncertaintites included in weight
   Int_t passLimitValue = 1;
@@ -21,9 +21,10 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
 
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
+  minirunNumber = getMinirunNumber_h(minirunNumber);
   nRuns     = getNruns_h(nRuns);
   vector<vector<string>> textFile = textFileParse_h(regInput,delim);
-  TTree * oldTree = getTree_h(tree, runNumber, splitNumber, nRuns, "NULL");
+  TTree * oldTree = getTree_h(tree, runNumber, minirunNumber, splitNumber, nRuns, "NULL");
   if (oldTree==0){
     Printf("Root file does not exist");
     return;
@@ -559,7 +560,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
   newTree->Write();
   outFile->Close();
   if (aggregatorStatus){
-  //writeFile_h("test_n_data",n_data,runNumber,splitNumber,nRuns);
+  //writeFile_h("test_n_data",n_data,runNumber,minirunNumber, splitNumber,nRuns);
   }
 }
 #endif // __CAMREG__

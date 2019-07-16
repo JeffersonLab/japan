@@ -2,7 +2,7 @@
 #define __CAMREG__
 #include "../camguin.hh"
 using namespace std;
-void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t runNumber = 0, Int_t splitNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInputDipole.txt", char delim = ' '){
+void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInputDipole.txt", char delim = ' '){
   Double_t speed = 0.66;
   TString fit = "parity";
   Double_t nonLinearFit = 0.0; // 1.0 = nonLinear fit with fit parameter uncertaintites included in weight
@@ -16,6 +16,7 @@ void regress_h(TString tree = "mul", TString filename = "HandData.root", Int_t r
 
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
+  minirunNumber = getMinirunNumber_h(minirunNumber);
   nRuns     = getNruns_h(nRuns);
   vector<vector<string>> textFile = textFileParse_h(regInput,delim);
   //TTree * oldTree = getTree_h(tree, runNumber, nRuns, "NULL");
