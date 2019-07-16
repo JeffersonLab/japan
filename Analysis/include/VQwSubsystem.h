@@ -141,9 +141,7 @@ class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms {
  protected:
   /// Map of published internal values
   std::map<TString, VQwHardwareChannel*> fPublishedInternalValues;
-  /// List of parameters to be published (loaded at the channel map)
   std::vector<std::vector<TString> > fPublishList;
-
   void UpdatePublishedValue(const TString& name, VQwHardwareChannel* data_channel) {
     fPublishedInternalValues[name] = data_channel;
   };

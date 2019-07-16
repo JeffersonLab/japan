@@ -30,7 +30,7 @@ class MQwPublishable {
     friend class VQwDataHandler;
 
   public:
-
+    std::vector<std::vector<TString> > fPublishList;
     /// \brief Retrieve the variable name from other subsystem arrays
     Bool_t RequestExternalValue(const TString& name, VQwHardwareChannel* value) const;
 
@@ -62,7 +62,7 @@ class MQwPublishable {
     std::map<TString, const VQwHardwareChannel*> fPublishedValuesDataElement;
     std::map<TString, const T*>                  fPublishedValuesSubsystem;
     std::map<TString, TString>                   fPublishedValuesDescription;
-
+ 
 };
 
 #endif

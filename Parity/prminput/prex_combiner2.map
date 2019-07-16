@@ -8,139 +8,142 @@
 
 ## Combined Detector Asymmetries 
 ############################## Up and Down-stream combo on Left Arm 
-[asym:@asym_left_avg]
-asym:usl, 0.5
-asym:dsl, 0.5
-[asym:@asym_left_dd]
-asym:usl, 0.5
-asym:dsl, -0.5
+#[asym:@asym_left_avg]
+#asym:usl, 0.5
+#asym:dsl, 0.5
+#[asym:@asym_left_dd]
+#asym:usl, 0.5
+#asym:dsl, -0.5
 ############################## Up and Down-stream combo on Right Arm 
-[asym:@asym_right_avg]
-asym:usr, 0.5
-asym:dsr, 0.5
-[asym:@asym_right_dd]
-asym:usr, 0.5
-asym:dsr, -0.5
+#[asym:@asym_right_avg]
+#asym:usr, 0.5
+#asym:dsr, 0.5
+#[asym:@asym_right_dd]
+#asym:usr, 0.5
+#asym:dsr, -0.5
 ############################## Left and Right Combo on Upstream Quartz
-[asym:@asym_us_avg]
-asym:usl, 0.5
-asym:usr, 0.5
-[asym:@asym_us_dd]
-asym:usl, 0.5
-asym:usr, -0.5
+#[asym:@asym_us_avg]
+#asym:usl, 0.5
+#asym:usr, 0.5
+#[asym:@asym_us_dd]
+#asym:usl, 0.5
+#asym:usr, -0.5
 ############################## Left and Right Combo on Downstream Quartz
-[asym:@asym_ds_avg]
-asym:dsl, 0.5
-asym:dsr, 0.5
-[asym:@asym_ds_dd]
-asym:dsl, 0.5
-asym:dsr, -0.5
+#[asym:@asym_ds_avg]
+#asym:dsl, 0.5
+#asym:dsr, 0.5
+#[asym:@asym_ds_dd]
+#asym:dsl, 0.5
+#asym:dsr, -0.5
 ############################## SAM 1 and 5
-[asym:@asym_sam_15_dd]
-asym:sam1, 0.5
-asym:sam5, -0.5
-[asym:@asym_sam_15_avg]
-asym:sam1, 0.5
-asym:sam5, 0.5
+#[asym:@asym_sam_15_dd]
+#asym:sam1, 0.5
+#asym:sam5, -0.5
+#[asym:@asym_sam_15_avg]
+#asym:sam1, 0.5
+#asym:sam5, 0.5
 ############################## SAM 3 and 7
-[asym:@asym_sam_37_dd]
-asym:sam3, 0.5
-asym:sam7, -0.5
-[asym:@asym_sam_37_avg]
-asym:sam3, 0.5
-asym:sam7, 0.5
+#[asym:@asym_sam_37_dd]
+#asym:sam3, 0.5
+#asym:sam7, -0.5
+#[asym:@asym_sam_37_avg]
+#asym:sam3, 0.5
+#asym:sam7, 0.5
 ############################## SAM 2 and 6
-[asym:@asym_sam_26_dd]
-asym:sam2, 0.5
-asym:sam6, -0.5
-[asym:@asym_sam_26_avg]
-asym:sam2, 0.5
-asym:sam6, 0.5
+#[asym:@asym_sam_26_dd]
+#asym:sam2, 0.5
+#asym:sam6, -0.5
+#[asym:@asym_sam_26_avg]
+#asym:sam2, 0.5
+#asym:sam6, 0.5
 ############################## SAM 4 and 8
-[asym:@asym_sam_48_dd]
-asym:sam4, 0.5
-asym:sam8, -0.5
-[asym:@asym_sam_48_avg]
-asym:sam4, 0.5
-asym:sam8, 0.5
+#[asym:@asym_sam_48_dd]
+#asym:sam4, 0.5
+#asym:sam8, -0.5
+#[asym:@asym_sam_48_avg]
+#asym:sam4, 0.5
+#asym:sam8, 0.5
+
+
+#############################Left and Right Average Difference
+[asym:@asym_left__right_dd]
+asym:asym_left_avg, 0.5
+asym:asym_right_avg, -0.5
 
 # Double differences
-[asym:@bcm_an_us_ds_dd]
-asym:bcm_an_us, 1
-asym:bcm_an_ds, -1
+#[asym:@bcm_an_us_ds_dd]
+#asym:bcm_an_us, 1
+#asym:bcm_an_ds, -1
 
-[asym:@bcm_an_us_ds3_dd]
-asym:bcm_an_us, 1
-asym:bcm_an_ds3, -1
+#[asym:@bcm_an_us_ds3_dd]
+#asym:bcm_an_us, 1
+#asym:bcm_an_ds3, -1
 
-[asym:@sam_4_8_dd]
-asym:sam4, 1
-asym:sam8, -1
+#[asym:@sam_4_8_dd]
+#asym:sam4, 1
+#asym:sam8, -1
 
-[diff:@sam_4_8_da]
-asym:sam4, 0.5
-asym:sam8, 0.5
+#[diff:@sam_4_8_da]
+#asym:sam4, 0.5
+#asym:sam8, 0.5
 
-[asym:@sam_2_6_dd]
-asym:sam2, 1
-asym:sam6, -1
+#[asym:@sam_2_6_dd]
+#asym:sam2, 1
+#asym:sam6, -1
 
-[diff:@sam_2_6_da]
-asym:sam2, 0.5
-asym:sam6, 0.5
+#[diff:@sam_2_6_da]
+#asym:sam2, 0.5
+#asym:sam6, 0.5
 
-[asym:@sam_26_48_dd]
-asym:sam2, 1
-asym:sam4, -1
-asym:sam6, 1
-asym:sam8, -1
+#[asym:@sam_26_48_dd]
+#asym:sam2, 1
+#asym:sam4, -1
+#asym:sam6, 1
+#asym:sam8, -1
 
-[diff:@sam_26_48_da]
-asym:sam2, 0.25
-asym:sam4, 0.25
-asym:sam6, 0.25
-asym:sam8, 0.25
+#[diff:@sam_26_48_da]
+#asym:sam2, 0.25
+#asym:sam4, 0.25
+#asym:sam6, 0.25
+#asym:sam8, 0.25
 
-[asym:@sam_1_3_dd]
-asym:sam1, 1
-asym:sam3, -1
+#[asym:@sam_1_3_dd]
+#asym:sam1, 1
+#asym:sam3, -1
 
-[diff:@sam_1_3_da]
-asym:sam1, 0.5
-asym:sam3, 0.5
+#[diff:@sam_1_3_da]
+#asym:sam1, 0.5
+#asym:sam3, 0.5
 
-[asym:@sam_5_7_dd]
-asym:sam5, 1
-asym:sam7, -1
+#[asym:@sam_5_7_dd]
+#asym:sam5, 1
+#asym:sam7, -1
 
-[diff:@sam_5_7_da]
-asym:sam5, 0.5
-asym:sam7, 0.5
+#[diff:@sam_5_7_da]
+#asym:sam5, 0.5
+#asym:sam7, 0.5
 
-[asym:@sam_13_57_dd]
-asym:sam1, 1
-asym:sam5, -1
-asym:sam3, 1
-asym:sam7, -1
+#[asym:@sam_13_57_dd]
+#asym:sam1, 1
+#asym:sam5, -1
+#asym:sam3, 1
+#asym:sam7, -1
 
-[diff:@sam_13_57_da]
-asym:sam1, 0.25
-asym:sam3, 0.25
-asym:sam5, 0.25
-asym:sam7, 0.25
+#[diff:@sam_13_57_da]
+#asym:sam1, 0.25
+#asym:sam3, 0.25
+#asym:sam5, 0.25
+#asym:sam7, 0.25
 
-[asym:@bpm_4aX_4eX_dd]
-asym:bpm4aX, 1
-asym:bpm4eX, -1
+#[asym:@bpm_4aX_4eX_dd]
+#asym:bpm4aX, 1
+#asym:bpm4eX, -1
 
-[asym:@bpm_4aY_4eY_dd]
-asym:bpm4aY, 1
-asym:bpm4eY, -1
+#[asym:@bpm_4aY_4eY_dd]
+#asym:bpm4aY, 1
+#asym:bpm4eY, -1
 
-[PUBLISH]
-! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
-  asym_left_avg, asym, asym_left_avg, c
-  asym_right_avg, asym, asym_right_avg, c
+
 
 #####
 #####  Some examples, all commented out.

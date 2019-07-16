@@ -8,8 +8,13 @@
  */
 
 #include "QwCombiner.h"
+#include "MQwPublishable.h"
+#include "VQwSubsystem.h"
+#include <iostream>
+#include <stdexcept>
 
 // Qweak headers
+#include "QwLog.h"
 #include "VQwDataElement.h"
 #include "QwVQWK_Channel.h"
 #include "QwParameterFile.h"
@@ -21,6 +26,7 @@
 #include "QwParityDB.h"
 #endif // __USE_DATABASE__
 
+#include "QwPromptSummary.h"
 
 // Register this handler with the factory
 RegisterHandlerFactory(QwCombiner);
@@ -75,6 +81,7 @@ Int_t QwCombiner::LoadChannelMap(const std::string& mapfile)
   QwParameterFile* section = 0;
   std::pair<EQwHandleType,std::string> type_name;
   while ((section = map.ReadNextSection(section_name,keep_header))) {
+    if(section_name=="PUBLISH") continue;
 
     // Store index to the current position in the dv vector
     size_t current_dv_start = fDependentName.size();
@@ -120,6 +127,37 @@ Int_t QwCombiner::LoadChannelMap(const std::string& mapfile)
         fIndependentName.at(dv).push_back(type_name.second);
       }
     }
+  }
+ 
+  TString varvalue; 
+  // Now load the variables to publish
+  std::vector<std::vector<TString> > fPublishList;
+  map.RewindToFileStart();
+  QwParameterFile *section2;
+  std::vector<TString> publishinfo;
+  while ((section2=map.ReadNextSection(varvalue))) {
+    if (varvalue == "PUBLISH") {
+      fPublishList.clear();
+      while (section2->ReadNextLine()) {
+        section2->TrimComment(); // Remove everything after a comment character
+        section2->TrimWhitespace(); // Get rid of leading and trailing spaces
+        for (int ii = 0; ii < 4; ii++) {
+          varvalue = section2->GetTypedNextToken<TString>();
+          if (varvalue.Length()) {
+            publishinfo.push_back(varvalue);
+          }
+        }
+        if (publishinfo.size() == 4)
+          fPublishList.push_back(publishinfo);
+        publishinfo.clear();
+      }
+    }
+    delete section2;
+  }
+  // Print list of variables to publish
+  QwMessage << "Variables to publish:" << QwLog::endl;
+  for (size_t jj = 0; jj < fPublishList.size(); jj++){
+    QwMessage << fPublishList.at(jj).at(0) << " " << fPublishList.at(jj).at(1) << " " << fPublishList.at(jj).at(2) << " " << fPublishList.at(jj).at(3) << QwLog::endl;
   }
   return 0;
 }
@@ -214,6 +252,9 @@ Int_t QwCombiner::ConnectChannels(
           QwWarning << "Independent variable for combiner has unknown type."
                     << QwLog::endl;
           break;
+      }
+      if (iv_ptr == NULL){
+        RequestExternalValue(fIndependentName.at(dv).at(iv));
       }
       if (iv_ptr) {
         //QwMessage << " iv: " << fIndependentName.at(dv).at(iv) << " (sens = " << fSensitivity.at(dv).at(iv) << ")" << QwLog::endl;

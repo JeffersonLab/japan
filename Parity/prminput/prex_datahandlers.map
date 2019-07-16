@@ -92,3 +92,10 @@
   map        = prex_combiner.map
   tree-name  = mulc
   tree-comment = Helicity event data tree (corrected)
+
+[QwCombiner]
+  name       = MyCombiner2
+  priority   = 99
+  map        = prex_combiner2.map
+  tree-name  = mulc
+  tree-comment = Helicity event data tree (corrected)
