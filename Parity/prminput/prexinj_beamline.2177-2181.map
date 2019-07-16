@@ -1,0 +1,182 @@
+
+ROC=24
+Bank=0x02
+vqwk_buffer_offset=1
+
+!same sample size for ADCs in a given bank
+sample_size=1984
+!
+!
+! module.type, module.num  chan.num, det.type, det.name
+
+
+!ADC0
+    VQWK, 0, 0,  bpmstripline,  bpm1I02xp
+    VQWK, 0, 1,  bpmstripline,  bpm1I02xm
+    VQWK, 0, 2,  bpmstripline,  bpm1I02yp
+    VQWK, 0, 3,  bpmstripline,  bpm1I02ym
+    VQWK, 0, 7, bcm, inj_battery_1 ! temporary battery channel
+!    VQWK, 0, 4,  bpmstripline,  bpm1I04xp
+!    VQWK, 0, 5,  bpmstripline,  bpm1I04xm
+!    VQWK, 0, 6,  bpmstripline,  bpm1I04yp
+!    VQWK, 0, 7,  bpmstripline,  bpm1I04ym
+
+!ADC1
+    VQWK, 1, 0,  bpmstripline,  bpm0I01xp
+    VQWK, 1, 1,  bpmstripline,  bpm0I01xm
+    VQWK, 1, 2,  bpmstripline,  bpm0I01yp
+    VQWK, 1, 3,  bpmstripline,  bpm0I01ym
+    VQWK, 1, 4,  bpmstripline,  bpm0I01Axp
+    VQWK, 1, 5,  bpmstripline,  bpm0I01Axm
+    VQWK, 1, 6,  bpmstripline,  bpm0I01Ayp
+    VQWK, 1, 7,  bpmstripline,  bpm0I01Aym
+
+
+!ADC2
+    VQWK, 2, 0,  bpmstripline,  bpm1I06xp
+    VQWK, 2, 1,  bpmstripline,  bpm1I06xm
+    VQWK, 2, 2,  bpmstripline,  bpm1I06yp
+    VQWK, 2, 3,  bpmstripline,  bpm1I06ym
+    VQWK, 2, 4,  bpmstripline,  bpm0I02xp
+    VQWK, 2, 5,  bpmstripline,  bpm0I02xm
+    VQWK, 2, 6,  bpmstripline,  bpm0I02yp
+    VQWK, 2, 7,  bpmstripline,  bpm0I02ym
+
+!ADC3
+    VQWK, 3, 0,  bpmstripline,  bpm0I02Axp
+    VQWK, 3, 1,  bpmstripline,  bpm0I02Axm
+    VQWK, 3, 2,  bpmstripline,  bpm0I02Ayp
+    VQWK, 3, 3,  bpmstripline,  bpm0I02Aym
+    VQWK, 3, 4,  bpmstripline,  bpm0I05xp
+    VQWK, 3, 5,  bpmstripline,  bpm0I05xm
+    VQWK, 3, 6,  bpmstripline,  bpm0I05yp
+    VQWK, 3, 7,  bpmstripline,  bpm0I05ym
+
+!ADC4
+    VQWK, 4, 0,  bpmstripline,  bpm0I07xp
+    VQWK, 4, 1,  bpmstripline,  bpm0I07xm
+    VQWK, 4, 2,  bpmstripline,  bpm0I07yp
+    VQWK, 4, 3,  bpmstripline,  bpm0I07ym
+    VQWK, 4, 4,  bpmstripline,  bpm0L01xp
+    VQWK, 4, 5,  bpmstripline,  bpm0L01xm
+    VQWK, 4, 6,  bpmstripline,  bpm0L01yp
+    VQWK, 4, 7,  bpmstripline,  bpm0L01ym
+
+
+!ADC5
+    VQWK, 5, 0,  bpmstripline,  bpm0L02xp
+    VQWK, 5, 1,  bpmstripline,  bpm0L02xm
+    VQWK, 5, 2,  bpmstripline,  bpm0L02yp
+    VQWK, 5, 3,  bpmstripline,  bpm0L02ym
+    VQWK, 5, 4,  bpmstripline,  bpm0L03xp
+    VQWK, 5, 5,  bpmstripline,  bpm0L03xm
+    VQWK, 5, 6,  bpmstripline,  bpm0L03yp
+    VQWK, 5, 7,  bpmstripline,  bpm0L03ym
+
+!ADC6
+    VQWK, 6, 0,  bpmstripline,  bpm0L04xp
+    VQWK, 6, 1,  bpmstripline,  bpm0L04xm
+    VQWK, 6, 2,  bpmstripline,  bpm0L04yp
+    VQWK, 6, 3,  bpmstripline,  bpm0L04ym
+    VQWK, 6, 4,  bpmstripline,  bpm0L05xp
+    VQWK, 6, 5,  bpmstripline,  bpm0L05xm
+    VQWK, 6, 6,  bpmstripline,  bpm0L05yp
+    VQWK, 6, 7,  bpmstripline,  bpm0L05ym
+
+!ADC7
+    VQWK, 7, 0,  bpmstripline,  bpm0L06xp
+    VQWK, 7, 1,  bpmstripline,  bpm0L06xm
+    VQWK, 7, 2,  bpmstripline,  bpm0L06yp
+    VQWK, 7, 3,  bpmstripline,  bpm0L06ym
+    VQWK, 7, 4,  bpmstripline,  bpm0L07xp
+    VQWK, 7, 5,  bpmstripline,  bpm0L07xm
+    VQWK, 7, 6,  bpmstripline,  bpm0L07yp
+    VQWK, 7, 7,  bpmstripline,  bpm0L07ym
+
+!ADC8
+    VQWK, 8, 0,  bpmstripline, bpm0L08xp
+    VQWK, 8, 1,  bpmstripline, bpm0L08xm
+    VQWK, 8, 2,  bpmstripline, bpm0L08yp
+    VQWK, 8, 3,  bpmstripline, bpm0L08ym
+    VQWK, 8, 4,  bpmstripline, bpm0L09xp
+    VQWK, 8, 5,  bpmstripline, bpm0L09xm
+    VQWK, 8, 6,  bpmstripline, bpm0L09yp
+    VQWK, 8, 7,  bpmstripline, bpm0L09ym
+
+!ADC9
+    VQWK, 9, 0,  bpmstripline,  bpm0L10xp
+    VQWK, 9, 1,  bpmstripline,  bpm0L10xm
+    VQWK, 9, 2,  bpmstripline,  bpm0L10yp
+    VQWK, 9, 3,  bpmstripline,  bpm0L10ym
+    VQWK, 9, 4,  bpmstripline,  bpm2I02xp
+    VQWK, 9, 5,  bpmstripline,  bpm2I02xm
+    VQWK, 9, 6,  bpmstripline,  bpm2I02yp
+    VQWK, 9, 7,  bpmstripline,  bpm2I02ym
+
+!ADC10
+    VQWK, 10, 0,  bpmstripline,  bpm0R05xp
+    VQWK, 10, 1,  bpmstripline,  bpm0R05xm
+    VQWK, 10, 2,  bpmstripline,  bpm0R05yp
+    VQWK, 10, 3,  bpmstripline,  bpm0R05ym
+    VQWK, 10, 4,  bpmstripline,  bpm0R03xp
+    VQWK, 10, 5,  bpmstripline,  bpm0R03xm
+    VQWK, 10, 6,  bpmstripline,  bpm0R03yp
+    VQWK, 10, 7,  bpmstripline,  bpm0R03ym
+
+!ADC11
+    VQWK, 11, 0,  bpmstripline,  bpm2I01xp
+    VQWK, 11, 1,  bpmstripline,  bpm2I01xm
+    VQWK, 11, 2,  bpmstripline,  bpm2I01yp
+    VQWK, 11, 3,  bpmstripline,  bpm2I01ym
+    VQWK, 11, 4,  bcm,  BCM0L02
+    VQWK, 11, 5,  bcm,  Battery6
+    VQWK, 11, 6,  bcm,  inj_battery_2 ! Permanent battery 
+    VQWK, 11, 7,   bcm,  PhaseMonitor
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Bank=0x01
+scaler_buffer_offset=6
+
+  SCALER,  0,  0, clock, inj_tstable
+  SCALER,  0,  1, bpmstripline, bpm0R02xp
+  SCALER,  0,  2, bpmstripline, bpm0R02xm
+  SCALER,  0,  3, bpmstripline, bpm0R02yp
+  SCALER,  0,  4, bpmstripline, bpm0R02ym
+  SCALER,  0,  5, bpmstripline, bpm0R04xp
+  SCALER,  0,  6, bpmstripline, bpm0R04xm
+  SCALER,  0,  7, bpmstripline, bpm0R04yp
+  SCALER,  0,  8, bpmstripline, bpm0R04ym
+
+normclock=clk4MHz_1
+
+  SCALER,  0,  9, clock, sca0_9
+  SCALER,  0, 10, clock, sca0_10
+  SCALER,  0, 11, clock, sca0_11
+  SCALER,  0, 12, clock, sca0_12
+  SCALER,  0, 13, clock, sca0_13
+  SCALER,  0, 14, clock, sca0_14
+  SCALER,  0, 15, clock, sca0_15
+
+  SCALER,  0, 16, halomonitor, sca0_16
+  SCALER,  0, 17, clock, clk4MHz_1
+  SCALER,  0, 18, clock, clk4MHz_2
+  SCALER,  0, 19, clock, clk4MHz_3
+  SCALER,  0, 20, halomonitor, sca0_20
+  SCALER,  0, 21, halomonitor, sca0_21
+  SCALER,  0, 22, halomonitor, sca0_22
+  SCALER,  0, 23, halomonitor, sca0_23
+  SCALER,  0, 24, halomonitor, sca0_24
+  SCALER,  0, 25, halomonitor, sca0_25
+  SCALER,  0, 26, halomonitor, sca0_26
+  SCALER,  0, 27, halomonitor, sca0_27
+  SCALER,  0, 28, halomonitor, sca0_28
+  SCALER,  0, 29, halomonitor, sca0_29
+  SCALER,  0, 30, halomonitor, sca0_30
+  SCALER,  0, 31, halomonitor, sca0_31
+
+
+[PUBLISH]
+# # q_targ, bcm, bcm0l02, c
+# q_targ, bpmstripline, bpm0i02, ef ###  Effective charge of BPM0i02
+
+ 

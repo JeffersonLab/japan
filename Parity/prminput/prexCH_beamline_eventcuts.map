@@ -26,8 +26,8 @@ EVENTCUTS = 3
 
 !***************************************************
 !for bcm devices
-!device_type, device_name,      lower limit, upper limit, local(l)/global(g), stability percentage
- bcm, bcm_an_ds3,		1.0,	1e6,	g,	0.2
+!device_type, device_name,      lower limit, upper limit, local(l)/global(g), stabilitylevel, burplevel
+ bcm, bcm_an_ds3,		5.0,	1e6,	g,	0.8  0.4
 
 !for parity mock data run 1000 9.98608e+06
 !bcm, qwk_bcm0l03, 	8.00e+06, 	1.20e+07, 1, 0 
@@ -44,9 +44,9 @@ EVENTCUTS = 3
 !Cuts are applied after the VQwSubsystem::ProcessEvent() routine. 
 !So pedestals are applied before appyling the cuts.
 
-!device_type,  device_name, channel_name, lower limit, upper limit, local(l)/global(g), stability percentage
+!device_type,  device_name, channel_name, lower limit, upper limit, local(l)/global(g), stability percentage, burplevel
 ! the following line is an example
-!bpmstripline, qwk_qpd, relx, 2.67319, 	4.45531
+!bpmstripline, qwk_qpd, relx, 2.67319, 	4.45531, 1
 
 
 

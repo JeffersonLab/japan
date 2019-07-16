@@ -11,10 +11,12 @@ VQwHardwareChannel::VQwHardwareChannel():
   fNumberOfDataWords(0),
   fNumberOfSubElements(0), fDataToSave(kRaw)
 {
-  fULimit = 0.0;
-  fLLimit = 0.0;
+  fULimit = -1;
+  fLLimit = 1;
   fErrorFlag = 0;
   fErrorConfigFlag = 0;
+  fBurpHoldoff = 10;
+  fBurpThreshold = -1.0;
 }
 
 VQwHardwareChannel::VQwHardwareChannel(const VQwHardwareChannel& value)
@@ -31,7 +33,10 @@ VQwHardwareChannel::VQwHardwareChannel(const VQwHardwareChannel& value)
    bEVENTCUTMODE(value.bEVENTCUTMODE),
    fULimit(value.fULimit),
    fLLimit(value.fLLimit),
-   fStability(value.fStability)
+   fStability(value.fStability),
+   fBurpThreshold(value.fBurpThreshold),
+   fBurpCountdown(value.fBurpCountdown),
+   fBurpHoldoff(value.fBurpHoldoff)
 {
 }
 
@@ -49,7 +54,10 @@ VQwHardwareChannel::VQwHardwareChannel(const VQwHardwareChannel& value, VQwDataE
    bEVENTCUTMODE(value.bEVENTCUTMODE),
    fULimit(value.fULimit),
    fLLimit(value.fLLimit),
-   fStability(value.fStability)
+   fStability(value.fStability),
+   fBurpThreshold(value.fBurpThreshold),
+   fBurpCountdown(value.fBurpCountdown),
+   fBurpHoldoff(value.fBurpHoldoff)
 {
 }
 
@@ -60,14 +68,16 @@ void VQwHardwareChannel::SetSingleEventCuts(Double_t min, Double_t max)
   fLLimit=min;
 }
 
-void VQwHardwareChannel::SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability)
+void VQwHardwareChannel::SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability, Double_t BurpLevel)
 {
+  //QwError<<"***************************inside VQwHardwareChannel, BurpLevel = "<<BurpLevel<<QwLog::endl;
   fErrorConfigFlag=errorflag;
   fStability=stability;
+  fBurpThreshold=BurpLevel;
   SetSingleEventCuts(min,max);
   QwMessage << "Set single event cuts for " << GetElementName() << ": "
-	    << "Config-error-flag == 0x" << std::hex << errorflag << std::dec
-	    << ", global? " << ((fErrorConfigFlag & kGlobalCut)==kGlobalCut) << ", stability? " << ((fErrorConfigFlag & kStabilityCut)==kStabilityCut)<<" cut "<<fStability << QwLog::endl;
+      << "Config-error-flag == 0x" << std::hex << errorflag << std::dec
+      << ", global? " << ((fErrorConfigFlag & kGlobalCut)==kGlobalCut) << ", stability? " << ((fErrorConfigFlag & kStabilityCut)==kStabilityCut)<<" cut "<<fStability << ", burpcut  " << fBurpThreshold << QwLog::endl;
 }
 
 #ifdef __USE_DATABASE__

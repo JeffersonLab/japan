@@ -49,7 +49,7 @@ public:
   virtual void  ConstructHistograms(TDirectory *folder, TString &prefix) = 0;
   virtual void  FillHistograms() = 0;
   /*! \brief Inherited from VQwDataElement to set the upper and lower limits (fULimit and fLLimit), stability % and the error flag on this channel */
-  virtual void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability) = 0;
+  virtual void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability, Double_t burplevel) = 0;
   virtual void Ratio( const VQwClock &numer, const VQwClock &denom)
     { std::cerr << "Ratio not defined! (VQwClock)" << std::endl; }
   virtual void ClearEventData() = 0;
@@ -67,7 +67,8 @@ public:
   virtual void  ProcessEvent() = 0;
   virtual void Scale(Double_t factor) = 0;
   virtual void CalculateRunningAverage() = 0;
-  virtual void AccumulateRunningSum(const VQwClock& value) = 0;
+  virtual void AccumulateRunningSum(const VQwClock& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF) = 0;
+  virtual void DeaccumulateRunningSum(VQwClock& value, Int_t ErrorMask=0xFFFFFFF) = 0;
   virtual void ConstructBranchAndVector(TTree *tree, TString &prefix, std::vector<Double_t> &values) = 0;
   virtual void ConstructBranch(TTree *tree, TString &prefix) = 0;
   virtual void ConstructBranch(TTree *tree, TString &prefix, QwParameterFile& modulelist) = 0;

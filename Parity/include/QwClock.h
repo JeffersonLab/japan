@@ -67,6 +67,12 @@ class QwClock : public VQwClock {
   Bool_t ApplyHWChecks();//Check for harware errors in the devices
   Bool_t ApplySingleEventCuts();//Check for good events by stting limits on the devices readings
   void IncrementErrorCounters(){fClock.IncrementErrorCounters();}
+
+  Bool_t CheckForBurpFail(const QwClock *ev_error){
+    return fClock.CheckForBurpFail(&(ev_error->fClock));
+  }
+
+
   void PrintErrorCounters() const;// report number of events failed due to HW and event cut faliure
   UInt_t GetEventcutErrorFlag(){//return the error flag
     return fClock.GetEventcutErrorFlag();
@@ -77,7 +83,7 @@ class QwClock : public VQwClock {
   }
 
   /*! \brief Inherited from VQwDataElement to set the upper and lower limits (fULimit and fLLimit), stability % and the error flag on this channel */
-  void SetSingleEventCuts(UInt_t errorflag, Double_t min = 0, Double_t max = 0, Double_t stability = 0);
+  void SetSingleEventCuts(UInt_t errorflag, Double_t min = 0, Double_t max = 0, Double_t stability = 0, Double_t burplevel = 0);
 
   void SetDefaultSampleSize(Int_t sample_size);
   void SetEventCutMode(Int_t bcuts){
@@ -103,7 +109,8 @@ class QwClock : public VQwClock {
   void Ratio(const QwClock &numer, const QwClock &denom);
   void Scale(Double_t factor);
 
-  void AccumulateRunningSum(const VQwClock& value);
+  void AccumulateRunningSum(const VQwClock& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void DeaccumulateRunningSum(VQwClock& value, Int_t ErrorMask=0xFFFFFFF);
   void CalculateRunningAverage();
 
   void SetPedestal(Double_t ped);

@@ -209,10 +209,14 @@ void VQwScaler_Channel::ProcessEvent()
 
 void VQwScaler_Channel::PrintValue() const
 {
-  //  printf("Name %s %23.4f +/- %15.4f", GetElementName().Data(), fValue, fValueError);
-  QwMessage << std::setw(5) << std::left << GetElementName() << " , "
-	    << std::setprecision(4)
-	    << std::setw(5) << std::right << GetValue() << "  +/-  " << GetValueError() << " sigma "<<GetValueWidth()
+  QwMessage << std::setprecision(4)
+            << std::setw(18) << std::left << GetSubsystemName()  << " "
+            << std::setw(18) << std::left << GetModuleType()     << " "
+            << std::setw(18) << std::left << GetElementName()    << " "
+	    << std::setw(12) << std::left << GetValue()          << "  +/-  "
+	    << std::setw(12) << std::left << GetValueError()     << "  sig  "
+            << std::setw(12) << std::left << GetValueWidth()     << " "
+            << std::setw(12) << std::left << GetGoodEventCount() << " "
 	    << QwLog::endl;
 }
 
@@ -231,8 +235,7 @@ void VQwScaler_Channel::ConstructHistograms(TDirectory *folder, TString &prefix)
     //  This channel is not used, so skip filling the histograms.
   } else {
     //  Now create the histograms.
-    TString basename, fullname;
-    basename = prefix + GetElementName();
+    TString basename = prefix + GetElementName();
 
     fHistograms.resize(1, NULL);
     size_t index=0;
@@ -260,12 +263,23 @@ void QwScaler_Channel<data_mask,data_shift>::ConstructBranchAndVector(TTree *tre
   if (IsNameEmpty()){
     //  This channel is not used, so skip setting up the tree.
   } else {
-    TString basename = prefix + GetElementName();
+    //  Decide what to store based on prefix
+    SetDataToSaveByPrefix(prefix);
+
+    TString basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix.Length()) + GetElementName();
     fTreeArrayIndex  = values.size();
 
     TString list;
     values.push_back(0.0);
     list = "value/D";
+    if (fDataToSave == kMoments) {
+      values.push_back(0.0);
+      list += ":value_m2/D";
+      values.push_back(0.0);
+      list += ":value_err/D";
+      values.push_back(0.0);
+      list += ":num_samples/D";
+    }
     values.push_back(0.0);
     list += ":Device_Error_Code/D";
     if(fDataToSave==kRaw){
@@ -276,7 +290,7 @@ void QwScaler_Channel<data_mask,data_shift>::ConstructBranchAndVector(TTree *tre
 	list += ":header/D"; 
       }
     }
-
+    //std::cout << basename <<": first==" << fTreeArrayIndex << ", last==" << values.size() << std::endl;
     fTreeArrayNumEntries = values.size() - fTreeArrayIndex;
     if (gQwHists.MatchDeviceParamsFromList(basename.Data()))
       tree->Branch(basename, &(values[fTreeArrayIndex]), list);
@@ -297,6 +311,7 @@ void  VQwScaler_Channel::ConstructBranch(TTree *tree, TString &prefix)
 template<unsigned int data_mask, unsigned int data_shift>
 void QwScaler_Channel<data_mask,data_shift>::FillTreeVector(std::vector<Double_t> &values) const
 {
+  //std::cout<<"inside QwScaler_Channel::FillTreeVector"<< std::endl;
   if (IsNameEmpty()) {
     //  This channel is not used, so skip setting up the tree.
   } else if (fTreeArrayNumEntries < 0) {
@@ -320,6 +335,11 @@ void QwScaler_Channel<data_mask,data_shift>::FillTreeVector(std::vector<Double_t
   } else {
     size_t index = fTreeArrayIndex;
     values[index++] = this->fValue;
+    if (fDataToSave == kMoments) {
+      values[index++] = fValueM2;
+      values[index++] = fValueError;
+      values[index++] = fGoodEventCount;
+    }
     values[index++] = this->fErrorFlag;
     if(fDataToSave==kRaw){
       values[index++] = this->fValue_Raw;
@@ -328,7 +348,11 @@ void QwScaler_Channel<data_mask,data_shift>::FillTreeVector(std::vector<Double_t
       }
 
     }
+    //std::cout << fElementName <<": first==" << fTreeArrayIndex << ", last==" << index << std::endl;
+    //std::cout<<"value: "<< this->fValue << std::endl;
+    //std::cout <<"index: " << index  << std::endl;
   }
+  
 }
 
 
@@ -630,13 +654,16 @@ Int_t VQwScaler_Channel::ApplyHWChecks() {
 
 Bool_t VQwScaler_Channel::ApplySingleEventCuts()
 {
+  //std::cout << "Here in VQwScaler_Channel: "<< std::endl; 
   Bool_t status;
   //QwError<<" Single Event Check ! "<<QwLog::endl;
   if (bEVENTCUTMODE>=2){//Global switch to ON/OFF event cuts set at the event cut file
-
-    if (fULimit==0 && fLLimit==0){
+    //std::cout << "Upper : " << fULimit << " , Lower: " << fLLimit << std::endl;
+    if (fULimit <  fLLimit){
+      // std::cout << "First" << std::endl;
       status=kTRUE;
     } else  if (GetValue()<=fULimit && GetValue()>=fLLimit){
+      //std::cout << "Second" << std::endl;
       //QwError<<" Single Event Cut passed "<<GetElementName()<<" "<<GetValue()<<QwLog::endl;
       if (fErrorFlag !=0)
 	status=kFALSE;
@@ -644,6 +671,7 @@ Bool_t VQwScaler_Channel::ApplySingleEventCuts()
 	status=kTRUE;
     }
     else{
+      //std::cout << "Third" << std::endl;
       //QwError<<" Single Event Cut Failed "<<GetElementName()<<" "<<GetValue()<<QwLog::endl;
       if (GetValue()> fULimit)
 	fErrorFlag|=kErrorFlag_EventCut_U;
@@ -678,8 +706,13 @@ void VQwScaler_Channel::IncrementErrorCounters()
 }
 
 
-void VQwScaler_Channel::AccumulateRunningSum(const VQwScaler_Channel& value, Int_t count)
+void VQwScaler_Channel::AccumulateRunningSum(const VQwScaler_Channel& value, Int_t count, Int_t ErrorMask)
 {
+
+  if(count==0){
+    count = value.fGoodEventCount;
+  }
+  
   // Moment calculations
   Int_t n1 = fGoodEventCount;
   Int_t n2 = count;
@@ -688,6 +721,27 @@ void VQwScaler_Channel::AccumulateRunningSum(const VQwScaler_Channel& value, Int
   if (n2 == 0 && value.fErrorFlag == 0) {
     n2 = 1;
   }
+
+  // If a single event is removed from the sum, check all but stability fail flags
+  if (n2 == -1) {
+    if ((value.fErrorFlag & ErrorMask) == 0) {
+      n2 = -1;
+    } else {
+      n2 = 0;
+    }
+  }
+
+  if (ErrorMask ==  kPreserveError){
+    //n = 1;
+    if (n2 == 0) {
+      n2 = 1;
+    }
+    if (count == -1) {
+      n2 = -1;
+    }
+  }
+
+  // New total number of good events
   Int_t n = n1 + n2;
 
   // Set up variables
@@ -697,6 +751,29 @@ void VQwScaler_Channel::AccumulateRunningSum(const VQwScaler_Channel& value, Int
   if (n2 == 0) {
     // no good events for addition
     return;
+  } else if (n2 == -1) {
+    // simple version for removal of single event from the sum
+    fGoodEventCount--;
+    if (n > 1) {
+      fValue -= (M12 - M11) / n;
+      fValueM2 -= (M12 - M11)
+        * (M12 - fValue); // note: using updated mean
+    } else if (n == 1) {
+      fValue -= (M12 - M11) / n;
+      fValueM2 -= (M12 - M11)
+        * (M12 - fValue); // note: using updated mean
+      if (fabs(fValueM2) < 10.*std::numeric_limits<double>::epsilon())
+        fValueM2 = 0; // rounding
+    } else if (n == 0) {
+      fValue -= M12;
+      fValueM2 -= M22;
+      if (fabs(fValue) < 10.*std::numeric_limits<double>::epsilon())
+        fValue = 0; // rounding
+      if (fabs(fValueM2) < 10.*std::numeric_limits<double>::epsilon())
+        fValueM2 = 0; // rounding
+    } else {
+      QwWarning << "Running sum has deaccumulated to negative good events." << QwLog::endl;
+    }
   } else if (n2 == 1) {
     // simple version for addition of single event
     fGoodEventCount++;
@@ -754,6 +831,16 @@ void VQwScaler_Channel::ScaledAdd(Double_t scale, const VQwHardwareChannel *valu
 	this->fErrorFlag |= (input->fErrorFlag);
     }
 }
+
+
+template<>
+VQwHardwareChannel* QwScaler_Channel<0x00ffffff,0>::Clone(){
+  return new QwSIS3801D24_Channel(*this);
+};
+template<>
+VQwHardwareChannel* QwScaler_Channel<0xffffffff,0>::Clone(){
+  return new QwSIS3801D32_Channel(*this);
+};
 
 //  These explicit class template instantiations should be the
 //  last thing in this file.  This list should cover all of the

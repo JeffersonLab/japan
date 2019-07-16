@@ -26,7 +26,7 @@ void  QwQPD::InitializeChannel(TString name)
 
   VQwBPM::InitializeChannel(name);
 
-  fEffectiveCharge.InitializeChannel(name+"_EffectiveCharge","derived");
+  fEffectiveCharge.InitializeChannel(name+"WS","derived");
 
   for(i=0;i<4;i++) {
     fPhotodiode[i].InitializeChannel(name+subelement[i],"raw");
@@ -52,7 +52,7 @@ void  QwQPD::InitializeChannel(TString subsystem, TString name)
 
   VQwBPM::InitializeChannel(name);
 
-  fEffectiveCharge.InitializeChannel(subsystem, "QwQPD", name+"_EffectiveCharge","derived");
+  fEffectiveCharge.InitializeChannel(subsystem, "QwQPD", name+"WS","derived");
 
   for(i=0;i<4;i++) {
     fPhotodiode[i].InitializeChannel(subsystem, "QwQPD", name+subelement[i],"raw");
@@ -277,51 +277,78 @@ void QwQPD::SetSingleEventCuts(TString ch_name, Double_t minX, Double_t maxX)
     VQwBPM::SetSingleEventCuts(ch_name, minX, maxX);
   }
 
-}
+}*/
 
-void QwQPD::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t minX, Double_t maxX, Double_t stability){
+void QwQPD::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t minX, Double_t maxX, Double_t stability, Double_t burplevel){
   errorflag|=kBPMErrorFlag;//update the device flag
   if (ch_name=="tl"){
     QwMessage<<"TL LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fPhotodiode[0].SetSingleEventCuts(errorflag,minX,maxX,stability); 
+    fPhotodiode[0].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel); 
 
   }else if (ch_name=="tr"){
     QwMessage<<"TR LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fPhotodiode[1].SetSingleEventCuts(errorflag,minX,maxX,stability); 
+    fPhotodiode[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel); 
 
   }else if (ch_name=="br"){
     QwMessage<<"BR LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fPhotodiode[2].SetSingleEventCuts(errorflag,minX,maxX,stability); 
+    fPhotodiode[2].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel); 
 
   }else if (ch_name=="bl"){
     QwMessage<<"BL LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fPhotodiode[3].SetSingleEventCuts(errorflag,minX,maxX,stability); 
+    fPhotodiode[3].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel); 
 
   }else if (ch_name=="relx"){
     QwMessage<<"RelX LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fRelPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability); 
+    fRelPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel); 
 
   }else if (ch_name=="rely"){
     QwMessage<<"RelY LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fRelPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability); 
+    fRelPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel); 
 
   }else if (ch_name=="absx"){
     QwMessage<<"AbsX LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fAbsPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability); 
+    fAbsPos[0].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel); 
 
   }else if (ch_name=="absy"){
     QwMessage<<"AbsY LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fAbsPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability); 
+    fAbsPos[1].SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel); 
     
   }else if (ch_name=="effectivecharge"){
     QwMessage<<"EffectveQ LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-    fEffectiveCharge.SetSingleEventCuts(errorflag,minX,maxX,stability); 
+    fEffectiveCharge.SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel); 
 
   }
 
 }
 
-*/
+Bool_t QwQPD::CheckForBurpFail(const VQwDataElement *ev_error){
+  Short_t i=0;
+  Bool_t burpstatus = kFALSE;
+  try {
+    if(typeid(*ev_error)==typeid(*this)) {
+      //std::cout<<" Here in QwQPD::CheckForBurpFail \n";
+      if (this->GetElementName()!="") {
+        const QwQPD* value_qpd = dynamic_cast<const QwQPD* >(ev_error);
+        for(i=0;i<4;i++){
+          burpstatus |= fPhotodiode[i].CheckForBurpFail(&(value_qpd->fPhotodiode[i]));
+        }
+        for(i=kXAxis;i<kNumAxes;i++) {
+          burpstatus |= fRelPos[i].CheckForBurpFail(&(value_qpd->fRelPos[i]));
+          burpstatus |= fAbsPos[i].CheckForBurpFail(&(value_qpd->fAbsPos[i])); 
+        }
+        burpstatus |= fEffectiveCharge.CheckForBurpFail(&(value_qpd->fEffectiveCharge)); 
+      }
+    } else {
+      TString loc="Standard exception from QwQPD::CheckForBurpFail :"+
+        ev_error->GetElementName()+" "+this->GetElementName()+" are not of the "
+        +"same type";
+      throw std::invalid_argument(loc.Data());
+    }
+  } catch (std::exception& e) {
+    std::cerr<< e.what()<<std::endl;
+  }
+  return burpstatus;
+};
 
 void QwQPD::UpdateErrorFlag(const VQwBPM *ev_error){
   Short_t i=0;
@@ -589,40 +616,40 @@ void QwQPD::CalculateRunningAverage()
   return;
 }
 
-void QwQPD::AccumulateRunningSum(const VQwBPM& value)
+void QwQPD::AccumulateRunningSum(const VQwBPM& value, Int_t count, Int_t ErrorMask)
 {
-  AccumulateRunningSum(*dynamic_cast<const QwQPD* >(&value));
+  AccumulateRunningSum(*dynamic_cast<const QwQPD* >(&value), count, ErrorMask);
 }
 
-void QwQPD::AccumulateRunningSum(const QwQPD& value)
+void QwQPD::AccumulateRunningSum(const QwQPD& value, Int_t count, Int_t ErrorMask)
 {
   Short_t i = 0;
-  for(i=0;i<4;i++) fPhotodiode[i].AccumulateRunningSum(value.fPhotodiode[i]);
+  for(i=0;i<4;i++) fPhotodiode[i].AccumulateRunningSum(value.fPhotodiode[i], count, ErrorMask);
   for (i = 0; i < 2; i++){    
-    fRelPos[i].AccumulateRunningSum(value.fRelPos[i]);
-    fAbsPos[i].AccumulateRunningSum(value.fAbsPos[i]);
+    fRelPos[i].AccumulateRunningSum(value.fRelPos[i], count, ErrorMask);
+    fAbsPos[i].AccumulateRunningSum(value.fAbsPos[i], count, ErrorMask);
   }
-  fEffectiveCharge.AccumulateRunningSum(value.fEffectiveCharge);
+  fEffectiveCharge.AccumulateRunningSum(value.fEffectiveCharge, count, ErrorMask);
   return;
 
 
 }
 
-void QwQPD::DeaccumulateRunningSum(VQwBPM& value)
+void QwQPD::DeaccumulateRunningSum(VQwBPM& value, Int_t ErrorMask)
 {
-  DeaccumulateRunningSum(*dynamic_cast<QwQPD* >(&value));
+  DeaccumulateRunningSum(*dynamic_cast<QwQPD* >(&value), ErrorMask);
 }
 
-void QwQPD::DeaccumulateRunningSum(QwQPD& value)
+void QwQPD::DeaccumulateRunningSum(QwQPD& value, Int_t ErrorMask)
 {
 
   Short_t i = 0;
   for(i=0;i<4;i++) fPhotodiode[i].DeaccumulateRunningSum(value.fPhotodiode[i]);
   for (i = 0; i < 2; i++){    
-    fRelPos[i].DeaccumulateRunningSum(value.fRelPos[i]);
-    fAbsPos[i].DeaccumulateRunningSum(value.fAbsPos[i]);
+    fRelPos[i].DeaccumulateRunningSum(value.fRelPos[i], ErrorMask);
+    fAbsPos[i].DeaccumulateRunningSum(value.fAbsPos[i], ErrorMask);
   }
-  fEffectiveCharge.DeaccumulateRunningSum(value.fEffectiveCharge);
+  fEffectiveCharge.DeaccumulateRunningSum(value.fEffectiveCharge, ErrorMask);
   return;
 
 

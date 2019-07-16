@@ -171,24 +171,14 @@ for(Int_t i=1;i<5;i++){
 /* fHCChargeAsymmetry0.InitializeChannel("q_targC","derived");//this is the charge asym at the beginning of the feedback loop */
 /*      fPreviousHCChargeAsymmetry.InitializeChannel("q_targC","derived");//charge asymmetry at the previous feedback loop */
 /*     fCurrentHCChargeAsymmetry.InitializeChannel("q_targC","derived");//current charge asymmetry  */
-fTargetParameter.InitializeChannel("q_targC","derived");
- fTargetHCChargeRunningSum.InitializeChannel("q_targC","derived");
+    fTargetParameter.InitializeChannel("tempvar","derived");
 
-fTargetParameter.InitializeChannel("q_targA","derived");
- fTargetHAChargeRunningSum.InitializeChannel("q_targA","derived");
+    fTargetHCChargeRunningSum.InitializeChannel("q_targC","derived");
+    fTargetHAChargeRunningSum.InitializeChannel("q_targA","derived");
+    fTargetHBChargeRunningSum.InitializeChannel("q_targB","derived");
+    fXYPosXDiffRunningSum.InitializeChannel("xy_pos_x","derived");
+    fXYPosYDiffRunningSum.InitializeChannel("xy_pos_y","derived");
 
-fTargetParameter.InitializeChannel("q_targB","derived");
- fTargetHBChargeRunningSum.InitializeChannel("q_targB","derived");
-
-fTargetParameter.InitializeChannel("xy_pos_x","derived");
- fXYPosXDiffRunningSum.InitializeChannel("xy_pos_x","derived");
-
-fTargetParameter.InitializeChannel("xy_pos_y","derived");
- fXYPosYDiffRunningSum.InitializeChannel("xy_pos_y","derived");
-
-
-    fTargetParameter.InitializeChannel("x_targ","derived");
-fTargetParameter.InitializeChannel("y_targ","derived");
      fTargetXDiffRunningSum.InitializeChannel("x_targ","derived");//to access the published Target X diff 
      /* fTargetXPDiffRunningSum.InitializeChannel("xp_targ","derived");//to access the published Target XP diff  */
      fTargetYDiffRunningSum.InitializeChannel("y_targ","derived");//to access the published Target Y diff 
@@ -308,7 +298,7 @@ out_file_HB_IA = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback
     void CalculateAsymmetry();
     void ClearRunningSum();
  void ClearHCRunningSum();
-    void AccumulateRunningSum();
+    void AccumulateRunningSum(QwHelicityCorrelatedFeedback& entry);
     void CalculateRunningAverage();
     void ConstructBranchAndVector(TTree *tree, TString &prefix, std::vector<Double_t> &values);
     void FillTreeVector(std::vector<Double_t> &values) const;
@@ -538,7 +528,50 @@ Bool_t IsHBPatternsAccumulated(){
     Int_t fPreviousHelPat;
 
     Int_t fCurrentHelPatMode;
+
+    std::vector<const char*> vBPM ={"bpm4aWS",
+				    "bpm4eWS",
+				    "bpm0i02aWS",
+				    "bpm1i06WS",
+				    "bpm12WS",
+				    "bpm0r05WS",
+				    "bpm0l06WS",
+				    "bpm0l05WS",
+				    "bpm0i05WS",
+				    "bpm2i02WS",
+				    "bpm2i01WS",
+				    "bcm0l02",
+				    "bcm_an_ds3"};
+    std::vector< std::pair<Double_t, Double_t> > vWireSumAsymmetry; //pair< mean, width>
+
+    std::vector<const char*> vBPM1 ={"bpm0i02X",
+    				     "bpm0i02Y",
+    				     "bpm1i06X",
+    				     "bpm1i06Y",
+    				     "bpm4eX",
+    				     "bpm4eY",
+    				     "bpm4aX",
+    				     "bpm4aY",
+    				     "bpm12X",
+    				     "bpm12Y",
+    				     "bpm0r05X",
+    				     "bpm0r05Y",
+    				     "bpm0l06X",
+    				     "bpm0l06Y",
+    				     "bpm0l05X",
+    				     "bpm0l05Y",
+    				     "bpm0i05X",
+    				     "bpm0i05Y",
+    				     "bpm2i02X",
+    				     "bpm2i02Y",
+    				     "bpm2i01X",
+    				     "bpm2i01Y"};
     
+ 
+
+				   
+ std::vector< std::pair<Double_t, Double_t> > vWireSumPosition; //pair< mean, width> 
+
     Double_t fChargeAsymmetry;//current charge asym
     Double_t fChargeAsymmetryError;//current charge asym precision
     Double_t fChargeAsymmetryWidth;//current charge asym width

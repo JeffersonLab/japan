@@ -10,6 +10,7 @@
  * "Formulas for Robust, One-Pass Parallel Computation of Covariances and Arbitrary-Order Statistical Moments" Philippe Peba, SANDIA REPORT SAND2008-6212, Unlimited Release, Printed September 2008
  *********************************************************************/
 
+#include <TVectorD.h>
 #include <TMatrixD.h>
 
 //-----------------------------------------
@@ -22,9 +23,30 @@ class LinRegBevPeb {
 
  public:
   TMatrixD mA, mAsig;  ///< found slopes + their stand errors
-  TMatrixD mRjk;  ///< found covariance between IVs
-  TMatrixD mMP, mMY;   ///< mean values accumulators
-  TMatrixD mVPP, mVPY,mVY2; ///< variances accumulators
+
+  /// correlations
+  TMatrixD mRPY, mRYP;
+  TMatrixD mRPP, mRYY;
+  TMatrixD mRYYprime;
+
+  /// unnormalized covariances
+  TMatrixD mVPY, mVYP;
+  TMatrixD mVPP, mVYY;
+  TMatrixD mVYYprime;
+
+  /// normalized covariances
+  TMatrixD sigXY, sigYX;
+  TMatrixD sigXX, sigYY;
+  TMatrixD sigYYprime;
+
+  /// mean values
+  TVectorD mMP, mMY, mMYprime;
+
+  /// sigmas
+  TVectorD sigX, sigY, sigYprime;
+
+  /// slopes
+  TMatrixD Axy, Ayx;
 
   LinRegBevPeb();
   
@@ -49,14 +71,17 @@ class LinRegBevPeb {
   /// Get mean value of a variable, returns error code
   Int_t getMeanP(const int i, Double_t &mean );
   Int_t getMeanY(const int i, Double_t &mean );
+  Int_t getMeanYprime(const int i, Double_t &mean );
 
   /// Get mean value of a variable, returns error code
   Int_t getSigmaP(const int i, Double_t &sigma );
   Int_t getSigmaY(const int i, Double_t &sigma );
+  Int_t getSigmaYprime(const int i, Double_t &sigma );
 
   /// Get mean value of a variable, returns error code
   Int_t getCovarianceP ( int i,  int j,  Double_t &covar );
   Int_t getCovariancePY( int ip, int iy, Double_t &covar );
+  Int_t getCovarianceY ( int i,  int j,  Double_t &covar );
 
   double  getUsedEve(){ return fGoodEventNumber;}
 

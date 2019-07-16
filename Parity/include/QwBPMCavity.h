@@ -34,24 +34,23 @@ class QwBPMCavity : public VQwBPM {
   friend class QwEnergyCalculator;
 
  public:
-  static UInt_t  GetSubElementIndex(TString subname);
-
+  enum ECavElements{kXElem=0, kYElem, kQElem, kNumElements};
+  static UInt_t GetSubElementIndex(TString subname);
+  static Bool_t ParseChannelName(const TString &channel, TString &detname,
+				 TString &subname, UInt_t &localindex);
  public:
   QwBPMCavity() { };
   QwBPMCavity(TString name):VQwBPM(name){
     InitializeChannel(name);
-    bRotated=kTRUE;
   };
   QwBPMCavity(TString subsystemname, TString name)
   : VQwBPM(name) {
 	  SetSubsystemName(subsystemname);
 	  InitializeChannel(subsystemname, name);
-	  bRotated=kTRUE;
   };
   QwBPMCavity(const QwBPMCavity& source)
   : VQwBPM(source),
-    fWire(source.fWire),fRelPos(source.fRelPos),fAbsPos(source.fAbsPos),
-    fEffectiveCharge(source.fEffectiveCharge)
+    fElement(source.fElement),fRelPos(source.fRelPos),fAbsPos(source.fAbsPos)
   { }
   virtual ~QwBPMCavity() { };
 
@@ -61,8 +60,8 @@ class QwBPMCavity : public VQwBPM {
   void    ClearEventData();
 
   void LoadChannelParameters(QwParameterFile &paramfile){
-    for(Short_t i=0;i<2;i++)
-      fWire[i].LoadChannelParameters(paramfile);
+    for(Short_t i=0;i<kNumElements;i++)
+      fElement[i].LoadChannelParameters(paramfile);
   }
 
   Int_t   ProcessEvBuffer(UInt_t* buffer,
@@ -79,7 +78,7 @@ class QwBPMCavity : public VQwBPM {
     }
     return &fAbsPos[axis];
   }
-  const VQwHardwareChannel* GetEffectiveCharge() const {return &fEffectiveCharge;}
+  const VQwHardwareChannel* GetEffectiveCharge() const {return &fElement[kQElem];}
 
   TString GetSubElementName(Int_t subindex);
   void    GetAbsolutePosition();
@@ -88,13 +87,15 @@ class QwBPMCavity : public VQwBPM {
   Bool_t  ApplySingleEventCuts();//Check for good events by stting limits on the devices readings
   //void    SetSingleEventCuts(TString ch_name, Double_t minX, Double_t maxX);
   /*! \brief Inherited from VQwDataElement to set the upper and lower limits (fULimit and fLLimit), stability % and the error flag on this channel */
-  //void    SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t min, Double_t max, Double_t stability);
+  void    SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t min, Double_t max, Double_t stability, Double_t burplevel);
   void    SetEventCutMode(Int_t bcuts);
   void IncrementErrorCounters();
   void PrintErrorCounters() const;// report number of events failed due to HW and event cut faliure
   UInt_t  GetEventcutErrorFlag();
   UInt_t  UpdateErrorFlag();
   void UpdateErrorFlag(const VQwBPM *ev_error);
+
+  Bool_t  CheckForBurpFail(const VQwDataElement *ev_error);
 
   void    SetDefaultSampleSize(Int_t sample_size);
   void    SetRandomEventParameters(Double_t meanX, Double_t sigmaX, Double_t meanY, Double_t sigmaY);
@@ -115,10 +116,10 @@ class QwBPMCavity : public VQwBPM {
   virtual QwBPMCavity& operator+= (const QwBPMCavity &value);
   virtual QwBPMCavity& operator-= (const QwBPMCavity &value);
 
-  void    AccumulateRunningSum(const VQwBPM &value);
-  void    AccumulateRunningSum(const QwBPMCavity &value);
-  void    DeaccumulateRunningSum(VQwBPM &value);
-  void    DeaccumulateRunningSum(QwBPMCavity &value);
+  void    AccumulateRunningSum(const VQwBPM &value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void    AccumulateRunningSum(const QwBPMCavity &value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void    DeaccumulateRunningSum(VQwBPM &value, Int_t ErrorMask=0xFFFFFFF);
+  void    DeaccumulateRunningSum(QwBPMCavity &value, Int_t ErrorMask=0xFFFFFFF);
   void    CalculateRunningAverage();
 
   void    ConstructHistograms(TDirectory *folder, TString &prefix);
@@ -140,21 +141,17 @@ class QwBPMCavity : public VQwBPM {
  private:
   /*  Position calibration factor, transform ADC counts in mm */
   static const Double_t kQwCavityCalibration;
-  /* Rotation factor for the BPM which antenna are at 45 deg */
-  static const Double_t kRotationCorrection;
-  static const TString subelement[3];
+  static const TString subelement[kNumElements];
 
 
 
  protected:
-  Bool_t   bRotated;
-  QwVQWK_Channel fWire[2];
-  QwVQWK_Channel fRelPos[2];
+  QwVQWK_Channel fElement[kNumElements];
+  QwVQWK_Channel fRelPos[kNumAxes];
 
   //  These are the "real" data elements, to which the base class
-  //  fAbsPos_base and fEffectiveCharge_base are pointers.
-  QwVQWK_Channel fAbsPos[2];
-  QwVQWK_Channel fEffectiveCharge;
+  //  fAbsPos_base and fElement[kQElem]_base are pointers.
+  QwVQWK_Channel fAbsPos[kNumAxes];
 
 
  private:

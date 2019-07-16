@@ -141,6 +141,8 @@ public:
 
   Bool_t ApplySingleEventCuts();//check values read from modules are at desired level
 
+  Bool_t CheckForBurpFail(const VQwDataElement *ev_error){return kFALSE;};
+
   void IncrementErrorCounters();
 
   /// report number of events failed due to HW and event cut failure
@@ -157,16 +159,14 @@ public:
   virtual void  FillTreeVector(std::vector<Double_t> &values) const = 0;
   void  ConstructBranch(TTree *tree, TString &prefix);
 
-  inline void AccumulateRunningSum(const VQwScaler_Channel& value){
-    AccumulateRunningSum(value, value.fGoodEventCount);
-  }
-  void AccumulateRunningSum(const VQwScaler_Channel &value, Int_t count);
-  void AccumulateRunningSum(const VQwHardwareChannel *value, Int_t count){
+
+  void AccumulateRunningSum(const VQwScaler_Channel &value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void AccumulateRunningSum(const VQwHardwareChannel *value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF){
     const VQwScaler_Channel *tmp_ptr = dynamic_cast<const VQwScaler_Channel*>(value);
-    if (tmp_ptr != NULL) AccumulateRunningSum(*tmp_ptr, count);
+    if (tmp_ptr != NULL) AccumulateRunningSum(*tmp_ptr, count, ErrorMask);
   };
-  inline void DeaccumulateRunningSum(const VQwScaler_Channel& value){
-    AccumulateRunningSum(value, -1);
+  inline void DeaccumulateRunningSum(const VQwScaler_Channel& value, Int_t ErrorMask){
+    AccumulateRunningSum(value, -1, ErrorMask);
   };
   
   void PrintValue() const;
@@ -225,6 +225,8 @@ class QwScaler_Channel: public VQwScaler_Channel
     QwScaler_Channel(TString name, TString datatosave = "raw")
     : VQwScaler_Channel(name,datatosave) { };
 
+  VQwHardwareChannel* Clone();
+
   public:
 
   // Implement the templated methods
@@ -236,7 +238,6 @@ class QwScaler_Channel: public VQwScaler_Channel
 
 
 };
-
 
 //  These typedef's should be the last things in the file.
 //  Class template instationation must be made in the source

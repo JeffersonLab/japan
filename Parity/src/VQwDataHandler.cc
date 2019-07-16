@@ -5,8 +5,8 @@ Created by: Michael Vallee
 Email: mv836315@ohio.edu
 
 Description:  This is the implemetation file to the VQwDataHandler class.
-              This class acts as a base class to all regression based
-              classes.
+              This class acts as a base class to all classes which need
+              to access data from multiple subsystems
 
 Last Modified: August 1, 2018 1:39 PM
 *****************************************************************************/
@@ -20,13 +20,54 @@ using namespace std;
 
 //#include "QwCombiner.h"
 
+#include "QwParameterFile.h"
+#include "QwRootFile.h"
 #include "QwVQWK_Channel.h"
+#include "QwPromptSummary.h"
 
 #define MYSQLPP_SSQLS_NO_STATICS
 #ifdef __USE_DATABASE__
 #include "QwParitySSQLS.h"
 #include "QwParityDB.h"
 #endif // __USE_DATABASE__
+
+
+VQwDataHandler::VQwDataHandler(const TString& name)
+: fPriority(0),
+  fName(name),
+  fMapFile(""),
+  fTreeName(""),
+  fTreeComment(""),
+  fPrefix(""),
+  fErrorFlagPtr(0),
+  fSubsystemArray(0),
+  fHelicityPattern(0),
+  fKeepRunningSum(kFALSE)
+{ }
+
+VQwDataHandler::VQwDataHandler(const VQwDataHandler &source)
+: fPriority(source.fPriority),
+  fName(source.fName),
+  fMapFile(source.fMapFile),
+  fTreeName(source.fTreeName),
+  fTreeComment(source.fTreeComment),
+  fPrefix(source.fPrefix),
+  fSubsystemArray(source.fSubsystemArray),
+  fHelicityPattern(source.fHelicityPattern),
+  fKeepRunningSum(source.fKeepRunningSum)
+{
+  fErrorFlagPtr  = source.fErrorFlagPtr;
+  fDependentVar  = source.fDependentVar;
+  fDependentType = source.fDependentType;
+  fDependentName = source.fDependentName;
+  //  Create new objects for the the outputs.
+  fOutputVar.resize(source.fOutputVar.size());
+  for (size_t i = 0; i < this->fDependentVar.size(); i++) {
+    const QwVQWK_Channel* vqwk = dynamic_cast<const QwVQWK_Channel*>(source.fOutputVar[i]);
+    this->fOutputVar[i] = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
+  }
+
+}
 
 
 VQwDataHandler::~VQwDataHandler() {
@@ -40,6 +81,47 @@ VQwDataHandler::~VQwDataHandler() {
 
 }
 
+void VQwDataHandler::ParseConfigFile(QwParameterFile& file){
+  file.RewindToFileStart();
+  file.EnableGreediness();
+  while (file.ReadNextLine()) {
+    QwMessage << file.GetLine() << QwLog::endl;
+  }
+  // Check for and process key-value pairs
+  file.PopValue("map",fMapFile);
+  file.PopValue("priority",fPriority);
+  file.PopValue("tree-name",fTreeName);
+  file.PopValue("tree-comment",fTreeComment);
+  file.PopValue("prefix",fPrefix);
+}
+
+
+void VQwDataHandler::CalcOneOutput(const VQwHardwareChannel* dv, VQwHardwareChannel* output,
+                                  vector< const VQwHardwareChannel* > &ivs,
+                                  vector< Double_t > &sens) {
+  
+  // if second is NULL, can't do corrector
+  if (output == NULL){
+    QwError<<"Second is value is NULL, unable to calculate corrector."<<QwLog::endl;
+    return;
+  }
+  // For correct type (asym, diff, mps)
+  // if (fDependentType.at(dv) != type) continue;
+
+  // Clear data in second, if first is NULL
+  if (dv == NULL){
+    output->ClearEventData();
+  }else{
+    // Update second value
+    output->AssignValueFrom(dv);
+  }
+
+  // Add corrections
+  for (size_t iv = 0; iv < ivs.size(); iv++) {
+    output->ScaledAdd(sens.at(iv), ivs.at(iv));
+  }
+  
+}
 
 void VQwDataHandler::ProcessData() {
   
@@ -54,6 +136,7 @@ void VQwDataHandler::ProcessData() {
 
 
 Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff) {
+  SetEventcutErrorFlagPointer(asym.GetEventcutErrorFlagPointer());
 
   /// Fill vector of pointers to the relevant data elements
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
@@ -63,40 +146,42 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
     QwVQWK_Channel* new_vqwk = NULL;
     QwVQWK_Channel* vqwk = NULL;
     string name = "";
-    string reg = "reg_";
+    string cor = "cor_";
     
-    if (fDependentType.at(dv)==kRegTypeMps) {
+    if (fDependentType.at(dv)==kHandleTypeMps) {
       //  Quietly ignore the MPS type when we're connecting the asym & diff
       continue;
     } else if(fDependentName.at(dv).at(0) == '@' ) {
       name = fDependentName.at(dv).substr(1,fDependentName.at(dv).length());
     }else{
       switch (fDependentType.at(dv)) {
-        case kRegTypeAsym:
+        case kHandleTypeAsym:
           dv_ptr = asym.ReturnInternalValueForFriends(fDependentName.at(dv));
           break;
-        case kRegTypeDiff:
+        case kHandleTypeDiff:
           dv_ptr = diff.ReturnInternalValueForFriends(fDependentName.at(dv));
           break;
         default:
           QwWarning << "QwCombiner::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
 		                << fDependentName.at(dv)
-		                << ", for asym/diff regression does not have proper type, type=="
+		                << ", for asym/diff processing does not have proper type, type=="
 		                << fDependentType.at(dv) << "."<< QwLog::endl;
           break;
       }
 
       vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
       name = vqwk->GetElementName().Data();
-      name.insert(0, reg);
+      name.insert(0, cor);
       new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
       new_vqwk->SetElementName(name);
+      new_vqwk->SetSubsystemName(fName);
     }
 
     // alias
     if(fDependentName.at(dv).at(0) == '@') {
       //QwMessage << "dv: " << name << QwLog::endl;
       new_vqwk = new QwVQWK_Channel(name, VQwDataElement::kDerived);
+      new_vqwk->SetSubsystemName(fName);
     }
     // defined type
     else if(dv_ptr!=NULL) {
@@ -113,35 +198,47 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
       fOutputVar.push_back(new_vqwk);
     }
   }
+  return 0;
 }
 
 
-pair<VQwDataHandler::EQwRegType,string> VQwDataHandler::ParseRegressionVariable(const string& variable) {
+pair<VQwDataHandler::EQwHandleType,string> VQwDataHandler::ParseHandledVariable(const string& variable) {
   
-  pair<EQwRegType,string> type_name;
+  pair<EQwHandleType,string> type_name;
   size_t len = variable.length();
   size_t pos1 = variable.find_first_of(ParseSeparator);
   size_t pos2 = variable.find_first_not_of(ParseSeparator,pos1);
   if (pos1 == string::npos) {
-    type_name.first  = kRegTypeUnknown;
+    type_name.first  = kHandleTypeUnknown;
     type_name.second = variable;
   } else {
     string type = variable.substr(0,pos1);
     string name = variable.substr(pos2,len-pos2);
     if (type == "asym")
-      {type_name.first = kRegTypeAsym;}
+      {type_name.first = kHandleTypeAsym;}
     else if (type == "diff")
-      {type_name.first = kRegTypeDiff;}
+      {type_name.first = kHandleTypeDiff;}
+    else if (type == "yield")
+      {type_name.first = kHandleTypeYield;} 
     else if (type == "mps")
-      {type_name.first = kRegTypeMps;}
+      {type_name.first = kHandleTypeMps;}
     else
-      {type_name.first = kRegTypeUnknown;}
+      {type_name.first = kHandleTypeUnknown;}
     type_name.second = name;
   }
   return type_name;
   
 }
 
+void VQwDataHandler::ConstructTreeBranches(
+    QwRootFile *treerootfile,
+    const std::string& treeprefix,
+    const std::string& branchprefix)
+{
+  if (fTreeName.size()>0){
+    treerootfile->ConstructTreeBranches(treeprefix + fTreeName, fTreeComment, *this, branchprefix + fPrefix);
+  }
+}
 
 void VQwDataHandler::ConstructBranchAndVector(
     TTree *tree,
@@ -150,6 +247,14 @@ void VQwDataHandler::ConstructBranchAndVector(
 {
   for (size_t i = 0; i < fOutputVar.size(); ++i) {
     fOutputVar.at(i)->ConstructBranchAndVector(tree, prefix, values);
+  }
+}
+
+void VQwDataHandler::FillTreeBranches(QwRootFile *treerootfile)
+{
+  if (fTreeName.size()>0){
+    treerootfile->FillTreeBranches(*this);
+    treerootfile->FillTree(fTreeName);
   }
 }
 
@@ -167,13 +272,11 @@ void VQwDataHandler::FillTreeVector(std::vector<Double_t>& values) const
   }
 }
 
-    
-void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value)
+
+void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value, Int_t count, Int_t ErrorMask)
 {
-  if (value.fErrorFlag==0){
-    for (size_t i = 0; i < fOutputVar.size(); i++){
-      this->fOutputVar[i]->AccumulateRunningSum(fOutputVar[i]);
-    }
+  for (size_t i = 0; i < fOutputVar.size(); i++){
+    this->fOutputVar[i]->AccumulateRunningSum(value.fOutputVar[i], count, ErrorMask);
   }
 }
 
@@ -181,20 +284,77 @@ void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value)
 void VQwDataHandler::CalculateRunningAverage()
 {
   for(size_t i = 0; i < fOutputVar.size(); i++) {
-    // calling CalculateRunningAverage in scope of VQwHardwareChannel
-    fOutputVar[i]->CalculateRunningAverage();
+    this->fOutputVar[i]->CalculateRunningAverage();
   }
-  
-  return;
 }
-
 
 void VQwDataHandler::PrintValue() const
 {
-  QwMessage<<"=== QwCombiner ==="<<QwLog::endl<<QwLog::endl;
+  QwMessage<<"=== "<< fName << " ==="<<QwLog::endl<<QwLog::endl;
   for(size_t i = 0; i < fOutputVar.size(); i++) {
     fOutputVar[i]->PrintValue();
   }
+}
+
+
+void VQwDataHandler::ClearEventData()
+{
+  for(size_t i = 0; i < fOutputVar.size(); i++) {
+    fOutputVar[i]->ClearEventData();
+  }
+}
+
+void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
+{
+     Bool_t local_print_flag = false;
+     Bool_t local_add_element= type.Contains("asy");
+  
+
+    if(local_print_flag){
+          QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
+          QwMessage << "        QwDataHandlerArray::WritePromptSummary()          " << QwLog::endl;
+          QwMessage << " --------------------------------------------------------------- " << QwLog::endl;
+     }
+
+     const VQwHardwareChannel* tmp_channel = 0;
+     TString  element_name        = "";
+     Double_t element_value       = 0.0;
+     Double_t element_value_err   = 0.0;
+     Double_t element_value_width = 0.0;
+
+     PromptSummaryElement *local_ps_element = NULL;
+     Bool_t local_add_these_elements= false;
+
+  for (size_t i = 0; i < fOutputVar.size();  i++) 
+    {
+      element_name        = fOutputVar[i]->GetElementName(); 
+      tmp_channel         = fOutputVar[i];
+      element_value       = 0.0;
+      element_value_err   = 0.0;
+      element_value_width = 0.0;
+     
+   
+      local_add_these_elements=element_name.Contains("dd")||element_name.Contains("da"); // Need to change this to add other detectors in summary
+
+      if(local_add_these_elements && local_add_element){
+        ps->AddElement(new PromptSummaryElement(element_name)); 
+      }
+
+      local_ps_element=ps->GetElementByName(element_name);
+       
+      if(local_ps_element) {
+        element_value       = tmp_channel->GetValue();
+        element_value_err   = tmp_channel->GetValueError();
+        element_value_width = tmp_channel->GetValueWidth();
+        
+        local_ps_element->Set(type, element_value, element_value_err, element_value_width);
+      }
+      
+      if( local_print_flag && local_ps_element) {
+        printf("Type %12s, Element %32s, value %12.4e error %8.4e  width %12.4e\n", type.Data(), element_name.Data(), element_value, element_value_err, element_value_width);
+      }
+    }
+
 }
 
 

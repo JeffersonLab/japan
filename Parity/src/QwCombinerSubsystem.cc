@@ -113,20 +113,20 @@ void QwCombinerSubsystem::Scale(Double_t value)
   
 };
 
-void QwCombinerSubsystem::AccumulateRunningSum(VQwSubsystem* input)
+void QwCombinerSubsystem::AccumulateRunningSum(VQwSubsystem* input, Int_t count, Int_t ErrorMask)
 {
   QwCombinerSubsystem* value = dynamic_cast<QwCombinerSubsystem*> (input);
   if (value!=NULL){
-    QwCombiner::AccumulateRunningSum(*value);
+    QwCombiner::AccumulateRunningSum(*value, count, ErrorMask);
   }
 }
 
-void QwCombinerSubsystem::DeaccumulateRunningSum(VQwSubsystem* input)
+void QwCombinerSubsystem::DeaccumulateRunningSum(VQwSubsystem* input, Int_t ErrorMask)
 {
   QwCombinerSubsystem* value = dynamic_cast<QwCombinerSubsystem*> (input);
   if (value!=NULL) {
     for (size_t i = 0; i < value-> fDependentVar.size(); i++) {
-      fOutputVar.at(i)->DeaccumulateRunningSum(value->fOutputVar.at(i));
+      fOutputVar.at(i)->DeaccumulateRunningSum(value->fOutputVar.at(i), ErrorMask);
     }
   }
 }
@@ -174,7 +174,7 @@ void QwCombinerSubsystem::ConstructBranch(TTree *tree, TString & prefix, QwParam
   TString tmp;
   QwParameterFile* nextmodule;
   trim_file.RewindToFileStart();
-  tmp="Regression";
+  tmp="Combiner";
   trim_file.RewindToFileStart();
   if (trim_file.FileHasModuleHeader(tmp)){
     nextmodule=trim_file.ReadUntilNextModule();//This section contains sub modules and or channels to be included in the tree

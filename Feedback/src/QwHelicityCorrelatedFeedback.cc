@@ -611,7 +611,7 @@ void QwHelicityCorrelatedFeedback::FeedPITASetPoints(){
   if (fPITASlope!=0) {
     Double_t correction = fChargeAsymmetry/fPITASlope;
 QwMessage<<"................Correction............."<<fChargeAsymmetry/fPITASlope<<QwLog::endl;
-QwMessage<<"................Aq............."<<fChargeAsymmetry<<QwLog::endl;
+QwMessage<<"................Hall A Aq............."<<fChargeAsymmetry<<QwLog::endl;
 QwMessage<<"................slope............."<<fPITASlope<<QwLog::endl;
     //damp the correction when charge asymmetry is close to zero
     // if (fFeedbackDamping){
@@ -704,7 +704,18 @@ QwMessage<<"................slope............."<<fPITASlope<<QwLog::endl;
   fEPICSCtrl.Set_RTP_PITA_8(fPITASetpoint8);
 
 
-
+  
+  int nBPM = vBPM.size();
+  for(int i=0;i<nBPM;i++){
+   
+    fEPICSCtrl.SetMeanWidth(2*i,vWireSumAsymmetry[i]);
+  }
+ 
+  int nBPM1 = vBPM1.size();
+  for(int j=0;j<nBPM1;j++){
+   
+    fEPICSCtrl.SetMeanWidth1(2*j,vWireSumPosition[j]);
+  }
 
 
 
@@ -1102,8 +1113,8 @@ void QwHelicityCorrelatedFeedback::FeedHCIASetPoints(){
   if (fHCIASlope!=0) {
     Double_t correction = fTargetHCCharge/fHCIASlope;
 QwMessage<<"................Correction............."<<fTargetHCCharge/fHCIASlope<<QwLog::endl;
-QwMessage<<"................Aq............."<<fTargetHCCharge<<QwLog::endl;
-QwMessage<<"................slope............."<<fHCIASlope<<QwLog::endl;
+QwMessage<<"................hall C Aq............."<<fTargetHCCharge<<QwLog::endl;
+QwMessage<<"................Hall C slope............."<<fHCIASlope<<QwLog::endl;
    
 
 
@@ -1273,8 +1284,8 @@ void QwHelicityCorrelatedFeedback::FeedHBIASetPoints(){
   if (fHBIASlope!=0) {
     Double_t correction3 = fTargetHBCharge/fHBIASlope;
 QwMessage<<"................Correction3............."<<fTargetHBCharge/fHBIASlope<<QwLog::endl;
-QwMessage<<"................Aq............."<<fTargetHBCharge<<QwLog::endl;
-QwMessage<<"................slope............."<<fHBIASlope<<QwLog::endl;
+QwMessage<<"................Hall B Aq............."<<fTargetHBCharge<<QwLog::endl;
+QwMessage<<"................hall B slope............."<<fHBIASlope<<QwLog::endl;
    
 
 
@@ -2216,58 +2227,6 @@ void  QwHelicityCorrelatedFeedback::CalculateAsymmetry()
     } else
       QwError << "fails on errorflag cut" << QwLog::endl;
 
-    /*
-      With additional two asymmetry calculations
-      Don't blind them!
-
-      quartet pattern + - - +
-                      1 2 3 4
-                      fAsymmetry  = (1+4)-(2+3)/(1+2+3+4)
-                      fAsymmetry1 = (1+2)-(3+4)/(1+2+3+4)
-                      fAsymmetry2 = (1+3)-(2+4)/(1+2+3+4)
-    */
-    // if (fEnableAlternateAsym) {
-    //   //  fAsymmetry1:  (first 1/2 pattern - second 1/2 pattern)/fYield
-    //   fPositiveHelicitySum.ClearEventData();
-    //   fNegativeHelicitySum.ClearEventData();
-    //   fPositiveHelicitySum = fEvents.at(0);
-    //   fNegativeHelicitySum = fEvents.at(fPatternSize/2);
-    //   if (fPatternSize/2 > 1){
-    // 	for (size_t i = 1; i < (size_t) fPatternSize/2 ; i++){
-    // 	  fPositiveHelicitySum += fEvents.at(i);
-    // 	  fNegativeHelicitySum += fEvents.at(fPatternSize/2 +i);
-    // 	}
-    //   }
-    //   fAlternateDiff.ClearEventData();
-    //   fAlternateDiff.Difference(fPositiveHelicitySum,fNegativeHelicitySum);
-    //   //  Do not blind this helicity-uncorrelated difference.
-    //   fAsymmetry1.Ratio(fAlternateDiff,fYield);
-    //   //  fAsymmetry2:  (even events - odd events)/fYield
-    //   //  Only build fAsymmetry2 if fPatternSize>2.
-    //   if (fPatternSize > 2) {
-    // 	fPositiveHelicitySum.ClearEventData();
-    // 	fNegativeHelicitySum.ClearEventData();
-    // 	fPositiveHelicitySum = fEvents.at(0);
-    // 	fNegativeHelicitySum = fEvents.at(1);
-    // 	if (fPatternSize/2 > 1){
-    // 	  for (size_t i = 1; i < (size_t) fPatternSize/2 ; i++){
-    // 	    fPositiveHelicitySum += fEvents.at(2*i);
-    // 	    fNegativeHelicitySum += fEvents.at(2*i + 1);
-    // 	  }
-    // 	}
-    // 	fAlternateDiff.ClearEventData();
-    // 	fAlternateDiff.Difference(fPositiveHelicitySum,fNegativeHelicitySum);
-    // 	//  Do not blind this helicity-uncorrelated difference.
-    // 	fAsymmetry2.Ratio(fAlternateDiff,fYield);
-    //   }
-    // }
-
-    // Accumulate the burst and running sums
-    if (fEnableBurstSum)   AccumulateBurstSum();
-    if (fEnableRunningSum) {      
-      AccumulateRunningSum();
-    }
-    
     if (localdebug) QwDebug << " pattern number =" << fQuartetNumber << QwLog::endl;
   }
 
@@ -2275,7 +2234,7 @@ void  QwHelicityCorrelatedFeedback::CalculateAsymmetry()
 };
 
 
-void QwHelicityCorrelatedFeedback::AccumulateRunningSum(){
+void QwHelicityCorrelatedFeedback::AccumulateRunningSum(QwHelicityCorrelatedFeedback &entry){
   // Bool_t bXDiff=kFALSE;
   Bool_t bXPDiff=kFALSE;
   // Bool_t bYDiff=kFALSE;
@@ -2283,188 +2242,92 @@ void QwHelicityCorrelatedFeedback::AccumulateRunningSum(){
   Bool_t b3C12XDiff=kFALSE;
   Bool_t b3C12YDiff=kFALSE;
   Bool_t b3C12YQ=kFALSE;
-  
 
+  QwHelicityPattern::AccumulateRunningSum(entry);
 
-  
+  //  Get the current pattern number for reporting purposes
+  fCurrentPatternNumber = entry.fCurrentPatternNumber;
 
-  QwHelicityPattern::AccumulateRunningSum();
+  if (entry.fAsymmetry.GetEventcutErrorFlag()==0){//good pattern
+    //fPatternIsGood = kTRUE;
+    fGoodPatternCounter++;//increment the quartet number - reset after each PITA feedback operation
+    fQuartetNumber++;//Then increment the quartet number - continously count
+  } else
+    QwError << "fails on errorflag cut" << QwLog::endl;
 
-  /*   KLUDGE: 20190520, DO WE NEED THIS HERE
-{
-  if (fPatternIsGood){
-    fRunningYield.AccumulateRunningSum(fYield);
-    if (fEnableDifference){
-      fRunningDifference.AccumulateRunningSum(fDifference);
-      // The difference is blinded, so the running difference is also blinded.
-    }
-    fRunningAsymmetry.AccumulateRunningSum(fAsymmetry);
-    if (fEnableAlternateAsym) {
-      fRunningAsymmetry1.AccumulateRunningSum(fAsymmetry1);
-      fRunningAsymmetry2.AccumulateRunningSum(fAsymmetry2);
-    }
-  }
-}
-  */
-
-if(fAsymmetry.RequestExternalValue("q_targC", &fTargetParameter)){
+  if(entry.fAsymmetry.RequestExternalValue("q_targC", &fTargetParameter)){
     //fScalerChargeRunningSum.PrintValue();
     //fScalerChargeRunningSum.AccumulateRunningSum(fScalerCharge);
- if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
-          fTargetHCChargeRunningSum.AccumulateRunningSum(fTargetParameter);
-      fHCIAGoodPatternCounter++;//update the good HA asymmetry counter
- }
- }
-
-if(fAsymmetry.RequestExternalValue("q_targA", &fTargetParameter)){
-     if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
-          fTargetHAChargeRunningSum.AccumulateRunningSum(fTargetParameter);
-      fHAIAGoodPatternCounter++;//update the good HA asymmetry counter
- }
- }
-
-if(fAsymmetry.RequestExternalValue("q_targB", &fTargetParameter)){
     if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
-          fTargetHBChargeRunningSum.AccumulateRunningSum(fTargetParameter);
+      fTargetHCChargeRunningSum.AccumulateRunningSum(fTargetParameter);
+      fHCIAGoodPatternCounter++;//update the good HA asymmetry counter
+    }
+  }
+
+  if(entry.fAsymmetry.RequestExternalValue("q_targA", &fTargetParameter)){
+    if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
+      fTargetHAChargeRunningSum.AccumulateRunningSum(fTargetParameter);
+      fHAIAGoodPatternCounter++;//update the good HA asymmetry counter
+    }
+  }
+
+  if(entry.fAsymmetry.RequestExternalValue("q_targB", &fTargetParameter)){
+    if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
+      fTargetHBChargeRunningSum.AccumulateRunningSum(fTargetParameter);
       fHBIAGoodPatternCounter++;//update the good HA asymmetry counter
- }
- }
-
-
-  // if(fAsymmetry.RequestExternalValue("sca_bcm", &fScalerCharge)){
-  //   //fScalerChargeRunningSum.PrintValue();
-  //   //fScalerChargeRunningSum.AccumulateRunningSum(fScalerCharge);
-  //   if (fScalerCharge.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
-  //     fScalerChargeRunningSum.AccumulateRunningSum(fScalerCharge);
-  //     fHAGoodPatternCounter++;//update the good HA asymmetry counter
-  //   }
-  // }else{
-  //   QwError << " Could not get external value setting parameters to  sca_bcm" <<QwLog::endl;
-  //   fHAIAFB=kFALSE;
-  // }
+    }
+  }
   
-   if(fAsymmetry.RequestExternalValue("x_targ", &fTargetParameter)){
-   if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
-     fTargetXDiffRunningSum.AccumulateRunningSum(fTargetParameter);
-     //  bXDiff=kTRUE;
-     fPFUGoodPatternCounter++;
-   }
- }
+  if(entry.fAsymmetry.RequestExternalValue("x_targ", &fTargetParameter)){
+    if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
+      fTargetXDiffRunningSum.AccumulateRunningSum(fTargetParameter);
+      //  bXDiff=kTRUE;
+      fPFUGoodPatternCounter++;
+    }
+  }
 
-   if(fAsymmetry.RequestExternalValue("xy_pos_x", &fTargetParameter)){
-   if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
-     fXYPosXDiffRunningSum.AccumulateRunningSum(fTargetParameter);
-     //  bXDiff=kTRUE;
-     fXGoodPatternCounter++;
-   }
- }
+  if(entry.fAsymmetry.RequestExternalValue("xy_pos_x", &fTargetParameter)){
+    if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
+      fXYPosXDiffRunningSum.AccumulateRunningSum(fTargetParameter);
+      //  bXDiff=kTRUE;
+      fXGoodPatternCounter++;
+    }
+  }
 
-  if(fAsymmetry.RequestExternalValue("xy_pos_y", &fTargetParameter)){
-   if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
-     fXYPosYDiffRunningSum.AccumulateRunningSum(fTargetParameter);
-     //  bXDiff=kTRUE;
-     fYGoodPatternCounter++;
-   }
- }
+  if(entry.fAsymmetry.RequestExternalValue("xy_pos_y", &fTargetParameter)){
+    if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
+      fXYPosYDiffRunningSum.AccumulateRunningSum(fTargetParameter);
+      //  bXDiff=kTRUE;
+      fYGoodPatternCounter++;
+    }
+  }
 
-  // if(fAsymmetry.RequestExternalValue("xp_targ", &fTargetParameter)){
-  //   if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
-  //     fTargetXPDiffRunningSum.AccumulateRunningSum(fTargetParameter);
-  //     bXPDiff=kTRUE;
-  //   }
-  // }
-
-if(fAsymmetry.RequestExternalValue("y_targ", &fTargetParameter)){
-  if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
-     fTargetYDiffRunningSum.AccumulateRunningSum(fTargetParameter);
-     fPFVGoodPatternCounter++;
-     // bYDiff=kTRUE;
-   }
- }
-
-  // if(fAsymmetry.RequestExternalValue("yp_targ", &fTargetParameter)){
-  //   if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
-  //     fTargetYPDiffRunningSum.AccumulateRunningSum(fTargetParameter);
-  //     bYPDiff=kTRUE;
-  //   }
-  // }
-
-  // if(fAsymmetry.RequestExternalValue("3c12x", &fTargetParameter)){
-  //   if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
-  //     f3C12XDiffRunningSum.AccumulateRunningSum(fTargetParameter);
-  //     b3C12XDiff=kTRUE;
-  //   }
-  // }
-
-  // if(fAsymmetry.RequestExternalValue("3c12y", &fTargetParameter)){
-  //   if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
-  //     f3C12YDiffRunningSum.AccumulateRunningSum(fTargetParameter);
-  //     b3C12YDiff=kTRUE;
-  //   }
-  // }
-
-  // if(fAsymmetry.RequestExternalValue("bcm7", &fAsymBCM7) && fAsymmetry.RequestExternalValue("bcm8", &fAsymBCM8)){
-  //   if (fAsymBCM7.GetEventcutErrorFlag()==0 && fAsymBCM8.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
-  //     fAsymBCM78DDRunningSum.AccumulateRunningSum((fAsymBCM7-fAsymBCM8));
-  //   }
-  // }
-
-  // if(fAsymmetry.RequestExternalValue("uslumisum", &fTargetCharge)){
-  //   if (fAsymmetry.GetEventcutErrorFlag()==0 && fTargetCharge.GetEventcutErrorFlag()==0){
-  //     fAsymUSLumiSumRunningSum.AccumulateRunningSum(fTargetCharge);
-  //   }
-  // }
-  // if(fYield.RequestExternalValue("3c12efc", &fTargetParameter)){
-  //   if (fTargetParameter.GetEventcutErrorFlag()==0 && fYield.GetEventcutErrorFlag()==0){
-  //     f3C12YQRunningSum.AccumulateRunningSum(fTargetParameter);
-  //     b3C12YQ=kTRUE;
-  //   }
-  // }
-  // if(fYield.RequestExternalValue("bcm8", &fTargetCharge)){
-  //   if (fTargetCharge.GetEventcutErrorFlag()==0 && fYield.GetEventcutErrorFlag()==0){
-  //     fYieldBCM8RunningSum.AccumulateRunningSum(fTargetCharge);
-  //   }
-  // }
-
-  
-
-  
-
-
-  
-
-// if (bXDiff && bXPDiff && bYDiff && bYPDiff && b3C12YQ)//if all parameters are good
-     //  fPFGoodPatternCounter++;//update the good position/angle asymmetry counter
-
-//if (bXDiff)//if all parameters are good
-    //  fPFUGoodPatternCounter++;
-//if (bYDiff)//if all parameters are good
-    //  fPFVGoodPatternCounter++;   
-
-
-
-  
+  if(entry.fAsymmetry.RequestExternalValue("y_targ", &fTargetParameter)){
+    if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
+      fTargetYDiffRunningSum.AccumulateRunningSum(fTargetParameter);
+      fPFVGoodPatternCounter++;
+      // bYDiff=kTRUE;
+    }
+  }
 
   switch(fCurrentHelPatMode){
   case 0:
-    fFBRunningAsymmetry[0].AccumulateRunningSum(fAsymmetry);
+    fFBRunningAsymmetry[0].AccumulateRunningSum(entry.fAsymmetry);
     fHelModeGoodPatternCounter[0]++;
     break;
   case 1:
-    fFBRunningAsymmetry[1].AccumulateRunningSum(fAsymmetry);
+    fFBRunningAsymmetry[1].AccumulateRunningSum(entry.fAsymmetry);
     fHelModeGoodPatternCounter[1]++;
     break;
   case 2:
-    fFBRunningAsymmetry[2].AccumulateRunningSum(fAsymmetry);
+    fFBRunningAsymmetry[2].AccumulateRunningSum(entry.fAsymmetry);
     fHelModeGoodPatternCounter[2]++;
     break;
   case 3:
-    fFBRunningAsymmetry[3].AccumulateRunningSum(fAsymmetry);
+    fFBRunningAsymmetry[3].AccumulateRunningSum(entry.fAsymmetry);
     fHelModeGoodPatternCounter[3]++;
     break;
   }
-
-  
 };
 
 
@@ -2483,9 +2346,40 @@ void QwHelicityCorrelatedFeedback::CalculateRunningAverage(Int_t mode){
 /// \brief retrieves the target charge asymmetry,asymmetry error ,asymmetry width
 */
 void QwHelicityCorrelatedFeedback::GetTargetChargeStat(){
-  fRunningAsymmetry.CalculateRunningAverage();
+  CalculateRunningAverage();
 
-  if (fRunningAsymmetry.RequestExternalValue("q_targ",&fTargetCharge)){
+
+Int_t nBPM = vBPM.size();
+ 
+  for(int i=0;i<nBPM;i++){
+    if (fAsymmetry.RequestExternalValue(vBPM[i],&fTargetParameter)){
+      Double_t this_mean =fTargetParameter.GetValue()*1.0e+6;
+      Double_t this_width=fTargetParameter.GetValueWidth()*1.0e+6;
+      std::pair<Double_t,Double_t> this_pair = std::make_pair(this_mean,this_width);
+   
+     
+      vWireSumAsymmetry.push_back(this_pair);
+    }
+  }
+
+
+
+Int_t nBPM1 = vBPM1.size();
+ 
+  for(int j=0;j<nBPM1;j++){
+    if (fAsymmetry.RequestExternalValue(vBPM1[j],&fTargetParameter)){
+      Double_t this_mean1 =fTargetParameter.GetValue()*1.0e+3;
+      Double_t this_width1=fTargetParameter.GetValueWidth()*1.0e+3;
+      std::pair<Double_t,Double_t> this_pair1 = std::make_pair(this_mean1,this_width1);
+     
+     
+      vWireSumPosition.push_back(this_pair1);
+    }
+  }
+
+
+
+  if (fAsymmetry.RequestExternalValue("q_targ",&fTargetCharge)){
     QwMessage<<"Reading published charge value stats"<<QwLog::endl;
     fTargetCharge.PrintInfo();
     fChargeAsymmetry=fTargetCharge.GetValue();
@@ -2850,7 +2744,7 @@ void QwHelicityCorrelatedFeedback::GetHBChargeStat(){
 //  */
 void  QwHelicityCorrelatedFeedback::ClearRunningSum()
 {
-  QwHelicityPattern::ClearRunningSum();
+  ClearEventData();
   fTargetCharge.ClearEventData();
   // //Clean bcm8 yield and bcm78 DD running sums
   // fAsymBCM78DDRunningSum.ClearEventData();

@@ -52,7 +52,7 @@ class VQwDataElement: public MQwHistograms {
  public:
   /// Flag to be used to decide which data needs to be histogrammed and
   /// entered in the tree
-  enum EDataToSave {kRaw = 0, kDerived};
+  enum EDataToSave {kRaw = 0, kDerived, kMoments};
 
 
  public:
@@ -127,7 +127,7 @@ class VQwDataElement: public MQwHistograms {
     { std::cerr << "Difference not defined!" << std::endl; }
   /*! \brief Ratio operator */
   virtual void Ratio(const VQwDataElement &numer, const VQwDataElement &denom)
-    { std::cerr << "Ratio not defined!" << std::endl; }
+  { std::cerr << "Ratio not defined for element"<< fElementName<< "!" << std::endl; }
 
   /*! \brief Construct the histograms for this data element */
   virtual void  ConstructHistograms(TDirectory *folder, TString &prefix) = 0;
@@ -144,6 +144,10 @@ class VQwDataElement: public MQwHistograms {
   virtual void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability){std::cerr << "SetSingleEventCuts not defined!" << std::endl; };
   /*! \brief report number of events failed due to HW and event cut failure */
   virtual void PrintErrorCounters() const {};
+
+  virtual Bool_t  CheckForBurpFail(const VQwDataElement *ev_error){
+    return kFALSE;
+  };
 
   /*! \brief return the error flag on this channel/device*/
   virtual UInt_t GetEventcutErrorFlag(){

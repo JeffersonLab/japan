@@ -208,11 +208,11 @@ Int_t QwIntegrationPMT::SetSingleEventCuts(Double_t LL=0, Double_t UL=0){//std::
 }
 
 /********************************************************/
-void QwIntegrationPMT::SetSingleEventCuts(UInt_t errorflag, Double_t LL=0, Double_t UL=0, Double_t stability=0){
+void QwIntegrationPMT::SetSingleEventCuts(UInt_t errorflag, Double_t LL=0, Double_t UL=0, Double_t stability=0, Double_t burplevel=0){
   //set the unique tag to identify device type (bcm,bpm & etc)
   errorflag|=kPMTErrorFlag;
   QwMessage<<"QwIntegrationPMT Error Code passing to QwVQWK_Ch "<<errorflag<<QwLog::endl;
-  fTriumf_ADC.SetSingleEventCuts(errorflag,LL,UL,stability);
+  fTriumf_ADC.SetSingleEventCuts(errorflag,LL,UL,stability,burplevel);
 
 }
 
@@ -220,6 +220,11 @@ void QwIntegrationPMT::SetSingleEventCuts(UInt_t errorflag, Double_t LL=0, Doubl
 
 void QwIntegrationPMT::SetDefaultSampleSize(Int_t sample_size){
  fTriumf_ADC.SetDefaultSampleSize((size_t)sample_size);
+}
+
+/********************************************************/
+void QwIntegrationPMT::SetSaturationLimit(Double_t saturation_volt){
+  fTriumf_ADC.SetVQWKSaturationLimt(saturation_volt);
 }
 //*/
 
@@ -247,6 +252,29 @@ Bool_t QwIntegrationPMT::ApplySingleEventCuts(){
 void QwIntegrationPMT::PrintErrorCounters() const{// report number of events failed due to HW and event cut faliure
   fTriumf_ADC.PrintErrorCounters();
 }
+
+/*********************************************************/
+
+Bool_t QwIntegrationPMT::CheckForBurpFail(const VQwDataElement *ev_error){
+  Bool_t burpstatus = kFALSE;
+  try {
+    if(typeid(*ev_error)==typeid(*this)) {
+      //std::cout<<" Here in QwIntegrationPMT::CheckForBurpFail \n";
+      if (this->GetElementName()!="") {
+        const QwIntegrationPMT* value_pmt = dynamic_cast<const QwIntegrationPMT* >(ev_error);
+        burpstatus |= fTriumf_ADC.CheckForBurpFail(&(value_pmt->fTriumf_ADC)); 
+      }
+    } else {
+      TString loc="Standard exception from QwIntegrationPMT::CheckForBurpFail :"+
+        ev_error->GetElementName()+" "+this->GetElementName()+" are not of the "
+        +"same type";
+      throw std::invalid_argument(loc.Data());
+    }
+  } catch (std::exception& e) {
+    std::cerr<< e.what()<<std::endl;
+  }
+  return burpstatus;
+};
 
 /********************************************************/
 void QwIntegrationPMT::UpdateErrorFlag(const QwIntegrationPMT* ev_error){
@@ -461,14 +489,14 @@ void QwIntegrationPMT::CalculateRunningAverage()
   fTriumf_ADC.CalculateRunningAverage();
 }
 
-void QwIntegrationPMT::AccumulateRunningSum(const QwIntegrationPMT& value)
+void QwIntegrationPMT::AccumulateRunningSum(const QwIntegrationPMT& value, Int_t count, Int_t ErrorMask)
 {
-  fTriumf_ADC.AccumulateRunningSum(value.fTriumf_ADC);
+  fTriumf_ADC.AccumulateRunningSum(value.fTriumf_ADC, count, ErrorMask);
 }
 
-void QwIntegrationPMT::DeaccumulateRunningSum(QwIntegrationPMT& value)
+void QwIntegrationPMT::DeaccumulateRunningSum(QwIntegrationPMT& value, Int_t ErrorMask)
 {
-  fTriumf_ADC.DeaccumulateRunningSum(value.fTriumf_ADC);
+  fTriumf_ADC.DeaccumulateRunningSum(value.fTriumf_ADC, ErrorMask);
 }
 
 

@@ -105,9 +105,9 @@ class QwMollerDetector:
     void  Difference(VQwSubsystem  *value1, VQwSubsystem  *value2);
     void  Ratio(VQwSubsystem  *value1, VQwSubsystem  *value2);
     void  Scale(Double_t);
-    void  AccumulateRunningSum(VQwSubsystem* value);
+    void  AccumulateRunningSum(VQwSubsystem* value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
     //remove one entry from the running sums for devices
-    void DeaccumulateRunningSum(VQwSubsystem* value){
+    void DeaccumulateRunningSum(VQwSubsystem* value, Int_t ErrorMask=0xFFFFFFF){
     };
     void  CalculateRunningAverage();
     Int_t LoadEventCuts(TString filename);
@@ -115,6 +115,10 @@ class QwMollerDetector:
     void IncrementErrorCounters() {};
     void PrintErrorCounters() const;
     UInt_t GetEventcutErrorFlag();
+
+    Bool_t CheckForBurpFail(const VQwSubsystem *subsys){
+      return kFALSE;
+    };
 
     //update the error flag in the subsystem level from the top level routines related to stability checks. This will uniquely update the errorflag at each channel based on the error flag in the corresponding channel in the ev_error subsystem
     void UpdateErrorFlag(const VQwSubsystem *ev_error){

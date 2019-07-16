@@ -71,7 +71,7 @@ class QwCombinedPMT : public VQwDataElement {
   Bool_t ApplySingleEventCuts();//Check for good events by stting limits on the devices readings
   void PrintErrorCounters() const;// report number of events failed due to HW and event cut faliure
   /*! \brief Inherited from VQwDataElement to set the upper and lower limits (fULimit and fLLimit), stability % and the error flag on this channel */
-  void SetSingleEventCuts(UInt_t errorflag, Double_t LL, Double_t UL, Double_t stability);
+  void SetSingleEventCuts(UInt_t errorflag, Double_t LL, Double_t UL, Double_t stability, Double_t burplevel);
 
   void SetDefaultSampleSize(Int_t sample_size);
   void SetEventCutMode(Int_t bcuts){
@@ -85,6 +85,8 @@ class QwCombinedPMT : public VQwDataElement {
   void IncrementErrorCounters(){
     fSumADC.IncrementErrorCounters();
   }
+
+  Bool_t CheckForBurpFail(const VQwDataElement *ev_error);
 
   UInt_t UpdateErrorFlag();
   void   UpdateErrorFlag(const QwCombinedPMT *ev_error);
@@ -100,8 +102,8 @@ class QwCombinedPMT : public VQwDataElement {
   void Ratio(QwCombinedPMT &numer, QwCombinedPMT &denom);
   void Scale(Double_t factor);
   void Normalize(VQwDataElement* denom);
-  void AccumulateRunningSum(const QwCombinedPMT& value);
-  void DeaccumulateRunningSum(QwCombinedPMT& value);
+  void AccumulateRunningSum(const QwCombinedPMT& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void DeaccumulateRunningSum(QwCombinedPMT& value, Int_t ErrorMask=0xFFFFFFF);
   void CalculateRunningAverage();
 
   void SetBlindability(Bool_t isblindable){fSumADC.SetBlindability(isblindable);};
