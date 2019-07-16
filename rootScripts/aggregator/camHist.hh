@@ -75,8 +75,9 @@ TString getCuts_h(TString cut = "defaultCut", Int_t overWriteCut = 0, TString br
       return cut;
     }
     else {
-      Printf("Error, invalid minirun number, using the default cut instead = %s",defaultCut.Data());
-      return defaultCut;
+      Printf("Note: invalid minirun number, using no cut instead");
+      cut = "1";
+      return cut;
     }
   } // Else, if you want "minirun==#" that will still work by hand, this if is just a flag to check env variable method instead...
   if (overWriteCut == 1){
