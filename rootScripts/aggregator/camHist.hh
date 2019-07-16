@@ -87,8 +87,9 @@ TH1 * getHistogram_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",
     return 0;
   }
   TString leafName = "NULL";
-  if (leaf==branch)
+  if (leaf==branch || branch=="" || branch=="NULL") // Just use the leaf name
   {
+    Printf("Looking for leaf instead\n");
     leafName = (TString)Leaf->GetName();
   }
   else
@@ -136,7 +137,7 @@ TH1 * getWeightedHistogram_h(TString tree = "mul", TString branch = "asym_vqwk_0
     return 0;
   }
   TString leafName = "NULL";
-  if (leaf==branch)
+  if (leaf==branch || leaf=="" || leaf =="NULL")
   {
     leafName = (TString)Leaf->GetName();
   }

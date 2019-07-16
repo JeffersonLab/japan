@@ -39,6 +39,7 @@ using namespace std;
 Int_t debug = -1;
 Int_t alarmStatus = -1;
 Int_t aggregatorStatus = -1;
+Int_t postpanStatus = -1;
 
 struct alarm_data {
   std::string type[5] = {"NULL","NULL","NULL","NULL","NULL"};

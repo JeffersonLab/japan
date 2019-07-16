@@ -17,6 +17,23 @@
 #include <TChain.h>
 #include <TFile.h>
 using namespace std;
+
+Int_t getpostpanStatus_h(){
+// Get environment variable agg status
+  if (debug>0) Printf("Post Pan Status: %d",postpanStatus);
+  if ( postpanStatus == -1 ) 
+  { 
+    TString aggStatusStr = gSystem->Getenv("CAM_POSTPAN");
+    postpanStatus = aggStatusStr.Atoi();
+  }
+  if (postpanStatus<0){
+    Printf("Error: Post Pan Status given (%d) invalid, must be an integer >= 0",postpanStatus);
+    return 0;
+  }
+  if (debug>0) Printf("Post Pan Status: %d",postpanStatus);
+  return postpanStatus;
+}
+
 Int_t getAggregatorStatus_h(){
 // Get environment variable agg status
   if (debug>0) Printf("Aggregator Status: %d",aggregatorStatus);
@@ -191,6 +208,7 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber 
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   n_runs    = getNruns_h(n_runs);
+  postpanStatus = getpostpanStatus_h();
   if (filenamebase == "NULL"){
     filenamebase = gSystem->Getenv("QW_ROOTFILES");
   }
@@ -201,15 +219,30 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber 
 
   Bool_t foundFile = false;
 
-  for(Int_t i = 0; i < (n_runs); i++){
+  // FIXME: This is the postpan case
+  TString postpanFileName = "";
+  if (postpanStatus == 1){
+    TString postpanFileNameBase = gSystem->Getenv("POSTPAN_ROOTFILES");
+    postpanFileName = postpanFileNameBase + "/prexPrompt_" + runNumber + "_000_regress_postpan.root";
+    newTChain->Add(postpanFileName);
+    if (debug>0) Printf("Post Pan TChain searching from file name: %s\n",postpanFileName.Data());
+    if (debug>0) Printf("Regular TChain searching from folder name: %s\n",filenamebase.Data());
+    if (!newTChain) {
+      Printf("Error, Post Pan TChain not found in file name: %s\n",postpanFileName.Data());
+    }
+    tree = "mul"; // FIXME we are just doing this now... for post pan stuff
+  }
 
-    TString daqConfigs[4] = {"prexPrompt_pass2","prexCH","prexINJ","prex_tedf"}; // Potentially replace this with a config file read in array or map;
-    TString analyses[3] = {".","_regress_prFIXME.","_regress_mul."};
+  const int num_daqConfigs = 4;
+  const int num_analyses = 3;
+  for(Int_t i = 0; i < (n_runs); i++){
+    TString daqConfigs[num_daqConfigs] = {"prexPrompt_pass2","prexCH","prexINJ","prex_tedf"}; // Potentially replace this with a config file read in array or map;
+    TString analyses[num_analyses] = {".","_regress_prFIXME.","_regress_mul."};
     TString suffix[2] = {"root",Form("%03d.root",splitNumber)};
     // FIXME remove this "FIXME" once there is a non-degeneracy in the tree names between the regress_pr and _mul root file's tree names
     if (debug>0) Printf("Looping over candidate rootfile prefixes and suffixes");
-    for(Int_t ana=0;ana<3;ana++){
-      for(Int_t j=0;j<4;j++){
+    for(Int_t ana=0;ana<num_analyses;ana++){
+      for(Int_t j=0;j<num_daqConfigs;j++){
         for(Int_t suf=0;suf<2;suf++){
           filenamebase = Form("%s/%s_%d%s%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber+i,(const char*)analyses[ana],(const char*) suffix[suf]);
           filename     = filenamebase;
@@ -217,7 +250,8 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber 
           if ( !gSystem->AccessPathName(filename.Data()) ) {
             if (debug>1) Printf("Found file name: %s",(const char*)filenamebase);
             foundFile = true;
-            j=6; // Exit loop
+            j=num_daqConfigs+1; // Exit loop
+            ana=4; // FIXME Turning off the loop continuing thing because we don't store files this way anyway......
             suf=3;
           }
         }
@@ -231,10 +265,16 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber 
         TFile * candidateFile = new TFile(filename.Data(),"READ");
         if (candidateFile->GetListOfKeys()->Contains(tree)){
           if (debug>0) Printf("File added to Chain: \"%s\"",(const char*)filename);
-          newTChain->Add(filename);
+          // FIXME This is how to avoid assuming post pan file lives in the same place
+          if (postpanStatus == 0){
+            newTChain->Add(filename);
+          }
           friendTChain->Add(filename);
+          Int_t testValFriend = friendTChain->GetEntries();
           newTChain->AddFriend(friendTChain);
+          if (debug>3) Printf("Friend TChain found in %s, with %d entries",filename.Data(),testValFriend);
           Int_t testVal = newTChain->GetEntries();
+          if (debug>3) Printf("Original TChain found in %s, with %d entries",postpanFileName.Data(),testVal);
         }
         else {
           if (debug>1) Printf("File %s doesn't contain tree: \"%s\"",(const char*)filename,(const char*)tree);
