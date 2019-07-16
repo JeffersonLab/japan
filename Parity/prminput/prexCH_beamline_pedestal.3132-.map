@@ -13,16 +13,15 @@ bcm_an_ds3, -1226.03, 0.000799
 bcm_dg_us, -219.36, 0.002928 
 bcm_dg_ds, -531.44, 0.002709 
 
-
-!!! Hall C bcm calibration from run 2946. Check halog 3695862. 
-   
-
 !!!  Calibrations for 40-50uA from run 2965.  
 !!bcm_an_us, -1754.29, 0.002570
 !!bcm_an_ds, -1426.15, 0.002669
 !!bcm_an_ds3, -4427.00, 0.000774
 !!bcm_dg_us, -1341.94, 0.002793
 !!bcm_dg_ds, -1662.59, 0.002588 
+
+!!! Hall C bcm calibration from run 2946. Check halog 3695862. 
+   
   
 ! ds10x is saturated at this current range, pedestal is copied from 20-30 uA current scan
 bcm_an_ds10,  -2589.54,  0.000267 
@@ -76,9 +75,10 @@ bpm4ecYM, 1069.94, 1.0
   cav4bYI,  -278.993,    0.0118156
 !!cav4bXI, -313.61, -0.118434
 !!cav4bYI, -29.58, -0.009883
-  cav4cQ, -1322.19, 0.000076
-  cav4cXI,  1671.86, 0.000076
-  cav4cYI,  -1652.94, 0.000076
+!!! cav4c calibrations obtained from run 3138. Check halog 3702581.
+  cav4cQ, -224.44, 0.003221
+  cav4cXI, -408.33, 0.003221
+  cav4cYI, -186.39, 0.003221
 !!cav4cXI, -529.38, 0.017139
 !!cav4cYI, 219.36, -0.012486
   cav4dQ, -1829.75, 0.003070
