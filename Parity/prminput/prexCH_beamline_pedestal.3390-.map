@@ -41,14 +41,15 @@ bpm12XP, 3381.30, 1.0
 bpm12XM, 4278.13, 1.0 
 bpm12YP, 4129.82, 1.0 
 bpm12YM, 3191.24, 1.0 
-bpm14XP, 356.75, 1.0 
-bpm14XM, 863.20, 1.0 
-bpm14YP, 665.76, 1.0 
-bpm14YM, 689.91, 1.0 
-bpm8XP, 579.23, 1.0 
-bpm8XM, 1204.34, 1.0 
-bpm8YP, 195.80, 1.0 
-bpm8YM, -45.86, 1.0 
+!Cameron 7/16/2019 No pedestals yet, needs to be calibrated with fresh beam ramp stuff...
+bpm11XP, 0, 1.0 
+bpm11XM, 0, 1.0 
+bpm11YP, 0, 1.0 
+bpm11YM, 0, 1.0 
+bpm16XP, 0, 1.0 
+bpm16XM, 0, 1.0 
+bpm16YP, 0, 1.0 
+bpm16YM, 0, 1.0 
 bpm4acXP, -417.66, 1.0 
 bpm4acXM, -1163.10, 1.0 
 bpm4acYP, 709.30, 1.0 
