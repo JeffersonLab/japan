@@ -75,8 +75,8 @@ TString getCuts_h(TString cut = "defaultCut", Int_t overWriteCut = 0, TString br
       return cut;
     }
     else {
-      Printf("Note: invalid minirun number, using no cut instead");
-      cut = "1";
+      Printf("Note: invalid minirun number, using ok_cut instead on full run");
+      cut = "(ok_cut==1)";
       return cut;
     }
   } // Else, if you want "minirun==#" that will still work by hand, this if is just a flag to check env variable method instead...
@@ -89,10 +89,9 @@ TString getCuts_h(TString cut = "defaultCut", Int_t overWriteCut = 0, TString br
 
 TH1 * getHistogram_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber           = getRunNumber_h(runNumber);
-  splitNumber = getSplitNumber_h(splitNumber);
-  minirunNumber = getMinirunNumber_h(minirunNumber);
+  splitNumber         = getSplitNumber_h(splitNumber);
+  minirunNumber       = getMinirunNumber_h(minirunNumber);
   nRuns               = getNruns_h(nRuns);
-  TString channel     = tree + "_" + branch + "_" + leaf;
   cut                 = getCuts_h(cut,overWriteCut,branch);
   // Make an instance of the relevant data source 
   TLeaf   *Leaf       = getLeaf_h(tree,branch,leaf,runNumber,minirunNumber,splitNumber,nRuns);
@@ -100,7 +99,7 @@ TH1 * getHistogram_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",
     return 0;
   }
   TString leafName = "NULL";
-  if (leaf==branch || branch=="" || branch=="NULL") // Just use the leaf name
+  if (leaf==branch || branch=="" || branch=="NULL" || leaf=="" || leaf=="NULL") // Just use the leaf name
   {
     Printf("Looking for leaf instead\n");
     leafName = (TString)Leaf->GetName();
@@ -143,7 +142,6 @@ TH1 * getWeightedHistogram_h(TString tree = "mul", TString branch = "asym_vqwk_0
   splitNumber = getSplitNumber_h(splitNumber);
   minirunNumber = getMinirunNumber_h(minirunNumber);
   nRuns               = getNruns_h(nRuns);
-  TString channel     = tree + "_" + branch + "_" + leaf;
   cut                 = getCuts_h(cut,overWriteCut,branch);
   // Make an instance of the relevant data source 
   TLeaf   *Leaf       = getLeaf_h(tree,branch,leaf,runNumber,minirunNumber,splitNumber,nRuns);
@@ -151,8 +149,9 @@ TH1 * getWeightedHistogram_h(TString tree = "mul", TString branch = "asym_vqwk_0
     return 0;
   }
   TString leafName = "NULL";
-  if (leaf==branch || leaf=="" || leaf =="NULL")
+  if (leaf==branch || branch=="" || branch =="NULL" || leaf=="" || leaf=="NULL")
   {
+    Printf("Looking for leaf instead\n");
     leafName = (TString)Leaf->GetName();
   }
   else
@@ -195,10 +194,15 @@ void writeInt_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
   nRuns     = getNruns_h(nRuns);
   TString weight = "NULL";
   TString integral = "NULL";
-  if (leaf==branch)
+  if (leaf==branch || branch == "" || branch == "NULL")
   {
     weight   = leaf;
     integral = "integral_" + leaf;
+  }
+  else if (leaf==branch || leaf == "" || leaf == "NULL")
+  {
+    weight   = branch;
+    integral = "integral_" + branch;
   }
   else
   {
@@ -232,12 +236,19 @@ void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_0
   TString mean_error  = "NULL";
   TString rms = "NULL";
   TString rms_error = "NULL";
-  if (leaf==branch)
+  if (leaf==branch || branch == "" || branch == "NULL")
   {
     mean = "mean_" + leaf;
     mean_error = "mean_" + leaf + "_error";
     rms = "rms_" + leaf;
     rms_error = "rms_" + leaf + "_error";
+  }
+  else if (leaf==branch || leaf == "" || leaf == "NULL")
+  {
+    mean = "mean_" + branch;
+    mean_error = "mean_" + branch + "_error";
+    rms = "rms_" + branch;
+    rms_error = "rms_" + branch + "_error";
   }
   else
   {
@@ -286,10 +297,15 @@ void writeMean_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0
   nRuns     = getNruns_h(nRuns);
   TString mean = "NULL";
   TString mean_error  = "NULL";
-  if (leaf==branch)
+  if (leaf==branch || branch == "" || branch == "NULL")
   {
     mean = "mean_" + leaf;
     mean_error = "mean_" + leaf + "_error";
+  }
+  else if (leaf==branch || leaf == "" || leaf == "NULL")
+  {
+    mean = "mean_" + branch;
+    mean_error = "mean_" + branch + "_error";
   }
   else
   {
@@ -327,11 +343,15 @@ void writeRMS_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
   nRuns     = getNruns_h(nRuns);
   TString rms = "NULL";
   TString rms_error = "NULL";
-  if (leaf==branch)
+  if (leaf==branch || branch == "" || branch == "NULL")
   {
-    if (debug>3) Printf("defining strings for printing data type");
     rms = "rms_" + leaf;
     rms_error = "rms_" + leaf + "_error";
+  }
+  else if (leaf==branch || leaf == "" || leaf == "NULL")
+  {
+    rms = "rms_" + branch;
+    rms_error = "rms_" + branch + "_error";
   }
   else
   {
