@@ -122,7 +122,7 @@ Int_t getMinirunNumber_h(Int_t minirunNumber = -2){
   }
   if (minirunNumber<-1){ // We consider -1 to be the "Full Run" case, and 0 is actually 0
     Printf("Error: minirun Number given (%d) invalid, must be an integer >= -1",minirunNumber);
-    return 0;
+    return -1; // We are doing the full run here, since no valid input given.
   }
   if (debug>0) Printf("MiniRun number: %d",minirunNumber);
   return minirunNumber;
