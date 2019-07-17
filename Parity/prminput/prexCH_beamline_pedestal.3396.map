@@ -21,7 +21,8 @@ bcm_dg_ds, -1420.85, 0.002557
 
 hallc_bcm_4c, -155, 0.001507
    
-  ! BPM pedestal from run 2770 current scan with gains off at ~50-70uA (based on UNSER)
+! BPM Pedestals from Tao - https://logbooks.jlab.org/entry/3705645
+! prexCH_beamline_pedestal.3396.map - apply it as a template pedestal map for 50 uA runs from last night since we added bpm 11 and bpm 16 .
 
 bpm4aXP, 370.46, 1.0 
 bpm4aXM, 314.16, 1.0 
