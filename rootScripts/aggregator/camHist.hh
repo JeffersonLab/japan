@@ -71,7 +71,7 @@ TString getCuts_h(TString cut = "defaultCut", Int_t overWriteCut = 0, TString br
   if (cut == "minirun" || cut == "MINIRUN" || cut == "MiniRun" || cut == "miniRun"){ // Flag word by itself, then check env variable
     Int_t minirunNumber = getMinirunNumber_h(-2); // Check the minirun number
     if (minirunNumber >= 0){
-      cut = Form("minirun==%d",minirunNumber);
+      cut = Form("(ok_cut==1 && minirun==%d)",minirunNumber); // Use native ok_cut version of ErrorFlag instead of assuming that friending with "mul" tree will work FIXME this assumes we want ErrorFlag==0 and leaves no room for creativity
       return cut;
     }
     else {
