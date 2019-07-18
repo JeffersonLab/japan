@@ -59,7 +59,7 @@ class LinRegBevPeb {
   virtual ~LinRegBevPeb() { };
 
   void solve();
-  bool failed() { return fGoodEventNumber <= 2; }
+  bool failed() { return fGoodEventNumber < nP + 1; }
 
   // after last event
   void printSummaryP() const;
