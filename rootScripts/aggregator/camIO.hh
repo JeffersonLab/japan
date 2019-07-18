@@ -220,6 +220,7 @@ vector<vector<string>> textFileParse_h(TString fileName, char delim = ',')
 TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t n_runs = -1, TString filenamebase = "NULL"){
 
   TString filename = "NULL";
+  TString defaultTree = "mul";
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   minirunNumber = getMinirunNumber_h(minirunNumber);
@@ -231,7 +232,8 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
   TString fileNameBase  = filenamebase; // placeholder string
   if (debug>4) Printf("Tree to add to chain = %s",(const char*)tree);
   TChain * newTChain = new TChain(tree);
-  TChain *friendTChain = new TChain("mul");
+  //TChain *friendTChain = new TChain("mul");
+  TChain *friendTChain = new TChain(defaultTree);
 
   Bool_t foundFile = false;
 
@@ -246,7 +248,8 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
     if (!newTChain) {
       Printf("Error, Post Pan TChain not found in file name: %s\n",postpanFileName.Data());
     }
-    tree = "mul"; // FIXME we are just doing this now... for post pan stuff
+    //tree = "mul"; // FIXME we are just doing this now... for post pan stuff
+    tree = defaultTree; // FIXME we are just doing this now... for post pan stuff
   }
 
   const int num_daqConfigs = 4;
@@ -285,12 +288,25 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
           if (postpanStatus == 0){
             newTChain->Add(filename);
           }
-          friendTChain->Add(filename);
-          Int_t testValFriend = friendTChain->GetEntries();
-          newTChain->AddFriend(friendTChain);
-          if (debug>3) Printf("Friend TChain found in %s, with %d entries",filename.Data(),testValFriend);
+          Int_t testValFriend = 0;
+          if (tree != defaultTree) {
+            friendTChain->Add(filename);
+            testValFriend = friendTChain->GetEntries();
+          }
+          //newTChain->AddFriend(friendTChain);
+          //if (debug>3) Printf("Friend TChain found in %s, with %d entries",filename.Data(),testValFriend);
+          if (postpanStatus == 1){
+            newTChain->AddFriend(friendTChain);
+            if (debug>3) Printf("Friend TChain \"%s\" found in %s, with %d entries",defaultTree.Data(),filename.Data(),testValFriend);
+          }
+          else if (tree != defaultTree) {
+            newTChain->AddFriend(friendTChain);
+            if (debug>3) Printf("Friend TChain \"%s\" found in %s, with %d entries",defaultTree.Data(),filename.Data(),testValFriend);
+          }
           Int_t testVal = newTChain->GetEntries();
-          if (debug>3) Printf("Original TChain found in %s, with %d entries",postpanFileName.Data(),testVal);
+          //if (debug>3) Printf("Original TChain found in %s, with %d entries",postpanFileName.Data(),testVal);
+          if (debug>3 && postpanStatus == 1) Printf("Original TChain \"%s\" found in %s, with %d entries",tree.Data(),postpanFileName.Data(),testVal);
+          if (debug>3 && postpanStatus == 0) Printf("Original TChain \"%s\" found in %s, with %d entries",tree.Data(),filename.Data(),testVal);
         }
         else {
           if (debug>1) Printf("File %s doesn't contain tree: \"%s\"",(const char*)filename,(const char*)tree);
@@ -348,7 +364,9 @@ TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TSt
     Printf("Error, tree %s missing",(const char*)(tree));
     return 0;
   }
+  Printf("test1");
   if (branch == "NULL" || branch == "" || branch == leaf) {
+    if (debug>3) Printf("Looking for Branch named: %s",leaf.Data());
     Branch = Chain->GetBranch(leaf);
     if (!Branch){ // If the branch doesn't exist assume the user wants to get a leaf instead
       TLeaf * Leaf = Chain->GetLeaf(leaf);
@@ -378,6 +396,7 @@ TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TSt
       return Leaf;
     }
   }
+  Branch = Chain->GetBranch(branch);
   TLeaf * Leaf = Branch->GetLeaf(leaf);
   if (!Leaf){
     Printf("Error, leaf %s missing",(const char*)(tree+"_"+branch+"_"+leaf));

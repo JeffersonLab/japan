@@ -5,8 +5,9 @@ import subprocess
 from argparse import ArgumentParser
 
 parser     = ArgumentParser()
-parser.add_argument("-f", "--conf", dest="devicelist", help="Device List and Analyses for camguin", metavar="CONF", default="input.txt")
-parser.add_argument("-r", "--runs", dest="runlist", help="Run List text file for camguin wrapper", metavar="RUNS", default="test")
+parser.add_argument("-f", "--conf", dest="devicelist", help="Device List and Analyses for camguin", required=True, metavar="CONF", default="input.txt")
+parser.add_argument("-r", "--runs", dest="runlist", help="Run List text file for camguin wrapper", required=True, metavar="RUNS", default="test")
+
 args       = vars(parser.parse_args())
 runlist    = args['runlist']
 devicelist = args['devicelist']
