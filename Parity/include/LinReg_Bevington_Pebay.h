@@ -26,31 +26,33 @@ class LinRegBevPeb {
   Int_t fErrorFlag;             ///< is information valid
   Long64_t fGoodEventNumber;    ///< accumulated so far  
 
-  TMatrixD mA, mAsig;  ///< found slopes + their stand errors
-
   /// correlations
   TMatrixD mRPY, mRYP;
   TMatrixD mRPP, mRYY;
-  TMatrixD mRYYprime;
+  TMatrixD mRYYp;
 
   /// unnormalized covariances
   TMatrixD mVPY, mVYP;
   TMatrixD mVPP, mVYY;
-  TMatrixD mVYYprime;
+  TMatrixD mVYYp;
+  /// variances
+  TVectorD mVP, mVY;
+  TVectorD mVYp;
 
   /// normalized covariances
-  TMatrixD sigXY, sigYX;
-  TMatrixD sigXX, sigYY;
-  TMatrixD sigYYprime;
+  TMatrixD mSPY, mSYP;
+  TMatrixD mSPP, mSYY;
+  TMatrixD mSYYp;
+  /// sigmas
+  TVectorD mSP, mSY;
+  TVectorD mSYp;
 
   /// mean values
-  TVectorD mMP, mMY, mMYprime;
+  TVectorD mMP, mMY, mMYp;
 
-  /// sigmas
-  TVectorD sigX, sigY, sigYprime;
 
   /// slopes
-  TMatrixD Axy, Ayx;
+  TMatrixD Axy, Ayx, dAxy, dAyx; // found slopes and their standard errors
 
  public:
 
@@ -72,7 +74,7 @@ class LinRegBevPeb {
   void print();
   void init();
   void clear();
-  void setDims(int a, int b){ nP=a; nY=b;}
+  void setDims(int a, int b){ nP = a; nY = b;}
 
   /// Get mean value of a variable, returns error code
   Int_t getMeanP(const int i, Double_t &mean) const;
