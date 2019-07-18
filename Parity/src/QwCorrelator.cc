@@ -558,12 +558,13 @@ void QwCorrelator::ConstructHistograms(TDirectory *folder, TString &prefix)
   }
 
   // store list of names to be archived
-  hA[0] = new TH1D("NamesIV",Form("IV name list nIV=%d",nP),nP,0,1);
+  fHnames.resize(2);
+  fHnames[0] = TH1D("NamesIV",Form("IV name list nIV=%d",nP),nP,0,1);
   for (int i = 0; i < nP; i++)
-    hA[0]->Fill(fIndependentName[i].c_str(),1.*i);
-  hA[1] = new TH1D("NamesDV",Form("DV name list nIV=%d",nY),nY,0,1);
+    fHnames[0].Fill(fIndependentName[i].c_str(),1.*i);
+  fHnames[1] = TH1D("NamesDV",Form("DV name list nIV=%d",nY),nY,0,1);
   for (int i = 0; i < nY; i++)
-    hA[1]->Fill(fDependentName[i].c_str(),i*1.);
+    fHnames[1].Fill(fDependentName[i].c_str(),i*1.);
 }
 
 /// \brief Fill the histograms
