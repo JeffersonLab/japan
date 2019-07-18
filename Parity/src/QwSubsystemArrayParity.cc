@@ -109,7 +109,8 @@ QwSubsystemArrayParity& QwSubsystemArrayParity::operator= (const QwSubsystemArra
 QwSubsystemArrayParity& QwSubsystemArrayParity::operator+= (const QwSubsystemArrayParity &value)
 {
   if (!value.empty()){
-
+    fCodaEventNumber = (fCodaEventNumber == 0) ? value.fCodaEventNumber :
+        std::min(fCodaEventNumber, value.fCodaEventNumber);
     if (this->size() == value.size()){
       this->fErrorFlag|=value.fErrorFlag;
       for(size_t i=0;i<value.size();i++){
@@ -148,7 +149,8 @@ QwSubsystemArrayParity& QwSubsystemArrayParity::operator+= (const QwSubsystemArr
 QwSubsystemArrayParity& QwSubsystemArrayParity::operator-= (const QwSubsystemArrayParity &value)
 {
   if (!value.empty()){
-
+    fCodaEventNumber = (fCodaEventNumber == 0) ? value.fCodaEventNumber :
+        std::min(fCodaEventNumber, value.fCodaEventNumber);
     if (this->size() == value.size()){
       this->fErrorFlag|=value.fErrorFlag;
       for(size_t i=0;i<value.size();i++){
@@ -183,7 +185,6 @@ void QwSubsystemArrayParity::Sum(
   const QwSubsystemArrayParity &value1,
   const QwSubsystemArrayParity &value2)
 {
-
   if (!value1.empty()&& !value2.empty()){
     *(this)  = value1;
     *(this) += value2;
@@ -263,7 +264,9 @@ void QwSubsystemArrayParity::AccumulateRunningSum(const QwSubsystemArrayParity& 
   if (!value.empty()) {
     if (this->size() == value.size()) {
       if (value.GetEventcutErrorFlag()==0){//do running sum only if error flag is zero. This way will prevent any Beam Trip(in ev mode 3) related events going into the running sum.
-	for (size_t i = 0; i < value.size(); i++) {
+        fCodaEventNumber = (fCodaEventNumber == 0) ? value.fCodaEventNumber :
+            std::min(fCodaEventNumber, value.fCodaEventNumber);
+        for (size_t i = 0; i < value.size(); i++) {
 	  if (value.at(i)==NULL || this->at(i)==NULL) {
 	    //  Either the value or the destination subsystem
 	    //  are null
