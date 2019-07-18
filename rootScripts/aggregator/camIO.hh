@@ -364,7 +364,6 @@ TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TSt
     Printf("Error, tree %s missing",(const char*)(tree));
     return 0;
   }
-  Printf("test1");
   if (branch == "NULL" || branch == "" || branch == leaf) {
     if (debug>3) Printf("Looking for Branch named: %s",leaf.Data());
     Branch = Chain->GetBranch(leaf);
@@ -396,7 +395,9 @@ TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TSt
       return Leaf;
     }
   }
-  Branch = Chain->GetBranch(branch);
+  else {
+    Branch = Chain->GetBranch(branch);
+  }
   TLeaf * Leaf = Branch->GetLeaf(leaf);
   if (!Leaf){
     Printf("Error, leaf %s missing",(const char*)(tree+"_"+branch+"_"+leaf));
