@@ -550,14 +550,13 @@ void  QwSubsystemArray::ConstructBranchAndVector(
   values.push_back(0.0);
   values.push_back(0.0);
   values.push_back(0.0);
-  if (prefix == "" || prefix == "yield_") {
+  if (prefix == "" || prefix.Index("yield_") == 0) {
     tree->Branch("CodaEventNumber",&(values[fTreeArrayIndex]),"CodaEventNumber/D");
     tree->Branch("CodaEventType",&(values[fTreeArrayIndex+1]),"CodaEventType/D");
     tree->Branch("Coda_CleanData",&(values[fTreeArrayIndex+2]),"Coda_CleanData/D");
     tree->Branch("Coda_ScanData1",&(values[fTreeArrayIndex+3]),"Coda_ScanData1/D");
     tree->Branch("Coda_ScanData2",&(values[fTreeArrayIndex+4]),"Coda_ScanData2/D");
   }
-  
   for (iterator subsys = begin(); subsys != end(); ++subsys) {
     VQwSubsystem* subsys_ptr = dynamic_cast<VQwSubsystem*>(subsys->get());
     subsys_ptr->ConstructBranchAndVector(tree, prefix, values);
