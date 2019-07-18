@@ -208,10 +208,10 @@ for(Int_t i=1;i<5;i++){
    out_file_HA_IA = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback_HA_IA_log.txt", "a"); 
     fprintf(out_file_PITA,"%22s \n",asctime (timeinfo));
     fprintf(out_file_PITA,
-	    "%9s %15s  %12s %12s %15s %15s %15s %15s\n",
-	    "Pat num.,", "Charge Aq [ppm],", "+-Aq Error,", "Correction,",
+	    "%10s %9s %15s  %12s %12s %15s %15s %15s %15s\n",
+	    "Current Pat.,","Pat num.,", "Charge Aq [ppm],", "+-Aq Error,", "Correction,",
 	    "New PITA Setpoint[1],", "Old PITA Setpoint[1],",
-    	    "New PITA Setpoint[5],", "Old PITA Setpoint[5],");
+    	    "New PITA Setpoint[5],", "Old PITA Setpoint[5]");
     fclose(out_file_PITA);
 
     /* fprintf(out_file_HA_IA,"%22s \n",asctime (timeinfo)); */
@@ -249,9 +249,9 @@ out_file_PITAPOSV = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedb
 out_file_PITAPOSXY = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback_PITAPOSXY_log.txt", "a"); 
     fprintf(out_file_PITAPOSXY,"%22s \n",asctime (timeinfo));
     fprintf(out_file_PITAPOSXY,
-	    "%9s %15s %15s %12s %12s %12s\n",
-	    "Pat num.,", "DiffX [um],", "DiffY [um],", "Correction POSXY,",
-	    "New PITAPOSXY Setpoint[1],", "Old PITAPOSXY Setpoint[1],");
+	    "%10s %9s %15s %15s %12s %12s %12s\n",
+	    "Current Pat.,","Pat num.,", "DiffX [um],", "DiffY [um],", "Correction POSXY,",
+	    "New PITAPOSXY Setpoint[1],", "Old PITAPOSXY Setpoint[1]");
     fclose(out_file_PITAPOSXY);
 
 
@@ -259,9 +259,9 @@ out_file_PITAPOSXY = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feed
 
     fprintf(out_file_HC_IA,"%22s \n",asctime (timeinfo));
     fprintf(out_file_HC_IA,
-  	    "%10s %22s  %16s %16s %26s %23s \n",
-  	    "Pat num.", "Charge Asym(ppm)", "Asym Error", "Correction",
-  	    "New IA Setpoint", "Old IA Setpoint");
+  	    "%10s %10s %22s  %16s %16s %26s %23s \n",
+  	    "Current pat.,","Pat num.,", "Charge Asym(ppm),", "Asym Error,", "Correction,",
+  	    "New IA Setpoint,", "Old IA Setpoint");
     fclose(out_file_HC_IA);
 
 out_file_HA_IA = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback_HA_IA_log.txt", "a");

@@ -1114,7 +1114,7 @@ void QwHelicityCorrelatedFeedback::FeedHCIASetPoints(){
     Double_t correction = fTargetHCCharge/fHCIASlope;
 QwMessage<<"................Correction............."<<fTargetHCCharge/fHCIASlope<<QwLog::endl;
 QwMessage<<"................hall C Aq............."<<fTargetHCCharge<<QwLog::endl;
-QwMessage<<"................Hall C slope............."<<fHCIASlope<<QwLog::endl;
+QwMessage<<"................HALL C slope............."<<fHCIASlope<<QwLog::endl;
    
 
 
@@ -1366,7 +1366,7 @@ void QwHelicityCorrelatedFeedback::LogParameters(){
   out_file_PITA = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback_PITA_log.txt", "a");
   
 
-  fprintf(out_file_PITA,"%9.0d %+15.2f %15.2f %15.2f %25.2f %25.2f %25.2f %25.2f \n",fQuartetNumber,fChargeAsymmetry,fChargeAsymmetryError,TMath::Abs(fPITASetpoint1-fPrevPITASetpoint1),fPITASetpoint1,fPrevPITASetpoint1,fPITASetpoint5,fPrevPITASetpoint5);
+  fprintf(out_file_PITA,"%10.0d %9.0d %+15.2f %15.2f %15.2f %25.2f %25.2f %25.2f %25.2f \n",fCurrentPatternNumber,fQuartetNumber,fChargeAsymmetry,fChargeAsymmetryError,TMath::Abs(fPITASetpoint1-fPrevPITASetpoint1),fPITASetpoint1,fPrevPITASetpoint1,fPITASetpoint5,fPrevPITASetpoint5);
   fclose(out_file_PITA);
 
 
@@ -1396,7 +1396,7 @@ void QwHelicityCorrelatedFeedback::LogXYParameters(){
  
 
   out_file_PITAPOSXY = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback_PITAPOSXY_log.txt", "a");
-  fprintf(out_file_PITAPOSXY,"%9.0d %+15.2f %15.2f %15.2f %15.2f %15.2f \n",fQuartetNumber,fXDiff,fYDiff,TMath::Abs(fPOSXYSetpoint1-fPrevPOSXYSetpoint1),fPOSXYSetpoint1,fPrevPOSXYSetpoint1);
+  fprintf(out_file_PITAPOSXY,"%10d %9.0d %+15.2f %15.2f %15.2f %15.2f %15.2f \n",fCurrentPatternNumber,fQuartetNumber,fXDiff,fYDiff,TMath::Abs(fPOSXYSetpoint1-fPrevPOSXYSetpoint1),fPOSXYSetpoint1,fPrevPOSXYSetpoint1);
   fclose(out_file_PITAPOSXY); 
 };
 
@@ -1406,7 +1406,7 @@ void QwHelicityCorrelatedFeedback::LogHCParameters(){
  
    out_file_HC_IA = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback_HC_IA_log.txt", "a");
   //fQuartetNumber only available when we have good stable Hall C beam
-     fprintf(out_file_HC_IA," %9.0d  %15.2f  %15.2f %15.0f %25.0f  %25.0f \n",fQuartetNumber,fTargetHCCharge,fTargetHCChargeError,TMath::Abs(fHCIASetpoint1-fPrevHCIASetpoint1),fHCIASetpoint1,fPrevHCIASetpoint1);
+   fprintf(out_file_HC_IA,"%10d %9.0d  %15.2f  %15.2f %15.0f %25.0f  %25.0f \n",fCurrentPatternNumber,fQuartetNumber,fTargetHCCharge,fTargetHCChargeError,TMath::Abs(fHCIASetpoint1-fPrevHCIASetpoint1),fHCIASetpoint1,fPrevHCIASetpoint1);
    fclose(out_file_HC_IA);
   
 };
@@ -1416,7 +1416,7 @@ void QwHelicityCorrelatedFeedback::LogHAParameters(){
  
    out_file_HA_IA = fopen("/adaqfs/halla/apar/PREX/japan_feedback/LogFiles/Feedback_HA_IA_log.txt", "a");
   //fQuartetNumber only available when we have good stable Hall C beam
-     fprintf(out_file_HA_IA," %9.0d  %15.2f  %15.2f %15.0f %25.0f  %25.0f \n",fQuartetNumber,fTargetHACharge,fTargetHAChargeError,TMath::Abs(fHAIASetpoint1-fPrevHAIASetpoint1),fHAIASetpoint1,fPrevHAIASetpoint1);
+   fprintf(out_file_HA_IA,"%10d %9.0d  %15.2f  %15.2f %15.0f %25.0f  %25.0f \n",fCurrentPatternNumber,fQuartetNumber,fTargetHACharge,fTargetHAChargeError,TMath::Abs(fHAIASetpoint1-fPrevHAIASetpoint1),fHAIASetpoint1,fPrevHAIASetpoint1);
    fclose(out_file_HA_IA);
   
 };
@@ -2224,8 +2224,9 @@ void  QwHelicityCorrelatedFeedback::CalculateAsymmetry()
       //fPatternIsGood = kTRUE;
       fGoodPatternCounter++;//increment the quartet number - reset after each PITA feedback operation
       fQuartetNumber++;//Then increment the quartet number - continously count
-    } else
-      QwError << "fails on errorflag cut" << QwLog::endl;
+    } else {
+      // QwError << "fails on errorflag cut" << QwLog::endl;
+    }
 
     if (localdebug) QwDebug << " pattern number =" << fQuartetNumber << QwLog::endl;
   }
@@ -2252,8 +2253,9 @@ void QwHelicityCorrelatedFeedback::AccumulateRunningSum(QwHelicityCorrelatedFeed
     //fPatternIsGood = kTRUE;
     fGoodPatternCounter++;//increment the quartet number - reset after each PITA feedback operation
     fQuartetNumber++;//Then increment the quartet number - continously count
-  } else
-    QwError << "fails on errorflag cut" << QwLog::endl;
+  } else {
+    // QwError << "fails on errorflag cut" << QwLog::endl;
+  }
 
   if(entry.fAsymmetry.RequestExternalValue("q_targC", &fTargetParameter)){
     //fScalerChargeRunningSum.PrintValue();
@@ -2348,32 +2350,58 @@ void QwHelicityCorrelatedFeedback::CalculateRunningAverage(Int_t mode){
 void QwHelicityCorrelatedFeedback::GetTargetChargeStat(){
   CalculateRunningAverage();
 
+  size_t nBPM = vBPM.size();
+  Bool_t refill;
+  if (vWireSumAsymmetry.size()==nBPM){
+    refill=kTRUE;
+  } else {
+    vWireSumAsymmetry.clear();
+    refill=kFALSE;
+  }
 
-Int_t nBPM = vBPM.size();
- 
-  for(int i=0;i<nBPM;i++){
+  for(size_t i=0;i<nBPM;i++){
     if (fAsymmetry.RequestExternalValue(vBPM[i],&fTargetParameter)){
       Double_t this_mean =fTargetParameter.GetValue()*1.0e+6;
       Double_t this_width=fTargetParameter.GetValueWidth()*1.0e+6;
       std::pair<Double_t,Double_t> this_pair = std::make_pair(this_mean,this_width);
    
-     
-      vWireSumAsymmetry.push_back(this_pair);
+      if (refill){
+	vWireSumAsymmetry[i].first  = this_pair.first;
+	vWireSumAsymmetry[i].second = this_pair.second;
+      } else {
+	vWireSumAsymmetry.push_back(this_pair);
+      }
+    } else {
+      QwWarning << "Could not get asymmetry results for "
+		<< vBPM[i] << QwLog::endl;
     }
   }
 
 
 
-Int_t nBPM1 = vBPM1.size();
- 
-  for(int j=0;j<nBPM1;j++){
+  size_t nBPM1 = vBPM1.size();
+  if (vWireSumPosition.size()==nBPM1){
+    refill=kTRUE;
+  } else {
+    vWireSumPosition.clear();
+    refill=kFALSE;
+  }
+  for(size_t j=0;j<nBPM1;j++){
     if (fAsymmetry.RequestExternalValue(vBPM1[j],&fTargetParameter)){
       Double_t this_mean1 =fTargetParameter.GetValue()*1.0e+3;
       Double_t this_width1=fTargetParameter.GetValueWidth()*1.0e+3;
       std::pair<Double_t,Double_t> this_pair1 = std::make_pair(this_mean1,this_width1);
      
-     
-      vWireSumPosition.push_back(this_pair1);
+     if (refill){
+	vWireSumPosition[j].first  = this_pair1.first;
+	vWireSumPosition[j].second = this_pair1.second;
+      } else {
+	vWireSumPosition.push_back(this_pair1);
+      }
+
+    } else {
+      QwWarning << "Could not get difference results for "
+		<< vBPM1[j] << QwLog::endl;
     }
   }
 
