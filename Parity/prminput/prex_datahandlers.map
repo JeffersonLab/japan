@@ -92,6 +92,13 @@
   tree-name  = lrb_all
   tree-comment = Correlations (all variables)
 
+[QwExtractor]
+  name       = bmw
+  priority   = 50
+  map        = prex_bmw.conf
+  tree-name  = bmw
+  tree-comment = Beam modulation
+
 [QwCombiner]
   name       = MyCombiner
   priority   = 0

@@ -1,0 +1,4 @@
+# Condition in section header
+[bmwcoil1 == 1]
+# Variables to write in body
+bmwcoil1

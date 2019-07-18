@@ -23,6 +23,13 @@
   tree-name  = lrb_std
   tree-comment = Correlations
 
+[QwExtractor]
+  name       = bmw
+  priority   = 50
+  map        = prex_bmw.conf
+  tree-name  = bmw
+  tree-comment = Beam modulation
+
 #[QwCorrelator]
 #  name       = lrb_all
 #  priority   = 50
