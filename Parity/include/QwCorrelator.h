@@ -116,11 +116,8 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 		
   int nP, nY;
 
-  // histograms
-  enum {mxHA=4};
-  TH1D* hA[mxHA];
-
   // monitoring histos for iv & dv
+  std::vector<TH1D> fHnames;
   std::vector<TH1D> fH1iv;
   std::vector<TH1D> fH1dv;
   std::vector<std::vector<TH2D>> fH2iv;
