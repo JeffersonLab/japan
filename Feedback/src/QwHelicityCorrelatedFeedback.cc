@@ -2262,21 +2262,21 @@ void QwHelicityCorrelatedFeedback::AccumulateRunningSum(QwHelicityCorrelatedFeed
     //fScalerChargeRunningSum.AccumulateRunningSum(fScalerCharge);
     if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
       fTargetHCChargeRunningSum.AccumulateRunningSum(fTargetParameter);
-      fHCIAGoodPatternCounter++;//update the good HA asymmetry counter
+      fHCIAGoodPatternCounter = fTargetHCChargeRunningSum.GetGoodEventCount();
     }
   }
 
   if(entry.fAsymmetry.RequestExternalValue("q_targA", &fTargetParameter)){
     if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
       fTargetHAChargeRunningSum.AccumulateRunningSum(fTargetParameter);
-      fHAIAGoodPatternCounter++;//update the good HA asymmetry counter
+      fHAIAGoodPatternCounter=fTargetHAChargeRunningSum.GetGoodEventCount();
     }
   }
 
   if(entry.fAsymmetry.RequestExternalValue("q_targB", &fTargetParameter)){
     if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
       fTargetHBChargeRunningSum.AccumulateRunningSum(fTargetParameter);
-      fHBIAGoodPatternCounter++;//update the good HA asymmetry counter
+      fHBIAGoodPatternCounter=fTargetHBChargeRunningSum.GetGoodEventCount();
     }
   }
   
@@ -2284,7 +2284,7 @@ void QwHelicityCorrelatedFeedback::AccumulateRunningSum(QwHelicityCorrelatedFeed
     if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
       fTargetXDiffRunningSum.AccumulateRunningSum(fTargetParameter);
       //  bXDiff=kTRUE;
-      fPFUGoodPatternCounter++;
+      fPFUGoodPatternCounter=fTargetXDiffRunningSum.GetGoodEventCount();
     }
   }
 
@@ -2292,7 +2292,7 @@ void QwHelicityCorrelatedFeedback::AccumulateRunningSum(QwHelicityCorrelatedFeed
     if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
       fXYPosXDiffRunningSum.AccumulateRunningSum(fTargetParameter);
       //  bXDiff=kTRUE;
-      fXGoodPatternCounter++;
+      fXGoodPatternCounter=fXYPosXDiffRunningSum.GetGoodEventCount();
     }
   }
 
@@ -2300,14 +2300,14 @@ void QwHelicityCorrelatedFeedback::AccumulateRunningSum(QwHelicityCorrelatedFeed
     if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
       fXYPosYDiffRunningSum.AccumulateRunningSum(fTargetParameter);
       //  bXDiff=kTRUE;
-      fYGoodPatternCounter++;
+      fYGoodPatternCounter=fXYPosYDiffRunningSum.GetGoodEventCount();
     }
   }
 
   if(entry.fAsymmetry.RequestExternalValue("y_targ", &fTargetParameter)){
     if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
       fTargetYDiffRunningSum.AccumulateRunningSum(fTargetParameter);
-      fPFVGoodPatternCounter++;
+      fPFVGoodPatternCounter=fTargetYDiffRunningSum.GetGoodEventCount();
       // bYDiff=kTRUE;
     }
   }
