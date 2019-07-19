@@ -71,6 +71,9 @@ class QwDetectorArray:
   Int_t LoadInputParameters(TString pedestalfile);
   Int_t LoadEventCuts(TString filename);
   Bool_t ApplySingleEventCuts();//Check for good events by stting limits on the devices readings
+
+  Bool_t  CheckForBurpFail(const VQwSubsystem *subsys);
+
   void IncrementErrorCounters();
   void PrintErrorCounters() const;// report number of events failed due to HW and event cut faliure
   UInt_t GetEventcutErrorFlag();//return the error flag
@@ -132,9 +135,9 @@ class QwDetectorArray:
   void Scale(Double_t factor);
   void Normalize(VQwDataElement* denom);
 
-  void AccumulateRunningSum(VQwSubsystem* value);
+  void AccumulateRunningSum(VQwSubsystem* value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
   //remove one entry from the running sums for devices
-  void DeaccumulateRunningSum(VQwSubsystem* value);
+  void DeaccumulateRunningSum(VQwSubsystem* value, Int_t ErrorMask=0xFFFFFFF);
   void CalculateRunningAverage();
 
   const QwIntegrationPMT* GetIntegrationPMT(const TString name) const;

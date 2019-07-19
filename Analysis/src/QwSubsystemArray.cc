@@ -24,7 +24,7 @@
  * Create a subsystem array based on the configuration option 'detectors'
  */
 QwSubsystemArray::QwSubsystemArray(QwOptions& options, CanContainFn myCanContain)
-: fEventTypeMask(0x0),fnCanContain(myCanContain)
+: fCleanParameter{0,0,0},fEventTypeMask(0x0),fnCanContain(myCanContain)
 {
   ProcessOptionsToplevel(options);
   QwParameterFile detectors(fSubsystemsMapFile.c_str());
@@ -49,6 +49,9 @@ QwSubsystemArray::QwSubsystemArray(const QwSubsystemArray& source)
   fSubsystemsDisabledByName(source.fSubsystemsDisabledByName),
   fSubsystemsDisabledByType(source.fSubsystemsDisabledByType)
 {
+  for (size_t i = 0; i < 3; i++)
+    fCleanParameter[i] = source.fCleanParameter[i];
+
   fPublishedValuesDataElement.clear();
   fPublishedValuesSubsystem.clear();
   fPublishedValuesDescription.clear();

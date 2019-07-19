@@ -53,7 +53,11 @@ class QwHelicityPattern {
   Bool_t PairAsymmetryIsGood();
   Bool_t NextPairIsComplete();
   void   CalculatePairAsymmetry();
-  void   ClearPairData(){fPairYield.ClearEventData();fPairDifference.ClearEventData(); fPairAsymmetry.ClearEventData();}
+  void   ClearPairData(){
+    fPairYield.ClearEventData();
+    fPairDifference.ClearEventData();
+    fPairAsymmetry.ClearEventData();
+  }
 
   Bool_t IsCompletePattern() const;
 
@@ -93,6 +97,13 @@ class QwHelicityPattern {
   /// Status of storing pattern differences flag
   Bool_t IsDifferenceEnabled() { return fEnableDifference; };
 
+  /// Enable/disable storing pair differences
+  void  EnablePairs(const Bool_t flag = kTRUE) { fEnablePairs = flag; };
+  /// Disable storing pair differences
+  void  DisablePairs() { fEnablePairs = kFALSE; };
+  /// Status of storing pair differences flag
+  Bool_t IsPairsEnabled() { return fEnablePairs; };
+
 #ifdef __USE_DATABASE__
   /// Update the blinder status with new external information
   void UpdateBlinder(QwParityDB* db){
@@ -113,28 +124,21 @@ class QwHelicityPattern {
   };
 
   // wish these could be const references, but ConstructBranchAndVector messes with object
-  QwSubsystemArrayParity& GetBurstYield()      { return fBurstYield; };
-  QwSubsystemArrayParity& GetBurstDifference() { return fBurstDifference; };
-  QwSubsystemArrayParity& GetBurstAsymmetry()  { return fBurstAsymmetry; };
+  QwSubsystemArrayParity& GetYield()      { return fYield; };
+  QwSubsystemArrayParity& GetDifference() { return fDifference; };
+  QwSubsystemArrayParity& GetAsymmetry()  { return fAsymmetry; };
 
   // wish these could be const references, but ConstructBranchAndVector messes with object
   QwSubsystemArrayParity& GetPairYield()      { return fPairYield; };
   QwSubsystemArrayParity& GetPairDifference() { return fPairDifference; };
   QwSubsystemArrayParity& GetPairAsymmetry()  { return fPairAsymmetry; };
 
-  void  AccumulateBurstSum();
-  void  AccumulateRunningBurstSum();
-  void  AccumulateRunningSum(){AccumulateRunningSum(*this);};
-  void  AccumulateRunningSum(QwHelicityPattern &entry);
+  void  AccumulateRunningSum(QwHelicityPattern &entry, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
   void  AccumulatePairRunningSum(QwHelicityPattern &entry);
 
-  void  CalculateBurstAverage();
-  void  CalculateRunningBurstAverage();
   void  CalculateRunningAverage();
 
-  void  PrintRunningBurstAverage() const;
-  void  PrintRunningAverage() const;
-  void  PrintBurstAverage() const;
+  void  PrintValue() const;
 
   void  ConstructObjects(){ConstructObjects((TDirectory*)NULL);};
   void  ConstructObjects(TDirectory *folder);
@@ -156,20 +160,18 @@ class QwHelicityPattern {
   void  WritePromptSummary(QwPromptSummary *ps);
 
   Bool_t IsGoodAsymmetry();
-  UInt_t GetEventcutErrorFlag() const{
+  UInt_t GetEventcutErrorFlag() const {
     return fAsymmetry.GetEventcutErrorFlag();
+  };
+  const UInt_t* GetEventcutErrorFlagPointer() const {
+    return fAsymmetry.GetEventcutErrorFlagPointer();
   };
 
   void  ClearEventData();
-  void  ClearBurstSum();
-  void  ClearRunningSum();
 
   void  Print() const;
 
  protected:
-  Bool_t fDEBUG;
-
-  //  QwHelicity* fHelicitySubsystem;
 
   std::vector<QwSubsystemArrayParity> fEvents;
   std::vector<Bool_t> fEventLoaded;
@@ -198,6 +200,8 @@ class QwHelicityPattern {
   QwSubsystemArrayParity fAsymmetry1;
   QwSubsystemArrayParity fAsymmetry2;
 
+  // Yield and asymmetry of a single helicity pair
+  Bool_t fEnablePairs;
   QwSubsystemArrayParity fPairYield;
   QwSubsystemArrayParity fPairDifference;
   QwSubsystemArrayParity fPairAsymmetry;
@@ -206,12 +210,6 @@ class QwHelicityPattern {
   Int_t fBurstLength;
   Bool_t fEnableBurstSum;
   Bool_t fPrintBurstSum;
-  QwSubsystemArrayParity fBurstYield;
-  QwSubsystemArrayParity fBurstDifference;
-  QwSubsystemArrayParity fBurstAsymmetry;
-  QwSubsystemArrayParity fRunningBurstYield;
-  QwSubsystemArrayParity fRunningBurstDifference;
-  QwSubsystemArrayParity fRunningBurstAsymmetry;
 
   // Running sum/average of the yield and asymmetry
   Bool_t fEnableRunningSum;
