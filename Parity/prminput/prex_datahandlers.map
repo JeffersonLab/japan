@@ -28,10 +28,10 @@
   map        = prex_corrolator.conf
   slope-file-base = blueR
   slope-file-suff = .block0.new.slope.root
-  slope-path = . 
+  slope-path = ./LRBoutput/
   alias-file-base = regalias_
   alias-file-suff = 
-  alias-path = .
+  alias-path = ./LRBoutput/
   block = 0
   disable-histos = true
 
@@ -41,10 +41,10 @@
   map        = prex_corrolator.conf
   slope-file-base = blueR
   slope-file-suff = .block1.new.slope.root
-  slope-path = . 
+  slope-path = ./LRBoutput/
   alias-file-base = regalias_
   alias-file-suff = 
-  alias-path = .
+  alias-path = ./LRBoutput/
   block = 1
   disable-histos = true
 
@@ -54,10 +54,10 @@
   map        = prex_corrolator.conf
   slope-file-base = blueR
   slope-file-suff = .block2.new.slope.root
-  slope-path = . 
+  slope-path = ./LRBoutput/
   alias-file-base = regalias_
   alias-file-suff = 
-  alias-path = .
+  alias-path = ./LRBoutput/
   block = 2
   disable-histos = true
 
@@ -67,10 +67,10 @@
   map        = prex_corrolator.conf
   slope-file-base = blueR
   slope-file-suff = .block3.new.slope.root
-  slope-path = . 
+  slope-path = ./LRBoutput/
   alias-file-base = regalias_
   alias-file-suff = 
-  alias-path = .
+  alias-path = ./LRBoutput/
   block = 3
   disable-histos = true
 
@@ -80,10 +80,10 @@
   map        = prex_corrolator_all.conf
   slope-file-base = blueR
   slope-file-suff = all.slope.root
-  slope-path = . 
+  slope-path = ./LRBoutput/ 
   alias-file-base = regalias_
   alias-file-suff = all
-  alias-path = .
+  alias-path = ./LRBoutput/
   disable-histos = true
 
 [QwCombiner]
