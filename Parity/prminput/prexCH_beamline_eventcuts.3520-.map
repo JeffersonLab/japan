@@ -28,7 +28,7 @@ EVENTCUTS = 3
 !for bcm devices
 !device_type, device_name,      lower limit, upper limit, local(l)/global(g), stability RMS
  bcm, bcm_an_ds3,		35,	1e6,	g,	0.8
- bpmstripline,	bpm12,	effectivecharge, 0, 1.8e5, g, 500
+ bpmstripline,	bpm12,	effectivecharge, 0, 1.8e5, g
  bpmstripline,	bpm4e,	effectivecharge, 0, 1.8e5, g
  bpmstripline,	bpm4a,	effectivecharge, 0, 1.8e5, g
  bpmstripline, bpm4a, ym, 10000, 50000, l
