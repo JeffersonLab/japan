@@ -7,14 +7,30 @@
 ! Unser calibration based on Run 1214 , HAPLOG 3609, also consistent with dave mack 3.7mV/uA halog entry 3689440 
 UNSER,   -174.1,     2.066e-2	    
 
-! BCM Calibration from run 3396 60-70 uA (based on UNSER) and ands10 at 20 -30uA
-bcm_an_us, -385.97, 0.002668 
-bcm_an_ds, -301.70, 0.002793 
-bcm_an_ds3, -1618.45, 0.000797 
-bcm_dg_us, -142.57, 0.002922 
-bcm_dg_ds, -340.10, 0.002712 
+! BCM Calibration from run 3395 10-70 uA (based on UNSER) and ands10 at 10 -30uA https://logbooks.jlab.org/entry/3706784
+bcm_an_ds, -387.81, 0.002774
 
-bcm_an_ds10, -1792.05, 0.000275 
+!Fit Run3395 from 10-70uA relative to calibrated "normalizing bcm": (bcm_an_ds.hw_sum_raw/bcm_an_ds.num_samples--387.81)*0.002774 (from bcm fit above from 10-70uA relative to UNSER):
+!bcm_an_us, -584.34, 0.002640
+!bcm_dg_us, -252.49, 0.002903
+!bcm_dg_ds, -534.58, 0.002685
+
+!Fit Run3395 from 50-70uA relative to calibrated "normalizing bcm": (bcm_an_ds.hw_sum_raw/bcm_an_ds.num_samples--387.81)*0.002774 (from bcm fit above from 10-70uA relative to UNSER):
+!bcm_an_ds3, -1974.06, 0.000791
+
+!Fit Run3395 from 10-30uA relative to calibrated "normalizing bcm": (bcm_an_ds.hw_sum_raw/bcm_an_ds.num_samples--387.81)*0.002774 (from bcm fit above from 10-70uA relative to UNSER):
+!bcm_an_ds10, -625.64, 0.000279
+
+
+!!Fit run3395 from 60-70uA or lower for ds10 and ds3 https://logbooks.jlab.org/entry/3706993
+bcm_an_us, -389.13, 0.002659
+bcm_an_ds3, -2174.05, 0.000789
+bcm_an_ds10, 340.14, 0.000285
+bcm_dg_ds, -210.26, 0.002717
+
+!!First Fit run3395 from 50-70uA then use IA scan to back caluclate pedestal https://logbooks.jlab.org/entry/3707257
+!bcm_dg_us, -779.34, 0.002902
+bcm_dg_us, -1027.98, 0.002902
 
 !!! Hall C bcm calibration from run 2946. Check halog 3695862. 
 !!! Updated to run 3372, halog 3705189
