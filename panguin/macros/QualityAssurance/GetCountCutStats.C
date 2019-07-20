@@ -55,8 +55,8 @@ void GetCountCutStats(Int_t nUserEvents = 0){
   percut[5]= cut[5]*100./tot;
   statStrNumbers[5] = Form(" = %d (%.2f%%)", cut[5], percut[5]);
 
-  statStr[6] = Form("BPM Saturation cut Failing Events");
-  r->Project(hist->GetName(), "CodaEventNumber", Form("(ErrorFlag&0x400)!=0 && Entry$>=(Entries$-%d)",nEvents));
+  statStr[6] = Form("Stability Cut Failing Events (beam + others)");
+  r->Project(hist->GetName(), "CodaEventNumber", Form("(ErrorFlag&0x1000000)!=0 && Entry$>=(Entries$-%d)",nEvents));
   cut[6] = hist->GetEntries();
   percut[6]= cut[6]*100./tot;
   statStrNumbers[6] = Form(" = %d (%.2f%%)", cut[6], percut[6]);
