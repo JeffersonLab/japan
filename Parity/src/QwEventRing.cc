@@ -37,6 +37,10 @@ void QwEventRing::DefineOptions(QwOptions &options)
       po::value<int>()->default_value(5),
       "QwEventRing: burp precut");
 
+  options.AddOptions()("burp.holdoff",
+      po::value<int>()->default_value(10),
+      "QwEventRing: burp holdoff");
+
   options.AddOptions()("ring.stability_cut",
       po::value<double>()->default_value(1),
       "QwEventRing: Stability ON/OFF");
