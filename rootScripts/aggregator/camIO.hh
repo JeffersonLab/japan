@@ -520,8 +520,22 @@ void writeAlarmFile_h(){
 }
 
 void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t new_runNumber = 0, Int_t new_minirunNumber = -2, Int_t new_splitNumber = -1, Int_t new_nRuns = -1){
+  // Get environment variables
+  new_runNumber     = getRunNumber_h(new_runNumber);
+  new_splitNumber   = getSplitNumber_h(new_splitNumber);
+  new_minirunNumber = getMinirunNumber_h(new_minirunNumber);
+  new_nRuns         = getNruns_h(new_nRuns);
+
   // Store all trees
-  TString aggregatorFileName = "run_aggregator.root";
+  if (new_minirunNumber <= -1) {
+    TString aggregatorFileName = Form("run_aggregator_%d.root",new_runNumber); 
+  }
+  else if (new_minirunNumber >= 0) {
+    TString aggregatorFileName = Form("minirun_aggregator_%d.root",new_runNumber);
+  }
+  else{
+    TString aggregatorFileName = "run_aggregator.root"; // Default root file name
+  }
   TString pwd                = gSystem->Getenv("PWD");
   Bool_t newFile             = gSystem->AccessPathName(pwd+"/"+aggregatorFileName); // Opposite return convention
   TFile *aggregatorFile      = new TFile(aggregatorFileName,"UPDATE");
@@ -531,12 +545,6 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
 
   // If the user adds an entry or branch then behave differently
   Bool_t newBranch = false;
-
-  // Get environment variables
-  new_runNumber     = getRunNumber_h(new_runNumber);
-  new_splitNumber   = getSplitNumber_h(new_splitNumber);
-  new_minirunNumber = getMinirunNumber_h(new_minirunNumber);
-  new_nRuns         = getNruns_h(new_nRuns);
 
   // Placeholder variables for reading of root file
   // Store the existing data in here per event
