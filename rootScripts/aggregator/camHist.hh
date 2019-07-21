@@ -60,7 +60,8 @@ TH1 * rebinTH1_h(TH1 * h1, TString mode = "manual", Int_t lookAbove = 0, Int_t l
 }
 
 TString getCuts_h(TString cut = "defaultCut", Int_t overWriteCut = 0, TString branchToCheck = "asym_vqwk_04_0ch0"){
-  TString defaultCut = "(ErrorFlag==0 && "+branchToCheck+".Device_Error_Code==0)"; // Make the default JAPAN cut on the user's given branch (assumes its a device ... excplicitly use noCut for non-device branches
+  TString defaultCut = "ErrorFlag==0"; // Default just errflag
+  //TString defaultCut = "(ErrorFlag==0 && "+branchToCheck+".Device_Error_Code==0)"; // Make the default JAPAN cut on the user's given branch (assumes its a device ... excplicitly use noCut for non-device branches
   if (cut == "defaultCut" || cut == "default" || cut == "def" || cut == "defaultCuts" || cut == "prex" || cut == "PREX"){
     if (debug > 1) Printf("Cut = %s",(const char*)defaultCut);
     return defaultCut; // Just return the default JAPAN cut
@@ -71,7 +72,8 @@ TString getCuts_h(TString cut = "defaultCut", Int_t overWriteCut = 0, TString br
   if (cut == "minirun" || cut == "MINIRUN" || cut == "MiniRun" || cut == "miniRun"){ // Flag word by itself, then check env variable
     Int_t minirunNumber = getMinirunNumber_h(-2); // Check the minirun number
     if (minirunNumber >= 0){
-      cut = Form("(ok_cut==1 && minirun==%d)",minirunNumber); // Use native ok_cut version of ErrorFlag instead of assuming that friending with "mul" tree will work FIXME this assumes we want ErrorFlag==0 and leaves no room for creativity
+      cut = Form("(ErrorFlag==0 && minirun==%d)",minirunNumber);
+      //cut = Form("(ok_cut==1 && minirun==%d)",minirunNumber); // Use native ok_cut version of ErrorFlag instead of assuming that friending with "mul" tree will work FIXME this assumes we want ErrorFlag==0 and leaves no room for creativity
       return cut;
     }
     else {

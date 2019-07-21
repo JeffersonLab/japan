@@ -7,11 +7,12 @@ from argparse import ArgumentParser
 parser     = ArgumentParser()
 parser.add_argument("-f", "--conf", dest="devicelist", help="Device List and Analyses for camguin", required=True, metavar="CONF", default="input.txt")
 parser.add_argument("-r", "--runs", dest="runlist", help="Run List text file for camguin wrapper", required=True, metavar="RUNS", default="test")
-parser.add_argument("-F", "--fullruns", dest="fullruns", help="Do mini runs flag", metavar="FULLRUNS", default="1")
+parser.add_argument("-F", "--fullruns", dest="fullruns", help="Do mini runs flag", metavar="FULLRUNS", default="0")
 
 args       = vars(parser.parse_args())
 runlist    = args['runlist']
 devicelist = args['devicelist']
+fullruns = args['fullruns']
 
 lines = []
 
@@ -51,7 +52,7 @@ for line in lines:
       print("Looking at mini run # = "+str(mini))
       os.system("./wrapper.sh -f "+str(devicelist)+" -r "+str(line)+" -m "+str(mini)+" -s 000 -n 1")
   else: # Do full run only (obviously this can be editted to do both in one go... but people want them separate - once we get the agg-rootfile names done correctly we can handle this internally to camguin)
-      print("Looking at Full run # = "+str(mini))
+      print("Looking at Full run")
       os.system("./wrapper.sh -f "+str(devicelist)+" -r "+str(line)+" -m "+str(-1)+" -s 000 -n 1")
 
 #os.system("mv run_aggregator.root run_aggregator_"+runlist+"_regress.root")
