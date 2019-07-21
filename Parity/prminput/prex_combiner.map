@@ -73,6 +73,22 @@ asym:bcm_an_ds, -0.5
 asym:bcm_an_us, 0.5
 asym:bcm_an_ds3, -0.5
 
+[asym:@bcm_dg_us_dg_ds_dd]
+asym:bcm_dg_us, 0.5
+asym:bcm_dg_ds, -0.5
+
+[asym:@bcm_cav4cQ_ds_dd]
+asym:cav4cQ, 0.5
+asym:bcm_an_ds, -0.5
+
+[asym:@bcm_dg_us_ds_dd]
+asym:bcm_dg_us, 0.5
+asym:bcm_an_ds, -0.5
+
+[asym:@bcm_dg_ds_ds_dd]
+asym:bcm_dg_ds, 0.5
+asym:bcm_an_ds, -0.5
+
 [asym:@sam_4_8_dd]
 asym:sam4, 0.5
 asym:sam8, -0.5
