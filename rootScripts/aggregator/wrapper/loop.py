@@ -7,6 +7,7 @@ from argparse import ArgumentParser
 parser     = ArgumentParser()
 parser.add_argument("-f", "--conf", dest="devicelist", help="Device List and Analyses for camguin", required=True, metavar="CONF", default="input.txt")
 parser.add_argument("-r", "--runs", dest="runlist", help="Run List text file for camguin wrapper", required=True, metavar="RUNS", default="test")
+parser.add_argument("-F", "--fullruns", dest="fullruns", help="Do mini runs flag", metavar="FULLRUNS", default="1")
 
 args       = vars(parser.parse_args())
 runlist    = args['runlist']
@@ -33,7 +34,7 @@ for line in lines:
   # minirun loop simply updates the MINIRUNNUM environment variable as it loops through.
   # Alternate solution is to procedurally generate the cut string: "minirun==# && ok_cut==1",1 (where 1 is the overwrite cut telling Device_Error_Code to go away)
   print("Extracting from run " + line)
-  cmds = ['root','-l','-q','-b','-L','getNMiniruns.C('+line+')']
+  cmds = ['root','-l','-q','-b','-L','getNMiniruns_postpan.C("'+line+'")']
   nMiniRuns = -1
   output = "NULL"
   output = subprocess.Popen(cmds, stdout=subprocess.PIPE).stdout.read().strip().decode('ascii') # Needs to be decoded... be careful
@@ -43,9 +44,15 @@ for line in lines:
     if each.split('=')[0] == "NMiniruns" and len(each.split('='))>1:
       nMiniRuns = int(each.split('=')[1])
       print("Found "+str(nMiniRuns)+" miniruns")
-  for mini in range(-1,nMiniRuns+1):
-    print("Looking at mini run # = "+str(mini))
-    os.system("./wrapper.sh -f "+str(devicelist)+" -r "+str(line)+" -m "+str(mini)+" -s 000 -n 1")
+  start = -1
+  if fullruns == 0:
+    start = 0
+    for mini in range(start,nMiniRuns):
+      print("Looking at mini run # = "+str(mini))
+      os.system("./wrapper.sh -f "+str(devicelist)+" -r "+str(line)+" -m "+str(mini)+" -s 000 -n 1")
+  else: # Do full run only (obviously this can be editted to do both in one go... but people want them separate - once we get the agg-rootfile names done correctly we can handle this internally to camguin)
+      print("Looking at Full run # = "+str(mini))
+      os.system("./wrapper.sh -f "+str(devicelist)+" -r "+str(line)+" -m "+str(-1)+" -s 000 -n 1")
 
-os.system("mv run_aggregator.root run_aggregator_"+runlist+"uA_regress.root")
-os.system("mv run_aggregator_"+runlist+"uA_regress.root ../")
+#os.system("mv run_aggregator.root run_aggregator_"+runlist+"_regress.root")
+#os.system("mv run_aggregator_"+runlist+"_regress.root ../")
