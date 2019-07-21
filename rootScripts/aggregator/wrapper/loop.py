@@ -46,7 +46,7 @@ for line in lines:
       nMiniRuns = int(each.split('=')[1])
       print("Found "+str(nMiniRuns)+" miniruns")
   start = -1
-  if fullruns == 0:
+  if int(fullruns) == 0:
     start = 0
     for mini in range(start,nMiniRuns):
       print("Looking at mini run # = "+str(mini))
