@@ -65,6 +65,24 @@ void QwEventRing::ProcessOptions(QwOptions &options)
   if (gQwOptions.HasValue("burp.precut"))
     fBurpPrecut=gQwOptions.GetValue<int>("burp.precut");
 
+  int tmpval = fBurpExtent;
+  if (fBurpPrecut>fBurpExtent){
+    QwWarning << "The burp precut ("<<fBurpPrecut
+	      << ") is larger than the burp extent (" 
+	      << fBurpExtent
+	      << "; this may not be what you meant to do."
+	      << QwLog::endl;
+    tmpval =  fBurpPrecut;
+  }
+  tmpval += 2;
+  if (fRING_SIZE<tmpval){
+    QwWarning << "Forcing ring size to be " << tmpval
+	      << " to accomodate a burp extent of " << fBurpExtent
+	      << " and a burp precut of " << fBurpPrecut
+	      << "; it had been " << fRING_SIZE << "." << QwLog::endl;
+    fRING_SIZE = tmpval;
+  }
+
   if (gQwOptions.HasValue("ring.stability_cut"))
     stability=gQwOptions.GetValue<double>("ring.stability_cut");
 
