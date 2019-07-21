@@ -69,10 +69,12 @@ TString getCuts_h(TString cut = "defaultCut", Int_t overWriteCut = 0, TString br
   if (cut == "noCut" || cut == "1"){
     return "1"; // Just return true
   }
-  if (cut == "minirun" || cut == "MINIRUN" || cut == "MiniRun" || cut == "miniRun"){ // Flag word by itself, then check env variable
+  cut.ToLower();
+  if (cut == "minirun" || cut == "miniruns"){ // Flag word by itself, then check env variable
     Int_t minirunNumber = getMinirunNumber_h(-2); // Check the minirun number
     if (minirunNumber >= 0){
-      cut = Form("(ErrorFlag==0 && minirun==%d)",minirunNumber);
+      cut = Form("(ErrorFlag==0 && minirun==%i)",minirunNumber);
+      //cut = Form("(ok_cut==1 && minirun==%d)",minirunNumber);
       //cut = Form("(ok_cut==1 && minirun==%d)",minirunNumber); // Use native ok_cut version of ErrorFlag instead of assuming that friending with "mul" tree will work FIXME this assumes we want ErrorFlag==0 and leaves no room for creativity
       return cut;
     }
@@ -238,21 +240,25 @@ void writeMeanRms_h(TString tree = "mul", TString draw = "asym_vqwk_04_0ch0", TS
   splitNumber = getSplitNumber_h(splitNumber);
   minirunNumber = getMinirunNumber_h(minirunNumber);
   nRuns     = getNruns_h(nRuns);
-  TString mean = "NULL";
-  TString mean_error  = "NULL";
-  TString rms = "NULL";
-  TString rms_error = "NULL";
+  TString mean = draw + "_mean";
+  TString mean_error  = draw + "_mean_error";
+  TString rms = draw + "_rms";
+  TString rms_error = draw + "_rms_error";
+  TString nEntries = draw + "_nentries";
   Double_t data_mean = 0;
   Double_t data_mean_error = 0;
   Double_t data_rms = 0;
   Double_t data_rms_error = 0;
-  TChain * Tree = getTree_h(tree, runNumber, minirunNumber, splitNumber, nRuns, filenamebase);
-  TString cut = getCuts_h(cut, overWriteCut, "NULL"); // FIXME in postPan era, branchToCheck in cuts method is not even used, but when it is, it will need to be parsed correctly - probably just ignore this from now on and make Device_Error_Code something done explicitly (since so many variables in Japan actually aren't devices)
-  Tree->Draw(draw,cut,overWriteCut,mode,runNumber,minirunNumber,splitNumber,nRuns);
+  TChain * Tree = getTree_h(tree, runNumber, minirunNumber, splitNumber, nRuns);
+  cut = getCuts_h(cut, overWriteCut, "NULL"); // FIXME in postPan era, branchToCheck in cuts method is not even used, but when it is, it will need to be parsed correctly - probably just ignore this from now on and make Device_Error_Code something done explicitly (since so many variables in Japan actually aren't devices)
+  Printf("%s->Draw(%s,%s)",tree.Data(),draw.Data(),cut.Data());
+  Int_t n_entries = Tree->Draw(Form("%s",draw.Data()),Form("%s",cut.Data()));
+  //Int_t n_entries = Tree->Draw("yield_bcm_an_ds","ErrorFlag==0 && minirun==0");
+  Printf("test 1");
   TH1 * hMeanRms = (TH1*)gROOT->FindObject("htemp");
   if (hMeanRms==0)
   {
-    Printf("Error, writeMeanRms_leafHist_h: Histogram failed");
+    Printf("Error, writeMeanRms_h: Histogram failed");
   }
   else {
     data_mean = hMeanRms->GetMean(1);
@@ -264,10 +270,11 @@ void writeMeanRms_h(TString tree = "mul", TString draw = "asym_vqwk_04_0ch0", TS
   if (debug>1) Printf("Run %d mean %s: %f+-%f",runNumber,(const char*)mean,data_mean,data_mean_error);
   if (debug>1) Printf("Run %d rms %s: %f+-%f",runNumber,(const char*)rms,data_rms,data_rms_error);
   if (aggregatorStatus){
-    writeFile_h(mean,data_mean,runNumber,splitNumber,nRuns);
-    writeFile_h(mean_error,data_mean_error,runNumber,splitNumber,nRuns);
-    writeFile_h(rms,data_rms,runNumber,splitNumber,nRuns);
-    writeFile_h(rms_error,data_rms_error,runNumber,splitNumber,nRuns);
+    writeFile_h(mean,data_mean,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(mean_error,data_mean_error,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(rms,data_rms,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(rms_error,data_rms_error,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(nEntries,n_entries,runNumber,minirunNumber,splitNumber,nRuns);
   }
   if (alarmStatus){
     // Then the alarm handler wants to receive the output in stdout
@@ -275,6 +282,7 @@ void writeMeanRms_h(TString tree = "mul", TString draw = "asym_vqwk_04_0ch0", TS
     Printf("%s=%f",(const char*)mean_error,data_mean_error);
     Printf("%s=%f",(const char*)rms,data_rms);
     Printf("%s=%f",(const char*)rms_error,data_rms_error);
+    Printf("%s=%d",(const char*)nEntries,n_entries);
   }
 }
 
@@ -334,10 +342,10 @@ void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_0
   if (debug>1) Printf("Run %d mean %s: %f+-%f",runNumber,(const char*)mean,data_mean,data_mean_error);
   if (debug>1) Printf("Run %d rms %s: %f+-%f",runNumber,(const char*)rms,data_rms,data_rms_error);
   if (aggregatorStatus){
-    writeFile_h(mean,data_mean,runNumber,splitNumber,nRuns);
-    writeFile_h(mean_error,data_mean_error,runNumber,splitNumber,nRuns);
-    writeFile_h(rms,data_rms,runNumber,splitNumber,nRuns);
-    writeFile_h(rms_error,data_rms_error,runNumber,splitNumber,nRuns);
+    writeFile_h(mean,data_mean,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(mean_error,data_mean_error,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(rms,data_rms,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(rms_error,data_rms_error,runNumber,minirunNumber,splitNumber,nRuns);
   }
   if (alarmStatus){
     // Then the alarm handler wants to receive the output in stdout

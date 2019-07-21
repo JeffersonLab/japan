@@ -17,7 +17,7 @@ fullruns = args['fullruns']
 lines = []
 
 try:
-  with open("runlist/"+runlist+".txt") as runlistFile:
+  with open(runlist) as runlistFile:
     for line in csv.reader(runlistFile, delimiter=','):
       lines.append(line[0])
 except:
@@ -50,7 +50,7 @@ for line in lines:
     start = 0
     for mini in range(start,nMiniRuns):
       print("Looking at mini run # = "+str(mini))
-      os.system("./wrapper.sh -f "+str(devicelist)+" -r "+str(line)+" -m "+str(mini)+" -s 000 -n 1")
+      os.system("./wrapper.sh -f "+str(devicelist)+" -r "+str(line)+" -m "+str(mini)+" -s 000 -n 1") # FIXME This -n 1 should be the Slug Number
   else: # Do full run only (obviously this can be editted to do both in one go... but people want them separate - once we get the agg-rootfile names done correctly we can handle this internally to camguin)
       print("Looking at Full run")
       os.system("./wrapper.sh -f "+str(devicelist)+" -r "+str(line)+" -m "+str(-1)+" -s 000 -n 1")

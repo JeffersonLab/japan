@@ -221,6 +221,7 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
 
   TString filename = "NULL";
   TString defaultTree = "mul";
+  TString newTree = "new";
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   minirunNumber = getMinirunNumber_h(minirunNumber);
@@ -249,12 +250,17 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
       Printf("Error, Post Pan TChain not found in file name: %s\n",postpanFileName.Data());
     }
     //tree = "mul"; // FIXME we are just doing this now... for post pan stuff
+    newTree = tree;
     tree = defaultTree; // FIXME we are just doing this now... for post pan stuff
   }
 
   const int num_daqConfigs = 4;
   const int num_analyses = 3;
-  for(Int_t i = 0; i < (n_runs); i++){
+  //for(Int_t i = 0; i < (n_runs); i++){ // FIXME this used to be used as a loop over chained together runs, and is being phased out in favor of slugging miniruns
+    // FIXME for the purpose of doing slugs (the original goal of the n_runs variable) we have decided to, instead
+    // of TChaining runs together and having large segments, to instead split the runs into miniruns (starting in post pan, see the other carnage around here)
+    // and then add those piece by piece into a "slug"
+    // We will now use the n_runs variable as a marker of which slug we are in.
     TString daqConfigs[num_daqConfigs] = {"prexPrompt_pass2","prexCH","prexINJ","prex_tedf"}; // Potentially replace this with a config file read in array or map;
     TString analyses[num_analyses] = {".","_regress_prFIXME.","_regress_mul."};
     TString suffix[2] = {"root",Form("%03d.root",splitNumber)};
@@ -263,7 +269,8 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
     for(Int_t ana=0;ana<num_analyses;ana++){
       for(Int_t j=0;j<num_daqConfigs;j++){
         for(Int_t suf=0;suf<2;suf++){
-          filenamebase = Form("%s/%s_%d%s%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber+i,(const char*)analyses[ana],(const char*) suffix[suf]);
+          // FIXME move to nruns==slugn : filenamebase = Form("%s/%s_%d%s%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber+i,(const char*)analyses[ana],(const char*) suffix[suf]);
+          filenamebase = Form("%s/%s_%d%s%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber,(const char*)analyses[ana],(const char*) suffix[suf]);
           filename     = filenamebase;
           if (debug>1) Printf("Trying file name: %s",(const char*)filenamebase);
           if ( !gSystem->AccessPathName(filename.Data()) ) {
@@ -289,7 +296,7 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
             newTChain->Add(filename);
           }
           Int_t testValFriend = 0;
-          if (tree != defaultTree) {
+          if (newTree != defaultTree) {
             friendTChain->Add(filename);
             testValFriend = friendTChain->GetEntries();
           }
@@ -299,13 +306,13 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
             newTChain->AddFriend(friendTChain);
             if (debug>3) Printf("Friend TChain \"%s\" found in %s, with %d entries",defaultTree.Data(),filename.Data(),testValFriend);
           }
-          else if (tree != defaultTree) {
+          else if (newTree != defaultTree) {
             newTChain->AddFriend(friendTChain);
             if (debug>3) Printf("Friend TChain \"%s\" found in %s, with %d entries",defaultTree.Data(),filename.Data(),testValFriend);
           }
           Int_t testVal = newTChain->GetEntries();
           //if (debug>3) Printf("Original TChain found in %s, with %d entries",postpanFileName.Data(),testVal);
-          if (debug>3 && postpanStatus == 1) Printf("Original TChain \"%s\" found in %s, with %d entries",tree.Data(),postpanFileName.Data(),testVal);
+          if (debug>3 && postpanStatus == 1) Printf("Original TChain found in %s, with %d entries",postpanFileName.Data(),testVal);
           if (debug>3 && postpanStatus == 0) Printf("Original TChain \"%s\" found in %s, with %d entries",tree.Data(),filename.Data(),testVal);
         }
         else {
@@ -316,7 +323,7 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
         candidateFile->Close();
       }
     }
-  }
+  // end FIXME }
   if (!foundFile){
     Printf("Rootfile not found in %s with runs from %d to %d, split %03d, check your config and rootfiles",(const char*)fileNameBase,runNumber,runNumber+n_runs-1, splitNumber);
     return 0;
