@@ -518,7 +518,7 @@ void writeAlarmFile_h(){
     file_out.close();
   }
 }
-
+/*
 struct units_t
 { 
   double ppm;
@@ -547,7 +547,7 @@ void addUnits(TFile file) {
   T->Write("agg", TObject::kOverwrite);
   fin->Close();
 }
-
+*/
 void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t new_runNumber = 0, Int_t new_minirunNumber = -2, Int_t new_splitNumber = -1, Int_t new_nRuns = -1){
   // Get environment variables
   new_runNumber     = getRunNumber_h(new_runNumber);
@@ -585,7 +585,6 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   if (newFile) {
     // Write a new file
     oldTree = new TTree("agg","Aggregator Tree");
-    addUnits(aggregatorFile);
     if (debug>0) Printf("Making new aggregator tree");
     branchList.push_back("run_number");
     branchList.push_back("n_runs");
