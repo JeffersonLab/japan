@@ -235,7 +235,7 @@ void writeInt_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
 // NEW FIXME
 
 
-void writeMeanRms_h(TString tree = "mul", TString draw = "asym_vqwk_04_0ch0", TString cut = "defaultCut", Int_t overWriteCut = 0, Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
+void writeMeanRms_h(TString tree = "mul", TString draw = "asym_vqwk_04_0ch0", TString units = "", TString cut = "defaultCut", Int_t overWriteCut = 0,  Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   minirunNumber = getMinirunNumber_h(minirunNumber);
@@ -251,10 +251,8 @@ void writeMeanRms_h(TString tree = "mul", TString draw = "asym_vqwk_04_0ch0", TS
   Double_t data_rms_error = 0;
   TChain * Tree = getTree_h(tree, runNumber, minirunNumber, splitNumber, nRuns);
   cut = getCuts_h(cut, overWriteCut, "NULL"); // FIXME in postPan era, branchToCheck in cuts method is not even used, but when it is, it will need to be parsed correctly - probably just ignore this from now on and make Device_Error_Code something done explicitly (since so many variables in Japan actually aren't devices)
-  Printf("%s->Draw(%s,%s)",tree.Data(),draw.Data(),cut.Data());
-  Int_t n_entries = Tree->Draw(Form("%s",draw.Data()),Form("%s",cut.Data()));
+  Int_t n_entries = Tree->Draw(Form("%s%s",draw.Data(),units.Data()),Form("%s",cut.Data()));
   //Int_t n_entries = Tree->Draw("yield_bcm_an_ds","ErrorFlag==0 && minirun==0");
-  Printf("test 1");
   TH1 * hMeanRms = (TH1*)gROOT->FindObject("htemp");
   if (hMeanRms==0)
   {

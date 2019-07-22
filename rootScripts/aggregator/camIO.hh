@@ -519,6 +519,35 @@ void writeAlarmFile_h(){
   }
 }
 
+struct units_t
+{ 
+  double ppm;
+  double ppb;
+  double mm;
+  double nm;
+  double um;
+  double V_uA;
+  double mV_uA;
+};
+
+//void addUnits(TString fnm) {
+void addUnits(TFile file) {
+  units_t unit;
+  unit.ppm=1e-6;
+  unit.ppb=1e-9;
+  unit.mm=1;
+  unit.um=1e-3;
+  unit.nm=1e-6;
+  unit.V_uA=1;
+  unit.mV_uA=1e-3;  
+  TTree *T=(TTree*)file->Get("agg");
+  T->Branch("units", &unit, "ppm/D:ppb/D:mm/D:nm/D:um/D:V_uA/D:mV_uA/D");
+
+  T->Fill();
+  T->Write("agg", TObject::kOverwrite);
+  fin->Close();
+}
+
 void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t new_runNumber = 0, Int_t new_minirunNumber = -2, Int_t new_splitNumber = -1, Int_t new_nRuns = -1){
   // Get environment variables
   new_runNumber     = getRunNumber_h(new_runNumber);
@@ -526,15 +555,13 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   new_minirunNumber = getMinirunNumber_h(new_minirunNumber);
   new_nRuns         = getNruns_h(new_nRuns);
 
+  TString aggregatorFileName="run_aggregator.root";
   // Store all trees
   if (new_minirunNumber <= -1) {
-    TString aggregatorFileName = Form("run_aggregator_%d.root",new_runNumber); 
-  }
-  else if (new_minirunNumber >= 0) {
-    TString aggregatorFileName = Form("minirun_aggregator_%d.root",new_runNumber);
+    aggregatorFileName = Form("run_aggregator_%d.root",new_runNumber); 
   }
   else{
-    TString aggregatorFileName = "run_aggregator.root"; // Default root file name
+    aggregatorFileName = Form("minirun_aggregator_%d.root",new_runNumber);
   }
   TString pwd                = gSystem->Getenv("PWD");
   Bool_t newFile             = gSystem->AccessPathName(pwd+"/"+aggregatorFileName); // Opposite return convention
@@ -558,6 +585,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   if (newFile) {
     // Write a new file
     oldTree = new TTree("agg","Aggregator Tree");
+    addUnits(aggregatorFile);
     if (debug>0) Printf("Making new aggregator tree");
     branchList.push_back("run_number");
     branchList.push_back("n_runs");
