@@ -1,0 +1,22 @@
+!! 70 uA pedestals for Main Detectors
+!! Pedestals from Run 3424 for 65-70uA https://logbooks.jlab.org/entry/3707321
+
+usl, 3381.39, 0.000076
+dsl, 13925.59, 0.000076
+usr, 1905.68, 0.000076
+dsr, 4581.71, 0.000076
+
+! Old 3132- AT pedestals
+atl1, -982.52, 0.000076
+atl2, 2681.51, 0.000076
+vqwk_25_0ch4, 0, 0.000076
+vqwk_25_0ch5, 0, 0.000076
+battery1L, 0, 0.000076
+battery2L, 0, 0.000076
+
+atr1, 1097.50, 0.000076
+atr2, 982.53, 0.000076
+vqwk_26_0ch4, 0, 0.000076
+vqwk_26_0ch5, 0, 0.000076
+battery1R ,   0, 0.000076
+battery2R ,   0, 0.000076

@@ -1,0 +1,13 @@
+!! SAM Pedestal
+!! For 70 uA runs, calibrated from run 3430
+
+!!Run3430 Fit SAMs and detectors from 60-70uA relative to (bcm_an_ds.hw_sum_raw/bcm_an_ds.num_samples--387.81)*0.002774 from log number 3707321
+sam1, 12198.80, 0.000076
+sam2, 11466.35, 0.000076
+sam3, 31691.92, 0.000076
+sam4, 8634.71, 0.000076
+sam5, 12304.00, 0.000076
+sam6, 13890.83, 0.000076
+sam7, 11444.85, 0.000076
+sam8, 13721.91, 0.000076
+
