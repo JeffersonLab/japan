@@ -82,7 +82,7 @@ Int_t getDebug_h(){
   return debug;
 }
 
-TString getOutputDir_h(){
+TString getOutputDir_h(TString outDir = "./"){
 // Get environment variable number of runs to chain
   if ( outDir == "./" ) 
   { 
@@ -91,7 +91,7 @@ TString getOutputDir_h(){
   }
   if (outDir == "" || outDir == "NULL"){
     Printf("Error: Output dir (%s) invalid, must be a string\n",outDir.Data());
-    return 0;
+    return "./";
   }
   if (debug>0) Printf("Output Directory: %s",outDir.Data());
   return outDir;

@@ -1,4 +1,4 @@
-setenv RUNNUM 2362
+setenv RUNNUM 1
 setenv NRUNS 1
 setenv SPLITNUM 0
 setenv MINIRUNNUM -1

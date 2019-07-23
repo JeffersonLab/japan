@@ -14,7 +14,6 @@ usage()
 
 source ../setup_camguin.sh
 
-
 unset CONFIG RUNNUM NRUNS
 
 while getopts ':r:m:s:f:n:h' c
