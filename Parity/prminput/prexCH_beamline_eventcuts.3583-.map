@@ -29,6 +29,8 @@ EVENTCUTS = 3
 !device_type, device_name,      lower limit, upper limit, local(l)/global(g), stability RMS
 ! 70 uA running BCM, BPM tracking non-saturation, global promotion of device error codes, BPM 4aYM had a few runs with strange wire response due to poor BNC connection
  bcm, bcm_an_ds,		55,	1e6,	g,	0.8
+! Adding the upstream BCM too, mostly for verification that it has no hardware errors and that it is also seeing the same beam
+ bcm, bcm_an_us,		55,	1e6,	g, 0
  bpmstripline,	bpm12,	effectivecharge, 0, 1.8e5, g, 0
  bpmstripline,	bpm11,	effectivecharge, 0, 1.8e5, g, 0
  bpmstripline,	bpm4e,	effectivecharge, 0, 1.8e5, g, 0
