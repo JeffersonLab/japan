@@ -241,13 +241,19 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
   splitNumber = getSplitNumber_h(splitNumber);
   minirunNumber = getMinirunNumber_h(minirunNumber);
   n_runs    = getNruns_h(n_runs);
-  postpanStatus = getpostpanStatus_h();
+  if (tree == "mini" || tree == "reg") {
+    postpanStatus = 1;
+  }
+  else {
+    postpanStatus = 0;
+  }
+  //postpanStatus = getpostpanStatus_h();
   if (filenamebase == "NULL"){
     filenamebase = gSystem->Getenv("QW_ROOTFILES");
   }
   TString fileNameBase  = filenamebase; // placeholder string
   if (debug>4) Printf("Tree to add to chain = %s",(const char*)tree);
-  TChain * newTChain = new TChain(tree);
+  TChain *newTChain = new TChain(tree);
   //TChain *friendTChain = new TChain("mul");
   TChain *friendTChain = new TChain(defaultTree);
 
