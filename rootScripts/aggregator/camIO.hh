@@ -241,7 +241,13 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
   splitNumber = getSplitNumber_h(splitNumber);
   minirunNumber = getMinirunNumber_h(minirunNumber);
   n_runs    = getNruns_h(n_runs);
-  if (tree == "mini" || tree == "reg") {
+  Int_t doMulExtra = 0;
+  TChain *extraFriendTChain = new TChain(tree);
+  if (tree.Contains("mulc")) {
+    doMulExtra = 1;
+    tree = "reg";
+  }
+  if (tree == "mini" || tree == "reg" || doMulExtra==1) {
     postpanStatus = 1;
   }
   else {
@@ -315,6 +321,10 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
           // FIXME This is how to avoid assuming post pan file lives in the same place
           if (postpanStatus == 0){
             newTChain->Add(filename);
+          }
+          if (doMulExtra == 1){
+            extraFriendTChain->Add(filename);
+            newTChain->AddFriend(extraFriendTChain);
           }
           Int_t testValFriend = 0;
           if (newTree != defaultTree) {
