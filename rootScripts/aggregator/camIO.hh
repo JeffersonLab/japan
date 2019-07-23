@@ -82,6 +82,21 @@ Int_t getDebug_h(){
   return debug;
 }
 
+TString getOutputDir_h(){
+// Get environment variable number of runs to chain
+  if ( outDir == "./" ) 
+  { 
+    TString out_dir = gSystem->Getenv("CAM_OUTPUTDIR");
+    outDir = out_dir;
+  }
+  if (outDir == "" || outDir == "NULL"){
+    Printf("Error: Output dir (%s) invalid, must be a string\n",outDir.Data());
+    return 0;
+  }
+  if (debug>0) Printf("Output Directory: %s",outDir.Data());
+  return outDir;
+}
+
 Int_t getRunNumber_h(Int_t runNumber = 0){
 // Get environment variable run number
   if (debug>0) Printf("Run number: %d",runNumber);
@@ -145,7 +160,6 @@ Int_t getNruns_h(Int_t n_runs = -1){
 
 void getAggregateVars_h(TTree * rootTree, std::vector<TString>* aggVars, std::vector<Double_t>* oldValues, std::vector<Double_t>* newValues) 
 {
-
   // Utility to find all of the variables (leaf's/branches) within a
   // Specified TTree and put them within the aggVars vector.
   // It is possible to generalize this up a level to loop over 
@@ -171,6 +185,7 @@ void getAggregateVars_h(TTree * rootTree, std::vector<TString>* aggVars, std::ve
     //if (debug>1) Printf("In branch %d : %s",iBranch,(const char*)&aggVars[iBranch]);
   }
 }
+
 void addAggregateVars_h(TString varName, std::vector<TString>* aggVars, std::vector<Double_t>* oldValues, std::vector<Double_t>* newValues){
 
   if (debug>1) Printf("Push back %s",(const char*)varName);
@@ -555,17 +570,18 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   new_minirunNumber = getMinirunNumber_h(new_minirunNumber);
   new_nRuns         = getNruns_h(new_nRuns);
 
-  TString aggregatorFileName="run_aggregator.root";
+  TString outputDir = getOutputDir_h();
+  TString aggregatorFileName = Form("%s/aggregator.root",outputDir.Data()); // FIXME, this is very specific, and doesn't allow for aggregating over slugs, for instance
   // Store all trees
   if (new_minirunNumber <= -1) {
-    aggregatorFileName = Form("run_aggregator_%d.root",new_runNumber); 
+    aggregatorFileName = Form("%s/run_aggregator_%d.root",outputDir.Data(),new_runNumber);
   }
   else{
-    aggregatorFileName = Form("minirun_aggregator_%d.root",new_runNumber);
+    aggregatorFileName = Form("%s/minirun_aggregator_%d.root",outputDir.Data(),new_runNumber);
   }
-  TString pwd                = gSystem->Getenv("PWD");
-  Bool_t newFile             = gSystem->AccessPathName(pwd+"/"+aggregatorFileName); // Opposite return convention
-  TFile *aggregatorFile      = new TFile(aggregatorFileName,"UPDATE");
+  TString pwd           = gSystem->Getenv("PWD");
+  Bool_t newFile        = gSystem->AccessPathName(pwd+"/"+aggregatorFileName); // Opposite return convention
+  TFile *aggregatorFile = new TFile(aggregatorFileName,"UPDATE");
   aggregatorFile->cd();
   TTree *oldTree;
   TTree *newTree;
