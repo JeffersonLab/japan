@@ -22,7 +22,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = 
   TTree * oldTree;
   TChain *chain = new TChain(tree);
   TFile * candidateFile = new TFile(filename.Data(),"READ");
-  if (if filename != "NULL" && candidateFile->GetListOfKeys()->Contains(tree)){
+  if (filename != "NULL" && candidateFile->GetListOfKeys()->Contains(tree)){
     chain->Add(filename);
     oldTree = chain;
   }
