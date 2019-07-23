@@ -1568,8 +1568,9 @@ void QwVQWK_Channel::Blind(const QwBlinder *blinder)
       blinder->BlindValue(fHardwareBlockSum);
     } else {
       blinder->ModifyThisErrorCode(fErrorFlag);
-      for (Int_t i = 0; i < fBlocksPerEvent; i++)  fBlock[i] = 0.0;
-      fHardwareBlockSum = 0.0;
+      for (Int_t i = 0; i < fBlocksPerEvent; i++)
+	fBlock[i] = QwBlinder::kValue_BlinderFail;
+      fHardwareBlockSum =  QwBlinder::kValue_BlinderFail;
     }
   }
   return;
@@ -1589,8 +1590,9 @@ void QwVQWK_Channel::Blind(const QwBlinder *blinder, const QwVQWK_Channel& yield
       blinder->BlindValue(fHardwareBlockSum, yield.fHardwareBlockSum);
     } else {
       blinder->ModifyThisErrorCode(fErrorFlag);//update the HW error code
-      for (Int_t i = 0; i < fBlocksPerEvent; i++)  fBlock[i] = 0.0;
-      fHardwareBlockSum = 0.0;
+      for (Int_t i = 0; i < fBlocksPerEvent; i++)
+	fBlock[i] = QwBlinder::kValue_BlinderFail * yield.fBlock[i];
+      fHardwareBlockSum = QwBlinder::kValue_BlinderFail * yield.fHardwareBlockSum;
     }
   }
   return;

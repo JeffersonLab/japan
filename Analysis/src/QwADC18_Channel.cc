@@ -1132,7 +1132,7 @@ void QwADC18_Channel::Blind(const QwBlinder *blinder)
       blinder->BlindValue(fValue);
     } else {
       blinder->ModifyThisErrorCode(fErrorFlag);
-      fValue = 0.0;
+      fValue = QwBlinder::kValue_BlinderFail;
     }
   }
 }
@@ -1149,7 +1149,7 @@ void QwADC18_Channel::Blind(const QwBlinder *blinder, const QwADC18_Channel& yie
       blinder->BlindValue(fValue, yield.fValue);
     } else {
       blinder->ModifyThisErrorCode(fErrorFlag);//update the HW error code
-      fValue = 0.0;
+      fValue = QwBlinder::kValue_BlinderFail * yield.fValue;
     }
   }
 }
