@@ -39,6 +39,8 @@ public:
   VQwHardwareChannel(const VQwHardwareChannel& value, VQwDataElement::EDataToSave datatosave);
   virtual ~VQwHardwareChannel() { };
 
+  void ProcessOptions();
+
   virtual VQwHardwareChannel* Clone() = 0;
 
   using VQwDataElement::UpdateErrorFlag;
