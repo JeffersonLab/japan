@@ -265,6 +265,25 @@ void writeMeanRms_h(TString tree = "mul", TString draw = "asym_vqwk_04_0ch0", TS
     data_rms_error = hMeanRms->GetRMSError(1);
   }
 
+  if (debug>1) Printf("Run %d mean %s: %f+-%f",runNumber,(const char*)mean,data_mean,data_mean_error);
+  if (debug>1) Printf("Run %d rms %s: %f+-%f",runNumber,(const char*)rms,data_rms,data_rms_error);
+  if (aggregatorStatus){
+    writeFile_h(mean,data_mean,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(mean_error,data_mean_error,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(rms,data_rms,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(rms_error,data_rms_error,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(nEntries,n_entries,runNumber,minirunNumber,splitNumber,nRuns);
+  }
+  if (alarmStatus){
+    // Then the alarm handler wants to receive the output in stdout
+    Printf("%s=%f",(const char*)mean,data_mean);
+    Printf("%s=%f",(const char*)mean_error,data_mean_error);
+    Printf("%s=%f",(const char*)rms,data_rms);
+    Printf("%s=%f",(const char*)rms_error,data_rms_error);
+    Printf("%s=%d",(const char*)nEntries,n_entries);
+  }
+}
+
 void writeCorrectionMeanRms_h(TString tree = "mul", TString draw = "asym_vqwk_04_0ch0", TString units = "", TString cut = "defaultCut", Int_t overWriteCut = 0,  Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
@@ -315,8 +334,6 @@ void writeCorrectionMeanRms_h(TString tree = "mul", TString draw = "asym_vqwk_04
     Printf("%s=%d",(const char*)nEntries,n_entries);
   }
 }
-
-
 
 
 // END NEW FIXME
