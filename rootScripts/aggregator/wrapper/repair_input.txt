@@ -1,0 +1,17 @@
+"meanRms","reg","bcm_an_us_ds3_avg","","miniruns",0,"defaultHist",0
+"meanRms","reg","bcm_an_ds_ds3_avg","","miniruns",0,"defaultHist",0
+"meanRms","reg","bcm_dg_us_ds3_avg","","miniruns",0,"defaultHist",0
+"meanRms","reg","bcm_cav4cQ_ds3_avg","","miniruns",0,"defaultHist",0
+"meanRms","reg","bcm_an_us_ds_dd ","","miniruns",0,"defaultHist",0
+"meanRms","reg","bcm_dg_us_ds_dd ","","miniruns",0,"defaultHist",0
+"meanRms","reg","bcm_dg_ds_ds_dd ","","miniruns",0,"defaultHist",0
+"meanRms","reg","bcm_dg_ds_ds3_dd ","","miniruns",0,"defaultHist",0
+"meanRms","reg","bcm_cav4cQ_ds_dd ","","miniruns",0,"defaultHist",0
+"meanRms","reg","asym_left_avg","","miniruns",0,"defaultHist",0
+"meanRms","reg","asym_left_dd","","miniruns",0,"defaultHist",0
+"meanRms","reg","asym_right_avg","","miniruns",0,"defaultHist",0
+"meanRms","reg","asym_right_dd","","miniruns",0,"defaultHist",0
+"meanRms","reg","asym_us_avg","","miniruns",0,"defaultHist",0
+"meanRms","reg","asym_us_dd","","miniruns",0,"defaultHist",0
+"meanRms","reg","asym_ds_avg","","miniruns",0,"defaultHist",0
+"meanRms","reg","asym_ds_dd","","miniruns",0,"defaultHist",0
