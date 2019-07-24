@@ -265,6 +265,38 @@ void writeMeanRms_h(TString tree = "mul", TString draw = "asym_vqwk_04_0ch0", TS
     data_rms_error = hMeanRms->GetRMSError(1);
   }
 
+void writeCorrectionMeanRms_h(TString tree = "mul", TString draw = "asym_vqwk_04_0ch0", TString units = "", TString cut = "defaultCut", Int_t overWriteCut = 0,  Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
+  runNumber = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
+  minirunNumber = getMinirunNumber_h(minirunNumber);
+  nRuns     = getNruns_h(nRuns);
+  TString mean = draw + "_correction_mean";
+  TString mean_error  = draw + "_correction_mean_error";
+  TString rms = draw + "_correction_rms";
+  TString rms_error = draw + "_correction_rms_error";
+  TString nEntries = draw + "_correction_nentries";
+  draw = "reg_" + draw + "-" + draw; // Make the actual draw command now
+  Double_t data_mean = 0;
+  Double_t data_mean_error = 0;
+  Double_t data_rms = 0;
+  Double_t data_rms_error = 0;
+  TChain * Tree = getTree_h(tree, runNumber, minirunNumber, splitNumber, nRuns);
+  // Technically for correction you need a smarter way to decide both object's OK/device error/error flag cuts
+  cut = getCuts_h(cut, overWriteCut, "NULL"); // FIXME in postPan era, branchToCheck in cuts method is not even used, but when it is, it will need to be parsed correctly - probably just ignore this from now on and make Device_Error_Code something done explicitly (since so many variables in Japan actually aren't devices)
+  Int_t n_entries = Tree->Draw(Form("%s%s",draw.Data(),units.Data()),Form("%s",cut.Data()));
+  //Int_t n_entries = Tree->Draw("yield_bcm_an_ds","ErrorFlag==0 && minirun==0");
+  TH1 * hMeanRms = (TH1*)gROOT->FindObject("htemp");
+  if (hMeanRms==0)
+  {
+    Printf("Error, writeMeanRms_h: Histogram failed");
+  }
+  else {
+    data_mean = hMeanRms->GetMean(1);
+    data_mean_error = hMeanRms->GetMeanError(1);
+    data_rms = hMeanRms->GetRMS(1);
+    data_rms_error = hMeanRms->GetRMSError(1);
+  }
+
   if (debug>1) Printf("Run %d mean %s: %f+-%f",runNumber,(const char*)mean,data_mean,data_mean_error);
   if (debug>1) Printf("Run %d rms %s: %f+-%f",runNumber,(const char*)rms,data_rms,data_rms_error);
   if (aggregatorStatus){

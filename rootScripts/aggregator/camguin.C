@@ -100,6 +100,16 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     if (debug>1) Printf("Done with meanrms ana");
   }
   else if (
+       ana == "correctionmeanrms"
+    || ana == "correctionmeanRms"
+    || ana == "correctionMeanRms"
+    || ana == "correction"
+    || ana == "corr"
+    || ana == "cor"){
+    writeCorrectionMeanRms_h( tree, branch, leaf, cut, overWriteCut, runNumber, minirunNumber, splitNumber, nRuns ); // FIXME Removed histMode input from this version of writeMeanRMS since we aren't doing intelligent branch parsing. This is the ideal Aggregator method, so don't make it any fancier
+    if (debug>1) Printf("Done with meanrms ana");
+  }
+  else if (
        ana == "Display"
     || ana == "display"
     || ana == "Disp"

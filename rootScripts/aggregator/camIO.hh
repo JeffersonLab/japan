@@ -595,8 +595,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   else{
     aggregatorFileName = Form("%s/minirun_aggregator_%d.root",outputDir.Data(),new_runNumber);
   }
-  TString pwd           = gSystem->Getenv("PWD");
-  Bool_t newFile        = gSystem->AccessPathName(pwd+"/"+aggregatorFileName); // Opposite return convention
+  Bool_t newFile        = gSystem->AccessPathName(aggregatorFileName); // Opposite return convention
   TFile *aggregatorFile = new TFile(aggregatorFileName,"UPDATE");
   aggregatorFile->cd();
   TTree *oldTree;
@@ -617,7 +616,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   if (newFile) {
     // Write a new file
     oldTree = new TTree("agg","Aggregator Tree");
-    if (debug>0) Printf("Making new aggregator tree");
+    if (debug>-1) Printf("Making new aggregator tree");
     branchList.push_back("run_number");
     branchList.push_back("n_runs");
     branchList.push_back("split_n");

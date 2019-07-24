@@ -7,5 +7,5 @@ export CAM_DEBUG=0
 export CAM_ALARM=1
 export CAM_AGGREGATE=1
 export CAM_POSTPAN=1
-export CAM_OUTPUTDIR=/adaqfs/home/apar/PREX/prompt/aggRootfiles/
+export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/
 export POSTPAN_ROOTFILES=/chafs2/work1/apar/postpan-outputs/
