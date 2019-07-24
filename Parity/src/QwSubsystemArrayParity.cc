@@ -480,7 +480,10 @@ Bool_t QwSubsystemArrayParity::ApplySingleEventCuts(){
   Int_t CountFalse;
   Bool_t status;
   UInt_t ErrorFlag;
-  fErrorFlag=0;
+  fErrorFlag=0;  // Testing if event number is within bad Event Range cut
+  if( CheckBadEventRange() )
+    fErrorFlag |=kBadEventRangeError;
+  
   VQwSubsystemParity *subsys_parity;
   CountFalse=0;
   if (!empty()){
@@ -604,7 +607,9 @@ void QwSubsystemArrayParity::UpdateErrorFlag() {
   //by default at the ApplySingleEventCuts routine fErrorFlag is updated properly and a const GetEventcutErrorFlag() routine 
   //returns the fErrorFlag value
   fErrorFlag=0;
-  
+  if( CheckBadEventRange() )
+    fErrorFlag |=kBadEventRangeError;
+
   VQwSubsystemParity *subsys_parity;
   if (!empty()){
     for (iterator subsys = begin(); subsys != end(); ++subsys){
@@ -613,6 +618,18 @@ void QwSubsystemArrayParity::UpdateErrorFlag() {
       fErrorFlag|=subsys_parity->UpdateErrorFlag();
     }
   }
+}
+
+Bool_t QwSubsystemArrayParity::CheckBadEventRange(){
+  std::vector< std::pair<UInt_t, UInt_t> >::iterator itber = fBadEventRange.begin(); // ber = bad event range
+  while(itber!=fBadEventRange.end()){
+    if( fCodaEventNumber >= (*itber).first 
+        && fCodaEventNumber <= (*itber).second){
+      return kTRUE;
+    }
+      itber++;
+  }
+  return kFALSE;
 }
 
 void  QwSubsystemArrayParity::ConstructBranchAndVector(TTree *tree, TString& prefix, std::vector<Double_t>& values){
