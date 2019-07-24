@@ -214,6 +214,10 @@ void QwSubsystemArray::DefineOptions(QwOptions &options)
                        po::value<std::string>()->default_value("detectors.map"),
                        "map file with detectors to include");
 
+  options.AddOptions()("bad-event-list",
+                       po::value<std::string>()->default_value("bad_events.map"),
+                       "map file with bad event ranges");
+
   // Versions of boost::program_options below 1.39.0 have a bug in multitoken processing
 #if BOOST_VERSION < 103900
   options.AddOptions()("disable-by-type",
@@ -254,12 +258,35 @@ void QwSubsystemArray::ProcessOptionsToplevel(QwOptions &options)
  */
 void QwSubsystemArray::ProcessOptionsSubsystems(QwOptions &options)
 {
+  fBadEventListFileName = options.GetValue<std::string>("bad-event-list");
+  if (fBadEventListFileName.size() > 0) {
+    fBadEventListFile = new QwParameterFile(fBadEventListFileName);
+    LoadAllEventRanges();
+  } else
+    fBadEventListFile = NULL;
+
   for (iterator subsys_iter = begin(); subsys_iter != end(); ++subsys_iter) {
     VQwSubsystem* subsys = dynamic_cast<VQwSubsystem*>(subsys_iter->get());
     subsys->ProcessOptions(options);
   }
 }
 
+void QwSubsystemArray::LoadAllEventRanges(){
+  // If there is an event list, open the next section
+  if (fBadEventListFile && !fBadEventListFile->IsEOF()) {
+    std::string bad_event_range;
+    // Find next non-whitespace, non-comment, non-empty line, before EOF
+    do {
+      fBadEventListFile->ReadNextLine(bad_event_range);
+      fBadEventListFile->TrimWhitespace();
+      fBadEventListFile->TrimComment('#');
+      if (fBadEventListFile->LineIsEmpty()) continue;
+      std::pair<UInt_t,UInt_t> aBadEventRange = QwParameterFile::ParseIntRange(":",bad_event_range);
+      fBadEventRange.push_back(aBadEventRange);
+      QwMessage << "Next Bad event range is " << bad_event_range << QwLog::endl;
+    } while (!fBadEventListFile->IsEOF());
+  }
+}
 
 /**
  * Get the subsystem in this array with the spcified name
