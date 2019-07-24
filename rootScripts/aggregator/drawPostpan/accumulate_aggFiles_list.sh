@@ -1,8 +1,9 @@
 #! /bin/sh
 ROOTFILEDIR="/chafs2/work1/apar/aggRootfiles"
+OUTPUTROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/slugRootfiles"
 if [ "$#" -lt 2 ]; then
-  echo "Usage: ./accumulate_aggFiles_list.sh list.txt output.root"
   echo "Error: Need to pass a runlist and output rootfile name as arguments"
+  echo "Usage: ./accumulate_aggFiles_list.sh list.txt (input file list, \\n separated,) output.root (what you want the output to be called)"
 else
   IFS=$'\n' read -d '' -r -a lines < $1
   # all lines
@@ -18,11 +19,11 @@ else
     run_lines[$i]=$run_temp
   done
 
-  hadd -f minirun_${2} ${minirun_lines[@]}
-  hadd -f run_${2} ${run_lines[@]}
+  hadd -f ${OUTPUTROOTFILEDIR}/minirun_${2} ${minirun_lines[@]}
+  hadd -f ${OUTPUTROOTFILEDIR}/run_${2} ${run_lines[@]}
 
-  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"minirun_${2}\"\)
-  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"run_${2}\"\)
+  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/minirun_${2}\"\)
+  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/run_${2}\"\)
 
 fi
 
