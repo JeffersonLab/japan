@@ -215,7 +215,7 @@ void QwSubsystemArray::DefineOptions(QwOptions &options)
                        "map file with detectors to include");
 
   options.AddOptions()("bad-event-list",
-                       po::value<std::string>()->default_value("bad_events.map"),
+                       po::value<std::string>()->default_value(""),
                        "map file with bad event ranges");
 
   // Versions of boost::program_options below 1.39.0 have a bug in multitoken processing
