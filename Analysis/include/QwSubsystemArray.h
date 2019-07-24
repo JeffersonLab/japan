@@ -108,7 +108,7 @@ class QwSubsystemArray:  public std::vector<boost::shared_ptr<VQwSubsystem> > {
   void ProcessOptionsSubsystems(QwOptions &options);
   /// \brief Process configuration options (default behavior)
   void ProcessOptions(QwOptions &options) { ProcessOptionsSubsystems(options); };
-  void LoadAllEventRanges();
+  void LoadAllEventRanges(QwOptions &options);
   
   /// \brief Add the subsystem to this array
   void push_back(VQwSubsystem* subsys);
@@ -314,8 +314,6 @@ class QwSubsystemArray:  public std::vector<boost::shared_ptr<VQwSubsystem> > {
   std::string fSubsystemsMapFile;
   std::vector<std::string> fSubsystemsDisabledByName; ///< List of disabled types
   std::vector<std::string> fSubsystemsDisabledByType; ///< List of disabled names
-  std::string fBadEventListFileName; // File name of Bad Event Range list
-  QwParameterFile* fBadEventListFile;
 
 }; // class QwSubsystemArray
 

@@ -258,12 +258,7 @@ void QwSubsystemArray::ProcessOptionsToplevel(QwOptions &options)
  */
 void QwSubsystemArray::ProcessOptionsSubsystems(QwOptions &options)
 {
-  fBadEventListFileName = options.GetValue<std::string>("bad-event-list");
-  if (fBadEventListFileName.size() > 0) {
-    fBadEventListFile = new QwParameterFile(fBadEventListFileName);
-    LoadAllEventRanges();
-  } else
-    fBadEventListFile = NULL;
+  LoadAllEventRanges(options);
 
   for (iterator subsys_iter = begin(); subsys_iter != end(); ++subsys_iter) {
     VQwSubsystem* subsys = dynamic_cast<VQwSubsystem*>(subsys_iter->get());
@@ -271,20 +266,22 @@ void QwSubsystemArray::ProcessOptionsSubsystems(QwOptions &options)
   }
 }
 
-void QwSubsystemArray::LoadAllEventRanges(){
-  // If there is an event list, open the next section
-  if (fBadEventListFile && !fBadEventListFile->IsEOF()) {
+void QwSubsystemArray::LoadAllEventRanges(QwOptions &options){
+
+  std::string fBadEventListFileName = options.GetValue<std::string>("bad-event-list");
+  if (fBadEventListFileName.size() > 0) {
+    QwParameterFile fBadEventListFile(fBadEventListFileName);
+    // If there is an event list, open the next section
     std::string bad_event_range;
-    // Find next non-whitespace, non-comment, non-empty line, before EOF
-    do {
-      fBadEventListFile->ReadNextLine(bad_event_range);
-      fBadEventListFile->TrimWhitespace();
-      fBadEventListFile->TrimComment('#');
-      if (fBadEventListFile->LineIsEmpty()) continue;
+    while (fBadEventListFile.ReadNextLine(bad_event_range)){
+      // Find next non-whitespace, non-comment, non-empty line, before EOF
+      fBadEventListFile.TrimWhitespace();
+      fBadEventListFile.TrimComment('#');
+      if (fBadEventListFile.LineIsEmpty()) continue;
       std::pair<UInt_t,UInt_t> aBadEventRange = QwParameterFile::ParseIntRange(":",bad_event_range);
       fBadEventRange.push_back(aBadEventRange);
       QwMessage << "Next Bad event range is " << bad_event_range << QwLog::endl;
-    } while (!fBadEventListFile->IsEOF());
+    } // end of loop of reading lines.
   }
 }
 
