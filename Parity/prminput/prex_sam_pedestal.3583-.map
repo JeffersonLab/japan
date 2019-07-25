@@ -1,7 +1,7 @@
 !! SAM Pedestal
 !! For 70 uA runs, calibrated from run 3430
 
-!!Run3430 Fit SAMs and detectors from 60-70uA relative to (bcm_an_ds.hw_sum_raw/bcm_an_ds.num_samples--387.81)*0.002774 from log number 3707321
+!!Run3597 https://logbooks.jlab.org/entry/3709537
 sam1, 12192.46, 0.000076
 sam2, 13126.92, 0.000076
 sam3, 11912.58, 0.000076

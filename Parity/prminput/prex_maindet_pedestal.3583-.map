@@ -1,5 +1,5 @@
 !! 70 uA pedestals for Main Detectors
-!! Pedestals from Run 3424 for 65-70uA https://logbooks.jlab.org/entry/3707321
+!! Pedestals from Run 3597 https://logbooks.jlab.org/entry/3709537
 
 usl, 1008.49, 0.000076
 dsl, 1342.35, 0.000076
