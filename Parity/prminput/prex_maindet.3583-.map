@@ -22,7 +22,7 @@ sample_size=4096
 !
 !  Force all channels to be "not_blindable" during testing
 !
-! Turning off Right ARM while RQ2 is being worked on over 2019-07-18->, started to go away during 3454, entirely turned off during event 103k of run 3455 and persists until x
+! Turning Right arm back on after RQ2 fixed. Note also that Left Quartz is new PREX II Quartz now
   VQWK, 0, 0,  IntegrationPMT,  usr           
   VQWK, 0, 1,  IntegrationPMT,  dsr           
   VQWK, 0, 2,  IntegrationPMT,  atr1          not_blindable 
