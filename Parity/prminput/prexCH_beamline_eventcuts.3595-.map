@@ -29,15 +29,16 @@ EVENTCUTS = 3
 !device_type, device_name,      lower limit, upper limit, local(l)/global(g), stability RMS
 ! 70 uA running BCM, BPM tracking non-saturation, global promotion of device error codes, BPM 4aYM had a few runs with strange wire response due to poor BNC connection
 ! So far stability cut on bcm_an_ds was 0.8. As we decided in WAC meeting 07/24/2019, we make the cut 1.4 for 70uA and 1 for 50uA running. i.e 2% stability cut.
+! Updating temporarily the current limit to include 50 uA until 70 uA stable running achieved
  bcm, bcm_an_ds,		35,	1e6,	g,	1.4
 ! Adding the upstream BCM too, mostly for verification that it has no hardware errors and that it is also seeing the same beam
  bcm, bcm_an_us,		5,	1e6,	g, 0
  bpmstripline,	bpm12,	effectivecharge, 0, 1.8e5, g, 0
  bpmstripline,	bpm11,	effectivecharge, 0, 1.8e5, g, 0
- bpmstripline,	bpm4e,	effectivecharge, 0, 1.8e5, g, 0
- bpmstripline,	bpm4a,	effectivecharge, 0, 1.8e5, g, 0
- bpmstripline,	bpm4ec,	effectivecharge, 0, 1.8e5, g, 0
- bpmstripline,	bpm4ac,	effectivecharge, 0, 1.8e5, g, 0
+ !bpmstripline,	bpm4e,	effectivecharge, 0, 1.8e5, g, 0
+ !bpmstripline,	bpm4a,	effectivecharge, 0, 1.8e5, g, 0
+ !bpmstripline,	bpm4ec,	effectivecharge, 0, 1.8e5, g, 0
+ !bpmstripline,	bpm4ac,	effectivecharge, 0, 1.8e5, g, 0
  bpmstripline, bpm4a, ym, 10000, 50000, l
 
 !for parity mock data run 1000 9.98608e+06
