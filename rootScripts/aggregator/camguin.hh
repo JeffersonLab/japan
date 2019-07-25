@@ -17,6 +17,7 @@
 #include <iostream>
 #include <string>
 #include <stdlib.h>
+#include <stdio.h>
 #include <dirent.h>
 #include <TROOT.h>
 #include <TSystem.h>

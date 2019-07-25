@@ -122,7 +122,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = 
       continue;
     }
     if (resp){
-      if (debug > 2) Printf("Branch %s",textFile[listEntryN][0].c_str());
+      if (debug > 2) Printf("Responding Branch %s",textFile[listEntryN][0].c_str());
       if (textFile[listEntryN][1]!="NULL"){
         oldRespondingDataBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][1]);
       }
@@ -155,7 +155,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = 
       nresp++;
     }
     if (manip){
-      if (debug > 2) Printf("Branch %s",textFile[listEntryN][0].c_str());
+      if (debug > 2) Printf("Manipulated Branch %s",textFile[listEntryN][0].c_str());
       if (textFile[listEntryN][1]!="NULL"){
         oldManipulatedDataBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][1]);
       }
@@ -327,31 +327,29 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = 
     while(oldTreeReader.Next() && oldTreeReader.GetCurrentEntry()<numEntries){
       //for (int i = 0; i < numEntries; i++)  // Loop over the input file's entries
       //oldTree->GetEntry(eventN);
-      if (*oldTreeErrorFlagValue==0){
-        newRegressedValuesOkCut = 1.0;
-      }
-      else {
-        if (debug > 3) Printf("error encountered in event %d",eventN);
+      if (*oldTreeErrorFlagValue!=0.0){
         newRegressedValuesOkCut = 0.0;
       }
+      //else {
+      //  if (debug > 2) Printf("error encountered in event %d, global error = %f",eventN,*oldTreeErrorFlagValue);
+      //  newRegressedValuesOkCut = 0.0;
+      //}
       for (Int_t j = 0 ; j<nmanip ; j++){ // Loop over fit parameters j
         if (debug > 3) Printf("Looping, j = %d",j);
-        if(oldManipulatedErrors[j]==0){
-          if (j<nmanip && j!=nmanipInputs){
-            oldManipulatedValues[j]=*oldManipulatedValuesReader[j]*weighting[j];
-            oldManipulatedErrors[j]=*oldManipulatedErrorsReader[j];
-            if (oldManipulatedUncertaintiesBranchList[j]!="User"){
-              oldManipulatedUncertainties[j]=*oldManipulatedUncertaintiesReader[j];
-            } // use the ROOT file supplied branch with uncertainties in it
+        if (j<nmanip && j!=nmanipInputs){
+          oldManipulatedValues[j]=*oldManipulatedValuesReader[j]*weighting[j];
+          oldManipulatedErrors[j]=*oldManipulatedErrorsReader[j];
+          if (oldManipulatedErrors[j] != 0.0) {
+            newRegressedValuesOkCut = 0.0;
+            if (debug > 2) Printf("Error in event manipulated variable %s, event %d",(const char*)oldManipulatedDataBranchList[j],eventN);
+            continue;
           }
-          else {
-            oldManipulatedValues[j]=1.0; // User input values here - this is the asymmetry/constant term
-          }
+          if (oldManipulatedUncertaintiesBranchList[j]!="User"){
+            oldManipulatedUncertainties[j]=*oldManipulatedUncertaintiesReader[j];
+          } // use the ROOT file supplied branch with uncertainties in it
         }
         else {
-          if (debug > 3) Printf("Entry %d has an error in input %s",eventN,(const char*)oldManipulatedDataBranchList[j]);
-          newRegressedValuesOkCut = 0.0;
-          continue; // Abort this entry
+          oldManipulatedValues[j]=1.0;// User input values here - this is the asymmetry/constant term
         }
       }
       // Define the function here
@@ -386,7 +384,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = 
         dddfi[1][0][0] = 0.0;
         dddfi[1][0][1] = ddfi[1][1]/parameters[0];
       }
-      if((*oldRespondingErrorsReader[fitN])!=0){ 
+      if((*oldRespondingErrorsReader[fitN])!=0.0){ 
         if (debug > 3) Printf("Entry %d has an error in input %s",eventN,(const char*)oldRespondingDataBranchList[fitN]);
         newRegressedValuesOkCut = 0.0;
       }
@@ -403,6 +401,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = 
         //newTree->Fill(); // Empty event here with error flag set to not ok
 
         newRegressedValuesOkCut = 1.0;
+        //eventN++;
         continue; 
       }
       si2 += oldRespondingUncertainties[fitN]*oldRespondingUncertainties[fitN];
@@ -520,7 +519,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = 
     iterateAgain = 0;
     if (passLimit == 1){ // Last pass, go for it
       Printf("Last pass of fit, speed = 1");
-      speed=1.0;
+      speed=0.5*1.0;
     }
     if (passLimit>0){
       if (debug > -1) {
@@ -543,6 +542,8 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = 
       for (Int_t j = 0 ; j<parameters.size(); j++){
         Printf("Relative change in parameter %d = %f",j,(delta_parameters[j]+parameters[j])/parameters[j]);
         if (abs(abs((parameters[j]+delta_parameters[j])/parameters[j])-1)>fitCriteria){
+        //if (!isnormal(parameters[j]) || !isnormal(delta_parameters[j]) || abs(abs((parameters[j]+delta_parameters[j])/parameters[j])-1)>fitCriteria){
+          Printf("\nRe-fitting, needs to be less change in parameters between subsequent fits to be convergent \n");
           iterateAgain = 1;
           numErrorEntries=0;
           oldTreeReader.Restart();
@@ -553,7 +554,14 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = 
         }
         if (parRms2<parameterLimitRMS && parAvg > parameterLimitValue){
           parameters[j]=(parameters[j]+speed*delta_parameters[j])/(parAvg*parAvg);
-          Printf("\nNormalized \n");
+          Printf("\nData out of control, redoing but normalized \n");
+        /*  iterateAgain = 1;
+          numErrorEntries=0;
+          oldTreeReader.Restart();
+          //newTree->Reset();
+          newTree->GetBranch(newRegressedBranchList[fitN])->Reset(); 
+          newTree->GetBranch(okFlagReg)->Reset(); 
+          newTree->SetEntries(0);*/
         }
         else{
           parameters[j]=parameters[j]+speed*delta_parameters[j];
@@ -574,6 +582,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = 
 
       if (parRms2<0.001 && parAvg > 2.0) {
         for (Int_t j = 0 ; j<parameters.size(); j++){
+          Printf("\nParameters exceed runaway false stability limit\n");
           parameters[j]=1.0e-9*parameters[j];
         }
       }
@@ -589,7 +598,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = 
     else {
       iterateAgain = 0;
     }
-    Printf("Fit pass %%%d completed",passLimitValue-passLimit);
+    Printf("Fit pass %d completed",passLimitValue-passLimit);
     passLimit = passLimit - 1;
     if (iterateAgain == 0){
       if (debug > -1) {

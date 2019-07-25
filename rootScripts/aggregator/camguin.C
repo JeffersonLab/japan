@@ -152,6 +152,7 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
   else if (
       ana == "regress"
    || ana == "regressor"
+   || ana == "regression"
    || ana == "reg"){
     regress_h( tree, runNumber, minirunNumber, splitNumber, nRuns, "regressor/regressionInput.txt", ' ');
   }
