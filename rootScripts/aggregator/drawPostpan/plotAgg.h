@@ -26,10 +26,31 @@ class Channel{
 void Channel::draw(TTree* tree,TString output){
 auto chan_name=this->name;
 auto chan_t=tree;
+TString unit="";
+if (chan_name.Contains("asym_")||chan_name.Contains("cor_")){
+  if (chan_name.Contains("_mean")) {unit="/ppb";} else{unit="/ppm";}
+}
+if (chan_name.Contains("bcm_") && (chan_name.Contains("_avg")||chan_name.Contains("_da") || chan_name.Contains("_dd"))){
+  if (chan_name.Contains("_mean")) {unit="/ppb";} else{unit="/ppm";}
+}
+if (chan_name.Contains("diff_")){
+  if (chan_name.Contains("_mean")) {unit="/nm";} else{unit="/nm";}
+}  
+if (chan_name.Contains("bpm_") && (chan_name.Contains("_avg")||chan_name.Contains("_da") || chan_name.Contains("_dd"))){
+  if (chan_name.Contains("_mean")) {unit="/nm";} else {unit="/nm";}
+}  
+
+
+if (chan_name.Contains("yield_")){
+  if (chan_name.Contains("bpm")) {unit="/mm";}
+  if (chan_name.Contains("usl")||chan_name.Contains("dsl") || chan_name.Contains("usr") || chan_name.Contains("dsr")|| chan_name.Contains("sam")) {unit="/mV_uA";}
+}
+  
+
 TTreeFormula f("name",chan_name, chan_t);
 
 if(f.GetNdim()!=0){
-Int_t nEntries=chan_t->Draw("run_number:minirun_n:"+chan_name+":"+chan_name+"_error","" , "goff");
+Int_t nEntries=chan_t->Draw("run_number:minirun_n:"+chan_name+unit+":"+chan_name+"_error"+unit,"" , "goff");
 Double_t index[nEntries];
 for(int i=0; i<nEntries;i++){
    index[i]=i;
@@ -132,11 +153,11 @@ return pulls;
 
 
 class Source {
-    TString file, tree;    
+    TString file, tree, output;    
   public:
     std::vector<Channel> list;
     TChain *T;   
-    Source (TString a, TString b): file(a), tree(b) {T=new TChain(tree); T->Add(file);}
+    Source (TString a, TString b, TString c): file(a), tree(b), output(c) {T=new TChain(tree); T->Add(file);}
     void printInfo() { std::cout << "Reading from  " << tree  << " tree in file " << std::endl;} 
     void drawAll();
     Channel GetChannelByName(TString name);    
@@ -154,14 +175,27 @@ while (auto *var= var_iter.Next()){
    if (createPlotObj) {
      Channel channel(var->GetName());     
      channel.printInfo();
+     channel.draw(this->T, this->output);
      (this->list).push_back(channel);
    }
 }   
 
-};
+}
 
+Channel Source::GetChannelByName(TString name){
 
+Channel chan("");
+for(auto iter=(this->list).begin();iter!=(this->list).end();iter++){
+ if (iter->name==name){
+  chan=*iter;
+  break;
+ }
+} 
+//printf("Found %s", (chan.name).Data());
+return chan;
+  
 
+}
 
 
 
