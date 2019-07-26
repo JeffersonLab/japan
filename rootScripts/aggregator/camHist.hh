@@ -338,20 +338,50 @@ void writeCorrectionMeanRms_h(TString tree = "mul", TString draw = "asym_vqwk_04
 
 // END NEW FIXME
 
-/*
 
-void writeSlopes_h(TString tree = "mul", TString draw = "asym_vqwk_04_0ch0", TString units = "", TString cut = "defaultCut", Int_t overWriteCut = 0,  Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
+
+void writeSlope_h(TString tree = "", TString draw = "asym_vqwk_04_0ch0", TString units = "", TString cut = "defaultCut", Int_t overWriteCut = 0,  Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   minirunNumber = getMinirunNumber_h(minirunNumber);
   nRuns     = getNruns_h(nRuns);
-  TString slope = draw + "_slope";
-  TString slope_error  = draw + "_slope_error";
   Double_t data_slope = 0;
   Double_t data_slope_error = 0;
-  Double_t data_rms = 0;
-  Double_t data_rms_error = 0;
-  TChain * Tree = getTree_h(tree, runNumber, minirunNumber, splitNumber, nRuns);
+  
+  if (minirunNumber<0){
+     	
+  	TString filenamebase= gSystem->Getenv("QW_ROOTFILES");
+  	auto filename= filenamebase+ "/../LRBoutput/blueR"+runNumber+".000new.slope.root";  
+  	TFile f(filename);
+ 
+   	std::map<TString, Int_t> IVname;
+	std::map<TString, Int_t> DVname;
+
+	TH1D* m=(TH1D*) f.Get("IVname");
+	for (auto i=0; i<m->GetEntries();i++){
+  		TString ivname=m->GetXaxis()->GetBinLabel(i+1);
+  		IVname[ivname]=i;
+	}
+
+	TH1D* n=(TH1D*) f.Get("DVname");
+	for (auto i=0; i<n->GetEntries(); i++){
+  		TString dvname=n->GetXaxis()->GetBinLabel(i+1);
+  		DVname[dvname]=i;
+	}
+
+	
+  TMatrixT<double> slopes=*(TMatrixT<double>*) f.Get("slopes");
+  TMatrixT<double> sigSlopes=*(TMatrixT<double>*) f.Get("sigSlopes");
+	for (auto& i: DVname){ 
+  		for (auto& j: IVname){
+    			writeFile_h(i.first+"_"+j.first+ "_slope", slopes(j.second,i.second),runNumber, minirunNumber, splitNumber, nRuns);
+  		    writeFile_h(i.first+"_"+j.first+ "_slope_error", sigSlopes(j.second,i.second),runNumber, minirunNumber, splitNumber, nRuns);
+	    }
+
+  }
+}
+
+  /*
   cut = getCuts_h(cut, overWriteCut, "NULL"); // FIXME in postPan era, branchToCheck in cuts method is not even used, but when it is, it will need to be parsed correctly - probably just ignore this from now on and make Device_Error_Code something done explicitly (since so many variables in Japan actually aren't devices)
   Int_t n_entries = Tree->Draw(Form("%s%s",draw.Data(),units.Data()),Form("%s",cut.Data()));
   //Int_t n_entries = Tree->Draw("yield_bcm_an_ds","ErrorFlag==0 && minirun==0");
@@ -381,10 +411,8 @@ void writeSlopes_h(TString tree = "mul", TString draw = "asym_vqwk_04_0ch0", TSt
     Printf("%s=%f",(const char*)rms_error,data_rms_error);
     Printf("%s=%d",(const char*)nEntries,n_entries);
   }
-}
-
-
 */
+}
 
 
 

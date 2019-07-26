@@ -100,6 +100,10 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     if (debug>1) Printf("Done with meanrms ana");
   }
   else if (
+      ana == "slope"){
+    writeSlope_h( tree, branch, leaf, cut, overWriteCut, runNumber, minirunNumber, splitNumber, nRuns);
+  }
+  else if (
        ana == "correctionmeanrms"
     || ana == "correctionmeanRms"
     || ana == "correctionMeanRms"
