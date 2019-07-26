@@ -2,7 +2,7 @@ void GetCountCutStats(Int_t nUserEvents = 0){
   TPad *a1 = new TPad("a1", "a1", 0,0,1,1);
   a1->Draw();
 
-  const int Nstats = 7;
+  const int Nstats = 8;
   TString statStr[Nstats];
   TString statStrNumbers[Nstats];
   Int_t cut[Nstats];
@@ -61,17 +61,23 @@ void GetCountCutStats(Int_t nUserEvents = 0){
   percut[6]= cut[6]*100./tot;
   statStrNumbers[6] = Form(" = %d (%.2f%%)", cut[6], percut[6]);
 
+  statStr[7] = Form("BPM Cut Failing Events");
+  r->Project(hist->GetName(), "CodaEventNumber", Form("(ErrorFlag&0x400)!=0 && Entry$>=(Entries$-%d)",nEvents));
+  cut[7] = hist->GetEntries();
+  percut[7]= cut[7]*100./tot;
+  statStrNumbers[7] = Form(" = %d (%.2f%%)", cut[7], percut[7]);
+
   TLatex text;
   text.SetTextSize(0.08);
   a1->cd(); 
-  Float_t iniY = 0.90, diffY = 0.05;
+  Float_t iniY = 0.90, diffY = 0.045;
   if (nUserEvents == 0) {
     text.DrawLatex(0.10, 0.93, Form("Total Run: %d events",nEvents)); 
   }
   else {
     text.DrawLatex(0.10, 0.93, Form("Event Stats, %d events",nEvents)); 
   }
-  text.SetTextSize(0.06);
+  text.SetTextSize(0.05);
   for (Int_t j = 0 ; j < Nstats ; j++){
     text.DrawLatex(0.10, iniY - (j*2.5+1)*diffY, statStr[j]); 
     text.DrawLatex(0.10, iniY - (j*2.5+2)*diffY, statStrNumbers[j]); 
