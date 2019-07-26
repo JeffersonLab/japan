@@ -348,38 +348,75 @@ void writeSlope_h(TString tree = "", TString draw = "asym_vqwk_04_0ch0", TString
   Double_t data_slope = 0;
   Double_t data_slope_error = 0;
   
-  if (minirunNumber<0){
+
      	
   	TString filenamebase= gSystem->Getenv("QW_ROOTFILES");
+    if(minirunNumber<0){
   	auto filename= filenamebase+ "/../LRBoutput/blueR"+runNumber+".000new.slope.root";  
   	TFile f(filename);
  
    	std::map<TString, Int_t> IVname;
-	std::map<TString, Int_t> DVname;
+	  std::map<TString, Int_t> DVname;
 
-	TH1D* m=(TH1D*) f.Get("IVname");
-	for (auto i=0; i<m->GetEntries();i++){
+	  TH1D* m=(TH1D*) f.Get("IVname");
+	  for (auto i=0; i<m->GetEntries();i++){
   		TString ivname=m->GetXaxis()->GetBinLabel(i+1);
   		IVname[ivname]=i;
-	}
+	  }
 
-	TH1D* n=(TH1D*) f.Get("DVname");
-	for (auto i=0; i<n->GetEntries(); i++){
+	  TH1D* n=(TH1D*) f.Get("DVname");
+	  for (auto i=0; i<n->GetEntries(); i++){
   		TString dvname=n->GetXaxis()->GetBinLabel(i+1);
   		DVname[dvname]=i;
-	}
+	  }
 
 	
-  TMatrixT<double> slopes=*(TMatrixT<double>*) f.Get("slopes");
-  TMatrixT<double> sigSlopes=*(TMatrixT<double>*) f.Get("sigSlopes");
-	for (auto& i: DVname){ 
+    TMatrixT<double> slopes=*(TMatrixT<double>*) f.Get("slopes");
+    TMatrixT<double> sigSlopes=*(TMatrixT<double>*) f.Get("sigSlopes");
+	  for (auto& i: DVname){ 
   		for (auto& j: IVname){
     			writeFile_h(i.first+"_"+j.first+ "_slope", slopes(j.second,i.second),runNumber, minirunNumber, splitNumber, nRuns);
   		    writeFile_h(i.first+"_"+j.first+ "_slope_error", sigSlopes(j.second,i.second),runNumber, minirunNumber, splitNumber, nRuns);
 	    }
-
+   }
   }
-}
+  if (minirunNumber>=0){
+    TString file= filenamebase+"/../postpan-outputs/prexPrompt_"+runNumber+"_000_regress_postpan.root";
+    TFile f(file);
+
+    TTreeReader theReader("mini", &f);
+    TTreeReaderArray<double> slope(theReader,"coeff");
+    TTreeReaderArray<double> slope_err(theReader,"err_coeff");
+
+    std::vector<TString> ivname= *(std::vector<TString>*) f.Get("IVNames");
+    std::vector<TString> dvname= *(std::vector<TString>*) f.Get("DVNames");
+    std::vector<TString> comb;
+
+    for (auto &i:dvname){
+      for (auto &j:ivname){
+        comb.push_back(i+"_"+j);
+      }
+    }
+
+    Int_t mini=0;
+    while(theReader.Next()){
+      Int_t count=0;
+      for (auto i=0; i<slope.GetSize(); i++){
+         if (mini!=minirunNumber) continue;
+         writeFile_h(comb.at(count)+ "_pslope", slope[i],runNumber, minirunNumber, splitNumber, nRuns);
+         writeFile_h(comb.at(count)+ "_pslope_error", slope_err[i], runNumber, minirunNumber, splitNumber, nRuns);
+         count++;
+     }
+    mini++; 
+    }
+
+
+
+
+  }	
+
+
+
 
   /*
   cut = getCuts_h(cut, overWriteCut, "NULL"); // FIXME in postPan era, branchToCheck in cuts method is not even used, but when it is, it will need to be parsed correctly - probably just ignore this from now on and make Device_Error_Code something done explicitly (since so many variables in Japan actually aren't devices)
