@@ -34,8 +34,8 @@ else
   hadd -f ${OUTPUTROOTFILEDIR}/run_${2} ${run_lines[@]}
 
   # Add units
-  #root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/minirun_${2}\"\)
-  #root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/run_${2}\"\)
+  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/minirun_${2}\"\)
+  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/run_${2}\"\)
 
 fi
 
