@@ -10,21 +10,32 @@ else
   echo "Hadding all runs: ${lines[@]}"
   minirun_lines=("${lines[@]}")
   run_lines=("${lines[@]}")
+  num_miniruns=0
 
   # Do miniruns
   for i in "${!lines[@]}"; do
-    minirun_temp="${ROOTFILEDIR}/minirun_aggregator_${lines[$i]}.root"
     run_temp="${ROOTFILEDIR}/run_aggregator_${lines[$i]}.root"
-    minirun_lines[$i]=$minirun_temp
     run_lines[$i]=$run_temp
+    shopt -s nullglob
+    miniarray=(${ROOTFILEDIR}/minirun_aggregator_${lines[$i]}_*.root)
+    shopt -u nullglob
+    #"${miniarray[@]}"
+    for j in "${!miniarray[@]}"; do
+      echo ${miniarray[$j]}
+      minirun_lines[$num_miniruns]=${miniarray[$j]}
+      let num_miniruns++
+    done
+    #minirun_temp="${ROOTFILEDIR}/minirun_aggregator_${lines[$i]}.root"
+    #minirun_lines[$i]=$minirun_temp
   done
 
+  echo Looking at ${minirun_lines[@]}
   hadd -f ${OUTPUTROOTFILEDIR}/minirun_${2} ${minirun_lines[@]}
   hadd -f ${OUTPUTROOTFILEDIR}/run_${2} ${run_lines[@]}
 
-  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/minirun_${2}\"\)
-  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/run_${2}\"\)
+  # Add units
+  #root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/minirun_${2}\"\)
+  #root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/run_${2}\"\)
 
 fi
 
-# Add units

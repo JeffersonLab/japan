@@ -593,7 +593,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
     aggregatorFileName = Form("%s/run_aggregator_%d.root",outputDir.Data(),new_runNumber);
   }
   else{
-    aggregatorFileName = Form("%s/minirun_aggregator_%d.root",outputDir.Data(),new_runNumber);
+    aggregatorFileName = Form("%s/minirun_aggregator_%d_%d.root",outputDir.Data(),new_runNumber,new_minirunNumber);
   }
   Bool_t newFile        = gSystem->AccessPathName(aggregatorFileName); // Opposite return convention
   TFile *aggregatorFile = new TFile(aggregatorFileName,"UPDATE");
