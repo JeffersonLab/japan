@@ -39,9 +39,11 @@ for each in output.split('\n'):
 start = -1
 if int(fullruns) == 0:
   start = 0
-  for mini in range(start,nMiniRuns):
+  for mini in range(start,nMiniRuns-1):
     print("Looking at mini run # = "+str(mini))
     os.system("./wrapper.sh -f "+str(devicelist)+" -r "+str(run)+" -m "+str(mini)+" -s 000 -n "+str(slug)+"&") # FIXME backgrounding here so that it will do all miniruns at once
+  print("Looking at mini run # = "+str(nMiniRuns-1))
+  os.system("./wrapper.sh -f "+str(devicelist)+" -r "+str(run)+" -m "+str(nMiniRuns-1)+" -s 000 -n "+str(slug)) # FIXME unbackgrounding here so it will hold and not swamp the processor
 else: # Do full run only (obviously this can be editted to do both in one go... but people want them separate - once we get the agg-rootfile names done correctly we can handle this internally to camguin)
     print("Looking at Full run")
     os.system("./wrapper.sh -f "+str(devicelist)+" -r "+str(run)+" -m "+str(-1)+" -s 000 -n "+str(slug))

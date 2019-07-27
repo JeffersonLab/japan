@@ -101,7 +101,7 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
   }
   else if (
       ana == "slope"){
-    writeSlope_h( tree, branch, leaf, cut, overWriteCut, runNumber, minirunNumber, splitNumber, nRuns);
+    writeSlope_h( runNumber, minirunNumber, splitNumber, nRuns);
   }
   else if (
        ana == "correctionmeanrms"
