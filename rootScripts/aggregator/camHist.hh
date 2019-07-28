@@ -397,8 +397,8 @@ void writeSlope_h(Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumb
       Int_t count=0;
       for (auto i=0; i<slope.GetSize(); i++){
         if (mini!=minirunNumber) continue;
-        writeFile_h("reg_"+comb.at(count)+ "_pslope", slope[i],runNumber, minirunNumber, splitNumber, nRuns);
-        writeFile_h("reg_"+comb.at(count)+ "_pslope_error", slope_err[i], runNumber, minirunNumber, splitNumber, nRuns);
+        writeFile_h("reg_"+comb.at(count)+ "_slope", slope[i],runNumber, minirunNumber, splitNumber, nRuns);
+        writeFile_h("reg_"+comb.at(count)+ "_slope_error", slope_err[i], runNumber, minirunNumber, splitNumber, nRuns);
         count++;
       }
       mini++; 
