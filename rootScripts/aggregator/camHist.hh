@@ -336,49 +336,43 @@ void writeCorrectionMeanRms_h(TString tree = "mul", TString draw = "asym_vqwk_04
 }
 
 
-// END NEW FIXME
-
-
-
-void writeSlope_h(TString tree = "", TString draw = "asym_vqwk_04_0ch0", TString units = "", TString cut = "defaultCut", Int_t overWriteCut = 0,  Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
+void writeSlope_h(Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   minirunNumber = getMinirunNumber_h(minirunNumber);
   nRuns     = getNruns_h(nRuns);
   Double_t data_slope = 0;
   Double_t data_slope_error = 0;
-  
 
-     	
-  	TString filenamebase= gSystem->Getenv("QW_ROOTFILES");
-    if(minirunNumber<0){
-  	auto filename= filenamebase+ "/../LRBoutput/blueR"+runNumber+".000new.slope.root";  
-  	TFile f(filename);
- 
-   	std::map<TString, Int_t> IVname;
-	  std::map<TString, Int_t> DVname;
+  TString filenamebase= gSystem->Getenv("QW_ROOTFILES");
+  if(minirunNumber<0){
+    auto filename= filenamebase+ "/../LRBoutput/blueR"+runNumber+".000new.slope.root";  
+    TFile f(filename);
 
-	  TH1D* m=(TH1D*) f.Get("IVname");
-	  for (auto i=0; i<m->GetEntries();i++){
-  		TString ivname=m->GetXaxis()->GetBinLabel(i+1);
-  		IVname[ivname]=i;
-	  }
+    std::map<TString, Int_t> IVname;
+    std::map<TString, Int_t> DVname;
 
-	  TH1D* n=(TH1D*) f.Get("DVname");
-	  for (auto i=0; i<n->GetEntries(); i++){
-  		TString dvname=n->GetXaxis()->GetBinLabel(i+1);
-  		DVname[dvname]=i;
-	  }
+    TH1D* m=(TH1D*) f.Get("IVname");
+    for (auto i=0; i<m->GetEntries();i++){
+      TString ivname=m->GetXaxis()->GetBinLabel(i+1);
+      IVname[ivname]=i;
+    }
 
-	
+    TH1D* n=(TH1D*) f.Get("DVname");
+    for (auto i=0; i<n->GetEntries(); i++){
+      TString dvname=n->GetXaxis()->GetBinLabel(i+1);
+      DVname[dvname]=i;
+    }
+
+
     TMatrixT<double> slopes=*(TMatrixT<double>*) f.Get("slopes");
     TMatrixT<double> sigSlopes=*(TMatrixT<double>*) f.Get("sigSlopes");
-	  for (auto& i: DVname){ 
-  		for (auto& j: IVname){
-    			writeFile_h(i.first+"_"+j.first+ "_slope", slopes(j.second,i.second),runNumber, minirunNumber, splitNumber, nRuns);
-  		    writeFile_h(i.first+"_"+j.first+ "_slope_error", sigSlopes(j.second,i.second),runNumber, minirunNumber, splitNumber, nRuns);
-	    }
-   }
+    for (auto& i: DVname){ 
+      for (auto& j: IVname){
+        writeFile_h("cor_"+i.first+"_"+j.first+ "_slope", slopes(j.second,i.second),runNumber, minirunNumber, splitNumber, nRuns);
+        writeFile_h("cor_"+i.first+"_"+j.first+ "_slope_error", sigSlopes(j.second,i.second),runNumber, minirunNumber, splitNumber, nRuns);
+      }
+    }
   }
   if (minirunNumber>=0){
     TString file= filenamebase+"/../postpan-outputs/prexPrompt_"+runNumber+"_000_regress_postpan.root";
@@ -402,21 +396,14 @@ void writeSlope_h(TString tree = "", TString draw = "asym_vqwk_04_0ch0", TString
     while(theReader.Next()){
       Int_t count=0;
       for (auto i=0; i<slope.GetSize(); i++){
-         if (mini!=minirunNumber) continue;
-         writeFile_h(comb.at(count)+ "_pslope", slope[i],runNumber, minirunNumber, splitNumber, nRuns);
-         writeFile_h(comb.at(count)+ "_pslope_error", slope_err[i], runNumber, minirunNumber, splitNumber, nRuns);
-         count++;
-     }
-    mini++; 
+        if (mini!=minirunNumber) continue;
+        writeFile_h("reg_"+comb.at(count)+ "_slope", slope[i],runNumber, minirunNumber, splitNumber, nRuns);
+        writeFile_h("reg_"+comb.at(count)+ "_slope_error", slope_err[i], runNumber, minirunNumber, splitNumber, nRuns);
+        count++;
+      }
+      mini++; 
     }
-
-
-
-
   }	
-
-
-
 
   /*
   cut = getCuts_h(cut, overWriteCut, "NULL"); // FIXME in postPan era, branchToCheck in cuts method is not even used, but when it is, it will need to be parsed correctly - probably just ignore this from now on and make Device_Error_Code something done explicitly (since so many variables in Japan actually aren't devices)
@@ -451,7 +438,7 @@ void writeSlope_h(TString tree = "", TString draw = "asym_vqwk_04_0ch0", TString
 */
 }
 
-
+// END NEW FIXME
 
 
 void writeMeanRms_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, TString mode = "defaultHist", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){

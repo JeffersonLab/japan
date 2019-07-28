@@ -170,3 +170,4 @@
 "correctionMeanRms","reg","asym_sam7","","miniruns",0,"defaultHist",0
 "meanRms","reg","reg_asym_sam8","","miniruns",0,"defaultHist",0
 "correctionMeanRms","reg","asym_sam8","","miniruns",0,"defaultHist",0
+"slope","","","","",0,"",0
