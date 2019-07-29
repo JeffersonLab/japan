@@ -39,6 +39,14 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     if (debug>1) Printf("Done with nEvents loop ana");
   }
   else if( 
+       ana == "last"
+    || ana == "lastloop"
+    || ana == "getlast"
+    || ana == "getLast"){
+    writeLast_Loop_h( tree, branch, leaf, runNumber, minirunNumber, splitNumber, nRuns );
+    if (debug>1) Printf("Done with getLast ana");
+  }
+  else if( 
        ana == "eventsloopn"
     || ana == "eventloopn"
     || ana == "eventloopN"
