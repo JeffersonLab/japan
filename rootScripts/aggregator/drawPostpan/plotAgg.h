@@ -27,6 +27,9 @@ void Channel::draw(TTree* tree,TString output){
 auto chan_name=this->name;
 auto chan_t=tree;
 TString unit="";
+if (chan_name.Contains("slope")){
+  unit="*nm/ppb";
+} else { 
 if (chan_name.Contains("asym_")||chan_name.Contains("cor_")){
   if (chan_name.Contains("_mean")) {unit="/ppb";} else{unit="/ppm";}
 }
@@ -40,12 +43,11 @@ if (chan_name.Contains("bpm_") && (chan_name.Contains("_avg")||chan_name.Contain
   if (chan_name.Contains("_mean")) {unit="/nm";} else {unit="/nm";}
 }  
 
-
 if (chan_name.Contains("yield_")){
   if (chan_name.Contains("bpm")) {unit="/mm";}
   if (chan_name.Contains("usl")||chan_name.Contains("dsl") || chan_name.Contains("usr") || chan_name.Contains("dsr")|| chan_name.Contains("sam")) {unit="/mV_uA";}
 }
-  
+}  
 
 TTreeFormula f("name",chan_name, chan_t);
 
@@ -65,7 +67,7 @@ TPad *p3 = new TPad("p3","",xSep,0,1,1,21);
 TGraphErrors g;
 std::vector<TH1F> p;
 
-if(chan_name.Contains("_mean")){
+if(chan_name.Contains("_mean")||chan_name.Contains("slope")){
 p1->Draw();
 p1->UseCurrentStyle();
 p2->Draw();
@@ -171,7 +173,7 @@ TIter var_iter(var_list);
 
 while (auto *var= var_iter.Next()){
    TString name(var->GetName());
-   bool createPlotObj = ((name.Contains("_mean") || name.Contains("_slope") || name.Contains("_rms")) && !(name.Contains("_error"))); // FIX ME:   This line wouldn't be necessary if aggregator had a substructure for value and value error
+   bool createPlotObj = ((name.Contains("_mean") || name.Contains("_slope") || name.Contains("_pslope")|| name.Contains("_rms")) && !(name.Contains("_error"))); // FIX ME:   This line wouldn't be necessary if aggregator had a substructure for value and value error
    if (createPlotObj) {
      Channel channel(var->GetName());     
      channel.printInfo();

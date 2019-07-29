@@ -294,7 +294,12 @@ void writeCorrectionMeanRms_h(TString tree = "mul", TString draw = "asym_vqwk_04
   TString rms = draw + "_correction_rms";
   TString rms_error = draw + "_correction_rms_error";
   TString nEntries = draw + "_correction_nentries";
-  draw = "reg_" + draw + "-" + draw; // Make the actual draw command now
+  if (tree == "reg"){
+    draw = "reg_" + draw + "-" + draw; // Make the actual draw command now
+  }
+  if (tree == "dit"){
+    draw = "dit_" + draw + "-" + draw; // Make the actual draw command now
+  }
   Double_t data_mean = 0;
   Double_t data_mean_error = 0;
   Double_t data_rms = 0;
@@ -344,10 +349,36 @@ void writeSlope_h(Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumb
   Double_t data_slope = 0;
   Double_t data_slope_error = 0;
 
-  TString filenamebase= gSystem->Getenv("QW_ROOTFILES");
+  TString ditSlopeFileNamebase = gSystem->Getenv("DITHERING_ROOTFILES_SLOPES");
+  TString ditSlopeFileName = ditSlopeFileNamebase + "/dit_slopes_slug" + nRuns + ".root";
+  if( !gSystem->AccessPathName(ditSlopeFileName) ) {
+    Printf("Getting dithering slopes from %s",ditSlopeFileName.Data());
+    TChain *ditTree = new TChain("dit");
+    ditTree->Add(ditSlopeFileName);
+    TLeaf *ditRunNum = ditTree->GetLeaf("run");
+    TObjArray *slopesList = ditTree->GetListOfLeaves();
+    TString outname = "";
+    for (Int_t a = 0; a<ditTree->GetEntries(); a++){
+      ditTree->GetEntry(a);
+      if (debug>3) Printf("Entry number %d, run number %d",a,(Int_t)ditRunNum->GetValue(0));
+      TIter slopesIter(slopesList);
+      while (TLeaf *slopes=(TLeaf*)slopesIter.Next()){
+      //for (Int_t c = 0; c<slopesList->GetEntries(); c++){
+        if (debug>4) Printf("Checking dither slope %s",((TString)slopes->GetName()).Data());
+        if ((TString)slopes->GetName() != "run" && (Int_t)ditRunNum->GetValue(0) == runNumber){
+        //if ((TString)((TLeaf*)slopesList.at(c))->GetName() != "run" && ditRunNum->GetValue(0) == runNumber){
+          //writeFile_h("dit_"+(TString)((TLeaf*)slopesList.at(c))->GetName()+"_slope",(Double_t)(TLeaf*)slopesList.at(c)->GetValue(0),runNumber,minirunNumber,splitNumber,nRuns);
+          outname = "dit_"+(TString)slopes->GetName()+"_slope";
+          if (debug>5) Printf("Adding to agg: %s = %f",outname.Data(),(Double_t)slopes->GetValue(0));
+          writeFile_h("dit_"+(TString)slopes->GetName()+"_slope",(Double_t)slopes->GetValue(0),runNumber,minirunNumber,splitNumber,nRuns);
+        }
+      }
+    }
+  }
   if(minirunNumber<0){
-    auto filename= filenamebase+ "/../LRBoutput/blueR"+runNumber+".000new.slope.root";  
-    TFile f(filename);
+    TString lrbFileNameBase = gSystem->Getenv("LRB_ROOTFILES");
+    TString lrbFileName = lrbFileNameBase + "/blueR"+runNumber+".000new.slope.root";  
+    TFile f(lrbFileName);
 
     std::map<TString, Int_t> IVname;
     std::map<TString, Int_t> DVname;
@@ -375,8 +406,9 @@ void writeSlope_h(Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumb
     }
   }
   if (minirunNumber>=0){
-    TString file= filenamebase+"/../postpan-outputs/prexPrompt_"+runNumber+"_000_regress_postpan.root";
-    TFile f(file);
+    TString lpostpanFileNameBase = gSystem->Getenv("POSTPAN_ROOTFILES");
+    TString lpostpanFileName = lpostpanFileNameBase + "/prexPrompt_" + runNumber + "_000_regress_postpan.root";
+    TFile f(lpostpanFileName);
 
     TTreeReader theReader("mini", &f);
     TTreeReaderArray<double> slope(theReader,"coeff");
