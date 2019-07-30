@@ -2,20 +2,26 @@
 #include "TTree.h"
 
 
-void plotAgg(TString filename, TString output){
+void plotAgg(TString filename, TString output, Int_t slug, Int_t ihwp, Int_t wein){
 
-Source source(filename, "agg",output);
+Source source(filename, "agg",output, slug, ihwp, wein);
 source.printInfo();
 TCanvas c("c", "c", 800,600);
-c.Print(output+".pdf[", "pdf");
+c.Print(output+slug+".pdf[", "pdf");
 source.drawAll();
 
 std::ofstream out;
-out.open(Form("%s.txt",output.Data()));
-
+std::map<Int_t,TString> map_ihwp;
+std::map<Int_t, TString> map_wein;
+map_wein[1]="Right";
+map_wein[2]="Left";
+map_ihwp[1]="In";
+map_ihwp[2]="Out";
+out.open(Form("%s%i.txt",output.Data(),slug));
+out<< "Slug: "<< slug<<"\t IHWP: "<<map_ihwp[ihwp]<<"\t Wein: "<< map_wein[wein]<< "\n";   
 out<< "Units:\n";
 out<< "Yields: bpm (mm), bcm (uA), sam/det (mV_uA)\n";
-out<< "Asym/Diff: bcm/sam/det mean (ppb), bcm/sam/det width (ppm) Diff: bpm (nm) \n"; 
+out<< "Asym: bcm/sam/det mean (ppb), bcm/sam/det width (ppm) Diff: bpm (nm) \n"; 
 out << "Slopes: All Devices (ppb/nm) \n"; 
 out << "======\n"<< "Yields\n" << "======\n";
 
@@ -41,6 +47,7 @@ for (auto iter=source.list.begin();iter!=source.list.end(); iter++){
     auto name=iter->name;
     if(name.Contains("_slope")||name.Contains("_pslope")) continue;
     if(!name.Contains("asym_")&&!name.Contains("diff_")) continue;
+    if(name.Contains("_avg") || name.Contains("_da") || name.Contains("_dd")) continue;
     if(name.Contains("reg_") || name.Contains("correction_")) continue;
     if(name.Contains("_mean")){
       name.ReplaceAll("_mean", "");
@@ -133,7 +140,7 @@ for (auto iter=source.list.begin();iter!=source.list.end(); iter++){
     if(!name.Contains("_slope")) continue;
     if (!name.Contains("reg_")) continue;
     name.ReplaceAll("_slope", "");
-    TString summary = Form("%28s| \t Mean:%12.4f+/-%12.4f\n", name.Data(), iter->value, iter->value_err);
+    TString summary = Form("%45s| \t Mean:%12.4f+/-%12.4f\n", name.Data(), iter->value, iter->value_err);
     out<< summary.Data();
     
 }
@@ -143,7 +150,7 @@ for (auto iter=source.list.begin();iter!=source.list.end(); iter++){
 
 
 
-c.Print(output+".pdf]","pdf");
+c.Print(output+slug+".pdf]","pdf");
 out.close();
 std::cout<< "All done drawing " << source.list.size() << "channels";
 

@@ -1,5 +1,5 @@
 using namespace ROOT;
-
+#include "../camIO.hh"
 
 
 
@@ -155,11 +155,12 @@ return pulls;
 
 
 class Source {
-    TString file, tree, output;    
+    TString file, tree, output;
+    Int_t slug, ihwp, wein;    
   public:
     std::vector<Channel> list;
     TChain *T;   
-    Source (TString a, TString b, TString c): file(a), tree(b), output(c) {T=new TChain(tree); T->Add(file);}
+    Source (TString a, TString b, TString c, Int_t i, Int_t j, Int_t k): file(a), tree(b), output(c), slug(i), ihwp(j), wein(k) {T=new TChain(tree); T->Add(file);}
     void printInfo() { std::cout << "Reading from  " << tree  << " tree in file " << std::endl;} 
     void drawAll();
     Channel GetChannelByName(TString name);    
@@ -167,21 +168,46 @@ class Source {
 };
 
 void Source::drawAll(){
+  
+auto filename= this->output+this->slug;
+/*
+TFile hfile(filename+".root", "Recreate");
+TTree *tree=new TTree("agg_slug", "");
+tree->SetEntries(1);
+auto bslug= tree->Branch("slug", &(this->slug));
+auto bihwp= tree->Branch("ihwp", &(this->ihwp));
+auto bwein= tree->Branch("wein", &(this->wein));
+bslug->Fill();
+bihwp->Fill();
+bwein->Fill();
+*/
 
 TObjArray *var_list=(this->T)->GetListOfBranches();
 TIter var_iter(var_list);
 
 while (auto *var= var_iter.Next()){
    TString name(var->GetName());
-   bool createPlotObj = ((name.Contains("_mean") || name.Contains("_slope") || name.Contains("_pslope")|| name.Contains("_rms")) && !(name.Contains("_error"))); // FIX ME:   This line wouldn't be necessary if aggregator had a substructure for value and value error
+   bool createPlotObj = ((name.Contains("_mean") || name.Contains("_slope") || name.Contains("_pslope")|| name.Contains("_rms")) && !(name.Contains("_error"))); 
    if (createPlotObj) {
      Channel channel(var->GetName());     
      channel.printInfo();
-     channel.draw(this->T, this->output);
+     channel.draw(this->T, filename);
      (this->list).push_back(channel);
+     writeFile_h(var->GetName(), channel.value, ihwp, wein, slug);     
+     writeFile_h(Form("%s_error", var->GetName()), channel.value_err, ihwp, wein, slug);
+     /*
+     auto branch=tree->Branch(var->GetName(),&channel.value);
+     auto branch_err= tree->Branch(Form("%s_error", var->GetName()), &channel.value_err);
+     branch->Fill();
+     branch_err->Fill();  
+     */   
    }
 }   
 
+/*
+tree->Write("agg_slug", TObject::kOverwrite);
+hfile.Close();
+*/
 }
 
 Channel Source::GetChannelByName(TString name){
