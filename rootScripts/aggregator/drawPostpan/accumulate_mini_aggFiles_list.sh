@@ -1,6 +1,7 @@
 #! /bin/sh
 ROOTFILEDIR="/chafs2/work1/apar/aggRootfiles"
 OUTPUTROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/slugRootfiles"
+#OUTPUTROOTFILEDIR="./"
 if [ "$#" -lt 2 ]; then
   echo "Error: Need to pass a runlist and output rootfile name as arguments"
   echo "Usage: ./accumulate_aggFiles_list.sh list.txt (input file list, \\n separated,) output.root (what you want the output to be called)"

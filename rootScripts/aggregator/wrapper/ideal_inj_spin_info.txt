@@ -1,4 +1,3 @@
-"meanRms","reg","bcm_dg_us_dg_ds_dd ","","miniruns",0,"defaultHist",0
 "last","slow","VWienAngle","VWienAngle","1",0,"defaultHist",0
 "last","slow","HWienAngle","HWienAngle","1",0,"defaultHist",0
 "last","slow","RTPQWCNT","RTPQWCNT","1",0,"defaultHist",0
