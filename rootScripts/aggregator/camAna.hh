@@ -193,6 +193,48 @@ Int_t writeEventLoopN_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_0
   return stabilityRingStart;
 }
 
+void writeLast_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
+  runNumber = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
+  minirunNumber = getMinirunNumber_h(minirunNumber);
+  nRuns     = getNruns_h(nRuns);
+  TString channel = tree + "_" + branch + "_" + leaf;
+  // Make an instance of the relevant data source 
+  TLeaf   *Leaf   = getLeaf_h(tree,branch,leaf,runNumber,minirunNumber,splitNumber,nRuns);
+  if (!Leaf){
+    return;
+  }
+  TString leafName = "NULL";
+  if (leaf==branch)
+  {
+    leafName = (TString)Leaf->GetName();
+    channel = tree+"_"+branch;
+  }
+  else
+  {
+    leafName = branch+"."+(TString)Leaf->GetName();
+  }
+  TBranch *Branch = Leaf->GetBranch();
+  TTree   *Tree   = Branch->GetTree();
+  Int_t    numEntries = Tree->GetEntries();
+
+  Double_t data    = 0.0;
+  TString analysis = channel+"_value";
+
+  for (int j = 0; j < numEntries; j++) 
+  { // Loop over the input file's entries
+    Tree->GetEntry(j);
+    data=Leaf->GetValue(0);
+  }
+  if (aggregatorStatus){
+    writeFile_h(analysis,data,runNumber,minirunNumber,splitNumber,nRuns);
+  }
+  if (alarmStatus){
+    // Then the alarm handler wants to receive the output in stdout
+    Printf("%s=%f",(const char*)analysis,data);
+  }
+}
+
 void writeMean_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCut", Int_t overWriteCut = 0, Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
