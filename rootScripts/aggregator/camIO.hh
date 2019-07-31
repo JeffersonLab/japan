@@ -105,10 +105,12 @@ Int_t getRunNumber_h(Int_t runNumber = 0){
     TString run = gSystem->Getenv("RUNNUM");
     runNumber = run.Atoi();
   }
+  /*
   if (runNumber<=0){
     Printf("Error: Run Number given (%d) invalid, must be an integer > 0",runNumber);
     return 0;
   }
+  */
   if (debug>0) Printf("Run number: %d",runNumber);
   return runNumber;
 }
@@ -135,10 +137,12 @@ Int_t getMinirunNumber_h(Int_t minirunNumber = -2){
     TString minirun = gSystem->Getenv("MINIRUNNUM");
     minirunNumber = minirun.Atoi();
   }
+  /*
   if (minirunNumber<-1){ // We consider -1 to be the "Full Run" case, and 0 is actually 0
     Printf("Error: minirun Number given (%d) invalid, must be an integer >= -1",minirunNumber);
     return -1; // We are doing the full run here, since no valid input given.
   }
+  */
   if (debug>0) Printf("MiniRun number: %d",minirunNumber);
   return minirunNumber;
 }
@@ -614,7 +618,11 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   TString aggregatorFileName = Form("%s/aggregator.root",outputDir.Data()); // FIXME, this is very specific, and doesn't allow for aggregating over slugs, for instance
   // Store all trees
   if (new_minirunNumber <= -1) {
-    aggregatorFileName = Form("%s/run_aggregator_%d.root",outputDir.Data(),new_runNumber);
+    if(new_runNumber <= -1) {
+      aggregatorFileName = Form("%s/grand_aggregator.root", outputDir.Data());
+    } else {  
+      aggregatorFileName = Form("%s/run_aggregator_%d.root",outputDir.Data(),new_runNumber);
+    }  
   }
   else{
     aggregatorFileName = Form("%s/minirun_aggregator_%d_%d.root",outputDir.Data(),new_runNumber,new_minirunNumber);
