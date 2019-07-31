@@ -221,9 +221,11 @@ void writeLast_Loop_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
   Double_t data    = 0.0;
   TString analysis = channel+"_value";
 
-  for (int j = 0; j < numEntries; j++) 
-  { // Loop over the input file's entries
-    Tree->GetEntry(j);
+  if (numEntries==0){
+    data = 0.0;
+  }
+  else{
+    Tree->GetEntry(numEntries-1);
     data=Leaf->GetValue(0);
   }
   if (aggregatorStatus){

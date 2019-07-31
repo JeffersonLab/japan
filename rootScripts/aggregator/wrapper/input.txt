@@ -201,3 +201,5 @@
 "last","slow","HWienAngle","HWienAngle","1",0,"defaultHist",0
 "last","slow","psub_pl_pos","psub_pl_pos","1",0,"defaultHist",0
 "last","slow","Phi_FG","Phi_FG","1",0,"defaultHist",0
+"last","slow","IGL1I00DI24_24M","IGL1I00DI24_24M","1",0,"defaultHist",0
+"last","slow","IGL1I00OD16_16","IGL1I00OD16_16","1",0,"defaultHist",0

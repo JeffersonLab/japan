@@ -1,8 +1,6 @@
 "combinerMeanRms","reg","(asym_usl+asym_usr)/2","asym_maindet_us_agg_avg","miniruns",0,"defaultHist",0
 "combinerMeanRms","reg","(asym_dsl-asym_dsr)/2","asym_maindet_ds_agg_dd","miniruns",0,"defaultHist",0
-"combinerMeanRms","reg","(asym_dsl+asym_dsr)/2","asym_maindet_ds_agg_avg","miniruns",0,"defaultHist",0
+"combinerMeanRms","reg","(asym_usl+asym_usr)/2","asym_maindet_us_agg_avg","miniruns",0,"defaultHist",0
 "combinerMeanRms","reg","(asym_dsl-asym_dsr)/2","asym_maindet_ds_agg_dd","miniruns",0,"defaultHist",0
 "combinerMeanRms","reg","asym_bcm_dg_ds","asym_qtarg_agg","miniruns",0,"defaultHist",0
 "combinerMeanRms","reg","diff_bpm11X","diff_energyBPMX","miniruns",0,"defaultHist",0
-"last","slow","IGL1I00DI24_24M","IGL1I00DI24_24M","1",0,"defaultHist",0
-"last","slow","IGL1I00OD16_16","IGL1I00OD16_16","1",0,"defaultHist",0
