@@ -2,23 +2,21 @@
 #include "TTree.h"
 
 
-void plotAgg(TString filename, TString output, Int_t slug, Int_t ihwp, Int_t wein){
+void plotAgg(TString filename, TString output, Int_t slug, Int_t ihwp, Int_t wein, Int_t hrs){
 
-Source source(filename, "agg",output, slug, ihwp, wein);
+Source source(filename, "agg",output, slug, ihwp, wein, hrs);
 source.printInfo();
 TCanvas c("c", "c", 800,600);
 c.Print(output+slug+".pdf[", "pdf");
 source.drawAll();
 
+
 std::ofstream out;
-std::map<Int_t,TString> map_ihwp;
-std::map<Int_t, TString> map_wein;
-map_wein[1]="Right";
-map_wein[2]="Left";
-map_ihwp[1]="In";
-map_ihwp[2]="Out";
+std::map<Int_t,TString> map_ihwp={ {1,"In"}, {2,"Out"} };
+std::map<Int_t, TString> map_wein={ {1,"Right"}, {2,"Left"} };
+std::map<Int_t, TString> map_hrs={ {0, "Both"}, {1,"Right Only"}, {2,"Left Only"} };
 out.open(Form("%s%i.txt",output.Data(),slug));
-out<< "Slug: "<< slug<<"\t IHWP: "<<map_ihwp[ihwp]<<"\t Wein: "<< map_wein[wein]<< "\n";   
+out<< "Slug: "<< slug<<"\t IHWP: "<<map_ihwp[ihwp]<<"\t Wein: "<< map_wein[wein]<< "\t HRS: "<<map_hrs[hrs]<< "\n";   
 out<< "Units:\n";
 out<< "Yields: bpm (mm), bcm (uA), sam/det (mV_uA)\n";
 out<< "Asym: bcm/sam/det mean (ppb), bcm/sam/det width (ppm) Diff: bpm (nm) \n"; 
