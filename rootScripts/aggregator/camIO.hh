@@ -667,19 +667,19 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
     }
     if (debug>0) Printf("Updating tree %s",(const char*)oldTree->GetName());
     TObjArray *aggVars = oldTree->GetListOfBranches();
-    if (debug>3) Printf("N entries = %d",aggVars->GetEntries());
+    if (debug>5) Printf("N entries = %d",aggVars->GetEntries());
     for ( Int_t b = 0; b<aggVars->GetEntries(); b++){
       TString found = (TString)(((TBranch*)(aggVars->At(b)))->GetName());
-      if (debug>2) Printf("In branch %s",(const char*)found);
+      if (debug>4) Printf("In branch %s",(const char*)found);
       branchList.push_back(found);
       newValues.push_back(-1.0e6);
       oldValues.push_back(-1.0e6);
       tempValues.push_back(-1.0e6);
     }
     for(Int_t iBranch = 0; iBranch < branchList.size(); iBranch++) {
-      if (debug>4) Printf("In branch %d : %s",iBranch,(const char*)branchList[iBranch]);
+      if (debug>5) Printf("In branch %d : %s",iBranch,(const char*)branchList[iBranch]);
     }
-    if (debug>1) Printf("Got agg contents");
+    if (debug>2) Printf("Got agg contents");
   }
 
   // Maybe do this here...
@@ -698,7 +698,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   }
   // Loop over branches and assign their addresses to old and new tree
   for (size_t k = 0; k < branchList.size(); k++){
-    if (debug>2) Printf("Assigning values to be saved, Iteration %zu, branch name: %s, manual blank initialization value: %f",k,(const char*) branchList[k],oldValues[k]);
+    if (debug>4) Printf("Assigning values to be saved, Iteration %zu, branch name: %s, manual blank initialization value: %f",k,(const char*) branchList[k],oldValues[k]);
     // If this is a new file then generate new branches for old and new
   	if (newFile || (newBranch && (branchList[k]==valueName))){
       oldTree->Branch(          branchList[k],&oldValues[k]); // Initialize a new branch, for placeholder purposes
@@ -734,42 +734,42 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   // 3) If copyOldEntry then continue
   //      for all variables copy oldValues[] to newValues[]
 
-  if (debug>3) Printf("Looking at %d entries",numEntries);
+  if (debug>4) Printf("Looking at %d entries",numEntries);
   while (entryN<=numEntries) {
-    if (debug>3) Printf("Examining Entry Number %d",entryN);
+    if (debug>5) Printf("Examining Entry Number %d",entryN);
 	  oldTree->GetEntry(entryN);
 	  //newTree->GetEntry(entryN);
     
 	  // Set the "old" values to placeholder values
     for (size_t l = 0; l < branchList.size(); l++){
-      if (debug>2) Printf("NOTE: Examining branch %s = %f (old value)",(const char*) branchList[l],oldValues[l]);
+      if (debug>4) Printf("NOTE: Examining branch %s = %f (old value)",(const char*) branchList[l],oldValues[l]);
 	    if (userAddedNewEntry && entryN==numEntries) {
 	      // Case 1
 	  	  // We are appending a new value to the end, or initializing an empty new root file
-        if (debug>1) Printf("User adding new value to root file: branch %s, value (new = %f, old = %f) runnumber %d",(const char*)valueName,new_value,oldValues[l],new_runNumber);
+        if (debug>3) Printf("User adding new value to root file: branch %s, value (new = %f, old = %f) runnumber %d",(const char*)valueName,new_value,oldValues[l],new_runNumber);
   		  writeEntry = true;
   	  }
     }
     for (size_t l = 0; l < branchList.size(); l++){
 	    // Check to see if we are on the requested new_runNumber, and if it is unique then behave differently
       if (branchList[l] == "run_number" && oldValues[l]==(Double_t)new_runNumber){
-        if (debug>3) Printf("Looking at entry# %d, run_number %d",entryN,new_runNumber);
+        if (debug>5) Printf("Looking at entry# %d, run_number %d",entryN,new_runNumber);
         RunNCheck=true;
       }
       if (branchList[l] == "n_runs" && oldValues[l]==(Double_t)new_nRuns){
-        if (debug>3) Printf("Looking at entry# %d, n_runs %d",entryN,new_nRuns);
+        if (debug>5) Printf("Looking at entry# %d, n_runs %d",entryN,new_nRuns);
         NRunsCheck=true;
       }
       if (branchList[l] == "split_n" && oldValues[l]==(Double_t)new_splitNumber){
-        if (debug>3) Printf("Looking at entry# %d, split_n %d",entryN,new_splitNumber);
+        if (debug>5) Printf("Looking at entry# %d, split_n %d",entryN,new_splitNumber);
         SplitNumberCheck=true;
       }
       if (branchList[l] == "minirun_n" && oldValues[l]==(Double_t)new_minirunNumber){
-        if (debug>3) Printf("Looking at entry# %d, minirun_n %d",entryN,new_minirunNumber);
+        if (debug>5) Printf("Looking at entry# %d, minirun_n %d",entryN,new_minirunNumber);
         MinirunNumberCheck=true;
       }
       if (SplitNumberCheck && MinirunNumberCheck && NRunsCheck && RunNCheck){
-        if (debug>3) Printf("Looking at entry# %d, editing it with updated values",entryN);
+        if (debug>5) Printf("Looking at entry# %d, editing it with updated values",entryN);
 		    numEntries--;
 		    userAddedNewEntry = false;
 		    writeEntry        = true;
@@ -781,27 +781,27 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
       // If the user is currently writing an entry then assume all other values besides run_number and n_runs are not specified and leave them as oldValues initialization
   	  if (writeEntry){
   	    if ( branchList[l] == "run_number" ) { 
-          if (debug > 3) Printf("NOTE: RunNumber %d getting written by user",new_runNumber);
+          if (debug > 5) Printf("NOTE: RunNumber %d getting written by user",new_runNumber);
   	      tempValues[l] = (Double_t)new_runNumber;
   	    }
         else if ( branchList[l] == "n_runs" ) {
-          if (debug > 3) Printf("NOTE: new_nRuns %d getting written by user",new_nRuns);
+          if (debug > 5) Printf("NOTE: new_nRuns %d getting written by user",new_nRuns);
           tempValues[l] = (Double_t)new_nRuns;
         }
         else if ( branchList[l] == "split_n" ) {
-          if (debug > 3) Printf("NOTE: new_splitNumber %d getting written by user",new_splitNumber);
+          if (debug > 5) Printf("NOTE: new_splitNumber %d getting written by user",new_splitNumber);
           tempValues[l] = (Double_t)new_splitNumber;
         }
   	    else if ( branchList[l] == "minirun_n" ) {
-          if (debug > 3) Printf("NOTE: new_minirunNumber %d getting written by user",new_minirunNumber);
+          if (debug > 5) Printf("NOTE: new_minirunNumber %d getting written by user",new_minirunNumber);
   	      tempValues[l] = (Double_t)new_minirunNumber;
   	    }
   	    else if ( branchList[l] == valueName ) {
-          if (debug > 3) Printf("NOTE: %s branch = %f getting written by user",(const char*) valueName,new_value);
+          if (debug > 5) Printf("NOTE: %s branch = %f getting written by user",(const char*) valueName,new_value);
           tempValues[l] = (Double_t)new_value;
 	      }
 	  	  else {
-          if (debug > 3) Printf("NOTE: %s branch = %f getting written by user",(const char*) branchList[l],oldValues[l]);
+          if (debug > 5) Printf("NOTE: %s branch = %f getting written by user",(const char*) branchList[l],oldValues[l]);
           if (userAddedNewBranch && !editEntry){
             tempValues[l] = -1.0e6; //oldValues[l] has been replaced with the prior entry, and because this new branch has no value in the tree its just that prior value
           }
@@ -809,15 +809,15 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
             tempValues[l] = oldValues[l];// has been replaced with the prior entry, and because this new branch has no value in the tree its just that prior value
           }
   		  }
-        if (debug > 2) Printf("Saving new values, Branch name %s, value %f",(const char*)branchList[l],oldValues[l]);
+        if (debug > 5) Printf("Saving new values, Branch name %s, value %f",(const char*)branchList[l],oldValues[l]);
       }
       else {
-        if (debug > 2) Printf("Saving old values, Branch name %s, value %f",(const char*)branchList[l],oldValues[l]);
+        if (debug > 5) Printf("Saving old values, Branch name %s, value %f",(const char*)branchList[l],oldValues[l]);
 	      // Otherwise just save the oldValues
         tempValues[l] = oldValues[l];
 	    }
 	    newValues[l] = tempValues[l];
-      if (debug > 1) Printf("Saving %s = %f, overwriting %f",(const char*)branchList[l],tempValues[l],oldValues[l]);
+      if (debug > 4) Printf("Saving %s = %f, overwriting %f",(const char*)branchList[l],tempValues[l],oldValues[l]);
       oldValues[l] = -1.0e6;
 	  }
     // Reset the triggers for writing
@@ -839,7 +839,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   else {
     newTree->Write("agg",TObject::kOverwrite);
   }
-  if (debug>0) newTree->Scan();
+  if (debug>3) newTree->Scan();
   aggregatorFile->Close();
 }
 

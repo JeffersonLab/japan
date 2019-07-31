@@ -113,6 +113,16 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     writeSlope_h( runNumber, minirunNumber, splitNumber, nRuns);
   }
   else if (
+       ana == "combinermeanrms"
+    || ana == "combinermeanRms"
+    || ana == "combinerMeanRms"
+    || ana == "combiner"
+    || ana == "combine"
+    || ana == "combo"){
+    writeCombinedMeanRms_h( tree, branch, leaf, cut, overWriteCut, runNumber, minirunNumber, splitNumber, nRuns ); // FIXME Removed histMode input from this version of writeMeanRMS since we aren't doing intelligent branch parsing. This is the ideal Aggregator method, so don't make it any fancier - this combo one does the branch as draw and then prints the leaf
+    if (debug>1) Printf("Done with correction ana");
+  }
+  else if (
        ana == "correctionmeanrms"
     || ana == "correctionmeanRms"
     || ana == "correctionMeanRms"
