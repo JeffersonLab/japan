@@ -19,7 +19,7 @@ fullruns   = args['fullruns']
 cmds = ['rcnd',str(run),'slug']
 cond_out = "NULL"
 cond_out = subprocess.Popen(cmds, stdout=subprocess.PIPE).stdout.read().strip().decode('ascii') # Needs to be decoded... be careful 
-slug = int(cond_out)
+slug = float(cond_out)
 print("The slug is slug: "+str(slug))
 
 # Add a layer of for loop over the number of minirun - obtained from a new camguin method to ask how many miniruns
