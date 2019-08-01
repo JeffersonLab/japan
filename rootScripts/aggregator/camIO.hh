@@ -155,10 +155,10 @@ Double_t getNruns_h(Double_t n_runs = -1){
     n_runs = nRuns.Atof();
   }
   if (n_runs<0){
-    Printf("Error: Number of Runs given (%d) invalid, must be an integer > 0 \n Tip: n_runs = 1 means you will only use 1 run, = 2 will TChain a second one on)",n_runs);
+    Printf("Error: Number of Runs given (%f) invalid, must be an integer > 0 \n Tip: n_runs = 1 means you will only use 1 run, = 2 will TChain a second one on)",n_runs);
     return 0;
   }
-  if (debug>0) Printf("Number of Runs: %d",n_runs);
+  if (debug>0) Printf("Number of Runs: %f",n_runs);
   return n_runs;
 }
 
@@ -384,7 +384,8 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
     }
   // end FIXME }
   if (!foundFile){
-    Printf("Rootfile not found in %s with runs from %d to %d, split %03d, check your config and rootfiles",(const char*)fileNameBase,runNumber,runNumber+n_runs-1, splitNumber);
+    //Printf("Rootfile not found in %s with runs from %d to %d, split %03d, check your config and rootfiles",(const char*)fileNameBase,runNumber,runNumber+n_runs-1, splitNumber);
+    Printf("Rootfile not found in %s for run %d, split %03d, check your config and rootfiles",(const char*)fileNameBase,runNumber, splitNumber);
     return 0;
   }
   //Printf("TChain total N Entries: %lld",newTChain->GetEntries());
@@ -765,7 +766,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
         RunNCheck=true;
       }
       if (branchList[l] == "n_runs" && oldValues[l]==(Double_t)new_nRuns){
-        if (debug>5) Printf("Looking at entry# %d, n_runs %d",entryN,new_nRuns);
+        if (debug>5) Printf("Looking at entry# %d, n_runs %f",entryN,new_nRuns);
         NRunsCheck=true;
       }
       if (branchList[l] == "split_n" && oldValues[l]==(Double_t)new_splitNumber){
@@ -793,7 +794,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   	      tempValues[l] = (Double_t)new_runNumber;
   	    }
         else if ( branchList[l] == "n_runs" ) {
-          if (debug > 5) Printf("NOTE: new_nRuns %d getting written by user",new_nRuns);
+          if (debug > 5) Printf("NOTE: new_nRuns %f getting written by user",new_nRuns);
           tempValues[l] = (Double_t)new_nRuns;
         }
         else if ( branchList[l] == "split_n" ) {
