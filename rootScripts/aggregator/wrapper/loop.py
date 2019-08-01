@@ -19,7 +19,7 @@ slug     = args['slug']
 #cmds = ['rcnd',str(run),'slug']
 #cond_out = "NULL"
 #cond_out = subprocess.Popen(cmds, stdout=subprocess.PIPE).stdout.read().strip().decode('ascii') # Needs to be decoded... be careful 
-#slug = int(cond_out)
+#slug = float(cond_out)
 #print("The slug is slug: "+str(slug))
 
 lines = []

@@ -11,3 +11,4 @@ setenv POSTPAN_ROOTFILES /chafs2/work1/apar/postpan-outputs/
 setenv DITHERING_ROOTFILES /chafs2/work1/apar/DitherCorrection/
 setenv DITHERING_ROOTFILES_SLOPES /chafs2/work1/apar/BMODextractor/
 setenv LRB_ROOTFILES /chafs2/work1/apar/LRBoutput/
+setenv RCDB_CONNECTION mysql://rcdb@hallcdb.jlab.org:3306/a-rcdb
