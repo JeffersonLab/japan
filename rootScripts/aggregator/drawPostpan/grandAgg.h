@@ -29,8 +29,8 @@ auto chan_t=tree;
 TString gc1= "&&"+ chan_name+"!=0 &&"+ chan_name+"!=-1e6 && "+ chan_name+"!=1e6";   
 TString gc2= "&&"+ chan_name+"_error!=0 &&"+chan_name+"_error!=-1e6 && "+chan_name+"_error!=1e6";
 //
-TString cut1="run_number==1 && split_n==1"+ gc1+ gc2;
-TString cut2="run_number==2 && split_n==1" + gc1+ gc2;
+TString cut1="ihwp==1 && wein==1"+ gc1+ gc2;
+TString cut2="ihwp==2 && wein==1" + gc1+ gc2;
 
 TTreeFormula f("name",chan_name, chan_t);
 
