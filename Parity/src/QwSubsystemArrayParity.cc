@@ -15,13 +15,21 @@
 
 //*****************************************************************//
 
+/// Default constructor
+QwSubsystemArrayParity::QwSubsystemArrayParity(QwOptions& options)
+: QwSubsystemArray(options, CanContain),
+  fErrorFlag(0),
+  fErrorFlagTreeIndex(-1)
+{
+
+}
+
+//*****************************************************************//
+
 /// Copy constructor
 QwSubsystemArrayParity::QwSubsystemArrayParity(const QwSubsystemArrayParity& source)
 : QwSubsystemArray(source)
 {
-  // Store pointer to source
-  dummy_source = &source;
-
   // Copy error flags
   fErrorFlag = source.fErrorFlag;
   fErrorFlagTreeIndex = source.fErrorFlagTreeIndex;
@@ -87,38 +95,8 @@ void QwSubsystemArrayParity::WritePromptSummary(QwPromptSummary *ps, TString typ
  */
 QwSubsystemArrayParity& QwSubsystemArrayParity::operator= (const QwSubsystemArrayParity &source)
 {
-  Bool_t localdebug=kFALSE;
-  if(localdebug)  std::cout<<"QwSubsystemArrayParity::operator= \n";
-  if (!source.empty()){
-    if (this->size() == source.size()){
-      this->fErrorFlag=source.fErrorFlag;
-      this->fCodaEventNumber=source.fCodaEventNumber;
-      this->fCodaEventType=source.fCodaEventType;
-      for(size_t i=0;i<source.size();i++){
-	if (source.at(i)==NULL || this->at(i)==NULL){
-	  //  Either the source or the destination subsystem
-	  //  are null
-	} else {
-	  VQwSubsystemParity *ptr1 =
-	    dynamic_cast<VQwSubsystemParity*>(this->at(i).get());
-	  if (typeid(*ptr1)==typeid(*(source.at(i).get()))){
-	    if(localdebug) std::cout<<" here in QwSubsystemArrayParity::operator= types mach \n";
-	    *(ptr1) = source.at(i).get();
-	  } else {
-	    //  Subsystems don't match
-	      QwError << " QwSubsystemArrayParity::operator= types do not mach" << QwLog::endl;
-	      QwError << " typeid(ptr1)=" << typeid(*ptr1).name()
-                      << " but typeid(*(source.at(i).get()))=" << typeid(*(source.at(i).get())).name()
-                      << QwLog::endl;
-	  }
-	}
-      }
-    } else {
-      //  Array sizes don't match
-    }
-  } else {
-    //  The source is empty
-  }
+  QwSubsystemArray::operator=(source);
+  this->fErrorFlag = source.fErrorFlag;
   return *this;
 }
 
@@ -131,7 +109,8 @@ QwSubsystemArrayParity& QwSubsystemArrayParity::operator= (const QwSubsystemArra
 QwSubsystemArrayParity& QwSubsystemArrayParity::operator+= (const QwSubsystemArrayParity &value)
 {
   if (!value.empty()){
-
+    fCodaEventNumber = (fCodaEventNumber == 0) ? value.fCodaEventNumber :
+        std::min(fCodaEventNumber, value.fCodaEventNumber);
     if (this->size() == value.size()){
       this->fErrorFlag|=value.fErrorFlag;
       for(size_t i=0;i<value.size();i++){
@@ -170,7 +149,8 @@ QwSubsystemArrayParity& QwSubsystemArrayParity::operator+= (const QwSubsystemArr
 QwSubsystemArrayParity& QwSubsystemArrayParity::operator-= (const QwSubsystemArrayParity &value)
 {
   if (!value.empty()){
-
+    fCodaEventNumber = (fCodaEventNumber == 0) ? value.fCodaEventNumber :
+        std::min(fCodaEventNumber, value.fCodaEventNumber);
     if (this->size() == value.size()){
       this->fErrorFlag|=value.fErrorFlag;
       for(size_t i=0;i<value.size();i++){
@@ -205,7 +185,6 @@ void QwSubsystemArrayParity::Sum(
   const QwSubsystemArrayParity &value1,
   const QwSubsystemArrayParity &value2)
 {
-
   if (!value1.empty()&& !value2.empty()){
     *(this)  = value1;
     *(this) += value2;
@@ -285,7 +264,9 @@ void QwSubsystemArrayParity::AccumulateRunningSum(const QwSubsystemArrayParity& 
   if (!value.empty()) {
     if (this->size() == value.size()) {
       if (value.GetEventcutErrorFlag()==0){//do running sum only if error flag is zero. This way will prevent any Beam Trip(in ev mode 3) related events going into the running sum.
-	for (size_t i = 0; i < value.size(); i++) {
+        fCodaEventNumber = (fCodaEventNumber == 0) ? value.fCodaEventNumber :
+            std::min(fCodaEventNumber, value.fCodaEventNumber);
+        for (size_t i = 0; i < value.size(); i++) {
 	  if (value.at(i)==NULL || this->at(i)==NULL) {
 	    //  Either the value or the destination subsystem
 	    //  are null

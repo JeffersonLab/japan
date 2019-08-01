@@ -324,9 +324,8 @@ std::vector<VQwDataHandler*> QwDataHandlerArray::GetDataHandlerByType(const std:
 void  QwDataHandlerArray::ClearEventData()
 {
   if (!empty()) {
-    /*    std::for_each(begin(), end(),
+    std::for_each(begin(), end(),
 		  boost::mem_fn(&VQwDataHandler::ClearEventData));
-    */
   }
 }
 
@@ -382,6 +381,23 @@ void  QwDataHandlerArray::FillTreeVector(std::vector <Double_t> &values) const
       handler_parity->FillTreeVector(values);
     }
   }
+}
+
+
+//*****************************************************************
+void  QwDataHandlerArray::ConstructHistograms(TDirectory *folder, TString &prefix)
+{
+  if (!empty()) {
+    for (iterator subsys = begin(); subsys != end(); ++subsys){
+      (*subsys)->ConstructHistograms(folder,prefix);
+    }
+  }
+}
+
+void  QwDataHandlerArray::FillHistograms()
+{
+  if (!empty())
+    std::for_each(begin(), end(), boost::mem_fn(&VQwDataHandler::FillHistograms));
 }
 
 
