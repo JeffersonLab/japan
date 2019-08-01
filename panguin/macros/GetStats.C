@@ -2,14 +2,14 @@ void GetStats(){
   TPad *a1 = new TPad("a1", "a1", 0,0,1,1);
   a1->Draw();
 
-  const int Nstats = 4;
+  const int Nstats = 5;
   TString statStr[Nstats];
   TString statStrNumbers[Nstats];
 
   TTree* r = (TTree*)gROOT->FindObject("evt");
   TH1D* hist = new TH1D("CodaEventNumber", "CodaEventNumber", 100, 0, 10e9);
  
-  r->Project(hist->GetName(), "CodaEventNumber", "1");
+  r->Project(hist->GetName(), "CodaEventNumber", "");
   Int_t tot = hist->GetEntries();
   statStr[0] = Form("Total Number of events");
   statStrNumbers[0] = Form(" = %d", tot);
@@ -20,17 +20,24 @@ void GetStats(){
   statStr[1] = Form("EventCut passing events");
   statStrNumbers[1] = Form(" = %d (%.2f%%)", ok, perok);
 
-  r->Project(hist->GetName(), "CodaEventNumber", "bcm_an_us<48");
+  r->Project(hist->GetName(), "CodaEventNumber", "bcm_dg_ds<60");
   Int_t low = hist->GetEntries();
   Double_t perlow= low*100./tot;
-  statStr[2] = Form("Current < 48 #muA events");
+  statStr[2] = Form("Current < 60 #muA events");
   statStrNumbers[2] = Form(" = %d (%.2f%%)", low, perlow);
 
-  r->Project(hist->GetName(), "CodaEventNumber", "bpm12XP>50000 || bpm12XM>50000 || bpm12YP>50000 || bpm12YM>50000");
+  r->Project(hist->GetName(), "CodaEventNumber", "bpm11XP>50000 || bpm11XM>50000 || bpm11YP>50000 || bpm11YM>50000");
   Int_t bpmsat = hist->GetEntries();
   Double_t perbpmsat= bpmsat*100./tot;
-  statStr[3] = Form("BPM12 wire saturation events");
+  statStr[3] = Form("BPM11 wire saturation events");
   statStrNumbers[3] = Form(" = %d (%.2f%%)", bpmsat, perbpmsat);
+
+  r->Project(hist->GetName(), "cav4cQ.hw_sum", "ErrorFlag==0");
+  Int_t nent = hist->GetEntries();
+  Double_t avgCurrent = hist->GetMean();
+  Double_t totalCharge = avgCurrent*(1/1.0e6)*(nent/120);
+  statStr[4] = Form("Total acc Q this run (1.2C = slug)");
+  statStrNumbers[4] = Form(" = %.2f C", totalCharge);
 
   TLatex text;
   text.SetTextSize(0.08);
