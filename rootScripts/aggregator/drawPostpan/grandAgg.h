@@ -29,17 +29,25 @@ auto chan_t=tree;
 TString gc1= "&&"+ chan_name+"!=0 &&"+ chan_name+"!=-1e6 && "+ chan_name+"!=1e6";   
 TString gc2= "&&"+ chan_name+"_error!=0 &&"+chan_name+"_error!=-1e6 && "+chan_name+"_error!=1e6";
 //
-TString cut1="ihwp==1 && wein==1"+ gc1+ gc2;
-TString cut2="ihwp==2 && wein==1" + gc1+ gc2;
+// device cut
+TString lc="";
+if (chan_name.Contains("usl")|| chan_name.Contains("dsl") || chan_name.Contains("left_avg") || chan_name.Contains("left_dd")){
+    lc+= "&& hrs!=1";
+}
+if (chan_name.Contains("usr")|| chan_name.Contains("dsr") || chan_name.Contains("right_avg") || chan_name.Contains("right_dd")){
+    lc+= "&& hrs!=2";
+}
+if (chan_name.Contains("us_avg")|| chan_name.Contains("ds_avg") || chan_name.Contains("us_dd") || chan_name.Contains("ds_dd")){
+    lc+= "&& hrs!=1 && hrs!=2";
+}
+//
+TString cut1="ihwp==1 && wein==1"+ gc1+ gc2+ lc;
+TString cut2="ihwp==2 && wein==1" + gc1+ gc2+ lc;
 
 TTreeFormula f("name",chan_name, chan_t);
 
 if(f.GetNdim()!=0){
 TCanvas *c=new TCanvas(chan_name, chan_name, 1200,800);
-c->Divide(2,2);
-
-
-
 
 Int_t nEntries=chan_t->Draw("n_runs:"+chan_name+":"+chan_name+"_error",cut1 , "goff");
 TGraphErrors g1 = drawReg(nEntries, chan_t->GetV1(), chan_t->GetV2(), chan_t->GetV3());
@@ -59,43 +67,57 @@ nEntries.push_back(chan_t->Draw("n_runs:"+chan_name+":"+chan_name+"_error","run_
 nEntries.push_back(chan_t->Draw("n_runs:"+chan_name+":"+chan_name+"_error","run_number==2 && split_n==2",  "goff");  
 */
 
-gStyle->SetOptFit(1);
+gStyle->SetOptFit(0);
+
+TF1* fconst1=new TF1("fconst1", "pol0");
+TF1* fconst2=new TF1("fconst2", "pol0");
+TF1* fconst3=new TF1("fconst3", "pol0");
 
 c->cd(1);
 g1.SetMarkerColor(kBlue);
 g1.SetMarkerStyle(20);
-auto g1_clone=*(TGraphErrors*) g1.Clone();
-g1_clone.Fit("pol0");
-g1_clone.SetTitle(chan_name+" vs slug (IHWP: In)");
-g1_clone.Draw("ap");
+fconst1->SetLineColor(kBlue);
+g1.Fit(fconst1,"Q");
 
-
-c->cd(2);
 g2.SetMarkerColor(kRed);
 g2.SetMarkerStyle(21);
 g2_cor.SetMarkerColor(kRed);
 g2_cor.SetMarkerStyle(21);
-auto g2_clone=*(TGraphErrors*) g2.Clone();
-g2_clone.Fit("pol0");
-g2_clone.SetTitle(chan_name+" vs slug (IHWP: Out)");
-g2_clone.Draw("ap");
+fconst2->SetLineColor(kRed);
+g2.Fit(fconst2,"Q");
+fconst3->SetLineColor(kRed);
+g2_cor.Fit(fconst3,"Q");
 
-
-
-c->cd(3);
 TMultiGraph mg;
 mg.Add(&g1);
 mg.Add(&g2);
 mg.SetTitle(chan_name+" vs slug");
-mg.Draw("ap"); 
-mg.Fit("pol0");
-c->cd(4);
+
+gPad->Modified();
+mg.SetMaximum(g1.GetMean(2)+6*g1.GetRMS(2));
+mg.SetMinimum(g2.GetMean(2)-6*g2.GetRMS(2));
+
+mg.Draw("ap");
+TLatex *pt1= new TLatex(0.25,0.85, Form("In:%3.3f+/-%3.3f\t #chi^{2}/NDF:%3.1f/%d",fconst1->GetParameter(0), fconst1->GetParError(0),fconst1->GetChisquare(), fconst1->GetNDF() ));
+pt1->SetNDC();
+pt1->SetTextFont(43);
+pt1->SetTextSize(40);
+pt1->SetTextColor(kBlue);
+pt1->Draw();
+TLatex *pt2= new TLatex(0.25,0.15, Form("Out:%3.3f+/-%3.3f\t #chi^{2}/NDF:%3.1f/%d",fconst2->GetParameter(0), fconst2->GetParError(0),fconst2->GetChisquare(), fconst2->GetNDF() ));
+pt2->SetNDC();
+pt2->SetTextFont(43);
+pt2->SetTextSize(40);
+pt2->SetTextColor(kRed);
+pt2->Draw();
+/*
+c->cd(1);
 TMultiGraph mg_cor;
 mg_cor.Add(&g1);
 mg_cor.Add(&g2_cor);
 mg_cor.SetTitle(chan_name+" vs slug (sign corrected)");
 mg_cor.Draw("ap");
-mg_cor.Fit("pol0");
+*/
 c->Print(output+".pdf");
 }
 }
