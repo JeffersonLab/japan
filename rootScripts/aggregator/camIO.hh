@@ -147,12 +147,12 @@ Int_t getMinirunNumber_h(Int_t minirunNumber = -2){
   return minirunNumber;
 }
 
-Int_t getNruns_h(Int_t n_runs = -1){
+Double_t getNruns_h(Double_t n_runs = -1){
 // Get environment variable number of runs to chain
   if ( n_runs == -1 ) 
   { 
     TString nRuns = gSystem->Getenv("NRUNS");
-    n_runs = nRuns.Atoi();
+    n_runs = nRuns.Atof();
   }
   if (n_runs<0){
     Printf("Error: Number of Runs given (%d) invalid, must be an integer > 0 \n Tip: n_runs = 1 means you will only use 1 run, = 2 will TChain a second one on)",n_runs);
@@ -236,7 +236,7 @@ vector<vector<string>> textFileParse_h(TString fileName, char delim = ',')
   }
 }
 
-TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t n_runs = -1, TString filenamebase = "NULL"){
+TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t n_runs = -1, TString filenamebase = "NULL"){
 
   TString filename = "NULL";
   TString defaultTree = "mul";
@@ -392,7 +392,7 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
   return newTChain;
 }
 
-TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1, TString filenamebase = "NULL"){
+TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t nRuns = -1, TString filenamebase = "NULL"){
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   minirunNumber = getMinirunNumber_h(minirunNumber);
@@ -405,7 +405,7 @@ TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", 
   return BranchLeaf;
 }
 
-TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1, TString filenamebase = "NULL"){
+TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t nRuns = -1, TString filenamebase = "NULL"){
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   minirunNumber = getMinirunNumber_h(minirunNumber);
@@ -418,7 +418,7 @@ TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
   return Branch;
 }
 
-TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TString leaf = "hw_sum", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1, TString filenamebase = "NULL"){
+TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TString leaf = "hw_sum", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t nRuns = -1, TString filenamebase = "NULL"){
   if (debug>2) Printf("Looking for leaf: \"%s\"",(const char*)(tree+"."+branch+"."+leaf));
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
@@ -607,7 +607,7 @@ void addUnits(TFile file) {
   fin->Close();
 }
 */
-void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t new_runNumber = 0, Int_t new_minirunNumber = -2, Int_t new_splitNumber = -1, Int_t new_nRuns = -1){
+void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t new_runNumber = 0, Int_t new_minirunNumber = -2, Int_t new_splitNumber = -1, Double_t new_nRuns = -1){
   // Get environment variables
   new_runNumber     = getRunNumber_h(new_runNumber);
   new_splitNumber   = getSplitNumber_h(new_splitNumber);
