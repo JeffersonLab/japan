@@ -27,7 +27,7 @@ print("The slug is slug: "+str(slug))
 # Alternate solution is to procedurally generate the cut string: "minirun==# && ok_cut==1",1 (where 1 is the overwrite cut telling Device_Error_Code to go away)
 print("Extracting from run " + str(run))
 cmds = ['root','-l','-q','-b','-L','getNMiniruns_postpan.C("'+str(run)+'")']
-nMiniRuns = -1
+nMiniRuns = 0
 output = "NULL"
 output = subprocess.Popen(cmds, stdout=subprocess.PIPE).stdout.read().strip().decode('ascii') # Needs to be decoded... be careful
 print(output)
