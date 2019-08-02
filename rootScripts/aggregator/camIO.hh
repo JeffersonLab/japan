@@ -673,6 +673,24 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
     //oldTree->SetName("old_agg");
     if (!oldTree) {
       Printf("ERROR, tree agg is dead");
+      oldTree = new TTree("agg","Aggregator Tree");
+      if (debug>-1) Printf("Making new aggregator tree run %d, minirun %d, split %d, n_runs %f - Evil Hack, probably invalidates the data taken before still...",new_runNumber,new_minirunNumber,new_splitNumber,new_nRuns);
+      branchList.push_back("run_number");
+      branchList.push_back("n_runs");
+      branchList.push_back("split_n");
+      branchList.push_back("minirun_n");
+      newValues.push_back( -1.0e6); // Vectors have to be initialized, and I don't know how many entries will come, so go for all of them
+      newValues.push_back( -1.0e6);
+      newValues.push_back( -1.0e6);
+      newValues.push_back( -1.0e6);
+      oldValues.push_back( -1.0e6); 
+      oldValues.push_back( -1.0e6); 
+      oldValues.push_back( -1.0e6); 
+      oldValues.push_back( -1.0e6); 
+      tempValues.push_back(-1.0e6);
+      tempValues.push_back(-1.0e6);
+      tempValues.push_back(-1.0e6); 
+      tempValues.push_back(-1.0e6); 
     }
     if (debug>0) Printf("Updating tree %s",(const char*)oldTree->GetName());
     TObjArray *aggVars = oldTree->GetListOfBranches();
