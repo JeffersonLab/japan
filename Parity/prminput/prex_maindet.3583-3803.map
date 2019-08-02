@@ -8,8 +8,8 @@ sample_size=4096
 !
   VQWK, 0, 0,  IntegrationPMT,  usl           
   VQWK, 0, 1,  IntegrationPMT,  dsl           
-  VQWK, 0, 2,  IntegrationPMT,  atl1          not_blindable 
-  VQWK, 0, 3,  IntegrationPMT,  atl2          not_blindable 
+!  VQWK, 0, 2,  IntegrationPMT,  atl1          not_blindable 
+!  VQWK, 0, 3,  IntegrationPMT,  atl2          not_blindable 
   VQWK, 0, 4,  IntegrationPMT,  vqwk_25_0ch4  not_blindable not_normalizable
   VQWK, 0, 5,  IntegrationPMT,  vqwk_25_0ch5  not_blindable not_normalizable
   VQWK, 0, 6,  IntegrationPMT,  battery1L  not_blindable not_normalizable
@@ -25,8 +25,8 @@ sample_size=4096
 ! Turning Right arm back on after RQ2 fixed. Note also that Left Quartz is new PREX II Quartz now
   VQWK, 0, 0,  IntegrationPMT,  usr           
   VQWK, 0, 1,  IntegrationPMT,  dsr           
-  VQWK, 0, 2,  IntegrationPMT,  atr1          not_blindable 
-  VQWK, 0, 3,  IntegrationPMT,  atr2          not_blindable 
+!  VQWK, 0, 2,  IntegrationPMT,  atr1          not_blindable 
+!  VQWK, 0, 3,  IntegrationPMT,  atr2          not_blindable 
   VQWK, 0, 4,  IntegrationPMT,  vqwk_26_0ch4  not_blindable not_normalizable
   VQWK, 0, 5,  IntegrationPMT,  vqwk_26_0ch5  not_blindable not_normalizable
   VQWK, 0, 6,  IntegrationPMT,  battery1R  not_blindable not_normalizable
