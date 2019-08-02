@@ -2,7 +2,7 @@ void GetStats(){
   TPad *a1 = new TPad("a1", "a1", 0,0,1,1);
   a1->Draw();
 
-  const int Nstats = 5;
+  const int Nstats = 6;
   TString statStr[Nstats];
   TString statStrNumbers[Nstats];
 
@@ -38,6 +38,12 @@ void GetStats(){
   Double_t totalCharge = avgCurrent*(1/1.0e6)*(nent/120);
   statStr[4] = Form("Total acc Q this run (1.2C = slug)");
   statStrNumbers[4] = Form(" = %.2f C", totalCharge);
+
+  r->Project(hist->GetName(), "CodaEventNumber", "");
+  Double_t goodTime = ((nent/120.0)/60.0);
+  Double_t totalTime = ((hist->GetEntries()/120.0)/60.0);
+  statStr[5] = Form("Good beam time / total time");
+  statStrNumbers[5] = Form(" = %.2f ABU minutes / %0.2f mins ",goodTime,totalTime);
 
   TLatex text;
   text.SetTextSize(0.08);
