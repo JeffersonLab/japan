@@ -81,6 +81,8 @@ TF1* fconst1=new TF1("fconst1", "pol0");
 TF1* fconst2=new TF1("fconst2", "pol0");
 TF1* fconst3=new TF1("fconst3", "pol0");
 TF1* fconst4=new TF1("fconst4", "pol0");
+TF1* fconst_p=new TF1("fconst_p", "pol0");
+TF1* fconst_m=new TF1("fconst_m", "pol0");
 
 
 g1.SetMarkerColor(kBlue);
@@ -97,14 +99,14 @@ g2.Fit(fconst2,"Q");
 fconst3->SetLineColor(kRed);
 g2_cor.Fit(fconst3,"Q");
 
-g3.SetMarkerColor(kCyan);
+g3.SetMarkerColor(kMagenta);
 g3.SetMarkerStyle(22);
-fconst3->SetLineColor(kCyan);
+fconst3->SetLineColor(kMagenta);
 g3.Fit(fconst3, "Q");
 
-g4.SetMarkerColor(kGreen);
+g4.SetMarkerColor(kGreen+4);
 g4.SetMarkerStyle(23);
-fconst4->SetLineColor(kGreen);
+fconst4->SetLineColor(kGreen+4);
 g4.Fit(fconst4, "Q");
 
 TMultiGraph mg;
@@ -112,6 +114,14 @@ mg.Add(&g1);
 mg.Add(&g2);
 mg.Add(&g3);
 mg.Add(&g4);
+TMultiGraph mg1;
+mg1.Add(&g1);
+mg1.Add(&g4);
+mg1.Fit(fconst_p, "Q");
+TMultiGraph mg2;
+mg2.Add(&g2);
+mg2.Add(&g3);
+mg2.Fit(fconst_m, "Q");
 mg.SetTitle(chan_name+" vs slug");
 /*
 if (!chan_name.Contains("_rms")&& !chan_name.Contains("_mean")){
@@ -126,35 +136,49 @@ if (!chan_name.Contains("_rms")&& !chan_name.Contains("_mean")){
  p1->Draw();
  TPad *p2 = new TPad("p2","",0,0,1,0.2);
  p2->SetTopMargin(0);
+ p2->SetLeftMargin(0);
+ p2->SetRightMargin(0);
  p2->Draw("B");
  p1->cd();
 
 mg.Draw("ap");
 p2->cd();
-TLatex *pt1= new TLatex(0.2,0.8, Form("%20s %3.3f+/-%3.3f %15s: %3.1f/%d","Right In:", fconst1->GetParameter(0), fconst1->GetParError(0), "#chi^{2}/NDF", fconst1->GetChisquare(), fconst1->GetNDF() ));
+TLatex *pt1= new TLatex(0.0,0.8, Form("%20s %3.3f+/-%3.3f %15s: %3.1f/%d","Right In:", fconst1->GetParameter(0), fconst1->GetParError(0), "#chi^{2}/NDF", fconst1->GetChisquare(), fconst1->GetNDF() ));
 pt1->SetNDC();
 pt1->SetTextFont(43);
-pt1->SetTextSize(27);
+pt1->SetTextSize(26);
 pt1->SetTextColor(kBlue);
 pt1->Draw();
-TLatex *pt2= new TLatex(0.2,0.6, Form("%20s %3.3f+/-%3.3f %15s: %3.1f/%d","Right Out:", fconst2->GetParameter(0), fconst2->GetParError(0), "#chi^{2}/NDF", fconst2->GetChisquare(), fconst2->GetNDF() ));
+TLatex *pt2= new TLatex(0.0,0.4, Form("%20s %3.3f+/-%3.3f %15s: %3.1f/%d","Right Out:", fconst2->GetParameter(0), fconst2->GetParError(0), "#chi^{2}/NDF", fconst2->GetChisquare(), fconst2->GetNDF() ));
 pt2->SetNDC();
 pt2->SetTextFont(43);
-pt2->SetTextSize(27);
+pt2->SetTextSize(26);
 pt2->SetTextColor(kRed);
 pt2->Draw();
-TLatex *pt3= new TLatex(0.2,0.4, Form("%20s %3.3f+/-%3.3f %15s:%3.1f/%d","Left In:", fconst3->GetParameter(0), fconst3->GetParError(0), "#chi^{2}/NDF", fconst3->GetChisquare(), fconst3->GetNDF() ));
+TLatex *pt3= new TLatex(0.0,0.2, Form("%20s %3.3f+/-%3.3f %15s:%3.1f/%d","Left In:", fconst3->GetParameter(0), fconst3->GetParError(0), "#chi^{2}/NDF", fconst3->GetChisquare(), fconst3->GetNDF() ));
 pt3->SetNDC();
 pt3->SetTextFont(43);
-pt3->SetTextSize(27);
-pt3->SetTextColor(kCyan);
+pt3->SetTextSize(26);
+pt3->SetTextColor(kMagenta);
 pt3->Draw();
-TLatex *pt4= new TLatex(0.2,0.2, Form("%20s %3.3f+/-%3.3f %15s:%3.1f/%d","Left Out:", fconst4->GetParameter(0), fconst4->GetParError(0), "#chi^{2}/NDF", fconst4->GetChisquare(), fconst4->GetNDF() ));
+TLatex *pt4= new TLatex(0.0,0.6, Form("%20s %3.3f+/-%3.3f %15s:%3.1f/%d","Left Out:", fconst4->GetParameter(0), fconst4->GetParError(0), "#chi^{2}/NDF", fconst4->GetChisquare(), fconst4->GetNDF() ));
 pt4->SetNDC();
 pt4->SetTextFont(43);
-pt4->SetTextSize(27);
-pt4->SetTextColor(kGreen);
+pt4->SetTextSize(26);
+pt4->SetTextColor(kGreen+4);
 pt4->Draw();
+TLatex *pt_p= new TLatex(0.45,0.7, Form("%20s %3.3f+/-%3.3f %15s: %3.1f/%d","", fconst_p->GetParameter(0), fconst_p->GetParError(0), "#chi^{2}/NDF", fconst_p->GetChisquare(), fconst_p->GetNDF() ));
+pt_p->SetNDC();
+pt_p->SetTextFont(43);
+pt_p->SetTextSize(26);
+pt_p->SetTextColor(kCyan+4);
+pt_p->Draw();
+TLatex *pt_m= new TLatex(0.45,0.3, Form("%20s %3.3f+/-%3.3f %15s: %3.1f/%d","", fconst_m->GetParameter(0), fconst_m->GetParError(0), "#chi^{2}/NDF", fconst_m->GetChisquare(), fconst_m->GetNDF() ));
+pt_m->SetNDC();
+pt_m->SetTextFont(43);
+pt_m->SetTextSize(26);
+pt_m->SetTextColor(kRed+3);
+pt_m->Draw();
 
 /*
 c->cd(1);
