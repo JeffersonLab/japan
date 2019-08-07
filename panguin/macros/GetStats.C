@@ -35,13 +35,13 @@ void GetStats(){
   r->Project(hist->GetName(), "cav4cQ.hw_sum", "ErrorFlag==0");
   Int_t nent = hist->GetEntries();
   Double_t avgCurrent = hist->GetMean();
-  Double_t totalCharge = avgCurrent*(1/1.0e6)*(nent/120);
+  Double_t totalCharge = avgCurrent*(1/1.0e6)*(nent/240);
   statStr[4] = Form("Total acc Q this run (1.2C = slug)");
   statStrNumbers[4] = Form(" = %.2f C", totalCharge);
 
   r->Project(hist->GetName(), "CodaEventNumber", "");
-  Double_t goodTime = ((nent/120.0)/60.0);
-  Double_t totalTime = ((hist->GetEntries()/120.0)/60.0);
+  Double_t goodTime = ((nent/240.0)/60.0);
+  Double_t totalTime = ((hist->GetEntries()/240.0)/60.0);
   statStr[5] = Form("Good beam time / total time");
   statStrNumbers[5] = Form(" = %.2f ABU minutes / %0.2f mins ",goodTime,totalTime);
 
