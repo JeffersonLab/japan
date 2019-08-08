@@ -33,3 +33,7 @@ To reanalyze and make new run and minirun files for each run
 5) To look at the data by hand, find the output slug aggregated files and do: 
  root /chafs2/work1/apar/aggRootfiles/slugRootfiles/run_slug11.root
  root [1] agg->Draw("reg_asym_usl_mean:run_number","","*")
+
+6) To Make grand aggregator plots do
+ root -l -b -q grandAgg.C'("/chafs2/work1/apar/aggRootfiles/slugRootfiles/grandRootfile/grand_aggregator.root","outLocation...")'
+

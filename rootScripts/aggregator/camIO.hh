@@ -304,14 +304,14 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
     tree = defaultTree; // FIXME we are just doing this now... for post pan stuff
   }
 
-  const int num_daqConfigs = 4;
+  const int num_daqConfigs = 5;
   const int num_analyses = 3;
   //for(Int_t i = 0; i < (n_runs); i++){ // FIXME this used to be used as a loop over chained together runs, and is being phased out in favor of slugging miniruns
     // FIXME for the purpose of doing slugs (the original goal of the n_runs variable) we have decided to, instead
     // of TChaining runs together and having large segments, to instead split the runs into miniruns (starting in post pan, see the other carnage around here)
     // and then add those piece by piece into a "slug"
     // We will now use the n_runs variable as a marker of which slug we are in.
-    TString daqConfigs[num_daqConfigs] = {"prexPrompt_pass2","prexCH","prexINJ","prex_tedf"}; // Potentially replace this with a config file read in array or map;
+    TString daqConfigs[num_daqConfigs] = {"prexPrompt_pass2","prexPrompt_pass1","prexCH","prexINJ","prex_tedf"}; // Potentially replace this with a config file read in array or map;
     TString analyses[num_analyses] = {".","_regress_prFIXME.","_regress_mul."};
     TString suffix[2] = {"root",Form("%03d.root",splitNumber)};
     // FIXME remove this "FIXME" once there is a non-degeneracy in the tree names between the regress_pr and _mul root file's tree names
