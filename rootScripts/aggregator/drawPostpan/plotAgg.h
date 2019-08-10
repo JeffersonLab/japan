@@ -170,6 +170,11 @@ class Source {
 void Source::drawAll(){
   
 auto filename= this->output+this->slug;
+TString empty = "CAM_OUTPUTDIR: Undefined variable.";
+//if (gSystem->Exec("echo $CAM_OUTPUTDIR")==empty) {
+//  Printf("Error: Must define an output directory, setting to default = ./");
+//  gSystem->Setenv("CAM_OUTPUTDIR","./");
+//}
 writeFile_h("ihwp", this->ihwp, -1, -1, -1, slug);
 writeFile_h("wein", this->wein, -1, -1, -1, slug);
 writeFile_h("hrs", this->hrs, -1, -1, -1, slug);

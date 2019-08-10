@@ -6,7 +6,7 @@ To reanalyze and make new run and minirun files for each run
 
 2) Once the aggregator is done running on all runs in a given slug you can hadd them together and add the units branch to them with 
 
- ~/PREX/prompt/accumulate_mini_aggFiles_list.sh ~/PREX/prompt/Aggregator/drawPostpan/run_lists/slug11.list slug11.root
+ ~/PREX/prompt/accumulate_mini_aggFiles_list.sh slug11
 
  - - - (NOTE: accumulate assumes minirun segmented output, but pre-slug 14 it was all one minirun in one, so use the accumulate_aggFiles_list.sh, and then HADD together if there is mixing (slug 14 and 15))
 
