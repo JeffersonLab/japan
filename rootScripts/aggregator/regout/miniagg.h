@@ -20,6 +20,8 @@ class Source {
 RDataFrame Source::readSource(){
 EnableImplicitMT();
 
+
+/* Getting device list. This can be vectorised.*/
 std::vector<string> device_list;
 string device;
 ifstream infile("input.txt");
@@ -30,7 +32,7 @@ if (infile.is_open()){
         count++;
   }
 }
-
+/*--------------------------------------------*/
 
 
 TChain mul_tree("mul");
@@ -50,9 +52,10 @@ auto d_good=d.Filter("ok_cut==1");
 
 auto mean=d_good.Mean();
 
-auto colNames=d_good.GetColumnNames();
-for (auto &&colName:colNames){
-     std::cout<<colName<<std::endl;
+
+for (auto &device:device_list){
+     auto mean=d_good.Mean(device.c_str());
+     std::cout<< device.c_str() << ":" << *mean<< std::endl;
 }
 
 std::cout<< typeid(mean).name() << std::endl;
