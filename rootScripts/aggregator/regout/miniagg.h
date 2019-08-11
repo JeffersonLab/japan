@@ -20,17 +20,17 @@ class Source {
 RDataFrame Source::readSource(){
 EnableImplicitMT();
 
-std::vector<TString> device_list;
+std::vector<string> device_list;
 string device;
 ifstream infile("input.txt");
 Int_t count=0;
 if (infile.is_open()){
   while(getline(infile,device)){
-        device_list.push_back(Form("\"%s\"",device.c_str()));
+        device_list.push_back(device);
         count++;
   }
 }
-std::cout<<"The device list is:" <<device_list.Data() << std::endl;
+
 
 
 TChain mul_tree("mul");
@@ -46,8 +46,16 @@ mul_tree.AddFriend(&mulc_tree);
 
 RDataFrame d(mul_tree,device_list);
 auto d_good=d.Filter("ok_cut==1");
+
+
 auto mean=d_good.Mean();
-std::cout<< *mean << std::endl;
+
+auto colNames=d_good.GetColumnNames();
+for (auto &&colName:colNames){
+     std::cout<<colName<<std::endl;
+}
+
+std::cout<< typeid(mean).name() << std::endl;
 return d;
 
 }
