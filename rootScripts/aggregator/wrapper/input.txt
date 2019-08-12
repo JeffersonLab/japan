@@ -122,6 +122,8 @@
 "meanRms","reg","diff_bpm14Y","","miniruns",0,"defaultHist",0
 "meanRms","reg","diff_bpm16X","","miniruns",0,"defaultHist",0
 "meanRms","reg","diff_bpm16Y","","miniruns",0,"defaultHist",0
+"meanRms","reg","diff_bpm0l01X","","miniruns",0,"defaultHist",0
+"meanRms","reg","diff_bpm0l01Y","","miniruns",0,"defaultHist",0
 "combinerMeanRms","reg","(asym_bcm_an_us+asym_bcm_an_ds)/2","asym_bcm_an_us_bcm_an_ds_agg_avg","miniruns",0,"defaultHist",0
 "combinerMeanRms","reg","(asym_bcm_an_us-asym_bcm_an_ds)/2","asym_bcm_an_us_bcm_an_ds_agg_dd","miniruns",0,"defaultHist",0
 "combinerMeanRms","reg","(asym_bcm_an_us+asym_bcm_an_ds3)/2","asym_bcm_an_us_bcm_an_ds3_agg_avg","miniruns",0,"defaultHist",0
@@ -273,3 +275,5 @@
 "last","slow","Phi_FG","Phi_FG","1",0,"defaultHist",0
 "last","slow","IGL1I00DI24_24M","IGL1I00DI24_24M","1",0,"defaultHist",0
 "last","slow","IGL1I00OD16_16","IGL1I00OD16_16","1",0,"defaultHist",0
+"last","slow","RTPAPOSUCNT","RTPAPOSUCNT","1",0,"defaultHist",0
+"last","slow","RTPAPOSVCNT","RTPAPOSVCNT","1",0,"defaultHist",0
