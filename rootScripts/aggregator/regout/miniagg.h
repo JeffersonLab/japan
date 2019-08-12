@@ -20,7 +20,7 @@ class Source {
 RDataFrame Source::readSource(){
 EnableImplicitMT();
 
-
+time_t current=time(NULL);
 /* Getting device list. This can be vectorised.*/
 std::vector<string> device_list;
 string device;
@@ -33,7 +33,7 @@ if (infile.is_open()){
   }
 }
 /*--------------------------------------------*/
-
+printf("%s", ctime(&current));
 
 TChain mul_tree("mul");
 TChain reg_tree("reg");
@@ -49,16 +49,15 @@ mul_tree.AddFriend(&mulc_tree);
 RDataFrame d(mul_tree,device_list);
 auto d_good=d.Filter("ok_cut==1");
 
-
-auto mean=d_good.Mean();
-
+printf("%s", ctime(&current));
 
 for (auto &device:device_list){
      auto mean=d_good.Mean(device.c_str());
      std::cout<< device.c_str() << ":" << *mean<< std::endl;
+     printf("%s", ctime(&current));
 }
 
-std::cout<< typeid(mean).name() << std::endl;
+//std::cout<< typeid(mean).name() << std::endl;
 return d;
 
 }
