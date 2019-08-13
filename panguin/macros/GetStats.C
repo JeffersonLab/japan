@@ -55,4 +55,5 @@ void GetStats(){
     text.DrawLatex(0.10, iniY - (j*2.5+1)*diffY, statStr[j]); 
     text.DrawLatex(0.10, iniY - (j*2.5+2)*diffY, statStrNumbers[j]); 
   }
+  if(hist) delete hist;
 }
