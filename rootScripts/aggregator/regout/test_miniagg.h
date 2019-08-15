@@ -1,14 +1,23 @@
 using namespace ROOT;
 
+// Best in root >= 6.16
 
 class Channel{
-
-
+  public: 
+    std::vector <TH1D> histos;
+    TString name;
+    TString draw;
+    std::vector <Int_t> miniruns;
+    std::vector <Double_t> means;
+    std::vector <Double_t> meanErrs;
+    std::vector <Double_t> rmss;
+    std::vector <Double_t> rmsErrs;
+    std::vector <Double_t> nentries;
 };
 
 class Source {
   public:
-    TString run,split,input;
+    TString run,split,miniruns,input;
     Source(TString n_run, TString n_split, TString in): run(n_run), split(n_split), input(in) {}
     RDataFrame readSource();
     void printInfo() { std::cout << "Processing run  " << run  << ". " << std::endl;} 
@@ -19,7 +28,6 @@ class Source {
 
 RDataFrame Source::readSource(){
   EnableImplicitMT();
-
 
   /* Getting device list. This can be vectorised.*/
   std::vector<string> device_list;
@@ -41,11 +49,13 @@ RDataFrame Source::readSource(){
   tsw.Start();
   TChain * mul_tree      = new TChain("mul");
   TChain * reg_tree      = new TChain("reg");
+  TChain * mini_tree     = new TChain("mini");
   TChain * mulc_tree     = new TChain("mulc");
   TChain * mulc_lrb_tree = new TChain("mulc_lrb");
 
   mul_tree->Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root",run.Data(),split.Data()));
   reg_tree->Add(Form("/chafs2/work1/apar/postpan-outputs/prexPrompt_%s_%s_regress_postpan.root", run.Data(),split.Data()));
+  mini_tree->Add(Form("/chafs2/work1/apar/postpan-outputs/prexPrompt_%s_%s_regress_postpan.root", run.Data(),split.Data()));
   mulc_tree->Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root", run.Data(),split.Data()));
   mulc_lrb_tree->Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root", run.Data(),split.Data()));
 
@@ -53,17 +63,27 @@ RDataFrame Source::readSource(){
   mul_tree->AddFriend(mulc_tree);
   mul_tree->AddFriend(mulc_lrb_tree);
 
+  miniruns = mini_tree->Scan("minirun","");
+
   RDataFrame d(*mul_tree);//,device_list);
   cout << "Filtering through reg.ok_cut==1 --"; tsw.Print(); cout << endl;
   tsw.Start();
   auto d_good=d.Filter("reg.ok_cut==1");
 
-  cout << "Done with Tree cut --"; tsw.Print(); cout << endl;
+  cout << "Filtered through reg.ok_cut==1 --"; tsw.Print(); cout << endl;
+  tsw.Start();
+  //std::vector<TInterface<TFilterBase> ROOT::Experimental::TDF::TInterface< Proxied >::Filter> minirunCuts;
+  //std::vector<ROOT::RDF::RInterface<Filter> minirunCuts;
+  //for (Int_t k = 0; k<miniruns; k++) {
+  //  minirunCuts.push_back(d_good.Filter(Form("reg.minirun==%d",k)));
+  //}
+
+  cout << "Done with Tree cuts --"; tsw.Print(); cout << endl;
   tsw.Start();
 
   //cout << "Executing Tree Traversal --"; tsw.Print(); cout << endl;
   //tsw.Start();
-  //auto mean=d_good.Mean();
+  //auto mean=d_good.Mean(); // This is non-lazy, avoid!
 
   std::vector<ROOT::RDF::RResultPtr<TH1D>> histoVec;
 
@@ -75,7 +95,9 @@ RDataFrame Source::readSource(){
     string tmpStr(device.size(),'\0');
     std::replace_copy(device.begin(), device.end(),tmpStr.begin(),'.','_');
     cout << "Alias name = " << tmpStr << endl;
-    histoVec.push_back(d_good.Define(tmpStr+"_agg",device).Histo1D(tmpStr+"_agg"));
+    // Replace this with a method that takes the number of miniruns, the minirunCuts list of TDFs, and the device_list info for Channel initialization
+    // Maybe do histo2d here and splice the reg.minirun stuff internally while defining them in the dedicated method
+    histoVec.push_back(d_good.Define(tmpStr+"_agg",device).Histo1D(tmpStr+"_agg"));//:reg.minirun")); // for 2D do this slice
     cout << "Done Getting Histo1D for " << device << " --"; tsw.Print(); cout << endl;
     tsw.Start();
 //    std::cout<< device << std::endl;
