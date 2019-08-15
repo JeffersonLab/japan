@@ -75,10 +75,10 @@ RDataFrame Source::readSource(){
     tmpHisto1D->SetName(device.c_str());
     histoVec.push_back(tmpHisto1D);
     */
-    cout << "Done Getting Histo1D for " << device.c_str() << " --"; tsw.Print(); cout << endl;
-    tsw.Start();
-    cout << "Done Getting analysis for " << (Double_t)((TH1*)gROOT->FindObject("htemp"))->GetMean() << " --"; tsw.Print(); cout << endl;
-    tsw.Start();
+    //cout << "Done Getting Histo1D for " << device.c_str() << " --"; tsw.Print(); cout << endl;
+    //tsw.Start();
+    //cout << "Done Getting analysis for " << (Double_t)((TH1*)gROOT->FindObject("htemp"))->GetMean() << " --"; tsw.Print(); cout << endl;
+    //tsw.Start();
   }
 
 //  for (auto &analysis:histoVec){

@@ -1,9 +1,9 @@
-#include "../camIO.hh"
-#include "getNMiniruns_postpan.C"
+#include "camIO.hh"
+#include "wrapper/getNMiniruns_postpan.C"
 void test(TString runnum = "3424"){
-  TChain* chain1 = new TChain("reg");
-  TChain* mini = new TChain("mini");
-  TChain* chain2 = new TChain("mul");
+  TChain * chain1 = new TChain("reg");
+  TChain * mini   = new TChain("mini");
+  TChain * chain2 = new TChain("mul");
   // FIXME use Open command structure for friended chain
   chain1->Add("/chafs2/work1/apar/postpan-outputs/prexPrompt_"+runnum+"_000_regress_postpan.root"); 
   chain2->Add("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_"+runnum+".000.root");

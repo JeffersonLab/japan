@@ -11,7 +11,7 @@ int draw_miniagg(){
 TString input= "input.txt";
 
 
-Source source("3454","000",input.Data());  // These labels need to be passed as strings. Otherwise it's difficult to convert them back to filenames.
+Source source("3994","000",input.Data());  // These labels need to be passed as strings. Otherwise it's difficult to convert them back to filenames.
 auto df_source=source.readSource();
 
 

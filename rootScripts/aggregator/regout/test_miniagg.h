@@ -39,20 +39,21 @@ RDataFrame Source::readSource(){
   tsw.Start();
   cout << "Beginning TChain Setup --"; tsw.Print(); cout << endl;
   tsw.Start();
-  TChain mul_tree("mul");
-  TChain reg_tree("reg");
-  TChain mulc_tree("mulc");
-  TChain mulc_lrb_tree("mulc_lrb");
+  TChain * mul_tree      = new TChain("mul");
+  TChain * reg_tree      = new TChain("reg");
+  TChain * mulc_tree     = new TChain("mulc");
+  TChain * mulc_lrb_tree = new TChain("mulc_lrb");
 
-  mul_tree.Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root",run.Data(),split.Data()));
-  reg_tree.Add(Form("/chafs2/work1/apar/postpan-outputs/prexPrompt_%s_%s_regress_postpan.root", run.Data(),split.Data()));
-  mulc_tree.Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root", run.Data(),split.Data()));
-  mulc_lrb_tree.Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root", run.Data(),split.Data()));
+  mul_tree->Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root",run.Data(),split.Data()));
+  reg_tree->Add(Form("/chafs2/work1/apar/postpan-outputs/prexPrompt_%s_%s_regress_postpan.root", run.Data(),split.Data()));
+  mulc_tree->Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root", run.Data(),split.Data()));
+  mulc_lrb_tree->Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root", run.Data(),split.Data()));
 
-  mul_tree.AddFriend(&reg_tree);
-  mul_tree.AddFriend(&mulc_tree);
+  mul_tree->AddFriend(reg_tree);
+  mul_tree->AddFriend(mulc_tree);
+  mul_tree->AddFriend(mulc_lrb_tree);
 
-  RDataFrame d(mul_tree,device_list);
+  RDataFrame d(*mul_tree);//,device_list);
   cout << "Filtering through reg.ok_cut==1 --"; tsw.Print(); cout << endl;
   tsw.Start();
   auto d_good=d.Filter("reg.ok_cut==1");
@@ -67,23 +68,27 @@ RDataFrame Source::readSource(){
   std::vector<ROOT::RDF::RResultPtr<TH1D>> histoVec;
 
   for (auto &device:device_list){
-    //auto mean=d_good.Mean(device.c_str());
-    ROOT::RDF::RResultPtr<TH1D> tmpHisto1D = d_good.Histo1D(device.c_str());
-    tmpHisto1D->SetName(device.c_str());
-    histoVec.push_back(tmpHisto1D);
-    cout << "Done Getting Histo1D for " << device.c_str() << " --"; tsw.Print(); cout << endl;
+    //auto mean=d_good.Mean(device);
+    //ROOT::RDF::RResultPtr<TH1D> tmpHisto1D = d_good.Histo1D(device);
+    //tmpHisto1D->SetName(device);
+    //histoVec.push_back(tmpHisto1D);
+    string tmpStr(device.size(),'\0');
+    std::replace_copy(device.begin(), device.end(),tmpStr.begin(),'.','_');
+    cout << "Alias name = " << tmpStr << endl;
+    histoVec.push_back(d_good.Define(tmpStr+"_agg",device).Histo1D(tmpStr+"_agg"));
+    cout << "Done Getting Histo1D for " << device << " --"; tsw.Print(); cout << endl;
     tsw.Start();
-    std::cout<< device.c_str() << std::endl;
+//    std::cout<< device << std::endl;
   }
 
   for (auto &analysis:histoVec){
-    //auto mean=d_good.Mean(device.c_str());
+    //auto mean=d_good.Mean(device);
     /* Manually, non-lazy
-    auto histMean = d_good.Histo1D(device.c_str())->GetMean();
-    auto histMeanErr = d_good.Histo1D(device.c_str())->GetMeanError();
-    auto histRMS = d_good.Histo1D(device.c_str())->GetRMS();
-    auto histRMSErr = d_good.Histo1D(device.c_str())->GetRMSError();
-    auto histNentries = d_good.Histo1D(device.c_str())->GetEntries();
+    auto histMean = d_good.Histo1D(device)->GetMean();
+    auto histMeanErr = d_good.Histo1D(device)->GetMeanError();
+    auto histRMS = d_good.Histo1D(device)->GetRMS();
+    auto histRMSErr = d_good.Histo1D(device)->GetRMSError();
+    auto histNentries = d_good.Histo1D(device)->GetEntries();
     */
     // Lazy
     auto histMean = analysis->GetMean();
@@ -91,9 +96,11 @@ RDataFrame Source::readSource(){
     auto histRMS = analysis->GetRMS();
     auto histRMSErr = analysis->GetRMSError();
     auto histNentries = analysis->GetEntries();
-    cout << "Done Getting analysis results for " << analysis->GetName() << " --"; tsw.Print(); cout << std::endl;
+    //cout << "Done Getting analysis results for " << analysis->GetName() << " --"; tsw.Print(); cout << std::endl;
+    //tsw.Start();
+    //std::cout<< "Mean = " << analysis->GetName() << ":" << histMean<< std::endl;
+    cout<< "Mean = :" << histMean<< " --"; tsw.Print(); cout <<std::endl;
     tsw.Start();
-    std::cout<< "Mean = " << analysis->GetName() << ":" << histMean<< std::endl;
   }
   cout << "Done with getting data --"; tsw.Print(); cout << endl;
   tsw.Start();
