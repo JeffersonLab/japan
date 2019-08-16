@@ -15,20 +15,22 @@ class Channel{
     std::vector <Double_t> rmsErrs;
     std::vector <Double_t> nentries;*/
     void getData();
+    void getSlowData();
     void storeData(TTree *);
     ROOT::RDF::RResultPtr<TH1D> histo;
     TString name;
+    TString branchName;
     TString type = "meanrms";
     TString draw;
     //Int_t minirun;
-    Double_t singleEntry; // For single entry getting
-    Double_t slope; // For Slope getting
-    Double_t slopeError;
-    Double_t avg; // For normal meanrms getting
-    Double_t avgErr;
-    Double_t rms;
-    Double_t rmsErr;
-    Double_t nEntries;
+    Double_t singleEntry = -1.0e6; // For single entry getting
+    Double_t slope = -1.0e6; // For Slope getting
+    Double_t slopeError = -1.0e6;
+    Double_t avg = -1.0e6; // For normal meanrms getting
+    Double_t avgErr = -1.0e6;
+    Double_t rms = -1.0e6;
+    Double_t rmsErr = -1.0e6;
+    Double_t nEntries = 0;
 };
 /* I would like to define the channels in a loop over input.txt and apply all filter/defines to dataframe, but I don't know the dataframe.filter's data type... just do it in line
 void Channel::fill_channels(TString inputFile = "input.txt"){
@@ -36,20 +38,31 @@ void Channel::fill_channels(TString inputFile = "input.txt"){
 }; */
 
 void Channel::getData(){
-  avg = histo->GetMean();
-  avgErr = histo->GetMeanError();
-  rms = histo->GetRMS();
-  rmsErr = histo->GetRMSError();
-  nEntries = histo->GetEntries();
+  if (histo){
+    avg = histo->GetMean();
+    avgErr = histo->GetMeanError();
+    rms = histo->GetRMS();
+    rmsErr = histo->GetRMSError();
+    nEntries = histo->GetEntries();
+  }
+};
+
+void Channel::getSlowData(){
+  if (histo){
+    singleEntry = histo->GetBinCenter(histo->GetMaximumBin());
+  }
 };
 
 void Channel::storeData(TTree * outputTree){
-  if (type != "slopes"){
+  if (type == "meanrms"){
     outputTree->Branch(Form("%s_avg",name.Data()),&avg);
     outputTree->Branch(Form("%s_avg_error",name.Data()),&avgErr);
     outputTree->Branch(Form("%s_rms",name.Data()),&rms);
     outputTree->Branch(Form("%s_rms_error",name.Data()),&rmsErr);
     outputTree->Branch(Form("%s_nentries",name.Data()),&nEntries);
+  }
+  if (type == "slow"){
+    outputTree->Branch(Form("%s",name.Data()),&singleEntry);
   }
   if (type == "slopes"){
     outputTree->Branch(Form("%s_slope",name.Data()),&slope);
@@ -189,12 +202,14 @@ RDataFrame Source::readSource(){
   cout << "Beginning TChain Setup --"; tsw.Print(); cout << endl;
   tsw.Start();
   TChain * mul_tree      = new TChain("mul");
+  TChain * slow_tree     = new TChain("slow");
   TChain * reg_tree      = new TChain("reg");
   TChain * mini_tree     = new TChain("mini");
   TChain * mulc_tree     = new TChain("mulc");
   TChain * mulc_lrb_tree = new TChain("mulc_lrb");
 
   mul_tree->Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root",run.Data(),split.Data()));
+  slow_tree->Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root",run.Data(),split.Data()));
   reg_tree->Add(Form("/chafs2/work1/apar/postpan-outputs/prexPrompt_%s_%s_regress_postpan.root", run.Data(),split.Data()));
   mini_tree->Add(Form("/chafs2/work1/apar/postpan-outputs/prexPrompt_%s_%s_regress_postpan.root", run.Data(),split.Data()));
   mulc_tree->Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root", run.Data(),split.Data()));
@@ -207,6 +222,7 @@ RDataFrame Source::readSource(){
   //miniruns = mini_tree->Scan("minirun",""); // FIXME for later minirun looping addition
 
   RDataFrame d(*mul_tree);//,device_list);
+  RDataFrame slow(*slow_tree);
   cout << "Filtering through reg.ok_cut==1 --"; tsw.Print(); cout << endl;
   tsw.Start();
   auto d_good=d.Filter("reg.ok_cut==1");
@@ -222,14 +238,9 @@ RDataFrame Source::readSource(){
   cout << "Done with Tree cuts --"; tsw.Print(); cout << endl;
   tsw.Start();
 
-  //cout << "Executing Tree Traversal --"; tsw.Print(); cout << endl;
-  //tsw.Start();
-  //auto mean=d_good.Mean(); // This is non-lazy, avoid!
-
-  //std::vector<ROOT::RDF::RResultPtr<TH1D>> histoVec;
   std::vector<Channel> channels;
 
-  /* Getting device list. This can be vectorised.*/
+  // Getting device list
   string line;
   std::vector<string> tokens;
   string typedefault = "meanrms";
@@ -237,6 +248,7 @@ RDataFrame Source::readSource(){
   if (infile.is_open()){
     while(getline(infile,line)){
       string token;
+      string name;
       string device;
       string type;
       std::istringstream tokenStream(line);
@@ -244,42 +256,58 @@ RDataFrame Source::readSource(){
         tokens.push_back(token);
       }
       if (tokens.size() > 0){
-        device = tokens.at(0);
+        name = tokens.at(0);
+      }
+      if (tokens.size() > 1){
+        device = tokens.at(1);
+        if (name == "same"){
+          name = device;
+        }
       }
       else { 
         Printf("Error: invalid input file");
         return 1; 
       }
-      if (tokens.size() > 1){
-        type=tokens.at(1);
+      if (tokens.size() > 2){
+        type=tokens.at(2);
       }
       else {
         type=typedefault;
       }
       tokens.clear();
-      string tmpStr(device.size(),'\0');
-      std::replace_copy(device.begin(), device.end(),tmpStr.begin(),'.','_');
-      // FIXME want to just cut off leading and trailing tree name and leaf name to obtain device name, unless doing a Rename or special analysis
-      cout << "Alias name = " << tmpStr << endl;
       Channel tmpChan;
-      tmpChan.name = tmpStr;
+      tmpChan.name = name;
+      tmpChan.branchName = "agg_"+name;
       tmpChan.draw = device;
       tmpChan.type = type;
-      if (minirun != "-1" && type != "slopes"){
-        tmpChan.histo = d_good.Define(tmpStr,device).Filter(Form("reg.minirun==%s",minirun.Data())).Histo1D(tmpStr);
-        channels.push_back(tmpChan);
-        cout << "Done Getting Histo1D for " << device << " --"; tsw.Print(); cout << endl;
-        tsw.Start();
+      try{
+        if (minirun != "-1" && (tmpChan.type != "slopes" && tmpChan.type != "slow")){
+          tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Filter(Form("reg.minirun==%s",minirun.Data())).Histo1D(tmpChan.branchName.Data());
+          //Printf("Executing \"tmpChan.histo = d_good.Define("+tmpChan.branchName+","+tmpChan.draw+").Filter(Form(\"reg.minirun==%s\".Histo1D("+tmpChan.branchName+")",minirun.Data());
+          channels.push_back(tmpChan);
+          cout << "Done Getting Histo1D for " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;
+          tsw.Start();
+        }
+        else if (tmpChan.type != "slopes" && tmpChan.type != "slow") {
+          tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Histo1D(tmpChan.branchName.Data());
+          channels.push_back(tmpChan);
+          cout << "Done Getting Histo1D for " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;
+          tsw.Start();
+        }
+        if (tmpChan.type == "slow"){
+          tmpChan.histo = slow.Histo1D(tmpChan.name.Data()); // FIXME want try/except to fill a histo that returns -1e6 mean -1e6 rms
+          channels.push_back(tmpChan);
+          cout << "Done Getting Histo1D for " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;
+          tsw.Start();
+        }
       }
-      else if (type != "slopes") {
-        tmpChan.histo = d_good.Define(tmpStr,device).Histo1D(tmpStr);
+      catch (...){
+        Printf("Channel %s not available",tmpChan.draw.Data());
         channels.push_back(tmpChan);
-        cout << "Done Getting Histo1D for " << device << " --"; tsw.Print(); cout << endl;
-        tsw.Start();
       }
-      if (type == "slopes") {
+      if (tmpChan.type == "slopes") {
         getSlopes(channels, run.Atoi(), minirun.Atoi(), split.Atoi(), nruns.Atoi()); // FIXME NRUNS needs to be double for develop version
-        cout << "Done Getting " << device << " --"; tsw.Print(); cout << endl;
+        cout << "Done Getting " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;
         tsw.Start();
       }
     }
@@ -292,6 +320,11 @@ RDataFrame Source::readSource(){
     if (tmpChan.type=="meanrms"){
       tmpChan.getData();
       cout<< tmpChan.name << " Mean = :" << tmpChan.avg<< " --"; tsw.Print(); cout <<std::endl;
+      tsw.Start();
+    }
+    if (tmpChan.type=="slow"){
+      tmpChan.getSlowData();
+      cout<< tmpChan.name << " Single Entry = :" << tmpChan.singleEntry<< " --"; tsw.Print(); cout <<std::endl;
       tsw.Start();
     }
     if (tmpChan.type=="slopes"){
