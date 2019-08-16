@@ -142,3 +142,4 @@ yield_sam5.hw_sum
 yield_sam6.hw_sum
 yield_sam7.hw_sum
 yield_sam8.hw_sum
+slopes,slopes

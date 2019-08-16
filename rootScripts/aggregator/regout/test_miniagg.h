@@ -21,7 +21,10 @@ class Channel{
     TString type = "meanrms";
     TString draw;
     //Int_t minirun;
-    Double_t avg;
+    Double_t singleEntry; // For single entry getting
+    Double_t slope; // For Slope getting
+    Double_t slopeError;
+    Double_t avg; // For normal meanrms getting
     Double_t avgErr;
     Double_t rms;
     Double_t rmsErr;
@@ -41,12 +44,16 @@ void Channel::getData(){
 };
 
 void Channel::storeData(TTree * outputTree){
-  if (type=="meanrms"){
+  if (type != "slopes"){
     outputTree->Branch(Form("%s_avg",name.Data()),&avg);
     outputTree->Branch(Form("%s_avg_error",name.Data()),&avgErr);
     outputTree->Branch(Form("%s_rms",name.Data()),&rms);
     outputTree->Branch(Form("%s_rms_error",name.Data()),&rmsErr);
     outputTree->Branch(Form("%s_nentries",name.Data()),&nEntries);
+  }
+  if (type == "slopes"){
+    outputTree->Branch(Form("%s_slope",name.Data()),&slope);
+    outputTree->Branch(Form("%s_slope_error",name.Data()),&slopeError);
   }
 };
 
@@ -57,7 +64,117 @@ class Source {
     RDataFrame readSource();
     void printInfo() { std::cout << "Processing run  " << run  << ". " << std::endl;} 
     void drawAll();
+    void getSlopes(std::vector<Channel>&, Int_t, Int_t, Int_t, Int_t);
     Channel GetChannelByName(TString name);    
+};
+
+void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1){
+  runNumber = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
+  minirunNumber = getMinirunNumber_h(minirunNumber);
+  nRuns     = getNruns_h(nRuns);
+  Double_t data_slope = 0;
+  Double_t data_slope_error = 0;
+  Printf("Getting slopes");
+
+  TString ditSlopeFileNamebase = gSystem->Getenv("DITHERING_ROOTFILES_SLOPES");
+  TString ditSlopeFileName = ditSlopeFileNamebase + "/dit_slopes_slug" + nRuns + ".root";
+  if( !gSystem->AccessPathName(ditSlopeFileName) ) {
+    Printf("Getting dithering slopes from %s",ditSlopeFileName.Data());
+    TChain *ditTree = new TChain("dit");
+    ditTree->Add(ditSlopeFileName);
+    TLeaf *ditRunNum = ditTree->GetLeaf("run");
+    TObjArray *slopesList = ditTree->GetListOfLeaves();
+    TString outname = "";
+    for (Int_t a = 0; a<ditTree->GetEntries(); a++){
+      ditTree->GetEntry(a);
+      if (debug>3) Printf("Entry number %d, run number %d",a,(Int_t)ditRunNum->GetValue(0));
+      TIter slopesIter(slopesList);
+      while (TLeaf *slopes=(TLeaf*)slopesIter.Next()){
+        if (debug>4) Printf("Checking dither slope %s",((TString)slopes->GetName()).Data());
+        if ((TString)slopes->GetName() != "run" && (Int_t)ditRunNum->GetValue(0) == runNumber){
+          outname = "dit_"+(TString)slopes->GetName()+"_slope";
+          if (debug>5) Printf("Adding to agg: %s = %f",outname.Data(),(Double_t)slopes->GetValue(0));
+          Channel tmpChan;
+          tmpChan.type = "slopes";
+          tmpChan.name = "dit_"+(TString)slopes->GetName();
+          tmpChan.slope = (Double_t)slopes->GetValue(0);
+          tmpChan.slopeError = 0.0; // Dithering has no errors?
+          channels.push_back(tmpChan);
+        }
+      }
+    }
+  }
+  if(minirunNumber<0){
+    TString lrbFileNameBase = gSystem->Getenv("LRB_ROOTFILES");
+    TString lrbFileName = lrbFileNameBase + "/blueR"+runNumber+".000new.slope.root";  
+    TFile f(lrbFileName);
+
+    std::map<TString, Int_t> IVname;
+    std::map<TString, Int_t> DVname;
+
+    TH1D* m=(TH1D*) f.Get("IVname");
+    for (auto i=0; i<m->GetEntries();i++){
+      TString ivname=m->GetXaxis()->GetBinLabel(i+1);
+      IVname[ivname]=i;
+    }
+
+    TH1D* n=(TH1D*) f.Get("DVname");
+    for (auto i=0; i<n->GetEntries(); i++){
+      TString dvname=n->GetXaxis()->GetBinLabel(i+1);
+      DVname[dvname]=i;
+    }
+
+
+    TMatrixT<double> slopes=*(TMatrixT<double>*) f.Get("slopes");
+    TMatrixT<double> sigSlopes=*(TMatrixT<double>*) f.Get("sigSlopes");
+    for (auto& i: DVname){ 
+      for (auto& j: IVname){
+        Channel tmpChan;
+        tmpChan.type = "slopes";
+        tmpChan.name = "cor_"+i.first+"_"+j.first;
+        tmpChan.slope = slopes(j.second,i.second);
+        tmpChan.slopeError = sigSlopes(j.second,i.second);
+        channels.push_back(tmpChan);
+      }
+    }
+  }
+  if (minirunNumber>=0){
+    Printf("Getting postpan slopes");
+    TString lpostpanFileNameBase = gSystem->Getenv("POSTPAN_ROOTFILES");
+    TString lpostpanFileName = lpostpanFileNameBase + "/prexPrompt_" + runNumber + "_000_regress_postpan.root";
+    TFile f(lpostpanFileName);
+
+    TTreeReader theReader("mini", &f);
+    TTreeReaderArray<double> slope(theReader,"coeff");
+    TTreeReaderArray<double> slope_err(theReader,"err_coeff");
+
+    std::vector<TString> ivname= *(std::vector<TString>*) f.Get("IVNames");
+    std::vector<TString> dvname= *(std::vector<TString>*) f.Get("DVNames");
+    std::vector<TString> comb;
+
+    for (auto &i:dvname){
+      for (auto &j:ivname){
+        comb.push_back(i+"_"+j);
+      }
+    }
+
+    Int_t mini=0;
+    while(theReader.Next()){
+      Int_t count=0;
+      for (auto i=0; i<slope.GetSize(); i++){
+        if (mini!=minirunNumber) continue;
+        Channel tmpChan;
+        tmpChan.type = "slopes";
+        tmpChan.name = "reg_"+comb.at(count);
+        tmpChan.slope = slope[i];
+        tmpChan.slopeError = slope_err[i];
+        channels.push_back(tmpChan);
+        count++;
+      }
+      mini++; 
+    }
+  }	
 };
 
 RDataFrame Source::readSource(){
@@ -112,24 +229,6 @@ RDataFrame Source::readSource(){
   //std::vector<ROOT::RDF::RResultPtr<TH1D>> histoVec;
   std::vector<Channel> channels;
 
-  /* Old non-OOP way
-  for (auto &device:device_list){
-    //auto mean=d_good.Mean(device);
-    //ROOT::RDF::RResultPtr<TH1D> tmpHisto1D = d_good.Histo1D(device);
-    //tmpHisto1D->SetName(device);
-    //histoVec.push_back(tmpHisto1D);
-    string tmpStr(device.size(),'\0');
-    std::replace_copy(device.begin(), device.end(),tmpStr.begin(),'.','_');
-    cout << "Alias name = " << tmpStr << endl;
-    // Replace this with a method that takes the number of miniruns, the minirunCuts list of TDFs, and the device_list info for Channel initialization
-    // Maybe do histo2d here and splice the reg.minirun stuff internally while defining them in the dedicated method
-    histoVec.push_back(d_good.Define(tmpStr+"_agg",device).Histo1D(tmpStr+"_agg"));//:reg.minirun")); // for 2D do this slice
-    cout << "Done Getting Histo1D for " << device << " --"; tsw.Print(); cout << endl;
-    tsw.Start();
-    //    std::cout<< device << std::endl;
-  }
-  */
-
   /* Getting device list. This can be vectorised.*/
   string line;
   std::vector<string> tokens;
@@ -160,19 +259,29 @@ RDataFrame Source::readSource(){
       tokens.clear();
       string tmpStr(device.size(),'\0');
       std::replace_copy(device.begin(), device.end(),tmpStr.begin(),'.','_');
+      // FIXME want to just cut off leading and trailing tree name and leaf name to obtain device name, unless doing a Rename or special analysis
       cout << "Alias name = " << tmpStr << endl;
       Channel tmpChan;
       tmpChan.name = tmpStr;
       tmpChan.draw = device;
-      if (minirun != "-1"){
+      tmpChan.type = type;
+      if (minirun != "-1" && type != "slopes"){
         tmpChan.histo = d_good.Define(tmpStr,device).Filter(Form("reg.minirun==%s",minirun.Data())).Histo1D(tmpStr);
+        channels.push_back(tmpChan);
+        cout << "Done Getting Histo1D for " << device << " --"; tsw.Print(); cout << endl;
+        tsw.Start();
       }
-      else {
+      else if (type != "slopes") {
         tmpChan.histo = d_good.Define(tmpStr,device).Histo1D(tmpStr);
+        channels.push_back(tmpChan);
+        cout << "Done Getting Histo1D for " << device << " --"; tsw.Print(); cout << endl;
+        tsw.Start();
       }
-      channels.push_back(tmpChan);
-      cout << "Done Getting Histo1D for " << device << " --"; tsw.Print(); cout << endl;
-      tsw.Start();
+      if (type == "slopes") {
+        getSlopes(channels, run.Atoi(), minirun.Atoi(), split.Atoi(), nruns.Atoi()); // FIXME NRUNS needs to be double for develop version
+        cout << "Done Getting " << device << " --"; tsw.Print(); cout << endl;
+        tsw.Start();
+      }
     }
   }
 
@@ -180,9 +289,15 @@ RDataFrame Source::readSource(){
   tsw.Start();
 
   for (auto &tmpChan:channels){
-    tmpChan.getData();
-    cout<< tmpChan.name << " Mean = :" << tmpChan.avg<< " --"; tsw.Print(); cout <<std::endl;
-    tsw.Start();
+    if (tmpChan.type=="meanrms"){
+      tmpChan.getData();
+      cout<< tmpChan.name << " Mean = :" << tmpChan.avg<< " --"; tsw.Print(); cout <<std::endl;
+      tsw.Start();
+    }
+    if (tmpChan.type=="slopes"){
+      cout<< tmpChan.name << " Slope = :" << tmpChan.slope<< " --"; tsw.Print(); cout <<std::endl;
+      tsw.Start();
+    }
   }
   cout << "Done with getting data --"; tsw.Print(); cout << endl;
   tsw.Start();
@@ -219,7 +334,7 @@ RDataFrame Source::readSource(){
   }
 
   outputTree->Fill();
-  outputTree->Write("agg");
+  outputTree->Write("agg",TObject::kOverwrite);
   aggregatorFile->Close();
 
   cout << "Done with ALL, run " << run << " and minirun " << minirun << " --"; tswAll.Print(); cout << endl;
