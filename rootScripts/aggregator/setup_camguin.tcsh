@@ -9,8 +9,7 @@ setenv CAM_DEBUG 0
 setenv CAM_ALARM 1
 setenv CAM_AGGREGATE 1
 setenv CAM_POSTPAN 1
-#setenv CAM_OUTPUTDIR /adaqfs/home/apar/PREX/prompt/aggRootfiles/
-setenv CAM_OUTPUTDIR ./
+setenv CAM_OUTPUTDIR /adaqfs/home/apar/PREX/prompt/aggRootfiles/
 setenv POSTPAN_ROOTFILES /chafs2/work1/apar/postpan-outputs/
 setenv DITHERING_ROOTFILES /chafs2/work1/apar/DitherCorrection/
 setenv DITHERING_ROOTFILES_SLOPES /chafs2/work1/apar/BMODextractor/
