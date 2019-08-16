@@ -105,10 +105,12 @@ Int_t getRunNumber_h(Int_t runNumber = 0){
     TString run = gSystem->Getenv("RUNNUM");
     runNumber = run.Atoi();
   }
+  /*
   if (runNumber<=0){
     Printf("Error: Run Number given (%d) invalid, must be an integer > 0",runNumber);
     return 0;
   }
+  */
   if (debug>0) Printf("Run number: %d",runNumber);
   return runNumber;
 }
@@ -135,26 +137,28 @@ Int_t getMinirunNumber_h(Int_t minirunNumber = -2){
     TString minirun = gSystem->Getenv("MINIRUNNUM");
     minirunNumber = minirun.Atoi();
   }
+  /*
   if (minirunNumber<-1){ // We consider -1 to be the "Full Run" case, and 0 is actually 0
     Printf("Error: minirun Number given (%d) invalid, must be an integer >= -1",minirunNumber);
     return -1; // We are doing the full run here, since no valid input given.
   }
+  */
   if (debug>0) Printf("MiniRun number: %d",minirunNumber);
   return minirunNumber;
 }
 
-Int_t getNruns_h(Int_t n_runs = -1){
+Double_t getNruns_h(Double_t n_runs = -1){
 // Get environment variable number of runs to chain
   if ( n_runs == -1 ) 
   { 
     TString nRuns = gSystem->Getenv("NRUNS");
-    n_runs = nRuns.Atoi();
+    n_runs = nRuns.Atof();
   }
   if (n_runs<0){
-    Printf("Error: Number of Runs given (%d) invalid, must be an integer > 0 \n Tip: n_runs = 1 means you will only use 1 run, = 2 will TChain a second one on)",n_runs);
+    Printf("Error: Number of Runs given (%f) invalid, must be an integer > 0 \n Tip: n_runs = 1 means you will only use 1 run, = 2 will TChain a second one on)",n_runs);
     return 0;
   }
-  if (debug>0) Printf("Number of Runs: %d",n_runs);
+  if (debug>0) Printf("Number of Runs: %f",n_runs);
   return n_runs;
 }
 
@@ -232,7 +236,7 @@ vector<vector<string>> textFileParse_h(TString fileName, char delim = ',')
   }
 }
 
-TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t n_runs = -1, TString filenamebase = "NULL"){
+TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t n_runs = -1, TString filenamebase = "NULL"){
 
   TString filename = "NULL";
   TString defaultTree = "mul";
@@ -302,14 +306,14 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
     tree = defaultTree; // FIXME we are just doing this now... for post pan stuff
   }
 
-  const int num_daqConfigs = 4;
+  const int num_daqConfigs = 5;
   const int num_analyses = 3;
   //for(Int_t i = 0; i < (n_runs); i++){ // FIXME this used to be used as a loop over chained together runs, and is being phased out in favor of slugging miniruns
     // FIXME for the purpose of doing slugs (the original goal of the n_runs variable) we have decided to, instead
     // of TChaining runs together and having large segments, to instead split the runs into miniruns (starting in post pan, see the other carnage around here)
     // and then add those piece by piece into a "slug"
     // We will now use the n_runs variable as a marker of which slug we are in.
-    TString daqConfigs[num_daqConfigs] = {"prexPrompt_pass2","prexCH","prexINJ","prex_tedf"}; // Potentially replace this with a config file read in array or map;
+    TString daqConfigs[num_daqConfigs] = {"prexPrompt_pass2","prexPrompt_pass1","prexCH","prexINJ","prex_tedf"}; // Potentially replace this with a config file read in array or map;
     TString analyses[num_analyses] = {".","_regress_prFIXME.","_regress_mul."};
     TString suffix[2] = {"root",Form("%03d.root",splitNumber)};
     // FIXME remove this "FIXME" once there is a non-degeneracy in the tree names between the regress_pr and _mul root file's tree names
@@ -384,7 +388,8 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
     }
   // end FIXME }
   if (!foundFile){
-    Printf("Rootfile not found in %s with runs from %d to %d, split %03d, check your config and rootfiles",(const char*)fileNameBase,runNumber,runNumber+n_runs-1, splitNumber);
+    //Printf("Rootfile not found in %s with runs from %d to %d, split %03d, check your config and rootfiles",(const char*)fileNameBase,runNumber,runNumber+n_runs-1, splitNumber);
+    Printf("Rootfile not found in %s for run %d, split %03d, check your config and rootfiles",(const char*)fileNameBase,runNumber, splitNumber);
     return 0;
   }
   //Printf("TChain total N Entries: %lld",newTChain->GetEntries());
@@ -392,7 +397,7 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
   return newTChain;
 }
 
-TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1, TString filenamebase = "NULL"){
+TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t nRuns = -1, TString filenamebase = "NULL"){
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   minirunNumber = getMinirunNumber_h(minirunNumber);
@@ -405,7 +410,7 @@ TLeaf * getBranchLeaf_h(TString tree = "mul", TString branchleaf = "ErrorFlag", 
   return BranchLeaf;
 }
 
-TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1, TString filenamebase = "NULL"){
+TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t nRuns = -1, TString filenamebase = "NULL"){
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
   minirunNumber = getMinirunNumber_h(minirunNumber);
@@ -418,7 +423,7 @@ TBranch * getBranch_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0"
   return Branch;
 }
 
-TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TString leaf = "hw_sum", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Int_t nRuns = -1, TString filenamebase = "NULL"){
+TLeaf * getLeaf_h(TString tree = "mul", TString branch = "asym_vqwk_04_0ch0",TString leaf = "hw_sum", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t nRuns = -1, TString filenamebase = "NULL"){
   if (debug>2) Printf("Looking for leaf: \"%s\"",(const char*)(tree+"."+branch+"."+leaf));
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
@@ -607,7 +612,7 @@ void addUnits(TFile file) {
   fin->Close();
 }
 */
-void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t new_runNumber = 0, Int_t new_minirunNumber = -2, Int_t new_splitNumber = -1, Int_t new_nRuns = -1){
+void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t new_runNumber = 0, Int_t new_minirunNumber = -2, Int_t new_splitNumber = -1, Double_t new_nRuns = -1){
   // Get environment variables
   new_runNumber     = getRunNumber_h(new_runNumber);
   new_splitNumber   = getSplitNumber_h(new_splitNumber);
@@ -618,7 +623,11 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   TString aggregatorFileName = Form("%s/aggregator.root",outputDir.Data()); // FIXME, this is very specific, and doesn't allow for aggregating over slugs, for instance
   // Store all trees
   if (new_minirunNumber <= -1) {
-    aggregatorFileName = Form("%s/run_aggregator_%d.root",outputDir.Data(),new_runNumber);
+    if(new_runNumber <= -1) {
+      aggregatorFileName = Form("%s/grand_aggregator.root", outputDir.Data());
+    } else {  
+      aggregatorFileName = Form("%s/run_aggregator_%d.root",outputDir.Data(),new_runNumber);
+    }  
   }
   else{
     aggregatorFileName = Form("%s/minirun_aggregator_%d_%d.root",outputDir.Data(),new_runNumber,new_minirunNumber);
@@ -668,6 +677,24 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
     //oldTree->SetName("old_agg");
     if (!oldTree) {
       Printf("ERROR, tree agg is dead");
+      oldTree = new TTree("agg","Aggregator Tree");
+      if (debug>-1) Printf("Making new aggregator tree run %d, minirun %d, split %d, n_runs %f - Evil Hack, probably invalidates the data taken before still...",new_runNumber,new_minirunNumber,new_splitNumber,new_nRuns);
+      branchList.push_back("run_number");
+      branchList.push_back("n_runs");
+      branchList.push_back("split_n");
+      branchList.push_back("minirun_n");
+      newValues.push_back( -1.0e6); // Vectors have to be initialized, and I don't know how many entries will come, so go for all of them
+      newValues.push_back( -1.0e6);
+      newValues.push_back( -1.0e6);
+      newValues.push_back( -1.0e6);
+      oldValues.push_back( -1.0e6); 
+      oldValues.push_back( -1.0e6); 
+      oldValues.push_back( -1.0e6); 
+      oldValues.push_back( -1.0e6); 
+      tempValues.push_back(-1.0e6);
+      tempValues.push_back(-1.0e6);
+      tempValues.push_back(-1.0e6); 
+      tempValues.push_back(-1.0e6); 
     }
     if (debug>0) Printf("Updating tree %s",(const char*)oldTree->GetName());
     TObjArray *aggVars = oldTree->GetListOfBranches();
@@ -761,7 +788,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
         RunNCheck=true;
       }
       if (branchList[l] == "n_runs" && oldValues[l]==(Double_t)new_nRuns){
-        if (debug>5) Printf("Looking at entry# %d, n_runs %d",entryN,new_nRuns);
+        if (debug>5) Printf("Looking at entry# %d, n_runs %f",entryN,new_nRuns);
         NRunsCheck=true;
       }
       if (branchList[l] == "split_n" && oldValues[l]==(Double_t)new_splitNumber){
@@ -789,7 +816,7 @@ void writeFile_h(TString valueName = "value", Double_t new_value = 0.0, Int_t ne
   	      tempValues[l] = (Double_t)new_runNumber;
   	    }
         else if ( branchList[l] == "n_runs" ) {
-          if (debug > 5) Printf("NOTE: new_nRuns %d getting written by user",new_nRuns);
+          if (debug > 5) Printf("NOTE: new_nRuns %f getting written by user",new_nRuns);
           tempValues[l] = (Double_t)new_nRuns;
         }
         else if ( branchList[l] == "split_n" ) {

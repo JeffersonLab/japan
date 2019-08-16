@@ -77,6 +77,7 @@ QwBlinder::QwBlinder(const EQwBlindingStrategy blinding_strategy):
   fWienMode(kWienIndeterminate),
   fIHWPPolarity_firstread(0),
   fIHWPPolarity(0),
+  fSpinDirectionForced(kFALSE),
   //
   fBeamCurrentThreshold(1.0),
   fBeamIsPresent(kFALSE),
@@ -111,12 +112,70 @@ QwBlinder::QwBlinder(const EQwBlindingStrategy blinding_strategy):
     else QwWarning << "Blinding strategy " << strategy << " not recognized" << QwLog::endl;
   }
 
+  std::string spin_direction;
+  if (blinder.FileHasVariablePair("=", "force-spin-direction", spin_direction)) {
+    std::transform(spin_direction.begin(), spin_direction.end(), spin_direction.begin(), ::tolower);
+    if (spin_direction == "spin-forward"){
+      QwWarning << "QwBlinder::QwBlinder:  Spin direction forced with force-spin-direction==spin-forward" << QwLog::endl;
+      SetWienState(kWienForward);
+      SetIHWPPolarity(+1);
+      fSpinDirectionForced = kTRUE;
+    } else if (spin_direction == "spin-backward"){
+      QwWarning << "QwBlinder::QwBlinder:  Spin direction forced with force-spin-direction==spin-backward" << QwLog::endl;
+      SetWienState(kWienBackward);
+      SetIHWPPolarity(+1);
+      fSpinDirectionForced = kTRUE;
+    } else if (spin_direction == "spin-vertical"){
+      QwWarning << "QwBlinder::QwBlinder:  Spin direction forced with force-spin-direction==spin-vertical" << QwLog::endl;
+      SetWienState(kWienVertTrans);
+      SetIHWPPolarity(+1);
+      fSpinDirectionForced = kTRUE;
+    } else if (spin_direction == "spin-horizontal"){
+      QwWarning << "QwBlinder::QwBlinder:  Spin direction forced with force-spin-direction==spin-horizontal" << QwLog::endl;
+      SetWienState(kWienHorizTrans);
+      SetIHWPPolarity(+1);
+      fSpinDirectionForced = kTRUE;
+    } else {
+      QwError << "QwBlinder::QwBlinder:  Unrecognized option given to force-spin-direction in blinder.map; "
+	      << "force-spin-direction==" << spin_direction << ".  Exit and correct the file."
+	      << QwLog::endl;
+      exit(10);
+    } 
+  }
+
+  std::string target_type;
+  if (blinder.FileHasVariablePair("=", "force-target-type", target_type)) {
+    std::transform(target_type.begin(), target_type.end(), target_type.begin(), ::tolower);
+    if (target_type == "target-blindable"){
+      QwWarning << "QwBlinder::QwBlinder:  Target position forced with force-target-type==target-blindable" << QwLog::endl;
+      fTargetPositionForced = kTRUE;
+      SetTargetBlindability(QwBlinder::kBlindable);
+    } else if (target_type == "target-out"){
+      QwWarning << "QwBlinder::QwBlinder:  Target position forced with force-target-type==target-out" << QwLog::endl;
+      fTargetPositionForced = kTRUE;
+      SetTargetBlindability(QwBlinder::kNotBlindable);
+    } else {
+      QwError << "QwBlinder::QwBlinder:  Unrecognized option given to force-target-type in blinder.map; "
+	      << "force-target-type==" << target_type << ".  Exit and correct the file."
+	      << QwLog::endl;
+      exit(10);
+    } 
+  }
 
   // Initialize blinder from seed
   InitBlinders(0);
-
   // Calculate set of test values
   InitTestValues(10);
+
+  if (fSpinDirectionForced){
+    if (fWienMode == kWienForward){
+      fBlindingOffset = fBlindingOffset_Base;
+    } else if (fWienMode == kWienBackward){
+      fBlindingOffset = -1 * fBlindingOffset_Base;
+    } else {
+      fBlindingOffset = 0.0;
+    }
+  }
 
   // Resize counters
   fPatternCounters.resize(kBlinderCount_NumCounters);
@@ -143,14 +202,16 @@ void QwBlinder::ProcessOptions(QwOptions& options)
 {
   if (options.GetValue<bool>("blinder.force-target-out")
       && options.GetValue<bool>("blinder.force-target-blindable")){
-    QwError << "QwBlinder::Update:  Both blinder.force-target-blindable and blinder.force-target-out are set.  "
+    QwError << "QwBlinder::ProcessOptions:  Both blinder.force-target-blindable and blinder.force-target-out are set.  "
 	    << "Only one can be in force at one time.  Exit and choose one option."
 	    << QwLog::endl;
     exit(10);
   } else if (options.GetValue<bool>("blinder.force-target-blindable")){
+    QwWarning << "QwBlinder::ProcessOptions:  Target position forced with blinder.force-target-blindable." << QwLog::endl;
     fTargetPositionForced = kTRUE;
     SetTargetBlindability(QwBlinder::kBlindable);
   } else if (options.GetValue<bool>("blinder.force-target-out")){
+    QwWarning << "QwBlinder::ProcessOptions:  Target position forced with blinder.force-target-out." << QwLog::endl;
     fTargetPositionForced = kTRUE;
     SetTargetBlindability(QwBlinder::kNotBlindable);
   }
@@ -273,7 +334,7 @@ void QwBlinder::Update(const QwEPICSEvent& epics)
   // Check for the beam polarity information
   //     IGL1I00DI24_24M         Beam Half-wave plate Read(off=out)
   //
-  if (fBlindingStrategy != kDisabled &&
+  if (fBlindingStrategy != kDisabled && !(fSpinDirectionForced) &&
       (fTargetBlindability == QwBlinder::kBlindable) ) {
     //  Use the EPICS class functions to determine the
     //  Wien mode and IHWP polarity.

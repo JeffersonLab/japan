@@ -36,6 +36,6 @@ done
 
 while read line; do
   # reading each line
-  root -q -b -L ../camguin.C"($line,$RUNNUM,$MINIRUNNUM,$SPLITNUM,$NRUNS)"
+  root -l -q -b -L ../camguin.C"($line,$RUNNUM,$MINIRUNNUM,$SPLITNUM,$NRUNS)"
 done < $CONFIG
-echo "Done with run: $RUNNUM, minirun: $MINIRUNNUM, slug: $NRUNS"
+echo -e "\n\nDone with run: $RUNNUM, minirun: $MINIRUNNUM, slug: $NRUNS\n\n"

@@ -54,6 +54,7 @@ VQwDataHandler::VQwDataHandler(const VQwDataHandler &source)
   fPrefix(source.fPrefix),
   fSubsystemArray(source.fSubsystemArray),
   fHelicityPattern(source.fHelicityPattern),
+  ParseSeparator(source.ParseSeparator),
   fKeepRunningSum(source.fKeepRunningSum)
 {
   fErrorFlagPtr  = source.fErrorFlagPtr;
@@ -235,8 +236,14 @@ void VQwDataHandler::ConstructTreeBranches(
     const std::string& treeprefix,
     const std::string& branchprefix)
 {
-  if (fTreeName.size()>0){
-    treerootfile->ConstructTreeBranches(treeprefix + fTreeName, fTreeComment, *this, branchprefix + fPrefix);
+  if (fTreeName.size() > 0) {
+    if (fOutputVar.size() == 0) {
+      QwWarning << "No data handler output; not creating tree "
+                << treeprefix + fTreeName
+                << QwLog::endl;
+    } else {
+      treerootfile->ConstructTreeBranches(treeprefix + fTreeName, fTreeComment, *this, branchprefix + fPrefix);
+    }
   }
 }
 

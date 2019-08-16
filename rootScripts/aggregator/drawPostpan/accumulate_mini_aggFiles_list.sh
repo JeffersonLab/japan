@@ -2,11 +2,11 @@
 ROOTFILEDIR="/chafs2/work1/apar/aggRootfiles"
 OUTPUTROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/slugRootfiles"
 #OUTPUTROOTFILEDIR="./"
-if [ "$#" -lt 2 ]; then
-  echo "Error: Need to pass a runlist and output rootfile name as arguments"
-  echo "Usage: ./accumulate_aggFiles_list.sh list.txt (input file list, \\n separated,) output.root (what you want the output to be called)"
+if [ "$#" -lt 1 ]; then
+  echo "Error: Need to pass a list file name number \"slug##\".list"
+  echo "Usage: ./accumulate_aggFiles_list.sh list.txt (input file list, \\n separated)"
 else
-  IFS=$'\n' read -d '' -r -a lines < $1
+  IFS=$'\n' read -d '' -r -a lines < run_list/${1}.list
   # all lines
   echo "Hadding all runs: ${lines[@]}"
   #minirun_lines=("${lines[@]}")
@@ -32,12 +32,12 @@ else
   done
 
   echo Looking at ${minirun_lines[@]}
-  hadd -f ${OUTPUTROOTFILEDIR}/minirun_${2} ${minirun_lines[@]}
-  hadd -f ${OUTPUTROOTFILEDIR}/run_${2} ${run_lines[@]}
+  hadd -f ${OUTPUTROOTFILEDIR}/minirun_${1}.root ${minirun_lines[@]}
+  hadd -f ${OUTPUTROOTFILEDIR}/run_${1}.root ${run_lines[@]}
 
   # Add units
-  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/minirun_${2}\"\)
-  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/run_${2}\"\)
+  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/minirun_${1}.root\"\)
+  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/run_${1}.root\"\)
 
 fi
 

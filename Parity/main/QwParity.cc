@@ -136,28 +136,26 @@ Int_t main(Int_t argc, Char_t* argv[])
     QwHelicityPattern helicitypattern(detectors,run_label);
     helicitypattern.ProcessOptions(gQwOptions);
     
-    /// Create the data handler array
-    QwDataHandlerArray datahandlerarray_evt(gQwOptions,detectors,run_label);
-    QwDataHandlerArray datahandlerarray_mul(gQwOptions,helicitypattern,run_label); // FIXME ringoutput?
-    
     ///  Create the event ring with the subsystem array
     QwEventRing eventring(gQwOptions,detectors);
     //  Make a copy of the detectors object to hold the
     //  events which pass through the ring.
     QwSubsystemArrayParity ringoutput(detectors);
 
+    /// Create the data handler arrays
+    QwDataHandlerArray datahandlerarray_evt(gQwOptions,detectors,run_label);
+    QwDataHandlerArray datahandlerarray_mul(gQwOptions,helicitypattern,run_label);
+    QwDataHandlerArray datahandlerarray_burst(gQwOptions,helicitypattern,run_label);
+
     ///  Create the burst sum
     QwHelicityPattern patternsum_per_burst(helicitypattern);
-    patternsum_per_burst.EnableDifference();
     patternsum_per_burst.DisablePairs();
 
     ///  Create the running sum
     QwSubsystemArrayParity eventsum(detectors);
     QwHelicityPattern patternsum(helicitypattern);
-    patternsum.EnableDifference();
     patternsum.DisablePairs();
     QwHelicityPattern burstsum(helicitypattern);
-    burstsum.EnableDifference();
     burstsum.DisablePairs();
 
     //  Initialize the database connection.
@@ -198,6 +196,7 @@ Int_t main(Int_t argc, Char_t* argv[])
     //  Construct histograms
     historootfile->ConstructHistograms("evt_histo", ringoutput);
     historootfile->ConstructHistograms("mul_histo", helicitypattern);
+    burstrootfile->ConstructHistograms("burst_histo", patternsum_per_burst);
     detectors.ShareHistograms(ringoutput);
 
     //  Construct tree branches
@@ -206,10 +205,15 @@ Int_t main(Int_t argc, Char_t* argv[])
     burstrootfile->ConstructTreeBranches("pr", "Pair tree", helicitypattern.GetPairYield(),"yield_");
     burstrootfile->ConstructTreeBranches("pr", "Pair tree", helicitypattern.GetPairAsymmetry(),"asym_");
     treerootfile->ConstructTreeBranches("slow", "EPICS and slow control tree", epicsevent);
-
-    datahandlerarray_mul.ConstructTreeBranches(treerootfile);
-
     burstrootfile->ConstructTreeBranches("burst", "Burst level data tree", patternsum_per_burst, "|stat");
+
+    historootfile->ConstructHistograms("evt_histo",   datahandlerarray_evt);
+    historootfile->ConstructHistograms("mul_histo",   datahandlerarray_mul);
+    burstrootfile->ConstructHistograms("burst_histo", datahandlerarray_burst);
+
+    datahandlerarray_evt.ConstructTreeBranches(treerootfile, "evt_");
+    datahandlerarray_mul.ConstructTreeBranches(treerootfile);
+    datahandlerarray_burst.ConstructTreeBranches(burstrootfile, "burst_");
 
     treerootfile->ConstructTreeBranches("evts", "Running sum tree", eventsum, "|stat");
     treerootfile->ConstructTreeBranches("muls", "Running sum tree", patternsum, "|stat");
@@ -301,7 +305,6 @@ Int_t main(Int_t argc, Char_t* argv[])
 	
         // Add event to the ring
         eventring.push(detectors);
-        //std::cout << "New Event" << std::endl;
 
         // Check to see ring is ready
         if (eventring.IsReady()) {
@@ -319,11 +322,21 @@ Int_t main(Int_t argc, Char_t* argv[])
 	  treerootfile->FillTreeBranches(ringoutput);
 	  treerootfile->FillTree("evt");
 
+	  // Process data handlers
+          datahandlerarray_evt.ProcessDataHandlerEntry();
+
+          // Fill data handler histograms
+          datahandlerarray_evt.FillHistograms();
+
+          // Fill data handler tree branches
+          datahandlerarray_evt.FillTreeBranches(treerootfile);
+
           // Load the event into the helicity pattern
           helicitypattern.LoadEventData(ringoutput);
 
 	  if (helicitypattern.PairAsymmetryIsGood()) {
-	    patternsum.AccumulatePairRunningSum(helicitypattern);
+            patternsum.AccumulatePairRunningSum(helicitypattern);
+
 	    // Fill pair tree branches
 	    treerootfile->FillTreeBranches(helicitypattern.GetPairYield());
 	    treerootfile->FillTreeBranches(helicitypattern.GetPairAsymmetry());
@@ -345,8 +358,21 @@ Int_t main(Int_t argc, Char_t* argv[])
               treerootfile->FillTreeBranches(helicitypattern);
               treerootfile->FillTree("mul");
 
+              // Process data handlers
+              datahandlerarray_mul.ProcessDataHandlerEntry();
+              datahandlerarray_burst.ProcessDataHandlerEntry();
+
+              // Fill data handler histograms
+              datahandlerarray_mul.FillHistograms();
+
+              // Fill data handler tree branches
+              datahandlerarray_mul.FillTreeBranches(treerootfile);
+
               // Fill the pattern into the sum for this burst
               patternsum_per_burst.AccumulateRunningSum(helicitypattern);
+
+              // Accumulate data handler arrays
+              //datahandlerarray_burst.AccumulateRunningSum(datahandlerarray_mul);
 
               // Burst mode
               if (helicitypattern.IsEndOfBurst()) {
@@ -363,19 +389,26 @@ Int_t main(Int_t argc, Char_t* argv[])
                   patternsum_per_burst.PrintValue();
                 }
 
+                // Fill histograms
+                burstrootfile->FillHistograms(patternsum_per_burst);
+
                 // Fill burst tree branches
                 burstrootfile->FillTreeBranches(patternsum_per_burst);
                 burstrootfile->FillTree("burst");
 
-                // Clear the burst data
-                patternsum_per_burst.ClearEventData();
-              }
+                // Finish data handler for burst
+                datahandlerarray_burst.FinishDataHandler();
 
-              // Process data handlers
-              datahandlerarray_mul.ProcessDataHandlerEntry();
-	      
-              // Fill regressed tree branches
-	      datahandlerarray_mul.FillTreeBranches(treerootfile);
+                // Fill data handler histograms
+                datahandlerarray_burst.FillHistograms();
+
+                // Fill data handler tree branches
+                datahandlerarray_burst.FillTreeBranches(burstrootfile);
+
+                // Clear the data
+                patternsum_per_burst.ClearEventData();
+                datahandlerarray_burst.ClearEventData();
+              }
 
               // Clear the data
               helicitypattern.ClearEventData();
@@ -392,6 +425,10 @@ Int_t main(Int_t argc, Char_t* argv[])
     QwMessage << "Unwinding event ring" << QwLog::endl;
     eventring.Unwind();
 
+    //  TODO Drain event run
+
+    //  TODO Finalize burst
+
     //  Perform actions at the end of the event loop on the
     //  detectors object, which ought to have handles for the
     //  MPS based histograms.
@@ -400,14 +437,20 @@ Int_t main(Int_t argc, Char_t* argv[])
     QwMessage << "Number of events processed at end of run: "
               << eventbuffer.GetPhysicsEventNumber() << QwLog::endl;
 
+    // Finish data handlers
+    datahandlerarray_evt.FinishDataHandler();
+    datahandlerarray_evt.FillTreeBranches(treerootfile);
     datahandlerarray_mul.FinishDataHandler();
+    datahandlerarray_mul.FillTreeBranches(treerootfile);
+    datahandlerarray_burst.FinishDataHandler();
+    datahandlerarray_burst.FillTreeBranches(burstrootfile);
 
     // Calculate running averages
     eventsum.CalculateRunningAverage();
     patternsum.CalculateRunningAverage();
     burstsum.CalculateRunningAverage();
 
-    // This will calculate running averages and write them to ROOT trees
+    // This will calculate running averages over single helicity events
     if (gQwOptions.GetValue<bool>("print-runningsum")) {
       QwMessage << " Running average of events" << QwLog::endl;
       QwMessage << " =========================" << QwLog::endl;

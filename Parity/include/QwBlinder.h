@@ -238,6 +238,7 @@ class QwBlinder {
     EQwWienMode fWienMode;
     Int_t fIHWPPolarity_firstread;
     Int_t fIHWPPolarity;
+    Bool_t fSpinDirectionForced;
     void SetTargetBlindability(EQwBlinderStatus status);
     void SetWienState(EQwWienMode wienmode);
     void SetIHWPPolarity(Int_t ihwppolarity);
