@@ -37,6 +37,8 @@ RDataFrame Source::readSource(){
 
   TStopwatch tsw;
   tsw.Start();
+  TStopwatch tswAll;
+  tswAll.Start();
   cout << "Beginning TChain Setup --"; tsw.Print(); cout << endl;
   tsw.Start();
   TChain mul_tree("mul");
@@ -106,6 +108,9 @@ RDataFrame Source::readSource(){
   //std::cout<< typeid(histMean).name() << std::endl;
   cout << "Done with printing data --"; tsw.Print(); cout << endl;
   tsw.Start();
+  cout << "Done with ALL --"; tswAll.Print(); cout << endl;
+  tswAll.Start();
+
   return d;
 
 }

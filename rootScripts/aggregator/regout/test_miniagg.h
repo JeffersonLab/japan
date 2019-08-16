@@ -4,6 +4,7 @@ using namespace ROOT;
 
 class Channel{
   public: 
+    /* Minirun update:
     std::vector <TH1D> histos;
     TString name;
     TString draw;
@@ -12,39 +13,62 @@ class Channel{
     std::vector <Double_t> meanErrs;
     std::vector <Double_t> rmss;
     std::vector <Double_t> rmsErrs;
-    std::vector <Double_t> nentries;
+    std::vector <Double_t> nentries;*/
+    void getData();
+    void storeData(TTree *);
+    ROOT::RDF::RResultPtr<TH1D> histo;
+    TString name;
+    TString type = "meanrms";
+    TString draw;
+    //Int_t minirun;
+    Double_t avg;
+    Double_t avgErr;
+    Double_t rms;
+    Double_t rmsErr;
+    Double_t nEntries;
+};
+/* I would like to define the channels in a loop over input.txt and apply all filter/defines to dataframe, but I don't know the dataframe.filter's data type... just do it in line
+void Channel::fill_channels(TString inputFile = "input.txt"){
+  return;
+}; */
+
+void Channel::getData(){
+  avg = histo->GetMean();
+  avgErr = histo->GetMeanError();
+  rms = histo->GetRMS();
+  rmsErr = histo->GetRMSError();
+  nEntries = histo->GetEntries();
+};
+
+void Channel::storeData(TTree * outputTree){
+  if (type=="meanrms"){
+    outputTree->Branch(Form("%s_avg",name.Data()),&avg);
+    outputTree->Branch(Form("%s_avg_error",name.Data()),&avgErr);
+    outputTree->Branch(Form("%s_rms",name.Data()),&rms);
+    outputTree->Branch(Form("%s_rms_error",name.Data()),&rmsErr);
+    outputTree->Branch(Form("%s_nentries",name.Data()),&nEntries);
+  }
 };
 
 class Source {
   public:
-    TString run,split,miniruns,input;
-    Source(TString n_run, TString n_split, TString in): run(n_run), split(n_split), input(in) {}
+    TString run,nruns,split,minirun,input;
+    Source(TString run_n, TString n_runs, TString n_minirun, TString n_split, TString in): run(run_n), nruns(n_runs), minirun(n_minirun), split(n_split), input(in) {}
     RDataFrame readSource();
     void printInfo() { std::cout << "Processing run  " << run  << ". " << std::endl;} 
     void drawAll();
     Channel GetChannelByName(TString name);    
-
 };
 
 RDataFrame Source::readSource(){
   EnableImplicitMT();
 
-  /* Getting device list. This can be vectorised.*/
-  std::vector<string> device_list;
-  string device;
-  ifstream infile("input.txt");
-  Int_t count=0;
-  if (infile.is_open()){
-    while(getline(infile,device)){
-      device_list.push_back(device);
-      count++;
-    }
-  }
   /*--------------------------------------------*/
 
-
   TStopwatch tsw;
+  TStopwatch tswAll;
   tsw.Start();
+  tswAll.Start();
   cout << "Beginning TChain Setup --"; tsw.Print(); cout << endl;
   tsw.Start();
   TChain * mul_tree      = new TChain("mul");
@@ -63,7 +87,7 @@ RDataFrame Source::readSource(){
   mul_tree->AddFriend(mulc_tree);
   mul_tree->AddFriend(mulc_lrb_tree);
 
-  miniruns = mini_tree->Scan("minirun","");
+  //miniruns = mini_tree->Scan("minirun",""); // FIXME for later minirun looping addition
 
   RDataFrame d(*mul_tree);//,device_list);
   cout << "Filtering through reg.ok_cut==1 --"; tsw.Print(); cout << endl;
@@ -85,8 +109,10 @@ RDataFrame Source::readSource(){
   //tsw.Start();
   //auto mean=d_good.Mean(); // This is non-lazy, avoid!
 
-  std::vector<ROOT::RDF::RResultPtr<TH1D>> histoVec;
+  //std::vector<ROOT::RDF::RResultPtr<TH1D>> histoVec;
+  std::vector<Channel> channels;
 
+  /* Old non-OOP way
   for (auto &device:device_list){
     //auto mean=d_good.Mean(device);
     //ROOT::RDF::RResultPtr<TH1D> tmpHisto1D = d_good.Histo1D(device);
@@ -100,76 +126,103 @@ RDataFrame Source::readSource(){
     histoVec.push_back(d_good.Define(tmpStr+"_agg",device).Histo1D(tmpStr+"_agg"));//:reg.minirun")); // for 2D do this slice
     cout << "Done Getting Histo1D for " << device << " --"; tsw.Print(); cout << endl;
     tsw.Start();
-//    std::cout<< device << std::endl;
+    //    std::cout<< device << std::endl;
+  }
+  */
+
+  /* Getting device list. This can be vectorised.*/
+  string line;
+  std::vector<string> tokens;
+  string typedefault = "meanrms";
+  ifstream infile("input.txt");
+  if (infile.is_open()){
+    while(getline(infile,line)){
+      string token;
+      string device;
+      string type;
+      std::istringstream tokenStream(line);
+      while(getline(tokenStream,token,',')){
+        tokens.push_back(token);
+      }
+      if (tokens.size() > 0){
+        device = tokens.at(0);
+      }
+      else { 
+        Printf("Error: invalid input file");
+        return 1; 
+      }
+      if (tokens.size() > 1){
+        type=tokens.at(1);
+      }
+      else {
+        type=typedefault;
+      }
+      tokens.clear();
+      string tmpStr(device.size(),'\0');
+      std::replace_copy(device.begin(), device.end(),tmpStr.begin(),'.','_');
+      cout << "Alias name = " << tmpStr << endl;
+      Channel tmpChan;
+      tmpChan.name = tmpStr;
+      tmpChan.draw = device;
+      if (minirun != "-1"){
+        tmpChan.histo = d_good.Define(tmpStr,device).Filter(Form("reg.minirun==%s",minirun.Data())).Histo1D(tmpStr);
+      }
+      else {
+        tmpChan.histo = d_good.Define(tmpStr,device).Histo1D(tmpStr);
+      }
+      channels.push_back(tmpChan);
+      cout << "Done Getting Histo1D for " << device << " --"; tsw.Print(); cout << endl;
+      tsw.Start();
+    }
   }
 
-  for (auto &analysis:histoVec){
-    //auto mean=d_good.Mean(device);
-    /* Manually, non-lazy
-    auto histMean = d_good.Histo1D(device)->GetMean();
-    auto histMeanErr = d_good.Histo1D(device)->GetMeanError();
-    auto histRMS = d_good.Histo1D(device)->GetRMS();
-    auto histRMSErr = d_good.Histo1D(device)->GetRMSError();
-    auto histNentries = d_good.Histo1D(device)->GetEntries();
-    */
-    // Lazy
-    auto histMean = analysis->GetMean();
-    auto histMeanErr = analysis->GetMeanError();
-    auto histRMS = analysis->GetRMS();
-    auto histRMSErr = analysis->GetRMSError();
-    auto histNentries = analysis->GetEntries();
-    //cout << "Done Getting analysis results for " << analysis->GetName() << " --"; tsw.Print(); cout << std::endl;
-    //tsw.Start();
-    //std::cout<< "Mean = " << analysis->GetName() << ":" << histMean<< std::endl;
-    cout<< "Mean = :" << histMean<< " --"; tsw.Print(); cout <<std::endl;
+  cout << "Done with getting All Histos --"; tsw.Print(); cout << endl << endl << endl;
+  tsw.Start();
+
+  for (auto &tmpChan:channels){
+    tmpChan.getData();
+    cout<< tmpChan.name << " Mean = :" << tmpChan.avg<< " --"; tsw.Print(); cout <<std::endl;
     tsw.Start();
   }
   cout << "Done with getting data --"; tsw.Print(); cout << endl;
   tsw.Start();
 
-  //std::cout<< typeid(histMean).name() << std::endl;
-  cout << "Done with printing data --"; tsw.Print(); cout << endl;
+  Double_t tmpRunN = run.Atof();
+  Double_t tmpNRuns = nruns.Atof();
+  Double_t tmpSplitN = split.Atof();
+  Double_t tmpMinirunN = minirun.Atof();
+
+  TString outputDir = getOutputDir_h();
+  TString aggregatorFileName = Form("%s/aggregator.root",outputDir.Data()); // FIXME, this is very specific, and doesn't allow for aggregating over slugs, for instance
+  // Store all trees
+  if (tmpMinirunN <= -1) {
+    aggregatorFileName = Form("%s/run_aggregator_%d.root",outputDir.Data(),(Int_t)tmpRunN);
+  }
+  else{
+    aggregatorFileName = Form("%s/minirun_aggregator_%d_%d.root",outputDir.Data(),(Int_t)tmpRunN,(Int_t)tmpMinirunN);
+  }
+  TFile *aggregatorFile = new TFile(aggregatorFileName,"UPDATE");
+  aggregatorFile->cd();
+  TTree * outputTree = new TTree("agg","Aggregator Tree");
+  // Intentionally not using a struct here to match prior aggregator output definition 
+  // and to simplify life for other people, and to allow for non-mean kinds of variables to be used
+  outputTree->Branch("run_number", &tmpRunN);
+  outputTree->Branch("n_runs", &tmpNRuns);
+  outputTree->Branch("split_n", &tmpSplitN);
+  outputTree->Branch("minirun_n", &tmpMinirunN);
+
+  cout << "Done setting up output tree --"; tsw.Print(); cout << endl;
   tsw.Start();
+
+  for (auto tmpChan:channels) {
+    tmpChan.storeData(outputTree);
+  }
+
+  outputTree->Fill();
+  outputTree->Write("agg");
+  aggregatorFile->Close();
+
+  cout << "Done with ALL, run " << run << " and minirun " << minirun << " --"; tswAll.Print(); cout << endl;
+  tswAll.Start();
   return d;
-
 }
-
-/*
-   Int_t miniagg(TString runlist, TString varlist, TString output){
-
-   TString filename1="/adaqfs/home/apar/pking/example_correlator_outputblueR1296new.slope.root";
-   TString filename2="/chafs2/work1/apar/japanOutput/prexALL_2332.000.root";
-   TString varname="";
-
-   ROOT::RDataFrame d=ROOT::RDataFrame("mul",filename2.Data());
-
-//displayColumns(d);
-std::vector<TString> name;
-name.push_back("asym_sam1");
-name.push_back("asym_sam2");
-
-std::vector<Float_t> mean;
-std::vector<Float_t> err_mean;
-std::vector<Float_t> rms;
-std::vector<Float_t> err_rms;
-
-for (auto it=name.begin();it!=name.end();it++){
-auto h=d.Histo1D(Form("%s.hw_sum",(*it).Data());
-mean.push_back(h->GetMean());
-err_mean.push_back(h->GetMeanError());
-rms.push_back(h->GetRMS());
-err_rms.push_back(h->GetRMSError());
-h->SetDirectory(0);
-}
-
-ROOT::RDataFrame summary(1);
-auto newsum=summary.Define("h1", [&means]() {return means[0];});
-auto newsum1=newsum.Define("h1_t", [&means]() {return means[1];});
-auto newsum2=newsum1.Define("h2", [&means]() {return means[2];});
-auto newsum3=newsum2.Define("h2_t", [&means]() {return means[3];});
-
-newsum3.Snapshot("tree", "tree.root");
-
-return 0;
-}
-*/

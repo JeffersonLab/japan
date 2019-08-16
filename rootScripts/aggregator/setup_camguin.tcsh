@@ -1,3 +1,6 @@
+setenv ROOTSYS /adaqfs/apps/ROOT/6.16-00
+setenv PATH "${ROOTSYS}/bin:${PATH}"
+setenv LD_LIBRARY_PATH "${ROOTSYS}/lib:${LD_LIBRARY_PATH}"
 setenv RUNNUM 1
 setenv NRUNS 1
 setenv SPLITNUM 0
