@@ -46,12 +46,23 @@ void Channel::getData(){
     rms = histo->GetRMS();
     rmsErr = histo->GetRMSError();
     nEntries = histo->GetEntries();
+    Printf("Device %s avg = %f",name.Data(),avg);
+  }
+  else {
+    if (debug>1) {
+      Printf("Error, histogram for %s empty",name.Data());
+    }
   }
 };
 
 void Channel::getSlowData(){
   if (histo){
     singleEntry = histo->GetBinCenter(histo->GetMaximumBin());
+  }
+  else {
+    if (debug>1) {
+      Printf("Error, histogram for %s empty",name.Data());
+    }
   }
 };
 
@@ -364,8 +375,9 @@ RDataFrame Source::readSource(){
   if (debug > 1) {cout << "Done setting up output tree --"; tsw.Print(); cout << endl;}
   tsw.Start();
 
-  for (auto tmpChan:channels) {
-    tmpChan.storeData(outputTree);
+  //for (auto tmpChan:channels) {
+  for (Int_t loop = 0 ; loop<channels.size() ; loop++) {
+    channels.at(loop).storeData(outputTree);
   }
 
   outputTree->Fill();

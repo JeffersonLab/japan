@@ -34,5 +34,5 @@ done
 [ -z "$CONFIG" ] && usage 5
 [ -z "$NRUNS" ] && usage 6
 
-root -l -q -b ../camDataFrame.C"($RUNNUM,$NRUNS,$MINIRUNNUM,$SPLITNUM,$CONFIG)"
+root -l -q -b ../camDataFrame.C"(\"$RUNNUM\",\"$NRUNS\",\"$MINIRUNNUM\",\"$SPLITNUM\",\"$CONFIG\")"
 echo -e "\n\nDone with run: $RUNNUM, minirun: $MINIRUNNUM, slug: $NRUNS\n\n"
