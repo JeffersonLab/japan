@@ -1,8 +1,8 @@
-#include "miniagg.h"
+#include "draw_miniagg.h"
 
 
 
-int miniagg(){
+int draw_miniagg(){
 
 
 //TString mul= "/chafs2/work1/apar/japanOutput/prexPrompt_pass1_3454.000.root";
@@ -11,7 +11,7 @@ int miniagg(){
 TString input= "input.txt";
 
 
-Source source("3454","000",input.Data());  // These labels need to be passed as strings. Otherwise it's difficult to convert them back to filenames.
+Source source("3994","000",input.Data());  // These labels need to be passed as strings. Otherwise it's difficult to convert them back to filenames.
 auto df_source=source.readSource();
 
 

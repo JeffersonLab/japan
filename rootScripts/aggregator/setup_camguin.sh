@@ -1,4 +1,7 @@
 #!/bin/bash
+export ROOTSYS=/adaqfs/apps/ROOT/6.16-00
+export PATH="${ROOTSYS}/bin:${PATH}"
+export LD_LIBRARY_PATH="${ROOTSYS}/lib:${LD_LIBRARY_PATH}"
 export RUNNUM=1
 export NRUNS=1
 export SPLITNUM=0

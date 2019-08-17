@@ -1,6 +1,7 @@
 #include "camguin.hh"
 #include "camIO.hh"
 #include "camHist.hh"
+#include "camDataFrame.hh"
 #include "camAna.hh"
 #include "camMatrix.hh"
 #include "regressor/camReg.hh"
@@ -123,6 +124,16 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     if (debug>1) Printf("Done with correction ana");
   }
   else if (
+       ana == "combinermeanrmsdf"
+    || ana == "combinermeanRmsDF"
+    || ana == "combinerMeanRmsDF"
+    || ana == "combinerDF"
+    || ana == "combineDF"
+    || ana == "comboDF"){
+    writeCombinedMeanRmsDF_h( tree, branch, leaf, cut, overWriteCut, runNumber, minirunNumber, splitNumber, nRuns ); // FIXME Removed histMode input from this version of writeMeanRMS since we aren't doing intelligent branch parsing. This is the ideal Aggregator method, so don't make it any fancier - this combo one does the branch as draw and then prints the leaf
+    if (debug>1) Printf("Done with correction DataFrame ana");
+  }
+  else if (
        ana == "correctionmeanrms"
     || ana == "correctionmeanRms"
     || ana == "correctionMeanRms"
@@ -131,6 +142,16 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     || ana == "cor"){
     writeCorrectionMeanRms_h( tree, branch, leaf, cut, overWriteCut, runNumber, minirunNumber, splitNumber, nRuns ); // FIXME Removed histMode input from this version of writeMeanRMS since we aren't doing intelligent branch parsing. This is the ideal Aggregator method, so don't make it any fancier
     if (debug>1) Printf("Done with correction ana");
+  }
+  else if (
+       ana == "correctionmeanrmsdf"
+    || ana == "correctionmeanRmsDF"
+    || ana == "correctionMeanRmsDF"
+    || ana == "correctionDF"
+    || ana == "corrDF"
+    || ana == "corDF"){
+    writeCorrectionMeanRmsDF_h( tree, branch, leaf, cut, overWriteCut, runNumber, minirunNumber, splitNumber, nRuns ); // FIXME Removed histMode input from this version of writeMeanRMS since we aren't doing intelligent branch parsing. This is the ideal Aggregator method, so don't make it any fancier
+    if (debug>1) Printf("Done with correction DataFrame ana");
   }
   else if (
        ana == "Display"

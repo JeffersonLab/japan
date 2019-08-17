@@ -279,10 +279,12 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
     TString postpanFileNameBase = gSystem->Getenv("POSTPAN_ROOTFILES");
     postpanFileName = postpanFileNameBase + "/prexPrompt_" + runNumber + "_000_regress_postpan.root";
     newTChain->Add(postpanFileName);
-    if (debug>0) Printf("Post Pan TChain searching from file name: %s\n",postpanFileName.Data());
     if (debug>0) Printf("Regular TChain searching from folder name: %s\n",filenamebase.Data());
     if (!newTChain) {
       Printf("Error, Post Pan TChain not found in file name: %s\n",postpanFileName.Data());
+    }
+    else {
+      if (debug>0) Printf("Post Pan TChain found, file name: %s\n",postpanFileName.Data());
     }
     //tree = "mul"; // FIXME we are just doing this now... for post pan stuff
     newTree = tree;
@@ -344,10 +346,12 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
           // FIXME This is how to avoid assuming post pan file lives in the same place
           if (ditheringStatus == 0 && postpanStatus == 0){
             newTChain->Add(filename);
+            Int_t tmp = newTChain->GetEntries();
           }
           if (doMulExtra == 1){
             extraFriendTChain->Add(filename);
             newTChain->AddFriend(extraFriendTChain);
+            Int_t tmp = newTChain->GetEntries();
           }
           Int_t testValFriend = 0;
           if (newTree != defaultTree) {
@@ -358,21 +362,21 @@ TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumbe
           //if (debug>3) Printf("Friend TChain found in %s, with %d entries",filename.Data(),testValFriend);
           if (postpanStatus == 1){
             newTChain->AddFriend(friendTChain);
-            if (debug>3) Printf("Friend TChain \"%s\" found in %s, with %d entries",defaultTree.Data(),filename.Data(),testValFriend);
+            if (debug>2) Printf("Friend TChain \"%s\" found in %s, with %d entries",defaultTree.Data(),filename.Data(),testValFriend);
           }
           else if (ditheringStatus == 1){
             newTChain->AddFriend(friendTChain);
-            if (debug>3) Printf("Friend TChain \"%s\" found in %s, with %d entries",defaultTree.Data(),filename.Data(),testValFriend);
+            if (debug>2) Printf("Friend TChain \"%s\" found in %s, with %d entries",defaultTree.Data(),filename.Data(),testValFriend);
           }
           else if (newTree != defaultTree) {
             newTChain->AddFriend(friendTChain);
-            if (debug>3) Printf("Friend TChain \"%s\" found in %s, with %d entries",defaultTree.Data(),filename.Data(),testValFriend);
+            if (debug>2) Printf("Friend TChain \"%s\" found in %s, with %d entries",defaultTree.Data(),filename.Data(),testValFriend);
           }
           Int_t testVal = newTChain->GetEntries();
           //if (debug>3) Printf("Original TChain found in %s, with %d entries",postpanFileName.Data(),testVal);
-          if (debug>3 && postpanStatus == 1) Printf("Original TChain found in %s, with %d entries",postpanFileName.Data(),testVal);
-          if (debug>3 && ditheringStatus == 1) Printf("Original TChain found in %s, with %d entries",ditheringFileName.Data(),testVal);
-          if (debug>3 && ditheringStatus == 0 && postpanStatus == 0) Printf("Original TChain \"%s\" found in %s, with %d entries",tree.Data(),filename.Data(),testVal);
+          if (debug>2 && postpanStatus == 1) Printf("Original TChain found in %s, with %d entries",postpanFileName.Data(),testVal);
+          if (debug>2 && ditheringStatus == 1) Printf("Original TChain found in %s, with %d entries",ditheringFileName.Data(),testVal);
+          if (debug>2 && ditheringStatus == 0 && postpanStatus == 0) Printf("Original TChain \"%s\" found in %s, with %d entries",tree.Data(),filename.Data(),testVal);
         }
         else {
           if (debug>1) Printf("File %s doesn't contain tree: \"%s\"",(const char*)filename,(const char*)tree);
