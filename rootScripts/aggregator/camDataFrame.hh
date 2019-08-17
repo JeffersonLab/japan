@@ -46,7 +46,6 @@ void Channel::getData(){
     rms = histo->GetRMS();
     rmsErr = histo->GetRMSError();
     nEntries = histo->GetEntries();
-    Printf("Device %s avg = %f",name.Data(),avg);
   }
   else {
     if (debug>1) {
@@ -68,8 +67,8 @@ void Channel::getSlowData(){
 
 void Channel::storeData(TTree * outputTree){
   if (type == "meanrms"){
-    outputTree->Branch(Form("%s_avg",name.Data()),&avg);
-    outputTree->Branch(Form("%s_avg_error",name.Data()),&avgErr);
+    outputTree->Branch(Form("%s_mean",name.Data()),&avg);
+    outputTree->Branch(Form("%s_mean_error",name.Data()),&avgErr);
     outputTree->Branch(Form("%s_rms",name.Data()),&rms);
     outputTree->Branch(Form("%s_rms_error",name.Data()),&rmsErr);
     outputTree->Branch(Form("%s_nentries",name.Data()),&nEntries);
