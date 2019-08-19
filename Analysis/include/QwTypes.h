@@ -181,7 +181,8 @@ static const UInt_t kEventCutMode3 = 0x10000;  // in Decimal 65536 to identify t
 static const UInt_t kErrorFlag_Helicity = 0x20000;  // Any type of helicity decoding problem
 
 
-static const UInt_t kErrorFlag_BurpCut =   0x800000;// in Decimal 2^23 to identify a burp cut failure
+//static const UInt_t kErrorFlag_BurpCut =   0x800000;// in Decimal 2^23 to identify a burp cut failure
+static const UInt_t kErrorFlag_BurpCut = 0x20000000;// promote to Decimal 2^29 to skip default accumulation mask.
 static const UInt_t kBeamStabilityError= 0x10000000;//in Decimal 2^28(268435456) to identify the a stability cut
 static const UInt_t kBeamTripError     =  0x8000000;// in Decimal 2^27(134217728) to identify the an event within a beam trip range set by ring parameters
 static const UInt_t kGlobalCut         =  0x4000000;// in Decimal 2^26 to identify the single event cut is a global cut
