@@ -1250,9 +1250,9 @@ void  QwHelicity::ConstructBranchAndVector(TTree *tree, TString &prefix, std::ve
     }
   else if(fHistoType==kHelSaveMPS)
     {
-      basename = "actual_helicity";    //predicted actual helicity before being delayed.
-      values.push_back(0.0);
-      tree->Branch(basename, &(values.back()), basename+"/D");
+      // basename = "actual_helicity";    //predicted actual helicity before being delayed.
+      // values.push_back(0.0);
+      // tree->Branch(basename, &(values.back()), basename+"/D");
       //
       basename = "delayed_helicity";   //predicted delayed helicity
       values.push_back(0.0);
@@ -1333,8 +1333,8 @@ void  QwHelicity::ConstructBranch(TTree *tree, TString &prefix)
     }
   else if(fHistoType==kHelSaveMPS)
     {
-      basename = "actual_helicity";    //predicted actual helicity before being delayed.
-      tree->Branch(basename, &fHelicityActual, basename+"/I");
+      // basename = "actual_helicity";    //predicted actual helicity before being delayed.
+      // tree->Branch(basename, &fHelicityActual, basename+"/I");
       //
       basename = "delayed_helicity";   //predicted delayed helicity
       tree->Branch(basename, &fHelicityDelayed, basename+"/I");
@@ -1395,8 +1395,8 @@ void  QwHelicity::ConstructBranch(TTree *tree, TString &prefix, QwParameterFile&
     }
   else if(fHistoType==kHelSaveMPS)
     {
-      basename = "actual_helicity";    //predicted actual helicity before being delayed.
-      tree->Branch(basename, &fHelicityActual, basename+"/I");
+      // basename = "actual_helicity";    //predicted actual helicity before being delayed.
+      // tree->Branch(basename, &fHelicityActual, basename+"/I");
       //
       basename = "delayed_helicity";   //predicted delayed helicity
       tree->Branch(basename, &fHelicityDelayed, basename+"/I");
@@ -1454,7 +1454,7 @@ void  QwHelicity::FillTreeVector(std::vector<Double_t> &values) const
   size_t index=fTreeArrayIndex;
   if(fHistoType==kHelSaveMPS)
     {
-      values[index++] = fHelicityActual;
+      // values[index++] = fHelicityActual;
       values[index++] = fHelicityDelayed;
       values[index++] = fHelicityReported;
       values[index++] = fPatternPhaseNumber;
