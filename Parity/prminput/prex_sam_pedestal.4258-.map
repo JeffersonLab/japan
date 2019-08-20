@@ -1,12 +1,12 @@
 !! SAM Pedestal
 
-!Run 3751 https://logbooks.jlab.org/entry/3712991
+!sam pedestals for Run4309 (bpm calibration scan) 55-70uA relative to (bcm_dg_ds.hw_sum_raw/bcm_dg_ds.num_samples--351.06)*0.002318
 !relative to digital downstream
-sam1, 12182.57, 0.000076
-sam2, 13203.02, 0.000076
-sam3, 12556.84, 0.000076
-sam4, 13393.22, 0.000076
-sam5, 12519.70, 0.000076
-sam6, 13296.34, 0.000076
-sam7, 12445.29, 0.000076
-sam8, 12400.46, 0.000076
+sam1, 11863.01, 0.000076
+sam2, 12445.05, 0.000076
+sam3, 11620.01, 0.000076
+sam4, 15275.39, 0.000076
+sam5, 12903.37, 0.000076
+sam6, 13904.43, 0.000076
+sam7, 12372.32, 0.000076
+sam8, 12080.37, 0.000076

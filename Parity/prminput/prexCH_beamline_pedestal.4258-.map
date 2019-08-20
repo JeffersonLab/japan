@@ -12,53 +12,64 @@ UNSER,   -174.1,     2.066e-2
 !!! Hall C bcm calibration from run 2946. Check halog 3695862. 
 !!! Updated to run 3372, halog 3705189
 
+! BCM https://logbooks.jlab.org/entry/3720995
 hallc_bcm_4c, -155, 0.001507
-! BCM https://logbooks.jlab.org/entry/3712991
-!Run3751 Fit BCMs from 10-70uA relative to bcm_dg_ds: (bcm_dg_ds.hw_sum_raw/bcm_dg_ds.num_samples--396.60)*0.002328 obtained from unserlike calibration yesterday
-bcm_an_us, -698.66, 0.006020
-bcm_an_ds3, -692.98, 0.001825
-bcm_an_ds, -538.29, 0.006128
-bcm_dg_us, -171.56, 0.002903
-bcm_dg_ds, -396.60, 0.002328
-bcm_an_ds10, -568.87, 0.000635
-cav4cQ, -596.60, 0.003101
+!When fit from 10-70uA, the BCM pedestals relative to the unser for Run4229 were
+bcm_an_us, -693.35, 0.006085
+bcm_an_ds3, -605.73, 0.001824
+bcm_an_ds, -536.08, 0.006112
+bcm_dg_us, -129.09, 0.002894
+bcm_dg_ds, -351.06, 0.002318
+bcm_an_ds10, -316.07, 0.000635
+cav4cQ, -605.23, 0.003082 
    
   
+!BPM Pedestals  https://logbooks.jlab.org/entry/3720995
+!BPM pedestals for Run 4309 55-70uA relative to (bcm_dg_ds.hw_sum_raw/bcm_dg_ds.num_samples--351.06)*0.002318 --had to fit bpm4eXM and bpm12YM by hand cause macro had an issue
 
-!BPM Pedestals https://logbooks.jlab.org/entry/3712722
-!***Fits (60-70uA) to bcm_dg_ds based on unser run 3735 peds: bcm_dg_ds.hw_sum_raw/bcm_dg_ds.num_samples--396.60)*0.002328
-bpm4aXP, 741.96, 1.0
-bpm4aXM, 780.19, 1.0
-bpm4aYP, 1038.57, 1.0
-bpm4aYM, 497.59, 1.0
-bpm4eXP, 1400.15, 1.0
-bpm4eXM, 1201.61, 1.0
-bpm4eYP, 929.90, 1.0
-bpm4eYM, 747.42, 1.0
-bpm4acXP, -665.28, 1.0
-bpm4acXM, -890.63, 1.0
-bpm4acYP, 466.75, 1.0
-bpm4acYM, 311.79, 1.0
-bpm4ecXP, 865.70, 1.0
-bpm4ecXM, 1051.00, 1.0
-bpm4ecYP, 1690.43, 1.0
-bpm4ecYM, 1216.64, 1.0
-bpm11XP, 1663.69, 1.0
-bpm11XM, 1394.86, 1.0
-bpm11YP, 1265.73, 1.0
-bpm11YM, 1217.68, 1.0
-bpm12XP, 3773.87, 1.0
-bpm12XM, 4209.90, 1.0
-bpm12YP, 3680.97, 1.0
-bpm12YM, 3496.15, 1.0
-bpm16XP, 1694.37, 1.0
-bpm16XM, 1732.43, 1.0
-bpm16YP, 584.90, 1.0
-bpm16YM, 715.95, 1.0
-bpm1XP, -3177.68, 1.0
-bpm1XM, -3123.57, 1.0
-bpm1YP, -3759.72, 1.0
-bpm1YM, -4108.05, 1.0
+
+!https://logbooks.jlab.org/node/add/logentry from run 3928 70uA, 240Hz with beam through Compton. 2 data points 60,70uA with gains off on iocse10. These could in principle be applied from runs starting going through the compton onwards (so Run3909 onwards was going through Compton)
+bpm4aXP, 1451.09, 1.0
+bpm4aXM, -42.74, 1.0
+bpm4aYP, 1584.20, 1.0
+bpm4aYM, -204.91, 1.0
+bpm4eXP, 1819.33, 1.0
+bpm4eXM, 733.784, 1.0
+bpm4eYP, 1311.33, 1.0
+bpm4eYM, 440.80, 1.0
+bpm4acXP, -90.89, 1.0
+bpm4acXM, -1622.22, 1.0
+bpm4acYP, 1178.93, 1.0
+bpm4acYM, -226.43, 1.0
+bpm4ecXP, 1298.37, 1.0
+bpm4ecXM, 532.29, 1.0
+bpm4ecYP, 1548.77, 1.0
+bpm4ecYM, 830.82, 1.0
+bpm11XP, 1784.79, 1.0
+bpm11XM, 1418.25, 1.0
+bpm11YP, 1371.68, 1.0
+bpm11YM, 1258.10, 1.0
+bpm12XP, 3891.59, 1.0
+bpm12XM, 4234.95, 1.0
+bpm12YP, 4004.67, 1.0
+bpm12YM, 3514.99, 1.0
+bpm16XP, 1438.58, 1.0
+bpm16XM, 1733.63, 1.0
+bpm16YP, 359.53, 1.0
+bpm16YM, 595.74, 1.0
+bpm1p02bXP, -3435.21, 1.0
+bpm1p02bXM, -2717.68, 1.0
+bpm1p02bYP, -3872.57, 1.0
+bpm1p02bYM, -2873.54, 1.0
+bpm1p03aXP, -5664.70, 1.0
+bpm1p03aXM, -4910.93, 1.0
+bpm1p03aYP, -2830.63, 1.0
+bpm1p03aYM, -2319.58, 1.0
+bpm1XP, -5118.76, 1.0
+bpm1XM, -1526.92, 1.0
+bpm1YP, -4934.73, 1.0
+bpm1YM, -1371.19, 1.0 
+
 
 !https://logbooks.jlab.org/node/add/logentry from run 3928 70uA, 240Hz with beam through Compton. 2 data points 60,70uA with gains off on iocse10. These could in principle be applied from runs starting going through the compton onwards (so Run3909 onwards was going through Compton)
 bpm1p02bXP, -3465.80, 1.0 
