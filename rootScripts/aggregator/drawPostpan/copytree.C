@@ -10,7 +10,7 @@ void copytree()
      TFile newfile("plots/grand_prototype.root", "recreate");
      auto newtree = oldtree->CloneTree(0);
      for (auto i : ROOT::TSeqI(nentries)) {
- //     if (i==9) continue;
+      if (i>=43-27) continue;
      	oldtree->GetEntry(i);
       newtree->Fill();
      }

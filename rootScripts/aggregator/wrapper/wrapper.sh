@@ -34,5 +34,12 @@ done
 [ -z "$CONFIG" ] && usage 5
 [ -z "$NRUNS" ] && usage 6
 
+if [ $CONFIG = "dithering_input.txt" ];
+then
+  export DITHERING_ROOTFILES=/chafs2/work1/apar/DitherCorrection/
+  export DITHERING_ROOTFILES_SLOPES=/chafs2/work1/apar/BMODextractor/
+  export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/dithering/
+fi
+
 root -l -q -b ../camDataFrame.C"(\"$RUNNUM\",\"$NRUNS\",\"$MINIRUNNUM\",\"$SPLITNUM\",\"$CONFIG\")"
-echo -e "\n\nDone with run: $RUNNUM, minirun: $MINIRUNNUM, slug: $NRUNS\n\n"
+echo -e "Done with run: $RUNNUM, minirun: $MINIRUNNUM, slug: $NRUNS"
