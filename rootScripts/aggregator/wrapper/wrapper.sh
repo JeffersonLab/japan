@@ -38,6 +38,7 @@ if [ $CONFIG = "dithering_input.txt" ];
 then
   export DITHERING_ROOTFILES=/chafs2/work1/apar/DitherCorrection/
   export DITHERING_ROOTFILES_SLOPES=/chafs2/work1/apar/BMODextractor/
+  export DITHERING_ROOTFILES_SLOPES_RUN=/chafs1/work1/apar/cameronc/WAC/backups/dithering_slopes_backups
   export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/dithering/
 fi
 
