@@ -52,7 +52,7 @@ if (chan_name.Contains("yield_")){
 TTreeFormula f("name",chan_name, chan_t);
 
 if(f.GetNdim()!=0){
-Int_t nEntries=chan_t->Draw("run_number:minirun_n:"+chan_name+unit+":"+chan_name+"_error"+unit,"" , "goff");
+Int_t nEntries=chan_t->Draw("run_number:minirun_n:"+chan_name+unit+":"+chan_name+"_error"+unit,"abs("+chan_name+unit+":"+chan_name+"_error"+unit+")<0.999e6", "goff");
 Double_t index[nEntries];
 for(int i=0; i<nEntries;i++){
    index[i]=i;

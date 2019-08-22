@@ -26,8 +26,8 @@ auto chan_name=this->name;
 auto chan_t=tree;
 
 // global cuts
-TString gc1= "&&"+ chan_name+"!=0 &&"+ chan_name+"!=-1e6 && "+ chan_name+"!=1e6";   
-TString gc2= "&&"+ chan_name+"_error!=0 &&"+chan_name+"_error!=-1e6 && "+chan_name+"_error!=1e6";
+TString gc1= "&&"+ chan_name+"!=0 && abs("+ chan_name+")<0.99e6";
+TString gc2= "&&"+ chan_name+"_error!=0 && abs("+chan_name+"_error)<0.99e6";
 //
 // device cut
 TString lc="";
