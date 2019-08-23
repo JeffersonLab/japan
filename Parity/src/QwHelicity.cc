@@ -1126,10 +1126,10 @@ void QwHelicity::SetFirstBits(UInt_t nbits, UInt_t seed)
 void QwHelicity::SetHistoTreeSave(const TString &prefix)
 {
   Ssiz_t len;
-  if (prefix == "diff_"
+  if (TRegexp("diff_").Index(prefix,&len) == 0
    || TRegexp("asym[1-9]*_").Index(prefix,&len) == 0)
     fHistoType = kHelNoSave;
-  else if (prefix == "yield_")
+  else if (TRegexp("yield_").Index(prefix,&len) == 0)
     fHistoType = kHelSavePattern;
   else
     fHistoType = kHelSaveMPS;

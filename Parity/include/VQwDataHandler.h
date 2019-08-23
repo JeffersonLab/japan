@@ -68,20 +68,25 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
     TString GetDataHandlerName(){return fName;}
 
-    void ClearEventData();
+    virtual void ClearEventData();
 
-    void AccumulateRunningSum(VQwDataHandler &value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+    virtual void AccumulateRunningSum(VQwDataHandler &value, Int_t count = 0, Int_t ErrorMask = 0xFFFFFFF);
     void CalculateRunningAverage();
     void PrintValue() const;
     void FillDB(QwParityDB *db, TString datatype){};
 
     void WritePromptSummary(QwPromptSummary *ps, TString type);
 
-    void ConstructTreeBranches(
+    virtual void ConstructTreeBranches(
         QwRootFile *treerootfile,
         const std::string& treeprefix = "",
         const std::string& branchprefix = "");
-    void FillTreeBranches(QwRootFile *treerootfile);
+    virtual void FillTreeBranches(QwRootFile *treerootfile);
+
+    /// \brief Construct the histograms in a folder with a prefix
+    virtual void  ConstructHistograms(TDirectory *folder, TString &prefix) { };
+    /// \brief Fill the histograms
+    virtual void  FillHistograms() { };
 
     // Fill the vector for this subsystem
     void FillTreeVector(std::vector<Double_t> &values) const;

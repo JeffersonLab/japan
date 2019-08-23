@@ -93,8 +93,20 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     void FillTreeBranches(QwRootFile *treerootfile);
     /// \brief Fill the vector for this handler
     void FillTreeVector(std::vector<Double_t>& values) const;
-    /// \brief Fill the histograms for this handler
-    void FillHistograms();
+
+    /// Construct the histograms for this subsystem
+    void  ConstructHistograms() {
+      ConstructHistograms((TDirectory*) NULL);
+    };
+    /// Construct the histograms for this subsystem in a folder
+    void  ConstructHistograms(TDirectory *folder) {
+      TString prefix = "";
+      ConstructHistograms(folder, prefix);
+    };
+    /// \brief Construct the histograms in a folder with a prefix
+    void  ConstructHistograms(TDirectory *folder, TString &prefix);
+    /// \brief Fill the histograms
+    void  FillHistograms();
 
     /// \brief Fill the database
     void FillDB(QwParityDB *db, TString type);
