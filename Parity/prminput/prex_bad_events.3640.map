@@ -1,0 +1,8 @@
+# And then there were gone ....
+# This map file should be replaced with specific run number
+# Usage: for example
+# It will flag kBadEventRangeError for events with CodaEventNumber >=0 and CodaEventNumber<=1000
+# And also flag kBadEventRangeError on a single event CodaEventNumber==3000
+0:41000
+#3000
+#3000:

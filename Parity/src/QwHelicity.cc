@@ -251,8 +251,12 @@ void QwHelicity::ProcessOptions(QwOptions &options)
 Bool_t QwHelicity::IsContinuous()
 {
   Bool_t results=kFALSE;
-  if(IsGoodPatternNumber()&&IsGoodEventNumber()&&IsGoodPhaseNumber())
+  if(IsGoodPatternNumber()&&IsGoodEventNumber()&&IsGoodPhaseNumber()){
     results=kTRUE;
+  } else {
+    //  Results is already false, so just set the error flag value.
+    fErrorFlag = kErrorFlag_Helicity + kGlobalCut + kEventCutMode3;
+  }
   return results;
 }
 
@@ -331,6 +335,7 @@ Bool_t QwHelicity::IsGoodHelicity()
        Check phase number to see if its a new pattern.*/
     fGoodHelicity=kFALSE;
     fNumHelicityErrors++;
+    fErrorFlag = kErrorFlag_Helicity + kGlobalCut + kEventCutMode3;
     if(fPatternPhaseNumber == fMinPatternPhase) {
       //first event in a new pattern
       QwError << "QwHelicity::IsGoodHelicity : The helicity reported in event "
@@ -364,12 +369,12 @@ void QwHelicity::ClearEventData()
 
   /**Reset data by setting the old event number, pattern number and pattern phase 
      to the values of the previous event.*/
-  if (fEventNumberFirst==-1 && fEventNumberOld!= -1){
-    fEventNumberFirst = fEventNumberOld;
+  if (fEventNumberFirst==-1 && fEventNumberOld== -1){
+    fEventNumberFirst = fEventNumber;
   }
-  if (fPatternNumberFirst==-1 && fPatternNumberOld!=-1 
-      && fPatternNumber==fPatternNumberOld+1){
-    fPatternNumberFirst = fPatternNumberOld;
+  if (fPatternNumberFirst==-1 && fPatternNumberOld==-1 
+      && fPatternNumber>fPatternNumberOld){
+    fPatternNumberFirst = fPatternNumber;
   }
 
   fEventNumberOld = fEventNumber;
@@ -445,9 +450,7 @@ void QwHelicity::PrintErrorCounters() const{
 }
 
 UInt_t QwHelicity::GetEventcutErrorFlag(){//return the error flag
-
-  return 0;
-
+  return fErrorFlag;
 }
 
 void QwHelicity::ProcessEventUserbitMode()
@@ -529,6 +532,7 @@ void QwHelicity::ProcessEventUserbitMode()
 
 void QwHelicity::ProcessEventInputRegisterMode()
 {
+  static Bool_t firstevent   = kTRUE;
   static Bool_t firstpattern = kTRUE;
   static Bool_t fake_the_counters=kFALSE;
   UInt_t thisinputregister=fWord[kInputRegister].fValue;
@@ -584,7 +588,9 @@ void QwHelicity::ProcessEventInputRegisterMode()
   }
 
 
-  if(fEventNumber!=(fEventNumberOld+1)){
+  if (firstevent){
+    firstevent = kFALSE;
+  } else if(fEventNumber!=(fEventNumberOld+1)){
     Int_t nummissed(fEventNumber - (fEventNumberOld+1));
     if (!fSuppressMPSErrorMsgs){
       QwError << "QwHelicity::ProcessEvent read event# ("
@@ -593,6 +599,7 @@ void QwHelicity::ProcessEventInputRegisterMode()
     }
     fNumMissedGates += nummissed;
     fNumMissedEventBlocks++;
+    fErrorFlag = kErrorFlag_Helicity + kGlobalCut + kEventCutMode3;
   }
 
   if (CheckIORegisterMask(thisinputregister,fInputReg_PatternSync) && fPatternPhaseNumber != fMinPatternPhase){
@@ -601,6 +608,7 @@ void QwHelicity::ProcessEventInputRegisterMode()
 	    << fPatternPhaseNumber << ") not "
 	    << fMinPatternPhase << "!  Please check the fPatternPhaseOffset in the helicity map file." << QwLog::endl;
     fNumMultSyncErrors++;
+    fErrorFlag = kErrorFlag_Helicity + kGlobalCut + kEventCutMode3;
   }
 
   fHelicityReported=0;
@@ -678,6 +686,7 @@ void QwHelicity::ProcessEventInputMollerMode()
 void  QwHelicity::ProcessEvent()
 {
   Bool_t ldebug = kFALSE;
+  fErrorFlag = 0;
 
   if (! HasDataLoaded()) return;
 
@@ -1241,9 +1250,9 @@ void  QwHelicity::ConstructBranchAndVector(TTree *tree, TString &prefix, std::ve
     }
   else if(fHistoType==kHelSaveMPS)
     {
-      basename = "actual_helicity";    //predicted actual helicity before being delayed.
-      values.push_back(0.0);
-      tree->Branch(basename, &(values.back()), basename+"/D");
+      // basename = "actual_helicity";    //predicted actual helicity before being delayed.
+      // values.push_back(0.0);
+      // tree->Branch(basename, &(values.back()), basename+"/D");
       //
       basename = "delayed_helicity";   //predicted delayed helicity
       values.push_back(0.0);
@@ -1324,8 +1333,8 @@ void  QwHelicity::ConstructBranch(TTree *tree, TString &prefix)
     }
   else if(fHistoType==kHelSaveMPS)
     {
-      basename = "actual_helicity";    //predicted actual helicity before being delayed.
-      tree->Branch(basename, &fHelicityActual, basename+"/I");
+      // basename = "actual_helicity";    //predicted actual helicity before being delayed.
+      // tree->Branch(basename, &fHelicityActual, basename+"/I");
       //
       basename = "delayed_helicity";   //predicted delayed helicity
       tree->Branch(basename, &fHelicityDelayed, basename+"/I");
@@ -1386,8 +1395,8 @@ void  QwHelicity::ConstructBranch(TTree *tree, TString &prefix, QwParameterFile&
     }
   else if(fHistoType==kHelSaveMPS)
     {
-      basename = "actual_helicity";    //predicted actual helicity before being delayed.
-      tree->Branch(basename, &fHelicityActual, basename+"/I");
+      // basename = "actual_helicity";    //predicted actual helicity before being delayed.
+      // tree->Branch(basename, &fHelicityActual, basename+"/I");
       //
       basename = "delayed_helicity";   //predicted delayed helicity
       tree->Branch(basename, &fHelicityDelayed, basename+"/I");
@@ -1445,7 +1454,7 @@ void  QwHelicity::FillTreeVector(std::vector<Double_t> &values) const
   size_t index=fTreeArrayIndex;
   if(fHistoType==kHelSaveMPS)
     {
-      values[index++] = fHelicityActual;
+      // values[index++] = fHelicityActual;
       values[index++] = fHelicityDelayed;
       values[index++] = fHelicityReported;
       values[index++] = fPatternPhaseNumber;
@@ -1975,6 +1984,14 @@ VQwSubsystem&  QwHelicity::operator=  (VQwSubsystem *value)
       this->fGoodPattern=input->fGoodPattern;
       this->fIgnoreHelicity = input->fIgnoreHelicity;
 
+      this->fErrorFlag = input->fErrorFlag;
+      this->fEventNumberFirst     = input->fEventNumberFirst;
+      this->fPatternNumberFirst   = input->fPatternNumberFirst;
+      this->fNumMissedGates       = input->fNumMissedGates;
+      this->fNumMissedEventBlocks = input->fNumMissedEventBlocks;
+      this->fNumMultSyncErrors    = input->fNumMultSyncErrors;
+      this->fNumHelicityErrors    = input->fNumHelicityErrors;
+
       if(ldebug){
 	std::cout << "QwHelicity::operator = this->fPatternNumber=" << this->fPatternNumber << std::endl;
 	std::cout << "input->fPatternNumber=" << input->fPatternNumber << "\n";
@@ -1984,27 +2001,42 @@ VQwSubsystem&  QwHelicity::operator=  (VQwSubsystem *value)
   return *this;
 }
 
-VQwSubsystem&  QwHelicity::operator+=  (VQwSubsystem *value)
-{
-  //  Bool_t localdebug=kFALSE;
+VQwSubsystem&  QwHelicity::operator+=  (VQwSubsystem *value){
   QwDebug << "Entering QwHelicity::operator+= adding " << value->GetSubsystemName() << " to " << this->GetSubsystemName() << " " << QwLog::endl;
 
   //this routine is most likely to be called during the computatin of assymetry
   //this call doesn't make too much sense for this class so the following lines
   //are only use to put safe gards testing for example if the two instantiation indeed
   // refers to elements in the same pattern.
-  if(Compare(value))
-    {
-      QwHelicity* input= dynamic_cast<QwHelicity*>(value);
-      QwDebug << "QwHelicity::operator+=: this->fPatternNumber=" << this->fPatternNumber 
-	      << ", input->fPatternNumber=" << input->fPatternNumber << QwLog::endl;
-
-      if(this->fPatternNumber!=input->fPatternNumber)
-	this->fPatternNumber=-999999;
-      if(this->fActualPatternPolarity!=input->fActualPatternPolarity)
-	this->fPatternNumber=-999999;
-    }
+  MergeCounters(value);
   return *this;
+}
+
+void QwHelicity::MergeCounters(VQwSubsystem *value)
+{
+  //  Bool_t localdebug=kFALSE;
+  if(Compare(value)) {
+    QwHelicity* input= dynamic_cast<QwHelicity*>(value);
+    QwDebug << "QwHelicity::MergeCounters: this->fPatternNumber=" << this->fPatternNumber 
+	    << ", input->fPatternNumber=" << input->fPatternNumber << QwLog::endl;
+
+    this->fErrorFlag |= input->fErrorFlag;
+    
+    //  Make sure the pattern number and poalrity agree!
+    if(this->fPatternNumber!=input->fPatternNumber)
+      this->fPatternNumber=-999999;
+    if(this->fActualPatternPolarity!=input->fActualPatternPolarity)
+      this->fPatternNumber=-999999;
+    if (this->fPatternNumber==-999999){
+      this->fErrorFlag |= kErrorFlag_Helicity + kGlobalCut + kEventCutMode3;
+    }
+    fEventNumber = (fEventNumber == 0) ? input->fEventNumber :
+      std::min(fEventNumber, input->fEventNumber);
+    for (size_t i=0; i<fWord.size(); i++) {
+      fWord[i].fValue =  (fWord[i].fValue == 0) ? input->fWord[i].fValue :
+	std::min( fWord[i].fValue, input->fWord[i].fValue);
+    }
+  }
 }
 
 void QwHelicity::Sum(VQwSubsystem  *value1, VQwSubsystem  *value2)
@@ -2015,7 +2047,7 @@ void QwHelicity::Sum(VQwSubsystem  *value1, VQwSubsystem  *value2)
   // refers to elements in the same pattern
   if(Compare(value1)&&Compare(value2)) {
     *this =  value1;
-    //*this += value2;
+    MergeCounters(value2);
   }
 }
 
@@ -2023,14 +2055,27 @@ void QwHelicity::Difference(VQwSubsystem  *value1, VQwSubsystem  *value2)
 {
   // this is stub function defined here out of completion and uniformity between each subsystem
   *this =  value1;
+  MergeCounters(value2);
 }
 
 void QwHelicity::Ratio(VQwSubsystem  *value1, VQwSubsystem  *value2)
 {
   // this is stub function defined here out of completion and uniformity between each subsystem
   *this =  value1;
+  MergeCounters(value2);
 }
 
+void  QwHelicity::AccumulateRunningSum(VQwSubsystem* value, Int_t count, Int_t ErrorMask){
+  if (Compare(value)) {
+    QwHelicity* input = dynamic_cast<QwHelicity*>(value);
+    //  Keep track of the various error quantities, so we can print 
+    //  them at the end.
+    fNumMissedGates       = input->fNumMissedGates;
+    fNumMissedEventBlocks = input->fNumMissedEventBlocks;
+    fNumMultSyncErrors    = input->fNumMultSyncErrors;
+    fNumHelicityErrors    = input->fNumHelicityErrors;
+  }
+}
 
 Bool_t QwHelicity::Compare(VQwSubsystem *value)
 {
@@ -2045,7 +2090,6 @@ Bool_t QwHelicity::Compare(VQwSubsystem *value)
   }
   return res;
 }
-
 
 UInt_t QwHelicity::BuildHelicityBitPattern(Int_t patternsize){
   UInt_t bitpattern = 0;

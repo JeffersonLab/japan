@@ -355,4 +355,5 @@ CTD673				slow_controls_data		float		!
 !    but a value is generated internally by the QwEPICSEvent class.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 WienMode        	slow_controls_data	String	 !  This will indicate the spin direction in the hall as defined by the Wien setting + precession
-
+RTPAPOSUCNT	slow_controls_data		float		! 
+RTPAPOSVCNT	slow_controls_data		float		! 

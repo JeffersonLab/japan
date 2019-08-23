@@ -85,6 +85,7 @@ class QwBlinder {
   
   ///  Error flag value 
   static const UInt_t kErrorFlag_BlinderFail = 0x200;
+  constexpr static const Double_t kValue_BlinderFail   = -1.0;
 
   static void DefineOptions(QwOptions &options);
 

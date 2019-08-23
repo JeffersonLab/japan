@@ -1,0 +1,115 @@
+!  Pedestals for 2I* and 1I* devices are taken from Caryn's 21MAY2019 analysis
+!    /adaqfs/home/apar/caryn/paninj2019/pan/controldb/control.db_inj_20190521_ebeamPcup_run2397
+! All others taken from Caryn's analysis from 22 JAN 2019
+!    /adaqfs/home/apar/caryn/paninj2018/pan/controldb/control.db_inj_20190122_20uAHallB
+! These are expected to be reasonable for the running through APEX.
+!from run2770 calibarated against bcm0l02 epics readout recorded in scandata1 around 50-70uA
+bpm1i02XP, 2382.76, 1.0 
+bpm1i02XM, 2295.54, 1.0 
+bpm1i02YP, 1620.95, 1.0 
+bpm1i02YM, 2348.61, 1.0 
+bpm1i04XP, 2539.31, 1.0 
+bpm1i04XM, 1827.97, 1.0 
+bpm1i04YP, 3831.30, 1.0 
+bpm1i04YM, 3149.90, 1.0 
+bpm0i01XP, 2666.05, 1.0 
+bpm0i01XM, 3323.98, 1.0 
+bpm0i01YP, 1357.61, 1.0 
+bpm0i01YM, 3213.46, 1.0 
+bpm0i01aXP, 914.40, 1.0 
+bpm0i01aXM, 2754.49, 1.0 
+bpm0i01aYP, 3406.42, 1.0 
+bpm0i01aYM, 2879.34, 1.0 
+bpm1i06XP, 3591.93, 1.0 
+bpm1i06XM, 3537.71, 1.0 
+bpm1i06YP, 3020.07, 1.0 
+bpm1i06YM, 3359.43, 1.0 
+bpm0i02XP, 3816.99, 1.0 
+bpm0i02XM, 5232.50, 1.0 
+bpm0i02YP, 3205.01, 1.0 
+bpm0i02YM, 4949.33, 1.0 
+bpm0i02aXP, 6210.98, 1.0 
+bpm0i02aXM, 4416.96, 1.0 
+bpm0i02aYP, 4545.79, 1.0 
+bpm0i02aYM, 6443.22, 1.0 
+bpm0i05XP, 2150.68, 1.0 
+bpm0i05XM, 2733.73, 1.0 
+bpm0i05YP, 2172.04, 1.0 
+bpm0i05YM, 2718.05, 1.0 
+bpm0i07XP, 1057.13, 1.0 
+bpm0i07XM, 1755.76, 1.0 
+bpm0i07YP, 2002.04, 1.0 
+bpm0i07YM, 2503.82, 1.0 
+bpm0l01XP, 913.65, 1.0 
+bpm0l01XM, 1704.68, 1.0 
+bpm0l01YP, 438.37, 1.0 
+bpm0l01YM, 1330.58, 1.0 
+bpm0l02XP, 2234.28, 1.0 
+bpm0l02XM, 1815.52, 1.0 
+bpm0l02YP, 1759.10, 1.0 
+bpm0l02YM, 900.42, 1.0 
+bpm0l03XP, 1570.76, 1.0 
+bpm0l03XM, 2625.54, 1.0 
+bpm0l03YP, 2309.57, 1.0 
+bpm0l03YM, 605.96, 1.0 
+bpm0l04XP, 602.70, 1.0 
+bpm0l04XM, 2051.49, 1.0 
+bpm0l04YP, 2191.32, 1.0 
+bpm0l04YM, 743.05, 1.0 
+bpm0l05XP, 1860.63, 1.0 
+bpm0l05XM, 1797.27, 1.0 
+bpm0l05YP, 2346.96, 1.0 
+bpm0l05YM, 1834.04, 1.0 
+bpm0l06XP, 1466.74, 1.0 
+bpm0l06XM, 1489.28, 1.0 
+bpm0l06YP, 925.75, 1.0 
+bpm0l06YM, 2164.73, 1.0 
+bpm0l07XP, 2636.20, 1.0 
+bpm0l07XM, 2858.90, 1.0 
+bpm0l07YP, 3096.05, 1.0 
+bpm0l07YM, 2770.21, 1.0 
+bpm0l08XP, 1713.21, 1.0 
+bpm0l08XM, 1964.94, 1.0 
+bpm0l08YP, 1769.54, 1.0 
+bpm0l08YM, 2223.10, 1.0 
+bpm0l09XP, 2333.38, 1.0 
+bpm0l09XM, 2429.90, 1.0 
+bpm0l09YP, 2487.05, 1.0 
+bpm0l09YM, 2736.60, 1.0 
+bpm0l10XP, 1640.35, 1.0 
+bpm0l10XM, 2291.08, 1.0 
+bpm0l10YP, 2246.36, 1.0 
+bpm0l10YM, 1921.16, 1.0 
+bpm2i02XP, 2027.12, 1.0 
+bpm2i02XM, 1865.40, 1.0 
+bpm2i02YP, 873.52, 1.0 
+bpm2i02YM, 2666.74, 1.0 
+bpm0r05XP, 1891.34, 1.0 
+bpm0r05XM, 1769.39, 1.0 
+bpm0r05YP, 2177.36, 1.0 
+bpm0r05YM, 1226.51, 1.0 
+bpm0r03XP, 3494.08, 1.0 
+bpm0r03XM, 3357.07, 1.0 
+bpm0r03YP, 2756.65, 1.0 
+bpm0r03YM, 2902.58, 1.0 
+bpm2i01XP, 2261.94, 1.0 
+bpm2i01XM, 3032.77, 1.0 
+bpm2i01YP, 2027.31, 1.0 
+bpm2i01YM, 3933.81, 1.0 
+bpm0r02XP, 11191.23, 1.0 
+bpm0r02XM, 11191.48, 1.0 
+bpm0r02YP, 11143.24, 1.0 
+bpm0r02YM, 11086.54, 1.0 
+bpm0r04XP, 11070.69, 1.0 
+bpm0r04XM, 10985.02, 1.0 
+bpm0r04YP, 11028.66, 1.0 
+bpm0r04YM, 10915.74, 1.0 
+
+!  BCM gain for 0L02 is from Qweak parameter files
+!from run 2769 using EPICS readout of bcm 0l02 on 6/21/19 
+!Updated 7/16/2019, see halog 3705189
+bcm0l02, 283.90, 0.002048
+!  Use calibration into volts for batteries and phase monitor.
+batery6                         -295.052     76.2939e-6
+batery7                         -445.764     76.2939e-6
+phasemonitor                    -162.172     76.2939e-6

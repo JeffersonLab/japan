@@ -66,5 +66,9 @@ At this point your code is tracked and committed on the local repository. To mak
   ```
   git push
   ```
+### Attaching your username for commit tracking purposes
 
-  
+To have your name properly tracked when committing (so that we know who is responsible for changes) please utilize the "author" tag
+  ```
+  git commit --author=username
+  ```
