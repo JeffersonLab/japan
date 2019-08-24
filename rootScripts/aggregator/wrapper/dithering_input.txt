@@ -1,3 +1,11 @@
+dit_asym_us_avg,(dit.dit_asym_usl.hw_sum+dit.dit_asym_usr.hw_sum)/2,meanrms
+asym_us_avg,mulc.asym_us_avg.hw_sum,meanrms
+dit_asym_us_dd,(dit.dit_asym_usl.hw_sum-dit.dit_asym_usr.hw_sum)/2,meanrms
+asym_us_dd,mulc.asym_us_dd.hw_sum,meanrms
+dit_asym_us_avg,(dit.dit_asym_dsl.hw_sum+dit.dit_asym_dsr.hw_sum)/2,meanrms
+asym_ds_avg,mulc.asym_ds_avg.hw_sum,meanrms
+dit_asym_us_dd,(dit.dit_asym_dsl.hw_sum-dit.dit_asym_dsr.hw_sum)/2,meanrms
+asym_ds_dd,mulc.asym_ds_dd.hw_sum,meanrms
 dit_asym_usl,dit.dit_asym_usl.hw_sum,meanrms
 asym_usl,asym_usl.hw_sum,meanrms
 dit_asym_usr,dit.dit_asym_usr.hw_sum,meanrms
