@@ -36,4 +36,8 @@ To reanalyze and make new run and minirun files for each run
 
 6) To Make grand aggregator plots do
  root -l -b -q grandAgg.C'("/chafs2/work1/apar/aggRootfiles/slugRootfiles/grandRootfile/grand_aggregator.root","outLocation...")'
+ 
+7) or to do steps 2-6 together and also make a grang plot from slug N to current, do:
+ ~/PREX/prompt/agg-scripts/make_grand_plots.sh run_list/slug62.list 0 N
+(where 0 represents the HRS status from step 3)
 
