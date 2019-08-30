@@ -147,30 +147,38 @@ void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_
     }
   }
   TString ditRunSlopeFileNamebase = gSystem->Getenv("DITHERING_ROOTFILES_SLOPES");
+  TString BlessedDitRunSlopeFileName = ditRunSlopeFileNamebase + "/dit_alldet_slopes_slug63.root";
   TString ditRunSlopeFileName = ditRunSlopeFileNamebase + "/dit_alldet_slopes_slug" + nRuns + ".root";
-  if( !gSystem->AccessPathName(ditRunSlopeFileName) ) {
+  if( 1==0 && !gSystem->AccessPathName(ditRunSlopeFileName) ) { // FIXME Turn off for now
     Printf("Getting dithering slopes from %s",ditRunSlopeFileName.Data());
     TChain *ditTree = new TChain("dit");
     ditTree->Add(ditRunSlopeFileName);
+    TChain *BlessedDitTree = new TChain("dit");
+    BlessedDitTree->Add(BlessedDitRunSlopeFileName);
     TLeaf *ditRunNum = ditTree->GetLeaf("run");
     TObjArray *slopesList = ditTree->GetListOfLeaves();
+    TObjArray *BlessedSlopesList = BlessedDitTree->GetListOfLeaves();
     TString outname = "";
     for (Int_t a = 0; a<ditTree->GetEntries(); a++){
       ditTree->GetEntry(a);
       if (debug>3) Printf("Entry number %d, run number %d",a,(Int_t)ditRunNum->GetValue(0));
-      TIter slopesIter(slopesList);
+      // FIXME This uses the names list from a known working case and then proceeds from there looping over the one in question's data
+      TIter slopesIter(BlessedSlopesList);
       while (TLeaf *slopes=(TLeaf*)slopesIter.Next()){
         if (debug>4) Printf("Checking dither slope %s",((TString)slopes->GetName()).Data());
         if ((TString)slopes->GetName() != "run" && (TString)slopes->GetName() != "cyclenum" && (Int_t)ditRunNum->GetValue(0) == runNumber){
           outname = "dit_"+(TString)slopes->GetName()+"_slope";
-          ditTree->Draw(Form("%s",slopes->GetName()),"flag==1","goff");
+          ditTree->Draw(Form("%s",slopes->GetName()),Form("run==%d && flag==1",runNumber),"goff");
           TH1* tmpHist = (TH1*)gROOT->FindObject("htemp");
-          if (debug>5) Printf("Adding to agg: %s = %f",outname.Data(),(Double_t)slopes->GetValue(0));
           Channel tmpChan;
           tmpChan.type = "slopes";
           tmpChan.name = "dit_run_"+(TString)slopes->GetName();
-          tmpChan.slope      = 1e-3*(Double_t)tmpHist->GetMean();
-          tmpChan.slopeError = 1e-3*(Double_t)tmpHist->GetMeanError();
+          if (tmpHist != 0){
+            tmpChan.slope      = 1e-3*(Double_t)tmpHist->GetMean();
+            tmpChan.slopeError = 1e-3*(Double_t)tmpHist->GetMeanError();
+          }
+          // FIXME This method assumes the run and cycle exist in the slopes file (not true if it failed at slope calculation)
+          //if (debug>5) Printf("Adding to agg: %s = %f",outname.Data(),(Double_t)slopes->GetValue(0));
           //tmpChan.slopeError = 0.0001; // Dithering has no errors?
           //if (abs((Double_t)slopes->GetValue(0))<200.0) { 
           //  tmpChan.slope = 1e-3*(Double_t)slopes->GetValue(0);
