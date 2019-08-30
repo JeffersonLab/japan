@@ -1,0 +1,3 @@
+reg_asym_us_avg,reg.reg_asym_us_avg,summary
+asym_us_avg_correction,reg.reg_asym_us_avg-mulc.asym_us_avg.hw_sum,summary
+asym_us_avg,mulc.asym_us_avg.hw_sum,summary

@@ -16,10 +16,15 @@ class Channel{
     std::vector <Double_t> rmss;
     std::vector <Double_t> rmsErrs;
     std::vector <Double_t> nentries;*/
+    void drawPlot (std::map<TString,TCanvas*>);
     void getData();
     void getSlowData();
     void storeData(TTree *);
     ROOT::RDF::RResultPtr<TH1D> histo;
+    ROOT::RDF::RResultPtr<TH1D> histo1D;
+    ROOT::RDF::RResultPtr<TH2D> histo2D;
+    ROOT::RDF::RResultPtr<TH3D> histo3D;
+    std::map<TString,TString> details;
     TString name;
     TString branchName;
     TString type = "meanrms";
@@ -38,6 +43,84 @@ class Channel{
 void Channel::fill_channels(TString inputFile = "input.txt"){
   return;
 }; */
+
+void Channel::drawPlot(std::map<TString,TCanvas*> canvases){
+  canvases[details["Canvas Name"]]->cd(details["Canvas X"].Atoi()+((details["Canvas Nx"].Atoi()-1)*details["Canvas Y"].Atoi()));
+  if (details["Dimension"].Atoi() == 1){ // 1D Draw
+    if (details.count("Draw Option") == 0) {
+      details["Draw Option"] = "";
+    }
+    if (details.count("Marker Color") > 0) { // To get a red plot of similar data with a different cut you need to do a draw same on a fresh channel with the same Canvas coordinates
+      histo1D->SetMarkerColor(details["Marker Color"].Atoi()); // Integer
+    }
+    if (details.count("Marker Style") > 0) {
+      histo1D->SetMarkerStyle(details["Marker Style"].Atoi()); // Integer
+    }
+    if (details.count("Marker Size") > 0) {
+      histo1D->SetMarkerSize(details["Marker Size"].Atoi()); // Integer
+    }
+    if (details.count("SetOptFit") == 0) {
+      details["SetOptFit"] = "1";
+    }
+    gStyle->SetOptFit(details["SetOptFit"].Atoi());
+    if (details.count("SetOptStat") == 0) {
+      details["SetOptStat"] = "0";
+    }
+    gStyle->SetOptStat(details["SetOptStat"].Atoi());
+    gStyle->SetStatW(0.3);
+    gStyle->SetStatH(0.25);
+    // Initial Draw
+    histo1D->Draw(details["Draw Option"]); // "SAME" would be nice to work automatically here
+    // Fitting
+    if (details.count("Fit Function") > 0) {
+      // Stat Box
+      TPaveStats *psus = (TPaveStats*)histo1D->FindObject("stats");
+      if(psus!=NULL){
+        psus->SetOptFit(1);
+        psus->SetOptStat(0);
+      /*psus->SetX1NDC(0.0); // 2D stat box on left (assumes positive correlation statbox)
+        psus->SetY1NDC(0.95);
+        psus->SetX2NDC(0.35);
+        psus->SetY2NDC(0.7);
+      */
+      }
+
+      if (details.count("Fit Option") == 0) {
+        details["Fit Option"] = "";
+      }
+      if (details.count("Fit X Low Limit") > 0 && details.count("Fit X High Limit") > 0){
+        histo1D->Fit(details["Fit Function"],details["Fit Options"],"",details["Fit X Low Limit"].Atof(),details["Fit X High Limit"].Atof());
+      }
+      if (details.count("Fit X Sigma Limit") > 0) {
+        details["Fit X Low Limit"] = histo1D->GetMean()-details["Fit X Sigma Limit"].Atoi()*(histo1D->GetRMS());
+        details["Fit X High Limit"] = histo1D->GetMean()+details["Fit X Sigma Limit"].Atoi()*(histo1D->GetRMS());
+        histo1D->Fit(details["Fit Function"],details["Fit Options"],"",details["Fit X Low Limit"].Atof(),details["Fit X High Limit"].Atof());
+      }
+      else {
+        histo1D->Fit(details["Fit Function"],details["Fit Options"]);
+      }
+      histo1D->Draw(details["Draw Option"]);
+      if (details.count("Top Label") > 0){
+        TText * t1 = new TText(0.2,0.95,details["Top Label"]);
+        t1->SetNDC();
+        t1->SetTextSize(0.05);
+        t1->Draw("same");
+      }
+      if (details.count("Side Label") > 0){
+        TText * t1 = new TText(0.05,0.4,details["Side Label"]);
+        t1->SetNDC();
+        t1->SetTextSize(0.05);
+        t1->Draw("same");
+      }
+      if (details.count("Full Label") > 0){
+        TText * t1 = new TText(0.3,0.4,details["Full Label"]);
+        t1->SetNDC();
+        t1->SetTextSize(0.05);
+        t1->Draw();
+      }
+    }
+  }
+}
 
 void Channel::getData(){
   if (histo){
@@ -311,15 +394,19 @@ RDataFrame Source::readSource(){
   tsw.Start();
 
   std::vector<Channel> channels;
+  std::vector<Channel> summaries;
+  std::map<TString,TCanvas*> canvases;
 
   // Getting device list
   string line;
   std::vector<string> tokens;
+  std::map<TString,TString> details;
   string typedefault = "meanrms";
   ifstream infile(input);
   if (infile.is_open()){
     while(getline(infile,line)){
       string token;
+      string detail;
       string name;
       string device;
       string type;
@@ -335,6 +422,38 @@ RDataFrame Source::readSource(){
         if (name == "same"){
           name = device;
         }
+        details["Dimension"] = Form("%d",((TString)device).CountChar(':')+1);
+        details["Name"] = name;
+        details["Draw"] = device;
+        if (((TString)device).CountChar(':') == 0) { // Histo1D
+          details["DrawX"] = device;
+        }
+        if (((TString)device).CountChar(':') == 1) { // Histo2D
+          std::vector<string> dims;
+          string dim;
+          std::istringstream dimStream(device);
+          while(getline(dimStream,dim,':')){
+            dims.push_back(dim);
+          }
+          TString dim1 = dims.at(0);
+          TString dim2 = dims.at(1);
+          details["DrawY"] = dim1;
+          details["DrawX"] = dim2;
+        }
+        if (((TString)device).CountChar(':') == 2) { // Histo3D
+          std::vector<string> dims;
+          string dim;
+          std::istringstream dimStream(device);
+          while(getline(dimStream,dim,':')){
+            dims.push_back(dim);
+          }
+          TString dim1 = dims.at(0);
+          TString dim2 = dims.at(1);
+          TString dim3 = dims.at(2);
+          details["DrawZ"] = dim1;
+          details["DrawY"] = dim2;
+          details["DrawX"] = dim3;
+        }
       }
       else { 
         Printf("Error: invalid input file");
@@ -342,45 +461,190 @@ RDataFrame Source::readSource(){
       }
       if (tokens.size() > 2){
         type=tokens.at(2);
+        details["Type"] = type;
+      }
+      if (tokens.size() > 3){
+        std::istringstream detailsStream(tokens.at(3));
+        while(getline(detailsStream,detail,';')){
+          std::istringstream thingStream(detail);
+          std::vector<string> things;
+          string thing;
+          while(getline(thingStream,thing,'=')){
+            things.push_back(thing);
+          }
+          if (things.size()>1){
+            TString thing1 = things.at(0);
+            TString thing2 = things.at(1);
+            details[thing1]=thing2; // Details = standard map of '=' separated things/details
+          }
+        }
       }
       else {
         type=typedefault;
+        details["Type"] = type;
       }
+
+      if (details.count("Canvas Name") == 0) details["Canvas Name"] = details["Name"] + "_" + details["Draw"];
+      if (details.count("Canvas X") == 0) details["Canvas X"] = "1";
+      if (details.count("Canvas Y") == 0) details["Canvas Y"] = "1";
+      if (details.count("Canvas Nx") == 0) details["Canvas Nx"] = "1";
+      if (details.count("Canvas Ny") == 0) details["Canvas Ny"] = "1";
+
+      if (canvases.count("Canvas Name") == 0) {
+        TCanvas * tempC = new TCanvas(details["Canvas Name"]);
+        tempC->Divide(details["Canvas Nx"].Atoi(),details["Canvas Ny"].Atoi());
+        canvases[details["Canvas Name"]] = tempC;
+      }
+
+      // Execute lazy channel building
       tokens.clear();
       Channel tmpChan;
       tmpChan.name = name;
       tmpChan.branchName = "agg_"+name;
       tmpChan.draw = device;
       tmpChan.type = type;
-      try{
-        if (minirun != "-1" && (tmpChan.type != "slopes" && tmpChan.type != "slow")){
-          if (debug > 1) Printf("Executing \"tmpChan.histo = d_good.Define("+tmpChan.branchName+","+tmpChan.draw+").Filter(Form(\"reg.minirun==%s\".Histo1D("+tmpChan.branchName+")",minirun.Data());
-          tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Filter(Form("reg.minirun==%s",minirun.Data())).Histo1D(tmpChan.branchName.Data());
-          channels.push_back(tmpChan);
-          if (debug > 1) {cout << "Done Getting Histo1D for " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;}
-          tsw.Start();
+      tmpChan.details = details;
+      if (tmpChan.type == "summary"){
+        if (tmpChan.details.count("Dimension")>0 && (tmpChan.details["Dimension"].Atoi()==1)) {
+          TString branchXname = Form("x_%s",tmpChan.details["DrawX"].Data());
+          if (minirun == "-1"){
+            if (tmpChan.details.count("Cut") > 0){
+              tmpChan.histo1D = d // FIXME should I use d_good here always? Is it safe to re-define the same node? Does Cut 1==1 work always?
+                .Filter(Form("%s",tmpChan.details["Cut"].Data()))
+                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                .Histo1D(branchXname.Data());
+            }
+            else {
+              tmpChan.histo1D = d // If 1==1 works then these else's are unnecessary
+                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                .Histo1D(branchXname.Data());
+            }
+          }
+          else {
+            if (tmpChan.details.count("Cut") > 0){
+              tmpChan.histo1D = d
+              .Filter(Form("%s",tmpChan.details["Cut"].Data()))
+              .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+              .Filter(Form("reg.minirun==%s",minirun.Data()))
+              .Histo1D(branchXname.Data());
+            }
+            else {
+              tmpChan.histo1D = d
+              .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+              .Filter(Form("reg.minirun==%s",minirun.Data()))
+              .Histo1D(branchXname.Data());
+            }
+          }
         }
-        else if (tmpChan.type != "slopes" && tmpChan.type != "slow") {
-          tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Histo1D(tmpChan.branchName.Data());
-          channels.push_back(tmpChan);
-          if (debug > 1) {cout << "Done Getting Histo1D for " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;}
-          tsw.Start();
+        if (tmpChan.details.count("Dimension")>0 && (tmpChan.details["Dimension"].Atoi()==2)) {
+          TString branchXname = Form("x_%s",tmpChan.details["DrawX"].Data());
+          TString branchYname = Form("y_%s",tmpChan.details["DrawY"].Data());
+          if (minirun == "-1"){
+            if (tmpChan.details.count("Cut") > 0){
+              tmpChan.histo2D = d
+                .Filter(Form("%s",tmpChan.details["Cut"].Data()))
+                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                .Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
+            }
+            else {
+              tmpChan.histo2D = d
+                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                .Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
+            }
+          }
+          else {
+            if (tmpChan.details.count("Cut") > 0){
+              tmpChan.histo2D = d
+                .Filter(Form("%s",tmpChan.details["Cut"].Data()))
+                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                .Filter(Form("reg.minirun==%s",minirun.Data()))
+                .Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
+            }
+            else {
+              tmpChan.histo2D = d
+                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                .Filter(Form("reg.minirun==%s",minirun.Data()))
+                .Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
+            }
+          }
         }
-        if (tmpChan.type == "slow"){
-          tmpChan.histo = slow.Histo1D(tmpChan.name.Data()); // FIXME want try/except to fill a histo that returns -1e6 mean -1e6 rms
-          channels.push_back(tmpChan);
-          if (debug > 1) {cout << "Done Getting Histo1D for " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;}
-          tsw.Start();
+        if (tmpChan.details.count("Dimension")>0 && (tmpChan.details["Dimension"].Atoi()==3)) {
+          TString branchXname = Form("x_%s",tmpChan.details["DrawX"].Data());
+          TString branchYname = Form("y_%s",tmpChan.details["DrawY"].Data());
+          TString branchZname = Form("z_%s",tmpChan.details["DrawZ"].Data());
+          if (minirun == "-1"){
+            if (tmpChan.details.count("Cut") > 0){
+              tmpChan.histo3D = d
+                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                .Define(branchZname.Data(),tmpChan.details["DrawZ"].Data())
+                .Histo3D(ROOT::RDF::TH3DModel(), branchXname.Data(),branchYname.Data(),branchZname.Data());
+            }
+            else {
+              tmpChan.histo3D = d
+                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                .Define(branchZname.Data(),tmpChan.details["DrawZ"].Data())
+                .Histo3D(ROOT::RDF::TH3DModel(), branchXname.Data(),branchYname.Data(),branchZname.Data());
+            }
+          }
+          else {
+            if (tmpChan.details.count("Cut") > 0){
+              tmpChan.histo3D = d
+                .Filter(Form("%s",tmpChan.details["Cut"].Data()))
+                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                .Define(branchZname.Data(),tmpChan.details["DrawZ"].Data())
+                .Filter(Form("reg.minirun==%s",minirun.Data()))
+                .Histo3D(ROOT::RDF::TH3DModel(), branchXname.Data(),branchYname.Data(),branchZname.Data());
+            }
+            else {
+              tmpChan.histo3D = d
+                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                .Define(branchZname.Data(),tmpChan.details["DrawZ"].Data())
+                .Filter(Form("reg.minirun==%s",minirun.Data()))
+                .Histo3D(ROOT::RDF::TH3DModel(), branchXname.Data(),branchYname.Data(),branchZname.Data()); // If I added a weight map entry then here is where it would get stuck in (default to 1 for ease?)
+            }
+          }
         }
+        summaries.push_back(tmpChan);
       }
-      catch (...){
-        Printf("Channel %s not available",tmpChan.draw.Data());
-        channels.push_back(tmpChan);
-      }
-      if (tmpChan.type == "slopes") {
-        getSlopes(channels, run.Atoi(), minirun.Atoi(), split.Atoi(), nruns.Atof());
-        if (debug > 1) {cout << "Done Getting " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;}
-        tsw.Start();
+      else {
+        try{
+          if (minirun != "-1" && (tmpChan.type != "slopes" && tmpChan.type != "slow")){
+            if (debug > 1) Printf("Executing \"tmpChan.histo = d_good.Define("+tmpChan.branchName+","+tmpChan.draw+").Filter(Form(\"reg.minirun==%s\".Histo1D("+tmpChan.branchName+")",minirun.Data());
+            tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Filter(Form("reg.minirun==%s",minirun.Data())).Histo1D(tmpChan.branchName.Data());
+            channels.push_back(tmpChan);
+            if (debug > 1) {cout << "Done Getting Histo1D for " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;
+              tsw.Start();}
+          }
+          else if (tmpChan.type != "slopes" && tmpChan.type != "slow") {
+            tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Histo1D(tmpChan.branchName.Data());
+            channels.push_back(tmpChan);
+            if (debug > 1) {cout << "Done Getting Histo1D for " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;
+              tsw.Start();}
+          }
+          if (tmpChan.type == "slow"){
+            tmpChan.histo = slow.Histo1D(tmpChan.name.Data()); // FIXME want try/except to fill a histo that returns -1e6 mean -1e6 rms
+            channels.push_back(tmpChan);
+            if (debug > 1) {cout << "Done Getting Histo1D for " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;
+              tsw.Start();}
+          }
+        }
+        catch (...){
+          Printf("Channel %s not available",tmpChan.draw.Data());
+          channels.push_back(tmpChan);
+        }
+        if (tmpChan.type == "slopes") {
+          getSlopes(channels, run.Atoi(), minirun.Atoi(), split.Atoi(), nruns.Atof());
+          if (debug > 1) {cout << "Done Getting " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;
+            tsw.Start();}
+        }
       }
     }
   }
@@ -391,17 +655,30 @@ RDataFrame Source::readSource(){
   for (auto &tmpChan:channels){
     if (tmpChan.type=="meanrms"){
       tmpChan.getData();
-      if (debug > 1) {cout<< tmpChan.name << " Mean = :" << tmpChan.avg<< " --"; tsw.Print(); cout <<std::endl;}
-      tsw.Start();
+      if (debug > 1) {cout<< tmpChan.name << " Mean = :" << tmpChan.avg<< " --"; tsw.Print(); cout <<std::endl;
+        tsw.Start();}
     }
     if (tmpChan.type=="slow"){
       tmpChan.getSlowData();
-      if (debug > 1) {cout<< tmpChan.name << " Single Entry = :" << tmpChan.singleEntry<< " --"; tsw.Print(); cout <<std::endl;}
-      tsw.Start();
+      if (debug > 1) {cout<< tmpChan.name << " Single Entry = :" << tmpChan.singleEntry<< " --"; tsw.Print(); cout <<std::endl;
+        tsw.Start();}
     }
     if (tmpChan.type=="slopes"){
-      if (debug > 1) {cout<< tmpChan.name << " Slope = :" << tmpChan.slope<< " --"; tsw.Print(); cout <<std::endl;}
-      tsw.Start();
+      if (debug > 1) {cout<< tmpChan.name << " Slope = :" << tmpChan.slope<< " --"; tsw.Print(); cout <<std::endl;
+        tsw.Start();}
+    }
+  }
+  for (auto &tmpChan:summaries){
+    if (tmpChan.details.count("Canvas Name") != 0) {
+      if (canvases.count(tmpChan.details["Canvas Name"].Data())){
+        tmpChan.drawPlot(canvases);
+      }
+      else {
+        Printf("Error, no canvas of name %s available",tmpChan.details["Canvas Name"].Data());
+      }
+    }
+    else {
+      Printf("Error, no canvas available for channel: %s",tmpChan.name.Data());
     }
   }
   cout << "Done with getting data --"; tsw.Print(); cout << endl;
@@ -434,7 +711,6 @@ RDataFrame Source::readSource(){
   if (debug > 1) {cout << "Done setting up output tree --"; tsw.Print(); cout << endl;}
   tsw.Start();
 
-  //for (auto tmpChan:channels) {
   for (Int_t loop = 0 ; loop<channels.size() ; loop++) {
     channels.at(loop).storeData(outputTree);
   }
@@ -442,6 +718,28 @@ RDataFrame Source::readSource(){
   outputTree->Fill();
   outputTree->Write("agg",TObject::kOverwrite);
   aggregatorFile->Close();
+
+  TString aggregatorPDFFileName = Form("%s/aggregator.pdf",outputDir.Data()); // FIXME, this is very specific, and doesn't allow for aggregating over slugs, for instance
+  if (tmpMinirunN <= -1) {
+    aggregatorPDFFileName = Form("%s/run_aggregator_%d.pdf",outputDir.Data(),(Int_t)tmpRunN);
+  }
+  else {
+    aggregatorPDFFileName = Form("%s/minirun_aggregator_%d_%d.pdf",outputDir.Data(),(Int_t)tmpRunN,(Int_t)tmpMinirunN);
+  }
+  //for (Int_t loop = 0 ; loop<canvases.size() ; loop++) {
+  Int_t loop = 0;
+  for (auto ite : canvases){
+    if (loop == 0) {
+      ite.second->SaveAs(aggregatorPDFFileName+"(");
+    }
+    if (loop == canvases.size()-1) {
+      ite.second->SaveAs(aggregatorPDFFileName+")");
+    }
+    else {
+      ite.second->SaveAs(aggregatorPDFFileName);
+    }
+    loop++;
+  }
 
   cout << "Done with ALL, run " << run << " and minirun " << minirun << " --"; tswAll.Print(); cout << endl;
   tswAll.Start();
