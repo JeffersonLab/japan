@@ -120,6 +120,8 @@ void Channel::drawPlot(std::map<TString,TCanvas*> canvases){
       }
     }
   }
+  Printf("Test 1");
+  canvases[details["Canvas Name"]]->SaveAs("test.pdf");
 }
 
 void Channel::getData(){
@@ -396,6 +398,7 @@ RDataFrame Source::readSource(){
   std::vector<Channel> channels;
   std::vector<Channel> summaries;
   std::map<TString,TCanvas*> canvases;
+  std::vector<TString> canvasNames;
 
   // Getting device list
   string line;
@@ -463,6 +466,10 @@ RDataFrame Source::readSource(){
         type=tokens.at(2);
         details["Type"] = type;
       }
+      else {
+        type=typedefault;
+        details["Type"] = type;
+      }
       if (tokens.size() > 3){
         std::istringstream detailsStream(tokens.at(3));
         while(getline(detailsStream,detail,';')){
@@ -479,10 +486,6 @@ RDataFrame Source::readSource(){
           }
         }
       }
-      else {
-        type=typedefault;
-        details["Type"] = type;
-      }
 
       if (details.count("Canvas Name") == 0) details["Canvas Name"] = details["Name"] + "_" + details["Draw"];
       if (details.count("Canvas X") == 0) details["Canvas X"] = "1";
@@ -490,10 +493,11 @@ RDataFrame Source::readSource(){
       if (details.count("Canvas Nx") == 0) details["Canvas Nx"] = "1";
       if (details.count("Canvas Ny") == 0) details["Canvas Ny"] = "1";
 
-      if (canvases.count("Canvas Name") == 0) {
+      if (canvases.count(details["Canvas Name"]) == 0) {
         TCanvas * tempC = new TCanvas(details["Canvas Name"]);
         tempC->Divide(details["Canvas Nx"].Atoi(),details["Canvas Ny"].Atoi());
         canvases[details["Canvas Name"]] = tempC;
+        canvasNames.push_back(details["Canvas Name"]);
       }
 
       // Execute lazy channel building
@@ -504,9 +508,13 @@ RDataFrame Source::readSource(){
       tmpChan.draw = device;
       tmpChan.type = type;
       tmpChan.details = details;
+      details.clear();
+      Printf("Test 3");
       if (tmpChan.type == "summary"){
+        Printf("Test 2");
         if (tmpChan.details.count("Dimension")>0 && (tmpChan.details["Dimension"].Atoi()==1)) {
-          TString branchXname = Form("x_%s",tmpChan.details["DrawX"].Data());
+          TString branchXname = Form("%s",tmpChan.details["DrawX"].Copy().ReplaceAll(".","_").ReplaceAll("-","_").Data());
+          //TString branchXname = Form("x_%s",tmpChan.details["DrawX"].Copy().ReplaceAll(".","_").ReplaceAll("-","_").Data());
           if (minirun == "-1"){
             if (tmpChan.details.count("Cut") > 0){
               tmpChan.histo1D = d // FIXME should I use d_good here always? Is it safe to re-define the same node? Does Cut 1==1 work always?
@@ -537,20 +545,20 @@ RDataFrame Source::readSource(){
           }
         }
         if (tmpChan.details.count("Dimension")>0 && (tmpChan.details["Dimension"].Atoi()==2)) {
-          TString branchXname = Form("x_%s",tmpChan.details["DrawX"].Data());
-          TString branchYname = Form("y_%s",tmpChan.details["DrawY"].Data());
+          TString branchXname = Form("x_%s",tmpChan.details["DrawX"].Copy().ReplaceAll(".","_").Data());
+          TString branchYname = Form("y_%s",tmpChan.details["DrawY"].Copy().ReplaceAll(".","_").Data());
           if (minirun == "-1"){
             if (tmpChan.details.count("Cut") > 0){
               tmpChan.histo2D = d
                 .Filter(Form("%s",tmpChan.details["Cut"].Data()))
-                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
-                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                //.Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                //.Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
                 .Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
             }
             else {
               tmpChan.histo2D = d
-                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
-                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                //.Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                //.Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
                 .Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
             }
           }
@@ -558,37 +566,37 @@ RDataFrame Source::readSource(){
             if (tmpChan.details.count("Cut") > 0){
               tmpChan.histo2D = d
                 .Filter(Form("%s",tmpChan.details["Cut"].Data()))
-                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
-                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                //.Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                //.Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
                 .Filter(Form("reg.minirun==%s",minirun.Data()))
                 .Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
             }
             else {
               tmpChan.histo2D = d
-                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
-                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                //.Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                //.Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
                 .Filter(Form("reg.minirun==%s",minirun.Data()))
                 .Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
             }
           }
         }
         if (tmpChan.details.count("Dimension")>0 && (tmpChan.details["Dimension"].Atoi()==3)) {
-          TString branchXname = Form("x_%s",tmpChan.details["DrawX"].Data());
-          TString branchYname = Form("y_%s",tmpChan.details["DrawY"].Data());
-          TString branchZname = Form("z_%s",tmpChan.details["DrawZ"].Data());
+          TString branchXname = Form("x_%s",tmpChan.details["DrawX"].Copy().ReplaceAll(".","_").Data());
+          TString branchYname = Form("y_%s",tmpChan.details["DrawY"].Copy().ReplaceAll(".","_").Data());
+          TString branchZname = Form("z_%s",tmpChan.details["DrawZ"].Copy().ReplaceAll(".","_").Data());
           if (minirun == "-1"){
             if (tmpChan.details.count("Cut") > 0){
               tmpChan.histo3D = d
-                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
-                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
-                .Define(branchZname.Data(),tmpChan.details["DrawZ"].Data())
+                //.Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                //.Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                //.Define(branchZname.Data(),tmpChan.details["DrawZ"].Data())
                 .Histo3D(ROOT::RDF::TH3DModel(), branchXname.Data(),branchYname.Data(),branchZname.Data());
             }
             else {
               tmpChan.histo3D = d
-                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
-                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
-                .Define(branchZname.Data(),tmpChan.details["DrawZ"].Data())
+                //.Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                //.Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                //.Define(branchZname.Data(),tmpChan.details["DrawZ"].Data())
                 .Histo3D(ROOT::RDF::TH3DModel(), branchXname.Data(),branchYname.Data(),branchZname.Data());
             }
           }
@@ -596,17 +604,17 @@ RDataFrame Source::readSource(){
             if (tmpChan.details.count("Cut") > 0){
               tmpChan.histo3D = d
                 .Filter(Form("%s",tmpChan.details["Cut"].Data()))
-                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
-                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
-                .Define(branchZname.Data(),tmpChan.details["DrawZ"].Data())
+                //.Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                //.Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                //.Define(branchZname.Data(),tmpChan.details["DrawZ"].Data())
                 .Filter(Form("reg.minirun==%s",minirun.Data()))
                 .Histo3D(ROOT::RDF::TH3DModel(), branchXname.Data(),branchYname.Data(),branchZname.Data());
             }
             else {
               tmpChan.histo3D = d
-                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
-                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
-                .Define(branchZname.Data(),tmpChan.details["DrawZ"].Data())
+                //.Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+                //.Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
+                //.Define(branchZname.Data(),tmpChan.details["DrawZ"].Data())
                 .Filter(Form("reg.minirun==%s",minirun.Data()))
                 .Histo3D(ROOT::RDF::TH3DModel(), branchXname.Data(),branchYname.Data(),branchZname.Data()); // If I added a weight map entry then here is where it would get stuck in (default to 1 for ease?)
             }
@@ -669,8 +677,11 @@ RDataFrame Source::readSource(){
     }
   }
   for (auto &tmpChan:summaries){
+    Printf("Test");
     if (tmpChan.details.count("Canvas Name") != 0) {
-      if (canvases.count(tmpChan.details["Canvas Name"].Data())){
+      if (canvases.count(tmpChan.details["Canvas Name"])){
+      //if (canvases.count(tmpChan.details["Canvas Name"].Data())){
+        Printf("Trying canvas named %s",tmpChan.details["Canvas Name"].Data());
         tmpChan.drawPlot(canvases);
       }
       else {
@@ -728,15 +739,15 @@ RDataFrame Source::readSource(){
   }
   //for (Int_t loop = 0 ; loop<canvases.size() ; loop++) {
   Int_t loop = 0;
-  for (auto ite : canvases){
-    if (loop == 0) {
-      ite.second->SaveAs(aggregatorPDFFileName+"(");
+  for (auto ite : canvasNames){
+    if (loop == 0 && canvasNames.size()!=1) {
+      canvases[ite]->SaveAs(aggregatorPDFFileName+"(");
     }
-    if (loop == canvases.size()-1) {
-      ite.second->SaveAs(aggregatorPDFFileName+")");
+    else if (loop == canvasNames.size()-1 && canvasNames.size()!=1) {
+      canvases[ite]->SaveAs(aggregatorPDFFileName+")");
     }
     else {
-      ite.second->SaveAs(aggregatorPDFFileName);
+      canvases[ite]->SaveAs(aggregatorPDFFileName);
     }
     loop++;
   }
