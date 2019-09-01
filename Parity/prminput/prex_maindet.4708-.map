@@ -1,0 +1,35 @@
+ROC=25
+Bank=0x5
+vqwk_buffer_offset=1
+
+sample_size=2012
+!
+!  Force all channels to be "not_blindable" during testing
+!
+! From slug 26 onward the ATs are assumed on and blindable
+  VQWK, 0, 0,  IntegrationPMT,  usl           
+  VQWK, 0, 1,  IntegrationPMT,  dsl           
+  VQWK, 0, 2,  IntegrationPMT,  atl1          not_blindable not_normalizable
+  VQWK, 0, 3,  IntegrationPMT,  atl2          not_blindable not_normalizable
+  VQWK, 0, 4,  IntegrationPMT,  vqwk_25_0ch4  not_blindable not_normalizable
+  VQWK, 0, 5,  IntegrationPMT,  vqwk_25_0ch5  not_blindable not_normalizable
+  VQWK, 0, 6,  IntegrationPMT,  battery1L  not_blindable not_normalizable
+  VQWK, 0, 7,  IntegrationPMT,  battery2L  not_blindable not_normalizable
+
+ROC=26
+Bank=0x5
+vqwk_buffer_offset=1
+sample_size=2012
+!
+!  Force all channels to be "not_blindable" during testing
+!
+! Set RHRS detectors to not_blindable not_normalizable when the RHRS dipole is off
+  VQWK, 0, 0,  IntegrationPMT,  usr           
+  VQWK, 0, 1,  IntegrationPMT,  dsr           
+  VQWK, 0, 2,  IntegrationPMT,  atr1          not_blindable not_normalizable
+  VQWK, 0, 3,  IntegrationPMT,  atr2          not_blindable not_normalizable
+  VQWK, 0, 4,  IntegrationPMT,  vqwk_26_0ch4  not_blindable not_normalizable
+  VQWK, 0, 5,  IntegrationPMT,  vqwk_26_0ch5  not_blindable not_normalizable
+  VQWK, 0, 6,  IntegrationPMT,  battery1R  not_blindable not_normalizable
+  VQWK, 0, 7,  IntegrationPMT,  battery2R  not_blindable not_normalizable
+
