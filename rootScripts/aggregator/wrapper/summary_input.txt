@@ -1,3 +1,4 @@
+asym_us_vs,asym_usl.hw_sum:asym_usr.hw_sum,summary,Canvas Name=Test2
 reg_asym_us_avg,reg.reg_asym_us_avg,summary
-asym_us_avg_correction,reg.reg_asym_us_avg-mulc.asym_us_avg.hw_sum,summary
-asym_us_avg,mulc.asym_us_avg.hw_sum,summary
+asym_usl_correction,reg.reg_asym_usl-asym_usl.hw_sum,summary
+asym_usl,asym_usl.hw_sum,summary
