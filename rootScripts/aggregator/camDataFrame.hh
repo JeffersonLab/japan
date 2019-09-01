@@ -65,43 +65,57 @@ void Channel::drawPlot(std::map<TString,TCanvas*> canvases){
   }
   if (details.count("Marker Size") > 0) {
     histo1D->SetMarkerSize(details["Marker Size"].Atoi()); // Integer
-    histo2D->SetMarkerSize(details["Marker Size"].Atoi()); // Integer
-    histo3D->SetMarkerSize(details["Marker Size"].Atoi()); // Integer
+    histo2D->SetMarkerSize(details["Marker Size"].Atoi());
+    histo3D->SetMarkerSize(details["Marker Size"].Atoi());
   }
   if (details.count("SetOptFit") == 0) {
     details["SetOptFit"] = "1";
   }
-  gStyle->SetOptFit(details["SetOptFit"].Atoi());
   if (details.count("SetOptStat") == 0) {
     details["SetOptStat"] = "0";
+    Printf("SetOptStat = %s",details["SetOptStat"].Data());
   }
-  gStyle->SetOptStat(details["SetOptStat"].Atoi());
+  else {
+    Printf("SetOptStat = %s",details["SetOptStat"].Data());
+  }
   gStyle->SetStatW(0.3);
   gStyle->SetStatH(0.25);
   // Initial Draw
   if (details["Dimension"] == "1") histo1D->Draw(details["Draw Option"]); // "SAME" would be nice to work automatically here
-  if (details["Dimension"] == "2") histo2D->Draw(details["Draw Option"]); // "SAME" would be nice to work automatically here
-  if (details["Dimension"] == "3") histo3D->Draw(details["Draw Option"]); // "SAME" would be nice to work automatically here
+  if (details["Dimension"] == "2") histo2D->Draw(details["Draw Option"]);
+  if (details["Dimension"] == "3") histo3D->Draw(details["Draw Option"]);
+  gPad->Update();
   // Fitting
   if (details.count("Fit Function") > 0) {
-    // Stat Box
-    TPaveStats *psus;
-    if (details["Dimension"] == "1") psus = (TPaveStats*)histo1D->FindObject("stats");
-    if (details["Dimension"] == "2") psus = (TPaveStats*)histo2D->FindObject("stats");
-    if (details["Dimension"] == "3") psus = (TPaveStats*)histo3D->FindObject("stats");
-    if(psus!=NULL){
-      psus->SetOptFit(1);
-      psus->SetOptStat(0);
-      /*psus->SetX1NDC(0.0); // 2D stat box on left (assumes positive correlation statbox)
-        psus->SetY1NDC(0.95);
-        psus->SetX2NDC(0.35);
-        psus->SetY2NDC(0.7);
-        */
+    if (details.count("SetOptFit") == 0) {
+      details["SetOptFit"] = "1";
+      details["SetOptStat"] = "0";
     }
+  }
+  else {
+    if (details.count("SetOptFit") == 0) {
+      details["SetOptFit"] = "0";
+    }
+  }
 
-    if (details.count("Fit Option") == 0) {
-      details["Fit Option"] = "";
-    }
+  // Stat Box
+  TPaveStats *psus;
+  if (details["Dimension"] == "1") psus = (TPaveStats*)histo1D->FindObject("stats");
+  if (details["Dimension"] == "2") psus = (TPaveStats*)histo2D->FindObject("stats");
+  if (details["Dimension"] == "3") psus = (TPaveStats*)histo3D->FindObject("stats");
+  gPad->Update();
+  canvases[details["Canvas Name"]]->Update();
+  if(psus!=NULL){
+    psus->SetOptStat(details["SetOptStat"].Atoi());
+    psus->SetOptFit(details["SetOptFit"].Atoi());
+    /*psus->SetX1NDC(0.0); // 2D stat box on left (assumes positive correlation statbox)
+      psus->SetY1NDC(0.95);
+      psus->SetX2NDC(0.35);
+      psus->SetY2NDC(0.7);
+      */
+  }
+
+  if (details.count("Fit Function") > 0) {
     if (details.count("Fit X Low Limit") > 0 && details.count("Fit X High Limit") > 0){
       if (details["Dimension"] == "1") histo1D->Fit(details["Fit Function"],details["Fit Options"],"",details["Fit X Low Limit"].Atof(),details["Fit X High Limit"].Atof());
       if (details["Dimension"] == "2") histo2D->Fit(details["Fit Function"],details["Fit Options"],"",details["Fit X Low Limit"].Atof(),details["Fit X High Limit"].Atof());
@@ -472,7 +486,7 @@ RDataFrame Source::readSource(){
           details["DrawY"] = dim1;
           details["DrawX"] = dim2;
           if (details.count("Histogram Title") == 0){
-            details["Histogram Title"] = "Histo "+details["DrawX"]+"_"+details["DrawY"];
+            details["Histogram Title"] = "Histo "+details["DrawY"]+" vs "+details["DrawX"];
           }
         }
         if (((TString)device).CountChar(':') == 2) { // Histo3D
@@ -489,7 +503,7 @@ RDataFrame Source::readSource(){
           details["DrawY"] = dim2;
           details["DrawX"] = dim3;
           if (details.count("Histogram Title") == 0){
-            details["Histogram Title"] = "Histo "+details["DrawX"]+"_"+details["DrawY"]+"_"+details["DrawZ"];
+            details["Histogram Title"] = "Histo "+details["DrawZ"]+" vs "+details["DrawY"]+" vs "+details["DrawX"];
           }
         }
       }
@@ -596,18 +610,13 @@ RDataFrame Source::readSource(){
           else {
             cutstr = "ErrorFlag==0";
           }
-          mul_tree->Draw(tmpChan.details["DrawX"].Data(),"ErrorFlag==0");
-          TH1 * tmp3Xhist = (TH1*)gROOT->FindObject("htemp");
-          Printf("Test 0.1, drawing X = %s",tmpChan.details["DrawX"].Data());
-          Printf("X rms = %f",tmp1Xhist->GetRMS());
-          mul_tree->Draw(tmpChan.details["DrawX"]+">>htempX",cutstr);
+          if (minirun != "-1"){
+            cutstr += Form("&&reg.minirun==%s",minirun.Data());
+          }
+          mul_tree->Draw(tmpChan.details["DrawX"]+">>htempX",cutstr,"goff");
           TH1 * tmp2Xhist = (TH1*)gROOT->FindObject("htempX");
-          mul_tree->Draw(tmpChan.details["DrawY"]+">>htempY",cutstr);
+          mul_tree->Draw(tmpChan.details["DrawY"]+">>htempY",cutstr,"goff");
           TH1 * tmp2Yhist = (TH1*)gROOT->FindObject("htempY");
-          Printf("Test 4, drawing Y:X = %s:%s", tmpChan.details["DrawY"].Data(), tmpChan.details["DrawX"].Data());
-          Printf("Cutstr = %s", cutstr.Data());
-          Printf("3X rms = %f", tmp3Xhist->GetRMS());
-          Printf("2X rms = %f", tmp2Xhist->GetRMS());
           if (tmpChan.details.count("N Bins X") == 0){
             tmpChan.details["N Bins X"] = (TString)Form("%d",tmp2Xhist->GetNbinsX());
           }
@@ -632,14 +641,14 @@ RDataFrame Source::readSource(){
                 .Filter(Form("%s",tmpChan.details["Cut"].Data()))
                 .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
                 .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
-                .Histo2D({branchXname+"_"+branchYname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof(), tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof()}, branchXname.Data(),branchYname.Data());
+                .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
                 //.Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
             }
             else {
               tmpChan.histo2D = d
                 .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
                 .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
-                .Histo2D({branchXname+"_"+branchYname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof(), tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof()}, branchXname.Data(),branchYname.Data());
+                .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
                 //.Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
             }
           }
@@ -650,7 +659,7 @@ RDataFrame Source::readSource(){
                 .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
                 .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
                 .Filter(Form("reg.minirun==%s",minirun.Data()))
-                .Histo2D({branchXname+"_"+branchYname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof(), tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof()}, branchXname.Data(),branchYname.Data());
+                .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
                 //.Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
             }
             else {
@@ -658,10 +667,12 @@ RDataFrame Source::readSource(){
                 .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
                 .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
                 .Filter(Form("reg.minirun==%s",minirun.Data()))
-                .Histo2D({branchXname+"_"+branchYname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof(), tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof()}, branchXname.Data(),branchYname.Data());
+                .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
                 //.Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
             }
           }
+          tmp2Xhist->Delete();
+          tmp2Yhist->Delete();
         }
         if (tmpChan.details.count("Dimension")>0 && (tmpChan.details["Dimension"].Atoi()==3)) {
           TString branchXname = Form("x_%s",tmpChan.details["DrawX"].Copy().ReplaceAll(".","_").ReplaceAll("-","_").Data());
