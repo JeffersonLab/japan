@@ -234,6 +234,63 @@ vector<vector<string>> textFileParse_h(TString fileName, char delim = ',')
     Printf("File not found: %s",(const char*)fileName);
     return filearray;
   }
+
+TChain* getMuls(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t n_runs = -1, TString filenamebase = "NULL"){
+
+  TString filename = "NULL";
+  TString defaultTree = "mul";
+  runNumber = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
+
+  if (filenamebase == "NULL"){
+    filenamebase = gSystem->Getenv("QW_ROOTFILES");
+  }
+  TString fileNameBase  = filenamebase; // placeholder string
+  Bool_t foundFile = false;
+  TChain *mulsChain = new TChain("muls");
+  const int num_daqConfigs = 5;
+  const int num_analyses = 3;
+  TString daqConfigs[num_daqConfigs] = {"prexPrompt_pass2","prexPrompt_pass1","prexCH","prexINJ","prex_tedf"}; 
+  TString analyses[num_analyses] = {".","_regress_prFIXME.","_regress_mul."};
+  TString suffix[2] = {"root",Form("%03d.root",splitNumber)};
+
+  if (debug>0) Printf("Looping over candidate rootfile prefixes and suffixes");
+  for(Int_t ana=0;ana<num_analyses;ana++){
+    for(Int_t j=0;j<num_daqConfigs;j++){
+      for(Int_t suf=0;suf<2;suf++){
+  // FIXME move to nruns==slugn : filenamebase = Form("%s/%s_%d%s%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber+i,(const char*)analyses[ana],(const char*) suffix[suf]);
+  filenamebase = Form("%s/%s_%d%s%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber,(const char*)analyses[ana],(const char*) suffix[suf]);
+  filename     = filenamebase;
+  if (debug>1) Printf("Trying file name: %s",(const char*)filenamebase);
+  if ( !gSystem->AccessPathName(filename.Data()) ) {
+    if (debug>1) Printf("Found file name: %s",(const char*)filenamebase);
+    foundFile = true;
+    j=num_daqConfigs+1; // Exit loop
+    ana=4; // FIXME Turning off the loop continuing thing because we don't store files this way anyway......
+    suf=3;
+  }
+      }
+    }
+  }
+  filename     = filenamebase;
+  filenamebase.Remove(filenamebase.Last('.'),5);
+
+  int split = 0;
+  while ( !gSystem->AccessPathName(filename.Data()) ) {
+    TFile * candidateFile = new TFile(filename.Data(),"READ");
+    if (candidateFile->GetListOfKeys()->Contains(tree)){
+      split++;
+      mulsChain->Add(filename);
+      filename = filenamebase + "_" + Form("%i",split) + ".root";
+      candidateFile->Close();
+    }
+  }
+  if (!foundFile){
+    Printf("Rootfile not found in %s for run %d, split %03d, check your config and rootfiles",(const char*)fileNameBase,runNumber, splitNumber);
+    return 0;
+  }
+  return mulsChain;
+}
 }
 
 TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t n_runs = -1, TString filenamebase = "NULL"){

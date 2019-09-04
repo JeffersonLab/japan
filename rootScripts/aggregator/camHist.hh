@@ -231,6 +231,68 @@ void writeInt_leafHist_h(TString tree = "mul", TString branch = "asym_vqwk_04_0c
   }
 }
 
+void writeMeanRms_muls(TString tree = "muls", TString branch_title = "asym_vqwk_04_0ch0", TString units = "", TString cut = "defaultCut", Int_t overWriteCut = 0,  Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t nRuns = -1){
+  runNumber = getRunNumber_h(runNumber);
+  splitNumber = getSplitNumber_h(splitNumber);
+  minirunNumber = getMinirunNumber_h(minirunNumber);
+  nRuns     = getNruns_h(nRuns);
+  TString mean = branch_title + "_mean";
+  TString mean_error  = branch_title + "_mean_error";
+  TString rms = branch_title + "_rms";
+  TString rms_error = branch_title + "_rms_error";
+  TString nEntries = branch_title + "_nentries";
+  Double_t data_mean = 0;
+  Double_t data_mean_error = 0;
+  Double_t data_rms = 0;
+  Double_t data_rms_error = 0;
+  TChain* mulsChain = getMuls(tree, runNumber, minirunNumber, splitNumber, nRuns);
+  cut = getCuts_h(cut, overWriteCut, "NULL"); 
+  TBranch* this_branch = mulsChain->GetBranch(branch_title);
+  TLeaf* mean_leaf= this_branch->GetLeaf("hw_sum");
+  TLeaf* m2_leaf = this_branch->GetLeaf("hw_sum_m2");
+  TLeaf* err_leaf = this_branch->GetLeaf("hw_sum_err");
+  TLeaf* nevent_leaf = this_branch->GetLeaf("num_samples");
+  TLeaf* unit_leaf;
+  double scale_factor = 1.0;
+  if(units!=NULL || units!=""){
+    TBranch* unit_branch = mulsChain->GetBranch("units");
+    if(unit_branch!=NULL)
+      unit_leaf= unit_branch->GetLeaf(units);
+  }
+    
+  mulsChain->GetEntry(0);
+  if(unit_leaf!=NULL)
+    scale_factor=unit_leaf->GetValue();
+  Int_t n_entries = nevent_leaf->GetValue();
+  if (n_entries==0)
+  {
+    Printf("Error, writeMeanRms_muls: Histogram failed");
+  }
+  else {
+    data_mean = mean_leaf->GetValue()/scale_factor;
+    data_mean_error = err_leaf->GetValue()/scale_factor;
+    data_rms = TMath::Sqrt((m2_leaf->GetValue()/nevent_leaf->GetValue()))/scale_factor;
+    data_rms_error = 0.0;
+  }
+
+  if (debug>1) Printf("Run %d mean %s: %f+-%f",runNumber,(const char*)mean,data_mean,data_mean_error);
+  if (debug>1) Printf("Run %d rms %s: %f+-%f",runNumber,(const char*)rms,data_rms,data_rms_error);
+  if (aggregatorStatus){
+    writeFile_h(mean,data_mean,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(mean_error,data_mean_error,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(rms,data_rms,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(rms_error,data_rms_error,runNumber,minirunNumber,splitNumber,nRuns);
+    writeFile_h(nEntries,n_entries,runNumber,minirunNumber,splitNumber,nRuns);
+  }
+  if (alarmStatus){
+    // Then the alarm handler wants to receive the output in stdout
+    Printf("%s=%f",(const char*)mean,data_mean);
+    Printf("%s=%f",(const char*)mean_error,data_mean_error);
+    Printf("%s=%f",(const char*)rms,data_rms);
+    Printf("%s=%f",(const char*)rms_error,data_rms_error);
+    Printf("%s=%d",(const char*)nEntries,n_entries);
+  }
+}
 
 // NEW FIXME
 

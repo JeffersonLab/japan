@@ -106,7 +106,11 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     || ana == "mean and rms"
     || ana == "mean&&rms"){
     // Leaf here is actually units, everything to be drawn is the "branch"
-    writeMeanRms_h( tree, branch, leaf, cut, overWriteCut, runNumber, minirunNumber, splitNumber, nRuns ); // FIXME Removed histMode input from this version of writeMeanRMS since we aren't doing intelligent branch parsing. This is the ideal Aggregator method, so don't make it any fancier
+    if(tree=="muls")
+      writeMeanRms_muls(tree, branch, leaf, cut, overWriteCut, runNumber, minirunNumber, splitNumber, nRuns );
+    else
+      writeMeanRms_h( tree, branch, leaf, cut, overWriteCut, runNumber, minirunNumber, splitNumber, nRuns );
+    // FIXME Removed histMode input from this version of writeMeanRMS since we aren't doing intelligent branch parsing. This is the ideal Aggregator method, so don't make it any fancier
     if (debug>1) Printf("Done with meanrms ana");
   }
   else if (

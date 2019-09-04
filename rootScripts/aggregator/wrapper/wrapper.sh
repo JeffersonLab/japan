@@ -34,6 +34,11 @@ done
 [ -z "$CONFIG" ] && usage 5
 [ -z "$NRUNS" ] && usage 6
 
+if [ $CONFIG = "PQB_input.txt" ];
+then
+  export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/PQB/
+fi
+
 if [ $CONFIG = "dithering_input.txt" ];
 then
   export DITHERING_ROOTFILES=/chafs2/work1/apar/DitherCorrection/
