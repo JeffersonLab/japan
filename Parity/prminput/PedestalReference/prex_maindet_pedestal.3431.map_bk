@@ -5,18 +5,11 @@
 !usr, 2072.91, 0.000076
 !dsr, 3913.36, 0.000076
 
-!! Pedestals from Run 3424 for 65-70uA https://logbooks.jlab.org/entry/3706791
-usl, 3381.39, 0.000076
-dsl, 13925.59, 0.000076
-usr, 1905.68, 0.000076
-dsr, 4581.71, 0.000076
-
-!!https://logbooks.jlab.org/node/add/logentry?followup=3707321 test for 10-70uA fit for 3430 
-!usl, 1087.67, 0.000076
-!dsl, 2579.45, 0.000076
-!usr, 1173.65, 0.000076
-!dsr, 1433.13, 0.000076
-
+!! Pedestals from Run 3430 for 65-70uA 
+usl, 1463.76, 0.000076
+dsl, 8236.80, 0.000076
+usr, 570.39, 0.000076
+dsr, 2369.25, 0.000076
 
 ! Old 3132- AT pedestals
 atl1, -982.52, 0.000076
