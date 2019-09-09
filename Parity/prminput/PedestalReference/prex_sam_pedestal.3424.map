@@ -1,0 +1,11 @@
+!! SAM Pedestal based on run 1221, ELOG 3608
+sam1 , 0 , 76.293e-6
+sam3 , 0 , 76.293e-6
+sam5 , 0 , 76.293e-6
+sam7 , 0 , 76.293e-6
+
+ !! SAM Pedestal based curent scan (35 - 45 uA) run 1404, ELOG 3667
+sam2 , 0 , 76.293e-6
+sam4 , 0 , 76.293e-6
+sam6 , 0 , 76.293e-6
+sam8 , 0 , 76.293e-6
