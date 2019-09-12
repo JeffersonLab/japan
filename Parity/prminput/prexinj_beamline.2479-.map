@@ -150,28 +150,10 @@ normclock=clk4MHz_1
 
   SCALER,  0,  9, clock, inj_laser_table_battery_2
   SCALER,  0, 10, clock, inj_bpm_trigger
-  SCALER,  0, 11, clock, sca0_11
-  SCALER,  0, 12, clock, sca0_12
-  SCALER,  0, 13, clock, sca0_13
-  SCALER,  0, 14, clock, sca0_14
-  SCALER,  0, 15, clock, sca0_15
 
-  SCALER,  0, 16, halomonitor, sca0_16
   SCALER,  0, 17, clock, clk4MHz_1
   SCALER,  0, 18, clock, clk4MHz_2
   SCALER,  0, 19, clock, clk4MHz_3
-  SCALER,  0, 20, halomonitor, sca0_20
-  SCALER,  0, 21, halomonitor, sca0_21
-  SCALER,  0, 22, halomonitor, sca0_22
-  SCALER,  0, 23, halomonitor, sca0_23
-  SCALER,  0, 24, halomonitor, sca0_24
-  SCALER,  0, 25, halomonitor, sca0_25
-  SCALER,  0, 26, halomonitor, sca0_26
-  SCALER,  0, 27, halomonitor, sca0_27
-  SCALER,  0, 28, halomonitor, sca0_28
-  SCALER,  0, 29, halomonitor, sca0_29
-  SCALER,  0, 30, halomonitor, sca0_30
-  SCALER,  0, 31, halomonitor, sca0_31
 
 
 [PUBLISH]

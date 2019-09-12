@@ -80,13 +80,15 @@ class  QwHaloMonitor : public VQwDataElement{
 
   void     SetPedestal(Double_t ped) { fHalo_Counter.SetPedestal(ped); };
   void     SetCalibrationFactor(Double_t factor) { fHalo_Counter.SetCalibrationFactor(factor); };
-  void AccumulateRunningSum(const QwHaloMonitor& value);
-  void DeaccumulateRunningSum(QwHaloMonitor& value);
+  void AccumulateRunningSum(const QwHaloMonitor& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void DeaccumulateRunningSum(QwHaloMonitor& value, Int_t ErrorMask=0xFFFFFFF);
   void CalculateRunningAverage();
 
   Bool_t ApplySingleEventCuts();//check values read from modules are at desired level
   void IncrementErrorCounters(){fHalo_Counter.IncrementErrorCounters();};
   UInt_t GetEventcutErrorFlag(){return fHalo_Counter.GetEventcutErrorFlag();};
+
+  Bool_t CheckForBurpFail(const VQwDataElement *ev_error);
 
   UInt_t UpdateErrorFlag() {return GetEventcutErrorFlag();};
   void UpdateErrorFlag(const QwHaloMonitor *ev_error){
@@ -95,8 +97,9 @@ class  QwHaloMonitor : public VQwDataElement{
 
   void PrintErrorCounters() const;// report number of events failed due to HW and event cut faliure
   Bool_t ApplyHWChecks();
-  void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability){
-    fHalo_Counter.SetSingleEventCuts(errorflag,min,max,stability);
+  void SetSingleEventCuts(UInt_t errorflag,Double_t min, Double_t max, Double_t stability, Double_t burplevel){
+    QwError<<"***************************"<<QwLog::endl;
+    fHalo_Counter.SetSingleEventCuts(errorflag,min,max,stability,burplevel);
   };
   void SetEventCutMode(Int_t bcuts){
     fHalo_Counter.SetEventCutMode(bcuts);

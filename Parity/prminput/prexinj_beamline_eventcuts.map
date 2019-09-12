@@ -29,7 +29,7 @@ EVENTCUTS = 3
 !for bcm devices
 !device_type, device_name,      lower limit, upper limit, local(l)/global(g), stability percentage
  
-bcm, qwk_bcm0l02,		1,	1000000,	l,	0
+!bcm, qwk_bcm0l02,		1,	1000000,	l,	0
 !bcm, empty1,	 	-2.420e+6,	-2.390e+6
 !bcm, empty1, 		0, 	0, 1, 0
 !bcm, empty2, 		0, 	0, 1, 0

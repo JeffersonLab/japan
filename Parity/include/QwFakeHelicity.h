@@ -30,6 +30,10 @@ class QwFakeHelicity: public QwHelicity {
     Bool_t  IsGoodHelicity();
     void    ProcessEvent();
 
+    Bool_t CheckForBurpFail(const VQwSubsystem *subsys){
+      return kFALSE;
+    };
+
  protected:
     Int_t fMinPatternPhase;
 

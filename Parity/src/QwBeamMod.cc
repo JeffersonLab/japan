@@ -42,12 +42,10 @@ void QwBeamMod::ProcessOptions(QwOptions &options){
       //Handle command line options
 }
 
-Int_t QwBeamMod::LoadChannelMap(TString mapfile)
-{
+Int_t QwBeamMod::LoadChannelMap(TString mapfile){
+  //  std::cout <<"Here in LoadChannelMap" << std::endl;
   Bool_t ldebug=kFALSE;
 
-  Int_t currentrocread=0;
-  Int_t currentbankread=0;
   Int_t wordsofar=0;
   Int_t bankindex=-1;
  
@@ -59,8 +57,7 @@ Int_t QwBeamMod::LoadChannelMap(TString mapfile)
   fDetectorMaps.insert(mapstr.GetParamFileNameContents());
   mapstr.EnableGreediness();
   mapstr.SetCommentChars("!");
-  while (mapstr.ReadNextLine())
-  {
+  while (mapstr.ReadNextLine())  {
     RegisterRocBankMarker(mapstr);
 
     if(bankindex!=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID)) { 
@@ -90,7 +87,6 @@ Int_t QwBeamMod::LoadChannelMap(TString mapfile)
       // QwModChannelID localModChannelID(bankindex, wordsofar,namech, modtype, this);
       QwModChannelID localModChannelID(bankindex, mapstr);
       TString namech  = localModChannelID.fmodulename; 
-
        if(localModChannelID.fmoduletype=="VQWK") {
         wordsofar+=6;
 
@@ -109,6 +105,7 @@ Int_t QwBeamMod::LoadChannelMap(TString mapfile)
           if (localModChannelID.fmodulename == "ramp") {
             fRampChannelIndex = fModChannel.size() - 1;
           }
+
         }
         
         if(ldebug)
@@ -146,7 +143,8 @@ Int_t QwBeamMod::LoadChannelMap(TString mapfile)
           std::cout<<"line ok=";
           if(lineok) std::cout<<"TRUE"<<std::endl;
           else std::cout<<"FALSE"<<std::endl;
-        }
+        }	
+	
       }
       
       if (localModChannelID.fmoduletype == "SIS3801D32") {
@@ -181,7 +179,8 @@ Int_t QwBeamMod::LoadChannelMap(TString mapfile)
       if(localModChannelID.fmoduletype=="SKIP"){
 	if (localModChannelID.modnum<=0) wordsofar+=1;
 	else           wordsofar+= localModChannelID.modnum;
-      }
+      
+       }
 
       if(localModChannelID.fmoduletype == "WORD") {
         //  std::cout << "Decoding QwWord :: " << namech << std::endl;
@@ -211,6 +210,7 @@ Int_t QwBeamMod::LoadChannelMap(TString mapfile)
         fWordsPerSubbank[bankindex].second = fWord.size();
         QwDebug << "--" << namech << "--" << fWord.size()-1 << QwLog::endl;
       }
+     
     }
   }
 
@@ -304,14 +304,15 @@ Int_t QwBeamMod::LoadEventCuts(TString  filename)
       device_type.ToUpper();
       //std::cout <<"device_type= " << device_type << std::endl;
       TString device_name = mapstr.GetTypedNextToken<TString>();
-      device_name.ToLower();
+      device_name.ToUpper();
       //std::cout << "device_name= "<< device_name << std::endl;
 
       if (device_type == "VQWK"||device_type=="SCALER" ||device_type=="SIS3801D24" ||device_type=="SIS3801D32"){
-
+	device_name.ToLower();
 	Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for BCM value
 	Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for BCM value
 	varvalue = mapstr.GetTypedNextToken<TString>();//global/loacal
+  Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
 	varvalue.ToLower();
 	Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
 	QwMessage<<"QwBeamMod Error Code  "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
@@ -319,7 +320,7 @@ Int_t QwBeamMod::LoadEventCuts(TString  filename)
 	QwMessage << "*****************************" << QwLog::endl;
 	QwMessage << " Type " << device_type << " Name " << device_name << " Index [" << det_index << "] "
 	          << " device flag " << eventcut_flag << QwLog::endl;
-	fModChannel[det_index]->SetSingleEventCuts((GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)|kBModErrorFlag),LLX,ULX,stabilitycut);
+	fModChannel[det_index]->SetSingleEventCuts((GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)|kBModErrorFlag),LLX,ULX,stabilitycut,burplevel);
 	QwMessage << "*****************************" << QwLog::endl;
 
       }
@@ -346,6 +347,19 @@ Int_t QwBeamMod::LoadEventCuts(TString  filename)
   return 0;
 }
 
+//*****************************************************************
+Bool_t QwBeamMod::CheckForBurpFail(const VQwSubsystem *subsys){
+  Bool_t burpstatus = kFALSE;
+  VQwSubsystem* tmp = const_cast<VQwSubsystem *>(subsys);
+  if(Compare(tmp)) {
+    const QwBeamMod* input = dynamic_cast<const QwBeamMod*>(subsys);
+    for(size_t i=0;i<input->fModChannel.size();i++){
+      //QwError << "************* test Clock *****************" << QwLog::endl;
+      burpstatus |= (this->fModChannel[i])->CheckForBurpFail(input->fModChannel[i]);
+    }
+  }
+  return burpstatus;
+}
 
 //*****************************************************************
 Int_t QwBeamMod::LoadInputParameters(TString pedestalfile)
@@ -395,9 +409,12 @@ Int_t QwBeamMod::LoadInputParameters(TString pedestalfile)
 
 Int_t QwBeamMod::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, UInt_t* buffer, UInt_t num_words)
 {
+ 
+
   Bool_t lkDEBUG=kFALSE;
 
   Int_t index = GetSubbankIndex(roc_id,bank_id);
+ 
 
   if (index>=0 && num_words>0){
     //  We want to process this ROC.  Begin looping through the data.
@@ -408,6 +425,7 @@ Int_t QwBeamMod::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, U
 		<< " number of words="<<num_words<<QwLog::endl;
     if (buffer[0]==0xf0f0f0f0 && num_words%2==1){
       buffer++;
+     
       if (lkDEBUG)
 	QwMessage << "QwBeamMod::ProcessEvBuffer:  "
 		  << "Skipped padding word 0xf0f0f0f0 at beginning of buffer."
@@ -456,7 +474,8 @@ Int_t QwBeamMod::ProcessEvBuffer(const ROCID_t roc_id, const BankID_t bank_id, U
 }
 
 Bool_t QwBeamMod::ApplySingleEventCuts(){
-  //  std::cout << "Here in ApplySingleEventCuts() " << std::endl;
+  //std::cout << "Here in ApplySingleEventCuts() " << std::endl;
+  // std::cout << "ErrorFlag: " << fFFB_ErrorFlag << std::endl;
   Bool_t test_Mod=kTRUE;
   Bool_t test_BCM1=kTRUE;
   
@@ -487,14 +506,19 @@ Bool_t QwBeamMod::ApplySingleEventCuts(){
     
     } 
   */
-
+  // std::cout << "Upper Limit: " << fBMWObj_UL << " , " << "Lower Limit: " << fBMWObj_LL << std::endl;
   //copy for fBmwObj
   if (fBMWObj_LL < fBMWObj_UL) {
+    //std::cout << "Upper Limit: " << fBMWObj_UL << " , " << "Lower Limit: " << fBMWObj_LL << std::endl;
+    
     // Cuts are valid
     if (fWord[fBmwObj_Index].GetValue()>fBMWObj_UL
 	|| fWord[fBmwObj_Index].GetValue()<fBMWObj_LL){
       // Value is outside of cuts range.
+     
+      //std::cout << "bmwobj value: "<< fWord[fBmwObj_Index].GetValue() << " , " << "ErrorFlag: "<< fFFB_ErrorFlag << std::endl;
       fFFB_ErrorFlag = (kGlobalCut+kBModErrorFlag+kBModFFBErrorFlag+kEventCutMode3);
+      //std::cout << "ErrorFlag: " << fFFB_ErrorFlag << std::endl;
     }
   }
   
@@ -548,14 +572,14 @@ UInt_t QwBeamMod::GetEventcutErrorFlag(){//return the error flag
     ErrorFlag |= fModChannel[i]->GetEventcutErrorFlag();
   }
   ErrorFlag |= fFFB_ErrorFlag;
+  
   return ErrorFlag;
-
 }
 
 
 
-void  QwBeamMod::ProcessEvent()
-{
+
+void  QwBeamMod::ProcessEvent(){
   //std::cout << "Here in ProcessEvent() " << std::endl;
   for (size_t i = 0; i < fModChannel.size(); i++) {
     // First apply HW checks and update HW  error flags.
@@ -578,14 +602,14 @@ Int_t QwBeamMod::ProcessConfigurationBuffer(const ROCID_t roc_id, const BankID_t
 
 //*****************************************************************
 
-void QwBeamMod::ClearEventData()
-{
+ void QwBeamMod::ClearEventData(){
+   // std::cout << "Here in ClearEventData " << std::endl;
    for(size_t i=0;i<fModChannel.size();i++)
     fModChannel[i]->ClearEventData();
 
    for (size_t i=0;i<fWord.size();i++)
     fWord[i].ClearEventData();
-   
+   //std::cout << "Error Flag: " << fFFB_ErrorFlag << std::endl;
    fFFB_ErrorFlag=0;
 }
 
@@ -626,7 +650,7 @@ Int_t QwBeamMod::GetDetectorIndex(TString name)
 //*****************************************************************
 VQwSubsystem&  QwBeamMod::operator=  (VQwSubsystem *value)
 {
-  // std::cout<<" here in QwBeamMod::operator= \n";
+ 
   if(Compare(value))
     {
 
@@ -640,15 +664,15 @@ VQwSubsystem&  QwBeamMod::operator=  (VQwSubsystem *value)
       for(size_t i=0;i<input->fWord.size();i++)
   	this->fWord[i].fValue=input->fWord[i].fValue;
       this->fFFB_ErrorFlag=input->fFFB_ErrorFlag;
-      //  std::cout << "ErrorFlag: " << this->fFFB_ErrorFlag << std::endl;
+     
     }
   return *this;
 }
 
 VQwSubsystem&  QwBeamMod::operator+=  (VQwSubsystem *value)
 {
-  if(Compare(value))
-    {
+  if(Compare(value)){
+    // std::cout << "Here in operator+= " << std::endl;
       //QwBeamMod* input= (QwBeamMod*)value ;
       QwBeamMod* input = dynamic_cast<QwBeamMod*>(value);
 
@@ -657,13 +681,13 @@ VQwSubsystem&  QwBeamMod::operator+=  (VQwSubsystem *value)
 //         for(size_t i=0;i<input->fWord.size();i++)
 //    	this->fWord[i]+=input->fWord[i];
       this->fFFB_ErrorFlag |= input->fFFB_ErrorFlag;
+      // std::cout <<"Error Flag: " << this->fFFB_ErrorFlag <<std::endl;
     }
   return *this;
 }
 
-VQwSubsystem&  QwBeamMod::operator-=  (VQwSubsystem *value)
-{
-
+VQwSubsystem&  QwBeamMod::operator-=  (VQwSubsystem *value){
+  
   if(Compare(value))
     {
       //QwBeamMod* input= (QwBeamMod*)value;
@@ -674,7 +698,7 @@ VQwSubsystem&  QwBeamMod::operator-=  (VQwSubsystem *value)
 //       for(size_t i=0;i<input->fWord.size();i++)
 //         this->fWord[i]-=input->fWord[i];
       this->fFFB_ErrorFlag |= input->fFFB_ErrorFlag;
-
+     
     }
   return *this;
 }
@@ -723,7 +747,7 @@ void QwBeamMod::Scale(Double_t factor)
 
 void QwBeamMod::CalculateRunningAverage() { }
 
-void QwBeamMod::AccumulateRunningSum(VQwSubsystem*) { }
+void QwBeamMod::AccumulateRunningSum(VQwSubsystem*, Int_t count, Int_t ErrorMask) { }
 
 Bool_t QwBeamMod::Compare(VQwSubsystem *value)
 {
@@ -823,7 +847,8 @@ void QwBeamMod::ConstructBranchAndVector(TTree *tree, TString & prefix, std::vec
   fTreeArrayIndex  = values.size();
   for (size_t i=0; i<fWord.size(); i++) {
     // 	  basename = fWord[i].fWordName;
-    basename = prefix+fWord[i].fWordName;
+    basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix.Length());
+    basename += fWord[i].fWordName;
     values.push_back(0.0);
     tree->Branch(basename, &(values.back()), basename+"/D");
   }

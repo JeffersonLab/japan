@@ -107,13 +107,15 @@ class QwBPMStripline : public VQwBPM {
   Bool_t  ApplySingleEventCuts();//Check for good events by stting limits on the devices readings
   //void    SetSingleEventCuts(TString ch_name, Double_t minX, Double_t maxX);
   /*   /\*! \brief Inherited from VQwDataElement to set the upper and lower limits (fULimit and fLLimit), stability % and the error flag on this channel *\/ */
-  //void    SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t min, Double_t max, Double_t stability);
+  void    SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t min, Double_t max, Double_t stability, Double_t burplevel);
+  //void    SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t min, Double_t max, Double_t stability, Double_t burplevel){return;};
   void    SetEventCutMode(Int_t bcuts);
   void    IncrementErrorCounters();
   void    PrintErrorCounters() const;   // report number of events failed due to HW and event cut faliure
   UInt_t  GetEventcutErrorFlag();
   UInt_t  UpdateErrorFlag();
 
+  Bool_t  CheckForBurpFail(const VQwDataElement *ev_error);
   void    UpdateErrorFlag(const VQwBPM *ev_error);
 
 
@@ -140,10 +142,10 @@ class QwBPMStripline : public VQwBPM {
   virtual QwBPMStripline& operator+= (const QwBPMStripline &value);
   virtual QwBPMStripline& operator-= (const QwBPMStripline &value);
 
-  void    AccumulateRunningSum(const QwBPMStripline& value);
-  void    AccumulateRunningSum(const VQwBPM& value);
-  void    DeaccumulateRunningSum(VQwBPM& value);
-  void    DeaccumulateRunningSum(QwBPMStripline& value);
+  void    AccumulateRunningSum(const QwBPMStripline& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void    AccumulateRunningSum(const VQwBPM& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void    DeaccumulateRunningSum(VQwBPM& value, Int_t ErrorMask=0xFFFFFFF);
+  void    DeaccumulateRunningSum(QwBPMStripline& value, Int_t ErrorMask=0xFFFFFFF);
 
   void    CalculateRunningAverage();
 

@@ -85,6 +85,7 @@ class QwBlinder {
   
   ///  Error flag value 
   static const UInt_t kErrorFlag_BlinderFail = 0x200;
+  constexpr static const Double_t kValue_BlinderFail   = -1.0;
 
   static void DefineOptions(QwOptions &options);
 
@@ -97,6 +98,8 @@ class QwBlinder {
 
     /// \brief Update the status with new external information
     void ProcessOptions(QwOptions& options);
+    /// \brief Update the status using a random number
+    void Update();
     /// \brief Update the status with new external information
     void Update(QwParityDB* db);
     /// \brief Update the status with new external information
@@ -236,6 +239,7 @@ class QwBlinder {
     EQwWienMode fWienMode;
     Int_t fIHWPPolarity_firstread;
     Int_t fIHWPPolarity;
+    Bool_t fSpinDirectionForced;
     void SetTargetBlindability(EQwBlinderStatus status);
     void SetWienState(EQwWienMode wienmode);
     void SetIHWPPolarity(Int_t ihwppolarity);
@@ -302,6 +306,9 @@ class QwBlinder {
 
     ///  Reads the seed from the database object
     Int_t ReadSeed(QwParityDB* db);
+
+    ///  Read the seed string generated utilizing a random number generator
+    Int_t ReadRandomSeed();
 
     void WriteChecksum(QwParityDB* db);     ///  Writes fSeedID and fBFChecksum to DB for this analysis ID
     void WriteTestValues(QwParityDB* db);   ///  Writes fTestNumber and fBlindTestValue to DB for this analysis ID

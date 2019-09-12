@@ -42,6 +42,7 @@ class PromptSummaryElement :  public TObject
 
   // Yield      : fHardwareBlockSumM2 
   // YieldError : fHardwareBlockSumError = sqrt(fHardwareBlockSumM2) / fGoodEventCount;
+  void SetNumGoodEvents        (const Double_t in) { fNumGoodEvents=in;};
 
   void SetYield                (const Double_t in) { fYield=in; };
   void SetYieldError           (const Double_t in) { fYieldError=in; };
@@ -63,6 +64,8 @@ class PromptSummaryElement :  public TObject
 
 
   // Yield 
+  const Double_t GetNumGoodEvents ()    { return fNumGoodEvents;};
+    
   const Double_t GetYield         () { return fYield; };
   const Double_t GetYieldError    () { return fYieldError; };
   const Double_t GetYieldWidth    () { return fYieldWidth; };
@@ -99,6 +102,7 @@ class PromptSummaryElement :  public TObject
 
   TString fElementName;
   
+  Double_t fNumGoodEvents;
   Double_t fYield;
   Double_t fYieldError;
   Double_t fYieldWidth;
@@ -158,7 +162,7 @@ class QwPromptSummary  :  public TObject
   Int_t  HowManyElements() const {return fNElements;};
 
 
-  void PrintCSV();
+  void PrintCSV(Int_t nEvents, TString start_time, TString end_time);
   void PrintTextSummary();
 
 private:
@@ -168,12 +172,13 @@ private:
 
   TString PrintTextSummaryHeader();
   TString PrintTextSummaryTailer();
-  TString PrintCSVHeader();
+  TString PrintCSVHeader(Int_t nEvents, TString start_time, TString end_time);
 
   void    SetupElementList();
   
   Int_t   fRunNumber;
   Int_t   fRunletNumber;
+  
 
   Bool_t  fLocalDebug;
 

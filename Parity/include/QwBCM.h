@@ -108,7 +108,7 @@ class QwBCM : public VQwBCM {
 
   Int_t SetSingleEventCuts(Double_t mean = 0, Double_t sigma = 0);//two limts and sample size
   /*! \brief Inherited from VQwDataElement to set the upper and lower limits (fULimit and fLLimit), stability % and the error flag on this channel */
-  void SetSingleEventCuts(UInt_t errorflag, Double_t min = 0, Double_t max = 0, Double_t stability = 0);
+  void SetSingleEventCuts(UInt_t errorflag, Double_t min = 0, Double_t max = 0, Double_t stability = 0, Double_t burplevel = 0);
 
   void SetDefaultSampleSize(Int_t sample_size);
   void SetEventCutMode(Int_t bcuts) {
@@ -153,9 +153,11 @@ public:
   void Ratio(const QwBCM &numer, const QwBCM &denom);
   void Scale(Double_t factor);
 
-  void AccumulateRunningSum(const VQwBCM& value);
-  void DeaccumulateRunningSum(VQwBCM& value);
+  void AccumulateRunningSum(const VQwBCM&, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void DeaccumulateRunningSum(VQwBCM& value, Int_t ErrorMask=0xFFFFFFF);
   void CalculateRunningAverage();
+
+  Bool_t CheckForBurpFail(const VQwDataElement *ev_error);
 
   void SetPedestal(Double_t ped);
   void SetCalibrationFactor(Double_t calib);

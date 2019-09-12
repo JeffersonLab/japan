@@ -32,15 +32,32 @@ using namespace std;
 #endif // __USE_DATABASE__
 
 
-VQwDataHandler::VQwDataHandler(const VQwDataHandler &source):
-  fPriority(source.fPriority),
+VQwDataHandler::VQwDataHandler(const TString& name)
+: fPriority(0),
+  fName(name),
+  fMapFile(""),
+  fTreeName(""),
+  fTreeComment(""),
+  fPrefix(""),
+  fErrorFlagPtr(0),
+  fSubsystemArray(0),
+  fHelicityPattern(0),
+  fKeepRunningSum(kFALSE)
+{ }
+
+VQwDataHandler::VQwDataHandler(const VQwDataHandler &source)
+: fPriority(source.fPriority),
   fName(source.fName),
   fMapFile(source.fMapFile),
   fTreeName(source.fTreeName),
   fTreeComment(source.fTreeComment),
   fPrefix(source.fPrefix),
+  fSubsystemArray(source.fSubsystemArray),
+  fHelicityPattern(source.fHelicityPattern),
+  ParseSeparator(source.ParseSeparator),
   fKeepRunningSum(source.fKeepRunningSum)
 {
+  fErrorFlagPtr  = source.fErrorFlagPtr;
   fDependentVar  = source.fDependentVar;
   fDependentType = source.fDependentType;
   fDependentName = source.fDependentName;
@@ -120,6 +137,7 @@ void VQwDataHandler::ProcessData() {
 
 
 Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff) {
+  SetEventcutErrorFlagPointer(asym.GetEventcutErrorFlagPointer());
 
   /// Fill vector of pointers to the relevant data elements
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
@@ -218,8 +236,14 @@ void VQwDataHandler::ConstructTreeBranches(
     const std::string& treeprefix,
     const std::string& branchprefix)
 {
-  if (fTreeName.size()>0){
-    treerootfile->ConstructTreeBranches(treeprefix + fTreeName, fTreeComment, *this, branchprefix + fPrefix);
+  if (fTreeName.size() > 0) {
+    if (fOutputVar.size() == 0) {
+      QwWarning << "No data handler output; not creating tree "
+                << treeprefix + fTreeName
+                << QwLog::endl;
+    } else {
+      treerootfile->ConstructTreeBranches(treeprefix + fTreeName, fTreeComment, *this, branchprefix + fPrefix);
+    }
   }
 }
 
@@ -255,46 +279,21 @@ void VQwDataHandler::FillTreeVector(std::vector<Double_t>& values) const
   }
 }
 
-    
-void VQwDataHandler::AccumulateRunningSum()
-{
-  if (fKeepRunningSum){
-    //  Create the running sum object if it doesn't exist.
-    if (fRunningSum == NULL){
-      fRunningSum = this->Clone();
-      fRunningSum->fKeepRunningSum = kFALSE;
-      fRunningSum->ClearEventData();
-    }
-    fRunningSum->AccumulateRunningSum(*this);
-  }
-}
 
-void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value)
+void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value, Int_t count, Int_t ErrorMask)
 {
   for (size_t i = 0; i < fOutputVar.size(); i++){
-    this->fOutputVar[i]->AccumulateRunningSum(value.fOutputVar[i]);
+    this->fOutputVar[i]->AccumulateRunningSum(value.fOutputVar[i], count, ErrorMask);
   }
 }
 
 
 void VQwDataHandler::CalculateRunningAverage()
 {
-  if (fKeepRunningSum && (fRunningSum != NULL)){
-    for(size_t i = 0; i < fRunningSum->fOutputVar.size(); i++) {
-      // calling CalculateRunningAverage in scope of VQwHardwareChannel
-      fRunningSum->fOutputVar[i]->CalculateRunningAverage();
-    }
-  }
-  return;
-}
-
-void VQwDataHandler::PrintRunningAverage()
-{
-  if (fKeepRunningSum && (fRunningSum != NULL)){
-    fRunningSum->PrintValue();
+  for(size_t i = 0; i < fOutputVar.size(); i++) {
+    this->fOutputVar[i]->CalculateRunningAverage();
   }
 }
-
 
 void VQwDataHandler::PrintValue() const
 {
@@ -314,9 +313,6 @@ void VQwDataHandler::ClearEventData()
 
 void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
 {
-  //  Only do something, if we have the running sum variables
-  if (!fKeepRunningSum || (fRunningSum == NULL)) return;
-
      Bool_t local_print_flag = false;
      Bool_t local_add_element= type.Contains("asy");
   
@@ -339,13 +335,13 @@ void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
   for (size_t i = 0; i < fOutputVar.size();  i++) 
     {
       element_name        = fOutputVar[i]->GetElementName(); 
-      tmp_channel=fRunningSum->fOutputVar[i];
+      tmp_channel         = fOutputVar[i];
       element_value       = 0.0;
       element_value_err   = 0.0;
       element_value_width = 0.0;
      
    
-      local_add_these_elements=element_name.Contains("dd")||element_name.Contains("da"); // Need to change this to add other detectorss in summary
+      local_add_these_elements=element_name.Contains("dd")||element_name.Contains("da"); // Need to change this to add other detectors in summary
 
       if(local_add_these_elements && local_add_element){
         ps->AddElement(new PromptSummaryElement(element_name)); 

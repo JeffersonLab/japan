@@ -47,6 +47,8 @@ class QwEventRing {
   /// \brief Return the read status of the ring
   Bool_t IsReady();
 
+  void CheckBurpCut(Int_t thisevent);
+
   /// \brief Return the number of events in the ring
   Int_t GetNumberOfEvents() const { return fNumberOfEvents; }
 
@@ -58,7 +60,6 @@ class QwEventRing {
       PrintRollingAverage();
     }
   }
-
  private:
 
   Int_t fRING_SIZE;//this is the length of the ring
@@ -87,6 +88,14 @@ class QwEventRing {
   //State of the stability check - ON/OFF
   Bool_t bStability;
 
+  //Beam Trip Variables
+  int holdoff;    //the amount of events that are ignored when the beam trips
+  int countdown;   //the amount of current events that are to be ignored
+
+  //  Burp cut variables
+  Int_t fBurpExtent;
+  Int_t fBurpPrecut;
+  QwSubsystemArrayParity fBurpAvg;
 };
 
 

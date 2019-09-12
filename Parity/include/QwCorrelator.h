@@ -19,29 +19,60 @@ Last Modified: August 1, 2018 1:43 PM
 #include "VQwDataHandler.h"
 
 // LinRegBlue Correlator Class
-#include "QwkRegBlueCorrelator.h"
+#include "LinReg_Bevington_Pebay.h"
 
-class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCorrelator>{
+// System headers
+#include <fstream>
+
+// Forward declarations
+class TH1D;
+class TH2D;
+class QwRootFile;
+
+class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCorrelator>
+{
  public:
   /// \brief Constructor with name
   QwCorrelator(const TString& name);
+  QwCorrelator(const QwCorrelator& name);
+  virtual ~QwCorrelator();
+
+ private:
+  static bool fPrintCorrelations;
+ public:
+  static void DefineOptions(QwOptions &options);
+  void ProcessOptions(QwOptions &options);
 
   void ParseConfigFile(QwParameterFile& file);
 
   Int_t LoadChannelMap(const std::string& mapfile);
-  	
-  void readConfig(const char * configFName);
-  	
+
   /// \brief Connect to Channels (asymmetry/difference only)
   Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
-		
-  void unpackEvent();
 
-  void AccumulateRunningSum();
-  void ProcessData(){};
+  void ProcessData();
   void CalcCorrelations();
-		
+
+  /// \brief Construct the tree branches
+  void ConstructTreeBranches(
+      QwRootFile *treerootfile,
+      const std::string& treeprefix = "",
+      const std::string& branchprefix = "");
+  /// \brief Fill the tree branches
+  void FillTreeBranches(QwRootFile *treerootfile) { };
+
+  /// \brief Construct the histograms in a folder with a prefix
+  void  ConstructHistograms(TDirectory *folder, TString &prefix);
+  /// \brief Fill the histograms
+  void  FillHistograms();
+
+  void ClearEventData();
+  void AccumulateRunningSum(VQwDataHandler &value, Int_t count = 0, Int_t ErrorMask = 0xFFFFFFF);
+
  protected:
+
+  Int_t fBlock;
+
   bool fDisableHistos;
   
   std::vector< TString > fIndependentFull;
@@ -57,23 +88,46 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   std::string fAlphaOutputFileBase;
   std::string fAlphaOutputFileSuff;
   std::string fAlphaOutputPath;
+  TFile* fAlphaOutputFile;
+  void OpenAlphaFile(const std::string& prefix);
+  void WriteAlphaFile();
+  void CloseAlphaFile();
+
+  TTree* fTree;
 
   std::string fAliasOutputFileBase;
   std::string fAliasOutputFileSuff;
   std::string fAliasOutputPath;		
+  std::ofstream fAliasOutputFile;
+  void OpenAliasFile(const std::string& prefix);
+  void WriteAliasFile();
+  void CloseAliasFile();
 
-  Int_t fTotalCount;
-  Int_t fGoodCount;
-  std::vector< Int_t > fErrCounts_IV;
-  std::vector< Int_t > fErrCounts_DV;
+  int fTotalCount;
+  int fGoodCount;
+
+  int fErrCounts_EF;
+  std::vector<int> fErrCounts_IV;
+  std::vector<int> fErrCounts_DV;
+
+  unsigned int fGoodEvent;
 
  private:
 		
-  //Default Constructor
-  QwCorrelator():corA("input") { };
-		
-  QwkRegBlueCorrelator corA;
-		
+  int nP, nY;
+
+  // monitoring histos for iv & dv
+  std::vector<TH1D> fHnames;
+  std::vector<TH1D> fH1iv;
+  std::vector<TH1D> fH1dv;
+  std::vector<std::vector<TH2D>> fH2iv;
+  std::vector<std::vector<TH2D>> fH2dv;
+
+  LinRegBevPeb linReg;
+
+  // Default constructor
+  QwCorrelator();
+
 };
 
 

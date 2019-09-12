@@ -178,11 +178,17 @@ static const UInt_t kPMTErrorFlag = 0x800; // in Decimal 2048 to identify the si
 static const UInt_t kBModFFBErrorFlag = 0x1000; // in Decimal 4096 (2^12) to identify the FFB OFF periods for Energy modulation
 static const UInt_t kBModErrorFlag = 0x8000; // in Decimal 32768 (2^15) to identify the single event cut is failed for a BMod channel
 static const UInt_t kEventCutMode3 = 0x10000;  // in Decimal 65536 to identify the mode 3 where we only flag event cut failed events 
+static const UInt_t kErrorFlag_Helicity = 0x20000;  // Any type of helicity decoding problem
+
+
+//static const UInt_t kErrorFlag_BurpCut =   0x800000;// in Decimal 2^23 to identify a burp cut failure
+static const UInt_t kErrorFlag_BurpCut = 0x20000000;// promote to Decimal 2^29 to skip default accumulation mask.
 static const UInt_t kBeamStabilityError= 0x10000000;//in Decimal 2^28(268435456) to identify the a stability cut
-static const UInt_t kBeamTripError= 0x8000000;// in Decimal 2^27(134217728) to identify the an event within a beam trip range set by ring parameters
-static const UInt_t kGlobalCut    = 0x4000000;// in Decimal 2^26 to identify the single event cut is a global cut
-static const UInt_t kLocalCut     = 0x2000000;// in Decimal 2^25 to identify the single event cut is a local cut
-static const UInt_t kStabilityCut = 0x1000000;// in Decimal 2^24 (16777216) to identify the single event cut is a stability cut. NOT IN USE CURRENTLY
+static const UInt_t kBeamTripError     =  0x8000000;// in Decimal 2^27(134217728) to identify the an event within a beam trip range set by ring parameters
+static const UInt_t kGlobalCut         =  0x4000000;// in Decimal 2^26 to identify the single event cut is a global cut
+static const UInt_t kLocalCut          =  0x2000000;// in Decimal 2^25 to identify the single event cut is a local cut
+static const UInt_t kStabilityCut      =  0x1000000;// in Decimal 2^24 (16777216) to identify the single event cut is a stability cut. NOT IN USE CURRENTLY
+static const UInt_t kBadEventRangeError= 0x80000000;//in Decimal 2^31 to identify an event range we don't like anymore
 static const UInt_t kPreserveError = 0x2FF;//when AND-ed with this it will only keep HW errors and blinder
 
 //To generate the error code based on global/local and stability cut value

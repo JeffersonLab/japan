@@ -15,7 +15,7 @@ Last Modified: August 1, 2018 1:39 PM
 #define VQWDATAHANDLER_H_
 
 // Qweak headers
-//#include "QwHelicityPattern.h"
+#include "QwHelicityPattern.h"
 #include "QwSubsystemArrayParity.h"
 #include "VQwHardwareChannel.h"
 #include "QwFactory.h"
@@ -23,7 +23,6 @@ Last Modified: August 1, 2018 1:39 PM
 
 class QwParameterFile;
 class QwRootFile;
-class QwHelicityPattern;
 class QwPromptSummary;
 
 class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
@@ -37,7 +36,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
     typedef std::vector< VQwHardwareChannel* >::iterator Iterator_HdwChan;
     typedef std::vector< VQwHardwareChannel* >::const_iterator ConstIterator_HdwChan;
 
-    VQwDataHandler(const TString& name):fName(name),fPrefix(""),fKeepRunningSum(kFALSE) {}
+    VQwDataHandler(const TString& name);
     VQwDataHandler(const VQwDataHandler &source);
 
     virtual void ParseConfigFile(QwParameterFile& file);
@@ -47,6 +46,16 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
     virtual Int_t ConnectChannels(QwSubsystemArrayParity& yield, QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff){
       return this->ConnectChannels(asym, diff);
+    }
+
+    // Subsystems with support for subsystem arrays should override this
+    virtual Int_t ConnectChannels(QwSubsystemArrayParity& detectors) { return 0; }
+
+    Int_t ConnectChannels(QwHelicityPattern& helicitypattern) {
+      return this->ConnectChannels(
+          helicitypattern.GetYield(),
+          helicitypattern.GetAsymmetry(),
+          helicitypattern.GetDifference());
     }
 
     virtual void ProcessData();
@@ -59,22 +68,25 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
     TString GetDataHandlerName(){return fName;}
 
-    void ClearEventData();
+    virtual void ClearEventData();
 
-    virtual void AccumulateRunningSum();
-    void AccumulateRunningSum(VQwDataHandler &value);
+    virtual void AccumulateRunningSum(VQwDataHandler &value, Int_t count = 0, Int_t ErrorMask = 0xFFFFFFF);
     void CalculateRunningAverage();
-    void PrintRunningAverage();
     void PrintValue() const;
     void FillDB(QwParityDB *db, TString datatype){};
 
     void WritePromptSummary(QwPromptSummary *ps, TString type);
 
-    void ConstructTreeBranches(
+    virtual void ConstructTreeBranches(
         QwRootFile *treerootfile,
         const std::string& treeprefix = "",
         const std::string& branchprefix = "");
-    void FillTreeBranches(QwRootFile *treerootfile);
+    virtual void FillTreeBranches(QwRootFile *treerootfile);
+
+    /// \brief Construct the histograms in a folder with a prefix
+    virtual void  ConstructHistograms(TDirectory *folder, TString &prefix) { };
+    /// \brief Fill the histograms
+    virtual void  FillHistograms() { };
 
     // Fill the vector for this subsystem
     void FillTreeVector(std::vector<Double_t> &values) const;
@@ -94,6 +106,16 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
     
     virtual Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
     
+    void SetEventcutErrorFlagPointer(const UInt_t* errorflagptr) {
+      fErrorFlagPtr = errorflagptr;
+    }
+    UInt_t GetEventcutErrorFlag() const {
+      if (fErrorFlagPtr)
+        return *fErrorFlagPtr;
+      else
+        return -1;
+    };
+
     std::pair<EQwHandleType,std::string> ParseHandledVariable(const std::string& variable);
 
    void CalcOneOutput(const VQwHardwareChannel* dv, VQwHardwareChannel* output,
@@ -117,6 +139,9 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
    TString run_label;
 
+   /// Error flag pointer
+   const UInt_t* fErrorFlagPtr;
+
    /// Single event pointer
    QwSubsystemArrayParity* fSubsystemArray;
    /// Helicity pattern pointer
@@ -135,7 +160,6 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
  protected:
    Bool_t fKeepRunningSum;
-   VQwDataHandler *fRunningSum;
 };
 
 #endif // VQWDATAHANDLER_H_

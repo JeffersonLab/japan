@@ -1,0 +1,21 @@
+!! SAM Pedestal
+
+!Fit to run3751 10-70uA relative to analog upstream: (bcm_an_us.hw_sum_raw/bcm_an_us.num_samples--696.84)*0.00602:
+sam1, 12185.58, 0.000076
+sam2, 13220.07, 0.000076
+sam3, 12635.07, 0.000076
+sam4, 13468.04, 0.000076
+sam5, 12531.23, 0.000076
+sam6, 13326.50, 0.000076
+sam7, 12519.40, 0.000076
+sam8, 12427.73, 0.000076 
+
+!Fit to run3751 50-70uA relative to analog upstream: (bcm_an_us.hw_sum_raw/bcm_an_us.num_samples--696.84)*0.00602:
+!sam1, 12166.49, 0.000076
+!sam2, 13100.11, 0.000076
+!sam3, 11264.04, 0.000076
+!sam4, 13086.09, 0.000076
+!sam5, 12406.57, 0.000076
+!sam6, 12810.20, 0.000076
+!sam7, 10872.93, 0.000076
+!sam8, 12144.67, 0.000076 

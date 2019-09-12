@@ -1,0 +1,19 @@
+!! SAM Pedestal
+!! For 20 uA runs, we are using the beam off pedestal .
+
+  sam1, 12399,76.293e-6
+  sam2 ,12725.6,76.293e-6
+  sam3, 15752.4,76.293e-6
+  sam4, 13014.5,76.293e-6
+  sam5, 12663.6,76.293e-6
+  sam6, 12926.8,76.293e-6
+  sam7, 18606.1,76.293e-6
+  sam8, 12323.5,76.293e-6
+
+
+
+
+
+
+
+

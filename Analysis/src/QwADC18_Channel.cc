@@ -622,18 +622,18 @@ void  QwADC18_Channel::FillTreeVector(std::vector<Double_t> &values) const
   if (IsNameEmpty()) {
     //  This channel is not used, so skip setting up the tree.
   } else if (fTreeArrayNumEntries < 0) {
-    QwError << "VQwScaler_Channel::FillTreeVector:  fTreeArrayNumEntries=="
+    QwError << "QwADC18_Channel::FillTreeVector:  fTreeArrayNumEntries=="
             << fTreeArrayNumEntries << QwLog::endl;
   } else if (fTreeArrayNumEntries == 0) {
     static bool warned = false;
     if (!warned) {
-      QwError << "VQwScaler_Channel::FillTreeVector:  fTreeArrayNumEntries=="
+      QwError << "QwADC18_Channel::FillTreeVector:  fTreeArrayNumEntries=="
               << fTreeArrayNumEntries << " (no branch constructed?)" << QwLog::endl;
       QwError << "Offending element is " << GetElementName() << QwLog::endl;
       warned = true;
     }
   } else if (values.size() < fTreeArrayIndex+fTreeArrayNumEntries) {
-    QwError << "VQwScaler_Channel::FillTreeVector:  values.size()=="
+    QwError << "QwADC18_Channel::FillTreeVector:  values.size()=="
             << values.size() << " name: " << fElementName
             << "; fTreeArrayIndex+fTreeArrayNumEntries=="
             << fTreeArrayIndex << '+' << fTreeArrayNumEntries << '='
@@ -1034,8 +1034,13 @@ void QwADC18_Channel::DivideBy(const QwADC18_Channel &denom)
  * @param value Object (single event or accumulated) to add to running moments
  * @param count Number of good events in value
  */
-void QwADC18_Channel::AccumulateRunningSum(const QwADC18_Channel& value, Int_t count)
+void QwADC18_Channel::AccumulateRunningSum(const QwADC18_Channel& value, Int_t count, Int_t ErrorMask)
 {
+
+  if(count==0){
+    count = value.fGoodEventCount;
+  }
+  
   // Moment calculations
   Int_t n1 = fGoodEventCount;
   Int_t n2 = count;
@@ -1044,6 +1049,17 @@ void QwADC18_Channel::AccumulateRunningSum(const QwADC18_Channel& value, Int_t c
   if (n2 == 0 && value.fErrorFlag == 0) {
     n2 = 1;
   }
+
+  if (ErrorMask ==  kPreserveError){
+    //n = 1;
+    if (n2 == 0) {
+      n2 = 1;
+    }
+    if (count == -1) {
+      n2 = -1;
+    }
+  }
+
   Int_t n = n1 + n2;
 
   // Set up variables
@@ -1116,7 +1132,7 @@ void QwADC18_Channel::Blind(const QwBlinder *blinder)
       blinder->BlindValue(fValue);
     } else {
       blinder->ModifyThisErrorCode(fErrorFlag);
-      fValue = 0.0;
+      fValue = QwBlinder::kValue_BlinderFail;
     }
   }
 }
@@ -1133,7 +1149,7 @@ void QwADC18_Channel::Blind(const QwBlinder *blinder, const QwADC18_Channel& yie
       blinder->BlindValue(fValue, yield.fValue);
     } else {
       blinder->ModifyThisErrorCode(fErrorFlag);//update the HW error code
-      fValue = 0.0;
+      fValue = QwBlinder::kValue_BlinderFail * yield.fValue;
     }
   }
 }

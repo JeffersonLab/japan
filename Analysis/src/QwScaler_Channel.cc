@@ -209,10 +209,14 @@ void VQwScaler_Channel::ProcessEvent()
 
 void VQwScaler_Channel::PrintValue() const
 {
-  //  printf("Name %s %23.4f +/- %15.4f", GetElementName().Data(), fValue, fValueError);
-  QwMessage << std::setw(5) << std::left << GetElementName() << " , "
-	    << std::setprecision(4)
-	    << std::setw(5) << std::right << GetValue() << "  +/-  " << GetValueError() << " sigma "<<GetValueWidth()
+  QwMessage << std::setprecision(4)
+            << std::setw(18) << std::left << GetSubsystemName()  << " "
+            << std::setw(18) << std::left << GetModuleType()     << " "
+            << std::setw(18) << std::left << GetElementName()    << " "
+	    << std::setw(12) << std::left << GetValue()          << "  +/-  "
+	    << std::setw(12) << std::left << GetValueError()     << "  sig  "
+            << std::setw(12) << std::left << GetValueWidth()     << " "
+            << std::setw(12) << std::left << GetGoodEventCount() << " "
 	    << QwLog::endl;
 }
 
@@ -702,8 +706,13 @@ void VQwScaler_Channel::IncrementErrorCounters()
 }
 
 
-void VQwScaler_Channel::AccumulateRunningSum(const VQwScaler_Channel& value, Int_t count)
+void VQwScaler_Channel::AccumulateRunningSum(const VQwScaler_Channel& value, Int_t count, Int_t ErrorMask)
 {
+
+  if(count==0){
+    count = value.fGoodEventCount;
+  }
+  
   // Moment calculations
   Int_t n1 = fGoodEventCount;
   Int_t n2 = count;
@@ -712,6 +721,27 @@ void VQwScaler_Channel::AccumulateRunningSum(const VQwScaler_Channel& value, Int
   if (n2 == 0 && value.fErrorFlag == 0) {
     n2 = 1;
   }
+
+  // If a single event is removed from the sum, check all but stability fail flags
+  if (n2 == -1) {
+    if ((value.fErrorFlag & ErrorMask) == 0) {
+      n2 = -1;
+    } else {
+      n2 = 0;
+    }
+  }
+
+  if (ErrorMask ==  kPreserveError){
+    //n = 1;
+    if (n2 == 0) {
+      n2 = 1;
+    }
+    if (count == -1) {
+      n2 = -1;
+    }
+  }
+
+  // New total number of good events
   Int_t n = n1 + n2;
 
   // Set up variables
@@ -721,6 +751,29 @@ void VQwScaler_Channel::AccumulateRunningSum(const VQwScaler_Channel& value, Int
   if (n2 == 0) {
     // no good events for addition
     return;
+  } else if (n2 == -1) {
+    // simple version for removal of single event from the sum
+    fGoodEventCount--;
+    if (n > 1) {
+      fValue -= (M12 - M11) / n;
+      fValueM2 -= (M12 - M11)
+        * (M12 - fValue); // note: using updated mean
+    } else if (n == 1) {
+      fValue -= (M12 - M11) / n;
+      fValueM2 -= (M12 - M11)
+        * (M12 - fValue); // note: using updated mean
+      if (fabs(fValueM2) < 10.*std::numeric_limits<double>::epsilon())
+        fValueM2 = 0; // rounding
+    } else if (n == 0) {
+      fValue -= M12;
+      fValueM2 -= M22;
+      if (fabs(fValue) < 10.*std::numeric_limits<double>::epsilon())
+        fValue = 0; // rounding
+      if (fabs(fValueM2) < 10.*std::numeric_limits<double>::epsilon())
+        fValueM2 = 0; // rounding
+    } else {
+      QwWarning << "Running sum has deaccumulated to negative good events." << QwLog::endl;
+    }
   } else if (n2 == 1) {
     // simple version for addition of single event
     fGoodEventCount++;

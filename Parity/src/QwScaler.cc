@@ -474,11 +474,26 @@ void QwScaler::Scale(Double_t factor)
 /**
  * Accumulate the running sum
  */
-void QwScaler::AccumulateRunningSum(VQwSubsystem* value)
+void QwScaler::AccumulateRunningSum(VQwSubsystem* value, Int_t count, Int_t ErrorMask)
 {
   if (Compare(value)) {
-    fGoodEventCount++;
-    *this  += value;
+    QwScaler* scaler = dynamic_cast<QwScaler*>(value);
+    for (size_t i = 0; i < fScaler.size(); i++) {
+      fScaler.at(i)->AccumulateRunningSum(scaler->fScaler.at(i), count, ErrorMask);
+    }
+  }
+}
+
+/**
+ * Deaccumulate the running sum
+ */
+void QwScaler::DeaccumulateRunningSum(VQwSubsystem* value, Int_t ErrorMask)
+{
+  if (Compare(value)) {
+    QwScaler* scaler = dynamic_cast<QwScaler*>(value);
+    for (size_t i = 0; i < fScaler.size(); i++) {
+      fScaler.at(i)->DeaccumulateRunningSum(scaler->fScaler.at(i), ErrorMask);
+    }
   }
 }
 
@@ -487,10 +502,8 @@ void QwScaler::AccumulateRunningSum(VQwSubsystem* value)
  */
 void QwScaler::CalculateRunningAverage()
 {
-  if (fGoodEventCount <= 0) {
-    Scale(0);
-  } else {
-    Scale(1.0/fGoodEventCount);
+  for (size_t i = 0; i < fScaler.size(); i++) {
+    fScaler.at(i)->CalculateRunningAverage();
   }
 }
 
@@ -503,6 +516,19 @@ Bool_t QwScaler::ApplySingleEventCuts()
 {
   return true;
 }
+
+/*Bool_t QwScaler::CheckForBurpFail(const VQwSubsystem *subsys){
+  Bool_t burpstatus = kFALSE;
+  VQwSubsystem* tmp = const_cast<VQwSubsystem *>(subsys);
+  if(Compare(tmp)) {
+    const QwScaler* input = dynamic_cast<const QwScaler*>(subsys);
+    for (size_t i = 0; i < input->fScaler.size(); i++) {
+      //QwError << "************* test " << typeid(this->fScaler[i]).name() << "*****************" << QwLog::endl;
+      burpstatus |= (this->fScaler.at(i))->CheckForBurpFail(input->fScaler.at(i));
+    }
+  }
+  return burpstatus;
+}*/
 
 void QwScaler::IncrementErrorCounters()
 {
@@ -567,6 +593,7 @@ void QwScaler::PrintInfo() const
  */
 void QwScaler::PrintValue() const
 {
+  QwMessage << "=== QwScaler: " << GetSubsystemName() << " ===" << QwLog::endl;
   for(size_t i = 0; i < fScaler.size(); i++) {
     fScaler.at(i)->PrintValue();
   }

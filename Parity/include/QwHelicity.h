@@ -62,6 +62,11 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
   Int_t LoadInputParameters(TString pedestalfile);
   Int_t LoadEventCuts(TString  filename);//Loads event cuts applicable to QwHelicity class, derived from VQwSubsystemParity
   Bool_t ApplySingleEventCuts();//Apply event cuts in the QwHelicity class, derived from VQwSubsystemParity
+
+  Bool_t  CheckForBurpFail(const VQwSubsystem *ev_error){
+    return kFALSE;
+  };
+
   void IncrementErrorCounters();
   void PrintErrorCounters() const;// report number of events failed due to HW and event cut failure, derived from VQwSubsystemParity
   UInt_t  GetEventcutErrorFlag();//return the error flag
@@ -119,9 +124,9 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
   void  Ratio(VQwSubsystem *numer, VQwSubsystem *denom);
   // end of "empty" functions
 
-  void  AccumulateRunningSum(VQwSubsystem* value) { };
+  void  AccumulateRunningSum(VQwSubsystem* value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
   //remove one entry from the running sums for devices
-  void DeaccumulateRunningSum(VQwSubsystem* value){
+  void DeaccumulateRunningSum(VQwSubsystem* value, Int_t ErrorMask=0xFFFFFFF){
   };
   void  CalculateRunningAverage() { };
 
@@ -148,6 +153,8 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
 
 /////
  protected:
+  void MergeCounters(VQwSubsystem *value);
+  
   Bool_t CheckIORegisterMask(const UInt_t& ioregister, const UInt_t& mask) const {
     return ((mask != 0)&&((ioregister & mask) == mask));
   };
@@ -289,6 +296,7 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
   Int_t  fNumMultSyncErrors;    // Number of errors reading the multiplet sync
   Int_t  fNumHelicityErrors;    // Number of errors predicting the helicity
 
+  UInt_t fErrorFlag;
 
   /// Flag to disable the printing os missed MPS error messags during
   /// online running
