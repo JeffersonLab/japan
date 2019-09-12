@@ -142,9 +142,9 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
     // Get the dependent variables
 
-    VQwHardwareChannel* dv_ptr = 0;
+    const VQwHardwareChannel* dv_ptr = 0;
     QwVQWK_Channel* new_vqwk = NULL;
-    QwVQWK_Channel* vqwk = NULL;
+    const QwVQWK_Channel* vqwk = NULL;
     string name = "";
     string cor = "cor_";
     
@@ -156,10 +156,10 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
     }else{
       switch (fDependentType.at(dv)) {
         case kHandleTypeAsym:
-          dv_ptr = asym.ReturnInternalValueForFriends(fDependentName.at(dv));
+          dv_ptr = asym.RequestExternalPointer(fDependentName.at(dv));
           break;
         case kHandleTypeDiff:
-          dv_ptr = diff.ReturnInternalValueForFriends(fDependentName.at(dv));
+          dv_ptr = diff.RequestExternalPointer(fDependentName.at(dv));
           break;
         default:
           QwWarning << "QwCombiner::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
@@ -169,7 +169,7 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
           break;
       }
 
-      vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
+      vqwk = dynamic_cast<const QwVQWK_Channel*>(dv_ptr);
       name = vqwk->GetElementName().Data();
       name.insert(0, cor);
       new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
@@ -435,59 +435,4 @@ void VQwDataHandler::FillDB(QwParityDB *db, TString datatype)
   return;
 }
 #endif // __USE_DATABASE__
-
-/*
-
-Bool_t VQwDataHandler::PublishInternalValue(const TString &name, const TString &desc, const VQwHardwareChannel *value) const {
-  
-  Bool_t status = kTRUE;
-
-  if (desc == "integrationpmt") {
-    value = GetIntegrationPMT(name)->GetChannel(name);
-  } else if (desc == "combinedpmt") {
-    value = GetCombinedPMT(name)->GetChannel(name);
-  } else {
-    QwError << "VQwDataHandler::PublishInternalValues() error "<< QwLog::endl;
-  }
-
-  if (desc == NULL) {
-    QwError << "VQwDataHandler::PublishInternalValues(): " << name << " not found" << QwLog::endl;
-    status |= kFALSE;
-  } else {
-    QwDebug << "VQwDataHandler::PublishInternalValues(): " << name << " found" << QwLog::endl;
-  }
-
-  return status;
-
-}
-
-Bool_t VQwDataHandler::PublishByRequest(TString device_name) {
-  
-  Bool_t status = kFALSE;
-  
-  for(size_t i=0;i<fDependentVar.size();i++) {
-
-    if(device_name.CompareTo(fDependentName.at(i)!=0) continue;
-    
-    if (fDependentType.at(i) == kQwCombinedPMT){
-      status = PublishInternalValue(device_name, "published-by-request", fDependentVar.at(i));
-    } else if (fDependentType.at(i) == kQwIntegrationPMT) {
-      status = PublishInternalValue(device_name, "published-by-request", fDependentVar.at(i));
-    } else {
-      QwError << "Unknown channel name:  " << device_name << QwLog::endl;
-    }
-
-    break;
-
-  }
-
-  if (!status) {
-    QwError << "VQwDataHandler::PublishByRequest:  Failed to publish channel name:  " << device_name << QwLog::endl;
-  }
-
-  return status;
-  
-}
-
-*/
 

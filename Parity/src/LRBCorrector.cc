@@ -194,10 +194,10 @@ Int_t LRBCorrector::ConnectChannels(
     const VQwHardwareChannel* iv_ptr = 0;
     switch (fIndependentType.at(iv)) {
       case kHandleTypeAsym:
-        iv_ptr = asym.ReturnInternalValue(fIndependentName.at(iv));
+        iv_ptr = asym.RequestExternalPointer(fIndependentName.at(iv));
         break;
       case kHandleTypeDiff:
-        iv_ptr = diff.ReturnInternalValue(fIndependentName.at(iv));
+        iv_ptr = diff.RequestExternalPointer(fIndependentName.at(iv));
         break;
       default:
         QwWarning << "Independent variable for corrector has unknown type."

@@ -125,7 +125,7 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
     // Warn if more than one helicity subsystem defined
     if (subsys_helicity.size() > 1)
       QwWarning << "Multiple helicity subsystems defined! "
-                << "Using " << helicity->GetSubsystemName() << "."
+                << "Using " << helicity->GetName() << "."
                 << QwLog::endl;
 
   } else {

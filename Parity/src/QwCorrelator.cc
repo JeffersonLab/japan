@@ -67,7 +67,7 @@ QwCorrelator::~QwCorrelator()
     fAlphaOutputFile->Close();
   } else
     QwWarning << "Cannot close slopes ROOT file for "
-              << GetDataHandlerName() << QwLog::endl;
+              << GetName() << QwLog::endl;
 
   if (fH1iv) { // only if previously allocated
     delete[] fH1iv;
@@ -216,9 +216,9 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
     // Get the dependent variables
 
-    VQwHardwareChannel* dv_ptr = 0;
+    const VQwHardwareChannel* dv_ptr = 0;
     QwVQWK_Channel* new_vqwk = NULL;
-    QwVQWK_Channel* vqwk = NULL;
+    const QwVQWK_Channel* vqwk = NULL;
     string name = "";
     string reg = "reg_";
     
@@ -230,10 +230,10 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
     }else{
       switch (fDependentType.at(dv)) {
         case kHandleTypeAsym:
-          dv_ptr = asym.ReturnInternalValueForFriends(fDependentName.at(dv));
+          dv_ptr = asym.RequestExternalPointer(fDependentName.at(dv));
           break;
         case kHandleTypeDiff:
-          dv_ptr = diff.ReturnInternalValueForFriends(fDependentName.at(dv));
+          dv_ptr = diff.RequestExternalPointer(fDependentName.at(dv));
           break;
         default:
           QwWarning << "QwCombiner::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
@@ -243,7 +243,7 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
           break;
         }
 
-      vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
+      vqwk = dynamic_cast<const QwVQWK_Channel*>(dv_ptr);
       name = vqwk->GetElementName().Data();
       name.insert(0, reg);
       new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
@@ -278,10 +278,10 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
     const VQwHardwareChannel* iv_ptr = 0;
     switch (fIndependentType.at(iv)) {
       case kHandleTypeAsym:
-        iv_ptr = asym.ReturnInternalValue(fIndependentName.at(iv));
+        iv_ptr = asym.RequestExternalPointer(fIndependentName.at(iv));
         break;
       case kHandleTypeDiff:
-        iv_ptr = diff.ReturnInternalValue(fIndependentName.at(iv));
+        iv_ptr = diff.RequestExternalPointer(fIndependentName.at(iv));
         break;
       default:
         QwWarning << "Independent variable for correlator has unknown type."

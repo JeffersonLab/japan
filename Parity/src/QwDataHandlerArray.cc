@@ -61,7 +61,7 @@ QwDataHandlerArray::QwDataHandlerArray(const QwDataHandlerArray& source)
     /*
     // Instruct the handler to publish variables
     if (this->back()->PublishInternalValues() == kFALSE) {
-      QwError << "Not all variables for " << this->back()->GetDataHandlerName()
+      QwError << "Not all variables for " << this->back()->GetName()
              << " could be published!" << QwLog::endl;
     */
   }
@@ -177,7 +177,7 @@ void QwDataHandlerArray::LoadDataHandlersFromParameterFile(
     /*    
     // Instruct the handler to publish variables
     if (handler->PublishInternalValues() == kFALSE) {
-      QwError << "Not all variables for " << handler->GetDataHandlerName()
+      QwError << "Not all variables for " << handler->GetName()
               << " could be published!" << QwLog::endl;
     }
     */
@@ -200,14 +200,14 @@ void QwDataHandlerArray::push_back(VQwDataHandler* handler)
     //  This is an empty handler...
     //  Do nothing for now.
 
-  } else if (!this->empty() && GetDataHandlerByName(handler->GetDataHandlerName())){
+  } else if (!this->empty() && GetDataHandlerByName(handler->GetName())){
     //  There is already a handler with this name!
-    QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetDataHandlerName()
+    QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetName()
             << " already exists" << QwLog::endl;
 
   } else if (!CanContain(handler)) {
     //  There is no support for this type of handler
-    QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetDataHandlerName()
+    QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetName()
             << " is not supported by this handler array" << QwLog::endl;
 
   } else {
@@ -280,8 +280,8 @@ VQwDataHandler* QwDataHandlerArray::GetDataHandlerByName(const TString& name)
     // Loop over the handlers
     for (const_iterator handler = begin(); handler != end(); ++handler) {
       // Check the name of this handler
-      // std::cout<<"QwDataHandlerArray::GetDataHandlerByName available name=="<<(*handler)->GetDataHandlerName()<<"== to be compared to =="<<name<<"==\n";
-      if ((*handler)->GetDataHandlerName() == name) {
+      // std::cout<<"QwDataHandlerArray::GetDataHandlerByName available name=="<<(*handler)->GetName()<<"== to be compared to =="<<name<<"==\n";
+      if ((*handler)->GetName() == name) {
         tmp = (*handler).get();
         //std::cout<<"QwDataHandlerArray::GetDataHandlerByName found a matching name \n";
       } else {
@@ -589,14 +589,14 @@ void QwDataHandlerArray::push_back(boost::shared_ptr<VQwDataHandler> handler)
    //  This is an empty handler...
    //  Do nothing for now.
 
- } else if (!this->empty() && GetDataHandlerByName(handler->GetDataHandlerName())){
+ } else if (!this->empty() && GetDataHandlerByName(handler->GetName())){
    //  There is already a handler with this name!
-   QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetDataHandlerName()
+   QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetName()
            << " already exists" << QwLog::endl;
 
  } else if (!CanContain(handler.get())) {
    //  There is no support for this type of handler
-   QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetDataHandlerName()
+   QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetName()
            << " is not supported by this handler array" << QwLog::endl;
 
  } else {
@@ -610,7 +610,7 @@ void QwDataHandlerArray::push_back(boost::shared_ptr<VQwDataHandler> handler)
 
    // Instruct the handler to publish variables
    if (handler_tmp->PublishInternalValues() == kFALSE) {
-     QwError << "Not all variables for " << handler_tmp->GetDataHandlerName()
+     QwError << "Not all variables for " << handler_tmp->GetName()
              << " could be published!" << QwLog::endl;
    }
 */

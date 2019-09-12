@@ -15,9 +15,6 @@
 #include "QwLog.h"
 #include "QwParameterFile.h"
 
-/// \todo TODO (wdc) QwVQWK_Channel necessary due to explicit cast in ReturnInternalValue (yuck)
-#include "QwVQWK_Channel.h"
-
 //*****************************************************************
 
 /**
@@ -58,7 +55,7 @@ QwSubsystemArray::QwSubsystemArray(const QwSubsystemArray& source)
     this->push_back(subsys->get()->Clone());
     // Instruct the subsystem to publish variables
     if (this->back()->PublishInternalValues() == kFALSE) {
-      QwError << "Not all variables for " << this->back()->GetSubsystemName()
+      QwError << "Not all variables for " << this->back()->GetName()
              << " could be published!" << QwLog::endl;
     }
   }
@@ -152,7 +149,7 @@ void QwSubsystemArray::LoadSubsystemsFromParameterFile(QwParameterFile& detector
 
     // Instruct the subsystem to publish variables
     if (subsys->PublishInternalValues() == kFALSE) {
-      QwError << "Not all variables for " << subsys->GetSubsystemName()
+      QwError << "Not all variables for " << subsys->GetName()
               << " could be published!" << QwLog::endl;
     }
 
@@ -176,14 +173,14 @@ void QwSubsystemArray::push_back(VQwSubsystem* subsys)
     //  This is an empty subsystem...
     //  Do nothing for now.
 
-  } else if (!this->empty() && GetSubsystemByName(subsys->GetSubsystemName())){
+  } else if (!this->empty() && GetSubsystemByName(subsys->GetName())){
     //  There is already a subsystem with this name!
-    QwError << "QwSubsystemArray::push_back(): subsys " << subsys->GetSubsystemName()
+    QwError << "QwSubsystemArray::push_back(): subsys " << subsys->GetName()
             << " already exists" << QwLog::endl;
 
   } else if (!fnCanContain(subsys)) {
     //  There is no support for this type of subsystem
-    QwError << "QwSubsystemArray::push_back(): subsys " << subsys->GetSubsystemName()
+    QwError << "QwSubsystemArray::push_back(): subsys " << subsys->GetName()
             << " is not supported by this subsystem array" << QwLog::endl;
 
   } else {
@@ -270,8 +267,8 @@ VQwSubsystem* QwSubsystemArray::GetSubsystemByName(const TString& name)
     // Loop over the subsystems
     for (const_iterator subsys = begin(); subsys != end(); ++subsys) {
       // Check the name of this subsystem
-      // std::cout<<"QwSubsystemArray::GetSubsystemByName available name=="<<(*subsys)->GetSubsystemName()<<"== to be compared to =="<<name<<"==\n";
-      if ((*subsys)->GetSubsystemName() == name) {
+      // std::cout<<"QwSubsystemArray::GetSubsystemByName available name=="<<(*subsys)->GetName()<<"== to be compared to =="<<name<<"==\n";
+      if ((*subsys)->GetName() == name) {
         tmp = (*subsys).get();
         //std::cout<<"QwSubsystemArray::GetSubsystemByName found a matching name \n";
       } else {
@@ -574,7 +571,7 @@ void QwSubsystemArray::ConstructBranch(
   for (iterator subsys = begin(); subsys != end(); ++subsys) {
     VQwSubsystem* subsys_ptr = dynamic_cast<VQwSubsystem*>(subsys->get());
 
-    TString subsysname = subsys_ptr->GetSubsystemName();
+    TString subsysname = subsys_ptr->GetName();
     //QwMessage << "Tree leaves created for " << subsysname << QwLog::endl;
 
     if (trim_file.FileHasSectionHeader(subsysname)) {
@@ -700,14 +697,14 @@ void QwSubsystemArray::push_back(boost::shared_ptr<VQwSubsystem> subsys)
    //  This is an empty subsystem...
    //  Do nothing for now.
 
- } else if (!this->empty() && GetSubsystemByName(subsys->GetSubsystemName())){
+ } else if (!this->empty() && GetSubsystemByName(subsys->GetName())){
    //  There is already a subsystem with this name!
-   QwError << "QwSubsystemArray::push_back(): subsys " << subsys->GetSubsystemName()
+   QwError << "QwSubsystemArray::push_back(): subsys " << subsys->GetName()
            << " already exists" << QwLog::endl;
 
  } else if (!fnCanContain(subsys.get())) {
    //  There is no support for this type of subsystem
-   QwError << "QwSubsystemArray::push_back(): subsys " << subsys->GetSubsystemName()
+   QwError << "QwSubsystemArray::push_back(): subsys " << subsys->GetName()
            << " is not supported by this subsystem array" << QwLog::endl;
 
  } else {
@@ -723,7 +720,7 @@ void QwSubsystemArray::push_back(boost::shared_ptr<VQwSubsystem> subsys)
 
    // Instruct the subsystem to publish variables
    if (subsys_tmp->PublishInternalValues() == kFALSE) {
-     QwError << "Not all variables for " << subsys_tmp->GetSubsystemName()
+     QwError << "Not all variables for " << subsys_tmp->GetName()
              << " could be published!" << QwLog::endl;
    }
  }

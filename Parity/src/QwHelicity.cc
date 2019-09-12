@@ -82,8 +82,8 @@ QwHelicity::QwHelicity(const TString& name)
 // all of the copy protection built into the helicity subsystem.  I can't be
 // bothered to clean it up right now... (wdc)
 QwHelicity::QwHelicity(const QwHelicity& source)
-: VQwSubsystem(source.GetSubsystemName()),
-  VQwSubsystemParity(source.GetSubsystemName()),
+: VQwSubsystem(source.GetName()),
+  VQwSubsystemParity(source.GetName()),
   fInputReg_HelPlus(source.fInputReg_HelPlus),
   fInputReg_HelMinus(source.fInputReg_HelMinus),
   fInputReg_PatternSync(source.fInputReg_PatternSync),
@@ -1987,7 +1987,7 @@ VQwSubsystem&  QwHelicity::operator=  (VQwSubsystem *value)
 VQwSubsystem&  QwHelicity::operator+=  (VQwSubsystem *value)
 {
   //  Bool_t localdebug=kFALSE;
-  QwDebug << "Entering QwHelicity::operator+= adding " << value->GetSubsystemName() << " to " << this->GetSubsystemName() << " " << QwLog::endl;
+  QwDebug << "Entering QwHelicity::operator+= adding " << value->GetName() << " to " << this->GetName() << " " << QwLog::endl;
 
   //this routine is most likely to be called during the computatin of assymetry
   //this call doesn't make too much sense for this class so the following lines

@@ -11,6 +11,39 @@
 #include "VQwHardwareChannel.h"
 
 template<class U, class T>
+class MQwPublishable_child {
+
+  public:
+
+  MQwPublishable_child() {fChild = dynamic_cast<T*>(this); };
+  MQwPublishable_child(const MQwPublishable_child& source) {fChild = dynamic_cast<T*>(this);};
+
+    virtual ~MQwPublishable_child() { };
+    void SetParent(U* parent){fParent = parent;};
+
+ protected:
+    /// \brief Retrieve the variable name from other subsystem arrays
+    Bool_t RequestExternalValue(const TString& name, VQwHardwareChannel* value) const;
+    /// \brief Retrieve the variable name from other subsystem arrays
+    const VQwHardwareChannel* RequestExternalPointer(const TString& name) const;
+    /// \brief Publish the value name with description from a subsystem in this array
+    Bool_t PublishInternalValue(const TString name, const TString desc, const VQwHardwareChannel* element) const;
+
+
+    /// The functions below should be specified in the fully derived classes.
+ public:
+    /// \brief Publish all variables of the subsystem
+    virtual Bool_t PublishInternalValues() const = 0;
+    /// \brief Try to publish an internal variable matching the submitted name
+    virtual Bool_t PublishByRequest(TString device_name) = 0;
+
+ private:
+    U* fParent;
+    T* fChild;
+};
+
+
+template<class U, class T>
 class MQwPublishable {
 
   public:
@@ -24,21 +57,22 @@ class MQwPublishable {
 
     virtual ~MQwPublishable() { };
 
-    /// Friend with data handler classes
-    friend class QwCombiner;
-    friend class QwCorrelator;
-    friend class VQwDataHandler;
-
   public:
     std::vector<std::vector<TString> > fPublishList;
     /// \brief Retrieve the variable name from other subsystem arrays
     Bool_t RequestExternalValue(const TString& name, VQwHardwareChannel* value) const;
 
+    /// \brief Retrieve the variable name from other subsystem arrays
+    const VQwHardwareChannel* RequestExternalPointer(const TString& name) const;
+    
     /// \brief Retrieve the variable name from subsystems in this subsystem array
     const VQwHardwareChannel* ReturnInternalValue(const TString& name) const;
 
     /// \brief Retrieve the variable name from subsystems in this subsystem array
     Bool_t ReturnInternalValue(const TString& name, VQwHardwareChannel* value) const;
+
+    /// \brief List the published values and description in this subsystem array
+    void ListPublishedValues() const;
 
     /// \brief Publish the value name with description from a subsystem in this array
     Bool_t PublishInternalValue(
@@ -47,16 +81,9 @@ class MQwPublishable {
         const T* subsys,
         const VQwHardwareChannel* element);
 
-    /// \brief List the published values and description in this subsystem array
-    void ListPublishedValues() const;
-
   private:
-
     /// \brief Try to publish an internal variable matching the submitted name
     Bool_t PublishByRequest(TString device_name);
-
-    /// \brief Retrieve the variable name from subsystems in this subsystem array
-    VQwHardwareChannel* ReturnInternalValueForFriends(const TString& name) const;
 
     /// Published values
     std::map<TString, const VQwHardwareChannel*> fPublishedValuesDataElement;

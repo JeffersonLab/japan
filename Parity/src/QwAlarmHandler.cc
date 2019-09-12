@@ -179,15 +179,15 @@ Int_t QwAlarmHandler::ConnectChannels(
     UInt_t eventcut = 0; 
     switch (fAlarmObjectList.at(anaInd).analysisType) {
       case kHandleTypeYield:
-        ana_ptr = yield.ReturnInternalValue(fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name"));
+        ana_ptr = yield.RequestExternalPointer(fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name"));
         eventcut = yield.GetEventcutErrorFlag();
         break;
       case kHandleTypeAsym:
-        ana_ptr = asym.ReturnInternalValue(fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name"));
+        ana_ptr = asym.RequestExternalPointer(fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name"));
         eventcut = asym.GetEventcutErrorFlag();
         break;
       case kHandleTypeDiff:
-        ana_ptr = diff.ReturnInternalValue(fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name"));
+        ana_ptr = diff.RequestExternalPointer(fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name"));
         eventcut = diff.GetEventcutErrorFlag();
         break;
       default:
@@ -239,7 +239,7 @@ Int_t QwAlarmHandler::ConnectChannels(
         name = fAnalysisName.at(dv).substr(1,fAnalysisName.at(dv).length());
         new_vqwk = new QwVQWK_Channel(name, VQwDataElement::kDerived);
       } else {
-        dv_ptr = event.ReturnInternalValue(fAnalysisName.at(dv));
+        dv_ptr = event.RequestExternalPointer(fAnalysisName.at(dv));
 
         vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
         name = vqwk.GetElementName().Data();
