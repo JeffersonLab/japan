@@ -179,28 +179,45 @@ Int_t QwAlarmHandler::ConnectChannels(
     UInt_t eventcut = 0; 
     switch (fAlarmObjectList.at(anaInd).analysisType) {
       case kHandleTypeYield:
+        //SetEventcutErrorFlagPointer(yield.GetEventcutErrorFlagPointer());
         ana_ptr = yield.ReturnInternalValue(fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name"));
         eventcut = yield.GetEventcutErrorFlag();
+        if (ana_ptr) {
+          fAlarmObjectList.at(anaInd).value = ana_ptr;
+          fAlarmObjectList.at(anaInd).eventcutErrorFlag = eventcut;
+        } else {
+          QwWarning << "Independent variable " << fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name") << " missing in alarm map "
+            << QwLog::endl;
+        }
         break;
       case kHandleTypeAsym:
+        //SetEventcutErrorFlagPointer(asym.GetEventcutErrorFlagPointer());
         ana_ptr = asym.ReturnInternalValue(fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name"));
         eventcut = asym.GetEventcutErrorFlag();
+        if (ana_ptr) {
+          fAlarmObjectList.at(anaInd).value = ana_ptr;
+          fAlarmObjectList.at(anaInd).eventcutErrorFlag = eventcut;
+        } else {
+          QwWarning << "Independent variable " << fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name") << " missing in alarm map "
+            << QwLog::endl;
+        }
         break;
       case kHandleTypeDiff:
+        //SetEventcutErrorFlagPointer(diff.GetEventcutErrorFlagPointer());
         ana_ptr = diff.ReturnInternalValue(fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name"));
         eventcut = diff.GetEventcutErrorFlag();
+        if (ana_ptr) {
+          fAlarmObjectList.at(anaInd).value = ana_ptr;
+          fAlarmObjectList.at(anaInd).eventcutErrorFlag = eventcut;
+        } else {
+          QwWarning << "Independent variable " << fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name") << " missing in alarm map "
+            << QwLog::endl;
+        }
         break;
       default:
         QwWarning << "Independent variable for AlarmHandler has unknown type."
           << QwLog::endl;
         break;
-    }
-    if (ana_ptr) {
-      fAlarmObjectList.at(anaInd).value = ana_ptr;
-      fAlarmObjectList.at(anaInd).eventcutErrorFlag = eventcut;
-    } else {
-      QwWarning << "Independent variable " << fAlarmObjectList.at(anaInd).alarmParameterMapStr.at("Channel-Name") << " missing in alarm map "
-        << QwLog::endl;
     }
   }
   return 0;
@@ -337,12 +354,12 @@ void QwAlarmHandler::CheckAlarms() {
       fAlarmObjectList.at(numAna).NsinceLastViolation = 0;
       tmpAlarmStat = "Event-Cut";
     }
-    else if (fAlarmObjectList.at(numAna).alarmParameterMap.count("Width") != 0 
-        && fAlarmObjectList.at(numAna).value->GetValueWidth() >= fAlarmObjectList.at(numAna).alarmParameterMap.at("Width"))  {
-      fAlarmObjectList.at(numAna).Nviolated++;
-      fAlarmObjectList.at(numAna).NsinceLastViolation = 0;
-      tmpAlarmStat = "Width";
-    }
+//    else if (fAlarmObjectList.at(numAna).alarmParameterMap.count("Width") != 0 
+//        && fAlarmObjectList.at(numAna).value->GetValueWidth() >= fAlarmObjectList.at(numAna).alarmParameterMap.at("Width"))  {
+//      fAlarmObjectList.at(numAna).Nviolated++;
+//      fAlarmObjectList.at(numAna).NsinceLastViolation = 0;
+//      tmpAlarmStat = "Width";
+//    }
     else if (fAlarmObjectList.at(numAna).alarmParameterMap.count("Exactly") != 0 
         && fAlarmObjectList.at(numAna).value->GetValue() != fAlarmObjectList.at(numAna).alarmParameterMap.at("Exactly"))  {
       fAlarmObjectList.at(numAna).Nviolated++;
@@ -401,8 +418,8 @@ void QwAlarmHandler::UpdateAlarmFile(){
 
   file_out.open(fAlarmOutputFile,std::ofstream::trunc);
   for (size_t ite = 0 ; ite<fAlarmObjectList.size(); ite++){
-    Double_t tmpVal = -1.0e6;
-    if (fAlarmObjectList.at(ite).value != 0 && fAlarmObjectList.at(ite).alarmParameterMap.count("Width") != 0 ) { // Check if non-trivial value object...
+    //Double_t tmpVal = -1.0e6;
+/*    if (fAlarmObjectList.at(ite).value != 0 && fAlarmObjectList.at(ite).alarmParameterMap.count("Width") != 0 ) { // Check if non-trivial value object...
       tmpVal = fAlarmObjectList.at(ite).value->GetValueWidth();
     }
     else if (fAlarmObjectList.at(ite).value != 0) { // Check if non-trivial value object...
@@ -412,6 +429,12 @@ void QwAlarmHandler::UpdateAlarmFile(){
       file_out<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Kind")<<","<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Chan")<<","<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Analysis")<<","<<"Value"<<","<<tmpVal<<std::endl;
     }
     if (fAlarmObjectList.at(ite).alarmParameterMapStr.count("Kind") && fAlarmObjectList.at(ite).alarmParameterMapStr.count("Chan") && fAlarmObjectList.at(ite).alarmParameterMapStr.count("Analysis") && fAlarmObjectList.at(ite).alarmStatus != "") { 
+      file_out<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Kind")<<","<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Chan")<<","<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Analysis")<<","<<"Alarm Status"<<","<<fAlarmObjectList.at(ite).alarmStatus<<std::endl;
+    }*/
+    if (fAlarmObjectList.at(ite).alarmParameterMapStr.count("Kind") && fAlarmObjectList.at(ite).alarmParameterMapStr.count("Chan") && fAlarmObjectList.at(ite).alarmParameterMapStr.count("Analysis") && fAlarmObjectList.at(ite).value != 0) { // Check if non-trivial value object...
+      file_out<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Kind")<<","<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Chan")<<","<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Analysis")<<","<<"Value"<<","<<fAlarmObjectList.at(ite).value->GetValue()<<std::endl;
+    }
+    if (fAlarmObjectList.at(ite).alarmParameterMapStr.count("Kind") && fAlarmObjectList.at(ite).alarmParameterMapStr.count("Chan") && fAlarmObjectList.at(ite).alarmParameterMapStr.count("Analysis") && fAlarmObjectList.at(ite).alarmStatus != "") { // Check if non-trivial value object...
       file_out<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Kind")<<","<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Chan")<<","<<fAlarmObjectList.at(ite).alarmParameterMapStr.at("Analysis")<<","<<"Alarm Status"<<","<<fAlarmObjectList.at(ite).alarmStatus<<std::endl;
     }
     else continue;
