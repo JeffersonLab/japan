@@ -15,11 +15,13 @@ class MQwPublishable_child {
 
   public:
 
-  MQwPublishable_child() {fChild = dynamic_cast<T*>(this); };
-  MQwPublishable_child(const MQwPublishable_child& source) {fChild = dynamic_cast<T*>(this);};
+  MQwPublishable_child() {fSelf = dynamic_cast<T*>(this); };
+  MQwPublishable_child(const MQwPublishable_child& source) {fSelf = dynamic_cast<T*>(this);};
 
     virtual ~MQwPublishable_child() { };
     void SetParent(U* parent){fParent = parent;};
+    U* GetParent() const {return fParent;};
+
 
  protected:
     /// \brief Retrieve the variable name from other subsystem arrays
@@ -39,7 +41,7 @@ class MQwPublishable_child {
 
  private:
     U* fParent;
-    T* fChild;
+    T* fSelf;
 };
 
 

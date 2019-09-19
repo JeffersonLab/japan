@@ -210,9 +210,9 @@ Bool_t MQwPublishable_child<U,T>::PublishInternalValue(
   // Get the parent and check for existence
   if (fParent != 0) {
     // Publish the variable with name in the parent
-    if (fParent->PublishInternalValue(name, desc, fChild, element) == kFALSE) {
+    if (fParent->PublishInternalValue(name, desc, fSelf, element) == kFALSE) {
       QwError << "Could not publish variable " << name
-	      << " in from object " << fChild->GetName() << "!" << QwLog::endl;
+	      << " in from object " << fSelf->GetName() << "!" << QwLog::endl;
       return kFALSE; // Error: variable could not be puslished
     }
   } else {

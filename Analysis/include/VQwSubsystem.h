@@ -95,10 +95,6 @@ class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms, 
   TString GetName() const {return fSystemName;};
   Bool_t  HasDataLoaded() const  {return fIsDataLoaded;}
 
-  /// \brief Set the parent of this subsystem to the specified array
-  void SetParent(QwSubsystemArray* parent);
-  /// \brief Get the parent of this subsystem
-  QwSubsystemArray* GetParent(const unsigned int parent = 0) const;
   /// \brief Get the sibling with specified name
   VQwSubsystem* GetSibling(const std::string& name) const;
 
@@ -351,11 +347,6 @@ class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms, 
   std::vector< std::vector<BankID_t> > fBank_IDs;
   /// Vector of marker words per ROC & subbank associated with this subsystem
   std::vector< std::vector< std::vector<UInt_t> > > fMarkerWords;
-
-
-  /// Vector of pointers to subsystem arrays that contain this subsystem
-  std::vector<QwSubsystemArray*> fArrays;
-
 
  protected:
 
