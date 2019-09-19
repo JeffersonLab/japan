@@ -20,7 +20,7 @@
  * Create a handler array based on the configuration option 'detectors'
  */
 QwDataHandlerArray::QwDataHandlerArray(QwOptions& options, QwHelicityPattern& helicitypattern, const TString &run)
-: fHelicityPattern(0),fSubsystemArray(0),fDataHandlersMapFile("")
+  : fHelicityPattern(0),fSubsystemArray(0),fDataHandlersMapFile(""),fArrayScope(kPatternScope)
 {
   ProcessOptions(options);
   if (fDataHandlersMapFile != ""){
@@ -34,7 +34,7 @@ QwDataHandlerArray::QwDataHandlerArray(QwOptions& options, QwHelicityPattern& he
  * Create a handler array based on the configuration option 'detectors'
  */
 QwDataHandlerArray::QwDataHandlerArray(QwOptions& options, QwSubsystemArrayParity& detectors, const TString &run)
-: fHelicityPattern(0),fSubsystemArray(0),fDataHandlersMapFile("")
+  : fHelicityPattern(0),fSubsystemArray(0),fDataHandlersMapFile(""),fArrayScope(kEventScope)
 {
   ProcessOptions(options);
   if (fDataHandlersMapFile != ""){
@@ -109,10 +109,18 @@ void QwDataHandlerArray::LoadDataHandlersFromParameterFile(
     // Determine type and name of handler
     std::string handler_type = section_name;
     std::string handler_name;
+    std::string handler_scope;
     if (! section->FileHasVariablePair("=","name",handler_name)) {
       QwError << "No name defined in section for handler " << handler_type << "." << QwLog::endl;
       delete section; section = 0;
       continue;
+    }
+    if (section->FileHasVariablePair("=","scope",handler_scope)) {
+      if (ScopeMismatch(handler_scope)) continue;
+    } else {
+      //  Assume the scope of a handler without a scope specifier is
+      //  "pattern".
+      if (fArrayScope != kPatternScope) continue;
     }
 
     // If handler type is explicitly disabled
