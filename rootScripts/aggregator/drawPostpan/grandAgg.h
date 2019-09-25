@@ -16,10 +16,20 @@ class Channel{
   
     Channel (TString a): name (a)  {};
     void draw(TTree *, TString);
+    void drawRange(TTree *, TString, Int_t, Int_t);
     TGraphErrors drawReg(Int_t, Double_t *, Double_t *, Double_t *);
     void printInfo() { std::cout << "Plotting "<< name<<" vs slug number" << endl;}
 };  
 
+//Draw, but only in a range of slug numbers
+void Channel::drawRange(TTree* tree,TString output, Int_t min = 0, Int_t max = 100000){
+    // Overload draw() by default initializing range to 0-10000
+    // But enable user specified cutting if wanted
+    auto chan_name=this->name;
+    auto chan_t=tree;
+    TTree* cut_tree = tree->CopyTree(Form("n_runs>=%d && n_runs<=%d",min,max));
+    draw(cut_tree, output);
+}
 
 void Channel::draw(TTree* tree,TString output){
 auto chan_name=this->name;
@@ -217,6 +227,7 @@ class Source {
     Source (TString a, TString b, TString c): file(a), tree(b), output(c) {T=new TChain(tree); T->Add(file);}
     void printInfo() { std::cout << "Reading from  " << tree  << " tree in file " << std::endl;} 
     void drawAll();
+    void drawAllRange(Int_t min, Int_t max);
     Channel GetChannelByName(TString name);    
 
 };
@@ -235,6 +246,25 @@ while (auto *var= var_iter.Next()){
      Channel channel(var->GetName());     
      channel.printInfo();
      channel.draw(this->T, filename);
+     (this->list).push_back(channel);
+   
+   }
+}   
+
+void Source::drawAllRange(Int_t min = 0, Int_t max = 10000){
+  
+auto filename= this->output;
+
+TObjArray *var_list=(this->T)->GetListOfBranches();
+TIter var_iter(var_list);
+
+while (auto *var= var_iter.Next()){
+   TString name(var->GetName());
+   bool createPlotObj = ((name.Contains("_mean") || name.Contains("_slope") || name.Contains("_pslope")|| name.Contains("_rms")) && !(name.Contains("_error"))); 
+   if (createPlotObj) {
+     Channel channel(var->GetName());     
+     channel.printInfo();
+     channel.drawRange(this->T, filename, min, max);
      (this->list).push_back(channel);
    
    }

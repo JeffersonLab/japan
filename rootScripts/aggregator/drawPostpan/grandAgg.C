@@ -2,13 +2,18 @@
 #include "TTree.h"
 
 
-void grandAgg(TString filename, TString output){
+void grandAgg(TString filename, TString output, Int_t min = 0, Int_t max = 10000){
 
 Source source(filename, "agg",output);
 source.printInfo();
 TCanvas c("c", "c", 800,600);
 c.Print(output+".pdf[", "pdf");
-source.drawAll();
+if (min !=0 || max != 10000) {
+  source.drawAllRange(min,max);
+}
+else{
+  source.drawAll();
+}
 
 std::ofstream out;
 out.open(Form("%s.txt",output.Data()));   
