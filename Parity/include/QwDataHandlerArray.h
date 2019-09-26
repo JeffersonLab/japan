@@ -172,6 +172,16 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     /// Filename of the global detector map
     std::string fDataHandlersMapFile;
 
+    Bool_t ScopeMismatch(TString name){
+      name.ToLower();
+      EDataHandlerArrayScope tmpscope = kUnknownScope;
+      if (name=="event") tmpscope = kEventScope;
+      if (name=="pattern") tmpscope = kPatternScope;
+      return (fArrayScope != tmpscope);
+    }
+    enum EDataHandlerArrayScope {kUnknownScope=-1, kEventScope, kPatternScope};
+    EDataHandlerArrayScope fArrayScope;
+
     std::vector<std::string> fDataHandlersDisabledByName; ///< List of disabled types
     std::vector<std::string> fDataHandlersDisabledByType; ///< List of disabled names
 

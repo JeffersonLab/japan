@@ -252,6 +252,10 @@ void QwSubsystemArray::DefineOptions(QwOptions &options)
                        po::value<std::string>()->default_value("detectors.map"),
                        "map file with detectors to include");
 
+  options.AddOptions()("bad-event-list",
+                       po::value<std::string>()->default_value(""),
+                       "map file with bad event ranges");
+
   // Versions of boost::program_options below 1.39.0 have a bug in multitoken processing
 #if BOOST_VERSION < 103900
   options.AddOptions()("disable-by-type",
@@ -292,12 +296,32 @@ void QwSubsystemArray::ProcessOptionsToplevel(QwOptions &options)
  */
 void QwSubsystemArray::ProcessOptionsSubsystems(QwOptions &options)
 {
+  LoadAllEventRanges(options);
+
   for (iterator subsys_iter = begin(); subsys_iter != end(); ++subsys_iter) {
     VQwSubsystem* subsys = dynamic_cast<VQwSubsystem*>(subsys_iter->get());
     subsys->ProcessOptions(options);
   }
 }
 
+void QwSubsystemArray::LoadAllEventRanges(QwOptions &options){
+
+  std::string fBadEventListFileName = options.GetValue<std::string>("bad-event-list");
+  if (fBadEventListFileName.size() > 0) {
+    QwParameterFile fBadEventListFile(fBadEventListFileName);
+    // If there is an event list, open the next section
+    std::string bad_event_range;
+    while (fBadEventListFile.ReadNextLine(bad_event_range)){
+      // Find next non-whitespace, non-comment, non-empty line, before EOF
+      fBadEventListFile.TrimWhitespace();
+      fBadEventListFile.TrimComment('#');
+      if (fBadEventListFile.LineIsEmpty()) continue;
+      std::pair<UInt_t,UInt_t> aBadEventRange = QwParameterFile::ParseIntRange(":",bad_event_range);
+      fBadEventRange.push_back(aBadEventRange);
+      QwMessage << "Next Bad event range is " << bad_event_range << QwLog::endl;
+    } // end of loop of reading lines.
+  }
+}
 
 /**
  * Get the subsystem in this array with the spcified name
@@ -550,14 +574,13 @@ void  QwSubsystemArray::ConstructBranchAndVector(
   values.push_back(0.0);
   values.push_back(0.0);
   values.push_back(0.0);
-  if (prefix == "" || prefix == "yield_") {
+  if (prefix == "" || prefix.Index("yield_") == 0) {
     tree->Branch("CodaEventNumber",&(values[fTreeArrayIndex]),"CodaEventNumber/D");
     tree->Branch("CodaEventType",&(values[fTreeArrayIndex+1]),"CodaEventType/D");
     tree->Branch("Coda_CleanData",&(values[fTreeArrayIndex+2]),"Coda_CleanData/D");
     tree->Branch("Coda_ScanData1",&(values[fTreeArrayIndex+3]),"Coda_ScanData1/D");
     tree->Branch("Coda_ScanData2",&(values[fTreeArrayIndex+4]),"Coda_ScanData2/D");
   }
-  
   for (iterator subsys = begin(); subsys != end(); ++subsys) {
     VQwSubsystem* subsys_ptr = dynamic_cast<VQwSubsystem*>(subsys->get());
     subsys_ptr->ConstructBranchAndVector(tree, prefix, values);

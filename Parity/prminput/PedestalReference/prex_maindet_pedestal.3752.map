@@ -1,0 +1,33 @@
+!! 70 uA pedestals for Main Detectors
+!! Pedestals from Run 3645, with BCM DG DS as reference https://logbooks.jlab.org/entry/3711368 
+! and https://logbooks.jlab.org/entry/3712991
+
+!Run 3751 10-70uA fit (5points) relative to analog downstream 1x: https://logbooks.jlab.org/entry/3713774
+usl, 1317.33, 0.000076
+dsl, 1469.33, 0.000076
+usr, 1444.69, 0.000076
+dsr, 1006.75, 0.000076
+atl1, 781.16, 0.000076
+atl2, 1452.97, 0.000076
+atr1, 1265.58, 0.000076
+atr2, 921.62, 0.000076
+
+
+!usl, 1212.59, 0.000076
+!dsl, 1357.25, 0.000076
+!usr, 1381.32, 0.000076
+!dsr, 937.79, 0.000076
+
+!atl1, 697.65, 0.000076
+!atl2, 1298.86, 0.000076
+vqwk_25_0ch4, 0, 0.000076
+vqwk_25_0ch5, 0, 0.000076
+battery1L, 0, 0.000076
+battery2L, 0, 0.000076
+
+!atr1, 1112.50, 0.000076
+!atr2, 769.93, 0.000076
+vqwk_26_0ch4, 0, 0.000076
+vqwk_26_0ch5, 0, 0.000076
+battery1R ,   0, 0.000076
+battery2R ,   0, 0.000076

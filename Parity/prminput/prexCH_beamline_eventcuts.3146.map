@@ -1,0 +1,79 @@
+
+!This file contains beamline event cut properties
+!*********************************************************************************************
+!Global switch to turn ON and OFF eventcut check
+!Available settings
+!***************************************************
+!To turn OFF all checks
+!EVENTCUTS = 0 
+
+!***************************************************
+!To turn OFF event cuts and perform only HW checks
+!EVENTCUTS = 1
+
+!***************************************************
+!To turn ON both event cuts and HW checks
+! EVENTCUTS = 2
+
+!***************************************************
+!To turn do both event cuts and HW checks and only flag event cut failed events
+EVENTCUTS = 3
+
+!IMPORTANT
+!---------
+!Make sure when puting tabs in the map file entries, always put ", " before inserting a tab. 
+!Otherwise the routine QwParameterFile::GetNextToken(", ") will get confuse.
+
+!***************************************************
+!for bcm devices
+!device_type, device_name,      lower limit, upper limit, local(l)/global(g), stability percentage
+ bcm, bcm_an_ds3,		12,	1e6,	g,	0.1
+ bpmstripline, bpm4a, xm, 1000, 55000, g, 0, 1000
+ bpmstripline, bpm4a, xp, 1000, 55000, g, 0, 1000
+ bpmstripline, bpm4a, ym, 1000, 55000, g, 0, 1000
+ bpmstripline, bpm4a, yp, 1000, 55000, g, 0, 1000
+ bpmstripline, bpm4e, xm, 1000, 55000, g, 0, 1000
+ bpmstripline, bpm4e, xp, 1000, 55000, g, 0, 1000
+ bpmstripline, bpm4e, ym, 1000, 55000, g, 0, 1000
+ bpmstripline, bpm4e, yp, 1000, 55000, g, 0, 1000
+ bpmstripline, bpm12, xm, 1000, 55000, g, 0, 1000
+ bpmstripline, bpm12, xp, 1000, 55000, g, 0, 1000
+ bpmstripline, bpm12, ym, 1000, 55000, g, 0, 1000
+ bpmstripline, bpm12, yp, 1000, 55000, g, 0, 1000
+ bpmstripline, bpm4a, ym, 10000, 50000, l
+
+!for parity mock data run 1000 9.98608e+06
+!bcm, qwk_bcm0l03, 	8.00e+06, 	1.20e+07, 1, 0 
+
+ 
+!bcm, qwk_batery6,  	0,	0, 1, 0 
+!bcm, qwk_batery7, 	95.57778e+9,	95.5788e+9, 1, 0 
+!bcm, phasemonitor, 	0,	0, 1, 0
+
+!****************************************************				
+!for bpmstrpline devices
+!device_type, device_name, channel_name, lower limit, upper limit
+!channel_name can be relx, rely, absx, absy, wsum, xp, xm, yp, ym
+!Cuts are applied after the VQwSubsystem::ProcessEvent() routine. 
+!So pedestals are applied before appyling the cuts.
+
+!device_type,  device_name, channel_name, lower limit, upper limit, local(l)/global(g), stability percentage
+! the following line is an example
+!bpmstripline, qwk_qpd, relx, 2.67319, 	4.45531
+
+
+
+!This file contains beamline event cut properties
+
+!IMPORTANT
+!---------
+!Make sure when puting tabs in the map file entries, always put ", " before inserting a tab. 
+!Otherwise the routine QwParameterFile::GetNextToken(", ") will extract the entry with the tab character.
+
+!Comments
+!--------
+!Devices that are not in the list are not subjected event cut checks
+!All devices  will be tested for HW checks.
+!
+!For device_type =bcm only upper and lower limit of the calibrated charge on the ADC HW sum. (QwVQWK_Channel::fHardwareBlockSum)
+

@@ -326,7 +326,7 @@ Int_t main(Int_t argc, Char_t* argv[])
           datahandlerarray_evt.ProcessDataHandlerEntry();
 
           // Fill data handler histograms
-          datahandlerarray_evt.FillHistograms();
+          historootfile->FillHistograms(datahandlerarray_evt);
 
           // Fill data handler tree branches
           datahandlerarray_evt.FillTreeBranches(treerootfile);
@@ -363,7 +363,7 @@ Int_t main(Int_t argc, Char_t* argv[])
               datahandlerarray_burst.ProcessDataHandlerEntry();
 
               // Fill data handler histograms
-              datahandlerarray_mul.FillHistograms();
+              historootfile->FillHistograms(datahandlerarray_mul);
 
               // Fill data handler tree branches
               datahandlerarray_mul.FillTreeBranches(treerootfile);
@@ -400,7 +400,7 @@ Int_t main(Int_t argc, Char_t* argv[])
                 datahandlerarray_burst.FinishDataHandler();
 
                 // Fill data handler histograms
-                datahandlerarray_burst.FillHistograms();
+                burstrootfile->FillHistograms(datahandlerarray_burst);
 
                 // Fill data handler tree branches
                 datahandlerarray_burst.FillTreeBranches(burstrootfile);

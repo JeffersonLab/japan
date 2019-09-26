@@ -20,6 +20,7 @@
   alias-file-base = regalias_
   alias-file-suff = 
   alias-path = ./LRBoutput/
+  disable-histos = true
   tree-name  = lrb_std
   tree-comment = Correlations
 
@@ -34,6 +35,7 @@
   alias-file-suff = 
   alias-path = ./LRBoutput/
   block = 0
+  disable-histos = true
   tree-name  = lrb_std_block0
   tree-comment = Correlations (block0)
 
@@ -48,6 +50,7 @@
   alias-file-suff = 
   alias-path = ./LRBoutput/
   block = 1
+  disable-histos = true
   tree-name  = lrb_std_block1
   tree-comment = Correlations (block1)
 
@@ -62,6 +65,7 @@
   alias-file-suff = 
   alias-path = ./LRBoutput/
   block = 2
+  disable-histos = true
   tree-name  = lrb_std_block2
   tree-comment = Correlations (block2)
 
@@ -76,6 +80,7 @@
   alias-file-suff = 
   alias-path = ./LRBoutput/
   block = 3
+  disable-histos = true
   tree-name  = lrb_std_block3
   tree-comment = Correlations (block3)
 
@@ -89,6 +94,7 @@
   alias-file-base = regalias_
   alias-file-suff = all
   alias-path = ./LRBoutput/
+  disable-histos = true
   tree-name  = lrb_all
   tree-comment = Correlations (all variables)
 

@@ -449,34 +449,34 @@ void QwCorrelator::ConstructTreeBranches(
     tree->Branch(bn(n),pv(v),lv(v,n));
   };
 
-  branchm(fTree,linReg.mA,    "A");
-  branchm(fTree,linReg.mAsig, "dA");
+  branchm(fTree,linReg.Axy,  "A");
+  branchm(fTree,linReg.dAxy, "dA");
 
-  branchm(fTree,linReg.mVPP,      "VPP");
-  branchm(fTree,linReg.mVPY,      "VPY");
-  branchm(fTree,linReg.mVYP,      "VYP");
-  branchm(fTree,linReg.mVYY,      "VYY");
-  branchm(fTree,linReg.mVYYprime, "VYYp");
+  branchm(fTree,linReg.mVPP,  "VPP");
+  branchm(fTree,linReg.mVPY,  "VPY");
+  branchm(fTree,linReg.mVYP,  "VYP");
+  branchm(fTree,linReg.mVYY,  "VYY");
+  branchm(fTree,linReg.mVYYp, "VYYp");
 
-  branchm(fTree,linReg.sigXX,     "SPP");
-  branchm(fTree,linReg.sigXY,     "SPY");
-  branchm(fTree,linReg.sigYX,     "SYP");
-  branchm(fTree,linReg.sigYY,     "SYY");
-  branchm(fTree,linReg.sigYYprime,"SYYp");
+  branchm(fTree,linReg.mSPP,  "SPP");
+  branchm(fTree,linReg.mSPY,  "SPY");
+  branchm(fTree,linReg.mSYP,  "SYP");
+  branchm(fTree,linReg.mSYY,  "SYY");
+  branchm(fTree,linReg.mSYYp, "SYYp");
 
-  branchm(fTree,linReg.mRPP,      "RPP");
-  branchm(fTree,linReg.mRPY,      "RPY");
-  branchm(fTree,linReg.mRYP,      "RYP");
-  branchm(fTree,linReg.mRYY,      "RYY");
-  branchm(fTree,linReg.mRYYprime, "RYYp");
+  branchm(fTree,linReg.mRPP,  "RPP");
+  branchm(fTree,linReg.mRPY,  "RPY");
+  branchm(fTree,linReg.mRYP,  "RYP");
+  branchm(fTree,linReg.mRYY,  "RYY");
+  branchm(fTree,linReg.mRYYp, "RYYp");
 
-  branchv(fTree,linReg.mMP,      "MP");
-  branchv(fTree,linReg.mMY,      "MY");
-  branchv(fTree,linReg.mMYprime, "MYp");
+  branchv(fTree,linReg.mMP,  "MP");
+  branchv(fTree,linReg.mMY,  "MY");
+  branchv(fTree,linReg.mMYp, "MYp");
 
-  branchv(fTree,linReg.sigX,     "dMP");
-  branchv(fTree,linReg.sigY,     "dMY");
-  branchv(fTree,linReg.sigYprime,"dMYp");
+  branchv(fTree,linReg.mSP,  "dMP");
+  branchv(fTree,linReg.mSY,  "dMY");
+  branchv(fTree,linReg.mSYp, "dMYp");
 
   // Create alpha and alias files
   OpenAlphaFile(treeprefix);
@@ -558,12 +558,13 @@ void QwCorrelator::ConstructHistograms(TDirectory *folder, TString &prefix)
   }
 
   // store list of names to be archived
-  hA[0] = new TH1D("NamesIV",Form("IV name list nIV=%d",nP),nP,0,1);
+  fHnames.resize(2);
+  fHnames[0] = TH1D("NamesIV",Form("IV name list nIV=%d",nP),nP,0,1);
   for (int i = 0; i < nP; i++)
-    hA[0]->Fill(fIndependentName[i].c_str(),1.*i);
-  hA[1] = new TH1D("NamesDV",Form("DV name list nIV=%d",nY),nY,0,1);
+    fHnames[0].Fill(fIndependentName[i].c_str(),1.*i);
+  fHnames[1] = TH1D("NamesDV",Form("DV name list nIV=%d",nY),nY,0,1);
   for (int i = 0; i < nY; i++)
-    hA[1]->Fill(fDependentName[i].c_str(),i*1.);
+    fHnames[1].Fill(fDependentName[i].c_str(),i*1.);
 }
 
 /// \brief Fill the histograms
@@ -599,17 +600,17 @@ void QwCorrelator::WriteAlphaFile()
   if (fAlphaOutputFile) fAlphaOutputFile->cd();
 
   // Write objects
-  linReg.mA.Write("slopes");
-  linReg.mAsig.Write("sigSlopes");
+  linReg.Axy.Write("slopes");
+  linReg.dAxy.Write("sigSlopes");
 
   linReg.mRPP.Write("IV_IV_correlation");
   linReg.mRPY.Write("IV_DV_correlation");
   linReg.mRYY.Write("DV_DV_correlation");
-  linReg.mRYYprime.Write("DV_DV_correlation_prime");
+  linReg.mRYYp.Write("DV_DV_correlation_prime");
 
   linReg.mMP.Write("IV_mean");
   linReg.mMY.Write("DV_mean");
-  linReg.mMYprime.Write("DV_mean_prime");
+  linReg.mMYp.Write("DV_mean_prime");
 
   // number of events
   TMatrixD Mstat(1,1);
@@ -627,32 +628,32 @@ void QwCorrelator::WriteAlphaFile()
   hdv.Write();
 
   // sigmas
-  linReg.sigX.Write("IV_sigma");
-  linReg.sigY.Write("DV_sigma");
-  linReg.sigYprime.Write("DV_sigma_prime");
+  linReg.mSP.Write("IV_sigma");
+  linReg.mSY.Write("DV_sigma");
+  linReg.mSYp.Write("DV_sigma_prime");
 
   // raw covariances
   linReg.mVPP.Write("IV_IV_rawVariance");
   linReg.mVPY.Write("IV_DV_rawVariance");
   linReg.mVYY.Write("DV_DV_rawVariance");
-  linReg.mVYYprime.Write("DV_DV_rawVariance_prime");
+  linReg.mVYYp.Write("DV_DV_rawVariance_prime");
   TVectorD mVY2(TMatrixDDiag(linReg.mVYY));
   mVY2.Write("DV_rawVariance");
   TVectorD mVP2(TMatrixDDiag(linReg.mVPP));
   mVP2.Write("IV_rawVariance");
-  TVectorD mVY2prime(TMatrixDDiag(linReg.mVYYprime));
+  TVectorD mVY2prime(TMatrixDDiag(linReg.mVYYp));
   mVY2prime.Write("DV_rawVariance_prime");
 
   // normalized covariances
-  linReg.sigXX.Write("IV_IV_normVariance");
-  linReg.sigXY.Write("IV_DV_normVariance");
-  linReg.sigYY.Write("DV_DV_normVariance");
-  linReg.sigYYprime.Write("DV_DV_normVariance_prime");
-  TVectorD sigY2(TMatrixDDiag(linReg.sigYY));
+  linReg.mSPP.Write("IV_IV_normVariance");
+  linReg.mSPY.Write("IV_DV_normVariance");
+  linReg.mSYY.Write("DV_DV_normVariance");
+  linReg.mSYYp.Write("DV_DV_normVariance_prime");
+  TVectorD sigY2(TMatrixDDiag(linReg.mSYY));
   sigY2.Write("DV_normVariance");
-  TVectorD sigX2(TMatrixDDiag(linReg.sigXX));
+  TVectorD sigX2(TMatrixDDiag(linReg.mSPP));
   sigX2.Write("IV_normVariance");
-  TVectorD sigY2prime(TMatrixDDiag(linReg.sigYYprime));
+  TVectorD sigY2prime(TMatrixDDiag(linReg.mSYYp));
   sigY2prime.Write("DV_normVariance_prime");
 
   linReg.Axy.Write("A_xy");
@@ -728,7 +729,7 @@ void QwCorrelator::WriteAliasFile()
     fAliasOutputFile << Form("  tree->SetAlias(\"reg_%s\",",fDependentFull[i].Data()) << std::endl;
     fAliasOutputFile << Form("         \"%s",fDependentFull[i].Data());
     for (int j = 0; j < nP; j++) {
-      fAliasOutputFile << Form("%+.4e*%s", -linReg.mA(j,i), fIndependentFull[j].Data());
+      fAliasOutputFile << Form("%+.4e*%s", -linReg.Axy(j,i), fIndependentFull[j].Data());
     }
     fAliasOutputFile << "\");" << std::endl;
   }

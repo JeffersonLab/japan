@@ -312,13 +312,25 @@ void QwBlinder::Update(const QwEPICSEvent& epics)
       //	  << "QWtgt_name=" << position << " "
 	    << "QWTGTPOS=" << tgt_pos << " "
 	    << QwLog::endl;
-    if ((tgt_pos > 3e6 && tgt_pos < 6.9e6) 
-	|| (tgt_pos > 7.3e6 && tgt_pos < 7.7e6)) {
+    if (/*  Target positions before 1 August 2019.*/
+	( (tgt_pos > 3e6 && tgt_pos < 6.9e6) 
+	  || (tgt_pos > 7.3e6 && tgt_pos < 7.7e6))
+	/*  Target positions after 1 August 2019.*/
+	||( (tgt_pos>30.e6 && tgt_pos<69e6)
+	    || (tgt_pos>73e6 && tgt_pos<78e6)
+	     ) ) {
       //  Lead-208 target positions
       SetTargetBlindability(QwBlinder::kBlindable);
-    } else if ((tgt_pos > -1e3 && tgt_pos < 3e6) 
+    } else if (/*  Target positions before 1 August 2019.*/
+	       ((tgt_pos > -1e3 && tgt_pos < 3e6) 
 	       || (tgt_pos > 6.8e6 && tgt_pos < 7.2e6)
-	       || (tgt_pos > 7.7e6 && tgt_pos < 10e6)){
+		|| (tgt_pos > 7.7e6 && tgt_pos < 10e6))
+	       /*  Target positions after 1 August 2019.*/
+	       || ( (tgt_pos>17e6 && tgt_pos<30e6)
+		    || (tgt_pos>69e6 && tgt_pos<73e6)
+		    || (tgt_pos>78e6 && tgt_pos<90e6)
+		   )
+	       ){
       //  Positions are not lead-208 targets.
       SetTargetBlindability(QwBlinder::kNotBlindable);
     } else {

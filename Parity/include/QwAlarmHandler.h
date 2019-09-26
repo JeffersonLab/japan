@@ -69,7 +69,7 @@ class QwAlarmHandler:public VQwDataHandler, public MQwDataHandlerCloneable<QwAla
       VQwDataHandler::EQwHandleType analysisType;
       // List of resultant objects for data handler to update
       const VQwHardwareChannel* value;
-      UInt_t eventcutErrorFlag;
+      const UInt_t* eventcutErrorFlag;
       std::string alarmStatus;
       int Nviolated; // Vector of 0's for history tracking
       int NsinceLastViolation; // Vector of 0's for history tracking
