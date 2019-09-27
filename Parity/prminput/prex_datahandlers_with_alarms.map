@@ -1,5 +1,12 @@
 # This is an example of a detector definition file.
 
+[QwCombiner]
+  name       = MyCombiner
+  priority   = 0
+  map        = prex_combiner.map
+  tree-name  = mulc
+  tree-comment = Helicity event data tree (corrected)
+
 [LRBCorrector]
   name       = LinRegBlue Corrector
   priority   = 10
@@ -34,17 +41,10 @@
 #  alias-path = .
 #  disable-histos = true
 
-[QwCombiner]
-  name       = MyCombiner
-  priority   = 0
-  map        = prex_combiner.map
-  tree-name  = mulc
-  tree-comment = Helicity event data tree (corrected)
-
 [QwAlarmHandler]
   name        = MyAlarmHandler
   priority    = 20
   map         = prex_alarm_handler.map
-  alarm-output-file   = /adaqfs/home/apar/alarms/japanAlarms.csv
+  alarm-output-file   = ./japanAlarms.csv
   alarm-loop-N-update = 350
   alarm-active        = 1

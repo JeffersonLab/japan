@@ -48,8 +48,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 
   bool fDisableHistos;
   
-  std::vector< TString > fIndependentFull;
-  std::vector< TString > fDependentFull;
+  std::vector< std::string > fIndependentFull;
     
   //  Using the fDependentType and fDependentName from base class, but override the IV arrays
   std::vector< EQwHandleType > fIndependentType;
@@ -92,8 +91,8 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   void init(std::vector<std::string> ivName, std::vector<std::string> dvName);
   void initHistos(std::vector<std::string> ivName, std::vector<std::string> dvName);
   void addEvent(double *Pvec, double *Yvec);
-  void exportAlphas(std::vector < TString > ivName, std::vector < TString > dvName);
-  void exportAlias(TString outPath, TString macroName, std::vector < TString > ivName, std::vector < TString > dvName);
+  void exportAlphas(std::vector < std::string > ivName, std::vector < std::string > dvName);
+  void exportAlias(TString outPath, TString macroName, std::vector < std::string > ivName, std::vector < std::string > dvName);
 
   // Default constructor
   QwCorrelator();

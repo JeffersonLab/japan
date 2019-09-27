@@ -166,6 +166,7 @@ void QwDataHandlerArray::LoadDataHandlersFromParameterFile(
     }
 
     // Pass detector maps
+    handler->SetParent(this);
     handler->SetRunLabel(run);
     handler->SetPointer(&detectors);
     handler->ParseConfigFile(*section);

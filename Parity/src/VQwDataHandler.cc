@@ -141,10 +141,8 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
   /// Fill vector of pointers to the relevant data elements
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
     // Get the dependent variables
-
     const VQwHardwareChannel* dv_ptr = 0;
-    QwVQWK_Channel* new_vqwk = NULL;
-    const QwVQWK_Channel* vqwk = NULL;
+    VQwHardwareChannel* new_ptr = NULL;
     string name = "";
     string cor = "cor_";
     
@@ -154,7 +152,9 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
     } else if(fDependentName.at(dv).at(0) == '@' ) {
       name = fDependentName.at(dv).substr(1,fDependentName.at(dv).length());
     }else{
-      switch (fDependentType.at(dv)) {
+      dv_ptr = this->RequestExternalPointer(fDependentFull.at(dv));
+      if (dv_ptr == NULL){
+	switch (fDependentType.at(dv)) {
         case kHandleTypeAsym:
           dv_ptr = asym.RequestExternalPointer(fDependentName.at(dv));
           break;
@@ -163,25 +163,32 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
           break;
         default:
           QwWarning << "QwCombiner::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
-		                << fDependentName.at(dv)
-		                << ", for asym/diff processing does not have proper type, type=="
-		                << fDependentType.at(dv) << "."<< QwLog::endl;
+		    << fDependentName.at(dv)
+		    << ", for asym/diff processing does not have proper type, type=="
+		    << fDependentType.at(dv) << "."<< QwLog::endl;
           break;
+	}
+      }
+      if (dv_ptr == NULL){
+	QwWarning << "VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
+		  << fDependentName.at(dv)
+		  << ", was not found (fullname=="
+		  << fDependentFull.at(dv)<< ")." << QwLog::endl;
+	 continue;
       }
 
-      vqwk = dynamic_cast<const QwVQWK_Channel*>(dv_ptr);
-      name = vqwk->GetElementName().Data();
+      name = dv_ptr->GetElementName().Data();
       name.insert(0, cor);
-      new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
-      new_vqwk->SetElementName(name);
-      new_vqwk->SetSubsystemName(fName);
+      new_ptr = dv_ptr->Clone(VQwDataElement::kDerived);
+      new_ptr->SetElementName(name);
+      new_ptr->SetSubsystemName(fName);
     }
 
     // alias
     if(fDependentName.at(dv).at(0) == '@') {
       //QwMessage << "dv: " << name << QwLog::endl;
-      new_vqwk = new QwVQWK_Channel(name, VQwDataElement::kDerived);
-      new_vqwk->SetSubsystemName(fName);
+      new_ptr = new QwVQWK_Channel(name, VQwDataElement::kDerived);
+      new_ptr->SetSubsystemName(fName);
     }
     // defined type
     else if(dv_ptr!=NULL) {
@@ -193,9 +200,9 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
     }
 
     // pair creation
-    if(new_vqwk != NULL) {
-      fDependentVar.push_back(vqwk);
-      fOutputVar.push_back(new_vqwk);
+    if(new_ptr != NULL) {
+      fDependentVar.push_back(dv_ptr);
+      fOutputVar.push_back(new_ptr);
     }
   }
   return 0;
@@ -303,6 +310,60 @@ void VQwDataHandler::ClearEventData()
     fOutputVar[i]->ClearEventData();
   }
 }
+
+
+//*****************************************************************//
+Bool_t VQwDataHandler::PublishInternalValues() const
+{
+  // Publish variables
+  Bool_t status = kTRUE;
+  VQwHardwareChannel* tmp_channel;
+  
+  // Publish variables through map file
+  for (size_t pp = 0; pp < fPublishList.size(); pp++) {
+    TString publish_name = fPublishList.at(pp).at(0);
+    TString device_type = fPublishList.at(pp).at(1);
+    TString device_name = fPublishList.at(pp).at(2);
+    TString device_prop = fPublishList.at(pp).at(3);
+    device_type.ToLower();
+    device_prop.ToLower();
+
+    tmp_channel = NULL;
+
+    for(size_t i=0;i<fOutputVar.size(); ++i) {
+      if(device_name.CompareTo(fOutputVar.at(i)->GetElementName())==0){
+	tmp_channel = fOutputVar.at(i);
+	break;
+      }
+    }
+    if (tmp_channel == NULL) {
+      QwError << "VQwDataHandler::PublishInternalValues(): " << publish_name 
+	      << " not found" << QwLog::endl;
+      status &= kFALSE;
+    } else {
+      QwDebug << "VQwDataHandler::PublishInternalValues(): " << publish_name 
+	      << " found" << QwLog::endl;
+      status &= PublishInternalValue(publish_name, "published-value", tmp_channel);
+    }
+  }
+  return status;
+}    
+
+Bool_t VQwDataHandler::PublishByRequest(TString device_name)
+{
+  Bool_t status = kFALSE;
+  for(size_t i=0;i<fOutputVar.size(); ++i) {
+    if(device_name.CompareTo(fOutputVar.at(i)->GetElementName())==0){
+      status = PublishInternalValue(device_name, "published-by-request",
+				    fOutputVar.at(i));
+      break;
+    }
+  }
+  if (!status && fOutputVar.size()>0)
+    QwDebug << "VQwDataHandler::PublishByRequest:  Failed to publish channel name:  " << device_name << QwLog::endl;
+  return status;
+}
+
 
 void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
 {

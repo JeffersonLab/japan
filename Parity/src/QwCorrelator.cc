@@ -217,18 +217,14 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
     // Get the dependent variables
 
     const VQwHardwareChannel* dv_ptr = 0;
-    QwVQWK_Channel* new_vqwk = NULL;
-    const QwVQWK_Channel* vqwk = NULL;
-    string name = "";
-    string reg = "reg_";
     
     if (fDependentType.at(dv)==kHandleTypeMps){
       //  Quietly ignore the MPS type when we're connecting the asym & diff
       continue;
-    } else if(fDependentName.at(dv).at(0) == '@' ){
-      name = fDependentName.at(dv).substr(1,fDependentName.at(dv).length());
     }else{
-      switch (fDependentType.at(dv)) {
+      dv_ptr = this->RequestExternalPointer(fDependentFull.at(dv));
+      if (dv_ptr==NULL){
+	switch (fDependentType.at(dv)) {
         case kHandleTypeAsym:
           dv_ptr = asym.RequestExternalPointer(fDependentName.at(dv));
           break;
@@ -242,32 +238,20 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
 		                << fDependentType.at(dv) << "."<< QwLog::endl;
           break;
         }
-
-      vqwk = dynamic_cast<const QwVQWK_Channel*>(dv_ptr);
-      name = vqwk->GetElementName().Data();
-      name.insert(0, reg);
-      new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
-      new_vqwk->SetElementName(name);
-    }
-
-    // alias
-    if(fDependentName.at(dv).at(0) == '@'){
-      //QwMessage << "dv: " << name << QwLog::endl;
-      new_vqwk = new QwVQWK_Channel(name, VQwDataElement::kDerived);
-    }
-    // defined type
-    else if(dv_ptr!=NULL){
-      //QwMessage << "dv: " << fDependentName.at(dv) << QwLog::endl;
-    }else {
-      QwWarning << "Dependent variable " << fDependentName.at(dv) << " could not be found, "
-                << "or is not a VQWK channel." << QwLog::endl;
-      continue; 
+      }
+      if (dv_ptr == NULL){
+	QwWarning << "QwCombiner::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
+		  << fDependentName.at(dv)
+		  << ", was not found (fullname=="
+		  << fDependentFull.at(dv)<< ")." << QwLog::endl;
+	 continue;
+      }
     }
 
     // pair creation
-    if(vqwk != NULL){
+    if(dv_ptr != NULL){
       // fDependentVarType.push_back(fDependentType.at(dv));
-      fDependentVar.push_back(vqwk);
+      fDependentVar.push_back(dv_ptr);
     }
 
   }
@@ -434,8 +418,8 @@ void QwCorrelator::addEvent(double *Pvec, double *Yvec)
 }
 
 void QwCorrelator::exportAlphas(
-    std::vector < TString > ivName,
-    std::vector < TString > dvName)
+    std::vector < std::string > ivName,
+    std::vector < std::string > dvName)
 {
   if (fAlphaOutputFile) fAlphaOutputFile->cd();
 
@@ -458,12 +442,12 @@ void QwCorrelator::exportAlphas(
 
   //... IVs
   TH1D hiv("IVname","names of IVs",nP,-0.5,nP-0.5);
-  for (int i=0;i<nP;i++) hiv.Fill(ivName[i],i);
+  for (int i=0;i<nP;i++) hiv.Fill(ivName[i].c_str(),i);
   hiv.Write();
 
   //... DVs
   TH1D hdv("DVname","names of IVs",nY,-0.5,nY-0.5);
-  for (int i=0;i<nY;i++) hdv.Fill(dvName[i],i);
+  for (int i=0;i<nY;i++) hdv.Fill(dvName[i].c_str(),i);
   hdv.Write();
 
   // sigmas
@@ -503,8 +487,8 @@ void QwCorrelator::exportAlphas(
 void QwCorrelator::exportAlias(
     TString outPath,
     TString macroName,
-    std::vector < TString > Pname,
-    std::vector < TString > Yname)
+    std::vector < std::string > Pname,
+    std::vector < std::string > Yname)
 {
   FILE *fd=fopen(outPath+macroName+".C","w");
   if (fd == 0) {
@@ -514,11 +498,11 @@ void QwCorrelator::exportAlias(
   fprintf(fd,"void %s() {\n",macroName.Data());
   fprintf(fd,"  TTree* tree = (TTree*) gDirectory->Get(\"mul\");\n");
   for (int iy = 0; iy <nY; iy++) {
-    fprintf(fd,"  tree->SetAlias(\"reg_%s\",\n         \"%s",Yname[iy].Data(),Yname[iy].Data());
+    fprintf(fd,"  tree->SetAlias(\"reg_%s\",\n         \"%s",Yname[iy].c_str(),Yname[iy].c_str());
     for (int j = 0; j < nP; j++) {
       double val= -linReg.mA(j,iy);
       if(val>0)  fprintf(fd,"+");
-      fprintf(fd,"%.4e*%s",val,Pname[j].Data());
+      fprintf(fd,"%.4e*%s",val,Pname[j].c_str());
     }
     fprintf(fd,"\");\n");
 

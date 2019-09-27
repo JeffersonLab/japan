@@ -68,7 +68,7 @@ class MQwPublishable {
     const VQwHardwareChannel* RequestExternalPointer(const TString& name) const;
     
     /// \brief Retrieve the variable name from subsystems in this subsystem array
-    const VQwHardwareChannel* ReturnInternalValue(const TString& name) const;
+    virtual const VQwHardwareChannel* ReturnInternalValue(const TString& name) const;
 
     /// \brief Retrieve the variable name from subsystems in this subsystem array
     Bool_t ReturnInternalValue(const TString& name, VQwHardwareChannel* value) const;
@@ -85,7 +85,7 @@ class MQwPublishable {
 
   private:
     /// \brief Try to publish an internal variable matching the submitted name
-    Bool_t PublishByRequest(TString device_name);
+    virtual Bool_t PublishByRequest(TString device_name);
 
     /// Published values
     std::map<TString, const VQwHardwareChannel*> fPublishedValuesDataElement;

@@ -97,13 +97,9 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable, public MQwPublish
     virtual Int_t LoadChannelMap(const std::string& mapfile){return 0;};
 
     /// \brief Publish all variables of the subsystem
-    virtual Bool_t PublishInternalValues() const {
-      return kTRUE; // when not implemented, this returns success
-    };
+    virtual Bool_t PublishInternalValues() const;
     /// \brief Try to publish an internal variable matching the submitted name
-    virtual Bool_t PublishByRequest(TString device_name){
-      return kFALSE; // when not implemented, this returns failure
-    };
+    virtual Bool_t PublishByRequest(TString device_name);
 
   protected:
     
@@ -149,6 +145,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable, public MQwPublish
    /// Helicity pattern pointer
    QwHelicityPattern* fHelicityPattern;
 
+   std::vector< std::string > fDependentFull;
    std::vector< EQwHandleType > fDependentType;
    std::vector< std::string > fDependentName;
 
@@ -157,6 +154,8 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable, public MQwPublish
 
    std::vector< VQwHardwareChannel* > fOutputVar;
    std::vector< Double_t > fOutputValues;
+
+   std::vector<std::vector<TString> > fPublishList;
 
    std::string ParseSeparator;  // Used as space between tokens in ParseHandledVariable
 

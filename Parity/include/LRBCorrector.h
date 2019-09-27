@@ -41,7 +41,8 @@ class LRBCorrector : public VQwDataHandler, public MQwDataHandlerCloneable<LRBCo
 
     std::vector< EQwHandleType > fIndependentType;
     std::vector< std::string > fIndependentName;
-    
+    std::vector< std::string > fIndependentFull;
+
     std::vector< const VQwHardwareChannel* > fIndependentVar;
     std::vector< Double_t > fIndependentValues;
 

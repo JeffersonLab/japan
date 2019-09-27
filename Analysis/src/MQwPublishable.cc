@@ -61,7 +61,7 @@ const VQwHardwareChannel* MQwPublishable<U,T>::ReturnInternalValue(const TString
             << name << QwLog::endl;
 
   } else {
-    QwError << "PublishByRequest failed for " << name << QwLog::endl;
+    QwDebug << "PublishByRequest failed for " << name << QwLog::endl;
   }
   //  Not found
   return 0;
@@ -132,7 +132,7 @@ Bool_t MQwPublishable<U,T>::PublishByRequest(TString device_name)
 {
   Bool_t status = kFALSE;
   if (fPublishedValuesSubsystem.count(device_name) > 0) {
-    QwError << "MQwPublishable::PublishByRequest:  Channel "
+    QwDebug << "MQwPublishable::PublishByRequest:  Channel "
             << device_name << " has already been published."
             << QwLog::endl;
     ListPublishedValues();
@@ -147,8 +147,8 @@ Bool_t MQwPublishable<U,T>::PublishByRequest(TString device_name)
       }
       // Report failure to publish
       if (! status) {
-        QwError << "MQwPublishable::PublishByRequest: Failed to publish channel name: "
-            << device_name << QwLog::endl;
+        QwDebug << "MQwPublishable::PublishByRequest: Failed to publish channel name: "
+		<< device_name << QwLog::endl;
       }
     }
   }
