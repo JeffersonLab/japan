@@ -1,0 +1,24 @@
+!! SAM Pedestal
+!! For 70 uA runs, calibrated from run 3430
+
+!!Run3597 https://logbooks.jlab.org/entry/3709705
+
+!For 10-70uA fits on run3597 relative to digital downstream "(bcm_dg_ds.hw_sum_raw/bcm_dg_ds.num_samples- -210.26)*0.002717
+sam1, 12264.40, 0.000076
+sam2, 13225.30, 0.000076
+!sam3, 12652.73, 0.000076
+!sam4, 13271.30, 0.000076
+sam5, 12627.75, 0.000076
+!sam6, 13508.63, 0.000076
+!sam7, 12709.00, 0.000076
+sam8, 12564.48, 0.000076
+
+!For 55-70uA fits on run3597 relative to digital downstream "(bcm_dg_ds.hw_sum_raw/bcm_dg_ds.num_samples- -210.26)*0.002717
+!sam1, 12316.75, 0.000076
+!sam2, 13196.21, 0.000076
+sam3, 19010.02, 0.000076
+sam4, 10944.12, 0.000076
+!sam5, 12271.68, 0.000076
+sam6, 12890.85, 0.000076
+sam7, 10610.88, 0.000076
+!sam8, 12548.57, 0.000076

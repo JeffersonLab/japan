@@ -112,8 +112,8 @@ class QwSubsystemArray:
   void ProcessOptionsSubsystems(QwOptions &options);
   /// \brief Process configuration options (default behavior)
   void ProcessOptions(QwOptions &options) { ProcessOptionsSubsystems(options); };
-
-
+  void LoadAllEventRanges(QwOptions &options);
+  
   /// \brief Add the subsystem to this array
   void push_back(VQwSubsystem* subsys);
 
@@ -274,12 +274,13 @@ class QwSubsystemArray:
     return kFALSE;
   };
 
+  std::vector< std::pair<UInt_t,UInt_t> > fBadEventRange; 
+
  private:
   /// Filename of the global detector map
   std::string fSubsystemsMapFile;
   std::vector<std::string> fSubsystemsDisabledByName; ///< List of disabled types
   std::vector<std::string> fSubsystemsDisabledByType; ///< List of disabled names
-
 
 }; // class QwSubsystemArray
 

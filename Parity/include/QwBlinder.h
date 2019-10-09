@@ -85,6 +85,7 @@ class QwBlinder {
   
   ///  Error flag value 
   static const UInt_t kErrorFlag_BlinderFail = 0x200;
+  constexpr static const Double_t kValue_BlinderFail   = -1.0;
 
   static void DefineOptions(QwOptions &options);
 
@@ -238,6 +239,7 @@ class QwBlinder {
     EQwWienMode fWienMode;
     Int_t fIHWPPolarity_firstread;
     Int_t fIHWPPolarity;
+    Bool_t fSpinDirectionForced;
     void SetTargetBlindability(EQwBlinderStatus status);
     void SetWienState(EQwWienMode wienmode);
     void SetIHWPPolarity(Int_t ihwppolarity);

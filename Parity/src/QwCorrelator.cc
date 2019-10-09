@@ -198,7 +198,7 @@ Int_t QwCorrelator::LoadChannelMap(const std::string& mapfile)
       QwMessage << "Tree Type read, ignoring." << QwLog::endl;
     }
     else {
-      QwError << "Function LoadChannelMap in QwCorrelator.cc read in invalid primary_token." << QwLog::endl;
+      QwError << "LoadChannelMap in QwCorrelator read invalid primary_token " << primary_token << QwLog::endl;
     }
   }
 

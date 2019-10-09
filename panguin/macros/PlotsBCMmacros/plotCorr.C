@@ -1,4 +1,4 @@
-void plotCorr_Catherine(Int_t runnum, Double_t fit_RMS = 3.5, TString first = "asym_bcm_an_ds3", TString first_unit = "ppm", TString tree = "mul"){
+void plotCorr(Int_t runnum, Double_t fit_RMS = 3.5, TString first = "asym_bcm_an_ds3", TString first_unit = "ppm", TString tree = "mul"){
 
   Int_t showSubBlocks = 0;
   //The variables we want to find correlations for
@@ -25,7 +25,8 @@ void plotCorr_Catherine(Int_t runnum, Double_t fit_RMS = 3.5, TString first = "a
   TString blocks[n_blocks] = {"hw_sum"};
 
   //Open the file and get the tree
-  TFile * file = new TFile(Form("$QW_ROOTFILES/prexALL_%i.000.root", runnum));
+  //TFile * file = new TFile(Form("$QW_ROOTFILES/prexALL_%i.000.root", runnum));
+  TFile * file = new TFile(Form("$QW_ROOTFILES/prexPrompt_pass2_%i.000.root", runnum));
   TTree *ttree = (TTree*)file->Get(tree);
   TString cutsX = "ErrorFlag==0";
   TString cutsY = "ErrorFlag==0";

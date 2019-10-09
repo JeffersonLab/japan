@@ -392,6 +392,10 @@ void  QwHelicityPattern::CalculatePairAsymmetry()
       //  can propagate to the global error.
       fPairDifference.UpdateErrorFlag();
       fPairYield.UpdateErrorFlag(fPairDifference);
+      if (! fBlinder.IsBlinderOkay()){
+	fPairYield.UpdateErrorFlag(QwBlinder::kErrorFlag_BlinderFail);
+	fPairDifference.UpdateErrorFlag(QwBlinder::kErrorFlag_BlinderFail);
+      }
     }
     fPairAsymmetry.Ratio(fPairDifference,fPairYield);
     fPairAsymmetry.IncrementErrorCounters();
@@ -551,6 +555,10 @@ void  QwHelicityPattern::CalculateAsymmetry()
       //  can propagate to the global error.
       fDifference.UpdateErrorFlag();
       fYield.UpdateErrorFlag(fDifference);
+      if (! fBlinder.IsBlinderOkay()){
+	fYield.UpdateErrorFlag(QwBlinder::kErrorFlag_BlinderFail);
+	fDifference.UpdateErrorFlag(QwBlinder::kErrorFlag_BlinderFail);
+      }
     }
     fAsymmetry.Ratio(fDifference,fYield);
     fAsymmetry.IncrementErrorCounters();
