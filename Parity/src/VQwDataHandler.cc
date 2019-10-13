@@ -242,7 +242,8 @@ void VQwDataHandler::ConstructTreeBranches(
                 << treeprefix + fTreeName
                 << QwLog::endl;
     } else {
-      treerootfile->ConstructTreeBranches(treeprefix + fTreeName, fTreeComment, *this, branchprefix + fPrefix);
+      fTreeName = treeprefix+fTreeName;
+      treerootfile->ConstructTreeBranches(fTreeName, fTreeComment, *this, fPrefix+branchprefix);
     }
   }
 }
