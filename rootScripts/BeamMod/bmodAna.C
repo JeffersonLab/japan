@@ -612,14 +612,22 @@ void BMOD::saveSlopeData() {
   std::vector<std::vector<Double_t>> localDetsens;
   std::vector<std::vector<Double_t>> localDetsens_err;
   std::vector<std::vector<Double_t>> localDetfNdata;
+  std::vector<std::vector<std::vector<std::vector<Double_t>>>> localAlphas;
+  std::vector<std::vector<std::vector<std::vector<Double_t>>>> localBetas;
+  std::vector<std::vector<std::vector<std::vector<Double_t>>>> localDeltas;
+
+  // Prepare empty vectors and matrices
   std::vector<Double_t> tmpVec;
   for (int j = 0; j < nDet; j++){
     for (int k = 0; k < nBPM; k++){
       tmpVec.push_back(0.0);
     }
+    // Empty slopes per monitor/detector combination
     slopes.push_back(tmpVec);
     tmpVec.clear();
   }
+
+  // Also for the sensitivities
   for(int icoil=0;icoil<nCoil;icoil++){
     for(int ibpm=0;ibpm<nBPM;ibpm++){
       tmpVec.push_back(0.0);
@@ -636,6 +644,26 @@ void BMOD::saveSlopeData() {
     localDetsens_err.push_back(tmpVec);
     localDetfNdata.push_back(tmpVec);
     tmpVec.clear();
+  }
+
+  // Also prep the alphas, etc.
+  std::vector<std::vector<Double_t>> tmpVec2;
+  std::vector<std::vector<std::vector<Double_t>>> tmpVec3;
+  for(int icoil1=0;icoil1<nCoil;icoil1++){
+    for(int icoil2=0;icoil2<nCoil;icoil2++){
+      for(int ibpm1=0;ibpm1<nBPM;ibpm1++){
+        for(int ibpm2=0;ibpm2<nBPM;ibpm2++){
+          tmpVec.push_back(0.0);
+        }
+        tmpVec2.push_back(tmpVec);
+        tmpVec.clear();
+      }
+      tmpVec3.push_back(tmpVec2);
+      tmpVec2.clear();
+    }
+    localAlphas.push_back(tmpVec3);
+    localBetas.push_back(tmpVec3);
+    localDeltas.push_back(tmpVec3);
   }
 
   Int_t slug_number = QuerySlugNumber(runNumber);
@@ -673,14 +701,30 @@ void BMOD::saveSlopeData() {
     }    
     for(int icoil=0;icoil<nCoil;icoil++){
       for(int ibpm=0;ibpm<nBPM;ibpm++){
-        dit_tree->Branch(Form("Coil%s_%s",parameterVectors["Coils"].at(icoil).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm).c_str()),&localBPMsens[icoil][ibpm]);
-        dit_tree->Branch(Form("Coil%s_%s_err",parameterVectors["Coils"].at(icoil).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm).c_str()),&localBPMsens_err[icoil][ibpm]);
-        dit_tree->Branch(Form("Coil%s_%s_Ndata",parameterVectors["Coils"].at(icoil).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm).c_str()),&localBPMfNdata[icoil][ibpm]);
+        dit_tree->Branch(Form("%s_coil%s",      parameterVectors["BPMs Slope Names"].at(ibpm).c_str(),parameterVectors["Coils"].at(icoil).c_str()),&localBPMsens[icoil][ibpm]);
+        dit_tree->Branch(Form("%s_coil%s_err",  parameterVectors["BPMs Slope Names"].at(ibpm).c_str(),parameterVectors["Coils"].at(icoil).c_str()),&localBPMsens_err[icoil][ibpm]);
+        dit_tree->Branch(Form("%s_coil%s_Ndata",parameterVectors["BPMs Slope Names"].at(ibpm).c_str(),parameterVectors["Coils"].at(icoil).c_str()),&localBPMfNdata[icoil][ibpm]);
       }
       for(int idet=0;idet<nDet;idet++){
-        dit_tree->Branch(Form("Coil%s_%s",parameterVectors["Coils"].at(icoil).c_str(),parameterVectors["Detectors"].at(idet).c_str()),&localDetsens[icoil][idet]);
-        dit_tree->Branch(Form("Coil%s_%s_err",parameterVectors["Coils"].at(icoil).c_str(),parameterVectors["Detectors"].at(idet).c_str()),&localDetsens_err[icoil][idet]);
-        dit_tree->Branch(Form("Coil%s_%s_Ndata",parameterVectors["Coils"].at(icoil).c_str(),parameterVectors["Detectors"].at(idet).c_str()),&localDetfNdata[icoil][idet]);
+        dit_tree->Branch(Form("%s_coil%s",      parameterVectors["Detectors"].at(idet).c_str(),parameterVectors["Coils"].at(icoil).c_str()),&localDetsens[icoil][idet]);
+        dit_tree->Branch(Form("%s_coil%s_err",  parameterVectors["Detectors"].at(idet).c_str(),parameterVectors["Coils"].at(icoil).c_str()),&localDetsens_err[icoil][idet]);
+        dit_tree->Branch(Form("%s_coil%s_Ndata",parameterVectors["Detectors"].at(idet).c_str(),parameterVectors["Coils"].at(icoil).c_str()),&localDetfNdata[icoil][idet]);
+      }
+    }
+    for(int icoil1=0;icoil1<nCoil;icoil1++){
+      for(int icoil2=0;icoil2<nCoil;icoil2++){
+        for(int ibpm1=0;ibpm1<nBPM;ibpm1++){
+          for(int ibpm2=0;ibpm2<nBPM;ibpm2++){
+            if (ibpm1 == ibpm2 || icoil1 == icoil2) {
+              continue;
+            }
+            else {
+              dit_tree->Branch(Form("alpha%s%s_%s%s",parameterVectors["Coils"].at(icoil1).c_str(),parameterVectors["Coils"].at(icoil2).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm1).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm2).c_str()),&localAlphas[icoil1][icoil2][ibpm1][ibpm2]);
+              dit_tree->Branch(Form("beta%s%s_%s%s",parameterVectors["Coils"].at(icoil1).c_str(),parameterVectors["Coils"].at(icoil2).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm1).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm2).c_str()),&localBetas[icoil1][icoil2][ibpm1][ibpm2]);
+              dit_tree->Branch(Form("delta%s%s_%s%s",parameterVectors["Coils"].at(icoil1).c_str(),parameterVectors["Coils"].at(icoil2).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm1).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm2).c_str()),&localDeltas[icoil1][icoil2][ibpm1][ibpm2]);
+            }
+          }
+        }
       }
     }
     dit_tree->Branch("run",
@@ -701,14 +745,30 @@ void BMOD::saveSlopeData() {
     }
     for(int icoil=0;icoil<nCoil;icoil++){
       for(int ibpm=0;ibpm<nBPM;ibpm++){
-        dit_tree->SetBranchAddress(Form("Coil%s_%s",parameterVectors["Coils"].at(icoil).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm).c_str()),&localBPMsens[icoil][ibpm]);
-        dit_tree->SetBranchAddress(Form("Coil%s_%s_err",parameterVectors["Coils"].at(icoil).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm).c_str()),&localBPMsens_err[icoil][ibpm]);
-        dit_tree->SetBranchAddress(Form("Coil%s_%s_Ndata",parameterVectors["Coils"].at(icoil).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm).c_str()),&localBPMfNdata[icoil][ibpm]);
+        dit_tree->SetBranchAddress(Form("%s_coil%s",      parameterVectors["BPMs Slope Names"].at(ibpm).c_str(),parameterVectors["Coils"].at(icoil).c_str()),&localBPMsens[icoil][ibpm]);
+        dit_tree->SetBranchAddress(Form("%s_coil%s_err",  parameterVectors["BPMs Slope Names"].at(ibpm).c_str(),parameterVectors["Coils"].at(icoil).c_str()),&localBPMsens_err[icoil][ibpm]);
+        dit_tree->SetBranchAddress(Form("%s_coil%s_Ndata",parameterVectors["BPMs Slope Names"].at(ibpm).c_str(),parameterVectors["Coils"].at(icoil).c_str()),&localBPMfNdata[icoil][ibpm]);
       }
       for(int idet=0;idet<nDet;idet++){
-        dit_tree->SetBranchAddress(Form("Coil%s_%s",parameterVectors["Coils"].at(icoil).c_str(),parameterVectors["Detectors"].at(idet).c_str()),&localDetsens[icoil][idet]);
-        dit_tree->SetBranchAddress(Form("Coil%s_%s_err",parameterVectors["Coils"].at(icoil).c_str(),parameterVectors["Detectors"].at(idet).c_str()),&localDetsens_err[icoil][idet]);
-        dit_tree->SetBranchAddress(Form("Coil%s_%s_Ndata",parameterVectors["Coils"].at(icoil).c_str(),parameterVectors["Detectors"].at(idet).c_str()),&localDetfNdata[icoil][idet]);
+        dit_tree->SetBranchAddress(Form("%s_coil%s",      parameterVectors["Detectors"].at(idet).c_str(),parameterVectors["Coils"].at(icoil).c_str()),&localDetsens[icoil][idet]);
+        dit_tree->SetBranchAddress(Form("%s_coil%s_err",  parameterVectors["Detectors"].at(idet).c_str(),parameterVectors["Coils"].at(icoil).c_str()),&localDetsens_err[icoil][idet]);
+        dit_tree->SetBranchAddress(Form("%s_coil%s_Ndata",parameterVectors["Detectors"].at(idet).c_str(),parameterVectors["Coils"].at(icoil).c_str()),&localDetfNdata[icoil][idet]);
+      }
+    }
+    for(int icoil1=0;icoil1<nCoil;icoil1++){
+      for(int icoil2=0;icoil2<nCoil;icoil2++){
+        for(int ibpm1=0;ibpm1<nBPM;ibpm1++){
+          for(int ibpm2=0;ibpm2<nBPM;ibpm2++){
+            if (ibpm1 == ibpm2 || icoil1 == icoil2) {
+              continue;
+            }
+            else {
+              dit_tree->SetBranchAddress(Form("alpha%s%s_%s%s",parameterVectors["Coils"].at(icoil1).c_str(),parameterVectors["Coils"].at(icoil2).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm1).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm2).c_str()),&localAlphas[icoil1][icoil2][ibpm1][ibpm2]);
+              dit_tree->SetBranchAddress(Form("beta%s%s_%s%s",parameterVectors["Coils"].at(icoil1).c_str(),parameterVectors["Coils"].at(icoil2).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm1).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm2).c_str()),&localBetas[icoil1][icoil2][ibpm1][ibpm2]);
+              dit_tree->SetBranchAddress(Form("delta%s%s_%s%s",parameterVectors["Coils"].at(icoil1).c_str(),parameterVectors["Coils"].at(icoil2).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm1).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm2).c_str()),&localDeltas[icoil1][icoil2][ibpm1][ibpm2]);
+            }
+          }
+        }
       }
     }
     dit_tree->SetBranchAddress("run",
@@ -750,6 +810,32 @@ void BMOD::saveSlopeData() {
             localDetsens[icoil][idet] = cycles.at(i).Detsens.at(icoil)[idet];
             localDetsens_err[icoil][idet] = cycles.at(i).Detsens_err.at(icoil)[idet];
             localDetfNdata[icoil][idet] = cycles.at(i).DetfNdata.at(icoil)[idet];
+          }
+        }
+        for(int icoil1=0;icoil1<nCoil;icoil1++){
+          for(int icoil2=icoil1+1;icoil2<nCoil;icoil2++){
+            for(int ibpm1=0;ibpm1<nBPM;ibpm1++){
+              for(int ibpm2=0;ibpm2<nBPM;ibpm2++){
+                if ( localBPMsens[icoil1][ibpm2] != 0 && localBPMsens[icoil2][ibpm1] != 0 ) {
+                  localAlphas[icoil1][icoil2][ibpm1][ibpm2] = 1.0 - (localBPMsens[icoil1][ibpm1]/localBPMsens[icoil1][ibpm2])*(localBPMsens[icoil2][ibpm2]/localBPMsens[icoil2][ibpm1]);
+                }
+                else {
+                  localAlphas[icoil1][icoil2][ibpm1][ibpm2] = 0.0;
+                }
+                if ( localBPMsens[icoil1][ibpm2] != 0 && localBPMsens[icoil2][ibpm2] != 0 ) {
+                  localDeltas[icoil1][icoil2][ibpm1][ibpm2] = (localBPMsens[icoil1][ibpm1]/localBPMsens[icoil1][ibpm2])-(localBPMsens[icoil2][ibpm1]/localBPMsens[icoil2][ibpm2]);
+                }
+                else {
+                  localDeltas[icoil1][icoil2][ibpm1][ibpm2] = 0.0;
+                }
+                if ( localAlphas[icoil1][icoil2][ibpm1][ibpm2] != 0 ){
+                  localBetas[icoil1][icoil2][ibpm1][ibpm2] = localDeltas[icoil1][icoil2][ibpm1][ibpm2]/localAlphas[icoil1][icoil2][ibpm1][ibpm2];
+                }
+                else {
+                  localBetas[icoil1][icoil2][ibpm1][ibpm2] = 0;
+                }
+              }
+            }
           }
         }
         if(cycleNum>1){
