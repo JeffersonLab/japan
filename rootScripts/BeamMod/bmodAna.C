@@ -784,15 +784,27 @@ void BMOD::saveSlopeData() {
       Printf("Overwriting previous entry for cycle %f",cycleNum);
       runNum   = runNumber;
       cycleNum = cycles.at(i).cycleNumber;
+      // The flag variable is determined by whether there is sufficient data for BPM sensitivity calculation
       flag     = cycles.at(i).BPMvalid;
       for(int idet=0;idet<nDet;idet++){
         for(int ibpm=0;ibpm<nBPM;ibpm++){
-          if(cycles.at(i).detSlopes.at(idet)[ibpm][0]==0) { // FIXME put a smarter slope stability cut here too
             // We found a null slope
+          if(cycles.at(i).detSlopes.at(idet)[ibpm][0]==0) { // FIXME put a smarter slope stability cut here too
             cycles.at(i).slopesValid = 0;
+            // FIXME NEW 
+            // Idea:
+            //    Calculate mean and RMS of slopes
+            //    Then, if any point is outside of 3 sigma, set flag = 0
+            //    This means that every time you add a new cycle to this set of data it will recalculate the 3 sigma limit and reset the flags for all
+          /*mean = Mean(cycles.at(i).detSlopes.at(idet)[ibpm][0]);
+            rms = RMS(cycles.at(i).detSlopes.at(idet)[ibpm][0]);
+            for each entry in cycles.at(i).detSlopes.at(idet)[ibpm][0] check N sigma limit (N from the input.txt parameter file, or 3 if not specified);
+            if passes N sigma cut then flag = 1, else = 0;
+            */
           }
         }
       }
+      // Right here is ignoring data if the slopes == 0
       if (cycles.at(i).slopesValid == 1) {
         for(int idet=0;idet<nDet;idet++){
           for(int ibpm=0;ibpm<nBPM;ibpm++){
@@ -813,7 +825,7 @@ void BMOD::saveSlopeData() {
           }
         }
         for(int icoil1=0;icoil1<nCoil;icoil1++){
-          for(int icoil2=icoil1+1;icoil2<nCoil;icoil2++){
+          for(int icoil2=0;icoil2<nCoil;icoil2++){
             for(int ibpm1=0;ibpm1<nBPM;ibpm1++){
               for(int ibpm2=0;ibpm2<nBPM;ibpm2++){
                 if ( localBPMsens[icoil1][ibpm2] != 0 && localBPMsens[icoil2][ibpm1] != 0 ) {
@@ -867,7 +879,7 @@ int bmodAna(Int_t runNo = 4199, std::string inputFile = "input.txt", TString slu
         bmod->calculateSensitivities();
         bmod->saveSensitivityData();
         bmod->invertMatrix();
-        //bmod->saveSlopeData();
+        bmod->saveSlopeData();
         // FIXME also append this run's data into the combo/slugwise input file
       }
     }
