@@ -31,7 +31,7 @@ EVENTCUTS = 3
 !Run 3404 has a brief > +0.5mm x position
  bpmstripline, bpm4e, absx, -1, 1, g
 
- bcm, bcm_dg_ds3,		35,	1e6,	g,	0.8
+ bcm, bcm_an_ds3,		35,	1e6,	g,	0.8
  bpmstripline, bpm4a, xm, 1000, 55000, g, 0, 1000
  bpmstripline, bpm4a, xp, 1000, 55000, g, 0, 1000
  bpmstripline, bpm4a, ym, 1000, 55000, g, 0, 1000
@@ -53,7 +53,6 @@ EVENTCUTS = 3
  !bpmstripline,	bpm4a,	effectivecharge, 0, 1.8e5, g, 0
  !bpmstripline,	bpm4ec,	effectivecharge, 0, 1.8e5, g, 0
  !bpmstripline,	bpm4ac,	effectivecharge, 0, 1.8e5, g, 0
-! bpmstripline, bpm4a, ym, 10000, 50000, l
 
 !for parity mock data run 1000 9.98608e+06
 !bcm, qwk_bcm0l03, 	8.00e+06, 	1.20e+07, 1, 0 
