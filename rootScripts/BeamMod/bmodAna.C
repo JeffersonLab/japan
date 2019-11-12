@@ -572,9 +572,10 @@ void BMOD::copytree(TString oldFileName = "test.root", Double_t cyclenumber = -1
     cout << "No cyclenumber passed with macro call!" << endl;
     return;
   }
-  cout << "ignoring cyclenumber" << cyclenumber << endl;
-  TFile* oldfile = TFile::Open(oldFileName);
-  if (oldfile!=NULL){
+  cout << "ignoring cyclenumber " << cyclenumber << endl;
+  Bool_t newFile = gSystem->AccessPathName(oldFileName);
+  if (!newFile){
+    TFile* oldfile = TFile::Open(oldFileName);
     TTree *oldtree;
     oldfile->GetObject("dit", oldtree);
     const auto nentries = oldtree->GetEntries();
@@ -667,17 +668,19 @@ void BMOD::saveSlopeData() {
   }
 
   Int_t slug_number = QuerySlugNumber(runNumber);
-  TString output_path;
   TString slopeFilename;
 
   if (parameterVectors.count("Rootfile Output Path") == 0) {
     Printf("ERROR: No \"Rootfile Output Path\" listed for Dithering Analysis. Using \"../rootfiles_alldet_pass1\" instead");
-    output_path = "../rootfiles_alldet_pass1/";
     slopeFilename = Form("dit_alldet_slopes_slug%d.root",slug_number);
   }
   else {
-    output_path = Form("%s",parameterVectors["Rootfile Output Path"].at(0).c_str());
-    slopeFilename = Form("%s/dithering_slopes_slug%d.root",parameterVectors["Rootfile Output Path"].at(0).c_str(),slug_number);
+    if (parameterVectors.count("Rootfile Output Runwise") != 0 && parameterVectors["Rootfile Output Runwise"].at(0) == "True") {
+      slopeFilename = Form("%s/dithering_slopes_slug%d_run%d.root",parameterVectors["Rootfile Output Path"].at(0).c_str(),slug_number,runNumber);
+    }
+    else {
+      slopeFilename = Form("%s/dithering_slopes_slug%d.root",parameterVectors["Rootfile Output Path"].at(0).c_str(),slug_number);
+    }
   }
 
   for(int i=0;i<cycles.size();i++){
