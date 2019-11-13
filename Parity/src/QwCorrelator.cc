@@ -605,12 +605,12 @@ void QwCorrelator::WriteAlphaFile()
 
   //... IVs
   TH1D hiv("IVname","names of IVs",nP,-0.5,nP-0.5);
-  for (int i=0;i<nP;i++) hiv.Fill(fIndependentFull[i],i);
+  for (int i=0;i<nP;i++) hiv.Fill(fIndependentFull[i].c_str(),i);
   hiv.Write();
 
   //... DVs
   TH1D hdv("DVname","names of IVs",nY,-0.5,nY-0.5);
-  for (int i=0;i<nY;i++) hdv.Fill(fDependentFull[i],i);
+  for (int i=0;i<nY;i++) hdv.Fill(fDependentFull[i].c_str(),i);
   hdv.Write();
 
   // sigmas
@@ -712,10 +712,10 @@ void QwCorrelator::WriteAliasFile()
   fAliasOutputFile << " if (i == " << i << ") {" << std::endl;
   fAliasOutputFile << Form("  TTree* tree = (TTree*) gDirectory->Get(\"mul\");") << std::endl;
   for (int i = 0; i < nY; i++) {
-    fAliasOutputFile << Form("  tree->SetAlias(\"reg_%s\",",fDependentFull[i].Data()) << std::endl;
-    fAliasOutputFile << Form("         \"%s",fDependentFull[i].Data());
+    fAliasOutputFile << Form("  tree->SetAlias(\"reg_%s\",",fDependentFull[i].c_str()) << std::endl;
+    fAliasOutputFile << Form("         \"%s",fDependentFull[i].c_str());
     for (int j = 0; j < nP; j++) {
-      fAliasOutputFile << Form("%+.4e*%s", -linReg.Axy(j,i), fIndependentFull[j].Data());
+      fAliasOutputFile << Form("%+.4e*%s", -linReg.Axy(j,i), fIndependentFull[j].c_str());
     }
     fAliasOutputFile << "\");" << std::endl;
   }

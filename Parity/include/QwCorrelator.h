@@ -92,7 +92,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   void WriteAlphaFile();
   void CloseAlphaFile();
 
-  TTree* fAlphaOutputTree;
+  TTree* fTree;
 
   std::string fAliasOutputFileBase;
   std::string fAliasOutputFileSuff;
