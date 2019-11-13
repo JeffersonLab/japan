@@ -45,8 +45,6 @@ EVENTCUTS = 3
  bpmstripline, bpm11, xp, 1000, 55000, g, 0, 1000
  bpmstripline, bpm11, ym, 1000, 55000, g, 0, 1000
  bpmstripline, bpm11, yp, 1000, 55000, g, 0, 1000
-! Local sketchy wire cut
- bpmstripline, bpm4a, ym, 10000, 50000, l
 
 !for parity mock data run 1000 9.98608e+06
 !bcm, qwk_bcm0l03, 	8.00e+06, 	1.20e+07, 1, 0 

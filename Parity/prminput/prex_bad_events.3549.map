@@ -1,0 +1,2 @@
+# Cut out beam excursion from first 160k events (weird BPM lock issue)
+:160000

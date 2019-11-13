@@ -36,7 +36,6 @@ EVENTCUTS = 3
  bpmstripline, bpm4e, absy, -10, 10, g, 0.02, 0
  bpmstripline, bpm4a, absy, -10, 10, g, 0.03, 0
  bpmstripline, bpm12, absx, -10, 10, g, 0.05, 0
- bpmstripline, bpm4a, ym, 10000, 50000, l
 
 !for parity mock data run 1000 9.98608e+06
 !bcm, qwk_bcm0l03, 	8.00e+06, 	1.20e+07, 1, 0 
