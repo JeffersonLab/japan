@@ -4,5 +4,6 @@
 # It will flag kBadEventRangeError for events with CodaEventNumber >=0 and CodaEventNumber<=1000
 # And also flag kBadEventRangeError on a single event CodaEventNumber==3000
 415000:428500
+286500:288100
 #3000
 #3000:

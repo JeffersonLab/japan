@@ -20,6 +20,7 @@
 #include <boost/mem_fn.hpp>
 
 // Qweak headers
+#include "MQwPublishable.h"
 #include "VQwSubsystem.h"
 #include "QwOptions.h"
 
@@ -29,7 +30,10 @@ class QwParameterFile;
 
 ///
 /// \ingroup QwAnalysis
-class QwSubsystemArray:  public std::vector<boost::shared_ptr<VQwSubsystem> > {
+class QwSubsystemArray:
+    public std::vector<boost::shared_ptr<VQwSubsystem>>,
+    public MQwPublishable<QwSubsystemArray, VQwSubsystem> {
+
  private:
   typedef std::vector<boost::shared_ptr<VQwSubsystem> >  SubsysPtrs;
  public:
@@ -149,49 +153,12 @@ class QwSubsystemArray:  public std::vector<boost::shared_ptr<VQwSubsystem> > {
 
  public:
 
-  /// \brief Retrieve the variable name from other subsystem arrays
-  Bool_t RequestExternalValue(const TString& name, VQwHardwareChannel* value) const;
-
-  /// \brief Retrieve the variable name from subsystems in this subsystem array
-  const VQwHardwareChannel* ReturnInternalValue(const TString& name) const;
-
-  /// \brief Retrieve the variable name from subsystems in this subsystem array
-  Bool_t ReturnInternalValue(const TString& name, VQwHardwareChannel* value) const;
-
-  /// \brief Publish the value name with description from a subsystem in this array
-  Bool_t PublishInternalValue(
-      const TString name,
-      const TString desc,
-      const VQwSubsystem* subsys,
-      const VQwHardwareChannel* element);
-
-  /// \brief List the published values and description in this subsystem array
-  void ListPublishedValues() const;
 
   /// \brief Print list of parameter files
   void PrintParamFileList() const;
 
   /// \brief Get list of parameter files
   TList* GetParamFileNameList(TString name) const;
-
- private:
-  /// \brief Try to publish an internal variable matching the submitted name
-  Bool_t PublishByRequest(TString device_name);
-
-  /// \brief Retrieve the variable name from subsystems in this subsystem array
-  VQwHardwareChannel* ReturnInternalValueForFriends(const TString& name) const;
-
-  /// Friend with regression class who needs write access to data
-  friend class QwCombiner;
-  // Child of QwCombiner Class
-  friend class QwCorrelator;
-  friend class VQwDataHandler;
-
-  /// Published values
-  std::map<TString, const VQwHardwareChannel*> fPublishedValuesDataElement;
-  std::map<TString, const VQwSubsystem*>   fPublishedValuesSubsystem;
-  std::map<TString, TString>               fPublishedValuesDescription;
-
 
  public:
 

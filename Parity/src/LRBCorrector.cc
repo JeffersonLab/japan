@@ -79,10 +79,12 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
     if (primary_token == "iv") {
       fIndependentType.push_back(type_name.first);
       fIndependentName.push_back(type_name.second);
+      fIndependentFull.push_back(current_token);
     }
     else if (primary_token == "dv") {
       fDependentType.push_back(type_name.first);
       fDependentName.push_back(type_name.second);
+      fDependentFull.push_back(current_token);
     }
     else if (primary_token == "treetype") {
       QwMessage << "Tree Type read, ignoring." << QwLog::endl;
@@ -192,17 +194,20 @@ Int_t LRBCorrector::ConnectChannels(
   for (size_t iv = 0; iv < fIndependentName.size(); iv++) {
     // Get the independent variables
     const VQwHardwareChannel* iv_ptr = 0;
-    switch (fIndependentType.at(iv)) {
+    iv_ptr = this->RequestExternalPointer(fIndependentFull.at(iv));
+    if (iv_ptr==NULL){
+      switch (fIndependentType.at(iv)) {
       case kHandleTypeAsym:
-        iv_ptr = asym.ReturnInternalValue(fIndependentName.at(iv));
+        iv_ptr = asym.RequestExternalPointer(fIndependentName.at(iv));
         break;
       case kHandleTypeDiff:
-        iv_ptr = diff.ReturnInternalValue(fIndependentName.at(iv));
+        iv_ptr = diff.RequestExternalPointer(fIndependentName.at(iv));
         break;
       default:
         QwWarning << "Independent variable for corrector has unknown type."
                   << QwLog::endl;
         break;
+      }
     }
     if (iv_ptr) {
       //QwMessage << " iv: " << fIndependentName.at(iv) /*<< " (sens = " << fSensitivity.at(dv).at(iv) << ")"*/ << QwLog::endl;

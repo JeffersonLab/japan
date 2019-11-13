@@ -250,7 +250,7 @@ Int_t QwAlarmHandler::ConnectChannels(
         name = fAnalysisName.at(dv).substr(1,fAnalysisName.at(dv).length());
         new_vqwk = new QwVQWK_Channel(name, VQwDataElement::kDerived);
       } else {
-        dv_ptr = event.ReturnInternalValue(fAnalysisName.at(dv));
+        dv_ptr = event.RequestExternalPointer(fAnalysisName.at(dv));
 
         vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
         name = vqwk.GetElementName().Data();

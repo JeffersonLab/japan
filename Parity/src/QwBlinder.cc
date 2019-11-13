@@ -279,8 +279,8 @@ void QwBlinder::Update(const QwSubsystemArrayParity& detectors)
 
     // Check that the current on target is above acceptable limit
     Bool_t tmp_beam = kFALSE;
-    //    if (detectors.ReturnInternalValue(q_targ.GetElementName(), &q_targ)) {
-    if (detectors.ReturnInternalValue("q_targ", &q_targ)) {
+    //    if (detectors.RequestExternalValue(q_targ.GetElementName(), &q_targ)) {
+    if (detectors.RequestExternalValue("q_targ", &q_targ)) {
       if (q_targ.GetValue() > fBeamCurrentThreshold){
 	// 	std::cerr << "q_targ.GetValue()==" 
 	// 		  << q_targ.GetValue() << std::endl;

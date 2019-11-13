@@ -19,13 +19,14 @@ Last Modified: August 1, 2018 1:39 PM
 #include "QwSubsystemArrayParity.h"
 #include "VQwHardwareChannel.h"
 #include "QwFactory.h"
-
+#include "MQwPublishable.h"
 
 class QwParameterFile;
 class QwRootFile;
 class QwPromptSummary;
+class QwDataHandlerArray;
 
-class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
+class VQwDataHandler:  virtual public VQwDataHandlerCloneable, public MQwPublishable_child<QwDataHandlerArray,VQwDataHandler> {
 
   public:
   
@@ -66,7 +67,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
     virtual ~VQwDataHandler();
 
-    TString GetDataHandlerName(){return fName;}
+    TString GetName(){return fName;}
 
     virtual void ClearEventData();
 
@@ -100,6 +101,11 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
     Int_t LoadChannelMap(){return this->LoadChannelMap(fMapFile);}
     virtual Int_t LoadChannelMap(const std::string& mapfile){return 0;};
 
+    /// \brief Publish all variables of the subsystem
+    virtual Bool_t PublishInternalValues() const;
+    /// \brief Try to publish an internal variable matching the submitted name
+    virtual Bool_t PublishByRequest(TString device_name);
+
   protected:
     
     VQwDataHandler() { }
@@ -121,9 +127,6 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
    void CalcOneOutput(const VQwHardwareChannel* dv, VQwHardwareChannel* output,
                        std::vector< const VQwHardwareChannel* > &ivs,
                        std::vector< Double_t > &sens);
-
-    //Bool_t PublishInternalValue(const TString &name, const TString &desc, const VQwHardwareChannel *value) const;
-    //Bool_t PublishByRequest(TString device_name);
 
  protected:
    //
@@ -147,6 +150,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
    /// Helicity pattern pointer
    QwHelicityPattern* fHelicityPattern;
 
+   std::vector< std::string > fDependentFull;
    std::vector< EQwHandleType > fDependentType;
    std::vector< std::string > fDependentName;
 
@@ -155,6 +159,8 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
    std::vector< VQwHardwareChannel* > fOutputVar;
    std::vector< Double_t > fOutputValues;
+
+   std::vector<std::vector<TString> > fPublishList;
 
    std::string ParseSeparator;  // Used as space between tokens in ParseHandledVariable
 

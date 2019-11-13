@@ -43,7 +43,7 @@ bool QwCorrelator::fPrintCorrelations = false;
 QwCorrelator::QwCorrelator(const TString& name)
 : VQwDataHandler(name),
   fBlock(-1),
-  fDisableHistos(false),
+  fDisableHistos(true),
   fAlphaOutputFileBase("blueR"),
   fAlphaOutputFileSuff("new.slope.root"),
   fAlphaOutputPath("."),
@@ -52,8 +52,10 @@ QwCorrelator::QwCorrelator(const TString& name)
   fAliasOutputFileBase("regalias_"),
   fAliasOutputFileSuff(""),
   fAliasOutputPath("."),
+  fNameNoSpaces(name),
   nP(0),nY(0)
 {
+  fNameNoSpaces.ReplaceAll(" ","_");
   // Set default tree name and descriptions (in VQwDataHandler)
   fTreeName = "lrb";
   fTreeComment = "Correlations";
@@ -303,24 +305,20 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
     // Get the dependent variables
 
-    VQwHardwareChannel* dv_ptr = 0;
-    QwVQWK_Channel* new_vqwk = NULL;
-    QwVQWK_Channel* vqwk = NULL;
-    string name = "";
-    string reg = "reg_";
+    const VQwHardwareChannel* dv_ptr = 0;
     
     if (fDependentType.at(dv)==kHandleTypeMps){
       //  Quietly ignore the MPS type when we're connecting the asym & diff
       continue;
-    } else if(fDependentName.at(dv).at(0) == '@' ){
-      name = fDependentName.at(dv).substr(1,fDependentName.at(dv).length());
     }else{
-      switch (fDependentType.at(dv)) {
+      dv_ptr = this->RequestExternalPointer(fDependentFull.at(dv));
+      if (dv_ptr==NULL){
+	switch (fDependentType.at(dv)) {
         case kHandleTypeAsym:
-          dv_ptr = asym.ReturnInternalValueForFriends(fDependentName.at(dv));
+          dv_ptr = asym.RequestExternalPointer(fDependentName.at(dv));
           break;
         case kHandleTypeDiff:
-          dv_ptr = diff.ReturnInternalValueForFriends(fDependentName.at(dv));
+          dv_ptr = diff.RequestExternalPointer(fDependentName.at(dv));
           break;
         default:
           QwWarning << "QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff): "
@@ -328,33 +326,21 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
                     << ", for asym/diff correlator does not have proper type, type=="
                     << fDependentType.at(dv) << "." << QwLog::endl;
           break;
+        }
       }
-
-      vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
-      name = vqwk->GetElementName().Data();
-      name.insert(0, reg);
-      new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
-      new_vqwk->SetElementName(name);
-    }
-
-    // alias
-    if(fDependentName.at(dv).at(0) == '@'){
-      //QwMessage << "dv: " << name << QwLog::endl;
-      new_vqwk = new QwVQWK_Channel(name, VQwDataElement::kDerived);
-    }
-    // defined type
-    else if(dv_ptr!=NULL){
-      //QwMessage << "dv: " << fDependentName.at(dv) << QwLog::endl;
-    }else {
-      QwWarning << "Dependent variable " << fDependentName.at(dv) << " could not be found, "
-                << "or is not a VQWK channel." << QwLog::endl;
-      continue; 
+      if (dv_ptr == NULL){
+	QwWarning << "QwCombiner::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
+		  << fDependentName.at(dv)
+		  << ", was not found (fullname=="
+		  << fDependentFull.at(dv)<< ")." << QwLog::endl;
+	 continue;
+      }
     }
 
     // pair creation
-    if(vqwk != NULL){
+    if(dv_ptr != NULL){
       // fDependentVarType.push_back(fDependentType.at(dv));
-      fDependentVar.push_back(vqwk);
+      fDependentVar.push_back(dv_ptr);
     }
 
   }
@@ -365,10 +351,10 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
     const VQwHardwareChannel* iv_ptr = 0;
     switch (fIndependentType.at(iv)) {
       case kHandleTypeAsym:
-        iv_ptr = asym.ReturnInternalValue(fIndependentName.at(iv));
+        iv_ptr = asym.RequestExternalPointer(fIndependentName.at(iv));
         break;
       case kHandleTypeDiff:
-        iv_ptr = diff.ReturnInternalValue(fIndependentName.at(iv));
+        iv_ptr = diff.RequestExternalPointer(fIndependentName.at(iv));
         break;
       default:
         QwWarning << "Independent variable for correlator has unknown type."

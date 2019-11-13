@@ -1,0 +1,51 @@
+! From run 5150-> for injector cathode and RHWP scans - 30 uA pedestal run 5151
+
+bpm1i02XP, -721.44, 1.0 
+bpm1i02XM, -1792.90, 1.0 
+bpm1i02YP, -1368.12, 1.0 
+bpm1i02YM, -819.91, 1.0 
+bpm1i04XP, -597.96, 1.0 
+bpm1i04XM, -549.68, 1.0 
+bpm1i04YP, 1115.07, 1.0 
+bpm1i04YM, 999.50, 1.0 
+bpm0i01XP, 16.13, 1.0 
+bpm0i01XM, -124.17, 1.0 
+bpm0i01YP, -449.66, 1.0 
+bpm0i01YM, -244.89, 1.0 
+bpm0i01aXP, -1291.09, 1.0 
+bpm0i01aXM, -658.29, 1.0 
+bpm0i01aYP, 89.66, 1.0 
+bpm0i01aYM, -280.77, 1.0 
+bpm1i06XP, 254.34, 1.0 
+bpm1i06XM, -177.94, 1.0 
+bpm1i06YP, -280.82, 1.0 
+bpm1i06YM, -835.50, 1.0 
+bpm0i02XP, -32.60, 1.0 
+bpm0i02XM, -252.20, 1.0 
+bpm0i02YP, -784.97, 1.0 
+bpm0i02YM, 154.18, 1.0 
+bpm0i02aXP, 137.52, 1.0 
+bpm0i02aXM, -448.72, 1.0 
+bpm0i02aYP, -503.16, 1.0 
+bpm0i02aYM, 828.21, 1.0 
+bpm0i05XP, -306.39, 1.0 
+bpm0i05XM, 974.64, 1.0 
+bpm0i05YP, -176.06, 1.0 
+bpm0i05YM, -59.58, 1.0 
+bpm2i01XP, -372.95, 1.0 
+bpm2i01XM, -5.28, 1.0 
+bpm2i01YP, 748.50, 1.0 
+bpm2i01YM, 1054.93, 1.0 
+bpm2i02XP, -836.42, 1.0 
+bpm2i02XM, -1689.41, 1.0 
+bpm2i02YP, -637.31, 1.0 
+bpm2i02YM, -289.37, 1.0
+
+
+!  BCM gain for 0L02 is from Qweak parameter files
+!from run 4858 for 85uA using epics readout of gun current https://logbooks.jlab.org/entry/3729588
+bcm0l02, 11154.56, 1.0
+!  Use calibration into volts for batteries and phase monitor.
+batery6                         -295.052     76.2939e-6
+batery7                         -445.764     76.2939e-6
+phasemonitor                    -162.172     76.2939e-6

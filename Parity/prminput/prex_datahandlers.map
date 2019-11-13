@@ -1,5 +1,12 @@
 # This is an example of a detector definition file.
 
+[QwCombiner]
+  name       = MyCombiner
+  priority   = 0
+  map        = prex_combiner.map
+  tree-name  = mulc
+  tree-comment = Helicity event data tree (corrected)
+
 [LRBCorrector]
   name       = LinRegBlue Corrector
   priority   = 10
@@ -99,8 +106,8 @@
   tree-comment = Correlations (all variables)
 
 [QwCombiner]
-  name       = MyCombiner
-  priority   = 0
-  map        = prex_combiner.map
+  name       = MyCombiner2
+  priority   = 99
+  map        = prex_combiner2.map
   tree-name  = mulc
   tree-comment = Helicity event data tree (corrected)

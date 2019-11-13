@@ -75,8 +75,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 
   bool fDisableHistos;
   
-  std::vector< TString > fIndependentFull;
-  std::vector< TString > fDependentFull;
+  std::vector< std::string > fIndependentFull;
     
   //  Using the fDependentType and fDependentName from base class, but override the IV arrays
   std::vector< EQwHandleType > fIndependentType;
@@ -93,7 +92,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   void WriteAlphaFile();
   void CloseAlphaFile();
 
-  TTree* fTree;
+  TTree* fAlphaOutputTree;
 
   std::string fAliasOutputFileBase;
   std::string fAliasOutputFileSuff;
@@ -114,6 +113,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 
  private:
 		
+  TString fNameNoSpaces;
   int nP, nY;
 
   // monitoring histos for iv & dv

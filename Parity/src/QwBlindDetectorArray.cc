@@ -306,7 +306,7 @@ Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
             {
               if (localMainDetID.fTypeID==kQwIntegrationPMT)
                 {
-                  QwIntegrationPMT localIntegrationPMT(GetSubsystemName(),localMainDetID.fdetectorname);
+                  QwIntegrationPMT localIntegrationPMT(GetName(),localMainDetID.fdetectorname);
 		  if (keyword=="not_blindable"
 		      || keyword2=="not_blindable")
 		    localIntegrationPMT.SetBlindability(kFALSE);
@@ -324,7 +324,7 @@ Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
 
               else if (localMainDetID.fTypeID==kQwCombinedPMT)
                 {
-		  QwCombinedPMT localcombinedPMT(GetSubsystemName(),localMainDetID.fdetectorname);
+		  QwCombinedPMT localcombinedPMT(GetName(),localMainDetID.fdetectorname);
 		  if (keyword=="not_normalizable" 
 		      || keyword2=="not_normalizable")
 		    localcombinedPMT.SetNormalizability(kFALSE);
@@ -731,7 +731,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
     }    
   }else{
     bIsExchangedDataValid = kFALSE;
-    QwError << GetSubsystemName() << " could not get external value for "
+    QwError << GetName() << " could not get external value for "
 	    << fTargetX.GetElementName() << QwLog::endl;
   }
 
@@ -742,7 +742,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
     }
   }else{
     bIsExchangedDataValid = kFALSE;
-    QwError << GetSubsystemName() << " could not get external value for "
+    QwError << GetName() << " could not get external value for "
 	    << fTargetY.GetElementName() << QwLog::endl;
   }
 
@@ -753,7 +753,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
     }
   }else{
     bIsExchangedDataValid = kFALSE;
-    QwError << GetSubsystemName() << " could not get external value for "
+    QwError << GetName() << " could not get external value for "
 	    << fTargetXprime.GetElementName() << QwLog::endl;
   }
   
@@ -764,7 +764,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
     }
   }else{
     bIsExchangedDataValid = kFALSE;
-    QwError << GetSubsystemName() << " could not get external value for "
+    QwError << GetName() << " could not get external value for "
 	    << fTargetYprime.GetElementName() << QwLog::endl;
   }
   
@@ -775,7 +775,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
     }
   }else{
     bIsExchangedDataValid = kFALSE;
-    QwError << GetSubsystemName() << " could not get external value for "
+    QwError << GetName() << " could not get external value for "
 	    << fTargetEnergy.GetElementName() << QwLog::endl;
   }
     
@@ -985,7 +985,7 @@ void  QwBlindDetectorArray::ExchangeProcessedData()
 	else
 	  {
 	    bIsExchangedDataValid = kFALSE;
-	    QwError << GetSubsystemName() << " could not get external value for "
+	    QwError << GetName() << " could not get external value for "
 		    << variable->GetElementName() << QwLog::endl;
 	  }
       } // end of loop over variables
@@ -1001,7 +1001,7 @@ void  QwBlindDetectorArray::ExchangeProcessedData()
     }
     else{
       bIsExchangedDataValid = kFALSE;
-      QwError << GetSubsystemName() << " could not get external value for "
+      QwError << GetName() << " could not get external value for "
 	      << fTargetCharge.GetElementName() << QwLog::endl;
     }
     
@@ -1486,7 +1486,7 @@ void  QwBlindDetectorArray::FillDB(QwParityDB *db, TString datatype)
 
 void  QwBlindDetectorArray::PrintValue() const
 {
-  QwMessage << "=== QwBlindDetectorArray: " << GetSubsystemName() << " ===" << QwLog::endl;
+  QwMessage << "=== QwBlindDetectorArray: " << GetName() << " ===" << QwLog::endl;
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
     fIntegrationPMT[i].PrintValue();
   for (size_t i = 0; i < fCombinedPMT.size(); i++)

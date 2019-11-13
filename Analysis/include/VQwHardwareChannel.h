@@ -41,7 +41,10 @@ public:
 
   void ProcessOptions();
 
-  virtual VQwHardwareChannel* Clone() = 0;
+  virtual VQwHardwareChannel* Clone() const{
+    return Clone(this->fDataToSave);
+  };
+  virtual VQwHardwareChannel* Clone(VQwDataElement::EDataToSave datatosave) const = 0;
 
   using VQwDataElement::UpdateErrorFlag;
 

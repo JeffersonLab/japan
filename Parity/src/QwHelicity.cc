@@ -82,8 +82,8 @@ QwHelicity::QwHelicity(const TString& name)
 // all of the copy protection built into the helicity subsystem.  I can't be
 // bothered to clean it up right now... (wdc)
 QwHelicity::QwHelicity(const QwHelicity& source)
-: VQwSubsystem(source.GetSubsystemName()),
-  VQwSubsystemParity(source.GetSubsystemName()),
+: VQwSubsystem(source.GetName()),
+  VQwSubsystemParity(source.GetName()),
   fInputReg_HelPlus(source.fInputReg_HelPlus),
   fInputReg_HelMinus(source.fInputReg_HelMinus),
   fInputReg_PatternSync(source.fInputReg_PatternSync),
@@ -369,12 +369,12 @@ void QwHelicity::ClearEventData()
 
   /**Reset data by setting the old event number, pattern number and pattern phase 
      to the values of the previous event.*/
-  if (fEventNumberFirst==-1 && fEventNumberOld== -1){
-    fEventNumberFirst = fEventNumber;
+  if (fEventNumberFirst==-1 && fEventNumberOld!= -1){
+    fEventNumberFirst = fEventNumberOld;
   }
-  if (fPatternNumberFirst==-1 && fPatternNumberOld==-1 
-      && fPatternNumber>fPatternNumberOld){
-    fPatternNumberFirst = fPatternNumber;
+  if (fPatternNumberFirst==-1 && fPatternNumberOld!=-1 
+      && fPatternNumber==fPatternNumberOld+1){
+    fPatternNumberFirst = fPatternNumberOld;
   }
 
   fEventNumberOld = fEventNumber;
@@ -2001,8 +2001,10 @@ VQwSubsystem&  QwHelicity::operator=  (VQwSubsystem *value)
   return *this;
 }
 
-VQwSubsystem&  QwHelicity::operator+=  (VQwSubsystem *value){
-  QwDebug << "Entering QwHelicity::operator+= adding " << value->GetSubsystemName() << " to " << this->GetSubsystemName() << " " << QwLog::endl;
+VQwSubsystem&  QwHelicity::operator+=  (VQwSubsystem *value)
+{
+  //  Bool_t localdebug=kFALSE;
+  QwDebug << "Entering QwHelicity::operator+= adding " << value->GetName() << " to " << this->GetName() << " " << QwLog::endl;
 
   //this routine is most likely to be called during the computatin of assymetry
   //this call doesn't make too much sense for this class so the following lines

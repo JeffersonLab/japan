@@ -8,8 +8,13 @@
  */
 
 #include "QwCombiner.h"
+#include "MQwPublishable.h"
+#include "VQwSubsystem.h"
+#include <iostream>
+#include <stdexcept>
 
 // Qweak headers
+#include "QwLog.h"
 #include "VQwDataElement.h"
 #include "QwVQWK_Channel.h"
 #include "QwParameterFile.h"
@@ -21,6 +26,7 @@
 #include "QwParityDB.h"
 #endif // __USE_DATABASE__
 
+#include "QwPromptSummary.h"
 
 // Register this handler with the factory
 RegisterHandlerFactory(QwCombiner);
@@ -75,6 +81,7 @@ Int_t QwCombiner::LoadChannelMap(const std::string& mapfile)
   QwParameterFile* section = 0;
   std::pair<EQwHandleType,std::string> type_name;
   while ((section = map.ReadNextSection(section_name,keep_header))) {
+    if(section_name=="PUBLISH") continue;
 
     // Store index to the current position in the dv vector
     size_t current_dv_start = fDependentName.size();
@@ -121,6 +128,37 @@ Int_t QwCombiner::LoadChannelMap(const std::string& mapfile)
       }
     }
   }
+ 
+  TString varvalue; 
+  // Now load the variables to publish
+  std::vector<std::vector<TString> > fPublishList;
+  map.RewindToFileStart();
+  QwParameterFile *section2;
+  std::vector<TString> publishinfo;
+  while ((section2=map.ReadNextSection(varvalue))) {
+    if (varvalue == "PUBLISH") {
+      fPublishList.clear();
+      while (section2->ReadNextLine()) {
+        section2->TrimComment(); // Remove everything after a comment character
+        section2->TrimWhitespace(); // Get rid of leading and trailing spaces
+        for (int ii = 0; ii < 4; ii++) {
+          varvalue = section2->GetTypedNextToken<TString>();
+          if (varvalue.Length()) {
+            publishinfo.push_back(varvalue);
+          }
+        }
+        if (publishinfo.size() == 4)
+          fPublishList.push_back(publishinfo);
+        publishinfo.clear();
+      }
+    }
+    delete section2;
+  }
+  // Print list of variables to publish
+  QwMessage << "Variables to publish:" << QwLog::endl;
+  for (size_t jj = 0; jj < fPublishList.size(); jj++){
+    QwMessage << fPublishList.at(jj).at(0) << " " << fPublishList.at(jj).at(1) << " " << fPublishList.at(jj).at(2) << " " << fPublishList.at(jj).at(3) << QwLog::endl;
+  }
   return 0;
 }
 
@@ -140,9 +178,9 @@ Int_t QwCombiner::ConnectChannels(
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
     // Get the dependent variables
 
-    VQwHardwareChannel* dv_ptr = 0;
+    const VQwHardwareChannel* dv_ptr = 0;
     QwVQWK_Channel* new_vqwk = NULL;
-    QwVQWK_Channel* vqwk = NULL;
+    const QwVQWK_Channel* vqwk = NULL;
     string name = "";
     string calc = "calc_";
     
@@ -154,10 +192,10 @@ Int_t QwCombiner::ConnectChannels(
     }else{
       switch (fDependentType.at(dv)) {
         case kHandleTypeAsym:
-          dv_ptr = asym.ReturnInternalValueForFriends(fDependentName.at(dv));
+          dv_ptr = asym.RequestExternalPointer(fDependentName.at(dv));
           break;
         case kHandleTypeDiff:
-          dv_ptr = diff.ReturnInternalValueForFriends(fDependentName.at(dv));
+          dv_ptr = diff.RequestExternalPointer(fDependentName.at(dv));
           break;
         default:
           QwWarning << "QwCombiner::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
@@ -167,7 +205,7 @@ Int_t QwCombiner::ConnectChannels(
           break;
       }
 
-      vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
+      vqwk = dynamic_cast<const QwVQWK_Channel*>(dv_ptr);
       name = vqwk->GetElementName().Data();
       name.insert(0, calc);
       new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
@@ -205,15 +243,18 @@ Int_t QwCombiner::ConnectChannels(
       const VQwHardwareChannel* iv_ptr = 0;
       switch (fIndependentType.at(dv).at(iv)) {
         case kHandleTypeAsym:
-          iv_ptr = asym.ReturnInternalValue(fIndependentName.at(dv).at(iv));
+          iv_ptr = asym.RequestExternalPointer(fIndependentName.at(dv).at(iv));
           break;
         case kHandleTypeDiff:
-          iv_ptr = diff.ReturnInternalValue(fIndependentName.at(dv).at(iv));
+          iv_ptr = diff.RequestExternalPointer(fIndependentName.at(dv).at(iv));
           break;
         default:
           QwWarning << "Independent variable for combiner has unknown type."
                     << QwLog::endl;
           break;
+      }
+      if (iv_ptr == NULL){
+        iv_ptr = RequestExternalPointer(fIndependentName.at(dv).at(iv));
       }
       if (iv_ptr) {
         //QwMessage << " iv: " << fIndependentName.at(dv).at(iv) << " (sens = " << fSensitivity.at(dv).at(iv) << ")" << QwLog::endl;
@@ -243,9 +284,9 @@ Int_t QwCombiner::ConnectChannels(QwSubsystemArrayParity& event)
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
     // Get the dependent variables
 
-    VQwHardwareChannel* dv_ptr = 0;
+    const VQwHardwareChannel* dv_ptr = 0;
     QwVQWK_Channel* new_vqwk = NULL;
-    QwVQWK_Channel* vqwk = NULL;
+    const QwVQWK_Channel* vqwk = NULL;
     string name = " s";
     string calc = "calc_";
 
@@ -263,9 +304,9 @@ Int_t QwCombiner::ConnectChannels(QwSubsystemArrayParity& event)
         name = fDependentName.at(dv).substr(1,fDependentName.at(dv).length());
         new_vqwk = new QwVQWK_Channel(name, VQwDataElement::kDerived);
       } else {
-        dv_ptr = event.ReturnInternalValueForFriends(fDependentName.at(dv));
+        dv_ptr = event.RequestExternalPointer(fDependentName.at(dv));
 
-        vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
+        vqwk = dynamic_cast<const QwVQWK_Channel*>(dv_ptr);
         name = vqwk->GetElementName().Data();
         name.insert(0,calc);
         new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
@@ -294,7 +335,7 @@ Int_t QwCombiner::ConnectChannels(QwSubsystemArrayParity& event)
       // Get the independent variables
       const VQwHardwareChannel* iv_ptr = 0;
       if(fIndependentType.at(dv).at(iv) == kHandleTypeMps){
-        iv_ptr = event.ReturnInternalValue(fIndependentName.at(dv).at(iv));
+        iv_ptr = event.RequestExternalPointer(fIndependentName.at(dv).at(iv));
     	} else {
         QwWarning << "Independent variable for MPS combiner has unknown type."
                   << QwLog::endl;

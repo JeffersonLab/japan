@@ -42,7 +42,7 @@ Int_t QwBeamLine::AddToElementList<VQwClock_ptr>(std::vector<VQwClock_ptr> &elem
 {
   if (detector_id.fTypeID == kQwClock){
     VQwClock_ptr element( 
-		       VQwClock::Create(GetSubsystemName(),
+		       VQwClock::Create(GetName(),
 				      detector_id.fdetectorname,
 				      detector_id.fmoduletype) );
     elementlist.push_back(element);
@@ -57,7 +57,7 @@ Int_t QwBeamLine::AddToElementList<VQwBCM_ptr>(std::vector<VQwBCM_ptr> &elementl
 {
   if (detector_id.fTypeID == kQwBCM){
     VQwBCM_ptr element( 
-		       VQwBCM::Create(GetSubsystemName(),
+		       VQwBCM::Create(GetName(),
 				      detector_id.fdetectorname,
 				      detector_id.fmoduletype) );
     elementlist.push_back(element);
@@ -72,7 +72,7 @@ Int_t QwBeamLine::AddToElementList<VQwBPM_ptr>(std::vector<VQwBPM_ptr> &elementl
 {
   if (detector_id.fTypeID == kQwBPMStripline){
     VQwBPM_ptr element( 
-	VQwBPM::CreateStripline(GetSubsystemName(),
+	VQwBPM::CreateStripline(GetName(),
 				detector_id.fdetectorname,
 				detector_id.fmoduletype) );
     elementlist.push_back(element);
@@ -86,7 +86,7 @@ template <typename TT>
 Int_t QwBeamLine::AddToElementList(std::vector<TT> &elementlist,
 				   QwBeamDetectorID &detector_id)
 {
-  TT element(GetSubsystemName(), detector_id.fdetectorname);
+  TT element(GetName(), detector_id.fdetectorname);
   elementlist.push_back(element);
   detector_id.fIndex = elementlist.size()-1;
   return detector_id.fIndex;
@@ -230,7 +230,7 @@ Int_t QwBeamLine::LoadChannelMap(TString mapfile)
 	  if (localComboID.fTypeID == kQwCombinedBCM){
 
 	    VQwBCM_ptr localbcmcombo(
-		VQwBCM::CreateCombo(GetSubsystemName(),
+		VQwBCM::CreateCombo(GetName(),
 				    localComboID.fdetectorname,localComboID.fmoduletype));
 	    fBCMCombo.push_back(localbcmcombo);
 
@@ -247,7 +247,7 @@ Int_t QwBeamLine::LoadChannelMap(TString mapfile)
 	  // Decoding combined BPM array.
 	  if(localComboID.fTypeID== kQwCombinedBPM){
 	    VQwBPM_ptr localbpmcombo(
-                VQwBPM::CreateCombo(GetSubsystemName(),
+                VQwBPM::CreateCombo(GetName(),
 				    localComboID.fdetectorname,localComboID.fmoduletype));
 	    fBPMCombo.push_back(localbpmcombo);
 
@@ -268,7 +268,7 @@ Int_t QwBeamLine::LoadChannelMap(TString mapfile)
 	  // Decoding energy calculator.
 	  if(localComboID.fTypeID== kQwEnergyCalculator){
 
-	    QwEnergyCalculator localecalculator(GetSubsystemName(), localComboID.fdetectorname);
+	    QwEnergyCalculator localecalculator(GetName(), localComboID.fdetectorname);
 	    fECalculator.push_back(localecalculator);
 
 	    for(size_t i=0;i<fDeviceName.size();i++){
@@ -1851,7 +1851,7 @@ VQwDataElement* QwBeamLine::GetElement(EQwBeamInstrumentType TypeID, Int_t index
     break;
   default:
     TString loc="QwBeamLine::GetElement called by "
-      +this->GetSubsystemName()+" with invalid arguements: "
+      +this->GetName()+" with invalid arguements: "
       +GetQwBeamInstrumentTypeName(TypeID)+" "
       +Form("%d",index);
     throw std::invalid_argument(loc.Data());
@@ -1901,7 +1901,7 @@ const VQwHardwareChannel* QwBeamLine::GetChannel(EQwBeamInstrumentType TypeID, I
     tmp_channel = fClock.at(index)->GetTime();
   } else {
     TString loc="QwBeamLine::GetChannel called by "
-      +this->GetSubsystemName()+" with invalid arguements: "
+      +this->GetName()+" with invalid arguements: "
       +GetQwBeamInstrumentTypeName(TypeID)+" "
       +Form("%d",index);
     throw std::invalid_argument(loc.Data());
@@ -2310,7 +2310,7 @@ void QwBeamLine::CalculateRunningAverage()
 //*****************************************************************//
 void QwBeamLine::PrintValue() const
 {
-  QwMessage << "=== QwBeamLine: " << GetSubsystemName() << " ===" << QwLog::endl;
+  QwMessage << "=== QwBeamLine: " << GetName() << " ===" << QwLog::endl;
   QwMessage << "Clock" << QwLog::endl;
   for (size_t i = 0; i < fClock.size();       i++) fClock[i].get()->PrintValue();
   QwMessage << "BPM stripline" << QwLog::endl;

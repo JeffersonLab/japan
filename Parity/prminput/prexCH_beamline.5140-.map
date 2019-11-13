@@ -1,0 +1,131 @@
+
+ROC=23
+Bank=0x05
+vqwk_buffer_offset = 1
+!same sample size for ADCs in a given bank
+sample_size=4096
+!Sample size should be unchanged - ask Paul King
+!
+! module.type, module.num  chan.num, det.type, det.name, if unrotated then last column ->UNROTATED
+
+
+!ADC0
+  VQWK, 0, 0,  bcm,  QWK_0_0
+    VQWK, 0, 1,  bcm,  BCM_DG_US
+    VQWK, 0, 2,  bcm,  QWK_0_2
+    VQWK, 0, 3,  bpmcavity,  CAV4BYI
+    VQWK, 0, 4,  bpmcavity,  CAV4BQ
+    VQWK, 0, 5,  bpmcavity,  CAV4CXI
+    VQWK, 0, 6,  bpmcavity,  CAV4CYI
+    VQWK, 0, 7,  bpmcavity,  CAV4CQ
+
+!ADC1
+    VQWK, 1, 0,  bpmstripline,  BPM4Exp
+    VQWK, 1, 1,  bpmstripline,  BPM4Exm
+    VQWK, 1, 2,  bpmstripline,  BPM4Eyp
+    VQWK, 1, 3,  bpmstripline,  BPM4Eym
+    VQWK, 1, 4,  bpmstripline,  BPM12xp
+    VQWK, 1, 5,  bpmstripline,  BPM12xm
+    VQWK, 1, 6,  bpmstripline,  BPM12yp
+    VQWK, 1, 7,  bpmstripline,  BPM12ym
+
+!ADC2
+    VQWK, 2, 0,  bpmstripline,  BPM4Axp
+    VQWK, 2, 1,  bpmstripline,  BPM4Axm
+    VQWK, 2, 2,  bpmstripline,  BPM4Ayp
+    VQWK, 2, 3,  bpmstripline,  BPM4Aym
+    VQWK, 2, 4,  bpmcavity,  CAV4DXI
+    VQWK, 2, 5,  bpmcavity,  CAV4DYI
+    VQWK, 2, 6,  bpmcavity,  CAV4DQ
+    VQWK, 2, 7,  bcm,  UNSER
+
+!ADC3
+    VQWK, 3, 0,  bpmcavity,  CAV4BXI 
+    VQWK, 3, 1,  bcm,  hallc_bcm_4c
+    VQWK, 3, 2,  bpmstripline,  BPM11xp
+    VQWK, 3, 3,  bcm,  ch_battery_1
+    VQWK, 3, 4,  bcm,  BCM_AN_US
+    VQWK, 3, 5,  bpmstripline,  BPM11xm
+    VQWK, 3, 6,  bpmstripline,  BPM11yp
+    VQWK, 3, 7,  bpmstripline,  BPM11ym
+
+!ADC4
+!Caryn edit BPM8 7/3/2019. XP was 4_5 and XM was 4_4 which is backwards so swapped them to correct mapping
+!Cameron edit 7/16/2019 -> new maps, BPMs 11, 12, 16, see http://ace.phys.virginia.edu/HAPPEX/3820
+    VQWK, 4, 0,  bpmstripline,  BPM1xp
+    VQWK, 4, 1,  bpmstripline,  BPM1xm
+    VQWK, 4, 2,  bpmstripline,  BPM1yp 
+    VQWK, 4, 3,  bpmstripline,  BPM1ym
+    VQWK, 4, 4,  bpmstripline,  BPM16xp
+    VQWK, 4, 5,  bpmstripline,  BPM16xm
+    VQWK, 4, 6,  bpmstripline,  BPM16yp
+    VQWK, 4, 7,  bpmstripline,  BPM16ym
+
+!ADC5
+    VQWK, 5, 0,  bcm,  ch_tsettle
+    VQWK, 5, 1,  bcm,  ch_bpm_trigger 
+    VQWK, 5, 2,  bcm,  beam_mod_ramp
+    VQWK, 5, 3,  bcm,  ch_battery_2
+    VQWK, 5, 4,  bcm,  BCM_DG_DS
+    VQWK, 5, 5,  bcm,  BCM_AN_DS
+    VQWK, 5, 6,  bcm,  BCM_AN_DS3
+    VQWK, 5, 7,  bcm,  BCM_AN_DS10
+
+!ADC6
+    VQWK, 6, 0,  bpmstripline,  BPM1p02bxp
+    VQWK, 6, 1,  bpmstripline,  BPM1p02bxm
+    VQWK, 6, 2,  bpmstripline,  BPM1p02byp
+    VQWK, 6, 3,  bpmstripline,  BPM1p02bym
+    VQWK, 6, 4,  bpmstripline,  BPM1p03axp
+    VQWK, 6, 5,  bpmstripline,  BPM1p03axm
+    VQWK, 6, 6,  bpmstripline,  BPM1p03ayp
+    VQWK, 6, 7,  bpmstripline,  BPM1p03aym
+
+  !These are complimentary bpms where we have tricked the bpm system into thinking xp is xm and yp is ym and vice versa. The cables are labeled 4acXP compliment but in actuality it is reading 4acXM compliment which is measured in the same 4us interval as the nominal original bpm 4aXP channel. We interpret here the minus compliment channels as plus and the plus compliment channels as minus
+!ADC7
+    VQWK, 7, 0,  bpmstripline,  BPM4acXM
+    VQWK, 7, 1,  bpmstripline,  BPM4acXP
+    VQWK, 7, 2,  bpmstripline,  BPM4acYM
+    VQWK, 7, 3,  bpmstripline,  BPM4acYP
+    VQWK, 7, 4,  bpmstripline,  BPM4ecXM
+    VQWK, 7, 5,  bpmstripline,  BPM4ecXP
+    VQWK, 7, 6,  bpmstripline,  BPM4ecYM
+    VQWK, 7, 7,  bpmstripline,  BPM4ecYP
+
+
+!! bank=0x2 
+!!
+!! scaler_buffer_offset=1 
+!!
+!! ! module.type  module.num  chan.num, det.type, det.name 
+!!   SCALER, 0,   4,  bcm, ch_MPS_single 
+!!   SCALER, 0,   5,  bcm, ch_TI_busy 
+!!   !!!  SCALER, 0,   6,  clock, ch_clock_13kHz  !!!!  Not connected 
+!!   SCALER, 0,   7,  clock, ch_clock_4mhz 
+!!   SCALER, 0,   8,  bcm, hallc_bcm_1 
+!!   !!!  SCALER, 0,   9,  bcmscal, hallc_bcm_2  !!!!  Not connected 
+!!   SCALER, 0,   10, bcm, BCM_scal_unser 
+!!   SCALER, 0,   11, bcm, BCM_scal_AAA 
+!!   SCALER, 0,   12, bcm, BCM_scal_BBB 
+!!   SCALER, 0,   13, bcm, BCM_scal_CCC 
+!!   SCALER, 0,   14, bcm, BCM_scal_DDD 
+!!   SCALER, 1,   0,  clock, ch_tstable_clock_4mhz 
+
+
+
+
+
+[PUBLISH]
+! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
+
+  x_targ, bpmstripline, bpm4e, y
+  y_targ, bpmstripline, bpm4e, x
+  
+  q_targA, bpmstripline, bpm4e, ef
+  q_targB, bpmstripline, bpm4e, ef
+  q_targC, bcm, hallc_bcm_4c, c
+
+ xy_pos_x, bpmstripline, bpm4e, x
+ xy_pos_y, bpmstripline, bpm4e, y 
+! Changing the normalizer for slug 51 to the digital BCM to mitigate noise
+ q_targ, bcm, bcm_dg_ds, c
