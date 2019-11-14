@@ -35,53 +35,6 @@ asym:dsr, 0.5
 [asym:@asym_ds_dd]
 asym:dsl, 0.5
 asym:dsr, -0.5
-############################## Combo ATs
-[asym:@asym_atl_avg]
-asym:atl1, 0.5
-asym:atl2, 0.5
-[asym:@asym_atl_dd]
-asym:atl1, 0.5
-asym:atl2, -0.5
-[asym:@asym_atr_avg]
-asym:atr1, 0.5
-asym:atr2, 0.5
-[asym:@asym_atr_dd]
-asym:atr1, 0.5
-asym:atr2, -0.5
-[asym:@asym_atl1r2_avg]
-asym:atl1, 0.5
-asym:atr2, 0.5
-[asym:@asym_atl1r2_dd]
-asym:atl1, 0.5
-asym:atr2, -0.5
-[asym:@asym_atr1l2_avg]
-asym:atr1, 0.5
-asym:atl2, 0.5
-[asym:@asym_atr1l2_dd]
-asym:atr1, 0.5
-asym:atl2, -0.5
-[asym:@asym_at1_avg]
-asym:atl1, 0.5
-asym:atr1, 0.5
-[asym:@asym_at1_dd]
-asym:atl1, 0.5
-asym:atr1, -0.5
-[asym:@asym_at2_avg]
-asym:atr2, 0.5
-asym:atl2, 0.5
-[asym:@asym_at2_dd]
-asym:atr2, 0.5
-asym:atl2, -0.5
-[asym:@asym_atl_dd_atr_dd_avg]
-asym:atl1, 0.25
-asym:atl2, -0.25
-asym:atr1, 0.25
-asym:atr2, -0.25
-[asym:@asym_atl_dd_atr_dd_dd]
-asym:atl1, 0.25
-asym:atl2, -0.25
-asym:atr1, -0.25
-asym:atr2, 0.25
 ############################## SAM 1 and 5
 [asym:@asym_sam_15_dd]
 asym:sam1, 0.5
@@ -127,10 +80,6 @@ asym:bcm_dg_ds, -0.5
 [asym:@bcm_cav4cQ_ds_dd]
 asym:cav4cQ, 0.5
 asym:bcm_an_ds, -0.5
-
-[asym:@bcm_cav4cQ_dg_ds_dd]
-asym:cav4cQ, 0.5
-asym:bcm_dg_ds, -0.5
 
 [asym:@bcm_dg_us_ds_dd]
 asym:bcm_dg_us, 0.5
@@ -195,14 +144,6 @@ asym:sam1, 0.25
 asym:sam3, 0.25
 asym:sam5, 0.25
 asym:sam7, 0.25
-
-[asym:@bpm_4aX_4ecX_dd]
-asym:bpm4aX, 0.5
-asym:bpm4ecX, -0.5
-
-[asym:@bpm_4aY_4ecY_dd]
-asym:bpm4aY, 0.5
-asym:bpm4ecY, -0.5
 
 [asym:@bpm_4aX_4eX_dd]
 asym:bpm4aX, 0.5
