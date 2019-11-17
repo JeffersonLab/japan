@@ -94,11 +94,6 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
     }
   }
 
-  // Resize sensitivity with all zeros
-  fSensitivity.resize(fDependentType.size());
-  for (size_t i = 0; i != fDependentType.size(); i++)
-    fSensitivity.at(i).resize(fIndependentType.size());
-
   // Construct slope file name
   std::string SlopeFileName = fAlphaFileBase + run_label.Data() + fAlphaFileSuff;
   std::string SlopeFilePath = fAlphaFilePath + "/";
@@ -113,7 +108,16 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
   }
 
   // Slope matrix
-  TMatrixD *alphasM = (TMatrixD *) corFile->Get("slopes");
+  TKey* key = corFile->GetKey("slopes");
+  if (key == 0) {
+    QwWarning << "No slope matrix found" << QwLog::endl;
+    corFile->Close();
+    return 0;
+  }
+  QwMessage << "Slope matrix has " << key->GetCycle() << " cycle(s)." << QwLog::endl;
+  Short_t cycle = key->GetCycle(); // last cycle
+  TKey* key_cycle = corFile->GetKey("slopes", cycle);
+  TMatrixD *alphasM = (TMatrixD *) key_cycle->ReadObj();
   if (alphasM == 0) {
     QwWarning << "Slope matrix is null" << QwLog::endl;
     corFile->Close();
@@ -173,9 +177,11 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
   }
 
   // Assign sensitivities
-  for (Int_t i = 0; i < ivnames->GetXaxis()->GetNbins(); ++i) {
-    for (Int_t j = 0; j < dvnames->GetXaxis()->GetNbins(); ++j) {
-      fSensitivity[j].push_back(-1.0*(*alphasM)(i,j));
+  fSensitivity[cycle].resize(fDependentType.size());
+  for (size_t i = 0; i != fDependentType.size(); ++i) {
+    fSensitivity[cycle].at(i).resize(fIndependentType.size());
+    for (size_t j = 0; j != fIndependentType.size(); ++j) {
+      fSensitivity[cycle].at(i).at(j) = -1.0*(*alphasM)(j,i);
     }
   }
 
@@ -225,7 +231,9 @@ Int_t LRBCorrector::ConnectChannels(
 
 
 void LRBCorrector::ProcessData() {
+  Short_t burst = 1;
+  if (fSensitivity.count(burst) == 0) return;
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
-    CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar, fSensitivity[i]);
+    CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar, fSensitivity[burst][i]);
   }
 }
