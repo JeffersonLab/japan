@@ -825,7 +825,7 @@ void  QwHelicityPattern::FillHistograms()
 void QwHelicityPattern::ConstructBranchAndVector(TTree *tree, TString & prefix, std::vector <Double_t> &values)
 {
 TString basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix.Length())+"BurstCounter";
-  tree->Branch(basename,&fBurstCounter,basename+"/I");
+  tree->Branch(basename,&fBurstCounter,basename+"/S");
   TString newprefix = "yield_" + prefix;
   fYield.ConstructBranchAndVector(tree, newprefix, values);
   newprefix = "asym_" + prefix;
@@ -846,7 +846,7 @@ TString basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix
 void QwHelicityPattern::ConstructBranch(TTree *tree, TString & prefix)
 {
   TString basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix.Length())+"BurstCounter";
-  tree->Branch(basename,&fBurstCounter,basename+"/I");
+  tree->Branch(basename,&fBurstCounter,basename+"/S");
 
   TString newprefix = "yield_" + prefix;
   fYield.ConstructBranch(tree, newprefix);
@@ -868,7 +868,7 @@ void QwHelicityPattern::ConstructBranch(TTree *tree, TString & prefix)
 void QwHelicityPattern::ConstructBranch(TTree *tree, TString & prefix, QwParameterFile &trim_tree)
 {
   TString basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix.Length())+"BurstCounter";
-  tree->Branch(basename,&fBurstCounter,basename+"/I");
+  tree->Branch(basename,&fBurstCounter,basename+"/S");
   TString newprefix = "yield_" + prefix;
   fYield.ConstructBranch(tree, newprefix, trim_tree);
   newprefix = "asym_" + prefix;

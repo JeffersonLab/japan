@@ -42,7 +42,8 @@ Last Modified: August 1, 2018 1:41 PM
 RegisterHandlerFactory(LRBCorrector);
 
 /// \brief Constructor with name
-LRBCorrector::LRBCorrector(const TString& name):VQwDataHandler(name)
+LRBCorrector::LRBCorrector(const TString& name):VQwDataHandler(name),
+						fLastCycle(0)
 {
   ParseSeparator = "_";
   fKeepRunningSum = kTRUE;
@@ -107,37 +108,6 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
     return 0;
   }
 
-  // Slope matrix
-  TKey* key = corFile->GetKey("slopes");
-  if (key == 0) {
-    QwWarning << "No slope matrix found" << QwLog::endl;
-    corFile->Close();
-    return 0;
-  }
-  QwMessage << "Slope matrix has " << key->GetCycle() << " cycle(s)." << QwLog::endl;
-  Short_t cycle = key->GetCycle(); // last cycle
-  TKey* key_cycle = corFile->GetKey("slopes", cycle);
-  TMatrixD *alphasM = (TMatrixD *) key_cycle->ReadObj();
-  if (alphasM == 0) {
-    QwWarning << "Slope matrix is null" << QwLog::endl;
-    corFile->Close();
-    return 0;
-  }
-  if (alphasM->GetNrows() != Int_t(fIndependentType.size())) {
-    QwWarning << "Slope matrix has wrong number of rows: "
-              << alphasM->GetNrows() << " != " << fIndependentType.size()
-              << QwLog::endl;
-    corFile->Close();
-    return 0;
-  }
-  if (alphasM->GetNcols() != Int_t(fDependentType.size())) {
-    QwWarning << "Slope matrix has wrong number of cols: "
-              << alphasM->GetNcols() << " != " << fDependentType.size()
-              << QwLog::endl;
-    corFile->Close();
-    return 0;
-  }
-
   // DV names
   TH1 *dvnames = (TH1 *) corFile->Get("DVname");
   if (dvnames == 0) {
@@ -176,12 +146,45 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
     }
   }
 
-  // Assign sensitivities
-  fSensitivity[cycle].resize(fDependentType.size());
-  for (size_t i = 0; i != fDependentType.size(); ++i) {
-    fSensitivity[cycle].at(i).resize(fIndependentType.size());
-    for (size_t j = 0; j != fIndependentType.size(); ++j) {
-      fSensitivity[cycle].at(i).at(j) = -1.0*(*alphasM)(j,i);
+  // Slope matrix
+  TKey* key = corFile->GetKey("slopes");
+  if (key == 0) {
+    QwWarning << "No slope matrix found" << QwLog::endl;
+    corFile->Close();
+    return 0;
+  }
+  QwMessage << "Slope matrix has " << key->GetCycle() << " cycle(s)." << QwLog::endl;
+  fLastCycle = key->GetCycle(); // last cycle
+  for (Short_t cycle=1; cycle<=fLastCycle; cycle++){
+    TKey* key_cycle = corFile->GetKey("slopes", cycle);
+    TMatrixD *alphasM = (TMatrixD *) key_cycle->ReadObj();
+    if (alphasM == 0) {
+      QwWarning << "Slope matrix is null" << QwLog::endl;
+      corFile->Close();
+      return 0;
+    }
+    if (alphasM->GetNrows() != Int_t(fIndependentType.size())) {
+      QwWarning << "Slope matrix has wrong number of rows: "
+		<< alphasM->GetNrows() << " != " << fIndependentType.size()
+		<< QwLog::endl;
+      corFile->Close();
+      return 0;
+    }
+    if (alphasM->GetNcols() != Int_t(fDependentType.size())) {
+      QwWarning << "Slope matrix has wrong number of cols: "
+		<< alphasM->GetNcols() << " != " << fDependentType.size()
+		<< QwLog::endl;
+      corFile->Close();
+      return 0;
+    }
+
+    // Assign sensitivities
+    fSensitivity[cycle].resize(fDependentType.size());
+    for (size_t i = 0; i != fDependentType.size(); ++i) {
+      fSensitivity[cycle].at(i).resize(fIndependentType.size());
+      for (size_t j = 0; j != fIndependentType.size(); ++j) {
+	fSensitivity[cycle].at(i).at(j) = -1.0*(*alphasM)(j,i);
+      }
     }
   }
 
@@ -231,9 +234,9 @@ Int_t LRBCorrector::ConnectChannels(
 
 
 void LRBCorrector::ProcessData() {
-  Short_t burst = 1;
-  if (fSensitivity.count(burst) == 0) return;
+  Short_t cycle = fBurstCounter+1;
+  if (fSensitivity.count(cycle) == 0) return;
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
-    CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar, fSensitivity[burst][i]);
+    CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar, fSensitivity[cycle][i]);
   }
 }

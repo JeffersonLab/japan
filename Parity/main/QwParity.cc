@@ -213,7 +213,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     datahandlerarray_evt.ConstructTreeBranches(treerootfile, "evt_");
     datahandlerarray_mul.ConstructTreeBranches(treerootfile);
-    datahandlerarray_burst.ConstructTreeBranches(burstrootfile, "burst_");
+    datahandlerarray_burst.ConstructTreeBranches(burstrootfile, "burst_", "|stat");
 
     treerootfile->ConstructTreeBranches("evts", "Running sum tree", eventsum, "|stat");
     treerootfile->ConstructTreeBranches("muls", "Running sum tree", patternsum, "|stat");
@@ -406,6 +406,7 @@ Int_t main(Int_t argc, Char_t* argv[])
                 datahandlerarray_burst.FillTreeBranches(burstrootfile);
 
 		helicitypattern.IncrementBurstCounter();
+		datahandlerarray_burst.UpdateBurstCounter(helicitypattern.GetBurstCounter());
                 // Clear the data
                 patternsum_per_burst.ClearEventData();
                 datahandlerarray_burst.ClearEventData();
@@ -428,7 +429,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     //  TODO Drain event run
 
-    //  TODO Finalize burst
+    //  Finalize burst
     if (patternsum_per_burst.HasBurstData()){
       // Calculate average over this burst
       patternsum_per_burst.CalculateRunningAverage();
@@ -472,8 +473,6 @@ Int_t main(Int_t argc, Char_t* argv[])
     datahandlerarray_evt.FillTreeBranches(treerootfile);
     datahandlerarray_mul.FinishDataHandler();
     datahandlerarray_mul.FillTreeBranches(treerootfile);
-    datahandlerarray_burst.FinishDataHandler();
-    datahandlerarray_burst.FillTreeBranches(burstrootfile);
 
     // Calculate running averages
     eventsum.CalculateRunningAverage();

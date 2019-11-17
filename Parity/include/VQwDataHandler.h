@@ -61,6 +61,8 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable, public MQwPublish
 
     virtual void ProcessData();
 
+    virtual void UpdateBurstCounter(Short_t burstcounter){fBurstCounter=burstcounter;};
+
     virtual void FinishDataHandler(){};
 
     virtual void CalcCorrelations(){};
@@ -131,6 +133,8 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable, public MQwPublish
  protected:
    //
    Int_t fPriority; ///  When a datahandler array is processed, handlers with lower priority will be processed before handlers with higher priority
+
+   Short_t fBurstCounter;
 
     //***************[Variables]***************
    TString fName;

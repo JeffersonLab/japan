@@ -120,6 +120,15 @@ class QwDataHandlerArray:
     void  ClearEventData();
     void  ProcessEvent();
 
+    void UpdateBurstCounter(Short_t burstcounter)
+    {
+      if (!empty()) {
+	for(iterator handler = begin(); handler != end(); ++handler){
+	  (*handler)->UpdateBurstCounter(burstcounter);
+	}
+      }
+    }
+
     /// \brief Assignment operator
     QwDataHandlerArray& operator=  (const QwDataHandlerArray &value);
     /*
