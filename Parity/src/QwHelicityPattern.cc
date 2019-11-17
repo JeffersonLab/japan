@@ -95,6 +95,8 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
     fPairDifference(event), 
     fPairAsymmetry(event),
     fBurstLength(0),
+    fGoodPatterns(0),
+    fBurstCounter(0),
     fEnableBurstSum(kFALSE),
     fPrintBurstSum(kFALSE),
     fEnableRunningSum(kTRUE),     
@@ -178,6 +180,8 @@ QwHelicityPattern::QwHelicityPattern(const QwHelicityPattern &source)
   fPairDifference(source.fYield),
   fPairAsymmetry(source.fYield),
   fBurstLength(source.fBurstLength),
+  fGoodPatterns(source.fGoodPatterns),
+  fBurstCounter(source.fBurstCounter),
   fEnableBurstSum(source.fEnableBurstSum),
   fPrintBurstSum(source.fPrintBurstSum),
   fEnableRunningSum(source.fEnableRunningSum),
@@ -648,6 +652,8 @@ void QwHelicityPattern::ClearEventData()
   fPairIsGood = kFALSE;
   fNextPair   = 0;
 
+
+  fGoodPatterns = 0;
   fPatternIsGood = kFALSE;
   SetDataLoaded(kFALSE);
 }
@@ -661,6 +667,8 @@ void QwHelicityPattern::ClearEventData()
 void  QwHelicityPattern::AccumulateRunningSum(QwHelicityPattern &entry, Int_t count, Int_t ErrorMask)
 {
   if (entry.fPatternIsGood){
+    fGoodPatterns++;
+    fBurstCounter = entry.fBurstCounter;
     fYield.AccumulateRunningSum(entry.fYield, count, ErrorMask);
     fAsymmetry.AccumulateRunningSum(entry.fAsymmetry, count, ErrorMask);
     if (fEnableDifference){
@@ -816,6 +824,8 @@ void  QwHelicityPattern::FillHistograms()
 
 void QwHelicityPattern::ConstructBranchAndVector(TTree *tree, TString & prefix, std::vector <Double_t> &values)
 {
+TString basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix.Length())+"BurstCounter";
+  tree->Branch(basename,&fBurstCounter,basename+"/I");
   TString newprefix = "yield_" + prefix;
   fYield.ConstructBranchAndVector(tree, newprefix, values);
   newprefix = "asym_" + prefix;
@@ -835,6 +845,9 @@ void QwHelicityPattern::ConstructBranchAndVector(TTree *tree, TString & prefix, 
 
 void QwHelicityPattern::ConstructBranch(TTree *tree, TString & prefix)
 {
+  TString basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix.Length())+"BurstCounter";
+  tree->Branch(basename,&fBurstCounter,basename+"/I");
+
   TString newprefix = "yield_" + prefix;
   fYield.ConstructBranch(tree, newprefix);
   newprefix = "asym_" + prefix;
@@ -854,6 +867,8 @@ void QwHelicityPattern::ConstructBranch(TTree *tree, TString & prefix)
 
 void QwHelicityPattern::ConstructBranch(TTree *tree, TString & prefix, QwParameterFile &trim_tree)
 {
+  TString basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix.Length())+"BurstCounter";
+  tree->Branch(basename,&fBurstCounter,basename+"/I");
   TString newprefix = "yield_" + prefix;
   fYield.ConstructBranch(tree, newprefix, trim_tree);
   newprefix = "asym_" + prefix;
