@@ -27,14 +27,20 @@ RegisterHandlerFactory(QwCombiner);
 
 
 /// \brief Constructor with name
-QwCombiner::QwCombiner(const TString& name):VQwDataHandler(name)
+QwCombiner::QwCombiner(const TString& name)
+: VQwDataHandler(name)
 {
   ParseSeparator = ":";
   fKeepRunningSum = kTRUE;
+  fErrorFlagMask = 0;
+  fErrorFlagPointer = 0;
 }
 
-QwCombiner::QwCombiner(const QwCombiner &source):VQwDataHandler(source)
+QwCombiner::QwCombiner(const QwCombiner &source)
+: VQwDataHandler(source)
 {
+  fErrorFlagMask = 0;
+  fErrorFlagPointer = 0;
 }
 
 /// Destructor
@@ -68,6 +74,14 @@ Int_t QwCombiner::LoadChannelMap(const std::string& mapfile)
 {
   // Open the file
   QwParameterFile map(mapfile);
+
+  // Read the preamble
+  QwParameterFile* preamble = map.ReadSectionPreamble();
+  TString mask;
+  if (preamble->FileHasVariablePair("=", "mask", mask)) {
+    fErrorFlagMask = QwParameterFile::GetUInt(mask);
+  }
+
 
   // Read the sections of dependent variables
   bool keep_header = true;
@@ -226,8 +240,11 @@ Int_t QwCombiner::ConnectChannels(
     }
   }
   
-  return 0;
+  // Store error flag pointer
+  QwMessage << "Using asymmetry error flag" << QwLog::endl;
+  fErrorFlagPointer = asym.GetEventcutErrorFlagPointer();
 
+  return 0;
 }
 
 /** Connect to the dependent and independent channels
@@ -310,10 +327,23 @@ Int_t QwCombiner::ConnectChannels(QwSubsystemArrayParity& event)
     }
   }
   
+  // Store error flag pointer
+  QwMessage << "Using event error flag" << QwLog::endl;
+  fErrorFlagPointer = event.GetEventcutErrorFlagPointer();
+
   return 0;
 }
 
-void QwCombiner::ProcessData() {
+void QwCombiner::ProcessData()
+{
+  if (fErrorFlagMask && fErrorFlagPointer) {
+    if ((*fErrorFlagPointer & fErrorFlagMask)) {
+      //QwMessage << "0x" << std::hex << *fErrorFlagPointer << " failed mask " << "0x" << fErrorFlagMask << std::dec << QwLog::endl;
+    } else {
+      //QwMessage << "0x" << std::hex << *fErrorFlagPointer << " passed mask " << "0x" << fErrorFlagMask << std::dec << QwLog::endl;
+    }
+  }
+
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar[i], fSensitivity[i]);
   }
