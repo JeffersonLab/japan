@@ -1,4 +1,16 @@
-# Condition in section header
-[bmwcoil1 == 1]
-# Variables to write in body
-bmwcoil1
+# OR of all separate lines
+# Each line has to be a TFormula-parseable line
+# somehow this has to be parsed for the last event only
+# possibly not in the tree yet
+#bmwobj!=1 && bmwactive==true && bmwcycnum>1 && bcm_dg_ds>60
+#(ErrorFlag&0x5b7e6bff)==0 && bmod_ramp>0
+#bmod_ramp>0 # this alone might be enough
+# could require conditions on pub/sub variables
+
+mask = 0x5b7e6bff
+
+[asym:@bpm4aX]
+asym:bpm4aX, 1.0
+
+[asym:@bpm4eX]
+asym:bpm4eX, 1.0

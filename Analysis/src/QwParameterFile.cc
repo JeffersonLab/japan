@@ -547,9 +547,9 @@ Bool_t QwParameterFile::LineHasSectionHeader(std::string& secname)
 {
   TrimComment();
   Bool_t status = kFALSE;
-  size_t equiv_pos1 = fLine.find_first_of('[');
+  size_t equiv_pos1 = fLine.find_first_of(fSectionChars[0]);
   if (equiv_pos1 != std::string::npos) {
-    size_t equiv_pos2 = fLine.find_first_of(']',equiv_pos1);
+    size_t equiv_pos2 = fLine.find_last_of(fSectionChars[1]);
     if (equiv_pos2 != std::string::npos && equiv_pos2 - equiv_pos1 > 1) {
       secname = fLine.substr(equiv_pos1 + 1, equiv_pos2 - equiv_pos1 - 1);
       TrimWhitespace(secname, TString::kBoth);
@@ -579,7 +579,7 @@ Bool_t QwParameterFile::LineHasModuleHeader(std::string& secname)
   Bool_t status = kFALSE;
   size_t equiv_pos1 = fLine.find_first_of(fModuleChars[0]);
   if (equiv_pos1 != std::string::npos) {
-    size_t equiv_pos2 = fLine.find_first_of(fModuleChars[1],equiv_pos1);
+    size_t equiv_pos2 = fLine.find_last_of(fModuleChars[1]);
     if (equiv_pos2 != std::string::npos && equiv_pos2 - equiv_pos1 > 1) {
       secname = fLine.substr(equiv_pos1 + 1, equiv_pos2 - equiv_pos1 - 1);
       TrimWhitespace(secname, TString::kBoth);
