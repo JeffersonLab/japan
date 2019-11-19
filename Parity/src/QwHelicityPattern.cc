@@ -67,7 +67,10 @@ void QwHelicityPattern::ProcessOptions(QwOptions &options)
   fEnableAlternateAsym = options.GetValue<bool>("enable-alternateasym");
 
   fBurstLength = options.GetValue<int>("burstlength");
-  if (fBurstLength == 0) DisableBurstSum();
+  if (fBurstLength <= 0){
+    fEnableBurstSum = kFALSE;
+    fPrintBurstSum  = kFALSE;
+  }
 
   if (fEnableAlternateAsym && fPatternSize <= 2){
     QwWarning << "QwHelicityPattern::ProcessOptions: "

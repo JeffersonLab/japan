@@ -69,40 +69,12 @@ class QwHelicityPattern {
   void  CalculateAsymmetry();
   void GetTargetChargeStat(Double_t & asym, Double_t & error, Double_t & width);//retrieves the target charge asymmetry,asymmetry error ,asymmetry width
 
-  /// Enable/disable alternate asymmetry calculation
-  void  EnableAlternateAsymmetry(const Bool_t flag = kTRUE) { fEnableAlternateAsym = flag; };
-  /// Disable alternate asymmetry calculation
-  void  DisableAlternateAsymmetry() { fEnableAlternateAsym = kFALSE; };
-  /// Status of alternate asymmetry calculation flag
-  Bool_t IsAlternateAsymEnabled() { return fEnableAlternateAsym; };
-
-  /// Enable/disable burst sum calculation
-  void  EnableBurstSum(const Bool_t flag = kTRUE) { fEnableBurstSum = flag; };
-  /// Disable burst sum calculation
-  void  DisableBurstSum() { fEnableBurstSum = kFALSE; };
   /// Status of burst sum calculation flag
-  Bool_t IsBurstSumEnabled() { return fEnableBurstSum; };
+  //TODO:  Do we need this?
+  //  Bool_t IsBurstSumEnabled() { return fEnableBurstSum; };
 
-  /// Enable/disable running sum calculation
-  void  EnableRunningSum(const Bool_t flag = kTRUE) { fEnableRunningSum = flag; };
-  /// Disable running sum calculation
-  void  DisableRunningSum() { fEnableRunningSum = kFALSE; };
-  /// Status of running sum calculation flag
-  Bool_t IsRunningSumEnabled() { return fEnableRunningSum; };
-
-  /// Enable/disable storing pattern differences
-  void  EnableDifference(const Bool_t flag = kTRUE) { fEnableDifference = flag; };
-  /// Disable storing pattern differences
-  void  DisableDifference() { fEnableDifference = kFALSE; };
-  /// Status of storing pattern differences flag
-  Bool_t IsDifferenceEnabled() { return fEnableDifference; };
-
-  /// Enable/disable storing pair differences
-  void  EnablePairs(const Bool_t flag = kTRUE) { fEnablePairs = flag; };
   /// Disable storing pair differences
   void  DisablePairs() { fEnablePairs = kFALSE; };
-  /// Status of storing pair differences flag
-  Bool_t IsPairsEnabled() { return fEnablePairs; };
 
 #ifdef __USE_DATABASE__
   /// Update the blinder status with new external information
