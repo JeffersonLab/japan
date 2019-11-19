@@ -213,7 +213,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     datahandlerarray_evt.ConstructTreeBranches(treerootfile, "evt_");
     datahandlerarray_mul.ConstructTreeBranches(treerootfile);
-    datahandlerarray_burst.ConstructTreeBranches(burstrootfile, "burst_");
+    datahandlerarray_burst.ConstructTreeBranches(burstrootfile, "burst_", "|stat");
 
     treerootfile->ConstructTreeBranches("evts", "Running sum tree", eventsum, "|stat");
     treerootfile->ConstructTreeBranches("muls", "Running sum tree", patternsum, "|stat");
@@ -375,7 +375,7 @@ Int_t main(Int_t argc, Char_t* argv[])
               //datahandlerarray_burst.AccumulateRunningSum(datahandlerarray_mul);
 
               // Burst mode
-              if (helicitypattern.IsEndOfBurst()) {
+              if (patternsum_per_burst.IsEndOfBurst()) {
 
                 // Calculate average over this burst
                 patternsum_per_burst.CalculateRunningAverage();
@@ -405,6 +405,8 @@ Int_t main(Int_t argc, Char_t* argv[])
                 // Fill data handler tree branches
                 datahandlerarray_burst.FillTreeBranches(burstrootfile);
 
+		helicitypattern.IncrementBurstCounter();
+		datahandlerarray_burst.UpdateBurstCounter(helicitypattern.GetBurstCounter());
                 // Clear the data
                 patternsum_per_burst.ClearEventData();
                 datahandlerarray_burst.ClearEventData();
@@ -427,7 +429,36 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     //  TODO Drain event run
 
-    //  TODO Finalize burst
+    //  Finalize burst
+    if (patternsum_per_burst.HasBurstData()){
+      // Calculate average over this burst
+      patternsum_per_burst.CalculateRunningAverage();
+
+      // Fill the burst into the sum over all bursts
+      burstsum.AccumulateRunningSum(patternsum_per_burst);
+
+      if (gQwOptions.GetValue<bool>("print-burstsum")) {
+	QwMessage << " Running average of this burst" << QwLog::endl;
+	QwMessage << " =============================" << QwLog::endl;
+	patternsum_per_burst.PrintValue();
+      }
+
+      // Fill histograms
+      burstrootfile->FillHistograms(patternsum_per_burst);
+
+      // Fill burst tree branches
+      burstrootfile->FillTreeBranches(patternsum_per_burst);
+      burstrootfile->FillTree("burst");
+    
+      // Finish data handler for burst
+      datahandlerarray_burst.FinishDataHandler();
+
+      // Fill data handler histograms
+      burstrootfile->FillHistograms(datahandlerarray_burst);
+
+      // Fill data handler tree branches
+      datahandlerarray_burst.FillTreeBranches(burstrootfile);
+    }
 
     //  Perform actions at the end of the event loop on the
     //  detectors object, which ought to have handles for the
@@ -442,8 +473,6 @@ Int_t main(Int_t argc, Char_t* argv[])
     datahandlerarray_evt.FillTreeBranches(treerootfile);
     datahandlerarray_mul.FinishDataHandler();
     datahandlerarray_mul.FillTreeBranches(treerootfile);
-    datahandlerarray_burst.FinishDataHandler();
-    datahandlerarray_burst.FillTreeBranches(burstrootfile);
 
     // Calculate running averages
     eventsum.CalculateRunningAverage();

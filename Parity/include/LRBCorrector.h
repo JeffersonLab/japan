@@ -32,6 +32,21 @@ class LRBCorrector : public VQwDataHandler, public MQwDataHandlerCloneable<LRBCo
     
     void ProcessData();
 
+    void UpdateBurstCounter(Short_t burstcounter){
+      if (burstcounter<fLastCycle){
+	fBurstCounter=burstcounter;
+      } else if (fLastCycle==1){
+	//  If we have a single cycle of slopes, don't throw a warning.
+	fBurstCounter = 0;
+      } else {
+	fBurstCounter = fLastCycle-1;
+	QwWarning << "Burst counter, " << burstcounter
+		  << ", is greater than the stored number of sets of slopes.  "
+		  << "Using the last set of slopes (cycle=" << fLastCycle
+		  << ")" << QwLog::endl;
+      }
+    };
+
   protected:
     LRBCorrector() { }
 
@@ -46,7 +61,8 @@ class LRBCorrector : public VQwDataHandler, public MQwDataHandlerCloneable<LRBCo
     std::vector< const VQwHardwareChannel* > fIndependentVar;
     std::vector< Double_t > fIndependentValues;
 
-    std::vector< std::vector< Double_t > > fSensitivity;
+    Short_t fLastCycle;
+    std::map<Short_t,std::vector<std::vector<Double_t>>> fSensitivity;
     
 };
 

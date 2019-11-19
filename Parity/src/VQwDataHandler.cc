@@ -34,6 +34,7 @@ using namespace std;
 
 VQwDataHandler::VQwDataHandler(const TString& name)
 : fPriority(0),
+  fBurstCounter(0),
   fName(name),
   fMapFile(""),
   fTreeName(""),
@@ -47,6 +48,7 @@ VQwDataHandler::VQwDataHandler(const TString& name)
 
 VQwDataHandler::VQwDataHandler(const VQwDataHandler &source)
 : fPriority(source.fPriority),
+  fBurstCounter(source.fBurstCounter),
   fName(source.fName),
   fMapFile(source.fMapFile),
   fTreeName(source.fTreeName),
