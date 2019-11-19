@@ -74,12 +74,14 @@ class BMOD{
     std::vector<Cycle> cycles;
     std::vector<Double_t> trim_base;
     std::map<std::string,std::vector<std::string>> parameterVectors;
+    TString slopeFilename = "test.root";
     void parseTextFile(std::string);
     void calculateSensitivities();
     void invertMatrix();
     void saveSensitivityData();
     void saveSlopeData();
     void copytree(TString, Double_t);
+    void edittree(TString);
     ~BMOD();
     Int_t getData(Int_t);
 };
@@ -597,6 +599,101 @@ void BMOD::copytree(TString oldFileName = "test.root", Double_t cyclenumber = -1
   }
 }
 
+void BMOD::edittree(TString oldFileName = "test.root")
+{
+  // Get old file, old tree and set top branch address
+  Bool_t newFile = gSystem->AccessPathName(oldFileName);
+  if (!newFile){
+    TFile* oldfile = TFile::Open(oldFileName);
+    TTree *oldtree;
+    oldfile->GetObject("dit", oldtree);
+    const auto nentries = oldtree->GetEntries();
+
+    TFile newfile(Form("localTmp_%d.root",runNumber), "recreate");
+    auto newtree = oldtree->CloneTree(0);
+    TLeaf* cycNumL = oldtree->GetLeaf("cyclenum");
+    Double_t tmpCycNum = 0.0;
+
+    Int_t flag = 1;
+    newtree->SetBranchAddress("flag",&flag);
+
+    std::vector<std::vector<std::vector<Double_t>>> tmpVecss;
+    std::vector<std::vector<Double_t>> tmpVecs;
+    std::vector<std::vector<Double_t>> tmpMeans;
+    std::vector<std::vector<Double_t>> tmpRMSs;
+    std::vector<Double_t> tmpVec;
+    std::vector<Double_t> tmpVec2;
+    for(int idet=0;idet<nDet;idet++){
+      tmpVecs.clear();
+      tmpVec2.clear();
+      for(int ibpm=0;ibpm<nBPM;ibpm++){
+        tmpVec.clear();
+        for (Int_t j = 0; j<nentries ; j++){
+          tmpVec.push_back(0.0);
+        }
+        tmpVecs.push_back(tmpVec);
+        tmpVec2.push_back(0.0);
+      }
+      tmpVecss.push_back(tmpVecs);
+      tmpMeans.push_back(tmpVec2);
+      tmpRMSs.push_back(tmpVec2);
+    }
+    for (auto i : ROOT::TSeqI(nentries)) {
+      cycNumL->GetBranch()->GetEntry(i);
+      tmpCycNum = cycNumL->GetValue();
+      oldtree->GetEntry(i);
+      //{do stuff}
+      if (parameterVectors.count("BPMs Slope Names") == 0 || parameterVectors["BPMs Slope Names"].size() == 0) {
+        Printf("ERROR: No \"BPMs Slope Names\" listed for Dithering Analysis. Please add a line to input file with an entry \"BPMs Slope Names\"=comma separated list of BPM slope names\"");
+        return;
+      }
+      if (parameterVectors.count("Detectors") == 0 || parameterVectors["Detectors"].size() == 0) {
+        Printf("ERROR: No \"Detectors\" listed for Dithering Analysis. Please add a line to input file with an entry \"Detectors=comma separated list of Detector device names\"");
+        return;
+      }
+      for(int idet=0;idet<nDet;idet++){
+        for(int ibpm=0;ibpm<nBPM;ibpm++){
+          TLeaf* tmpLeaf = oldtree->GetLeaf(Form("%s_%s",parameterVectors["Detectors"].at(idet).c_str(),parameterVectors["BPMs Slope Names"].at(ibpm).c_str()));
+          tmpLeaf->GetBranch()->GetEntry(i);
+          tmpVecss.at(idet).at(ibpm).at(i) = tmpLeaf->GetValue();
+        }
+      }
+    }
+    for(int idet=0;idet<nDet;idet++){
+      for(int ibpm=0;ibpm<nBPM;ibpm++){
+        tmpMeans.at(idet).at(ibpm) = TMath::Mean(tmpVecss.at(idet).at(ibpm).begin(),tmpVecss.at(idet).at(ibpm).end());
+        tmpRMSs.at(idet).at(ibpm)  = TMath::RMS(tmpVecss.at(idet).at(ibpm).begin(),tmpVecss.at(idet).at(ibpm).end());
+      }
+    }
+    for (Int_t i=0 ; i<nentries ; i++) {
+      cycNumL->GetBranch()->GetEntry(i);
+      tmpCycNum = cycNumL->GetValue();
+      oldtree->GetEntry(i);
+      //{do all stuff}
+      for(int idet=0;idet<nDet;idet++){
+        for(int ibpm=0;ibpm<nBPM;ibpm++){
+          if ( parameterVectors.count("Flag Sigma Cut") != 0 && abs(tmpVecss.at(idet).at(ibpm).at(i)-tmpMeans.at(idet).at(ibpm)) > atof((parameterVectors["Flag Sigma Cut"].at(0).c_str()))*tmpRMSs.at(idet).at(ibpm)) {
+          //  Printf("Cycle hit %f sigma cut, flag = 0",atof((parameterVectors["Flag Sigma Cut"].at(0).c_str())));
+          //  Printf("Slope %f doesn't fit within %f of mean %f",tmpVecss.at(idet).at(ibpm).at(i),atof((parameterVectors["Flag Sigma Cut"].at(0).c_str()))*tmpRMSs.at(idet).at(ibpm),tmpMeans.at(idet).at(ibpm));
+            flag = 0;
+          }
+          //else {
+          //  Printf("Slope OK");
+          //  Printf("Slope %f fits within %f of mean %f",tmpVecss.at(idet).at(ibpm).at(i),atof((parameterVectors["Flag Sigma Cut"].at(0).c_str()))*tmpRMSs.at(idet).at(ibpm),tmpMeans.at(idet).at(ibpm));
+          //}
+        }
+      }
+      newtree->Fill();
+    }
+    newtree->Write("dit",TObject::kOverwrite);
+    newfile.Close();
+    gSystem->Exec(Form("mv localTmp_%d.root %s",runNumber,oldFileName.Data()));
+  }
+  else {
+    Printf("Error, %s doesn't exist",oldFileName.Data());
+  }
+}
+
 void BMOD::saveSlopeData() {
   if (parameterVectors.count("BPMs Slope Names") == 0 || parameterVectors["BPMs Slope Names"].size() == 0) {
     Printf("ERROR: No \"BPMs Slope Names\" listed for Dithering Analysis. Please add a line to input file with an entry \"BPMs Slope Names\"=comma separated list of BPM slope names\"");
@@ -668,7 +765,6 @@ void BMOD::saveSlopeData() {
   }
 
   Int_t slug_number = QuerySlugNumber(runNumber);
-  TString slopeFilename;
 
   if (parameterVectors.count("Rootfile Output Path") == 0) {
     Printf("ERROR: No \"Rootfile Output Path\" listed for Dithering Analysis. Using \"../rootfiles_alldet_pass1\" instead");
@@ -784,26 +880,16 @@ void BMOD::saveSlopeData() {
 
   for(int i=0;i<cycles.size();i++){
     if(cycles.at(i).BPMvalid==1 && cycles.at(i).Detvalid==1){
-      Printf("Overwriting previous entry for cycle %f",cycleNum);
       runNum   = runNumber;
       cycleNum = cycles.at(i).cycleNumber;
+      Printf("Adding entry for cycle %f",cycleNum);
       // The flag variable is determined by whether there is sufficient data for BPM sensitivity calculation
       flag     = cycles.at(i).BPMvalid;
       for(int idet=0;idet<nDet;idet++){
         for(int ibpm=0;ibpm<nBPM;ibpm++){
             // We found a null slope
-          if(cycles.at(i).detSlopes.at(idet)[ibpm][0]==0) { // FIXME put a smarter slope stability cut here too
+          if(cycles.at(i).detSlopes.at(idet)[ibpm][0]==0){
             cycles.at(i).slopesValid = 0;
-            // FIXME NEW 
-            // Idea:
-            //    Calculate mean and RMS of slopes
-            //    Then, if any point is outside of 3 sigma, set flag = 0
-            //    This means that every time you add a new cycle to this set of data it will recalculate the 3 sigma limit and reset the flags for all
-          /*mean = Mean(cycles.at(i).detSlopes.at(idet)[ibpm][0]);
-            rms = RMS(cycles.at(i).detSlopes.at(idet)[ibpm][0]);
-            for each entry in cycles.at(i).detSlopes.at(idet)[ibpm][0] check N sigma limit (N from the input.txt parameter file, or 3 if not specified);
-            if passes N sigma cut then flag = 1, else = 0;
-            */
           }
         }
       }
@@ -898,6 +984,7 @@ int bmodAna(Int_t runNo = 4199, std::string inputFile = "input.txt", TString slu
         bmod->saveSensitivityData();
         bmod->invertMatrix();
         bmod->saveSlopeData();
+        bmod->edittree(bmod->slopeFilename);
         // FIXME also append this run's data into the combo/slugwise input file
       }
     }
@@ -910,6 +997,7 @@ int bmodAna(Int_t runNo = 4199, std::string inputFile = "input.txt", TString slu
     bmod->saveSensitivityData();
     bmod->invertMatrix();
     bmod->saveSlopeData();
+    bmod->edittree(bmod->slopeFilename);
   }
   return 0;
 }
