@@ -833,6 +833,21 @@ void BMOD::saveSlopeData() {
               for(int ibpm2=0;ibpm2<nBPM;ibpm2++){
                 if ( localBPMsens[icoil1][ibpm2] != 0 && localBPMsens[icoil2][ibpm1] != 0 ) {
                   localAlphas[icoil1][icoil2][ibpm1][ibpm2] = 1.0 - (localBPMsens[icoil1][ibpm1]/localBPMsens[icoil1][ibpm2])*(localBPMsens[icoil2][ibpm2]/localBPMsens[icoil2][ibpm1]);
+                  // There are a bunch of alphas that can be calculated, but the ones Ye Tian cares about are:
+                  //
+                  // alpha15 = 1-(bpm4ex_coil1*bpm4ax_coil5)/(bpm4ax_coil1*bpm4ex_coil5) = alpha15_4ex4ax
+                  // alpha35 = 1-(bpm4ex_coil3*bpm4ax_coil5)/(bpm4ax_coil3*bpm4ex_coil5) = alpha35_4ex4ax
+                  // alpha13 = 1-(bpm4ex_coil1*bpm4ax_coil3)/(bpm4ax_coil1*bpm4ex_coil3) = alpha13_4ex4ax
+                  // alpha24 = 1-(bpm4ey_coil2*bpm4ay_coil4)/(bpm4ay_coil2*bpm4ey_coil4) = alpha24_4ey4ay
+                  // alpha26 = 1-(bpm4ey_coil2*bpm4ay_coil6)/(bpm4ay_coil2*bpm4ey_coil6) = alpha26_4ey4ay
+                  // alpha46 = 1-(bpm4ey_coil4*bpm4ay_coil6)/(bpm4ay_coil4*bpm4ey_coil6) = alpha46_4ey4ay
+                  //
+                  // delta15 = (bpm12x_coil5/bpm4ax_coil5)-(bpm12x_coil1/bpm4ax_coil1) = delta15_12x4ax
+                  // delta35 = (bpm12x_coil5/bpm4ax_coil5)-(bpm12x_coil3/bpm4ax_coil3) = delta35_12x4ax
+                  // delta13 = (bpm12x_coil3/bpm4ax_coil3)-(bpm12x_coil1/bpm4ax_coil1) = delta13_12x4ax
+                  // delta26 = (bpm12x_coil6/bpm4ay_coil6)-(bpm12x_coil2/bpm4ay_coil2) = delta26_12y4ay
+                  // delta46 = (bpm12x_coil6/bpm4ay_coil6)-(bpm12x_coil4/bpm4ay_coil4) = delta46_12y4ay
+                  // delta24 = (bpm12x_coil4/bpm4ay_coil4)-(bpm12x_coil2/bpm4ay_coil2) = delta24_12y4ay
                 }
                 else {
                   localAlphas[icoil1][icoil2][ibpm1][ibpm2] = 0.0;
