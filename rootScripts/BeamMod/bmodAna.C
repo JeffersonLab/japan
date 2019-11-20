@@ -371,7 +371,7 @@ void BMOD::calculateSensitivities(){
   const double bpmmax=3;
   const double bpmmin=1;
   const double chtov=1.0e-3;//7.62939453125000000e-05; //10V*(1/pow(2,17))
-  const double factor=1.0e+3;
+  double factor=1.0e+3;
   TF1 *fun = new TF1("fun","[0]+[1]*x",-1e6,1e6);
   Double_t init_par[2] = {0,0};
   fun->SetParameters(init_par);
@@ -393,9 +393,11 @@ void BMOD::calculateSensitivities(){
       //bpmName=parameterVectors["BPMs"][ibpm];
       if (j<nBPM){
         name=parameterVectors["BPMs"][j];
+        factor=1.0e+3;
       }
       else {
         name=parameterVectors["Detectors"][j-nBPM];
+        factor=1.0e+6;
       }
       if (parameterVectors.count("Coils") == 0 || parameterVectors["Coils"].size() == 0) {
         Printf("Error: No Trim Card Coils listed for Dithering Analysis. Please add a line to input file with an entry \"Coils=comma separated list of bmod_trim# numbers\"");
@@ -403,7 +405,8 @@ void BMOD::calculateSensitivities(){
       }
       for(int icoil=0;icoil<nCoil;icoil++){
         //int ndata = tree_R->Draw(Form("%lf*(%s):(%s*%lf)",factor,bpmName.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
-        int ndata = tree_R->Draw(Form("%lf*(%s):(bmod_trim%s*%lf)",factor,name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
+        // Get Mean for normalized sensitivity calculation
+        int ndata = tree_R->Draw(Form("(%s):(bmod_trim%s*%lf)",name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
             Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
               parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil],cycles[i].cycleNumber));
         if(ndata<50){
@@ -432,13 +435,24 @@ void BMOD::calculateSensitivities(){
           g1->GetXaxis()->SetTitleSize(0.05);
           g1->GetYaxis()->SetTitleSize(0.05);
 
+          double this_mean = g1->GetMean(2);
+          if (j<nBPM){
+            this_mean = 1.0;
+          }
+          ndata = tree_R->Draw(Form("(%lf/%lf)*(%s):(bmod_trim%s*%lf)",factor,this_mean,name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
+              Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+                parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil],cycles[i].cycleNumber));
+
           double this_slope,this_error;
           Printf("-- Sensitivity for Device: %s",name.Data());
           Printf("-- CycleNumber: %f",cycles[i].cycleNumber);
           Printf("-- Coil ID: %d",icoil+1);
           Printf("-- NData: %d",ndata);
+
+          TGraph* g2 = new TGraph(ndata, tree_R->GetV2(),tree_R->GetV1());
           fun->SetParameters(init_par);
-          g1->Fit("fun","Q0");
+          g2->Fit("fun","Q0");
+
           this_slope = fun->GetParameter(1);
           this_error = fun->GetParError(1);
 

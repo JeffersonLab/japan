@@ -26,5 +26,5 @@ else
 
   echo Done with ${run_lines[@]}
   hadd -f ${OUTPUTROOTFILEDIR}/${1}.root ${run_lines[@]}
-  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/${1}.root\",\"dit\"\)
+# root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/${1}.root\",\"dit\"\)
 fi
