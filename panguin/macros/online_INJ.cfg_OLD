@@ -1,3 +1,4 @@
+#Caryn's macro
 # Configuration file for the online GUI 
 #  All lines containing "#" are treated as comments (ignored)
 #  Last line MUST be blank.
@@ -9,21 +10,21 @@
 watchfile
 
 # Defined cuts
-definecut evcut  (CodaEventNumber>5)
-definecut goodcut (CodaEventNumber>5&&ErrorFlag==0)
+definecut evcut  (CodaEventNumber>5&&bcm_an_us>40)
+definecut goodcut (CodaEventNumber>5&&ErrorFlag==0&&bcm_an_us>40)
 
 ### column row
 newpage 1 1
 	title plotInjFC2 
 #	macro ~/PREX/japan/panguin/macros/Integrated.C("muls","diff_bpm1i02X","CodaEventNumber>5 && ErrorFlag==0",20)
 #        macro showIntegrated.C("muls","diff_bpm1i02X",evcut,20)
-	 macro PlotInjBPMS_FC2.C("1")
+	 macro ./PlotBPMSmacros/PlotInjBPMS_FC2.C("yield_bcm_an_us>30&&CodaEventNumber>5&&ErrorFlag==0")
 
 newpage 1 1
 	title plotInjAll 
 #	macro ~/PREX/japan/panguin/macros/Integrated.C("muls","diff_bpm1i02X","CodaEventNumber>5 && ErrorFlag==0",20)
 #        macro showIntegrated.C("muls","diff_bpm1i02X",evcut,20)
-	 macro PlotInjBPMS.C("1")
+	 macro ./PlotBPMSmacros/PlotInjBPMS.C("yield_bcm_an_us>30&&CodaEventNumber>5&&ErrorFlag==0")
 
 newpage 2 3
 	title BPM 2I01 vs Event Number

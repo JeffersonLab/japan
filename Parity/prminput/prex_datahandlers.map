@@ -49,7 +49,7 @@
   slope-file-suff = .block0.new.slope.root
   slope-path = ./LRBoutput/ 
   alias-file-base = regalias_
-  alias-file-suff = 
+  alias-file-suff = _block0
   alias-path = ./LRBoutput/
   block = 0
   disable-histos = true
@@ -64,7 +64,7 @@
   slope-file-suff = .block1.new.slope.root
   slope-path = ./LRBoutput/ 
   alias-file-base = regalias_
-  alias-file-suff = 
+  alias-file-suff = _block1
   alias-path = ./LRBoutput/
   block = 1
   disable-histos = true
@@ -79,7 +79,7 @@
   slope-file-suff = .block2.new.slope.root
   slope-path = ./LRBoutput/ 
   alias-file-base = regalias_
-  alias-file-suff = 
+  alias-file-suff = _block2
   alias-path = ./LRBoutput/
   block = 2
   disable-histos = true
@@ -94,7 +94,7 @@
   slope-file-suff = .block3.new.slope.root
   slope-path = ./LRBoutput/ 
   alias-file-base = regalias_
-  alias-file-suff = 
+  alias-file-suff = _block3
   alias-path = ./LRBoutput/
   block = 3
   disable-histos = true

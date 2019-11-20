@@ -244,6 +244,7 @@ class QwBlinder {
     void SetWienState(EQwWienMode wienmode);
     void SetIHWPPolarity(Int_t ihwppolarity);
 
+    Bool_t fUseCREXPositions;
 
     Double_t fBeamCurrentThreshold;
     Bool_t fBeamIsPresent;

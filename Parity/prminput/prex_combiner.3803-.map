@@ -202,6 +202,9 @@ asym:bpm4eX, -0.5
 asym:bpm4aY, 0.5
 asym:bpm4eY, -0.5
 
+[diff:@diff_bpmE]
+diff:bpm11X, 1.0
+diff:bpm12X, 0.4
 
 
 #####
