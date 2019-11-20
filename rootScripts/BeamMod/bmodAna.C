@@ -637,6 +637,7 @@ void BMOD::edittree(TString oldFileName = "test.root")
     std::vector<std::vector<Double_t>> tmpRMSs;
     std::vector<Double_t> tmpVec;
     std::vector<Double_t> tmpVec2;
+    // FIXME Technically nDet and nBPM are 0 unless you've executed "calculateSensitivities" at least once...
     for(int idet=0;idet<nDet;idet++){
       tmpVecs.clear();
       tmpVec2.clear();
@@ -683,7 +684,7 @@ void BMOD::edittree(TString oldFileName = "test.root")
       cycNumL->GetBranch()->GetEntry(i);
       tmpCycNum = cycNumL->GetValue();
       oldtree->GetEntry(i);
-      //{do all stuff}
+      // FIXME how many detectors' slopes we actually look at is an important question: ignore ATs? Only look at SAMs for CREX?
       for(int idet=0;idet<nDet;idet++){
         for(int ibpm=0;ibpm<nBPM;ibpm++){
           if ( parameterVectors.count("Flag Sigma Cut") != 0 && abs(tmpVecss.at(idet).at(ibpm).at(i)-tmpMeans.at(idet).at(ibpm)) > atof((parameterVectors["Flag Sigma Cut"].at(0).c_str()))*tmpRMSs.at(idet).at(ibpm)) {
