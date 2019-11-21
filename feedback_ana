@@ -1,0 +1,11 @@
+#!/bin/tcsh
+
+source ~/PREX/setup_japan.tcsh
+
+set MY_LOG_FILE = feedbacklog
+
+if ( -f ${MY_LOG_FILE} ) then
+   mv   ${MY_LOG_FILE}  `ls -lrt ${MY_LOG_FILE} -l --time-style +%y-%m-%d-%H:%M:%S | awk '{printf "%s_%s",$7,$6}'`
+endif
+./build/Feedback/qwfeedback --QwLog.logfile  ${MY_LOG_FILE} --config prex.conf --add-config qwfeedback.conf
+    
