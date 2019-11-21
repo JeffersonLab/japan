@@ -396,7 +396,9 @@ std::cout << "HBIA4 HV value: " << value << std::endl;
 				      "BCM0L02_AsymMean",
 				      "BCM0L02_AsymWidth",
 				      "BCM1H01_AsymMean",
-				      "BCM1H01_AsymWidth"};
+				      "BCM1H01_AsymWidth",
+				      "BCM3H04_AsymMean",
+				      "BCM3H04_AsymWidth"};
 
   chid fIDbpm_4aWS_mean;
   chid fIDbpm_4aWS_width;
@@ -424,6 +426,8 @@ std::cout << "HBIA4 HV value: " << value << std::endl;
   chid fIDbcm0L02_width;
   chid fIDbcm_an_ds3_mean;
   chid fIDbcm_an_ds3_width;
+  chid fIDbcm_hallc_mean;
+  chid fIDbcm_hallc_width;
 
   std::vector<chid> vCHID ={fIDbpm_4aWS_mean,
 			    fIDbpm_4aWS_width,
@@ -450,7 +454,9 @@ std::cout << "HBIA4 HV value: " << value << std::endl;
 			    fIDbcm0L02_mean,
 			    fIDbcm0L02_width,
 			    fIDbcm_an_ds3_mean,
-			    fIDbcm_an_ds3_width};
+			    fIDbcm_an_ds3_width,
+			    fIDbcm_hallc_mean,
+			    fIDbcm_hallc_width};
 
   
   void SetMeanWidth(int myIndex, std::pair<Double_t,Double_t> value_pair){

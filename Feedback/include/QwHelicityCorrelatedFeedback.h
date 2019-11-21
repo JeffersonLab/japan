@@ -541,7 +541,9 @@ Bool_t IsHBPatternsAccumulated(){
 				    "bpm2i02WS",
 				    "bpm2i01WS",
 				    "bcm0l02",
-				    "bcm_an_ds3"};
+				    "q_targ",
+				    "hallc_bcm_4c"};
+
     std::vector< std::pair<Double_t, Double_t> > vWireSumAsymmetry; //pair< mean, width>
 
     std::vector<const char*> vBPM1 ={"bpm0i02X",
