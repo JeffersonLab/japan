@@ -54,6 +54,10 @@ Doxygen/html
 *.ps
 *.log*
 
+#  Feedback outputs
+feedbacklog*
+LogFiles*
+
 #tmp files
 *#*#
 *~
