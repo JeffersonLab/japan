@@ -361,11 +361,19 @@ void BMOD::calculateSensitivities(){
   //Double_t trim_base[7] = {1683,1582,1708,1670,1662,1709,1686};
   // NEW bases:
   // Double_t trim_base[7] = {833,782,845,827,822,844,832};
+  /*
   if (parameterVectors.count("Trim Bases")) {
     for (std::string &num:parameterVectors["Trim Bases"]){
       trim_base.push_back((Double_t)std::atof(num.c_str()));
     }
+  }*/
+  TH1F* hist_trim;
+  for (Int_t k = 0; k<nCoil; k++){
+    tree_R->Draw(Form("bmod_trim%s>>hist_trim%d",parameterVectors["Coils"][k].c_str(),k),"bmod_ramp<0","");
+    hist_trim = (TH1F *)gDirectory->Get(Form("hist_trim%d",k));
+    trim_base.push_back(hist_trim->GetXaxis()->GetBinCenter(hist_trim->GetMaximumBin()));
   }
+  
   const double trimmin=0.38;
   const double trimmax=0.7;
   const double bpmmax=3;
