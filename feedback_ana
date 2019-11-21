@@ -1,5 +1,12 @@
 #!/bin/tcsh
 
+set FB_PROCESS = `ps -u apar -o pid,cmd | grep qwfeedback | grep -v grep | grep -v emacs | grep -v vim | head -1`
+if ( "${FB_PROCESS}" != "" ) then
+    echo "There is already another qwfeedback process running."
+    echo "   Other process PID and command: ${FB_PROCESS}"
+    exit
+endif
+
 source ~/PREX/setup_japan.tcsh
 
 set MY_LOG_FILE = feedbacklog
