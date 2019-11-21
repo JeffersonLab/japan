@@ -2,30 +2,41 @@
 
 #No.of good patterns to accumulate before triggering the feedback algorithm.
 
-#for Hall A PITA
+#for Hall A PITA = 7.5 seconds
+#time(s)=(patterns*4)/f
 #patterns = 210
-patterns = 2000
+patterns = 225
 
-#for Hall C IA
-cia_patterns = 210
+#for Hall C IA = 1 minute
+cia_patterns = 1800
 
-#for Hall A IA
-aia_patterns = 210
+#for Hall A IA = 7 seconds
+#aia_patterns = 210
+#1min
+aia_patterns = 1800
 
-#for Hall B IA
-bia_patterns = 1800
+#for Hall B IA =1min
+bia_patterns = 200
 
-#for Hall A IA
-HAF_patterns = 200
+#for Hall A IA 
+# 7 seconds
+#HAF_patterns = 200
+#1min
+HAF_patterns = 1800
 
+
+# Interval time period can vary - 5 minutes -> 30*60*5 = 9000
 #for XY pos feedback
-xy_patterns = 4000
+#xy_patterns = 210
+#xy_patterns = 9000
+#xy_patterns = 18000
+xy_patterns = 54000
 
 #for position feedback
 #pf_patterns = 9000
-pfu_patterns = 4000
+pfu_patterns = 210
 #pfu_patterns = 18000
-pfv_patterns = 18000
+pfv_patterns = 500
 
 
 
@@ -85,26 +96,62 @@ HB_IA_up  = 70000
 
 
 #matrix elements for do 2 by 2 feedback
+#Amali edit 20190718
+#XU = -0.0000578
+#XV =  0.000261
+#YU = -0.000216
+#YV = -0.000129
+#Caryn edit for bpm4e 20190731
+#XU = -0.0000237
+#XV =  0.0000128
+#YU = -0.0000511
+#YV =  0.0000336
+#Caryn edit for bpm2i02 20191031
+XU = -0.000068
+XV =  0.000130
+YU = -0.000109
+YV = -0.000037
 
-XU = 1
-XV = 2
-YU = 3
-YV = 4
 
-
-
-PITASLOPE_IN = -0.12
-PITASLOPE_OUT = 0.12
+#PITASLOPE_IN = -0.12
+#PITASLOPE_OUT = 0.12
 PITASLOPE_OUT_IN = -0.57
 
-HAllCIASLOPE_IN = -0.043
-HAllCIASLOPE_OUT = -0.043
+#Amali edit 20190626
+#use japan slopes
+#PITASLOPE_IN = 0.12
+#PITASLOPE_OUT = -0.12
 
-HAllBIASLOPE_IN = -0.16
-HAllBIASLOPE_OUT = -0.16
+#Cameron 2019-10-24
+#use japan slopes
+PITASLOPE_IN = 1.23
+PITASLOPE_OUT = -1.23
 
-HAllAIASLOPE_IN = -0.0626
-HAllAIASLOPE_OUT = -0.0626
+
+#Amali edit 20190717
+#HAllCIASLOPE_IN = 0.043
+#HAllCIASLOPE_OUT = 0.043
+#Oct 2019 not sure of sign
+HAllCIASLOPE_IN = 0.0419
+HAllCIASLOPE_OUT = 0.0419
+#HAllCIASLOPE_IN = -0.043
+#HAllCIASLOPE_OUT = -0.043
+
+#from summer
+#HAllBIASLOPE_IN = -0.16
+#HAllBIASLOPE_OUT = -0.16
+#oct 2019 not sure of slope 
+HAllBIASLOPE_IN = 0.177
+HAllBIASLOPE_OUT = 0.177
+
+
+#from Summer
+#HAllAIASLOPE_IN = -0.0626
+#HAllAIASLOPE_OUT = -0.0626
+#from October 2019
+HAllAIASLOPE_IN = -0.0578
+HAllAIASLOPE_OUT = -0.0578
+
 
 #from May 2019
 #PITAPOSUSLOPE_IN = 0.000138
@@ -119,12 +166,15 @@ HAllAIASLOPE_OUT = -0.0626
 #PITAPOSVSLOPE_IN = -0.000229
 #PITAPOSVSLOPE_OUT = -0.000229
 
+#caryn edit 20190730
 PITAPOSUSLOPE_IN = 0.000218
 PITAPOSUSLOPE_OUT = 0.000218
-
 PITAPOSVSLOPE_IN = -0.000229
 PITAPOSVSLOPE_OUT = -0.000229
-
+#PITAPOSUSLOPE_IN = 0.1
+#PITAPOSUSLOPE_OUT = 0.1
+#PITAPOSVSLOPE_IN = 0.1
+#PITAPOSVSLOPE_OUT = 0.1
 
 ###  PITANEG = 200
 
