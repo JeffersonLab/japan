@@ -180,7 +180,8 @@ void QwDataHandlerArray::LoadDataHandlersFromParameterFile(
     handler->ParseConfigFile(*section);
     handler->LoadChannelMap();
     handler->ConnectChannels(detectors);
-    
+    handler->InitRunningSum();
+
     // Add to array
     this->push_back(handler);
     /*    
@@ -688,6 +689,7 @@ void QwDataHandlerArray::ProcessDataHandlerEntry()
   if (!empty()) {
     for(iterator handler = begin(); handler != end(); ++handler){
       (*handler)->ProcessData();
+      (*handler)->AccumulateRunningSum();
     }
   }
 }
@@ -696,9 +698,8 @@ void QwDataHandlerArray::FinishDataHandler()
 {
   if (!empty()) {
     for(iterator handler = begin(); handler != end(); ++handler){
-      (*handler)->CalcCorrelations();
+      (*handler)->FinishDataHandler();
     }
-    this->CalculateRunningAverage();  
   }
 }
   

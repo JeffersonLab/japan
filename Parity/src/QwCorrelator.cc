@@ -53,7 +53,8 @@ QwCorrelator::QwCorrelator(const TString& name)
   fAliasOutputFileSuff(""),
   fAliasOutputPath("."),
   fNameNoSpaces(name),
-  nP(0),nY(0)
+  nP(0),nY(0),
+  fCycleCounter(0)
 {
   fNameNoSpaces.ReplaceAll(" ","_");
   // Set default tree name and descriptions (in VQwDataHandler)
@@ -78,7 +79,8 @@ QwCorrelator::QwCorrelator(const QwCorrelator& source)
   fAliasOutputFileBase(source.fAliasOutputFileBase),
   fAliasOutputFileSuff(source.fAliasOutputFileSuff),
   fAliasOutputPath(source.fAliasOutputPath),
-  nP(source.nP),nY(source.nY)
+  nP(source.nP),nY(source.nY),
+  fCycleCounter(source.fCycleCounter)
 {
   QwWarning << "QwCorrelator copy constructor required but untested" << QwLog::endl;
 
@@ -187,6 +189,10 @@ void QwCorrelator::CalcCorrelations()
   // Check if any channels are active
   if (nP == 0 || nY == 0) {
     return;
+  }
+
+  if (fPrintCorrelations) {
+    QwMessage << "QwCorrelator: name=" << GetName() << QwLog::endl;
   }
 
   // Print entry summary
@@ -456,13 +462,13 @@ void QwCorrelator::ConstructTreeBranches(
   branchm(fTree,linReg.mRYY,  "RYY");
   branchm(fTree,linReg.mRYYp, "RYYp");
 
-  branchv(fTree,linReg.mMP,  "MP");
-  branchv(fTree,linReg.mMY,  "MY");
-  branchv(fTree,linReg.mMYp, "MYp");
+  branchv(fTree,linReg.mMP,  "MP");   // Parameter mean
+  branchv(fTree,linReg.mMY,  "MY");   // Uncorrected mean 
+  branchv(fTree,linReg.mMYp, "MYp");  // Corrected mean
 
-  branchv(fTree,linReg.mSP,  "dMP");
-  branchv(fTree,linReg.mSY,  "dMY");
-  branchv(fTree,linReg.mSYp, "dMYp");
+  branchv(fTree,linReg.mSP,  "dMP");  // Parameter mean error
+  branchv(fTree,linReg.mSY,  "dMY");  // Uncorrected mean error
+  branchv(fTree,linReg.mSYp, "dMYp"); // Corrected mean error
 
   // Create alpha and alias files
   OpenAlphaFile(treeprefix);
@@ -706,10 +712,7 @@ void QwCorrelator::WriteAliasFile()
     return;
   }
 
-  // Initialize call counter
-  static int i = 0;
-
-  fAliasOutputFile << " if (i == " << i << ") {" << std::endl;
+  fAliasOutputFile << " if (i == " << fCycleCounter << ") {" << std::endl;
   fAliasOutputFile << Form("  TTree* tree = (TTree*) gDirectory->Get(\"mul\");") << std::endl;
   for (int i = 0; i < nY; i++) {
     fAliasOutputFile << Form("  tree->SetAlias(\"reg_%s\",",fDependentFull[i].c_str()) << std::endl;
@@ -722,6 +725,6 @@ void QwCorrelator::WriteAliasFile()
   fAliasOutputFile << " }" << std::endl;
 
   // Increment call counter
-  i++;
+  fCycleCounter++;
 }
 

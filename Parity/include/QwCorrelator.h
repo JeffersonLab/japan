@@ -51,6 +51,9 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
 
   void ProcessData();
+  void FinishDataHandler(){
+    CalcCorrelations();
+  }
   void CalcCorrelations();
 
   /// \brief Construct the tree branches
@@ -124,6 +127,8 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   std::vector<std::vector<TH2D>> fH2dv;
 
   LinRegBevPeb linReg;
+
+  Int_t fCycleCounter;
 
   // Default constructor
   QwCorrelator();
