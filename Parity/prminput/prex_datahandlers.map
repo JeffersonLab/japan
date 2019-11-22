@@ -99,8 +99,16 @@
   tree-comment = Correlations (all variables)
 
 [QwCombiner]
+  name       = MyCombiner
+  priority   = 0
+  map        = prex_combiner.map
+  tree-name  = mulc
+  tree-comment = Helicity event data tree (corrected)
+
+[QwCombiner]
   name       = bmw
   priority   = 50
+  scope      = event
   map        = prex_bmw.map
   tree-name  = bmw
   tree-comment = Beam modulation

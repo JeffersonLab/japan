@@ -336,16 +336,19 @@ Int_t QwCombiner::ConnectChannels(QwSubsystemArrayParity& event)
 
 void QwCombiner::ProcessData()
 {
-  if (fErrorFlagMask && fErrorFlagPointer) {
-    if ((*fErrorFlagPointer & fErrorFlagMask)) {
-      //QwMessage << "0x" << std::hex << *fErrorFlagPointer << " failed mask " << "0x" << fErrorFlagMask << std::dec << QwLog::endl;
-    } else {
+  if (fErrorFlagMask!=0 && fErrorFlagPointer!=NULL) {
+    if ((*fErrorFlagPointer & fErrorFlagMask)!=0) {
       //QwMessage << "0x" << std::hex << *fErrorFlagPointer << " passed mask " << "0x" << fErrorFlagMask << std::dec << QwLog::endl;
+      for (size_t i = 0; i < fDependentVar.size(); ++i) {
+        CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar[i], fSensitivity[i]);
+      }
+    //} else {
+      //QwMessage << "0x" << std::hex << *fErrorFlagPointer << " failed mask " << "0x" << fErrorFlagMask << std::dec << QwLog::endl;
     }
   }
-
-  for (size_t i = 0; i < fDependentVar.size(); ++i) {
-    CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar[i], fSensitivity[i]);
+  else{
+    for (size_t i = 0; i < fDependentVar.size(); ++i) {
+      CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar[i], fSensitivity[i]);
+    }
   }
 }
-

@@ -1,16 +1,192 @@
 # OR of all separate lines
 # Each line has to be a TFormula-parseable line
-# somehow this has to be parsed for the last event only
+# somehow this has to be parsed for the last evt only
 # possibly not in the tree yet
 #bmwobj!=1 && bmwactive==true && bmwcycnum>1 && bcm_dg_ds>60
 #(ErrorFlag&0x5b7e6bff)==0 && bmod_ramp>0
 #bmod_ramp>0 # this alone might be enough
 # could require conditions on pub/sub variables
 
-mask = 0x5b7e6bff
+#Wouters mask = 0x5b7e6bff
+#mask = 0xda7e6bff
+mask = 0x9000
 
-[asym:@bpm4aX]
-asym:bpm4aX, 1.0
+[mps:@bmwobj]
+mps:bmwobj, 1.0
 
-[asym:@bpm4eX]
-asym:bpm4eX, 1.0
+[mps:@bmod_ramp]
+mps:bmod_ramp, 1.0
+
+[mps:@bmwcycnum]
+mps:bmwcycnum, 1.0
+
+[mps:@bmod_trim1]
+mps:bmod_trim1, 1.0
+[mps:@bmod_trim2]
+mps:bmod_trim2, 1.0
+[mps:@bmod_trim3]
+mps:bmod_trim3, 1.0
+[mps:@bmod_trim4]
+mps:bmod_trim4, 1.0
+[mps:@bmod_trim5]
+mps:bmod_trim5, 1.0
+[mps:@bmod_trim6]
+mps:bmod_trim6, 1.0
+[mps:@bmod_trim7]
+mps:bmod_trim7, 1.0
+
+[mps:@usl]
+mps:usl, 1.0
+[mps:@usr]
+mps:usr, 1.0
+[mps:@dsl]
+mps:dsl, 1.0
+[mps:@dsr]
+mps:dsr, 1.0
+
+[mps:@atl1]
+mps:atl1, 1.0
+[mps:@atl2]
+mps:atl2, 1.0
+[mps:@atr1]
+mps:atr1, 1.0
+[mps:@atr2]
+mps:atr2, 1.0
+
+[mps:@battery1l]
+mps:battery1l, 1.0
+[mps:@battery2l]
+mps:battery2l, 1.0
+[mps:@battery1r]
+mps:battery1r, 1.0
+[mps:@battery2r]
+mps:battery2r, 1.0
+
+[mps:@sam1]
+mps:sam1, 1.0
+[mps:@sam2]
+mps:sam2, 1.0
+[mps:@sam3]
+mps:sam3, 1.0
+[mps:@sam4]
+mps:sam4, 1.0
+[mps:@sam5]
+mps:sam5, 1.0
+[mps:@sam6]
+mps:sam6, 1.0
+[mps:@sam7]
+mps:sam7, 1.0
+[mps:@sam8]
+mps:sam8, 1.0
+
+[mps:@bpm4aX]
+mps:bpm4aX, 1.0
+[mps:@bpm4aY]
+mps:bpm4aY, 1.0
+
+[mps:@bpm4eX]
+mps:bpm4eX, 1.0
+[mps:@bpm4eY]
+mps:bpm4eY, 1.0
+
+[mps:@bpm4acX]
+mps:bpm4acX, 1.0
+[mps:@bpm4acY]
+mps:bpm4acY, 1.0
+
+[mps:@bpm4ecX]
+mps:bpm4ecX, 1.0
+[mps:@bpm4ecY]
+mps:bpm4ecY, 1.0
+
+[mps:@bpm11X]
+mps:bpm11X, 1.0
+[mps:@bpm11Y]
+mps:bpm11Y, 1.0
+
+[mps:@bpm12X]
+mps:bpm12X, 1.0
+[mps:@bpm12Y]
+mps:bpm12Y, 1.0
+
+[mps:@bpm16X]
+mps:bpm16X, 1.0
+[mps:@bpm16Y]
+mps:bpm16Y, 1.0
+
+[mps:@bpm1X]
+mps:bpm1X, 1.0
+[mps:@bpm1Y]
+mps:bpm1Y, 1.0
+
+[mps:@bpm1p02bX]
+mps:bpm1p02bX, 1.0
+[mps:@bpm1p02bY]
+mps:bpm1p02bY, 1.0
+
+[mps:@bpm1p03aX]
+mps:bpm1p03aX, 1.0
+[mps:@bpm1p03aY]
+mps:bpm1p03aY, 1.0
+
+[mps:@cav4bXI]
+mps:cav4bXI, 1.0
+[mps:@cav4bYI]
+mps:cav4bYI, 1.0
+
+[mps:@cav4cXI]
+mps:cav4cXI, 1.0
+[mps:@cav4cYI]
+mps:cav4cYI, 1.0
+
+[mps:@cav4dXI]
+mps:cav4dXI, 1.0
+[mps:@cav4dYI]
+mps:cav4dYI, 1.0
+
+[mps:@bpmEnergyX]
+mps:bpm11X, 1.0
+mps:bpm12X, 0.4
+[mps:@bpmEnergyY]
+mps:bpm11Y, 1.0
+mps:bpm12Y, 0.4
+
+
+[mps:@bcm_an_us]
+mps:bcm_an_us, 1.0
+[mps:@bcm_an_ds]
+mps:bcm_an_ds, 1.0
+[mps:@bcm_an_ds3]
+mps:bcm_an_ds3, 1.0
+[mps:@bcm_an_ds10]
+mps:bcm_an_ds10, 1.0
+[mps:@bcm_dg_us]
+mps:bcm_dg_us, 1.0
+[mps:@bcm_dg_usc]
+mps:bcm_dg_usc, 1.0
+[mps:@bcm_dg_ds]
+mps:bcm_dg_ds, 1.0
+[mps:@bcm_dg_dsc]
+mps:bcm_dg_dsc, 1.0
+[mps:@unser]
+mps:unser, 1.0
+[mps:@hallc_bcm_4c]
+mps:hallc_bcm_4c, 1.0
+
+[mps:@cav4bQ]
+mps:cav4bQ, 1.0
+[mps:@cav4cQ]
+mps:cav4cQ, 1.0
+[mps:@cav4dQ]
+mps:cav4dQ, 1.0
+
+[mps:@beam_mod_ramp]
+mps:beam_mod_ramp, 1.0
+[mps:@ch_bpm_trigger]
+mps:ch_bpm_trigger, 1.0
+[mps:@ch_tsettle]
+mps:ch_tsettle, 1.0
+[mps:@ch_battery_1]
+mps:ch_battery_1, 1.0
+[mps:@ch_battery_2]
+mps:ch_battery_2, 1.0
