@@ -45,7 +45,7 @@ class QwExtractor:public VQwDataHandler, public MQwDataHandlerCloneable<QwExtrac
     const QwSubsystemArrayParity* fSourcePointer;
     //QwSubsystemArrayParity* fSourcePointer;
 
-    QwSubsystemArrayParity fSourceCopy;
+    QwSubsystemArrayParity* fSourceCopy;
 
     TTree* fTree;
 

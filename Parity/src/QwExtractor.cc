@@ -54,7 +54,7 @@ QwExtractor::QwExtractor(const QwExtractor &source)
 }
 
 /// Destructor
-QwExtractor::~QwExtractor() {}
+QwExtractor::~QwExtractor() {delete fSourceCopy;}
 
 Int_t QwExtractor::LoadChannelMap(const std::string& mapfile) {return 0;}
 
@@ -68,12 +68,12 @@ Int_t QwExtractor::ConnectChannels(QwSubsystemArrayParity& event)
   // Keep a pointer to the source Detectors/RingOutput
   //fSourcePointer = &event;
   SetPointer(&event);
-  fSourceCopy = QwSubsystemArrayParity(event);
+  fSourceCopy = new QwSubsystemArrayParity(event);
   // Make a copy of RingOutput
   // Normal ConnectChannels for the test variable/ErrorFlag
   // Store error flag pointer
   QwMessage << "Using event error flag" << QwLog::endl;
-  fErrorFlagPointer = fSourceCopy.GetEventcutErrorFlagPointer();
+  fErrorFlagPointer = event.GetEventcutErrorFlagPointer();
   return 0;
 }
 
@@ -99,13 +99,14 @@ void QwExtractor::ConstructTreeBranches(
 void QwExtractor::ProcessData()
 //void QwExtractor::ProcessDataHandlerEntry()
 {
+  fLocalFlag = 0;
   if (fErrorFlagMask!=0 && fErrorFlagPointer!=NULL) {
     if ((*fErrorFlagPointer & fErrorFlagMask)!=0) {
       //QwMessage << "0x" << std::hex << *fErrorFlagPointer << " passed mask " << "0x" << fErrorFlagMask << std::dec << QwLog::endl;
       //CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar[i], fSensitivity[i]);
       // If test passes then local RingOutput = *fSource one
       fLocalFlag = 1;
-      fSourceCopy = QwSubsystemArrayParity(*fSourcePointer);
+      fSourceCopy->operator=(*fSourcePointer);
   //} else {
       //QwMessage << "0x" << std::hex << *fErrorFlagPointer << " failed mask " << "0x" << fErrorFlagMask << std::dec << QwLog::endl;
     }
@@ -114,16 +115,14 @@ void QwExtractor::ProcessData()
     //CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar[i], fSensitivity[i]);
     // If test passes then local RingOutput = *fSource one
     fLocalFlag = 1;
-    fSourceCopy = QwSubsystemArrayParity(*fSourcePointer);
+    fSourceCopy->operator=(*fSourcePointer);
   }
 }
-
-//void QwExtractor::ProcessData() {}
 
 void QwExtractor::FillTreeBranches(QwRootFile *treerootfile)
 {
   if (fTreeName.size()>0 && fLocalFlag ==1 ){
-    treerootfile->FillTreeBranches(fSourceCopy);
+    treerootfile->FillTreeBranches(*fSourceCopy);
     treerootfile->FillTree(fTreeName);
   }
 }
