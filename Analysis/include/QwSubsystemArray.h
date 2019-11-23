@@ -186,6 +186,7 @@ class QwSubsystemArray:  public std::vector<boost::shared_ptr<VQwSubsystem> > {
   // Child of QwCombiner Class
   friend class QwCorrelator;
   friend class VQwDataHandler;
+  friend class QwExtractor;
 
   /// Published values
   std::map<TString, const VQwHardwareChannel*> fPublishedValuesDataElement;
