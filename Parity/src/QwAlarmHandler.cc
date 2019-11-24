@@ -339,6 +339,13 @@ void QwAlarmHandler::CheckAlarms() {
       fAlarmObjectList.at(numAna).NsinceLastViolation = 0;
       tmpAlarmStat = "Event-Cut";
     }
+    else if ( fAlarmObjectList.at(numAna).alarmParameterMap.count("Event-Cut-Missed") != 0 
+        && ((int)(fAlarmObjectList.at(numAna).alarmParameterMap.at("Event-Cut-Missed")) & fAlarmObjectList.at(numAna).eventcutErrorFlag) == 0 ) { 
+      //do running sum only if error flag is zero. This way will prevent any Beam Trip(in ev mode 3) related events going into the running sum.AA
+      fAlarmObjectList.at(numAna).Nviolated++;
+      fAlarmObjectList.at(numAna).NsinceLastViolation = 0;
+      tmpAlarmStat = "Event-Cut-Missed";
+    }
     else if (fAlarmObjectList.at(numAna).alarmParameterMap.count("Exactly") != 0 
         && fAlarmObjectList.at(numAna).value->GetValue() != fAlarmObjectList.at(numAna).alarmParameterMap.at("Exactly"))  {
       fAlarmObjectList.at(numAna).Nviolated++;
@@ -372,7 +379,7 @@ void QwAlarmHandler::CheckAlarms() {
     else {
       fAlarmObjectList.at(numAna).NsinceLastViolation++;
     }
-    if ( fAlarmObjectList.at(numAna).NsinceLastViolation > fAlarmObjectList.at(numAna).alarmParameterMap.at("Ring-Length") ) { 
+    if ( fAlarmObjectList.at(numAna).NsinceLastViolation > fAlarmObjectList.at(numAna).alarmParameterMap.at("Ring-Length") && fAlarmObjectList.at(numAna).Nviolated > 0 ) { 
       fAlarmObjectList.at(numAna).Nviolated--;
     }
     if ( fAlarmObjectList.at(numAna).Nviolated > fAlarmObjectList.at(numAna).alarmParameterMap.at("Tolerance") ) {
