@@ -40,7 +40,7 @@ QwExtractor::QwExtractor(const TString& name)
   ParseSeparator = ":";
   fKeepRunningSum = kTRUE;
   fTreeName = "bmw";
-  fTreeName = "BMOD Extractor";
+  fTreeComment = "BMOD Extractor";
   fErrorFlagMask = 0x9000;
   fErrorFlagPointer = 0;
 
@@ -89,31 +89,24 @@ void QwExtractor::ConstructTreeBranches(
   }
 
   // Construct tree name and create new tree
-  const std::string name = treeprefix + fTreeName;
-  // Call BuildTree with "bmw" prefix
-  treerootfile->NewTree(name, fTreeComment.c_str());
-  fTree = treerootfile->GetTree(name);
-
+  fTreeName = treeprefix + fTreeName;
+  treerootfile->ConstructTreeBranches(fTreeName, fTreeComment.c_str(), *fSourceCopy);
+  //fTree = treerootfile->GetTree(fTreeName);
 }
 
 void QwExtractor::ProcessData()
-//void QwExtractor::ProcessDataHandlerEntry()
 {
   fLocalFlag = 0;
   if (fErrorFlagMask!=0 && fErrorFlagPointer!=NULL) {
     if ((*fErrorFlagPointer & fErrorFlagMask)!=0) {
-      //QwMessage << "0x" << std::hex << *fErrorFlagPointer << " passed mask " << "0x" << fErrorFlagMask << std::dec << QwLog::endl;
-      //CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar[i], fSensitivity[i]);
-      // If test passes then local RingOutput = *fSource one
+      //QwMessage << "0x" << std::hex << *fErrorFlagPointer << " passed mask " << "0x" << std::hex << fErrorFlagMask << std::dec << QwLog::endl;
       fLocalFlag = 1;
       fSourceCopy->operator=(*fSourcePointer);
-  //} else {
-      //QwMessage << "0x" << std::hex << *fErrorFlagPointer << " failed mask " << "0x" << fErrorFlagMask << std::dec << QwLog::endl;
-    }
+  }// else {
+  //    QwMessage << "0x" << std::hex << *fErrorFlagPointer << " failed mask " << "0x" << std::hex << fErrorFlagMask << std::dec << QwLog::endl;
+  //  }
   }
   else{
-    //CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar[i], fSensitivity[i]);
-    // If test passes then local RingOutput = *fSource one
     fLocalFlag = 1;
     fSourceCopy->operator=(*fSourcePointer);
   }
@@ -121,9 +114,13 @@ void QwExtractor::ProcessData()
 
 void QwExtractor::FillTreeBranches(QwRootFile *treerootfile)
 {
-  if (fTreeName.size()>0 && fLocalFlag ==1 ){
+  if (fTreeName.size()>0 && fLocalFlag == 1 ){
+    //QwMessage << fLocalFlag << " passed mask " << "0x" << std::hex<< fErrorFlagMask << std::dec << QwLog::endl;
     treerootfile->FillTreeBranches(*fSourceCopy);
     treerootfile->FillTree(fTreeName);
   }
+  //else {
+  //  QwMessage << fLocalFlag << " failed mask " << "0x" << fErrorFlagMask << std::dec << QwLog::endl;
+  //}
 }
 

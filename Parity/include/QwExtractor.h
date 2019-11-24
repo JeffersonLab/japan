@@ -29,9 +29,8 @@ class QwExtractor:public VQwDataHandler, public MQwDataHandlerCloneable<QwExtrac
         QwRootFile *treerootfile,
         const std::string& treeprefix = "",
         const std::string& branchprefix = "");
-    //void ProcessDataHandlerEntry();
-    void SetPointer(QwSubsystemArrayParity *ptr){fSourcePointer = ptr;};
     void ProcessData();
+    void SetPointer(QwSubsystemArrayParity *ptr){fSourcePointer = ptr;};
     void FillTreeBranches(QwRootFile *treerootfile);
   
   protected:
@@ -43,11 +42,8 @@ class QwExtractor:public VQwDataHandler, public MQwDataHandlerCloneable<QwExtrac
     Int_t fLocalFlag = 0;
 
     const QwSubsystemArrayParity* fSourcePointer;
-    //QwSubsystemArrayParity* fSourcePointer;
-
     QwSubsystemArrayParity* fSourceCopy;
-
-    TTree* fTree;
+    //TTree* fTree;
 
   private:
     // Default constructor
