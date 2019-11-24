@@ -183,6 +183,7 @@ Int_t BMOD::getData(Int_t runNo) {
     Printf("ERROR: No \"ROOT input path\" parameter in %s",infile.c_str());
     return 1;
   }
+  std::cout << "Using "<< infile << std::endl;
   return 0;
 }
 
@@ -995,6 +996,8 @@ void BMOD::saveSlopeData() {
 
 int bmodAna(Int_t runNo = 4199, std::string inputFile = "input.txt", TString sluglist = "NULL"){
   Printf("Starting BMOD Analysis");
+  TStopwatch tsw;
+  tsw.Start();
   if (runNo < 1000 && sluglist != "NULL") { // Assume its a slug
     std::string runnum;
     ifstream ifinfile(sluglist);
@@ -1022,5 +1025,6 @@ int bmodAna(Int_t runNo = 4199, std::string inputFile = "input.txt", TString slu
     bmod->saveSlopeData();
     bmod->edittree(bmod->slopeFilename);
   }
+  cout << "-- BMOD Analysis done in "; tsw.Print(); cout << endl;
   return 0;
 }
