@@ -364,7 +364,9 @@ Int_t TreeGetter::smartAdd(std::string tree) {
       ind2 = (Double_t)miniRunNumber;
       inTree->Branch(index2.c_str(),&ind2);
     }
-    inTree->BuildIndex(index1.c_str(),index2.c_str());
+    //inTree->BuildIndex(index1.c_str(),index2.c_str());
+    //TVirtualIndex* inIndex = inTree->GetTreeIndex();
+    //inTree->SetTreeIndex(inIndex);
 //    inTree->Scan();
 //    Printf("Scanned input tree");
 
@@ -396,7 +398,9 @@ Int_t TreeGetter::smartAdd(std::string tree) {
     else {
       tmpTree->SetBranchAddress(index2.c_str(),&ind2);
     }
-    tmpTree->BuildIndex(index1.c_str(),index2.c_str());
+    //tmpTree->BuildIndex(index1.c_str(),index2.c_str());
+    //TVirtualIndex* tmpIndex = tmpTree->GetTreeIndex();
+    //tmpTree->SetTreeIndex(tmpIndex);
     Printf("Number of entries = %lld",tmpTree->GetEntries());
 //    tmpTree->Scan();
 //    Printf("Scanned temporary copy of baseTree with friends");
@@ -443,6 +447,8 @@ Int_t TreeGetter::smartAdd(std::string tree) {
       outTree->Fill();
     }*/
     outTree->BuildIndex(index1.c_str(),index2.c_str());
+    TVirtualIndex* outIndex = outTree->GetTreeIndex();
+    outTree->SetTreeIndex(outIndex);
     outTree->SetName(tree.c_str());
     fileOutput->cd();
     outTree->Write();
