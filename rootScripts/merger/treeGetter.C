@@ -356,6 +356,14 @@ Int_t TreeGetter::smartAdd(std::string tree) {
     //inTree->SetBranchAddress(index2.c_str(),&ind2);
     // FIXME if the index1 and index2 variables don't exist then try to generate new ones for indexing purposes
     // FIXME if the index1 and index2's match across all trees then just addFriend them together into one mega-inTree, but if they don't then do the AddFile thing too (maybe avoid this...)
+    if (!inTree->GetListOfBranches()->FindObject(index1.c_str())) {
+      ind1 = (Double_t)runNumber;
+      inTree->Branch(index1.c_str(),&ind1);
+    }
+    if (!inTree->GetListOfBranches()->FindObject(index2.c_str())) {
+      ind2 = (Double_t)miniRunNumber;
+      inTree->Branch(index2.c_str(),&ind2);
+    }
     inTree->BuildIndex(index1.c_str(),index2.c_str());
 //    inTree->Scan();
 //    Printf("Scanned input tree");
@@ -378,31 +386,52 @@ Int_t TreeGetter::smartAdd(std::string tree) {
       ind1 = (Double_t)runNumber;
       tmpTree->Branch(index1.c_str(),&ind1);
     }
+    else {
+      tmpTree->SetBranchAddress(index1.c_str(),&ind1);
+    }
     if (!tmpTree->GetListOfBranches()->FindObject(index2.c_str())) {
       ind2 = (Double_t)miniRunNumber;
       tmpTree->Branch(index2.c_str(),&ind2);
+    }
+    else {
+      tmpTree->SetBranchAddress(index2.c_str(),&ind2);
     }
     tmpTree->BuildIndex(index1.c_str(),index2.c_str());
     Printf("Number of entries = %lld",tmpTree->GetEntries());
 //    tmpTree->Scan();
 //    Printf("Scanned temporary copy of baseTree with friends");
     TChain *outTree = (TChain*) tmpTree->CopyTree("","",0,0);
-    std::map<std::pair<Int_t,Int_t>,Bool_t> deleted;
+    //std::map<std::pair<Int_t,Int_t>,Bool_t> deleted;
+    std::map<std::pair<Int_t,Int_t>,Int_t> number;
+    std::map<std::pair<Int_t,Int_t>,Int_t> checked;
     for(Int_t i=0; i<tmpTree->GetEntries(); i++){
       tmpTree->GetEntry(i);
       std::pair <Int_t,Int_t> pr = {(Int_t)ind1,(Int_t)ind2};
-      deleted[pr] = false;
+      //deleted[pr] = false;
+      checked[pr] = 0;
+      number[pr] = 0;
     }
     for(Int_t i=0; i<tmpTree->GetEntries(); i++){
-     // deleted[i] = false;
       tmpTree->GetEntry(i);
       std::pair <Int_t,Int_t> pr = {(Int_t)ind1,(Int_t)ind2};
-      //Printf("Checking entry, ind1 = %d, ind2 = %d, deleted status == %d",(Int_t)ind1, (Int_t)ind2, deleted[pr]);
-      if (deleted[pr] == false && -1 != baseTree->GetEntryNumberWithIndex((Int_t)ind1,(Int_t)ind2) && -1 != inTree->GetEntryNumberWithIndex((Int_t)ind1,(Int_t)ind2)) { 
-        deleted[pr] = true;
-        Printf("Skipping entry, ind1 = %d, ind2 = %d",(Int_t)ind1, (Int_t)ind2);
-        continue; 
+      number[pr]++;
+    }
+    for(Int_t i=0; i<tmpTree->GetEntries(); i++){
+      // deleted[i] = false;
+      tmpTree->GetEntry(i);
+      std::pair <Int_t,Int_t> pr = {(Int_t)ind1,(Int_t)ind2};
+      checked[pr]++;
+      Printf("Checking entry, ind1 = %d, ind2 = %d, checked status == %d",(Int_t)ind1, (Int_t)ind2, checked[pr]);
+      if (checked[pr] < number[pr]) {
+        Printf("ind1 = %d, ind2 = %d initial value duplicate deleted",(Int_t)ind1, (Int_t)ind2);
+        continue;
       }
+      //Printf("Checking entry, ind1 = %d, ind2 = %d, deleted status == %d",(Int_t)ind1, (Int_t)ind2, deleted[pr]);
+      //if (deleted[pr] == false && -1 != baseTree->GetEntryNumberWithIndex((Int_t)ind1,(Int_t)ind2) && -1 != inTree->GetEntryNumberWithIndex((Int_t)ind1,(Int_t)ind2)) { 
+      //  deleted[pr] = true;
+      //  Printf("Skipping entry, ind1 = %d, ind2 = %d",(Int_t)ind1, (Int_t)ind2);
+      //  continue; 
+      //}
       tmpTree->GetEntry(i);
       outTree->Fill();
     }
