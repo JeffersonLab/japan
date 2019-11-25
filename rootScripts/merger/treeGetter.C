@@ -288,7 +288,9 @@ void TreeGetter::mergeData() {
 }
 
 Int_t TreeGetter::smartAdd(std::string tree) {
-  Double_t ind1, ind2;
+  // FIXME These two shorts here need to be doubles if its going to work on old aggregator files!!
+  Short_t ind1 = 0;
+  Short_t ind2 = 0;
   std::string index1 = "run_number";
   std::string index2 = "minirun_n";
   if (parameterVectors.count("Index 1") == 1) {
@@ -297,6 +299,13 @@ Int_t TreeGetter::smartAdd(std::string tree) {
   if (parameterVectors.count("Index 2") == 1) {
     index2 = parameterVectors["Index 2"].at(0);
   }
+  if (!fileInput) {
+    Printf("No input file, stopping");
+    return 0;
+  }
+  //auto ind2 = (Short_t)((TBranch*)(((TChain*)fileInput->Get(tree.c_str()))->GetListOfBranches()->FindObject(index2.c_str())))->GetEntry(0);
+  //Printf("ind2 = %f",(Double_t)ind2);
+
   if ((!fileBaseInput || !fileBaseInput->GetListOfKeys()->Contains(tree.c_str())) && fileInput) {
     // Move the input data into the output file name (could do with mv instead...)
     Printf("Starting a fresh output file");
@@ -326,7 +335,7 @@ Int_t TreeGetter::smartAdd(std::string tree) {
     //((TChain*)fileInput->Get(tree.c_str()))->Scan();
     fileOutput->cd();
     outTree->Write();
-//    outTree->Scan();
+    //outTree->Scan("run_number:BurstCounter:asym_bcm_an_ds:CodaEventNumber");
     delete inTree;
     delete outTree;
     return 1;
@@ -360,9 +369,17 @@ Int_t TreeGetter::smartAdd(std::string tree) {
       ind1 = (Double_t)runNumber;
       inTree->Branch(index1.c_str(),&ind1);
     }
+    else {
+      ind1 = (Double_t)runNumber;
+      inTree->SetBranchAddress(index1.c_str(),&ind1);
+    }
     if (!inTree->GetListOfBranches()->FindObject(index2.c_str())) {
       ind2 = (Double_t)miniRunNumber;
       inTree->Branch(index2.c_str(),&ind2);
+    }
+    else {
+      ind2 = (Double_t)miniRunNumber;
+      inTree->SetBranchAddress(index2.c_str(),&ind2);
     }
     //inTree->BuildIndex(index1.c_str(),index2.c_str());
     //TVirtualIndex* inIndex = inTree->GetTreeIndex();
@@ -410,6 +427,10 @@ Int_t TreeGetter::smartAdd(std::string tree) {
     std::map<std::pair<Int_t,Int_t>,Int_t> checked;
     for(Int_t i=0; i<tmpTree->GetEntries(); i++){
       tmpTree->GetEntry(i);
+      if (i >= baseTree->GetEntries()) {
+        ind1 = runNumber;
+        ind2 = i-baseTree->GetEntries();
+      }
       std::pair <Int_t,Int_t> pr = {(Int_t)ind1,(Int_t)ind2};
       //deleted[pr] = false;
       checked[pr] = 0;
@@ -417,12 +438,20 @@ Int_t TreeGetter::smartAdd(std::string tree) {
     }
     for(Int_t i=0; i<tmpTree->GetEntries(); i++){
       tmpTree->GetEntry(i);
+      if (i >= baseTree->GetEntries()) {
+        ind1 = runNumber;
+        ind2 = i-baseTree->GetEntries();
+      }
       std::pair <Int_t,Int_t> pr = {(Int_t)ind1,(Int_t)ind2};
       number[pr]++;
     }
     for(Int_t i=0; i<tmpTree->GetEntries(); i++){
       // deleted[i] = false;
       tmpTree->GetEntry(i);
+      if (i >= baseTree->GetEntries()) {
+        ind1 = runNumber;
+        ind2 = i-baseTree->GetEntries();
+      }
       std::pair <Int_t,Int_t> pr = {(Int_t)ind1,(Int_t)ind2};
       checked[pr]++;
       Printf("Checking entry, ind1 = %d, ind2 = %d, checked status == %d",(Int_t)ind1, (Int_t)ind2, checked[pr]);
@@ -436,7 +465,6 @@ Int_t TreeGetter::smartAdd(std::string tree) {
       //  Printf("Skipping entry, ind1 = %d, ind2 = %d",(Int_t)ind1, (Int_t)ind2);
       //  continue; 
       //}
-      tmpTree->GetEntry(i);
       outTree->Fill();
     }
     /*for(int i=0; i< inTree->GetEntries(); i++){
@@ -452,7 +480,7 @@ Int_t TreeGetter::smartAdd(std::string tree) {
     outTree->SetName(tree.c_str());
     fileOutput->cd();
     outTree->Write();
-//    outTree->Scan();
+    //outTree->Scan("run_number:BurstCounter:asym_bcm_an_ds:CodaEventNumber");
     // Don't delete these trees? The file closure deletes them for me? But the tree-Loop??
     delete baseTree;
     delete inTree;
