@@ -7,8 +7,8 @@ IntegrationPMT, dsl,		-1000,	100000,	g,	0
 IntegrationPMT, usr,		-1000,	100000,	l,	0
 IntegrationPMT, dsr,		-1000,	100000,	l,	0
 
-IntegrationPMT, atl1,		-1000,	100000,	g,	0
-IntegrationPMT, atl2,		-1000,	100000,	g,	0
-IntegrationPMT, atr1,		-1000,	100000,	l,	0
-IntegrationPMT, atr2,		-1000,	100000,	l,	0
+IntegrationPMT, atl1,		-1000,	120000	g,	0
+IntegrationPMT, atl2,		-1000,	120000	g,	0
+IntegrationPMT, atr1,		-1000,	120000	l,	0
+IntegrationPMT, atr2,		-1000,	120000	l,	0
 
