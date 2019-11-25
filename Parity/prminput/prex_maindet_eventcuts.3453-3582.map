@@ -1,7 +1,8 @@
 ! For runs 3564 and 3565 (HV off left, Quads off Right) - want to local cut the main RHRS detectors, global cut the main LHRS detectors
+! left arm running of slug 8-11
 
 EVENTCUTS = 3
-IntegrationPMT, usl,		-1000.000,	100000,	g,	0
-IntegrationPMT, dsl,		-1000.000,	100000,	g,	0
+IntegrationPMT, usl,		0.015,	100000,	g,	0
+IntegrationPMT, dsl,		0.015,	100000,	g,	0
 IntegrationPMT, usr,		-100001,	-100000,	l,	0
 IntegrationPMT, dsr,		-100001,	-100000,	l,	0

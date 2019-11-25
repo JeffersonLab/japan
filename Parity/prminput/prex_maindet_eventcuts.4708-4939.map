@@ -1,4 +1,5 @@
 ! Want to cut out glitch events on ATs as well to preserve regression down the line (postpan - remove the ATs once postpan is treating device error code correctly)
+! blined at
 
 EVENTCUTS = 3
 IntegrationPMT, usl,		-1000,	100000,	g,	0

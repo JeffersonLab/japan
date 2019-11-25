@@ -1,4 +1,5 @@
 ! For runs the RQ1 tripped, so local cut the R dets, global the left
+! left arm running of slug 43
 
 EVENTCUTS = 3
 IntegrationPMT, usl,		-1000,	100000,	g,	0
