@@ -4,7 +4,7 @@ ROOTFILEDIR="/chafs2/work1/apar/aggRootfiles"
 OUTPUTROOTFILEDIR="./test/"
 if [ "$#" -lt 1 ]; then
   echo "Error: Need to pass a list file name number \"slug##.txt\""
-  echo "Usage: ./accumulate_aggFiles_list.sh list.txt (input file list, \\n separated)"
+  echo "Usage: ./loop-getter.sh list.txt (input file list, \\n separated)"
 else
   IFS=$'\n' read -d '' -r -a lines < ${1}
   # all lines

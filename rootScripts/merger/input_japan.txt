@@ -1,13 +1,9 @@
-ALT Aggregator Trees=agg
 Trees=burst,burst_mulc,burst_mulc_lrb,burst_mulc_lrb_burst
 ROOT base input path=./test/aggregator.root
 ROOT input path=$QW_ROOTFILES/testCREX#.000.root
-ALT OFFICIAL ROOT input path=$QW_ROOTFILES/prexPrompt_pass1_#.000.root
-ALT FIXME ROOT input path=/chafs2/work1/apar/aggRootfiles/minirun_aggregator_#_#.root
 Rootfile Output Path=./test/
 Index 1=run_number
 Index 2=BurstCounter
-ALT AGGREGATOR Index 2=minirun_n
 Merge=True
-Prune=True
+Prune=False
 Strip=False

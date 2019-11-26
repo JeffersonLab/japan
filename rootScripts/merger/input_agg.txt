@@ -1,0 +1,9 @@
+Trees=agg
+ROOT base input path=./test/aggregator.root
+ROOT input path=/chafs2/work1/apar/aggRootfiles/minirun_aggregator_#_#.root
+Rootfile Output Path=./test/
+Index 1=run_number
+Index 2=minirun_n
+Merge=True
+Prune=False
+Strip=False

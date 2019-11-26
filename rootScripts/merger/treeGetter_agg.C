@@ -253,7 +253,7 @@ void TreeGetter::mergeData() {
   getBaseData();
   getMergeData();
   Printf("Merging into %s",baseinfile.c_str());
-  outfile = Form("%s_%d.root",baseinfile.substr(0,baseinfile.size()-5).c_str(),runNumber);
+  outfile = Form("%s_%d.root",baseinfile.substr(0,infile.size()-5).c_str(),runNumber);
   fileOutput = TFile::Open(outfile.c_str(),"recreate");
   for (int n = 0 ; n < parameterVectors["Trees"].size() ; n++) {
     //FIXME add new parameters to vector for branch naming
@@ -293,10 +293,10 @@ void TreeGetter::mergeData() {
 
 Int_t TreeGetter::smartAdd(std::string tree) {
   // FIXME These two shorts here need to be doubles if its going to work on old aggregator files!!
-  //Double_t ind1 = 0;
-  //Double_t ind2 = 0;
-  Short_t ind1 = 0;
-  Short_t ind2 = 0;
+  Double_t ind1 = 0;
+  Double_t ind2 = 0;
+  //Short_t ind1 = 0;
+  //Short_t ind2 = 0;
   std::string index1 = "run_number";
   std::string index2 = "minirun_n";
   if (parameterVectors.count("Index 1") == 1) {
@@ -381,7 +381,7 @@ Int_t TreeGetter::smartAdd(std::string tree) {
     // FIXME if the index1 and index2 variables don't exist then try to generate new ones for indexing purposes
     // FIXME if the index1 and index2's match across all trees then just addFriend them together into one mega-inTree, but if they don't then do the AddFile thing too (maybe avoid this...)
     //
-    /* FIXME Comment out this section to get the agg tree merging to work  */
+    /* FIXME Comment out this section to get the agg tree merging to work 
     if (!inTree->GetListOfBranches()->FindObject(index1.c_str())) {
       ind1 = (Double_t)runNumber;
       inTree->Branch(index1.c_str(),&ind1);
@@ -402,7 +402,7 @@ Int_t TreeGetter::smartAdd(std::string tree) {
       inTree->SetBranchAddress(index2.c_str(),&ind2);
       i2exists = true;
     }
-    /* */
+    */
     //inTree->BuildIndex(index1.c_str(),index2.c_str());
     //TVirtualIndex* inIndex = inTree->GetTreeIndex();
     //inTree->SetTreeIndex(inIndex);
@@ -530,7 +530,7 @@ Int_t TreeGetter::smartAdd(std::string tree) {
   }
 }
 
-int treeGetter(Int_t runNo = 4199, Int_t miniRunNo = -1, std::string inputFile = "input.txt", TString sluglist = "NULL"){
+int treeGetter_agg(Int_t runNo = 4199, Int_t miniRunNo = -1, std::string inputFile = "input.txt", TString sluglist = "NULL"){
   if (runNo < 1000 && sluglist != "NULL") { // Assume its a slug - this is for the stripper mostly
     std::string runnum;
     ifstream ifinfile(sluglist);
