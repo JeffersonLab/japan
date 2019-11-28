@@ -251,8 +251,19 @@ void VQwDataHandler::ConstructTreeBranches(
                 << treeprefix + fTreeName
                 << QwLog::endl;
     } else {
+      TString tmp_branchprefix(branchprefix.c_str());
+      if (tmp_branchprefix.Contains("stat") && fKeepRunningSum 
+	  && fRunningsum!=NULL){
+	fRunningsumFillsTree = kTRUE;
+      } else {
+	fRunningsumFillsTree = kFALSE;
+      }
       fTreeName = treeprefix+fTreeName;
-      treerootfile->ConstructTreeBranches(fTreeName, fTreeComment, *this, fPrefix+branchprefix);
+      if (fRunningsumFillsTree) {
+	treerootfile->ConstructTreeBranches(fTreeName, fTreeComment, *fRunningsum, fPrefix+branchprefix);
+      }else {
+	treerootfile->ConstructTreeBranches(fTreeName, fTreeComment, *this, fPrefix+branchprefix);
+      }
     }
   }
 }
@@ -270,7 +281,11 @@ void VQwDataHandler::ConstructBranchAndVector(
 void VQwDataHandler::FillTreeBranches(QwRootFile *treerootfile)
 {
   if (fTreeName.size()>0){
-    treerootfile->FillTreeBranches(*this);
+    if (fRunningsumFillsTree) {
+      treerootfile->FillTreeBranches(*fRunningsum);
+    } else {
+      treerootfile->FillTreeBranches(*this);
+    }
     treerootfile->FillTree(fTreeName);
   }
 }
@@ -289,6 +304,21 @@ void VQwDataHandler::FillTreeVector(std::vector<Double_t>& values) const
   }
 }
 
+void VQwDataHandler::InitRunningSum()
+{
+  if (fKeepRunningSum && fRunningsum == NULL){
+    fRunningsum = this->Clone();
+    fRunningsum->fKeepRunningSum = kFALSE;
+    fRunningsum->ClearEventData();
+  }
+}
+
+void VQwDataHandler::AccumulateRunningSum()
+{
+  if (fKeepRunningSum && fErrorFlagPtr!=NULL && (*fErrorFlagPtr)==0){
+    fRunningsum->AccumulateRunningSum(*this);
+  }
+}
 
 void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value, Int_t count, Int_t ErrorMask)
 {
@@ -300,8 +330,11 @@ void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value, Int_t count, In
 
 void VQwDataHandler::CalculateRunningAverage()
 {
-  for(size_t i = 0; i < fOutputVar.size(); i++) {
-    this->fOutputVar[i]->CalculateRunningAverage();
+  if (fKeepRunningSum && (fRunningsum != NULL)){
+    for(size_t i = 0; i < fRunningsum->fOutputVar.size(); i++) {
+      // calling CalculateRunningAverage in scope of VQwHardwareChannel
+      fRunningsum->fOutputVar[i]->CalculateRunningAverage();
+    }
   }
 }
 
@@ -318,6 +351,9 @@ void VQwDataHandler::ClearEventData()
 {
   for(size_t i = 0; i < fOutputVar.size(); i++) {
     fOutputVar[i]->ClearEventData();
+  }
+  if (fKeepRunningSum && fRunningsum!=NULL){
+    fRunningsum->ClearEventData();
   }
 }
 

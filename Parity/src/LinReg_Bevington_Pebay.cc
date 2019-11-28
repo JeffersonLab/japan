@@ -181,6 +181,9 @@ LinRegBevPeb& LinRegBevPeb::operator+=(const LinRegBevPeb& rhs)
   // on Scientific and Statistical Database Management.
   // https://doi.org/10.1145/3221269.3223036
 
+  if(fGoodEventNumber + rhs.fGoodEventNumber == 0)
+    return *this;
+
   // Deviations from mean
   TVectorD delta_y(mMY - rhs.mMY);
   TVectorD delta_p(mMP - rhs.mMP);

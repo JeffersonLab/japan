@@ -40,7 +40,8 @@ class LRBCorrector : public VQwDataHandler, public MQwDataHandlerCloneable<LRBCo
 	fBurstCounter = 0;
       } else {
 	fBurstCounter = fLastCycle-1;
-	QwWarning << "Burst counter, " << burstcounter
+	QwWarning << "LRBCorrector, " << GetName() 
+		  << ": Burst counter, " << burstcounter
 		  << ", is greater than the stored number of sets of slopes.  "
 		  << "Using the last set of slopes (cycle=" << fLastCycle
 		  << ")" << QwLog::endl;

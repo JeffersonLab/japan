@@ -406,6 +406,7 @@ Int_t main(Int_t argc, Char_t* argv[])
                 datahandlerarray_burst.FillTreeBranches(burstrootfile);
 
 		helicitypattern.IncrementBurstCounter();
+		datahandlerarray_mul.UpdateBurstCounter(helicitypattern.GetBurstCounter());
 		datahandlerarray_burst.UpdateBurstCounter(helicitypattern.GetBurstCounter());
                 // Clear the data
                 patternsum_per_burst.ClearEventData();
@@ -470,9 +471,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     // Finish data handlers
     datahandlerarray_evt.FinishDataHandler();
-    datahandlerarray_evt.FillTreeBranches(treerootfile);
     datahandlerarray_mul.FinishDataHandler();
-    datahandlerarray_mul.FillTreeBranches(treerootfile);
 
     // Calculate running averages
     eventsum.CalculateRunningAverage();

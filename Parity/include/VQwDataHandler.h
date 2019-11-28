@@ -42,8 +42,14 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable, public MQwPublish
 
     virtual void ParseConfigFile(QwParameterFile& file);
 
-    void SetPointer(QwHelicityPattern *ptr){fHelicityPattern = ptr;};
-    void SetPointer(QwSubsystemArrayParity *ptr){fSubsystemArray = ptr;};
+    void SetPointer(QwHelicityPattern *ptr){
+      fHelicityPattern = ptr;
+      fErrorFlagPtr = ptr->GetEventcutErrorFlagPointer();
+    };
+    void SetPointer(QwSubsystemArrayParity *ptr){
+      fSubsystemArray = ptr;
+      fErrorFlagPtr = ptr->GetEventcutErrorFlagPointer();
+    };
 
     virtual Int_t ConnectChannels(QwSubsystemArrayParity& yield, QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff){
       return this->ConnectChannels(asym, diff);
@@ -63,9 +69,9 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable, public MQwPublish
 
     virtual void UpdateBurstCounter(Short_t burstcounter){fBurstCounter=burstcounter;};
 
-    virtual void FinishDataHandler(){};
-
-    virtual void CalcCorrelations(){};
+    virtual void FinishDataHandler(){
+      CalculateRunningAverage();
+    };
 
     virtual ~VQwDataHandler();
 
@@ -73,6 +79,8 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable, public MQwPublish
 
     virtual void ClearEventData();
 
+    void InitRunningSum();
+    void AccumulateRunningSum();
     virtual void AccumulateRunningSum(VQwDataHandler &value, Int_t count = 0, Int_t ErrorMask = 0xFFFFFFF);
     void CalculateRunningAverage();
     void PrintValue() const;
@@ -170,6 +178,8 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable, public MQwPublish
 
  protected:
    Bool_t fKeepRunningSum;
+   Bool_t fRunningsumFillsTree;
+   VQwDataHandler *fRunningsum;
 };
 
 #endif // VQWDATAHANDLER_H_
