@@ -410,7 +410,6 @@ Bool_t VQwDataHandler::PublishByRequest(TString device_name)
   return status;
 }
 
-
 void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
 {
      Bool_t local_print_flag = false;

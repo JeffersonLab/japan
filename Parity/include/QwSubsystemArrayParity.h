@@ -45,6 +45,7 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
     friend class QwCombiner;
     friend class QwCorrelator;
     friend class LRBCorrector;
+    friend class QwExtractor;
 
     /// Constructor with options
     QwSubsystemArrayParity(QwOptions& options);

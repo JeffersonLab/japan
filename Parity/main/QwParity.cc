@@ -38,6 +38,7 @@
 #include "QwPromptSummary.h"
 #include "QwCorrelator.h"
 #include "LRBCorrector.h"
+#include "QwExtractor.h"
 #include "QwDataHandlerArray.h"
 
 // Qweak subsystems
@@ -143,7 +144,7 @@ Int_t main(Int_t argc, Char_t* argv[])
     QwSubsystemArrayParity ringoutput(detectors);
 
     /// Create the data handler arrays
-    QwDataHandlerArray datahandlerarray_evt(gQwOptions,detectors,run_label);
+    QwDataHandlerArray datahandlerarray_evt(gQwOptions,ringoutput,run_label);
     QwDataHandlerArray datahandlerarray_mul(gQwOptions,helicitypattern,run_label);
     QwDataHandlerArray datahandlerarray_burst(gQwOptions,helicitypattern,run_label);
 
