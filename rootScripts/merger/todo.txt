@@ -1,0 +1,2 @@
+1) Add a mode for getting data out of JAPAN summary trees (that adds a new Double_t branch for runNumber tracking)
+2) Do OOP on a list of input runs/miniruns for aggregation or just runs for JAPAN summaries
