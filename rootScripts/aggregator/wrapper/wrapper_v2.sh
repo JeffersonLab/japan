@@ -34,18 +34,8 @@ done
 [ -z "$CONFIG" ] && usage 5
 [ -z "$NRUNS" ] && usage 6
 
-if [ $CONFIG = "PQB_input.txt" ];
-then
-  export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/PQB/
-fi
-
-if [ $CONFIG = "dithering_input.txt" ];
-then
-  export DITHERING_ROOTFILES=/chafs2/work1/apar/DitherCorrection/
-  export DITHERING_ROOTFILES_SLOPES=/chafs2/work1/apar/BMODextractor/
-  export DITHERING_ROOTFILES_SLOPES_RUN=/chafs1/work1/apar/cameronc/WAC/backups/dithering_slopes_backups
-  export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/dithering/
-fi
-
-root -l -q -b ../camDataFrame.C"(\"$RUNNUM\",\"$NRUNS\",\"$MINIRUNNUM\",\"$SPLITNUM\",\"$CONFIG\")"
-echo -e "Done with run: $RUNNUM, minirun: $MINIRUNNUM, slug: $NRUNS"
+while read line; do
+  # reading each line
+  root -l -q -b -L ../camguin_v2.C"($line,$RUNNUM,$MINIRUNNUM,$SPLITNUM,$NRUNS)"
+done < $CONFIG
+echo -e "\n\nDone with run: $RUNNUM, minirun: $MINIRUNNUM, slug: $NRUNS\n\n"

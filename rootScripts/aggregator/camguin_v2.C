@@ -1,12 +1,11 @@
 #include "camguin.hh"
-#include "camIO.hh"
-#include "camHist.hh"
-#include "camDataFrame.hh"
+#include "camIO_v2.hh"
+#include "camHist_v2.hh"
 #include "camAna.hh"
 #include "camMatrix.hh"
 #include "regressor/camReg.hh"
 using namespace std;
-void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCuts", Int_t overWriteCut = 0, TString histMode = "defaultHist", Int_t stabilityRing = 0, Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t nRuns = -1){
+void camguin_v2(TString ana = "help", TString tree = "mul", TString branch = "asym_vqwk_04_0ch0", TString leaf = "hw_sum", TString cut = "defaultCuts", Int_t overWriteCut = 0, TString histMode = "defaultHist", Int_t stabilityRing = 0, Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t nRuns = -1){
   getDebug_h();
   getAlarmStatus_h();
   getAggregatorStatus_h();
@@ -110,7 +109,6 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
       writeMeanRms_muls(tree, branch, leaf, cut, overWriteCut, runNumber, minirunNumber, splitNumber, nRuns );
     else
       writeMeanRms_h( tree, branch, leaf, cut, overWriteCut, runNumber, minirunNumber, splitNumber, nRuns );
-    // FIXME Removed histMode input from this version of writeMeanRMS since we aren't doing intelligent branch parsing. This is the ideal Aggregator method, so don't make it any fancier
     if (debug>1) Printf("Done with meanrms ana");
   }
   else if (
@@ -128,16 +126,6 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     if (debug>1) Printf("Done with correction ana");
   }
   else if (
-       ana == "combinermeanrmsdf"
-    || ana == "combinermeanRmsDF"
-    || ana == "combinerMeanRmsDF"
-    || ana == "combinerDF"
-    || ana == "combineDF"
-    || ana == "comboDF"){
-    writeCombinedMeanRmsDF_h( tree, branch, leaf, cut, overWriteCut, runNumber, minirunNumber, splitNumber, nRuns ); // FIXME Removed histMode input from this version of writeMeanRMS since we aren't doing intelligent branch parsing. This is the ideal Aggregator method, so don't make it any fancier - this combo one does the branch as draw and then prints the leaf
-    if (debug>1) Printf("Done with correction DataFrame ana");
-  }
-  else if (
        ana == "correctionmeanrms"
     || ana == "correctionmeanRms"
     || ana == "correctionMeanRms"
@@ -146,16 +134,6 @@ void camguin(TString ana = "help", TString tree = "mul", TString branch = "asym_
     || ana == "cor"){
     writeCorrectionMeanRms_h( tree, branch, leaf, cut, overWriteCut, runNumber, minirunNumber, splitNumber, nRuns ); // FIXME Removed histMode input from this version of writeMeanRMS since we aren't doing intelligent branch parsing. This is the ideal Aggregator method, so don't make it any fancier
     if (debug>1) Printf("Done with correction ana");
-  }
-  else if (
-       ana == "correctionmeanrmsdf"
-    || ana == "correctionmeanRmsDF"
-    || ana == "correctionMeanRmsDF"
-    || ana == "correctionDF"
-    || ana == "corrDF"
-    || ana == "corDF"){
-    writeCorrectionMeanRmsDF_h( tree, branch, leaf, cut, overWriteCut, runNumber, minirunNumber, splitNumber, nRuns ); // FIXME Removed histMode input from this version of writeMeanRMS since we aren't doing intelligent branch parsing. This is the ideal Aggregator method, so don't make it any fancier
-    if (debug>1) Printf("Done with correction DataFrame ana");
   }
   else if (
        ana == "Display"

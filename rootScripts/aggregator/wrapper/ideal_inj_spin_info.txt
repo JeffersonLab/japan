@@ -1,0 +1,14 @@
+"last","slow","VWienAngle","VWienAngle","1",0,"defaultHist",0
+"last","slow","HWienAngle","HWienAngle","1",0,"defaultHist",0
+"last","slow","RTPQWCNT","RTPQWCNT","1",0,"defaultHist",0
+"last","slow","RTPPITA1CNT","RTPPITA1CNT","1",0,"defaultHist",0
+"last","slow","RTPPITA2CNT","RTPPITA2CNT","1",0,"defaultHist",0
+"last","slow","RTPAPOSUCNT","RTPAPOSUCNT","1",0,"defaultHist",0
+"last","slow","RTPAPOSVCNT","RTPAPOSVCNT","1",0,"defaultHist",0
+"last","slow","RTPDPOSUCNT","RTPDPOSUCNT","1",0,"defaultHist",0
+"last","slow","RTPDPOSVCNT","RTPDPOSVCNT","1",0,"defaultHist",0
+"last","slow","psub_pl_pos","psub_pl_pos","1",0,"defaultHist",0
+"last","slow","Phi_FG","Phi_FG","1",0,"defaultHist",0
+"last","slow","C1068_QDAC03r.RVAL","C1068_QDAC03r.RVAL","1",0,"defaultHist",0
+"last","slow","C1068_QDAC07r.RVAL","C1068_QDAC07r.RVAL","1",0,"defaultHist",0
+"last","slow","C1068_QDAC11r.RVAL","C1068_QDAC11r.RVAL","1",0,"defaultHist",0

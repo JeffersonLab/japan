@@ -94,12 +94,6 @@ asym_atr1l2_avg,mulc.asym_atr1l2_avg.hw_sum,meanrms
 reg_asym_atr1l2_dd,reg.reg_asym_atr1l2_dd,meanrms
 asym_atr1l2_dd_correction,reg.reg_asym_atr1l2_dd-mulc.asym_atr1l2_dd.hw_sum,meanrms
 asym_atr1l2_dd,mulc.asym_atr1l2_dd.hw_sum,meanrms
-reg_asym_atl_dd_atr_dd_avg,reg.asym_atl_dd_atr_dd_avg,meanrms
-asym_atl_dd_atr_dd_avg_correction,reg.asym_atl_dd_atr_dd_avg-mulc.asym_atl_dd_atr_dd_avg.hw_sum,meanrms
-asym_atl_dd_atr_dd_avg,mulc.asym_atl_dd_atr_dd_avg.hw_sum,meanrms
-reg_asym_atl_dd_atr_dd_dd,reg.asym_atl_dd_atr_dd_dd,meanrms
-asym_atl_dd_atr_dd_dd_correction,reg.asym_atl_dd_atr_dd_dd-mulc.asym_atl_dd_atr_dd_dd.hw_sum,meanrms
-asym_atl_dd_atr_dd_dd,mulc.asym_atl_dd_atr_dd_dd.hw_sum,meanrms
 asym_bcm_an_us_bcm_an_ds_agg_avg,(asym_bcm_an_us.hw_sum+asym_bcm_an_ds.hw_sum)/2,meanrms
 asym_bcm_an_us_bcm_an_ds_agg_dd,(asym_bcm_an_us.hw_sum-asym_bcm_an_ds.hw_sum)/2,meanrms
 asym_bcm_an_us_bcm_an_ds3_agg_avg,(asym_bcm_an_us.hw_sum+asym_bcm_an_ds3.hw_sum)/2,meanrms

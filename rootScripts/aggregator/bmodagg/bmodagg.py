@@ -10,8 +10,8 @@ class bmoddata:
   #parses Tao's csv file output and initializes a bmod structure storing the information
   def __init__(self, source):
     self.source=source
-    self.runinfo=pd.read_csv(filepath_or_buffer=source, engine="python", delimiter='\t', skiprows=2,nrows=1)
-    self.df=pd.read_csv(filepath_or_buffer=source, engine="python",delimiter='\t',header=0, skiprows=5)
+    self.runinfo=pd.read_csv(filepath_or_buffer=source, engine="python", delimiter='\t', skiprows=1,nrows=1)
+    self.df=pd.read_csv(filepath_or_buffer=source, engine="python",delimiter='\t',header=0, skiprows=3)
     self.df.insert(0,'RunID',self.runinfo.iloc[0][0])
     self.df['Variable']=self.df.DV_name+'_vs_'+self.df.IV_name
     self.df=self.df.drop(["#comment","DV_name","IV_name","unit"],axis=1) #Getting rid of unnecesary columns 
