@@ -18,15 +18,17 @@ hallc_bcm_4c, -155, 0.001507
 !https://logbooks.jlab.org/node/add/logentry
 !When fit from 15-85uA, the BCM pedestals relative to the unser for Run4901 were
 bcm_dg_ds, -493.75, 0.002346 
-bcm_dg_dsc, -493.75, 0.002346 
+!  Slopes for bcm_dg_dsc adjusted by comparing them to bcm_dg_ds in run 5352 with 5uA tune beam
+bcm_dg_dsc, -493.75, 0.0021791287
 
 !For run 4872, Fit from 15-85uA, relative to digital downstream bcm_dg_ds.hw_sum_raw/bcm_dg_ds.num_samples--493.75)*0.002346
 !https://logbooks.jlab.org/node/add/logentry
 bcm_an_us, -642.17, 0.006190 
 bcm_an_ds, -484.85, 0.006206 
 bcm_an_ds3, -759.55, 0.001820 
-bcm_dg_us, -71.49, 1.0 
-bcm_dg_usc, -231.70, 0.002887 
+!  Slopes for bcm_dg_us and bcm_dg_usc adjusted by comparing them to bcm_dg_ds in run 5352 with 5uA tune beam
+bcm_dg_us, -71.49,   0.00016588535
+bcm_dg_usc, -231.70, 0.00015190781
 cav4cQ, -684.46, 0.003096 
   !Fit from 55 to 70uA from run 4808 because at 85uA it saturates
 bcm_an_ds10, -5633.05, 0.000592
