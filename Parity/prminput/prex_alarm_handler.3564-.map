@@ -2,4 +2,5 @@ Kind=Japan Chan=BPM-12-WS Channel=yield_bpm12WS HighHigh=180000 Ring-Length=100
 Kind=Japan Chan=BPM-11-WS Channel=yield_bpm11WS HighHigh=180000 Ring-Length=100
 Kind=Japan Chan=BPM-4a-WS Channel=yield_bpm4aWS HighHigh=180000 Ring-Length=100
 Kind=Japan Chan=BPM-4e-WS Channel=yield_bpm4eWS HighHigh=180000 Ring-Length=100
-Kind=Japan Chan=BCM-an-us-Err Channel=yield_bcm_an_us HighHigh=100 Error-Code=0000000f Ring-Length=100 Tolerance=4
+Kind=Japan Chan=BMOD-ramp Channel=yield_bcm_dg_ds Event-Cut-Missed=0x9000 Tolerance=25200 Ring-Length=54000
+

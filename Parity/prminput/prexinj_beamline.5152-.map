@@ -158,15 +158,15 @@ normclock=clk4MHz_1
 
 [PUBLISH]
 # # q_targ, bcm, bcm0l02, c
-q_targ, bpmstripline, bpm2i01, ef
+!q_targ, bpmstripline, bpm2i01, ef
 # q_targ, bpmstripline, bpm0i02, ef ###  Effective charge of BPM0i02
 
-q_targB, bpmstripline, bpm2i02, ef
-q_targC, bpmstripline, bpm2i02, ef
+!q_targB, bpmstripline, bpm2i02, ef
+!q_targC, bpmstripline, bpm2i02, ef
 
 # Position published variables
-x_targ, bpmstripline, bpm2i01, y
-y_targ, bpmstripline, bpm2i01, x
-xy_pos_x, bpmstripline, bpm2i01, x
-xy_pos_y, bpmstripline, bpm2i01, y 
+!x_targ, bpmstripline, bpm2i02, y
+!y_targ, bpmstripline, bpm2i02, x
+!xy_pos_x, bpmstripline, bpm2i02, x
+!xy_pos_y, bpmstripline, bpm2i02, y 
 
