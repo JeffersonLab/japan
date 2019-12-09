@@ -2260,7 +2260,8 @@ void QwHelicityCorrelatedFeedback::AccumulateRunningSum(QwHelicityCorrelatedFeed
   if(entry.fAsymmetry.RequestExternalValue("q_targC", &fTargetParameter)){
     //fScalerChargeRunningSum.PrintValue();
     //fScalerChargeRunningSum.AccumulateRunningSum(fScalerCharge);
-    if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
+    // PREX II if (fTargetParameter.GetEventcutErrorFlag()==0 && fAsymmetry.GetEventcutErrorFlag()==0){
+    if (fTargetParameter.GetEventcutErrorFlag()==0){ // CREX/Hall C && fAsymmetry.GetEventcutErrorFlag()==0){}
       fTargetHCChargeRunningSum.AccumulateRunningSum(fTargetParameter);
       fHCIAGoodPatternCounter = fTargetHCChargeRunningSum.GetGoodEventCount();
     }
