@@ -834,12 +834,12 @@ void VQwScaler_Channel::ScaledAdd(Double_t scale, const VQwHardwareChannel *valu
 
 
 template<>
-VQwHardwareChannel* QwScaler_Channel<0x00ffffff,0>::Clone(){
-  return new QwSIS3801D24_Channel(*this);
+VQwHardwareChannel* QwScaler_Channel<0x00ffffff,0>::Clone(VQwDataElement::EDataToSave datatosave) const{
+  return new QwScaler_Channel(*this, datatosave);
 };
 template<>
-VQwHardwareChannel* QwScaler_Channel<0xffffffff,0>::Clone(){
-  return new QwSIS3801D32_Channel(*this);
+VQwHardwareChannel* QwScaler_Channel<0xffffffff,0>::Clone(VQwDataElement::EDataToSave datatosave) const{
+  return new QwScaler_Channel(*this, datatosave);
 };
 
 //  These explicit class template instantiations should be the

@@ -1,17 +1,27 @@
 # This is an example of a detector definition file.
 
 [LRBCorrector]
-  name       = LinRegBlue Corrector
+  name       = LinRegBlue Corrector (run-level slopes)
   priority   = 10
   map        = prex_corrolator.conf
   slope-file-base = blueR
   slope-file-suff = new.slope.root
   slope-path = ./LRBoutput/
   tree-name  = mulc_lrb
-  tree-comment = Helicity event data tree (corrected by LinRegBlue)
+  tree-comment = Corrected helicity event data tree (run-level slopes)
+
+[LRBCorrector]
+  name       = LinRegBlue Corrector (burst-level slopes)
+  priority   = 10
+  map        = prex_corrolator.conf
+  slope-file-base = burst_blueR
+  slope-file-suff = new.slope.root
+  slope-path = ./LRBoutput/
+  tree-name  = mulc_lrb_burst
+  tree-comment = Regressed helicity event data tree (burst-level slopes)
 
 [QwCorrelator]
-  name       = MyCorrelator
+  name       = lrb_std
   priority   = 50
   map        = prex_corrolator.conf
   slope-file-base = blueR
@@ -20,19 +30,28 @@
   alias-file-base = regalias_
   alias-file-suff = 
   alias-path = ./LRBoutput/
-  disable-histos = true
+  tree-name  = lrb_std
+  tree-comment = Correlations
+
+[QwExtractor]
+  name       = bmw
+  priority   = 50
+  map        = prex_bmw.conf
+  tree-name  = bmw
+  tree-comment = Beam modulation
 
 #[QwCorrelator]
-# name       = MyMassiveCorrelator
+#  name       = lrb_all
 #  priority   = 50
 #  map        = prex_corrolator_all.conf
 #  slope-file-base = blueR
 #  slope-file-suff = all.slope.root
-#  slope-path = ./ 
+#  slope-path = ./LRBoutput/
 #  alias-file-base = regalias_
 #  alias-file-suff = all
-#  alias-path = ./
-#  disable-histos = true
+#  alias-path = ./LRBoutput/
+#  tree-name  = lrb_all
+#  tree-comment = Correlations (all variables)
 
 [QwCombiner]
   name       = MyCombiner

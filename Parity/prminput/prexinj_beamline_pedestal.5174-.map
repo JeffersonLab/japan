@@ -1,0 +1,116 @@
+! From run 5174-> for injector cathode and RHWP scans - 150 uA pedestal run 5174
+
+bpm1i02XP, -548.78, 1.0 
+bpm1i02XM, -915.64, 1.0 
+bpm1i02YP, -753.17, 1.0 
+bpm1i02YM, -1124.88, 1.0 
+bpm1i04XP, -360.53, 1.0 
+bpm1i04XM, -604.73, 1.0 
+bpm1i04YP, 1404.78, 1.0 
+bpm1i04YM, 1321.42, 1.0 
+bpm0i01XP, 551.87, 1.0 
+bpm0i01XM, 437.25, 1.0 
+bpm0i01YP, -155.86, 1.0 
+bpm0i01YM, 199.53, 1.0 
+bpm0i01aXP, -1138.89, 1.0 
+bpm0i01aXM, -276.07, 1.0 
+bpm0i01aYP, 606.87, 1.0 
+bpm0i01aYM, -68.72, 1.0 
+bpm1i06XP, 909.84, 1.0 
+bpm1i06XM, 298.49, 1.0 
+bpm1i06YP, 638.03, 1.0 
+bpm1i06YM, -5.63, 1.0 
+bpm0i02XP, 557.29, 1.0 
+bpm0i02XM, 383.78, 1.0 
+bpm0i02YP, -342.27, 1.0 
+bpm0i02YM, 621.15, 1.0 
+bpm0i02aXP, 1526.40, 1.0 
+bpm0i02aXM, 1124.73, 1.0 
+bpm0i02aYP, 1135.63, 1.0 
+bpm0i02aYM, 2185.95, 1.0 
+bpm0i05XP, 1000.96, 1.0 
+bpm0i05XM, 1470.03, 1.0 
+bpm0i05YP, 818.80, 1.0 
+bpm0i05YM, 1303.99, 1.0 
+bpm0i07XP, 10077.73, 1.0 
+bpm0i07XM, 9480.24, 1.0 
+bpm0i07YP, 9911.14, 1.0 
+bpm0i07YM, 10046.14, 1.0 
+bpm0l01XP, 23095.94, 1.0 
+bpm0l01XM, 26044.35, 1.0 
+bpm0l01YP, 24734.13, 1.0 
+bpm0l01YM, 29357.93, 1.0 
+bpm0l02XP, 11722.25, 1.0 
+bpm0l02XM, 10218.41, 1.0 
+bpm0l02YP, 15594.33, 1.0 
+bpm0l02YM, 10266.99, 1.0 
+bpm0l03XP, 21183.54, 1.0 
+bpm0l03XM, 19210.40, 1.0 
+bpm0l03YP, 23598.55, 1.0 
+bpm0l03YM, 21622.04, 1.0 
+bpm0l04XP, 19372.78, 1.0 
+bpm0l04XM, 19137.98, 1.0 
+bpm0l04YP, 16174.02, 1.0 
+bpm0l04YM, 16100.20, 1.0 
+bpm0l05XP, 15681.00, 1.0 
+bpm0l05XM, 15825.24, 1.0 
+bpm0l05YP, 19518.08, 1.0 
+bpm0l05YM, 19579.42, 1.0 
+bpm0l06XP, 19171.89, 1.0 
+bpm0l06XM, 19383.65, 1.0 
+bpm0l06YP, 17392.24, 1.0 
+bpm0l06YM, 17375.01, 1.0 
+bpm0l07XP, 22854.56, 1.0 
+bpm0l07XM, 23017.46, 1.0 
+bpm0l07YP, 17526.86, 1.0 
+bpm0l07YM, 17507.33, 1.0 
+bpm0l08XP, 15148.25, 1.0 
+bpm0l08XM, 15278.94, 1.0 
+bpm0l08YP, 13797.32, 1.0 
+bpm0l08YM, 14463.57, 1.0 
+bpm0l09XP, 13742.27, 1.0 
+bpm0l09XM, 14150.64, 1.0 
+bpm0l09YP, 13182.03, 1.0 
+bpm0l09YM, 12987.16, 1.0 
+bpm0l10XP, 13718.62, 1.0 
+bpm0l10XM, 13821.03, 1.0 
+bpm0l10YP, 14429.53, 1.0 
+bpm0l10YM, 14377.07, 1.0 
+bpm2i02XP, -934.67, 1.0 
+bpm2i02XM, -1379.68, 1.0 
+bpm2i02YP, -760.12, 1.0 
+bpm2i02YM, -442.12, 1.0 
+bpm0r05XP, 7558.43, 1.0 
+bpm0r05XM, 7961.14, 1.0 
+bpm0r05YP, 7658.53, 1.0 
+bpm0r05YM, 7707.25, 1.0 
+bpm0r03XP, 7720.45, 1.0 
+bpm0r03XM, 7984.12, 1.0 
+bpm0r03YP, 11341.39, 1.0 
+bpm0r03YM, 11466.80, 1.0 
+bpm2i01XP, -483.96, 1.0 
+bpm2i01XM, -131.45, 1.0 
+bpm2i01YP, 694.25, 1.0 
+bpm2i01YM, 994.05, 1.0 
+bpm0r02XP, 11615.66, 1.0 
+bpm0r02XM, 11622.40, 1.0 
+bpm0r02YP, 11484.82, 1.0 
+bpm0r02YM, 11472.79, 1.0 
+bpm0r04XP, 11616.67, 1.0 
+bpm0r04XM, 11559.35, 1.0 
+bpm0r04YP, 11538.04, 1.0 
+bpm0r04YM, 11403.07, 1.0 
+
+
+
+
+!  BCM gain for 0L02 is from Qweak parameter files
+!from run 4858 for 85uA using epics readout of gun current https://logbooks.jlab.org/entry/3729588
+!bcm0l02, 11154.56, 1.0
+bcm0l02, 17.89, 433.561690
+
+
+!  Use calibration into volts for batteries and phase monitor.
+batery6                         -295.052     76.2939e-6
+batery7                         -445.764     76.2939e-6
+phasemonitor                    -162.172     76.2939e-6

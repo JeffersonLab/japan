@@ -1,0 +1,10 @@
+9
+diff_bpm4aX	nm	n_runs<22
+diff_bpm4aY	nm	n_runs<22
+diff_bpm4eX	nm	n_runs<22
+diff_bpm4eY	nm	n_runs<22
+diff_bpm11X	nm	n_runs>2&&n_runs<22
+asym_bcm_an_us	ppb	n_runs<13||(n_runs>20&&n_runs<22)
+asym_bcm_an_ds	ppb	n_runs<13||(n_runs>20&&n_runs<22)
+asym_bcm_dg_us	ppb	n_runs<22
+asym_bcm_dg_ds	ppb	n_runs<22

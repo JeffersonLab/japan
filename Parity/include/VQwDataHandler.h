@@ -19,13 +19,14 @@ Last Modified: August 1, 2018 1:39 PM
 #include "QwSubsystemArrayParity.h"
 #include "VQwHardwareChannel.h"
 #include "QwFactory.h"
-
+#include "MQwPublishable.h"
 
 class QwParameterFile;
 class QwRootFile;
 class QwPromptSummary;
+class QwDataHandlerArray;
 
-class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
+class VQwDataHandler:  virtual public VQwDataHandlerCloneable, public MQwPublishable_child<QwDataHandlerArray,VQwDataHandler> {
 
   public:
   
@@ -41,8 +42,14 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
     virtual void ParseConfigFile(QwParameterFile& file);
 
-    void SetPointer(QwHelicityPattern *ptr){fHelicityPattern = ptr;};
-    void SetPointer(QwSubsystemArrayParity *ptr){fSubsystemArray = ptr;};
+    void SetPointer(QwHelicityPattern *ptr){
+      fHelicityPattern = ptr;
+      fErrorFlagPtr = ptr->GetEventcutErrorFlagPointer();
+    };
+    void SetPointer(QwSubsystemArrayParity *ptr){
+      fSubsystemArray = ptr;
+      fErrorFlagPtr = ptr->GetEventcutErrorFlagPointer();
+    };
 
     virtual Int_t ConnectChannels(QwSubsystemArrayParity& yield, QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff){
       return this->ConnectChannels(asym, diff);
@@ -60,28 +67,37 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
     virtual void ProcessData();
 
-    virtual void FinishDataHandler(){};
+    virtual void UpdateBurstCounter(Short_t burstcounter){fBurstCounter=burstcounter;};
 
-    virtual void CalcCorrelations(){};
+    virtual void FinishDataHandler(){
+      CalculateRunningAverage();
+    };
 
     virtual ~VQwDataHandler();
 
-    TString GetDataHandlerName(){return fName;}
+    TString GetName(){return fName;}
 
-    void ClearEventData();
+    virtual void ClearEventData();
 
-    void AccumulateRunningSum(VQwDataHandler &value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+    void InitRunningSum();
+    void AccumulateRunningSum();
+    virtual void AccumulateRunningSum(VQwDataHandler &value, Int_t count = 0, Int_t ErrorMask = 0xFFFFFFF);
     void CalculateRunningAverage();
     void PrintValue() const;
     void FillDB(QwParityDB *db, TString datatype){};
 
     void WritePromptSummary(QwPromptSummary *ps, TString type);
 
-    void ConstructTreeBranches(
+    virtual void ConstructTreeBranches(
         QwRootFile *treerootfile,
         const std::string& treeprefix = "",
         const std::string& branchprefix = "");
-    void FillTreeBranches(QwRootFile *treerootfile);
+    virtual void FillTreeBranches(QwRootFile *treerootfile);
+
+    /// \brief Construct the histograms in a folder with a prefix
+    virtual void  ConstructHistograms(TDirectory *folder, TString &prefix) { };
+    /// \brief Fill the histograms
+    virtual void  FillHistograms() { };
 
     // Fill the vector for this subsystem
     void FillTreeVector(std::vector<Double_t> &values) const;
@@ -94,6 +110,11 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
 
     Int_t LoadChannelMap(){return this->LoadChannelMap(fMapFile);}
     virtual Int_t LoadChannelMap(const std::string& mapfile){return 0;};
+
+    /// \brief Publish all variables of the subsystem
+    virtual Bool_t PublishInternalValues() const;
+    /// \brief Try to publish an internal variable matching the submitted name
+    virtual Bool_t PublishByRequest(TString device_name);
 
   protected:
     
@@ -117,12 +138,11 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
                        std::vector< const VQwHardwareChannel* > &ivs,
                        std::vector< Double_t > &sens);
 
-    //Bool_t PublishInternalValue(const TString &name, const TString &desc, const VQwHardwareChannel *value) const;
-    //Bool_t PublishByRequest(TString device_name);
-
  protected:
    //
    Int_t fPriority; ///  When a datahandler array is processed, handlers with lower priority will be processed before handlers with higher priority
+
+   Short_t fBurstCounter;
 
     //***************[Variables]***************
    TString fName;
@@ -142,6 +162,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
    /// Helicity pattern pointer
    QwHelicityPattern* fHelicityPattern;
 
+   std::vector< std::string > fDependentFull;
    std::vector< EQwHandleType > fDependentType;
    std::vector< std::string > fDependentName;
 
@@ -151,10 +172,14 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable {
    std::vector< VQwHardwareChannel* > fOutputVar;
    std::vector< Double_t > fOutputValues;
 
+   std::vector<std::vector<TString> > fPublishList;
+
    std::string ParseSeparator;  // Used as space between tokens in ParseHandledVariable
 
  protected:
    Bool_t fKeepRunningSum;
+   Bool_t fRunningsumFillsTree;
+   VQwDataHandler *fRunningsum;
 };
 
 #endif // VQWDATAHANDLER_H_

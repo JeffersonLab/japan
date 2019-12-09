@@ -120,45 +120,6 @@ Int_t VQwSubsystem::LoadDetectorMaps(QwParameterFile& file)
   return 0;
 }
 
-
-/**
- * Set the parent of this subsystem to the specified parent array.  A subsystem
- * can have multiple parents, but that is not recommended.
- *
- * @param parent Parent array
- */
-void VQwSubsystem::SetParent(QwSubsystemArray* parent)
-{
-  // Ignore null array pointers
-  if (! parent) return;
-
-  // Check whether array already in parent list
-  for (size_t i = 0; i < fArrays.size(); i++) {
-    // Equality tested by pointer equality
-    if (fArrays.at(i) == parent) return;
-  }
-
-  // Add array to the list
-  fArrays.push_back(parent);
-}
-
-/**
- * Get the parent of this subsystem, and print an error if no parent is defined.
- *
- * @param parent Parent number (default = 0)
- * @return Pointer to the parent subsystem array
- */
-QwSubsystemArray* VQwSubsystem::GetParent(const unsigned int parent) const
-{
-  // This is ambiguously for multiple parents
-  if (fArrays.size() > 0 && fArrays.size() > parent)
-    return fArrays.at(parent);
-  else {
-    QwError << "Subsystem " << GetSubsystemName() << " has no parent!" << QwLog::endl;
-    return 0;
-  }
-}
-
 /**
  * Get the sibling of this subsystem with the specified name.  If no parents is
  * defined, an error is printed by GetParent().  If no sibling with that name
@@ -178,53 +139,7 @@ VQwSubsystem* VQwSubsystem::GetSibling(const std::string& name) const
     return 0; // GetParent() prints error already
 }
 
-/**
- * Get the value corresponding to some variable name from a different
- * subsystem.
- * @param name Name of the desired variable
- * @param value Pointer to the value to be filled by the call
- * @return True if the variable was found, false if not found
- */
-Bool_t VQwSubsystem::RequestExternalValue(
-	const TString& name,
-	VQwHardwareChannel* value) const
-{
-  // Get the parent and check for existence (NOTE: only one parent supported)
-  QwSubsystemArray* parent = GetParent();
-  if (parent != 0) {
-    return parent->RequestExternalValue(name, value);
-  }
-  return kFALSE; // Error: could not find variable in parent
-}
 
-
-/**
- * Publish a variable name to the subsystem array
- * @param name Name of the variable
- * @param desc Description of the variable
- * @param value Channel to publish
- * @return True if the variable could be published, false otherwise
- */
-Bool_t VQwSubsystem::PublishInternalValue(
-    const TString& name,
-    const TString& desc,
-    const VQwHardwareChannel* value) const
-{
-  // Get the parent and check for existence
-  QwSubsystemArray* parent = GetParent();
-  if (parent != 0) {
-    // Publish the variable with name in the parent
-    if (parent->PublishInternalValue(name, desc, this, value) == kFALSE) {
-      QwError << "Could not publish variable " << name
-              << " in subsystem " << GetSubsystemName() << "!" << QwLog::endl;
-      return kFALSE; // Error: variable could not be puslished
-    }
-  } else {
-    QwError << "I am an orphan :-(" << QwLog::endl;
-    return kFALSE; // Error: no parent defined
-  }
-  return kTRUE; // Success
-}
 
 void VQwSubsystem::ClearAllBankRegistrations()
 {
@@ -367,8 +282,7 @@ void VQwSubsystem::PrintInfo() const
       std::cout << std::hex << "0x" << fBank_IDs[roc_index][bank_index] << " ";
     std::cout << std::dec << std::endl;
   }
-  for (size_t array = 0; array < fArrays.size(); array++)
-    std::cout << "in array " << std::hex << fArrays.at(array) << std::dec << std::endl;
+  std::cout << "in array " << std::hex << GetParent() << std::dec << std::endl;
 }
 
 

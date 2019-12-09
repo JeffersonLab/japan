@@ -1,0 +1,11 @@
+!Here are the pedestals fit from 10-70uA for run4650
+!during the stubby quartz test at "nominal high voltages"
+!in detectors with respect to bcm_dg_ds: (bcm_dg_ds.hw_sum_raw/bcm_dg_ds.num_samples--351.06)*0.002318
+sam1, 12172.22, 0.000076
+sam2, 13608.24, 0.000076
+sam3, 12692.42, 0.000076
+sam4, 14099.08, 0.000076
+sam5, 12506.17, 0.000076
+sam6, 13359.39, 0.000076
+sam7, 12564.06, 0.000076
+sam8, 12465.44, 0.000076

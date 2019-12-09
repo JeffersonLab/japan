@@ -1,0 +1,4 @@
+"combinerMeanRms","reg","(asym_usl+asym_usr)/2","asym_maindet_us_agg_avg","miniruns",0,"defaultHist",0
+"combinerMeanRms","reg","(asym_usl+asym_usr)/2","asym_maindet_us_agg_avg","miniruns",0,"defaultHist",0
+"combinerMeanRms","reg","asym_bcm_an_ds","asym_qtarg_agg","miniruns",0,"defaultHist",0
+"combinerMeanRms","reg","diff_bpm11X","diff_energyBPMX","miniruns",0,"defaultHist",0

@@ -45,9 +45,10 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
     friend class QwCombiner;
     friend class QwCorrelator;
     friend class LRBCorrector;
+    friend class QwExtractor;
 
     /// Constructor with options
-    QwSubsystemArrayParity(QwOptions& options): QwSubsystemArray(options, CanContain),fErrorFlag(0),fErrorFlagTreeIndex(-1) { };
+    QwSubsystemArrayParity(QwOptions& options);
     /// Copy constructor by reference
     QwSubsystemArrayParity(const QwSubsystemArrayParity& source);
     /// Default destructor
@@ -68,7 +69,6 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
     /// \brief Fill the database
     void FillDB(QwParityDB *db, TString type);
     void FillErrDB(QwParityDB *db, TString type);
-    const QwSubsystemArrayParity *dummy_source;
 
     /// \brief Assignment operator
     QwSubsystemArrayParity& operator=  (const QwSubsystemArrayParity &value);
@@ -115,7 +115,7 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
     void IncrementErrorCounters();
 
     Bool_t CheckForBurpFail(QwSubsystemArrayParity &event);
-
+    Bool_t CheckBadEventRange();
     /// \brief Report the number of events failed due to HW and event cut failures
     void PrintErrorCounters() const;
     /// \brief Return the error flag to the main routine

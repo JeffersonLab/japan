@@ -1,0 +1,257 @@
+# Rules for this file
+# - no repeating dependent variables in the same section
+#   (probably also not in different sections, come to think of it)
+#
+# - Alias names start with "@" after the "asym" or "diff" prefix.
+#   They should also be all lower case.
+#
+
+## Combined Detector Asymmetries 
+############################## Up and Down-stream combo on Left Arm 
+[asym:@asym_left_avg]
+asym:usl, 0.5
+asym:dsl, 0.5
+[asym:@asym_left_dd]
+asym:usl, 0.5
+asym:dsl, -0.5
+############################## Up and Down-stream combo on Right Arm 
+[asym:@asym_right_avg]
+asym:usr, 0.5
+asym:dsr, 0.5
+[asym:@asym_right_dd]
+asym:usr, 0.5
+asym:dsr, -0.5
+############################## Left and Right Combo on Upstream Quartz
+[asym:@asym_us_avg]
+asym:usl, 0.5
+asym:usr, 0.5
+[asym:@asym_us_dd]
+asym:usl, 0.5
+asym:usr, -0.5
+############################## Left and Right Combo on Downstream Quartz
+[asym:@asym_ds_avg]
+asym:dsl, 0.5
+asym:dsr, 0.5
+[asym:@asym_ds_dd]
+asym:dsl, 0.5
+asym:dsr, -0.5
+############################## Combo ATs
+[asym:@asym_atl_avg]
+asym:atl1, 0.5
+asym:atl2, 0.5
+[asym:@asym_atl_dd]
+asym:atl1, 0.5
+asym:atl2, -0.5
+[asym:@asym_atr_avg]
+asym:atr1, 0.5
+asym:atr2, 0.5
+[asym:@asym_atr_dd]
+asym:atr1, 0.5
+asym:atr2, -0.5
+[asym:@asym_atl1r2_avg]
+asym:atl1, 0.5
+asym:atr2, 0.5
+[asym:@asym_atl1r2_dd]
+asym:atl1, 0.5
+asym:atr2, -0.5
+[asym:@asym_atr1l2_avg]
+asym:atr1, 0.5
+asym:atl2, 0.5
+[asym:@asym_atr1l2_dd]
+asym:atr1, 0.5
+asym:atl2, -0.5
+[asym:@asym_at1_avg]
+asym:atl1, 0.5
+asym:atr1, 0.5
+[asym:@asym_at1_dd]
+asym:atl1, 0.5
+asym:atr1, -0.5
+[asym:@asym_at2_avg]
+asym:atr2, 0.5
+asym:atl2, 0.5
+[asym:@asym_at2_dd]
+asym:atr2, 0.5
+asym:atl2, -0.5
+############################## SAM 1 and 5
+[asym:@asym_sam_15_dd]
+asym:sam1, 0.5
+asym:sam5, -0.5
+[asym:@asym_sam_15_avg]
+asym:sam1, 0.5
+asym:sam5, 0.5
+############################## SAM 3 and 7
+[asym:@asym_sam_37_dd]
+asym:sam3, 0.5
+asym:sam7, -0.5
+[asym:@asym_sam_37_avg]
+asym:sam3, 0.5
+asym:sam7, 0.5
+############################## SAM 2 and 6
+[asym:@asym_sam_26_dd]
+asym:sam2, 0.5
+asym:sam6, -0.5
+[asym:@asym_sam_26_avg]
+asym:sam2, 0.5
+asym:sam6, 0.5
+############################## SAM 4 and 8
+[asym:@asym_sam_48_dd]
+asym:sam4, 0.5
+asym:sam8, -0.5
+[asym:@asym_sam_48_avg]
+asym:sam4, 0.5
+asym:sam8, 0.5
+
+# Double differences
+[asym:@bcm_an_us_ds_dd]
+asym:bcm_an_us, 0.5
+asym:bcm_an_ds, -0.5
+
+[asym:@bcm_an_us_ds3_dd]
+asym:bcm_an_us, 0.5
+asym:bcm_an_ds3, -0.5
+
+[asym:@bcm_dg_us_dg_ds_dd]
+asym:bcm_dg_us, 0.5
+asym:bcm_dg_ds, -0.5
+
+[asym:@bcm_cav4cQ_ds_dd]
+asym:cav4cQ, 0.5
+asym:bcm_an_ds, -0.5
+
+[asym:@bcm_cav4cQ_dg_ds_dd]
+asym:cav4cQ, 0.5
+asym:bcm_dg_ds, -0.5
+
+[asym:@bcm_dg_us_ds_dd]
+asym:bcm_dg_us, 0.5
+asym:bcm_an_ds, -0.5
+
+[asym:@bcm_dg_ds_ds_dd]
+asym:bcm_dg_ds, 0.5
+asym:bcm_an_ds, -0.5
+
+[asym:@sam_4_8_dd]
+asym:sam4, 0.5
+asym:sam8, -0.5
+
+[diff:@sam_4_8_da]
+asym:sam4, 0.5
+asym:sam8, 0.5
+
+[asym:@sam_2_6_dd]
+asym:sam2, 0.5
+asym:sam6, -0.5
+
+[diff:@sam_2_6_da]
+asym:sam2, 0.5
+asym:sam6, 0.5
+
+[asym:@sam_26_48_dd]
+asym:sam2, 0.25
+asym:sam4, -0.25
+asym:sam6, 0.25
+asym:sam8, -0.25
+
+[diff:@sam_26_48_da]
+asym:sam2, 0.25
+asym:sam4, 0.25
+asym:sam6, 0.25
+asym:sam8, 0.25
+
+[asym:@sam_1_3_dd]
+asym:sam1, 0.5
+asym:sam3, -0.5
+
+[diff:@sam_1_3_da]
+asym:sam1, 0.5
+asym:sam3, 0.5
+
+[asym:@sam_5_7_dd]
+asym:sam5, 0.5
+asym:sam7, -0.5
+
+[diff:@sam_5_7_da]
+asym:sam5, 0.5
+asym:sam7, 0.5
+
+[asym:@sam_13_57_dd]
+asym:sam1, 0.25
+asym:sam5, -0.25
+asym:sam3, 0.25
+asym:sam7, -0.25
+
+[diff:@sam_13_57_da]
+asym:sam1, 0.25
+asym:sam3, 0.25
+asym:sam5, 0.25
+asym:sam7, 0.25
+
+[asym:@bpm_4aX_4ecX_dd]
+asym:bpm4aX, 0.5
+asym:bpm4ecX, -0.5
+
+[asym:@bpm_4aY_4ecY_dd]
+asym:bpm4aY, 0.5
+asym:bpm4ecY, -0.5
+
+[asym:@bpm_4aX_4eX_dd]
+asym:bpm4aX, 0.5
+asym:bpm4eX, -0.5
+
+[asym:@bpm_4aY_4eY_dd]
+asym:bpm4aY, 0.5
+asym:bpm4eY, -0.5
+
+[diff:@diff_bpmE]
+diff:bpm11X, 1.0
+diff:bpm12X, 0.4
+
+
+#####
+#####  Some examples, all commented out.
+#####
+
+## This is a simple case:
+##  two dependent variables
+##  two independent variables
+#[asym:qwk_md1neg, asym:qwk_md1pos]
+#diff:x_targ, 0.0, -0.0
+#diff:y_targ, 0.0, -0.0
+#
+##  four independent variables
+##  asymmetry for dependent variables
+#[asym:qwk_md2neg, asym:qwk_md2pos]
+#diff:x_targ, 0.11, -0.11
+#diff:y_targ, 0.12, -0.12
+#diff:xp_targ, 0.10, -0.10
+#diff:yp_targ, 0.09, -0.09
+#
+##  four dependent variables
+#[asym:qwk_md3neg, asym:qwk_md3pos, asym:qwk_md4neg, asym:qwk_md4pos]
+#diff:x_targ, 0.11, -0.11, 0.11, -0.11
+#diff:y_targ, 0.12, -0.12, 0.12, -0.12
+#diff:xp_targ, 0.10, -0.10, 0.10, -0.10
+#diff:yp_targ, 0.09, -0.09, 0.09, -0.09
+#
+##  eight dependent variables
+#[asym:qwk_md5neg, asym:qwk_md5pos, asym:qwk_md6neg, asym:qwk_md6pos, asym:qwk_md7neg, asym:qwk_md7pos, asym:qwk_md8neg, asym:qwk_md8pos]
+#diff:x_targ, 0.11, -0.11, 0.11, -0.11, 0.11, -0.11, 0.11, -0.11
+#diff:y_targ, 0.12, -0.12, 0.12, -0.12, 0.12, -0.12, 0.12, -0.12
+#diff:xp_targ, 0.10, -0.10, 0.10, -0.10, 0.10, -0.10, 0.10, -0.10
+#diff:yp_targ, 0.09, -0.09, 0.09, -0.09, 0.09, -0.09, 0.09, -0.09
+#
+## This is an event case:
+##  two dependent variables
+##  two independent variables
+##
+## Currently disabled because of how we write ROOT trees
+##
+#[mps:qwk_md1neg, mps:qwk_md1pos]
+#mps:x_targ, 1.11, -5.11
+#mps:y_targ, 1.12, -1.12
+#
+#[mps:qwk_md2neg, mps:qwk_md2pos]
+#mps:x_targ,  0.11, -0.11
+#mps:y_targ,  0.12, -0.12
+#mps:xp_targ, 0.10, -0.10
+#mps:yp_targ, 0.09, -0.09
