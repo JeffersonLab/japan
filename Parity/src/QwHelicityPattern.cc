@@ -1,4 +1,4 @@
-/**********************************************************\
+//**********************************************************\
 * File: QwHelicityPattern.cc                              *
 *                                                         *
 * Author:                                                 *
@@ -928,9 +928,9 @@ void QwHelicityPattern::FillErrDB(QwParityDB *db)
 
 void QwHelicityPattern::WritePromptSummary(QwPromptSummary *ps)
 {
+  ps->SetPatternSize(fPatternSize);
   fYield.WritePromptSummary(ps, "yield");
   fAsymmetry.WritePromptSummary(ps, "asymmetry");
-  
   return;
 };
 
