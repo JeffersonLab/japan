@@ -9,11 +9,8 @@ UNSER,   -174.1,     2.066e-2
 
 
 
-!!! Hall C bcm calibration from run 2946. Check halog 3695862. 
-!!! Updated to run 3372, halog 3705189
-
-! BCM https://logbooks.jlab.org/entry/3720995
-hallc_bcm_4c, -155, 0.001507
+!!! Hall C bcm two point calibration from run 5371
+hallc_bcm_4c, -360.17, 0.0011264648
 
 
 !For run 5360, 
