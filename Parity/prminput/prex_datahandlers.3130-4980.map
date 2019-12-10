@@ -24,6 +24,16 @@
   tree-comment = Helicity event data tree (corrected by LinRegBlue)
 
 [LRBCorrector]
+  name       = LinRegBlue AllDet Corrector
+  priority   = 10
+  map        = prex_corrolator_alldet.conf
+  slope-file-base = blueR
+  slope-file-suff = alldet.slope.root
+  slope-path = ./LRBoutput/
+  tree-name  = mulc_lrb_alldet
+  tree-comment = Helicity event data tree (corrected by LinRegBlue)
+
+[LRBCorrector]
   name       = LinRegBlue Overloaded Corrector
   priority   = 10
   map        = prex_corrolator_all.conf
@@ -42,6 +52,18 @@
   slope-path = ./LRBoutput/
   alias-file-base = regalias_
   alias-file-suff = 
+  alias-path = ./LRBoutput/
+  disable-histos = true
+
+[QwCorrelator]
+  name       = AllDetCorrelator
+  priority   = 50
+  map        = prex_corrolator_alldet.conf
+  slope-file-base = blueR
+  slope-file-suff = alldet.slope.root
+  slope-path = ./LRBoutput/
+  alias-file-base = regalias_
+  alias-file-suff = alldet
   alias-path = ./LRBoutput/
   disable-histos = true
 
