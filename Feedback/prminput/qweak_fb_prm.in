@@ -7,6 +7,9 @@
 #patterns = 210
 patterns = 225
 
+#for Hall A PITA = 2 minute
+#patterns = 3600
+
 #for Hall C IA = 1 minute
 cia_patterns = 1800
 
@@ -132,8 +135,11 @@ PITASLOPE_OUT = -1.23
 #HAllCIASLOPE_IN = 0.043
 #HAllCIASLOPE_OUT = 0.043
 #Oct 2019 not sure of sign
-HAllCIASLOPE_IN = 0.0419
-HAllCIASLOPE_OUT = 0.0419
+#HAllCIASLOPE_IN = 0.0419
+#HAllCIASLOPE_OUT = 0.0419
+#Nov21 2019 remeasured
+HAllCIASLOPE_IN = 0.03
+HAllCIASLOPE_OUT = 0.03
 #HAllCIASLOPE_IN = -0.043
 #HAllCIASLOPE_OUT = -0.043
 
