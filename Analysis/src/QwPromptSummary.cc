@@ -125,7 +125,7 @@ void
 PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, const Double_t a_width)   
 {
   Double_t unit= 1;
-  Bool_t qtarg=fElementName.EqualTo("bcm_an_ds3"); //Estimator for good events
+//REMOVE THIS:  Bool_t qtarg=fElementName.EqualTo("bcm_an_ds3"); //Estimator for good events
   Bool_t bcm= fElementName.Contains("bcm");
   Bool_t bpm= fElementName.Contains("bpm");
   Bool_t sam= fElementName.Contains("sam");
@@ -154,10 +154,6 @@ PromptSummaryElement::Set(TString type, const Double_t a, const Double_t a_err, 
     this->SetYieldError(a_err/unit);
     this->SetYieldWidth(a_width/unit);
 
-    if (qtarg){
-      Double_t temp = (a_width/a_err);
-      this->SetNumGoodEvents(4*temp*temp);
-    }
   }
   else if(type.Contains("asymmetry")) {
     if (bpm) {
@@ -325,7 +321,7 @@ QwPromptSummary::PrintCSVHeader(Int_t nEvents, TString start_time, TString end_t
 {
   TString out = "";
    
-  Double_t goodEvents=  (this->GetElementByName("bcm_an_ds3"))->GetNumGoodEvents();
+  Double_t goodEvents = ((this->GetElementByName("bcm_an_us"))->GetNumGoodEvents())*fPatternSize;
 
   out += Form("Run: %d \n",fRunNumber);
   out += "Start Time: "+start_time+"\nEnd Time: "+end_time+"\n";

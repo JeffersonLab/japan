@@ -63,7 +63,7 @@ class QwHelicityPattern {
 
   Bool_t IsEndOfBurst(){
     //  Is this the end of a burst?
-    return (fBurstLength > 0 && fCurrentPatternNumber % fBurstLength == 0);
+    return (fBurstLength > 0 && fGoodPatterns >= fBurstLength);
   }
 
   void  CalculateAsymmetry();
@@ -167,6 +167,9 @@ class QwHelicityPattern {
     return fAsymmetry.GetEventcutErrorFlagPointer();
   };
 
+  Bool_t HasBurstData(){return fGoodPatterns>0;};
+  void  IncrementBurstCounter(){fBurstCounter++;}
+  Short_t GetBurstCounter() const {return fBurstCounter;}
   void  ClearEventData();
 
   void  Print() const;
@@ -208,6 +211,8 @@ class QwHelicityPattern {
 
   // Burst sum/difference of the yield and asymmetry
   Int_t fBurstLength;
+  Int_t fGoodPatterns;
+  Short_t fBurstCounter;
   Bool_t fEnableBurstSum;
   Bool_t fPrintBurstSum;
 

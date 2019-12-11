@@ -1,0 +1,13 @@
+Coils=1,3,7,4,6
+BPMs Slope Names=4aX,4eX,11X12X,4aY,4eY
+BPMs=bpm4aX,bpm4eX,bpm11X+0.4*bpm12X,bpm4aY,bpm4eY
+Detectors=usl,dsl,usr,dsr,atl1,atl2,atr1,atr2
+Flag Sigma Cut=3.0
+ROOT input path=/lustre/expphy/volatile/halla/parity/japanOutput/prexPrompt_pass1_#.000.root
+Output path=./slopes/
+Rootfile Output Path=./slopes/
+Rootfile Output Runwise=True
+60 uA Cut=bcm_dg_ds>60
+Old Cut=(ErrorFlag & 0x7bfe6fff)==0
+Cut=(ErrorFlag & 0xda7e6bff)==0
+Tree=evt

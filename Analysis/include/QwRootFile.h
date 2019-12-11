@@ -362,6 +362,7 @@ class QwRootFile {
 
     /// Create a new tree with name and description
     void NewTree(const std::string& name, const std::string& desc) {
+      if (IsTreeDisabled(name)) return;
       this->cd();
       QwRootTree *tree = 0;
       if (! HasTreeByName(name)) {

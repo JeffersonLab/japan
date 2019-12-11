@@ -44,6 +44,10 @@ class QwCombiner:public VQwDataHandler, public MQwDataHandlerCloneable<QwCombine
     /// Default constructor (Protected for child class access)
     QwCombiner() { };
 
+    /// Error flag mask
+    UInt_t fErrorFlagMask;
+    const UInt_t* fErrorFlagPointer;
+
     /// List of channels to use in the combiner
     std::vector< std::vector< EQwHandleType > > fIndependentType;
     std::vector< std::vector< std::string > > fIndependentName;

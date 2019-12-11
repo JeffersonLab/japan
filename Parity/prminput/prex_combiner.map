@@ -161,7 +161,10 @@ asym:bpm4eX, -0.5
 asym:bpm4aY, 0.5
 asym:bpm4eY, -0.5
 
-
+[PUBLISH]
+! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
+  asym_left_avg, asym, asym_left_avg, c
+  asym_right_avg, asym, asym_right_avg, c
 
 #####
 #####  Some examples, all commented out.

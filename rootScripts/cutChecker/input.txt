@@ -1,0 +1,8 @@
+ROOT input path?$QW_ROOTFILES/prexPrompt_pass1_#.000.root
+Rootfile Output Path?./test/
+Output path?./test/
+Tree?mul
+Runs?3154-4990
+Run Skip Size?100
+Draws?ErrorFlag,ErrorFlag,asym_sam1,asym_sam1,asym_sam2,asym_sam2,asym_sam3,asym_sam3,asym_sam4,asym_sam4,asym_sam5,asym_sam5,asym_sam6,asym_sam6,asym_sam7,asym_sam7,asym_sam8,asym_sam8,asym_usl,asym_usl,asym_usr,asym_usr,asym_dsl,asym_dsl,asym_dsr,asym_dsr,asym_atl1,asym_atl1,asym_atl2,asym_atl2,asym_atr1,asym_atr1,asym_atr2,asym_atr2
+Cuts?ErrorFlag==0,ErrorFlag!=0,asym_sam1.Device_Error_Code!=0,asym_sam1.Device_Error_Code!=0&&ErrorFlag==0,asym_sam2.Device_Error_Code!=0,asym_sam2.Device_Error_Code!=0&&ErrorFlag==0,asym_sam3.Device_Error_Code!=0,asym_sam3.Device_Error_Code!=0&&ErrorFlag==0,asym_sam4.Device_Error_Code!=0,asym_sam4.Device_Error_Code!=0&&ErrorFlag==0,asym_sam5.Device_Error_Code!=0,asym_sam5.Device_Error_Code!=0&&ErrorFlag==0,asym_sam6.Device_Error_Code!=0,asym_sam6.Device_Error_Code!=0&&ErrorFlag==0,asym_sam7.Device_Error_Code!=0,asym_sam7.Device_Error_Code!=0&&ErrorFlag==0,asym_sam8.Device_Error_Code!=0,asym_sam8.Device_Error_Code!=0&&ErrorFlag==0,asym_usl.Device_Error_Code!=0,asym_usl.Device_Error_Code!=0&&ErrorFlag==0,asym_usr.Device_Error_Code!=0,asym_usr.Device_Error_Code!=0&&ErrorFlag==0,asym_dsl.Device_Error_Code!=0,asym_dsl.Device_Error_Code!=0&&ErrorFlag==0,asym_dsr.Device_Error_Code!=0,asym_dsr.Device_Error_Code!=0&&ErrorFlag==0,asym_atl1.Device_Error_Code!=0,asym_atl1.Device_Error_Code!=0&&ErrorFlag==0,asym_atl2.Device_Error_Code!=0,asym_atl2.Device_Error_Code!=0&&ErrorFlag==0,asym_atr1.Device_Error_Code!=0,asym_atr1.Device_Error_Code!=0&&ErrorFlag==0,asym_atr2.Device_Error_Code!=0,asym_atr2.Device_Error_Code!=0&&ErrorFlag==0

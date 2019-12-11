@@ -153,6 +153,7 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
 
 /////
  protected:
+  void CheckPatternNum(VQwSubsystem *value);
   void MergeCounters(VQwSubsystem *value);
   
   Bool_t CheckIORegisterMask(const UInt_t& ioregister, const UInt_t& mask) const {

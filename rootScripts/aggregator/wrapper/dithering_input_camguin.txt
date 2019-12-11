@@ -1,0 +1,13 @@
+"slope","","","","",0,"",0
+"meanRms","dit","dit_asym_usl","","miniruns",0,"defaultHist",0
+"correctionMeanRms","dit","asym_usl","","miniruns",0,"defaultHist",0
+"meanRms","reg","asym_usl","","miniruns",0,"defaultHist",0
+"meanRms","dit","dit_asym_usr","","miniruns",0,"defaultHist",0
+"correctionMeanRms","dit","asym_usr","","miniruns",0,"defaultHist",0
+"meanRms","reg","asym_usr","","miniruns",0,"defaultHist",0
+"meanRms","dit","dit_asym_dsl","","miniruns",0,"defaultHist",0
+"correctionMeanRms","dit","asym_dsl","","miniruns",0,"defaultHist",0
+"meanRms","reg","asym_dsl","","miniruns",0,"defaultHist",0
+"meanRms","dit","dit_asym_dsr","","miniruns",0,"defaultHist",0
+"correctionMeanRms","dit","asym_dsr","","miniruns",0,"defaultHist",0
+"meanRms","reg","asym_dsr","","miniruns",0,"defaultHist",0

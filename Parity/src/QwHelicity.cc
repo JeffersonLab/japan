@@ -82,8 +82,8 @@ QwHelicity::QwHelicity(const TString& name)
 // all of the copy protection built into the helicity subsystem.  I can't be
 // bothered to clean it up right now... (wdc)
 QwHelicity::QwHelicity(const QwHelicity& source)
-: VQwSubsystem(source.GetSubsystemName()),
-  VQwSubsystemParity(source.GetSubsystemName()),
+: VQwSubsystem(source.GetName()),
+  VQwSubsystemParity(source.GetName()),
   fInputReg_HelPlus(source.fInputReg_HelPlus),
   fInputReg_HelMinus(source.fInputReg_HelMinus),
   fInputReg_PatternSync(source.fInputReg_PatternSync),
@@ -369,12 +369,12 @@ void QwHelicity::ClearEventData()
 
   /**Reset data by setting the old event number, pattern number and pattern phase 
      to the values of the previous event.*/
-  if (fEventNumberFirst==-1 && fEventNumberOld== -1){
-    fEventNumberFirst = fEventNumber;
+  if (fEventNumberFirst==-1 && fEventNumberOld!= -1){
+    fEventNumberFirst = fEventNumberOld;
   }
-  if (fPatternNumberFirst==-1 && fPatternNumberOld==-1 
-      && fPatternNumber>fPatternNumberOld){
-    fPatternNumberFirst = fPatternNumber;
+  if (fPatternNumberFirst==-1 && fPatternNumberOld!=-1 
+      && fPatternNumber==fPatternNumberOld+1){
+    fPatternNumberFirst = fPatternNumberOld;
   }
 
   fEventNumberOld = fEventNumber;
@@ -395,6 +395,7 @@ void QwHelicity::ClearEventData()
       from the data stream, -1 will allow us to identify that.*/
   fEventNumber = -1;
   fPatternPhaseNumber = -1;
+  fPatternNumber = -1;
   return;
 }
 
@@ -1126,10 +1127,10 @@ void QwHelicity::SetFirstBits(UInt_t nbits, UInt_t seed)
 void QwHelicity::SetHistoTreeSave(const TString &prefix)
 {
   Ssiz_t len;
-  if (prefix == "diff_"
+  if (TRegexp("diff_").Index(prefix,&len) == 0
    || TRegexp("asym[1-9]*_").Index(prefix,&len) == 0)
     fHistoType = kHelNoSave;
-  else if (prefix == "yield_")
+  else if (TRegexp("yield_").Index(prefix,&len) == 0)
     fHistoType = kHelSavePattern;
   else
     fHistoType = kHelSaveMPS;
@@ -2001,18 +2002,21 @@ VQwSubsystem&  QwHelicity::operator=  (VQwSubsystem *value)
   return *this;
 }
 
-VQwSubsystem&  QwHelicity::operator+=  (VQwSubsystem *value){
-  QwDebug << "Entering QwHelicity::operator+= adding " << value->GetSubsystemName() << " to " << this->GetSubsystemName() << " " << QwLog::endl;
+VQwSubsystem&  QwHelicity::operator+=  (VQwSubsystem *value)
+{
+  //  Bool_t localdebug=kFALSE;
+  QwDebug << "Entering QwHelicity::operator+= adding " << value->GetName() << " to " << this->GetName() << " " << QwLog::endl;
 
   //this routine is most likely to be called during the computatin of assymetry
   //this call doesn't make too much sense for this class so the following lines
   //are only use to put safe gards testing for example if the two instantiation indeed
   // refers to elements in the same pattern.
+  CheckPatternNum(value);
   MergeCounters(value);
   return *this;
 }
 
-void QwHelicity::MergeCounters(VQwSubsystem *value)
+void QwHelicity::CheckPatternNum(VQwSubsystem *value)
 {
   //  Bool_t localdebug=kFALSE;
   if(Compare(value)) {
@@ -2030,6 +2034,15 @@ void QwHelicity::MergeCounters(VQwSubsystem *value)
     if (this->fPatternNumber==-999999){
       this->fErrorFlag |= kErrorFlag_Helicity + kGlobalCut + kEventCutMode3;
     }
+  }
+}
+
+void QwHelicity::MergeCounters(VQwSubsystem *value)
+{
+  //  Bool_t localdebug=kFALSE;
+  if(Compare(value)) {
+    QwHelicity* input= dynamic_cast<QwHelicity*>(value);
+
     fEventNumber = (fEventNumber == 0) ? input->fEventNumber :
       std::min(fEventNumber, input->fEventNumber);
     for (size_t i=0; i<fWord.size(); i++) {
@@ -2047,6 +2060,7 @@ void QwHelicity::Sum(VQwSubsystem  *value1, VQwSubsystem  *value2)
   // refers to elements in the same pattern
   if(Compare(value1)&&Compare(value2)) {
     *this =  value1;
+    CheckPatternNum(value2);
     MergeCounters(value2);
   }
 }
@@ -2055,6 +2069,7 @@ void QwHelicity::Difference(VQwSubsystem  *value1, VQwSubsystem  *value2)
 {
   // this is stub function defined here out of completion and uniformity between each subsystem
   *this =  value1;
+  CheckPatternNum(value2);
   MergeCounters(value2);
 }
 
@@ -2062,12 +2077,16 @@ void QwHelicity::Ratio(VQwSubsystem  *value1, VQwSubsystem  *value2)
 {
   // this is stub function defined here out of completion and uniformity between each subsystem
   *this =  value1;
+  CheckPatternNum(value2);
   MergeCounters(value2);
 }
 
 void  QwHelicity::AccumulateRunningSum(VQwSubsystem* value, Int_t count, Int_t ErrorMask){
   if (Compare(value)) {
+    MergeCounters(value);
     QwHelicity* input = dynamic_cast<QwHelicity*>(value);
+    fPatternNumber = (fPatternNumber <=0 ) ? input->fPatternNumber :
+      std::min(fPatternNumber, input->fPatternNumber);
     //  Keep track of the various error quantities, so we can print 
     //  them at the end.
     fNumMissedGates       = input->fNumMissedGates;
