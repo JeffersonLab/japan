@@ -1,0 +1,5 @@
+Kind=Japan Chan=BPM-12-WS Channel=yield_bpm12WS HighHigh=180000 Ring-Length=100
+Kind=Japan Chan=BPM-11-WS Channel=yield_bpm11WS HighHigh=180000 Ring-Length=100
+Kind=Japan Chan=BPM-4a-WS Channel=yield_bpm4aWS HighHigh=180000 Ring-Length=100
+Kind=Japan Chan=BPM-4e-WS Channel=yield_bpm4eWS HighHigh=180000 Ring-Length=100
+
