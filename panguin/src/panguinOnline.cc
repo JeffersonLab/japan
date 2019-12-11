@@ -375,13 +375,16 @@ void OnlineGUI::DoDraw()
     TString sRootFileLastUpdated("File updated at: ");
     sRootFileLastUpdated += buffer;
     fRootFileLastUpdated->SetText(sRootFileLastUpdated);
-    
+    ULong_t backgroundColor = fLastUpdated->GetBackground();
     if(fVerbosity>=4)
       cout<<"Updating plots (current, file, diff[s]):\t"<<t<<"\t"<<tf<<"\t"<<t - tf<<endl;
     if( t - tf > 60 ){
       ULong_t red;
       gClient->GetColorByName("red",red);
-      fRootFileLastUpdated->SetBackgroundColor(red);//FIXME
+      fRootFileLastUpdated->SetBackgroundColor(red);
+    }
+    else{
+      fRootFileLastUpdated->SetBackgroundColor(backgroundColor);
     }
   }
 
@@ -1003,6 +1006,9 @@ void OnlineGUI::TreeDraw(vector <TString> command) {
 	    <<fRootTree[iTree]->GetName()<<endl;
     }
     errcode = fRootTree[iTree]->Draw(var,cut,drawopt);
+    if (command[5].EqualTo("grid")){
+      gPad->SetGrid();
+    }
 
     TObject *hobj = (TObject*)gROOT->FindObject(histoname);
     if(fVerbosity>=3)
