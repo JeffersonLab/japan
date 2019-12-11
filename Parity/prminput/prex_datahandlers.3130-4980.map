@@ -14,27 +14,37 @@
   tree-comment = Helicity event data tree (BMod corrected)
 
 [LRBCorrector]
-  name       = LinRegBlue Corrector (run-level slopes)
+  name       = LinRegBlue Corrector
   priority   = 10
   map        = prex_corrolator.conf
   slope-file-base = blueR
   slope-file-suff = new.slope.root
   slope-path = ./LRBoutput/
   tree-name  = mulc_lrb
-  tree-comment = Corrected helicity event data tree (run-level slopes)
+  tree-comment = Helicity event data tree (corrected by LinRegBlue)
 
 [LRBCorrector]
-  name       = LinRegBlue Corrector (burst-level slopes)
+  name       = LinRegBlue AllDet Corrector
   priority   = 10
-  map        = prex_corrolator.conf
-  slope-file-base = burst_blueR
-  slope-file-suff = new.slope.root
+  map        = prex_corrolator_alldet.conf
+  slope-file-base = blueR
+  slope-file-suff = alldet.slope.root
   slope-path = ./LRBoutput/
-  tree-name  = mulc_lrb_burst
-  tree-comment = Regressed helicity event data tree (burst-level slopes)
+  tree-name  = mulc_lrb_alldet
+  tree-comment = Helicity event data tree (corrected by LinRegBlue)
+
+[LRBCorrector]
+  name       = LinRegBlue Overloaded Corrector
+  priority   = 10
+  map        = prex_corrolator_all.conf
+  slope-file-base = blueR
+  slope-file-suff = all.slope.root
+  slope-path = ./LRBoutput/
+  tree-name  = mulc_lrb_all
+  tree-comment = Helicity event data tree (corrected by LinRegBlue)
 
 [QwCorrelator]
-  name       = lrb_std
+  name       = MyCorrelator
   priority   = 50
   map        = prex_corrolator.conf
   slope-file-base = blueR
@@ -44,71 +54,73 @@
   alias-file-suff = 
   alias-path = ./LRBoutput/
   disable-histos = true
-  tree-name  = lrb_std
-  tree-comment = Correlations
 
 [QwCorrelator]
-  name       = lrb_std_block0
+  name       = AllDetCorrelator
+  priority   = 50
+  map        = prex_corrolator_alldet.conf
+  slope-file-base = blueR
+  slope-file-suff = alldet.slope.root
+  slope-path = ./LRBoutput/
+  alias-file-base = regalias_
+  alias-file-suff = alldet
+  alias-path = ./LRBoutput/
+  disable-histos = true
+
+[QwCorrelator]
+  name       = MyCorrelator_block0
   priority   = 50
   map        = prex_corrolator.conf
   slope-file-base = blueR
   slope-file-suff = .block0.new.slope.root
-  slope-path = ./LRBoutput/ 
+  slope-path = ./LRBoutput/
   alias-file-base = regalias_
   alias-file-suff = _block0
   alias-path = ./LRBoutput/
   block = 0
   disable-histos = true
-  tree-name  = lrb_std_block0
-  tree-comment = Correlations (block0)
 
 [QwCorrelator]
-  name       = lrb_std_block1
+  name       = MyCorrelator_block1
   priority   = 50
   map        = prex_corrolator.conf
   slope-file-base = blueR
   slope-file-suff = .block1.new.slope.root
-  slope-path = ./LRBoutput/ 
+  slope-path = ./LRBoutput/
   alias-file-base = regalias_
   alias-file-suff = _block1
   alias-path = ./LRBoutput/
   block = 1
   disable-histos = true
-  tree-name  = lrb_std_block1
-  tree-comment = Correlations (block1)
 
 [QwCorrelator]
-  name       = lrb_std_block2
+  name       = MyCorrelator_block2
   priority   = 50
   map        = prex_corrolator.conf
   slope-file-base = blueR
   slope-file-suff = .block2.new.slope.root
-  slope-path = ./LRBoutput/ 
+  slope-path = ./LRBoutput/
   alias-file-base = regalias_
   alias-file-suff = _block2
   alias-path = ./LRBoutput/
   block = 2
   disable-histos = true
-  tree-name  = lrb_std_block2
-  tree-comment = Correlations (block2)
 
 [QwCorrelator]
-  name       = lrb_std_block3
+  name       = MyCorrelator_block3
   priority   = 50
   map        = prex_corrolator.conf
   slope-file-base = blueR
   slope-file-suff = .block3.new.slope.root
-  slope-path = ./LRBoutput/ 
+  slope-path = ./LRBoutput/
   alias-file-base = regalias_
   alias-file-suff = _block3
   alias-path = ./LRBoutput/
   block = 3
   disable-histos = true
-  tree-name  = lrb_std_block3
-  tree-comment = Correlations (block3)
 
 [QwCorrelator]
-  name       = lrb_all
+  name       = MyMassiveCorrelator
   priority   = 50
   map        = prex_corrolator_all.conf
   slope-file-base = blueR
@@ -118,28 +130,4 @@
   alias-file-suff = all
   alias-path = ./LRBoutput/
   disable-histos = true
-  tree-name  = lrb_all
-  tree-comment = Correlations (all variables)
 
-[QwCombiner]
-  name       = MyCombiner2
-  priority   = 99
-  map        = prex_combiner2.map
-  tree-name  = mulc2
-  tree-comment = Helicity event data tree (corrected)
-
-[QwExtractor]
-  name       = BMWExtractor
-  priority   = 0
-  scope      = event
-  tree-name  = bmw          # not implemented at this time, currently hardcoded
-  tree-comment = Bmod Data  # not implemented at this time, currently hardcoded
-
-# Old combiner approach - fails to get non-published data (like WORD bmw data that matters)
-#[QwCombiner]
-#  name       = bmw
-#  priority   = 50
-#  scope      = event
-#  map        = prex_bmw.map
-#  tree-name  = bmw
-#  tree-comment = Beam modulation
