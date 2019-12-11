@@ -147,7 +147,7 @@ class QwPromptSummary  :  public TObject
   void SetRunletNumber(const Int_t in) {fRunletNumber = in;};
   const Int_t GetRunletNumber() {return fRunletNumber;};
 
-  void SetPatt  Int_t fPatternSize;ernSize(const Int_t in) { fPatternSize=in; };
+  void SetPatternSize(const Int_t in) { fPatternSize=in; };
   const Int_t GetPatternSize() { return fPatternSize; };
 
   void AddElement(PromptSummaryElement *in);
