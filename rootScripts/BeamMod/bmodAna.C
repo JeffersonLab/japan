@@ -243,7 +243,7 @@ void BMOD::parseTextFile(std::string fileName = "input.txt"){
 
 void BMOD::calculateSensitivities(){
   gStyle->SetOptStat(0); 
-  if (parameterVectors.count("Tree") == 0){
+  if (parameterVectors.count("Tree") == 0 || !file1->Get(parameterVectors["Tree"].at(0).c_str())){
     Printf("Looking in \"evt\" tree for BMOD data");
     std::string tmpTreeStr = "evt";
     std::vector<std::string> tmpTreeStrVec;
@@ -580,14 +580,14 @@ void BMOD::invertMatrix() {
       for(int idet=0;idet<nDet;idet++){
         TMatrixD tmpDetVec(nCoil,1);
         for(int icoil=0;icoil<nCoil;icoil++){
-          tmpDetVec[icoil][0] = cycles[i].Detsens[idet][icoil];// BPM data
+          tmpDetVec[icoil][0] = cycles[i].Detsens[idet][icoil];// det sens data
           cycles[i].detData.push_back(tmpDetVec);
         }
-        for(int idet=0;idet<nDet;idet++){
-          TMatrixD tmpDetSlopes(nBPM,1);
-          tmpDetSlopes.Mult(BPM_inverse,tmpDetVec);
-          cycles[i].detSlopes.push_back(tmpDetSlopes);
-        }
+        //for(int idet=0;idet<nDet;idet++){
+        TMatrixD tmpDetSlopes(nBPM,1);
+        tmpDetSlopes.Mult(BPM_inverse,tmpDetVec);
+        cycles[i].detSlopes.push_back(tmpDetSlopes);
+        //}
       }
 
     }
@@ -622,6 +622,8 @@ void BMOD::copytree(TString oldFileName = "test.root", Double_t cyclenumber = -1
     }
     newtree->Write("dit",TObject::kOverwrite);
     newfile.Close();
+    oldfile->Close();
+    delete oldfile;
     gSystem->Exec(Form("mv localTmp_%d_%f.root %s",runNumber,cyclenumber,oldFileName.Data()));
   }
 }
@@ -715,6 +717,8 @@ void BMOD::edittree(TString oldFileName = "test.root")
     }
     newtree->Write("dit",TObject::kOverwrite);
     newfile.Close();
+    oldfile->Close();
+    delete oldfile;
     gSystem->Exec(Form("mv localTmp_%d.root %s",runNumber,oldFileName.Data()));
   }
   else {
@@ -805,11 +809,11 @@ void BMOD::saveSlopeData() {
     else {
       slopeFilename = Form("%s/dithering_slopes_slug%d.root",parameterVectors["Rootfile Output Path"].at(0).c_str(),slug_number);
     }
+    for(int i=0;i<cycles.size();i++){
+      copytree(slopeFilename,cycles.at(i).cycleNumber);
+    }
   }
 
-  for(int i=0;i<cycles.size();i++){
-    copytree(slopeFilename,cycles.at(i).cycleNumber);
-  }
   TFile* ditfile = TFile::Open(Form("%s",slopeFilename.Data()),"UPDATE");
   if(ditfile==NULL){
     ditfile = TFile::Open(Form("%s",slopeFilename.Data()),"RECREATE");
@@ -933,7 +937,7 @@ void BMOD::saveSlopeData() {
       scandata2 = cycles.at(i).scandata2_mean;
       Printf("Adding entry for cycle %f",cycleNum);
       // The flag variable is determined by whether there is sufficient data for BPM sensitivity calculation
-      flag     = cycles.at(i).BPMvalid;
+      flag      = cycles.at(i).BPMvalid;
       for(int idet=0;idet<nDet;idet++){
         for(int ibpm=0;ibpm<nBPM;ibpm++){
             // We found a null slope
@@ -952,14 +956,14 @@ void BMOD::saveSlopeData() {
         }
         for(int icoil=0;icoil<nCoil;icoil++){
           for(int ibpm=0;ibpm<nBPM;ibpm++){
-            localBPMsens[icoil][ibpm] = cycles.at(i).BPMsens.at(icoil)[ibpm];
-            localBPMsens_err[icoil][ibpm] = cycles.at(i).BPMsens_err.at(icoil)[ibpm];
-            localBPMfNdata[icoil][ibpm] = cycles.at(i).BPMfNdata.at(icoil)[ibpm];
+            localBPMsens[icoil][ibpm] = cycles.at(i).BPMsens.at(ibpm)[icoil];
+            localBPMsens_err[icoil][ibpm] = cycles.at(i).BPMsens_err.at(ibpm)[icoil];
+            localBPMfNdata[icoil][ibpm] = cycles.at(i).BPMfNdata.at(ibpm)[icoil];
           }
           for(int idet=0;idet<nDet;idet++){
-            localDetsens[icoil][idet] = cycles.at(i).Detsens.at(icoil)[idet];
-            localDetsens_err[icoil][idet] = cycles.at(i).Detsens_err.at(icoil)[idet];
-            localDetfNdata[icoil][idet] = cycles.at(i).DetfNdata.at(icoil)[idet];
+            localDetsens[icoil][idet] = cycles.at(i).Detsens.at(idet)[icoil];
+            localDetsens_err[icoil][idet] = cycles.at(i).Detsens_err.at(idet)[icoil];
+            localDetfNdata[icoil][idet] = cycles.at(i).DetfNdata.at(idet)[icoil];
           }
         }
         for(int icoil1=0;icoil1<nCoil;icoil1++){
@@ -1017,6 +1021,7 @@ void BMOD::saveSlopeData() {
     dit_tree->Write(0,TObject::kOverwrite);
   }
   ditfile->Close();
+  delete ditfile;
 }
 
 int bmodAna(Int_t runNo = 4199, std::string inputFile = "input.txt", TString sluglist = "NULL"){
@@ -1030,7 +1035,9 @@ int bmodAna(Int_t runNo = 4199, std::string inputFile = "input.txt", TString slu
       while(getline(ifinfile,runnum)){
         BMOD * bmod = new BMOD();
         bmod->parseTextFile(inputFile);
-        bmod->getData(std::atoi(runnum.c_str()));
+        if(bmod->getData(std::atoi(runnum.c_str()))){
+          return 1;
+        }
         bmod->calculateSensitivities();
         bmod->saveSensitivityData();
         bmod->invertMatrix();
@@ -1043,9 +1050,12 @@ int bmodAna(Int_t runNo = 4199, std::string inputFile = "input.txt", TString slu
   else {
     BMOD * bmod = new BMOD();
     bmod->parseTextFile(inputFile);
-    bmod->getData(runNo);
+    if(bmod->getData(runNo)){
+      return 1;
+    }
     bmod->calculateSensitivities();
     bmod->saveSensitivityData();
+    // FIXME this should be optional 
     bmod->invertMatrix();
     bmod->saveSlopeData();
     bmod->edittree(bmod->slopeFilename);
