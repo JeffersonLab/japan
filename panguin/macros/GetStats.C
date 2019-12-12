@@ -45,6 +45,11 @@ void GetStats(){
   statStr[5] = Form("Good beam time / total time");
   statStrNumbers[5] = Form(" = %.2f ABU minutes / %0.2f mins ",goodTime,totalTime);
 
+  //if (totalTime > 35.0) {
+  //  gSystem->Exec("python3 /adaqfs/home/apar/alarms/AlarmHandlerGUI/alert.py -a 6");
+  //  Printf("The run has laster 35 minutes, please start a new one to avoid CODA file splits\n");
+  //}
+
   TLatex text;
   text.SetTextSize(0.08);
   a1->cd(); 
