@@ -42,8 +42,8 @@ class Cycle{
     Int_t Detvalid = 1;
     Int_t slopesValid = 1;
     Double_t cycleNumber;
-    Double_t supercycslope;
-    Double_t supercyc_err;
+    Double_t scandata1_mean;
+    Double_t scandata2_mean;
     std::vector <TMatrixD> coilNames;
     std::vector <TMatrixD> BPMNames; 
     std::vector <TMatrixD> detNames; 
@@ -62,6 +62,7 @@ class Cycle{
 class BMOD{
   public:
     Int_t runNumber = 0;
+    Int_t slug_number = 0;
     Int_t nBPM = 0;
     Int_t nDet = 0;
     Int_t nCoil = 0;
@@ -201,7 +202,7 @@ void BMOD::parseTextFile(std::string fileName = "input.txt"){
       std::string token;
       std::istringstream tokenStream(line);
       Int_t tokenizer = 0;
-      while(getline(tokenStream,token,'=')){
+      while(getline(tokenStream,token,':')){
 //        Printf("Reading token %s",token.c_str());
         if (tokenizer == 0) {
 //          Printf("Token 1 = %s",token.c_str());
@@ -337,14 +338,10 @@ void BMOD::calculateSensitivities(){
 
   //const int n=cycleNumbers.size();//number of cycle
   //Double_t cycleNumbers[n];
-  //Double_t supercycslope[n];
-  //Double_t supercyc_err[n];
   //Int_t Is_fill[n];
   for(int i=0;i<cycleNumbers.size();i++){
     Cycle tmpCycle;
     tmpCycle.cycleNumber = cycleNumbers[i];
-    tmpCycle.supercycslope = cycleNumbers[i];
-    tmpCycle.supercyc_err = 0;
     for(int ibpm=0;ibpm<nBPM;ibpm++){
       tmpCycle.BPMsens.push_back(tmp1);
       tmpCycle.BPMsens_err.push_back(tmp2);
@@ -370,7 +367,7 @@ void BMOD::calculateSensitivities(){
   }*/
   TH1F* hist_trim;
   for (Int_t k = 0; k<nCoil; k++){
-    tree_R->Draw(Form("bmod_trim%s>>hist_trim%d",parameterVectors["Coils"][k].c_str(),k),"bmod_ramp<0","");
+    tree_R->Draw(Form("bmod_trim%s>>hist_trim%d",parameterVectors["Coils"][k].c_str(),k),"bmod_ramp<0","goff");
     hist_trim = (TH1F *)gDirectory->Get(Form("hist_trim%d",k));
     trim_base.push_back(hist_trim->GetXaxis()->GetBinCenter(hist_trim->GetMaximumBin()));
   }
@@ -394,6 +391,13 @@ void BMOD::calculateSensitivities(){
 
 
   for(Int_t i=0;i<cycles.size();i++){
+    tree_R->Draw("scandata1>>hist_sd1",Form("cleandata==1 && bmwcycnum==%f",cycles[i].cycleNumber),"goff");
+    TH1F* hist_sd1 = (TH1F *)gDirectory->Get("hist_sd1");
+    cycles.at(i).scandata1_mean = hist_sd1->GetMean();
+    tree_R->Draw("scandata2>>hist_sd2",Form("cleandata==1 && bmwcycnum==%f",cycles[i].cycleNumber),"goff");
+    TH1F* hist_sd2 = (TH1F *)gDirectory->Get("hist_sd2");
+    cycles.at(i).scandata2_mean = hist_sd2->GetMean();
+  
     //for(int ibpm=0;ibpm<nBPM;ibpm++)
     int j = 0;
     //for(int j=0;j<(nBPM+nDet);j++)
@@ -788,7 +792,7 @@ void BMOD::saveSlopeData() {
     localDeltas.push_back(tmpVec3);
   }
 
-  Int_t slug_number = QuerySlugNumber(runNumber);
+  slug_number = QuerySlugNumber(runNumber);
 
   if (parameterVectors.count("Rootfile Output Path") == 0) {
     Printf("ERROR: No \"Rootfile Output Path\" listed for Dithering Analysis. Using \"../rootfiles_alldet_pass1\" instead");
@@ -813,6 +817,9 @@ void BMOD::saveSlopeData() {
   TTree* dit_tree = (TTree*)ditfile->Get("dit");
 
   Int_t runNum = runNumber;
+  Int_t slugNum = slug_number;
+  Double_t scandata1 = 0.0;
+  Double_t scandata2 = 0.0;
   Int_t flag = 1;
   Double_t cycleNum = 0;
   if(dit_tree==NULL){
@@ -853,9 +860,18 @@ void BMOD::saveSlopeData() {
     dit_tree->Branch("run",
         &runNum,
         "run/I");
+    dit_tree->Branch("slug",
+        &slugNum,
+        "slug/I");
     dit_tree->Branch("cyclenum",
         &cycleNum,
         "cyclenum/D");
+    dit_tree->Branch("scandata1",
+        &scandata1,
+        "scandata1/D");
+    dit_tree->Branch("scandata2",
+        &scandata2,
+        "scandata2/D");
     dit_tree->Branch("flag",
         &flag,
         "flag/I");
@@ -896,16 +912,25 @@ void BMOD::saveSlopeData() {
     }
     dit_tree->SetBranchAddress("run",
         &runNum);
+    dit_tree->SetBranchAddress("slug",
+        &slugNum);
     dit_tree->SetBranchAddress("cyclenum",
         &cycleNum);
+    dit_tree->SetBranchAddress("scandata1",
+        &scandata1);
+    dit_tree->SetBranchAddress("scandata2",
+        &scandata2);
     dit_tree->SetBranchAddress("flag",
         &flag);
   }
 
   for(int i=0;i<cycles.size();i++){
     if(cycles.at(i).BPMvalid==1 && cycles.at(i).Detvalid==1){
-      runNum   = runNumber;
-      cycleNum = cycles.at(i).cycleNumber;
+      runNum    = runNumber;
+      slugNum   = slug_number;
+      cycleNum  = cycles.at(i).cycleNumber;
+      scandata1 = cycles.at(i).scandata1_mean;
+      scandata2 = cycles.at(i).scandata2_mean;
       Printf("Adding entry for cycle %f",cycleNum);
       // The flag variable is determined by whether there is sufficient data for BPM sensitivity calculation
       flag     = cycles.at(i).BPMvalid;

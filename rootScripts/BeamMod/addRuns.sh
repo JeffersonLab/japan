@@ -2,7 +2,7 @@
 gojapan
 SLOPEFILES="./slopes/"
 OUTPUTROOTFILEDIR="./slugs/"
-cd ~/cameronc/japan-feature-add-merger/rootScripts/BeamMod
+cd ~/PREX/prompt/bmodAna/
 if [ "$#" -lt 1 ]; then
   echo "Error: Need to pass a run number"
   echo "Usage: ./doRun ###"
