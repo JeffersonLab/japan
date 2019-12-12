@@ -714,6 +714,7 @@ void BMOD::edittree(TString oldFileName = "test.root")
         }
       }
       newtree->Fill();
+      flag = 1;
     }
     newtree->Write("dit",TObject::kOverwrite);
     newfile.Close();
