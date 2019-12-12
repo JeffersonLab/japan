@@ -1042,8 +1042,10 @@ int bmodAna(Int_t runNo = 4199, std::string inputFile = "input.txt", TString slu
         bmod->saveSensitivityData();
         bmod->invertMatrix();
         bmod->saveSlopeData();
-        bmod->edittree(bmod->slopeFilename);
-        // FIXME also append this run's data into the combo/slugwise input file
+        if (bmod->parameterVectors.count("Rootfile Output Runwise") == 0 || bmod->parameterVectors["Rootfile Output Runwise"].at(0) != "True") {
+          bmod->edittree(bmod->slopeFilename);
+        }
+        // FIXME also append this run's data into the combo/slugwise input file if possible
       }
     }
   }
@@ -1058,7 +1060,9 @@ int bmodAna(Int_t runNo = 4199, std::string inputFile = "input.txt", TString slu
     // FIXME this should be optional 
     bmod->invertMatrix();
     bmod->saveSlopeData();
-    bmod->edittree(bmod->slopeFilename);
+    if (bmod->parameterVectors.count("Rootfile Output Runwise") == 0 || bmod->parameterVectors["Rootfile Output Runwise"].at(0) != "True") {
+      bmod->edittree(bmod->slopeFilename);
+    }
   }
   cout << "-- BMOD Analysis done in "; tsw.Print(); cout << endl;
   return 0;
