@@ -805,10 +805,10 @@ void BMOD::saveSlopeData() {
   }
   else {
     if (parameterVectors.count("Rootfile Output Runwise") != 0 && parameterVectors["Rootfile Output Runwise"].at(0) == "True") {
-      slopeFilename = Form("%s/dithering_slopes_slug%d_run%d.root",parameterVectors["Rootfile Output Path"].at(0).c_str(),slug_number,runNumber);
+      slopeFilename = Form("%s/dithering_slopes_%s_slug%d_run%d.root",parameterVectors["Rootfile Output Path"].at(0).c_str(),CoilListStr.Data(),slug_number,runNumber);
     }
     else {
-      slopeFilename = Form("%s/dithering_slopes_slug%d.root",parameterVectors["Rootfile Output Path"].at(0).c_str(),slug_number);
+      slopeFilename = Form("%s/dithering_slopes_%s_slug%d.root",parameterVectors["Rootfile Output Path"].at(0).c_str(),CoilListStr.Data(),slug_number);
     }
     for(int i=0;i<cycles.size();i++){
       copytree(slopeFilename,cycles.at(i).cycleNumber);
@@ -1041,7 +1041,7 @@ int bmodAna(Int_t runNo = 4199, std::string inputFile = "input.txt", TString slu
         }
         bmod->calculateSensitivities();
         bmod->saveSensitivityData();
-        if (bmod->parameterVectors.count("Just Sensitivies") != 0 && bmod->parameterVectors["Just Sensitivies"].at(0) == "True") {
+        if (bmod->parameterVectors.count("Just Sensitivies") == 0 && bmod->parameterVectors["Just Sensitivies"].at(0) == "False") {
           bmod->invertMatrix();
           bmod->saveSlopeData();
           if (bmod->parameterVectors.count("Rootfile Output Runwise") == 0 || bmod->parameterVectors["Rootfile Output Runwise"].at(0) != "True") {
@@ -1060,7 +1060,7 @@ int bmodAna(Int_t runNo = 4199, std::string inputFile = "input.txt", TString slu
     }
     bmod->calculateSensitivities();
     bmod->saveSensitivityData();
-    if (bmod->parameterVectors.count("Just Sensitivies") != 0 && bmod->parameterVectors["Just Sensitivies"].at(0) == "True") {
+    if (bmod->parameterVectors.count("Just Sensitivies") == 0 || bmod->parameterVectors["Just Sensitivies"].at(0) == "False") {
       bmod->invertMatrix();
       bmod->saveSlopeData();
       if (bmod->parameterVectors.count("Rootfile Output Runwise") == 0 || bmod->parameterVectors["Rootfile Output Runwise"].at(0) != "True") {
