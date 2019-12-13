@@ -1,11 +1,40 @@
-TCanvas* c2 = new TCanvas()
-c2->Divide(2,2)
-c2->cd(1)
-dit->Draw("alpha53_4eX4aX:cyclenum","","*")
-c2->cd(2)
-dit->Draw("delta53_4eX4aX:cyclenum","","*")
-c2->cd(3)
-dit->Draw("alpha64_4eY4aY:cyclenum","","*")
-c2->cd(4)
-dit->Draw("delta64_4eY4aY:cyclenum","","*")
-c1->SaveAs("5412-53647.pdf")
+void plotAD(std::string input = "NULL"){
+  TChain* dit = new TChain("dit");
+  dit->AddFile(input.c_str());
+  TCanvas* c1 = new TCanvas();
+  c1->Divide(3,1);
+  c1->cd(1);
+  dit->Draw("alpha53_4eX4aX:cyclenum","","*");
+  c1->cd(2);
+  dit->Draw("alpha51_4eX4aX:cyclenum","","*");
+  c1->cd(3);
+  dit->Draw("alpha31_4eX4aX:cyclenum","","*");
+  c1->SaveAs(Form("%s_alphas-deltas.pdf(",input.substr(0,input.find(".root")).c_str()));
+  TCanvas* c2 = new TCanvas();
+  c2->Divide(3,1);
+  c2->cd(1);
+  dit->Draw("alpha64_4eY4aY:cyclenum","","*");
+  c2->cd(2);
+  dit->Draw("alpha62_4eY4aY:cyclenum","","*");
+  c2->cd(3);
+  dit->Draw("alpha42_4eY4aY:cyclenum","","*");
+  c2->SaveAs(Form("%s_alphas-deltas.pdf",input.substr(0,input.find(".root")).c_str()));
+  TCanvas* c3 = new TCanvas();
+  c3->Divide(3,1);
+  c3->cd(1);
+  dit->Draw("delta53_4eX4aX:cyclenum","","*");
+  c3->cd(2);
+  dit->Draw("delta51_4eX4aX:cyclenum","","*");
+  c3->cd(3);
+  dit->Draw("delta31_4eX4aX:cyclenum","","*");
+  c3->SaveAs(Form("%s_alphas-deltas.pdf",input.substr(0,input.find(".root")).c_str()));
+  TCanvas* c4 = new TCanvas();
+  c4->Divide(3,1);
+  c4->cd(1);
+  dit->Draw("delta64_4eY4aY:cyclenum","","*");
+  c4->cd(2);
+  dit->Draw("delta62_4eY4aY:cyclenum","","*");
+  c4->cd(3);
+  dit->Draw("delta42_4eY4aY:cyclenum","","*");
+  c4->SaveAs(Form("%s_alphas-deltas.pdf)",input.substr(0,input.find(".root")).c_str()));
+}
