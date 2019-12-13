@@ -708,7 +708,10 @@ QwMessage<<"................slope............."<<fPITASlope<<QwLog::endl;
   int nBPM = vBPM.size();
   for(int i=0;i<nBPM;i++){
    
-    fEPICSCtrl.SetMeanWidth(2*i,vWireSumAsymmetry[i]);
+    if (vBPM.at(i) != "q_targC") {
+      // Don't submit to EPICs the Hall C charge Aq here (do it in the Hall C IA feedback method)
+      fEPICSCtrl.SetMeanWidth(2*i,vWireSumAsymmetry[i]);
+    }
   }
  
   int nBPM1 = vBPM1.size();
@@ -1155,11 +1158,29 @@ QwMessage<<"................HALL C slope............."<<fHCIASlope<<QwLog::endl;
   
   //send the new PITA setpoint
   fEPICSCtrl.Set_IA_HC_1(fHCIASetpoint1);
- fEPICSCtrl.Set_IA_HC_2(fHCIASetpoint2);
- fEPICSCtrl.Set_IA_HC_3(fHCIASetpoint3);
- fEPICSCtrl.Set_IA_HC_4(fHCIASetpoint4);
+  fEPICSCtrl.Set_IA_HC_2(fHCIASetpoint2);
+  fEPICSCtrl.Set_IA_HC_3(fHCIASetpoint3);
+  fEPICSCtrl.Set_IA_HC_4(fHCIASetpoint4);
 
-fTargetHCChargeRunningSum.ClearEventData();
+  int numBPM = vBPM.size();
+  for(int i=0;i<numBPM;i++){
+   
+    Bool_t HCrefill;
+    if (vBPM.at(i) == "q_targC"){
+      // Only submit Hall C IA Feedback Aq to EPICS
+      if (fAsymmetry.RequestExternalValue(vBPM[i],&fTargetParameter)){
+        Double_t this_mean =fTargetParameter.GetValue()*1.0e+6;
+        Double_t this_width=fTargetParameter.GetValueWidth()*1.0e+6;
+        std::pair<Double_t,Double_t> this_pair = std::make_pair(this_mean,this_width);
+        fEPICSCtrl.SetMeanWidth(2*i,this_pair);
+      } else {
+        QwWarning << "Could not get asymmetry results for "
+          << vBPM[i] << QwLog::endl;
+      }
+    }
+  }
+
+  fTargetHCChargeRunningSum.ClearEventData();
 
   QwMessage << "fTargetHCChargeRunningSum.GetGoodEventCount()=="
 	    << fTargetHCChargeRunningSum.GetGoodEventCount()
