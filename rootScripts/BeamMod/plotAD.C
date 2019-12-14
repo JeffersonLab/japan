@@ -22,19 +22,19 @@ void plotAD(std::string input = "NULL"){
   TCanvas* c3 = new TCanvas();
   c3->Divide(3,1);
   c3->cd(1);
-  dit->Draw("delta53_4eX4aX:cyclenum","","*");
+  dit->Draw("delta53_4eX11X12X:cyclenum","","*");
   c3->cd(2);
-  dit->Draw("delta51_4eX4aX:cyclenum","","*");
+  dit->Draw("delta51_4eX11X12X:cyclenum","","*");
   c3->cd(3);
-  dit->Draw("delta31_4eX4aX:cyclenum","","*");
+  dit->Draw("delta31_4eX11X12X:cyclenum","","*");
   c3->SaveAs(Form("%s_alphas-deltas.pdf",input.substr(0,input.find(".root")).c_str()));
   TCanvas* c4 = new TCanvas();
   c4->Divide(3,1);
   c4->cd(1);
-  dit->Draw("delta64_4eY4aY:cyclenum","","*");
+  dit->Draw("delta64_4eY11X12X:cyclenum","","*");
   c4->cd(2);
-  dit->Draw("delta62_4eY4aY:cyclenum","","*");
+  dit->Draw("delta62_4eY11X12X:cyclenum","","*");
   c4->cd(3);
-  dit->Draw("delta42_4eY4aY:cyclenum","","*");
+  dit->Draw("delta42_4eY11X12X:cyclenum","","*");
   c4->SaveAs(Form("%s_alphas-deltas.pdf)",input.substr(0,input.find(".root")).c_str()));
 }
