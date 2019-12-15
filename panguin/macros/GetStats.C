@@ -36,7 +36,7 @@ void GetStats(){
   Int_t nent = hist->GetEntries();
   Double_t avgCurrent = hist->GetMean();
   Double_t totalCharge = avgCurrent*(1/1.0e6)*(nent/120);
-  statStr[4] = Form("Total acc Q this run (1.2C = slug)");
+  statStr[4] = Form("Total acc Q this run (3C = slug)");
   statStrNumbers[4] = Form(" = %.2f C", totalCharge);
 
   r->Project(hist->GetName(), "CodaEventNumber", "");
