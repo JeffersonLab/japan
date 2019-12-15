@@ -169,15 +169,25 @@ Int_t BMOD::getData(Int_t runNo) {
     if(!file1){
       infile = Form("$QW_ROOTFILES/prexPrompt_pass1_%d.000.root",runNumber);
       file1 = TFile::Open(infile.c_str());
-      if(!file1){
-        std::cout << infile << " doesn't exist!!! Trying quick prompt" << std::endl;
-        infile = Form("$QW_ROOTFILES/quick_%d.000.root",runNumber);
-        file1=TFile::Open(infile.c_str());
-        if(!file1){
-          std::cout << infile << " doesn't exist!!!" << std::endl;
-          return 1;
-        }
-      }
+    }
+    if(!file1){
+      std::cout << infile << " doesn't exist!!! Trying quick prompt" << std::endl;
+      infile = Form("$QW_ROOTFILES/quick_%d.000.root",runNumber);
+      file1=TFile::Open(infile.c_str());
+    }
+    if(!file1){
+      std::cout << infile << " doesn't exist!!! Trying prexALL...000.root" << std::endl;
+      infile = Form("$QW_ROOTFILES/prexALL_%d.000.root",runNumber);
+      file1=TFile::Open(infile.c_str());
+    }
+    if(!file1){
+      std::cout << infile << " doesn't exist!!! Trying prexALL" << std::endl;
+      infile = Form("$QW_ROOTFILES/prexALL_%d.root",runNumber);
+      file1=TFile::Open(infile.c_str());
+    }
+    if(!file1){
+      std::cout << infile << " doesn't exist!!!" << std::endl;
+      return 1;
     }
   }
   else {
@@ -367,7 +377,8 @@ void BMOD::calculateSensitivities(){
   }*/
   TH1F* hist_trim;
   for (Int_t k = 0; k<nCoil; k++){
-    tree_R->Draw(Form("bmod_trim%s>>hist_trim%d",parameterVectors["Coils"][k].c_str(),k),"bmod_ramp<0","goff");
+    tree_R->Draw(Form("bmod_trim%s>>hist_trim%d",parameterVectors["Coils"][k].c_str(),k),"beam_mod_ramp<0","goff");
+    //tree_R->Draw(Form("bmod_trim%s>>hist_trim%d",parameterVectors["Coils"][k].c_str(),k),"bmod_ramp<0","goff");
     hist_trim = (TH1F *)gDirectory->Get(Form("hist_trim%d",k));
     trim_base.push_back(hist_trim->GetXaxis()->GetBinCenter(hist_trim->GetMaximumBin()));
   }
@@ -420,7 +431,8 @@ void BMOD::calculateSensitivities(){
         //int ndata = tree_R->Draw(Form("%lf*(%s):(%s*%lf)",factor,bpmName.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
         // Get Mean for normalized sensitivity calculation
         int ndata = tree_R->Draw(Form("(%s):(bmod_trim%s*%lf)",name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
-            Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+            Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+            //Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
               parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil],cycles[i].cycleNumber));
         if(ndata<50){
           Printf("-- Sensitivity for Device: %s",name.Data());
@@ -453,7 +465,8 @@ void BMOD::calculateSensitivities(){
             this_mean = 1.0;
           }
           ndata = tree_R->Draw(Form("(%lf/%lf)*(%s):(bmod_trim%s*%lf)",factor,this_mean,name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
-              Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+              Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+              //Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
                 parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil],cycles[i].cycleNumber));
 
           double this_slope,this_error;
@@ -601,7 +614,7 @@ void BMOD::copytree(TString oldFileName = "test.root", Double_t cyclenumber = -1
     cout << "No cyclenumber passed with macro call!" << endl;
     return;
   }
-  cout << "ignoring cyclenumber " << cyclenumber << endl;
+  cout << "Clearing prior instances of cyclenumber " << cyclenumber << endl;
   Bool_t newFile = gSystem->AccessPathName(oldFileName);
   if (!newFile){
     TFile* oldfile = TFile::Open(oldFileName);
@@ -797,7 +810,13 @@ void BMOD::saveSlopeData() {
     localDeltas.push_back(tmpVec3);
   }
 
-  slug_number = QuerySlugNumber(runNumber);
+  if(runNumber == 999999){
+    TString s = gSystem->GetFromPipe("~/scripts/getRunNumber");
+    slug_number = QuerySlugNumber(s.Atoi());
+  }
+  else {
+    slug_number = QuerySlugNumber(runNumber);
+  }
 
   if (parameterVectors.count("Rootfile Output Path") == 0) {
     Printf("ERROR: No \"Rootfile Output Path\" listed for Dithering Analysis. Using \"../rootfiles_alldet_pass1\" instead");
