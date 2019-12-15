@@ -41,6 +41,7 @@ QwExtractor::QwExtractor(const TString& name)
   fKeepRunningSum = kTRUE;
   fTreeName = "bmw";
   fTreeComment = "BMOD Extractor";
+  fCut = 0;
   fErrorFlagMask = 0x9000;
   fErrorFlagPointer = 0;
 
@@ -49,12 +50,23 @@ QwExtractor::QwExtractor(const TString& name)
 QwExtractor::QwExtractor(const QwExtractor &source)
 : VQwDataHandler(source)
 {
+  fCut = 0;
   fErrorFlagMask = 0x9000;
   fErrorFlagPointer = 0;
 }
 
 /// Destructor
 QwExtractor::~QwExtractor() {delete fSourceCopy;}
+
+void QwExtractor::ParseConfigFile(QwParameterFile& file)
+{
+  VQwDataHandler::ParseConfigFile(file);
+  file.PopValue("cut-logic",    fCut);
+  file.PopValue("tree-name",    fTreeName);
+  file.PopValue("tree-comment", fTreeComment);
+  file.PopValue("error-mask",   fErrorFlagMask);
+
+}
 
 Int_t QwExtractor::LoadChannelMap(const std::string& mapfile) {return 0;}
 
@@ -97,16 +109,25 @@ void QwExtractor::ConstructTreeBranches(
 void QwExtractor::ProcessData()
 {
   fLocalFlag = 0;
-  if (fErrorFlagMask!=0 && fErrorFlagPointer!=NULL) {
-    if ((*fErrorFlagPointer & fErrorFlagMask)!=0) {
-      //QwMessage << "0x" << std::hex << *fErrorFlagPointer << " passed mask " << "0x" << std::hex << fErrorFlagMask << std::dec << QwLog::endl;
+  if (fErrorFlagPointer!=NULL) {
+    if (fCut==1 && (*fErrorFlagPointer & fErrorFlagMask)!=0) {
+      // We are doing a == test, selecting activated bits
+      //QwMessage << "Cut in, 0x" << std::hex << *fErrorFlagPointer << " passed mask " << "0x" << std::hex << fErrorFlagMask << std::dec << QwLog::endl;
       fLocalFlag = 1;
       fSourceCopy->operator=(*fSourcePointer);
-  }// else {
+    }
+    else if (fCut==0 && (*fErrorFlagPointer & fErrorFlagMask)==0) {
+      // We are doing an != test, not selecting activated bits
+      //QwMessage << "Cut out, 0x" << std::hex << *fErrorFlagPointer << " passed mask " << "0x" << std::hex << fErrorFlagMask << std::dec << QwLog::endl;
+      fLocalFlag = 1;
+      fSourceCopy->operator=(*fSourcePointer);
+    }
+  // else {
   //    QwMessage << "0x" << std::hex << *fErrorFlagPointer << " failed mask " << "0x" << std::hex << fErrorFlagMask << std::dec << QwLog::endl;
   //  }
   }
   else{
+    // Trivial case for safety
     fLocalFlag = 1;
     fSourceCopy->operator=(*fSourcePointer);
   }

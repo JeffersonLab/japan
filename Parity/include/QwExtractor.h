@@ -32,11 +32,14 @@ class QwExtractor:public VQwDataHandler, public MQwDataHandlerCloneable<QwExtrac
     void ProcessData();
     void SetPointer(QwSubsystemArrayParity *ptr){fSourcePointer = ptr;};
     void FillTreeBranches(QwRootFile *treerootfile);
+
+    void ParseConfigFile(QwParameterFile& file);
   
   protected:
     /// Default constructor (Protected for child class access)
 
     /// Error flag mask
+    UInt_t fCut;
     UInt_t fErrorFlagMask;
     const UInt_t* fErrorFlagPointer;
     Int_t fLocalFlag = 0;
