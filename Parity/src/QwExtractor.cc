@@ -39,10 +39,10 @@ QwExtractor::QwExtractor(const TString& name)
 {
   ParseSeparator = ":";
   fKeepRunningSum = kTRUE;
-  fTreeName = "bmw";
-  fTreeComment = "BMOD Extractor";
+  fTreeName = "";
+  fTreeComment = "Extractor";
   fCut = 0;
-  fErrorFlagMask = 0x9000;
+  fErrorFlagMask = 0x0;
   fErrorFlagPointer = 0;
 
 }
@@ -63,6 +63,8 @@ void QwExtractor::ParseConfigFile(QwParameterFile& file)
   VQwDataHandler::ParseConfigFile(file);
   file.PopValue("cut-logic",    fCut);
   file.PopValue("tree-name",    fTreeName);
+  file.PopValue("branch-prefix",fBranchprefix);
+  file.PopValue("tree-prefix",  fTreeprefix);
   file.PopValue("tree-comment", fTreeComment);
   file.PopValue("error-mask",   fErrorFlagMask);
 
@@ -75,6 +77,21 @@ Int_t QwExtractor::LoadChannelMap(const std::string& mapfile) {return 0;}
  * @param even Helicity event structure
  * @return Zero on success
  */
+
+Int_t QwExtractor::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff)
+{
+  // Keep a pointer to the source Detectors/RingOutput
+  //fSourcePointer = &event;
+  SetPointer(&asym);
+  fSourceCopy = new QwSubsystemArrayParity(asym);
+  // Make a copy of RingOutput
+  // Normal ConnectChannels for the test variable/ErrorFlag
+  // Store error flag pointer
+  QwMessage << "Using event error flag" << QwLog::endl;
+  fErrorFlagPointer = asym.GetEventcutErrorFlagPointer();
+  return 0;
+}
+
 Int_t QwExtractor::ConnectChannels(QwSubsystemArrayParity& event)
 {
   // Keep a pointer to the source Detectors/RingOutput
@@ -101,7 +118,8 @@ void QwExtractor::ConstructTreeBranches(
   }
 
   // Construct tree name and create new tree
-  fTreeName = treeprefix + fTreeName;
+  if (treeprefix!="") { fTreeprefix = treeprefix; }
+  fTreeName = fTreeprefix + fTreeName;
   treerootfile->ConstructTreeBranches(fTreeName, fTreeComment.c_str(), *fSourceCopy);
   //fTree = treerootfile->GetTree(fTreeName);
 }

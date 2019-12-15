@@ -144,7 +144,7 @@
   name       = CleanExtractor
   priority   = 0
   cut-logic  = 0
-  scope      = event
+  scope      = pattern
   tree-name  = clean
   tree-comment = Clean Data
   error-mask = 0xffffffff
