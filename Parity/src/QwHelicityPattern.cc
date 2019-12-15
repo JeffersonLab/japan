@@ -182,6 +182,7 @@ QwHelicityPattern::QwHelicityPattern(const QwHelicityPattern &source)
   fPairAsymmetry(source.fYield),
   fBurstLength(source.fBurstLength),
   fGoodPatterns(source.fGoodPatterns),
+  fPatternSize(source.fPatternSize),
   fBurstCounter(source.fBurstCounter),
   fEnableBurstSum(source.fEnableBurstSum),
   fPrintBurstSum(source.fPrintBurstSum),
