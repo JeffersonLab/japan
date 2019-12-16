@@ -669,7 +669,8 @@ void QwHelicityPattern::ClearEventData()
 void  QwHelicityPattern::AccumulateRunningSum(QwHelicityPattern &entry, Int_t count, Int_t ErrorMask)
 {
   if (entry.fPatternIsGood){
-    if ( (*(entry.fAsymmetry.GetEventcutErrorFlagPointer()) & ErrorMask) == 0 )  {
+    //    if ( (*(entry.fAsymmetry.GetEventcutErrorFlagPointer()) & ErrorMask) == 0 )  {
+    if (entry.fAsymmetry.GetEventcutErrorFlag()==0){
       fGoodPatterns++;
     }
     fBurstCounter = entry.fBurstCounter;
