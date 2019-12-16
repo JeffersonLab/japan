@@ -95,211 +95,247 @@ asym:atl1, 0.25
 asym:atl2, 0.25
 asym:atr1, -0.25
 asym:atr2, -0.25
-############################## SAM 1 and 5
-[asym:@asym_sam_15_dd]
-asym:sam1, 0.5
-asym:sam5, -0.5
+
+# Double differences and avgs
+[asym:@asym_bcm_2an_us_an_ds_avg]
+asym:bcm_an_us, 0.6666
+asym:bcm_an_ds, 0.3333
+
+[asym:@asym_bcm_2an_us_an_ds_dd]
+asym:bcm_an_us,  0.6666
+asym:bcm_an_ds, -0.3333
+
+[asym:@asym_bcm_an_us_an_ds_avg]
+asym:bcm_an_us, 0.5
+asym:bcm_an_ds, 0.5
+
+[asym:@asym_bcm_an_us_an_ds_dd]
+asym:bcm_an_us,  0.5
+asym:bcm_an_ds, -0.5
+
+[asym:@asym_bcm_an_us_an_ds3_avg]
+asym:bcm_an_us,  0.5
+asym:bcm_an_ds3, 0.5
+
+[asym:@asym_bcm_an_us_an_ds3_dd]
+asym:bcm_an_us,   0.5
+asym:bcm_an_ds3, -0.5
+
+[asym:@asym_bcm_dg_us_dg_ds_avg]
+asym:bcm_dg_us, 0.5
+asym:bcm_dg_ds, 0.5
+
+[asym:@asym_bcm_dg_us_dg_ds_dd]
+asym:bcm_dg_us, 0.5
+asym:bcm_dg_ds, -0.5
+
+[asym:@asym_bcm_cav4cQ_an_ds_avg]
+asym:cav4cQ, 0.5
+asym:bcm_an_ds, 0.5
+
+[asym:@asym_bcm_cav4cQ_an_ds_dd]
+asym:cav4cQ, 0.5
+asym:bcm_an_ds, -0.5
+
+[asym:@asym_bcm_cav4cQ_dg_ds_avg]
+asym:cav4cQ, 0.5
+asym:bcm_dg_ds, 0.5
+
+[asym:@asym_bcm_cav4cQ_dg_ds_dd]
+asym:cav4cQ, 0.5
+asym:bcm_dg_ds, -0.5
+
+[asym:@asym_bcm_dg_us_an_us_avg]
+asym:bcm_dg_us, 0.5
+asym:bcm_an_us, 0.5
+
+[asym:@asym_bcm_dg_us_an_us_dd]
+asym:bcm_dg_us, 0.5
+asym:bcm_an_us, -0.5
+
+[asym:@asym_bcm_dg_ds_an_us_avg]
+asym:bcm_dg_ds, 0.5
+asym:bcm_an_us, 0.5
+
+[asym:@asym_bcm_dg_ds_an_us_dd]
+asym:bcm_dg_ds, 0.5
+asym:bcm_an_us, -0.5
+
+[asym:@asym_bcm_dg_us_an_ds_avg]
+asym:bcm_dg_us, 0.5
+asym:bcm_an_ds, 0.5
+
+[asym:@asym_bcm_dg_us_an_ds_dd]
+asym:bcm_dg_us, 0.5
+asym:bcm_an_ds, -0.5
+
+[asym:@asym_bcm_dg_ds_an_ds_avg]
+asym:bcm_dg_ds, 0.5
+asym:bcm_an_ds, 0.5
+
+[asym:@asym_bcm_dg_ds_an_ds_dd]
+asym:bcm_dg_ds, 0.5
+asym:bcm_an_ds, -0.5
+
 [asym:@asym_sam_15_avg]
 asym:sam1, 0.5
 asym:sam5, 0.5
-############################## SAM 3 and 7
-[asym:@asym_sam_37_dd]
-asym:sam3, 0.5
-asym:sam7, -0.5
+
+[asym:@asym_sam_15_dd]
+asym:sam1, 0.5
+asym:sam5, -0.5
+
 [asym:@asym_sam_37_avg]
 asym:sam3, 0.5
 asym:sam7, 0.5
-############################## SAM 2 and 6
-[asym:@asym_sam_26_dd]
-asym:sam2, 0.5
-asym:sam6, -0.5
+
+[asym:@asym_sam_37_dd]
+asym:sam3, 0.5
+asym:sam7, -0.5
+
 [asym:@asym_sam_26_avg]
 asym:sam2, 0.5
 asym:sam6, 0.5
-############################## SAM 4 and 8
-[asym:@asym_sam_48_dd]
-asym:sam4, 0.5
-asym:sam8, -0.5
+
+[asym:@asym_sam_26_dd]
+asym:sam2, 0.5
+asym:sam6, -0.5
+
 [asym:@asym_sam_48_avg]
 asym:sam4, 0.5
 asym:sam8, 0.5
 
-# Double differences and avgs
-[asym:@bcm_2an_us_an_ds_avg]
-asym:bcm_an_us, 0.6666
-asym:bcm_an_ds, 0.3333
+[asym:@asym_sam_48_dd]
+asym:sam4, 0.5
+asym:sam8, -0.5
 
-[asym:@bcm_2an_us_an_ds_dd]
-asym:bcm_an_us,  0.6666
-asym:bcm_an_ds, -0.3333
+[asym:@asym_sam_24_68_dd]
+asym:sam2, 0.25
+asym:sam4, 0.25
+asym:sam6, -0.25
+asym:sam8, -0.25
 
-[asym:@bcm_an_us_an_ds_avg]
-asym:bcm_an_us, 0.5
-asym:bcm_an_ds, 0.5
-
-[asym:@bcm_an_us_an_ds_dd]
-asym:bcm_an_us,  0.5
-asym:bcm_an_ds, -0.5
-
-[asym:@bcm_an_us_an_ds3_avg]
-asym:bcm_an_us,  0.5
-asym:bcm_an_ds3, 0.5
-
-[asym:@bcm_an_us_an_ds3_dd]
-asym:bcm_an_us,   0.5
-asym:bcm_an_ds3, -0.5
-
-[asym:@bcm_dg_us_dg_ds_avg]
-asym:bcm_dg_us, 0.5
-asym:bcm_dg_ds, 0.5
-
-[asym:@bcm_dg_us_dg_ds_dd]
-asym:bcm_dg_us, 0.5
-asym:bcm_dg_ds, -0.5
-
-[asym:@bcm_cav4cQ_an_ds_avg]
-asym:cav4cQ, 0.5
-asym:bcm_an_ds, 0.5
-
-[asym:@bcm_cav4cQ_an_ds_dd]
-asym:cav4cQ, 0.5
-asym:bcm_an_ds, -0.5
-
-[asym:@bcm_cav4cQ_dg_ds_avg]
-asym:cav4cQ, 0.5
-asym:bcm_dg_ds, 0.5
-
-[asym:@bcm_cav4cQ_dg_ds_dd]
-asym:cav4cQ, 0.5
-asym:bcm_dg_ds, -0.5
-
-[asym:@bcm_dg_us_an_us_avg]
-asym:bcm_dg_us, 0.5
-asym:bcm_an_us, 0.5
-
-[asym:@bcm_dg_us_an_us_dd]
-asym:bcm_dg_us, 0.5
-asym:bcm_an_us, -0.5
-
-[asym:@bcm_dg_ds_an_us_avg]
-asym:bcm_dg_ds, 0.5
-asym:bcm_an_us, 0.5
-
-[asym:@bcm_dg_ds_an_us_dd]
-asym:bcm_dg_ds, 0.5
-asym:bcm_an_us, -0.5
-
-[asym:@bcm_dg_us_an_ds_avg]
-asym:bcm_dg_us, 0.5
-asym:bcm_an_ds, 0.5
-
-[asym:@bcm_dg_us_an_ds_dd]
-asym:bcm_dg_us, 0.5
-asym:bcm_an_ds, -0.5
-
-[asym:@bcm_dg_ds_an_ds_avg]
-asym:bcm_dg_ds, 0.5
-asym:bcm_an_ds, 0.5
-
-[asym:@bcm_dg_ds_an_ds_dd]
-asym:bcm_dg_ds, 0.5
-asym:bcm_an_ds, -0.5
-
-[asym:@sam_26_48_dd]
+[asym:@asym_sam_26_48_dd]
 asym:sam2, 0.25
 asym:sam4, -0.25
 asym:sam6, 0.25
 asym:sam8, -0.25
 
-[diff:@sam_26_48_avg]
+[asym:@asym_sam_2468_avg]
 asym:sam2, 0.25
 asym:sam4, 0.25
 asym:sam6, 0.25
 asym:sam8, 0.25
 
-[asym:@sam_13_57_dd]
+[asym:@asym_sam_13_57_dd]
 asym:sam1, 0.25
 asym:sam5, -0.25
 asym:sam3, 0.25
 asym:sam7, -0.25
 
-[diff:@sam_13_57_avg]
+[asym:@asym_sam_15_37_dd]
+asym:sam1, 0.25
+asym:sam5, 0.25
+asym:sam3, -0.25
+asym:sam7, -0.25
+
+[asym:@asym_sam_1357_avg]
 asym:sam1, 0.25
 asym:sam3, 0.25
 asym:sam5, 0.25
 asym:sam7, 0.25
 
-[asym:@bpm_4aX_4acX_avg]
-asym:bpm4aX, 0.5
-asym:bpm4acX, 0.5
+[asym:@asym_sam_12345678_avg]
+asym:sam1, 0.125
+asym:sam2, 0.125
+asym:sam3, 0.125
+asym:sam4, 0.125
+asym:sam5, 0.125
+asym:sam6, 0.125
+asym:sam7, 0.125
+asym:sam8, 0.125
 
-[asym:@bpm_4aX_4acX_dd]
-asym:bpm4aX, 0.5
-asym:bpm4acX, -0.5
+[asym:@asym_sam_1357_2468_dd]
+asym:sam1, 0.125
+asym:sam3, 0.125
+asym:sam5, 0.125
+asym:sam7, 0.125
+asym:sam2, -0.125
+asym:sam4, -0.125
+asym:sam6, -0.125
+asym:sam8, -0.125
 
-[asym:@bpm_4aX_4eX_avg]
-asym:bpm4aX, 0.5
-asym:bpm4eX, 0.5
+[diff:@diff_bpm_4aX_4acX_avg]
+diff:bpm4aX, 0.5
+diff:bpm4acX, 0.5
 
-[asym:@bpm_4aX_4eX_dd]
-asym:bpm4aX, 0.5
-asym:bpm4eX, -0.5
+[diff:@diff_bpm_4aX_4acX_dd]
+diff:bpm4aX, 0.5
+diff:bpm4acX, -0.5
 
-[asym:@bpm_4aX_4ecX_avg]
-asym:bpm4aX, 0.5
-asym:bpm4ecX, 0.5
+[diff:@diff_bpm_4aX_4eX_avg]
+diff:bpm4aX, 0.5
+diff:bpm4eX, 0.5
 
-[asym:@bpm_4aX_4ecX_dd]
-asym:bpm4aX, 0.5
-asym:bpm4ecX, -0.5
+[diff:@diff_bpm_4aX_4eX_dd]
+diff:bpm4aX, 0.5
+diff:bpm4eX, -0.5
 
-[asym:@bpm_4eX_4ecX_avg]
-asym:bpm4eX, 0.5
-asym:bpm4ecX, 0.5
+[diff:@diff_bpm_4aX_4ecX_avg]
+diff:bpm4aX, 0.5
+diff:bpm4ecX, 0.5
 
-[asym:@bpm_4eX_4ecX_dd]
-asym:bpm4eX, 0.5
-asym:bpm4ecX, -0.5
+[diff:@diff_bpm_4aX_4ecX_dd]
+diff:bpm4aX, 0.5
+diff:bpm4ecX, -0.5
 
-[asym:@bpm_4aY_4acY_avg]
-asym:bpm4aY, 0.5
-asym:bpm4acY, 0.5
+[diff:@diff_bpm_4eX_4ecX_avg]
+diff:bpm4eX, 0.5
+diff:bpm4ecX, 0.5
 
-[asym:@bpm_4aY_4acY_dd]
-asym:bpm4aY, 0.5
-asym:bpm4acY, -0.5
+[diff:@diff_bpm_4eX_4ecX_dd]
+diff:bpm4eX, 0.5
+diff:bpm4ecX, -0.5
 
-[asym:@bpm_4aY_4eY_avg]
-asym:bpm4aY, 0.5
-asym:bpm4eY, 0.5
+[diff:@diff_bpm_4aY_4acY_avg]
+diff:bpm4aY, 0.5
+diff:bpm4acY, 0.5
 
-[asym:@bpm_4aY_4eY_dd]
-asym:bpm4aY, 0.5
-asym:bpm4eY, -0.5
+[diff:@diff_bpm_4aY_4acY_dd]
+diff:bpm4aY, 0.5
+diff:bpm4acY, -0.5
 
-[asym:@bpm_4aY_4ecY_avg]
-asym:bpm4aY, 0.5
-asym:bpm4ecY, 0.5
+[diff:@diff_bpm_4aY_4eY_avg]
+diff:bpm4aY, 0.5
+diff:bpm4eY, 0.5
 
-[asym:@bpm_4aY_4ecY_dd]
-asym:bpm4aY, 0.5
-asym:bpm4ecY, -0.5
+[diff:@diff_bpm_4aY_4eY_dd]
+diff:bpm4aY, 0.5
+diff:bpm4eY, -0.5
 
-[asym:@bpm_4eY_4ecY_avg]
-asym:bpm4eY, 0.5
-asym:bpm4ecY, 0.5
+[diff:@diff_bpm_4aY_4ecY_avg]
+diff:bpm4aY, 0.5
+diff:bpm4ecY, 0.5
 
-[asym:@bpm_4eY_4ecY_dd]
-asym:bpm4eY, 0.5
-asym:bpm4ecY, -0.5
+[diff:@diff_bpm_4aY_4ecY_dd]
+diff:bpm4aY, 0.5
+diff:bpm4ecY, -0.5
 
-[diff:@bpmE]
+[diff:@diff_bpm_4eY_4ecY_avg]
+diff:bpm4eY, 0.5
+diff:bpm4ecY, 0.5
+
+[diff:@diff_bpm_4eY_4ecY_dd]
+diff:bpm4eY, 0.5
+diff:bpm4ecY, -0.5
+
+[diff:@diff_bpmE]
 diff:bpm12X, 1
 
-[diff:@bpmEX]
+[diff:@diff_bpmEX]
 diff:bpm12X, 1
 
-[diff:@bpmE_11X12X]
+[diff:@diff_bpmE_11X12X]
 diff:bpm11X, 1.0
 diff:bpm12X, 0.4
 
