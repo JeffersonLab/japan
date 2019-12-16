@@ -31,6 +31,20 @@
   tree-name  = lrb_std
   tree-comment = Correlations
 
+[QwCorrelator]
+  name       = lrb_alldet_std
+  priority   = 50
+  map        = prex_corrolator_alldet.conf
+  slope-file-base = blueR
+  slope-file-suff = alldet.slope.root
+  slope-path = ./LRBoutput/
+  alias-file-base = regalias_
+  alias-file-suff = alldet
+  alias-path = ./LRBoutput/
+  disable-histos = true
+  tree-name  = lrb_std_alldet
+  tree-comment = Correlations (All detector channels)
+
 [QwAlarmHandler]
   name        = MyAlarmHandler
   priority    = 20
@@ -38,3 +52,11 @@
   alarm-output-file   = /adaqfs/home/apar/alarms/japanAlarms.csv
   alarm-loop-N-update = 350
   alarm-active        = 1
+
+[QwExtractor]
+  name       = BMWExtractor
+  priority   = 0
+  scope      = event
+  tree-name  = bmw          # not implemented at this time, currently hardcoded
+  tree-comment = Bmod Data  # not implemented at this time, currently hardcoded
+
