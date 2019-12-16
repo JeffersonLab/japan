@@ -125,11 +125,11 @@ asym:sam4, 0.5
 asym:sam8, 0.5
 
 # Double differences and avgs
-[asym:@bcm_an_2us_ds_avg]
+[asym:@bcm_2an_us_an_ds_avg]
 asym:bcm_an_us, 0.6666
 asym:bcm_an_ds, 0.3333
 
-[asym:@bcm_an_2us_ds_dd]
+[asym:@bcm_2an_us_an_ds_dd]
 asym:bcm_an_us,  0.6666
 asym:bcm_an_ds, -0.3333
 
