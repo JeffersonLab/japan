@@ -1166,7 +1166,7 @@ QwMessage<<"................HALL C slope............."<<fHCIASlope<<QwLog::endl;
   for(int i=0;i<numBPM;i++){
    
     Bool_t HCrefill;
-    if (vBPM.at(i) == "q_targC"){
+    if (i == numBPM-1){
       // Only submit Hall C IA Feedback Aq to EPICS
       if (fAsymmetry.RequestExternalValue(vBPM[i],&fTargetParameter)){
         Double_t this_mean =fTargetParameter.GetValue()*1.0e+6;
