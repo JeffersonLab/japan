@@ -33,13 +33,13 @@ void BeamModPlot(TString type="evt",TString type2="mul", TString ref="CodaEventN
   
 
   TString bmwcut = "bmwcycnum>0";
-  TString evcut = "(ErrorFlag & 0x7bfe6fff)==0";
-  TString evcutxcorr = "(ErrorFlag & 0x7bfe6fff)==0"; //cut for x sensitivities
-  TString evcutycorr = "(ErrorFlag & 0x7bfe6fff)==0"; //cut for y sensitivities
-  TString evcutbcm = "(ErrorFlag & 0x7bfe6fff)==0 && bmwcycnum==1"; //cut to look at one supercycle
-  TString evcutx = "(ErrorFlag & 0x7bfe6fff)==0 && bmwobj==1 | bmwobj==3 | bmwobj==5";//cut for x modulations
-  TString evcuty = "(ErrorFlag & 0x7bfe6fff)==0 && bmwobj==2 | bmwobj==4 | bmwobj==6";// cut for y modulations
-  TString evcute = "(ErrorFlag & 0x7bfe6fff)==0 && bmwobj==8";//cut for energy modulations
+  TString evcut = "(ErrorFlag & 0xda7e6bff)==0";
+  TString evcutxcorr = "(ErrorFlag & 0xda7e6bff)==0"; //cut for x sensitivities
+  TString evcutycorr = "(ErrorFlag & 0xda7e6bff)==0"; //cut for y sensitivities
+  TString evcutbcm = "(ErrorFlag & 0xda7e6bff)==0 && bmwcycnum==1"; //cut to look at one supercycle
+  TString evcutx = "(ErrorFlag & 0xda7e6bff)==0 && bmwobj==1 | bmwobj==3 | bmwobj==5";//cut for x modulations
+  TString evcuty = "(ErrorFlag & 0xda7e6bff)==0 && bmwobj==2 | bmwobj==4 | bmwobj==6";// cut for y modulations
+  TString evcute = "(ErrorFlag & 0xda7e6bff)==0 && bmwobj==8";//cut for energy modulations
   TString bmon = "(ErrorFlag & 0x00009000) !=0"; //flags true if BM is on
   TString coil[7] = {"bmod_trim1","bmod_trim2","bmod_trim3","bmod_trim4","bmod_trim5","bmod_trim6","bmod_trim7"};
 

@@ -182,6 +182,7 @@ QwHelicityPattern::QwHelicityPattern(const QwHelicityPattern &source)
   fPairAsymmetry(source.fYield),
   fBurstLength(source.fBurstLength),
   fGoodPatterns(source.fGoodPatterns),
+  fPatternSize(source.fPatternSize),
   fBurstCounter(source.fBurstCounter),
   fEnableBurstSum(source.fEnableBurstSum),
   fPrintBurstSum(source.fPrintBurstSum),
@@ -668,7 +669,10 @@ void QwHelicityPattern::ClearEventData()
 void  QwHelicityPattern::AccumulateRunningSum(QwHelicityPattern &entry, Int_t count, Int_t ErrorMask)
 {
   if (entry.fPatternIsGood){
-    fGoodPatterns++;
+    //    if ( (*(entry.fAsymmetry.GetEventcutErrorFlagPointer()) & ErrorMask) == 0 )  {
+    if (entry.fAsymmetry.GetEventcutErrorFlag()==0){
+      fGoodPatterns++;
+    }
     fBurstCounter = entry.fBurstCounter;
     fYield.AccumulateRunningSum(entry.fYield, count, ErrorMask);
     fAsymmetry.AccumulateRunningSum(entry.fAsymmetry, count, ErrorMask);
