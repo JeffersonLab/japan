@@ -411,6 +411,8 @@ void QwCorrelator::ConstructTreeBranches(
   const std::string name = treeprefix + fTreeName;
   treerootfile->NewTree(name, fTreeComment.c_str());
   fTree = treerootfile->GetTree(name);
+  // Check to make sure the tree was created successfully
+  if (fTree == NULL) return;
 
   // Set up branches
   fTree->Branch(TString(branchprefix + "total_count"), &fTotalCount);
