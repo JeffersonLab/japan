@@ -407,6 +407,10 @@ void QwCorrelator::ConstructTreeBranches(
     return;
   }
 
+  // Create alpha and alias files before trying to create the tree
+  OpenAlphaFile(treeprefix);
+  OpenAliasFile(treeprefix);
+
   // Construct tree name and create new tree
   const std::string name = treeprefix + fTreeName;
   treerootfile->NewTree(name, fTreeComment.c_str());
@@ -472,9 +476,6 @@ void QwCorrelator::ConstructTreeBranches(
   branchv(fTree,linReg.mSY,  "dMY");  // Uncorrected mean error
   branchv(fTree,linReg.mSYp, "dMYp"); // Corrected mean error
 
-  // Create alpha and alias files
-  OpenAlphaFile(treeprefix);
-  OpenAliasFile(treeprefix);
 }
 
 /// \brief Construct the histograms in a folder with a prefix
