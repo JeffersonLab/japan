@@ -127,5 +127,5 @@ y_targ, bpmstripline, bpm4e, x
 
 xy_pos_x, bpmstripline, bpm4e, x
 xy_pos_y, bpmstripline, bpm4e, y 
-! Changing the normalizer for slug 51 to the digital BCM to mitigate noise
-q_targ, bcm, bcm_an_us, c
+! q_targ is 0l02 for feedback testing
+!q_targ, bcm, bcm_an_us, c
