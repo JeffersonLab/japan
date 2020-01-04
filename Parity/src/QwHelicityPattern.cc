@@ -53,6 +53,10 @@ void QwHelicityPattern::DefineOptions(QwOptions &options)
     ("burstlength", po::value<int>()->default_value(9000),
      "number of patterns per burst");
 
+  options.AddOptions("Helicity pattern")
+    ("max-burst-index", po::value<int>()->default_value(0x7fffffff), // Default to max signed int
+     "max number of bursts for a run");
+
   QwBlinder::DefineOptions(options);
 }
 
@@ -69,6 +73,9 @@ void QwHelicityPattern::ProcessOptions(QwOptions &options)
 
   fBurstLength = options.GetValue<int>("burstlength");
   if (fBurstLength == 0) DisableBurstSum();
+
+  fMaxBurstIndex = options.GetValue<int>("max-burst-index");
+//  if (fMaxBurstIndex != 0x7fffffff) do something ;
 
   if (fEnableAlternateAsym && fPatternSize <= 2){
     QwWarning << "QwHelicityPattern::ProcessOptions: "
@@ -96,6 +103,7 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
     fPairDifference(event), 
     fPairAsymmetry(event),
     fBurstLength(0),
+    fMaxBurstIndex(0x7fffffff),
     fGoodPatterns(0),
     fBurstCounter(0),
     fEnableBurstSum(kFALSE),
@@ -181,6 +189,7 @@ QwHelicityPattern::QwHelicityPattern(const QwHelicityPattern &source)
   fPairDifference(source.fYield),
   fPairAsymmetry(source.fYield),
   fBurstLength(source.fBurstLength),
+  fMaxBurstIndex(source.fMaxBurstIndex),
   fGoodPatterns(source.fGoodPatterns),
   fPatternSize(source.fPatternSize),
   fBurstCounter(source.fBurstCounter),

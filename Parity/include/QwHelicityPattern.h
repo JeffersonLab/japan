@@ -62,8 +62,8 @@ class QwHelicityPattern {
   Bool_t IsCompletePattern() const;
 
   Bool_t IsEndOfBurst(){
-    //  Is this the end of a burst?
-    return (fBurstLength > 0 && fGoodPatterns >= fBurstLength);
+    //  Is this the end of a burst? And is this not the final burst?
+    return (( fBurstLength > 0 && fGoodPatterns >= fBurstLength ) && ( fBurstCounter<fMaxBurstIndex ));
   }
 
   void  CalculateAsymmetry();
@@ -168,7 +168,12 @@ class QwHelicityPattern {
   };
 
   Bool_t HasBurstData(){return fGoodPatterns>0;};
-  void  IncrementBurstCounter(){fBurstCounter++;}
+  void  IncrementBurstCounter(){
+    if (fBurstCounter < fMaxBurstIndex) {
+      fBurstCounter++;
+    }
+    // Else we just park here and don't try to increment any more. This is a parameter from command line or map file
+  }
   Short_t GetBurstCounter() const {return fBurstCounter;}
   void  ClearEventData();
 
@@ -211,6 +216,7 @@ class QwHelicityPattern {
 
   // Burst sum/difference of the yield and asymmetry
   Int_t fBurstLength;
+  Int_t fMaxBurstIndex;
   Int_t fGoodPatterns;
   Short_t fBurstCounter;
   Bool_t fEnableBurstSum;
