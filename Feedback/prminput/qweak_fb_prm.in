@@ -11,6 +11,7 @@ patterns = 225
 #patterns = 3600
 
 #for Hall C IA = 1 minute
+#cia_patterns = 200
 cia_patterns = 1800
 
 #for Hall A IA = 7 seconds
@@ -19,7 +20,7 @@ cia_patterns = 1800
 aia_patterns = 1800
 
 #for Hall B IA =1min
-bia_patterns = 200
+bia_patterns = 1800
 
 #for Hall A IA 
 # 7 seconds
@@ -110,15 +111,21 @@ HB_IA_up  = 70000
 #YU = -0.0000511
 #YV =  0.0000336
 #Caryn edit for bpm2i02 20191031
-XU = -0.000068
-XV =  0.000130
-YU = -0.000109
-YV = -0.000037
+#XU = -0.000068
+#XV =  0.000130
+#YU = -0.000109
+#YV = -0.000037
+#Caryn edit for bpm2i02 20200104
+XU = -0.0000468
+XV =  0.0000889
+YU = -0.0001059
+YV = -0.0000348
 
 
 #PITASLOPE_IN = -0.12
 #PITASLOPE_OUT = 0.12
-PITASLOPE_OUT_IN = -0.57
+#PITASLOPE_OUT_IN = -0.57
+PITASLOPE_OUT_IN = -1.48
 
 #Amali edit 20190626
 #use japan slopes
@@ -127,9 +134,11 @@ PITASLOPE_OUT_IN = -0.57
 
 #Cameron 2019-10-24
 #use japan slopes
-PITASLOPE_IN = 1.23
-PITASLOPE_OUT = -1.23
-
+#PITASLOPE_IN = 1.23
+#PITASLOPE_OUT = -1.23
+#from 2010-1-04
+PITASLOPE_IN = 1.48
+PITASLOPE_OUT = -1.48
 
 #Amali edit 20190717
 #HAllCIASLOPE_IN = 0.043
@@ -138,8 +147,8 @@ PITASLOPE_OUT = -1.23
 #HAllCIASLOPE_IN = 0.0419
 #HAllCIASLOPE_OUT = 0.0419
 #Nov21 2019 remeasured
-HAllCIASLOPE_IN = 0.03
-HAllCIASLOPE_OUT = 0.03
+HAllCIASLOPE_IN = 0.0326
+HAllCIASLOPE_OUT = 0.0326
 #HAllCIASLOPE_IN = -0.043
 #HAllCIASLOPE_OUT = -0.043
 
@@ -147,16 +156,16 @@ HAllCIASLOPE_OUT = 0.03
 #HAllBIASLOPE_IN = -0.16
 #HAllBIASLOPE_OUT = -0.16
 #oct 2019 not sure of slope 
-HAllBIASLOPE_IN = 0.177
-HAllBIASLOPE_OUT = 0.177
+HAllBIASLOPE_IN = 0.1065
+HAllBIASLOPE_OUT = 0.1065
 
 
 #from Summer
 #HAllAIASLOPE_IN = -0.0626
 #HAllAIASLOPE_OUT = -0.0626
 #from October 2019
-HAllAIASLOPE_IN = -0.0578
-HAllAIASLOPE_OUT = -0.0578
+HAllAIASLOPE_IN = -0.0533
+HAllAIASLOPE_OUT = -0.0533
 
 
 #from May 2019
