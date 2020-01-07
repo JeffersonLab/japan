@@ -10,8 +10,9 @@ UNSER,   -174.1,     2.066e-2
 
 
 !!! Hall C bcm two point calibration from run 5371
-hallc_bcm_4c, -360.17, 0.0011264648
-
+!! hallc_bcm_4c,  -360.17, 0.0011264648
+!!  Multipoint calibration from run 5382
+  hallc_bcm_4c,  -524.0,   0.0041998972
 
 !For runs in 100-150 uA range: https://logbooks.jlab.org/entry/3753564
 
