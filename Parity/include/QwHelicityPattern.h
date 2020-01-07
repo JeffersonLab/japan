@@ -63,13 +63,22 @@ class QwHelicityPattern {
 
   Bool_t IsCompletePattern() const;
 
-  void PrintIndex(Int_t runNum){
+  void PrintIndexMapFile(Int_t runNum){
     if ( fPrintIndexFile && (fGoodPatterns < fBurstMinGoodPatterns) ) {
       // Print a text map file to prmpinput/MaxBurstIndices/max_burst_index.####.map
-      QwWarning << "Printing MaxBurstIndices/max_burst_index." << runNum << ".map file with " << fBurstCounter << " max burst number" << QwLog::endl;
+      Int_t maxBurst = 0;
+      if (fBurstCounter==0) {
+        // It's a single burst run anyway
+        maxBurst = 0;
+      }
+      else {
+        // It's a multi burst run and we want to merge the final two bursts
+        maxBurst = fBurstCounter-1;
+      }
+      QwWarning << "Printing MaxBurstIndices/max_burst_index." << runNum << ".map file with " << maxBurst << " max burst number" << QwLog::endl;
       std::ofstream output;
       output.open(Form("MaxBurstIndices/max_burst_index.%d.map",runNum));
-      output<< fBurstCounter << std::endl; // Print the current index before incrementing further, this will be the max index and the next pass will overflow this one instead of having another
+      output<< maxBurst << std::endl; // Print the current index before incrementing further, this will be the max index and the next pass will overflow this one instead of having another
       output.close();
     }
   }

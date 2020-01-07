@@ -461,7 +461,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
       // Fill data handler tree branches
       datahandlerarray_burst.FillTreeBranches(burstrootfile);
-      patternsum_per_burst.PrintIndex(run_number);
+      patternsum_per_burst.PrintIndexMapFile(run_number);
     }
 
     //  Perform actions at the end of the event loop on the
