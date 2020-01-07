@@ -99,11 +99,12 @@ Int_t main(Int_t argc, Char_t* argv[])
   //  QwPromptSummary promptsummary;
 
   ///  Start loop over all runs
+  Int_t run_number = 0;
   while (eventbuffer.OpenNextStream() == CODA_OK) {
 
     ///  Begin processing for the first run
 
-    Int_t run_number = eventbuffer.GetRunNumber();
+    run_number = eventbuffer.GetRunNumber();
     TString run_label = eventbuffer.GetRunLabel();
 
     ///  Set the current event number for parameter file lookup
@@ -460,6 +461,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
       // Fill data handler tree branches
       datahandlerarray_burst.FillTreeBranches(burstrootfile);
+      patternsum_per_burst.PrintIndex(run_number);
     }
 
     //  Perform actions at the end of the event loop on the

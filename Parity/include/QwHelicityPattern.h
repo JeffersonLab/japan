@@ -9,6 +9,8 @@
 
 // System headers
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 // ROOT headers
 #include <TTree.h>
@@ -60,6 +62,17 @@ class QwHelicityPattern {
   }
 
   Bool_t IsCompletePattern() const;
+
+  void PrintIndex(Int_t runNum){
+    if ( fPrintIndexFile && (fGoodPatterns < fBurstMinGoodPatterns) ) {
+      // Print a text map file to prmpinput/MaxBurstIndices/max_burst_index.####.map
+      QwWarning << "Printing MaxBurstIndices/max_burst_index." << runNum << ".map file with " << fBurstCounter << " max burst number" << QwLog::endl;
+      std::ofstream output;
+      output.open(Form("MaxBurstIndices/max_burst_index.%d.map",runNum));
+      output<< fBurstCounter << std::endl; // Print the current index before incrementing further, this will be the max index and the next pass will overflow this one instead of having another
+      output.close();
+    }
+  }
 
   Bool_t IsEndOfBurst(){
     //  Is this the end of a burst? And is this not the final burst?
@@ -217,6 +230,8 @@ class QwHelicityPattern {
   // Burst sum/difference of the yield and asymmetry
   Int_t fBurstLength;
   Int_t fMaxBurstIndex;
+  Bool_t fPrintIndexFile;
+  Int_t fBurstMinGoodPatterns;
   Int_t fGoodPatterns;
   Short_t fBurstCounter;
   Bool_t fEnableBurstSum;
