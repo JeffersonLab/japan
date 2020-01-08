@@ -28,7 +28,7 @@ EVENTCUTS = 3
 !for bcm devices
 !device_type, device_name,      lower limit, upper limit, local(l)/global(g), stability percentage
 !!! CREX RUNNING
-!!! bcm, bcm_an_us,     80,  1e6,  g
+ bcm, bcm_an_us,     80,  1e6,  g
 !!! bcm, hallc_bcm_4c,  2,   1e6,  l 
 ! END TWO CUTS
 !bcm, bcm_dg_ds,    500, 1e10, g
