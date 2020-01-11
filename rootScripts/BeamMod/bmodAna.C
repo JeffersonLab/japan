@@ -1056,11 +1056,11 @@ int bmodAna(Int_t runNo = 4199, std::string inputFile = "input.txt", TString slu
         BMOD * bmod = new BMOD();
         bmod->parseTextFile(inputFile);
         if(bmod->getData(std::atoi(runnum.c_str()))){
-          return 1;
+          continue;
         }
         bmod->calculateSensitivities();
         bmod->saveSensitivityData();
-        if (bmod->parameterVectors.count("Just Sensitivies") == 0 && bmod->parameterVectors["Just Sensitivies"].at(0) == "False") {
+        if (bmod->parameterVectors.count("Just Sensitivies") == 0 || bmod->parameterVectors["Just Sensitivies"].at(0) == "False") {
           bmod->invertMatrix();
           bmod->saveSlopeData();
           if (bmod->parameterVectors.count("Rootfile Output Runwise") == 0 || bmod->parameterVectors["Rootfile Output Runwise"].at(0) != "True") {
