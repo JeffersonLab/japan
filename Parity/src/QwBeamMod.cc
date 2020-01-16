@@ -93,7 +93,7 @@ Int_t QwBeamMod::LoadChannelMap(TString mapfile){
         if (lineok){
          VQwHardwareChannel* localchan1 = new QwVQWK_Channel();
 	
-	 localchan1->InitializeChannel(GetSubsystemName(),"QwBeamMod",localModChannelID.fmodulename,"raw");
+	 localchan1->InitializeChannel(GetName(),"QwBeamMod",localModChannelID.fmodulename,"raw");
           fModChannel.push_back(localchan1);
 	  fModChannel[fModChannel.size()-1]->LoadChannelParameters(mapstr);
           localModChannelID.fIndex=fModChannel.size()-1;
@@ -123,7 +123,7 @@ Int_t QwBeamMod::LoadChannelMap(TString mapfile){
         if (lineok){
 	  VQwHardwareChannel* localchan2 = new QwSIS3801D24_Channel();
 	  
-          localchan2->InitializeChannel(GetSubsystemName(),"QwBeamMod",localModChannelID.fmodulename,"raw");
+          localchan2->InitializeChannel(GetName(),"QwBeamMod",localModChannelID.fmodulename,"raw");
           fModChannel.push_back(localchan2);
 	  fModChannel[fModChannel.size()-1]->LoadChannelParameters(mapstr);
           localModChannelID.fIndex=fModChannel.size()-1;
@@ -153,7 +153,7 @@ Int_t QwBeamMod::LoadChannelMap(TString mapfile){
         if (lineok){
 	  VQwHardwareChannel* localchan3 = new QwSIS3801D32_Channel();
        
-          localchan3->InitializeChannel(GetSubsystemName(),"QwBeamMod",localModChannelID.fmodulename,"raw");
+          localchan3->InitializeChannel(GetName(),"QwBeamMod",localModChannelID.fmodulename,"raw");
           fModChannel.push_back(localchan3);
 	  fModChannel[fModChannel.size()-1]->LoadChannelParameters(mapstr);
           localModChannelID.fIndex=fModChannel.size()-1;

@@ -1,0 +1,15 @@
+ROC=26
+Bank=0x5
+vqwk_buffer_offset=1
+
+sample_size=4096
+
+  VQWK, 1, 0,  IntegrationPMT,  sam1  not_normalizable 
+  VQWK, 1, 1,  IntegrationPMT,  sam2  not_normalizable
+  VQWK, 1, 2,  IntegrationPMT,  sam3  not_normalizable
+  VQWK, 1, 3,  IntegrationPMT,  sam4  not_normalizable
+  VQWK, 1, 4,  IntegrationPMT,  sam5  not_normalizable
+  VQWK, 1, 5,  IntegrationPMT,  sam6  not_normalizable
+  VQWK, 1, 6,  IntegrationPMT,  sam7  not_normalizable
+  VQWK, 1, 7,  IntegrationPMT,  sam8  not_normalizable
+

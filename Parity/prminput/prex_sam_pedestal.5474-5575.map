@@ -1,0 +1,21 @@
+!! SAM Pedestal based to apply for Run5474,100-150uA current ramp, 2x2 raster (1.8x1.4MCC), FFB on. https://logbooks.jlab.org/entry/3753933
+!Calibrations fit relative to (bcm_an_us.hw_sum_raw/bcm_an_us.num_samples--597.00)*0.008975 from 100-150uA:
+sam1, 11262.32, 0.000076
+sam2, 11477.88, 0.000076
+sam3, 5234.19, 0.000076
+sam4, 11893.15, 0.000076
+sam5, 11700.85, 0.000076
+sam6, 13547.06, 0.000076
+sam7, 12153.40, 0.000076
+sam8, 12433.53, 0.000076
+
+!Calibrations fit relative to (bcm_an_us.hw_sum_raw/bcm_an_us.num_samples--597.00)*0.008975 from 30-150uA:
+
+!sam1, 11158.68, 0.000076
+!sam2, 13534.43, 0.000076
+!sam3, 9585.96, 0.000076
+!sam4, 12806.73, 0.000076
+!sam5, 11671.62, 0.000076
+!sam6, 13494.16, 0.000076
+!sam7, 12287.19, 0.000076
+!sam8, 12485.48, 0.000076

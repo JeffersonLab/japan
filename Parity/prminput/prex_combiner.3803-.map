@@ -72,6 +72,16 @@ asym:atl2, 0.5
 [asym:@asym_at2_dd]
 asym:atr2, 0.5
 asym:atl2, -0.5
+[asym:@asym_atl_dd_atr_dd_avg]
+asym:atl1, 0.25
+asym:atl2, -0.25
+asym:atr1, 0.25
+asym:atr2, -0.25
+[asym:@asym_atl_dd_atr_dd_dd]
+asym:atl1, 0.25
+asym:atl2, -0.25
+asym:atr1, -0.25
+asym:atr2, 0.25
 ############################## SAM 1 and 5
 [asym:@asym_sam_15_dd]
 asym:sam1, 0.5

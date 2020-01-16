@@ -1,5 +1,12 @@
 # This is an example of a detector definition file.
 
+[QwCombiner]
+  name       = MyCombiner
+  priority   = 0
+  map        = prex_combiner.map
+  tree-name  = mulc
+  tree-comment = Helicity event data tree (corrected)
+
 #[LRBCorrector]
 #  name       = LinRegBlue Corrector
 #  priority   = 10
@@ -10,36 +17,33 @@
 #  tree-name  = mulc_lrb
 #  tree-comment = Helicity event data tree (corrected by LinRegBlue)
 
-#[QwCorrelator]
-#  name       = MyCorrelator
-#  priority   = 50
-#  map        = prex_corrolator.conf
-#  slope-file-base = blueR
-#  slope-file-suff = new.slope.root
-#  slope-path = ./LRBoutput/
-#  alias-file-base = regalias_
-#  alias-file-suff = 
-#  alias-path = ./LRBoutput/
-#  disable-histos = true
+[QwCorrelator]
+  name       = lrb_std
+  priority   = 50
+  map        = prex_corrolator.conf
+  slope-file-base = blueR
+  slope-file-suff = new.slope.root
+  slope-path = ./LRBoutput/
+  alias-file-base = regalias_
+  alias-file-suff = 
+  alias-path = ./LRBoutput/
+  disable-histos = true
+  tree-name  = lrb_std
+  tree-comment = Correlations
 
-#[QwCorrelator]
-#  name       = MyMassiveCorrelator
-#  priority   = 50
-#  map        = prex_corrolator_all.conf
-#  slope-file-base = blueR
-#  slope-file-suff = all.slope.root
-#  slope-path = . 
-#  alias-file-base = regalias_
-#  alias-file-suff = all
-#  alias-path = .
-#  disable-histos = true
-
-[QwCombiner]
-  name       = MyCombiner
-  priority   = 0
-  map        = prex_combiner.map
-  tree-name  = mulc
-  tree-comment = Helicity event data tree (corrected)
+[QwCorrelator]
+  name       = lrb_alldet_std
+  priority   = 50
+  map        = prex_corrolator_alldet.conf
+  slope-file-base = blueR
+  slope-file-suff = alldet.slope.root
+  slope-path = ./LRBoutput/
+  alias-file-base = regalias_
+  alias-file-suff = alldet
+  alias-path = ./LRBoutput/
+  disable-histos = true
+  tree-name  = lrb_std_alldet
+  tree-comment = Correlations (All detector channels)
 
 [QwAlarmHandler]
   name        = MyAlarmHandler
@@ -48,3 +52,11 @@
   alarm-output-file   = /adaqfs/home/apar/alarms/japanAlarms.csv
   alarm-loop-N-update = 350
   alarm-active        = 1
+
+[QwExtractor]
+  name       = BMWExtractor
+  priority   = 0
+  scope      = event
+  tree-name  = bmw          # not implemented at this time, currently hardcoded
+  tree-comment = Bmod Data  # not implemented at this time, currently hardcoded
+

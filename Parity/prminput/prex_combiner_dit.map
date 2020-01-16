@@ -5,38 +5,6 @@
 # - Alias names start with "@" after the "asym" or "diff" prefix.
 #   They should also be all lower case.
 #
-## Dithering slopes from run 3322-3370 by Ye Tian 
-[asym:@dit_asym_usl]
-asym:usl, 1.0
-diff:bpm4aX, -144.11e-3
-diff:bpm4aY, 1e-3
-diff:bpm4eX, 71.345e-3
-diff:bpm4eY, -14.104e-3
-diff:bpm12X, 56.145e-3
-
-[asym:@dit_asym_usr]
-asym:usr, 1.0
-diff:bpm4aX, -108.03e-3
-diff:bpm4aY, 0.1818e-3
-diff:bpm4eX, -22.7341e-3
-diff:bpm4eY, -11.3323e-3
-diff:bpm12X, 57.0824e-3
-
-[asym:@dit_asym_dsl]
-asym:dsl, 1.0
-diff:bpm4aX, -147.066e-3
-diff:bpm4aY, 0.832e-3
-diff:bpm4eX, 75.594e-3
-diff:bpm4eY, -13.646e-3
-diff:bpm12X, 56.439e-3
-
-[asym:@dit_asym_dsr]
-asym:dsr, 1.0
-diff:bpm4aX, -118.3035e-3
-diff:bpm4aY, 0.4085e-3
-diff:bpm4eX, -14.3978e-3
-diff:bpm4eY, -12.8515e-3
-diff:bpm12X, 61.5153e-3
 
 #####
 #####  Some examples, all commented out.

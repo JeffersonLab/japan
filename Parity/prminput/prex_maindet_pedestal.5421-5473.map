@@ -1,0 +1,34 @@
+!From run Run5436,30-150uA current ramp, 2x2 raster (1.8x1.4MCC), FFB on, decreasing currents, gain searches done at 70,50,30uA.
+!Production at 150 uA pedestals, DS detectors are unplugged from integrating DAQ: https://logbooks.jlab.org/entry/3753968
+
+
+! Fitting from 100-150 uA yield these
+! Calibrations fit relative to (bcm_an_us.hw_sum_raw/bcm_an_us.num_samples--597.00)*0.008975 from 100-150uA:
+usl, -328.98, 0.000076
+dsl, -328.98, 0.000076
+atl1, 598.61, 0.000076
+atl2, -746.39, 0.000076
+
+vqwk_25_0ch4 ,   0   ,  7.629e-05
+vqwk_25_0ch5 ,   0   ,  7.629e-05
+battery1l ,   0   ,  7.629e-05
+battery2l ,   0   ,  7.629e-05
+
+usr, 2399.54, 0.000076
+dsr, 2399.54, 0.000076
+atr1, 955.98, 0.000076
+atr2, 1289.01, 0.000076
+
+vqwk_26_0ch4 ,   0   ,  7.629e-05
+vqwk_26_0ch5 ,   0   ,  7.629e-05
+battery1r ,   0   ,  7.629e-05
+battery2r ,   0   ,  7.629e-05
+
+! If we fit from 30-150 uA then we get this result
+! Calibrations fit relative to (bcm_an_us.hw_sum_raw/bcm_an_us.num_samples--597.00)*0.008975 from 30-175uA:
+!usl, 1132.05, 0.000076
+!usr, 1353.59, 0.000076
+!atl1, 916.75, 0.000076
+!atl2, 1314.62, 0.000076
+!atr1, 1060.25, 0.000076
+!atr2, 794.64, 0.000076

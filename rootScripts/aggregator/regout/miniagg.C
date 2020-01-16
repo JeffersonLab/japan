@@ -1,17 +1,35 @@
-#include "TFile.h"
-#include "TTree.h"
+#include "miniagg.h"
 
 
-void displayColumns(ROOT::RDataFrame d){
 
-auto colNames=d.GetColumnNames();
-for (auto &&colName:colNames){
-     std::cout<<colName<<std::endl;
-}
-
-}
+int miniagg(){
 
 
+//TString mul= "/chafs2/work1/apar/japanOutput/prexPrompt_pass1_3454.000.root";
+//TString reg="/chafs2/work1/apar/postpan-outputs/prexPrompt_3454_000_regress_postpan.root";
+
+TString input= "input.txt";
+
+
+Source source("3454","000",input.Data());  // These labels need to be passed as strings. Otherwise it's difficult to convert them back to filenames.
+auto df_source=source.readSource();
+
+
+
+
+return 0;
+} 
+
+
+
+
+
+
+
+
+
+
+/*
 Int_t miniagg(TString runlist, TString varlist, TString output){
 
 TString filename1="/adaqfs/home/apar/pking/example_correlator_outputblueR1296new.slope.root";
@@ -54,4 +72,4 @@ newsum3.Snapshot("tree", "tree.root");
 
 return 0;
 }
-
+*/

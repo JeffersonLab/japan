@@ -145,6 +145,14 @@ asym:sam3, 0.25
 asym:sam5, 0.25
 asym:sam7, 0.25
 
+[asym:@bpm_4aX_4ecX_dd]
+asym:bpm4aX, 0.5
+asym:bpm4ecX, -0.5
+
+[asym:@bpm_4aY_4ecY_dd]
+asym:bpm4aY, 0.5
+asym:bpm4ecY, -0.5
+
 [asym:@bpm_4aX_4eX_dd]
 asym:bpm4aX, 0.5
 asym:bpm4eX, -0.5
@@ -153,7 +161,10 @@ asym:bpm4eX, -0.5
 asym:bpm4aY, 0.5
 asym:bpm4eY, -0.5
 
-
+[PUBLISH]
+! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
+  asym_left_avg, asym, asym_left_avg, c
+  asym_right_avg, asym, asym_right_avg, c
 
 #####
 #####  Some examples, all commented out.

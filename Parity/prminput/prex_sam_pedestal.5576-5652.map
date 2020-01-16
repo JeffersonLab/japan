@@ -1,0 +1,9 @@
+Detectors/SAMs and cav4cQ Fit with respect to (bcm_an_us.hw_sum_raw--645.63)*0.008924/bcm_an_us.num_samples from 40 to 150uA using GetBCMPedestals_Caryn_Amali_run5576_bcmanus.C
+sam1, 12535.33, 0.000076
+sam2, 14441.02, 0.000076
+sam3, 12013.76, 0.000076
+sam4, 13798.93, 0.000076
+sam5, 13086.67, 0.000076
+sam6, 14261.41, 0.000076
+sam7, 12500.02, 0.000076
+sam8, 13362.41, 0.000076

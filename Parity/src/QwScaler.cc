@@ -593,7 +593,7 @@ void QwScaler::PrintInfo() const
  */
 void QwScaler::PrintValue() const
 {
-  QwMessage << "=== QwScaler: " << GetSubsystemName() << " ===" << QwLog::endl;
+  QwMessage << "=== QwScaler: " << GetName() << " ===" << QwLog::endl;
   for(size_t i = 0; i < fScaler.size(); i++) {
     fScaler.at(i)->PrintValue();
   }
