@@ -1354,19 +1354,18 @@ Int_t QwEPICSEvent::DetermineIHWPPolarity() const{
     QwWarning << "IHWP state is not well defined: '"
         << GetDataString("IGL1I00OD16_16") << "'"
         << QwLog::endl;
+    if (GetDataString("IGL1I00DI24_24M")=="OUT"
+        || GetDataString("IGL1I00DI24_24M")=="1"){
+      ihwppolarity = 1;
+    } else if (GetDataString("IGL1I00DI24_24M")=="IN"
+        || GetDataString("IGL1I00DI24_24M")=="0"){
+      ihwppolarity = -1;
+    } else {
+      QwWarning << "IHWP state is not well defined: '"
+        << GetDataString("IGL1I00DI24_24M") << "'"
+        << QwLog::endl;
+    }
   }
-  /*
-  if (GetDataString("IGL1I00DI24_24M")=="OUT"
-      || GetDataString("IGL1I00DI24_24M")=="1"){
-    ihwppolarity = 1;
-  } else if (GetDataString("IGL1I00DI24_24M")=="IN"
-	     || GetDataString("IGL1I00DI24_24M")=="0"){
-    ihwppolarity = -1;
-  } else {
-    QwWarning << "IHWP state is not well defined: '"
-	      << GetDataString("IGL1I00DI24_24M") << "'"
-	      << QwLog::endl;
-  }*/
   QwDebug << "QwEPICSEvent::DetermineIHWPPolarity: "
 	  << "raw IHWP polarity is: "
 	  << ihwppolarity << QwLog::endl;
