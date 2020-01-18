@@ -1,7 +1,6 @@
-////////BeamModCycle.C
 ///Panguin gui compatible diagnostic plots for shift taking online replay 
 
-void rmsCheck(TString type = "burst_lrb_std", Double_t refRMSraw = 1900.0, Double_t refRMSreg = 1125.0, Double_t burstLen = 9000.0) {
+void slopeCheck(TString type = "burst_lrb_std", Double_t refRMS4eX = 0.01, Double_t refRMS12X = -0.04, Double_t burstLen = 9000.0) {
   gStyle->SetOptStat(0);
   TTree* tree_R = (TTree*)gDirectory->Get(type);
   //tree_R->AddFriend((TTree*)gDirectory->Get("burst"));
@@ -33,30 +32,21 @@ void rmsCheck(TString type = "burst_lrb_std", Double_t refRMSraw = 1900.0, Doubl
   }
   
   TPad *cPlot = new TPad("cPlot","cPlot",0,0,1,1);
-  cPlot->Divide(2,2);
+  cPlot->Divide(3,2);
   cPlot->Draw();
 
-  // I want 4 sub-canvases of TGraphErrors multi-graphs
-  // Each one does a different thing, raw/regressed, means/RMSs
-  //   both left and right in one plot, purple and green
-  //   red will be a reference line indicating the max expected level
+  // I want 5 sub-canvases of TGraphErrors multi-graphs
   //
-  //TString drawRawMean[2] = {"burst.asym_usl.hw_sum","burst.asym_usr.hw_sum"};
-  //TString drawRawRMS[2]  = {"burst.asym_usl.hw_sum_err*1e6*sqrt(burst.asym_usl.num_samples)","burst.asym_usr.hw_sum_err*1e6*sqrt(burst.asym_usr.num_samples)"};
-  //TString drawRawMean[2] = {"MY[0]*1e6","MY[1]*1e6"};
-  //TString drawRawRMS[2]  = {"dMY[0]*1e6","dMY[1]*1e6"};
-  //TString drawRegMean[2] = {"MYp[0]*1e6","MYp[1]*1e6"};
-  //TString drawRegRMS[2]  = {"dMYp[0]*1e6","dMYp[1]*1e6"};
-  TString drawUSL[4] = {"MY[0]*1e6","dMY[0]*1e6","MYp[0]*1e6","dMYp[0]*1e6"};
-  TString drawUSLerr[4] = {Form("dMY[0]*1e6/sqrt(%f)",burstLen),"0",Form("dMYp[0]*1e6/sqrt(%f)",burstLen),"0"};
-  TString drawUSR[4] = {"MY[1]*1e6","dMY[1]*1e6","MYp[1]*1e6","dMYp[1]*1e6"};
-  TString drawUSRerr[4] = {Form("dMY[1]*1e6/sqrt(%f)",burstLen),"0",Form("dMY[1]*1e6/sqrt(%f)",burstLen),"0"};
-  TMultiGraph *tMGraphPlot[4];  //plots one super cycle
-  TGraph *tGraphPlotL[4];  //plots one super cycle
-  TGraph *tGraphPlotR[4];  //plots one super cycle
-  TGraph *tGraphPlotRef[4];  //plots one super cycle
-  for (int i=0;i<4; i++){
-    int nptL = tree_R->Draw(Form("%s:%s:Entry$:0",drawUSL[i].Data(),drawUSLerr[i].Data()),"","goff");
+  TString drawSlopesL[5] = {"A[0][0]","A[1][0]","A[2][0]","A[3][0]","A[4][0]"};
+  TString drawSlopesLerr[5] = {"dA[0][0]","dA[1][0]","dA[2][0]","dA[3][0]","dA[4][0]"};
+  TString drawSlopesR[5] = {"A[0][1]","A[1][1]","A[2][1]","A[3][1]","A[4][1]"};
+  TString drawSlopesRerr[5] = {"dA[0][1]","dA[1][1]","dA[2][1]","dA[3][1]","dA[4][1]"};
+  TMultiGraph *tMGraphPlot[5];  //plots one super cycle
+  TGraph *tGraphPlotL[5];  //plots one super cycle
+  TGraph *tGraphPlotR[5];  //plots one super cycle
+  TGraph *tGraphPlotRef[5];  //plots one super cycle
+  for (int i=0;i<5; i++){
+    int nptL = tree_R->Draw(Form("%s:%s:Entry$:0",drawSlopesL[i].Data(),drawSlopesLerr[i].Data()),"","goff");
     //int npt = tree_R->Draw(Form("%s:burst.BurstCounter>>hc%d",draw[i].Data(),i),"","goff");
     tGraphPlotL[i]= new TGraphErrors(nptL,tree_R->GetV3(),tree_R->GetV1(),tree_R->GetV4(),tree_R->GetV2());
     tGraphPlotL[i]->SetLineStyle(1);
@@ -65,7 +55,8 @@ void rmsCheck(TString type = "burst_lrb_std", Double_t refRMSraw = 1900.0, Doubl
     tGraphPlotL[i]->SetMarkerSize(0.5);
     tGraphPlotL[i]->SetMarkerColor(3);
 
-    int nptR = tree_R->Draw(Form("%s:%s:Entry$:0",drawUSR[i].Data(),drawUSRerr[i].Data()),"","goff");
+    int nptR = tree_R->Draw(Form("%s:%s:Entry$:0",drawSlopesR[i].Data(),drawSlopesRerr[i].Data()),"","goff");
+    //int npt = tree_R->Draw(Form("%s:burst.BurstCounter>>hc%d",draw[i].Data(),i),"","goff");
     tGraphPlotR[i]= new TGraphErrors(nptR,tree_R->GetV3(),tree_R->GetV1(),tree_R->GetV4(),tree_R->GetV2());
     tGraphPlotR[i]->SetLineStyle(1);
     tGraphPlotR[i]->SetLineColor(4);
@@ -73,13 +64,13 @@ void rmsCheck(TString type = "burst_lrb_std", Double_t refRMSraw = 1900.0, Doubl
     tGraphPlotR[i]->SetMarkerSize(0.5);
     tGraphPlotR[i]->SetMarkerColor(4);
 
-    if (i==1 || i==3){
+    if (i==2 || i==4){
       int nptRMSRef = 0;
-      if (i==1){
-        nptRMSRef = tree_R->Draw(Form("%f:0:Entry$:0",refRMSraw),"","goff");
+      if (i==2){
+        nptRMSRef = tree_R->Draw(Form("%f:0:Entry$:0",refRMS4eX),"","goff");
       }
-      if (i==3){
-        nptRMSRef = tree_R->Draw(Form("%f:0:Entry$:0",refRMSreg),"","goff");
+      if (i==4){
+        nptRMSRef = tree_R->Draw(Form("%f:0:Entry$:0",refRMS12X),"","goff");
       }
       tGraphPlotRef[i]= new TGraphErrors(nptRMSRef,tree_R->GetV3(),tree_R->GetV1(),tree_R->GetV4(),tree_R->GetV2());
       tGraphPlotRef[i]->SetLineStyle(2);
@@ -89,24 +80,27 @@ void rmsCheck(TString type = "burst_lrb_std", Double_t refRMSraw = 1900.0, Doubl
 
     tMGraphPlot[i] = new TMultiGraph();
     if (i==0){
-      tMGraphPlot[i]->SetTitle("Raw US L and R main detector Means");
+      tMGraphPlot[i]->SetTitle("4aX Slopes");
     }
     if (i==1){
-      tMGraphPlot[i]->SetTitle("Raw US L and R main detector RMSs");
+      tMGraphPlot[i]->SetTitle("4aY Slopes");
     }
     if (i==2){
-      tMGraphPlot[i]->SetTitle("Regressed US L and R main detector Means");
+      tMGraphPlot[i]->SetTitle("4eX Slopes");
     }
     if (i==3){
-      tMGraphPlot[i]->SetTitle("Regressed US L and R main detector RMSs");
+      tMGraphPlot[i]->SetTitle("4eY Slopes");
+    }
+    if (i==4){
+      tMGraphPlot[i]->SetTitle("12X Slopes");
     }
     tMGraphPlot[i]->GetXaxis()->SetTitle("Burst Number");
-    tMGraphPlot[i]->GetYaxis()->SetTitle("Mean (ppm)");
+    tMGraphPlot[i]->GetYaxis()->SetTitle("Slopes");
     tMGraphPlot[i]->Add(tGraphPlotL[i],"P");
     tMGraphPlot[i]->Add(tGraphPlotR[i],"P");
-    if (i==1 || i==3){
+    if (i==2 || i==4){
       tMGraphPlot[i]->Add(tGraphPlotRef[i],"LP");
-      tMGraphPlot[i]->GetYaxis()->SetTitle("RMS (ppm)");
+//      tMGraphPlot[i]->GetYaxis()->SetTitle("Expected");
     }
     cPlot->cd(i+1);
     tMGraphPlot[i]->Draw("A");
@@ -119,7 +113,7 @@ void rmsCheck(TString type = "burst_lrb_std", Double_t refRMSraw = 1900.0, Doubl
   legend1->SetNColumns(1);
   legend1->AddEntry(tGraphPlotL[0],"Left","p");
   legend1->AddEntry(tGraphPlotR[1],"Right","p");
-  legend1->AddEntry(tGraphPlotRef[3],"Max RMS","lp");
+  legend1->AddEntry(tGraphPlotRef[4],"Expected","lp");
   legend1->Draw();
 
   // FIXME wants:
