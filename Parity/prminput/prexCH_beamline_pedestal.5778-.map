@@ -37,48 +37,50 @@ cav4cQ, -688.35, 0.012403
 !using10-100uA
 bcm_an_ds10, -800.69, 0.000906
 
-!Run5653, BPM calibration - https://logbooks.jlab.org/entry/3763564
+!Run5778, BPM calibration - https://logbooks.jlab.org/entry/3766410
 !Calibrations fit relative to (bcm_an_us.hw_sum_raw/bcm_an_us.num_samples--645.63)*0.008924
-bpm4aXP, 607.35, 1.0
-bpm4aXM, 467.64, 1.0
-bpm4aYP, 336.27, 1.0
-bpm4aYM, 433.38, 1.0
-bpm4eXP, 1229.12, 1.0
-bpm4eXM, 880.31, 1.0
-bpm4eYP, 594.28, 1.0
-bpm4eYM, 841.24, 1.0
-bpm4acXP, -981.48, 1.0
-bpm4acXM, -1014.43, 1.0
-bpm4acYP, 314.67, 1.0
-bpm4acYM, 828.18, 1.0
-bpm4ecXP, 824.61, 1.0
-bpm4ecXM, 930.52, 1.0
-bpm4ecYP, 727.42, 1.0
-bpm4ecYM, 1005.32, 1.0
-bpm11XP, 2633.37, 1.0
-bpm11XM, 1224.18, 1.0
-bpm11YP, 916.65, 1.0
-bpm11YM, 2019.23, 1.0
-bpm12XP, 4825.41, 1.0
-bpm12XM, 3534.65, 1.0
-bpm12YP, 3659.34, 1.0
-bpm12YM, 4429.72, 1.0
-bpm16XP, 1684.44, 1.0
-bpm16XM, 2637.05, 1.0
-bpm16YP, 1113.06, 1.0
-bpm16YM, 695.38, 1.0
-!bpm1p02bXP, -25774.06, 1.0
-!bpm1p02bXM, 11796726869604.74, 1.0
-!bpm1p02bYP, -29379.45, 1.0
-!bpm1p02bYM, -29413.35, 1.0
-!bpm1p03aXP, -22126.68, 1.0
-!bpm1p03aXM, -21134.33, 1.0
-!bpm1p03aYP, -23647.16, 1.0
-!bpm1p03aYM, -23568.95, 1.0
-bpm1XP, -2997.89, 1.0
-bpm1XM, -2611.89, 1.0
-bpm1YP, -4026.15, 1.0
-bpm1YM, -3901.39, 1.0
+!combined four fits to get the pedestals
+
+bpm4aXP, 162.60, 1.0
+bpm4aXM, 717.66, 1.0
+bpm4aYP, 278.55, 1.0
+bpm4aYM, 264.41, 1.0
+bpm4eXP, 660.73, 1.0
+bpm4eXM, 1046.64, 1.0
+bpm4eYP, 304.03, 1.0
+bpm4eYM, 721.19, 1.0
+bpm4acXP, -1556.95, 1.0
+bpm4acXM, -1157.93, 1.0
+bpm4acYP, 131.01, 1.0
+bpm4acYM, 519.16, 1.0
+bpm4ecXP, 330.69, 1.0
+bpm4ecXM, 1164.53, 1.0
+bpm4ecYP, 634.19, 1.0
+bpm4ecYM, 1099.56, 1.0
+bpm11XP, 1495.99, 1.0
+bpm11XM, 778.51, 1.0
+bpm11YP, 1109.63, 1.0
+bpm11YM, 1082.46, 1.0
+bpm12XP, 3713.63, 1.0
+bpm12XM, 3809.22, 1.0
+bpm12YP, 3587.22, 1.0
+bpm12YM, 3214.93, 1.0
+bpm16XP, 1158.97, 1.0
+bpm16XM, 1740.65, 1.0
+bpm16YP, 393.90, 1.0
+bpm16YM, 277.94, 1.0
+bpm1p02bXP, -2893.55, 1.0
+bpm1p02bXM, -627.52, 1.0
+bpm1p02bYP, -3614.13, 1.0
+bpm1p02bYM, -2786.71, 1.0
+bpm1p03aXP, -3804.06, 1.0
+bpm1p03aXM, -4729.25, 1.0
+bpm1p03aYP, -1937.54, 1.0
+bpm1p03aYM, -2418.26, 1.0
+bpm1XP, -2044.10, 1.0
+bpm1XM, -2741.87, 1.0
+bpm1YP, -4384.24, 1.0
+bpm1YM, -3940.74, 1.0
 
 !!  Cavity BPM offsets determined  for 40-50uA from run 2965 by using the
 !!  unser.
@@ -88,17 +90,11 @@ bpm1YM, -3901.39, 1.0
 !! Cavities have problems in CREX running - not yet calibrated by Musson
   cav4bXI,  -350.396,    0.0216191
   cav4bYI,  -278.993,    0.0118156
-!!cav4bXI, -313.61, -0.118434
-!!cav4bYI, -29.58, -0.009883
 
 !! FIXE ME: XI YI pedestal 
   cav4cXI, -408.33, 0.003221
   cav4cYI, -186.39, 0.003221
 
-!!cav4cXI, -529.38, 0.017139
-!!cav4cYI, 219.36, -0.012486
   cav4dXI,  -525.044,    0.0218225
   cav4dYI,  1084.72,    0.00207035
-!!cav4dXI, -398.41, 0.034273
-!!cav4dYI, 1317.22, -0.003728
 
