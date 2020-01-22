@@ -12,4 +12,4 @@ max_asymmetry = 0.900
 # max_factor = positive float fraction such that multiplicative blinding asymmetry is between 1 +/- (this value)
 max_factor = 0.0
 
-use_crex_target_position = true
+crex_target_index = 1
