@@ -12,6 +12,6 @@ Flag Sigma Cut:3.0
 ROOT input path:$QW_ROOTFILES/prexPrompt_pass1_#.000.root
 Output path:./slopes/
 Rootfile Output Path:./slopes/
-Rootfile Output Runwise:True
+Rootfile Output Runwise:False
 Cut:bcm_dg_ds>5
 Tree:evt_bmw
