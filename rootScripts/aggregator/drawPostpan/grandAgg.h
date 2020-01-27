@@ -37,7 +37,7 @@ auto chan_t=tree;
 
 // global cuts
 TString gc1= "&&"+ chan_name+"!=0 && abs("+ chan_name+")<0.99e6";
-TBranch* br1 = chan_t->GetListOfBranches()->FindObject(chan_name+"_error");
+TBranch* br1 = (TBranch*)chan_t->GetListOfBranches()->FindObject(chan_name+"_error");
 TString gc2 = "";
 if (br1) {
   gc2= "";
@@ -68,7 +68,7 @@ TTreeFormula f("name",chan_name, chan_t);
 if(f.GetNdim()!=0){
 TCanvas c(chan_name, chan_name, 1200,1000);
 
-TBranch* br2 = chan_t->GetListOfBranches()->FindObject(chan_name+"_error");
+TBranch* br2 = (TBranch*)chan_t->GetListOfBranches()->FindObject(chan_name+"_error");
 Int_t nEntries = 0;
 if (br2) {
   nEntries=chan_t->Draw("n_runs:"+chan_name+":"+chan_name+"_error",cut1 , "goff");
