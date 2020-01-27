@@ -75,7 +75,8 @@ void BeamModPlot(TString type="evt",TString type2="mul", TString ref="CodaEventN
   else{
 
     TPad *cBMWPlot2 = new TPad("cBMWPlot2", "cBMWPlot2",0,0,1,1);
-    cBMWPlot2->Divide(1,3);
+    cBMWPlot2->Divide(1,1);
+//    cBMWPlot2->Divide(1,3);
     cBMWPlot2->Draw();
 
     TGraph *tGraphBMWPlot3[8]; //plots trim cards for the whole run
@@ -120,13 +121,14 @@ void BeamModPlot(TString type="evt",TString type2="mul", TString ref="CodaEventN
     legend2->AddEntry(tGraphBMWPlot3[7],"Beam Current","l");
     legend2->Draw();
 
-    cBMWPlot2->cd(2);
+ /*   cBMWPlot2->cd(2);
     //    tree_M->Draw("(diff_bpm4eX-diff_bpm4aX):(diff_bpm4aX+diff_bpm4eX)","yield_bmwobj<0");
     tree_M->Draw("0.18*diff_bpm4eX-diff_bpm4aX:diff_bpm4aX+0.18*diff_bpm4eX","ErrorFlag==0 && diff_bpm4aX>-5 && diff_bpm4aX<5 && diff_bpm4eX>-5 && diff_bpm4eX<5","goff");
 
     cBMWPlot2->cd(3);
     //    tree_M->Draw("(diff_bpm4eY-diff_bpm4aY):(diff_bpm4aY+diff_bpm4eY)","yield_bmwobj<0");
     tree_M->Draw("diff_bpm4eY-0.65*diff_bpm4aY:0.65*diff_bpm4aY+diff_bpm4eY","ErrorFlag==0 && diff_bpm4eY>-5 && diff_bpm4eY<5 && diff_bpm4aY>-5 && diff_bpm4aY<5","goff");
+    */
   }
 
 }

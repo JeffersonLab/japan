@@ -53,20 +53,13 @@ void regMulPlot(TString type = "burst_lrb_std", TString det = "us_avg") {
       tmp_d_slopess.push_back(0.0);
     }
     d_slopes.push_back(tmp_d_slopess);
-    //tmp_d_slopess.clear();
   }
   for (Int_t IVs = 0; IVs < 5; IVs++) {
-    ////(l_slopes.at(IVs).at(DVs))->GetEntry(elist->GetEntry(i));
     tree_C->Draw(Form("A[%d][%d]",IVs,ind),"","GOFF");
     std::vector<double> xVals(tree_C->GetV1(), tree_C->GetV1() + tree_C->GetSelectedRows() % tree_C->GetEstimate());
-    //std::vector<double> xVals(tree_C->GetV1(), tree_C->GetV1() + tree_C->GetSelectedRows() % tree_C->GetEstimate());
-    ////TVector<Double_t> xVals(tree_C->GetV1(), tree_C->GetV1() + tree_C->GetSelectedRows() % tree_C->GetEstimate());
-    ////(l_slopes.at(IVs).at(DVs))->GetEntry(elist->GetEntry(i));
-    ////d_slopes.at(IVs).at(DVs).at(i) = (l_slopes.at(IVs).at(DVs))->GetValue();
     for (Int_t j = 0; j<xVals.size(); j++) {
       d_slopes.at(IVs).at(j) = xVals.at(j);
     }
-    //xVals.clear();
   }
   TString drawDiffs[5];
   TTree* tree_R;
@@ -97,18 +90,29 @@ void regMulPlot(TString type = "burst_lrb_std", TString det = "us_avg") {
     cut = Form("ErrorFlag==0&&asym_%s.Device_Error_Code==0",det.Data());
   }
   gStyle->SetOptStat(1111);
-  for (int i=0;i<5; i++){
-    //draw = Form("%s-1*%f*%s",draw.Data(),0.0,drawDiffs[i].Data());
-    draw = Form("%s-1*%f*%s",draw.Data(),(Double_t)(d_slopes.at(i).at(0)),drawDiffs[i].Data());
+  TString bdraw = draw;
+  TString bcut = cut;
+  for (Int_t n = 0; n<nonzero; n++) {
+    if (n == nonzero-1) {
+      bcut = cut+Form("&&mul.BurstCounter>=%d",n);
+    }
+    else {
+      bcut = cut+Form("&&mul.BurstCounter==%d",n);
+    }
+    for (int i=0;i<5; i++){
+      bdraw = Form("%s-1.0*%f*%s",bdraw.Data(),(Double_t)(d_slopes.at(i).at(n)),drawDiffs[i].Data());
+    }
+    if (n == 0) {
+      tree_R->Draw(Form("(%s)/ppm>>%s",bdraw.Data(),det.Data()),bcut.Data());
+    }
+    else { 
+      tree_R->Draw(Form("(%s)/ppm>>+%s",bdraw.Data(),det.Data()),bcut.Data());
+    }
+    bdraw = draw;
   }
-
-  //tree_R->Draw(Form("(%s)/ppm>>h1",draw.Data()),Form("mul.ErrorFlag==0&&asym_%s.Device_Error_Code==0",det.Data()));
-  tree_R->Draw(Form("(%s)/ppm>>%s",draw.Data(),det.Data()),cut.Data());
   TH1 *h1 = (TH1*)gROOT->FindObject(Form("%s",det.Data()));
   h1->SetTitle(Form("Regressed %s",det.Data()));
   h1->GetYaxis()->SetTitle(Form("Regressed %s",det.Data()));
   h1->GetXaxis()->SetTitle(Form("ppm"));
   h1->Draw();
-  //d_slopes.clear();
-  //delete d_slopes;
 }
