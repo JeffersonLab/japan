@@ -30,6 +30,9 @@ TString unit="";
 if (chan_name.Contains("slope")){
   unit="*nm/ppb";
 } else { 
+if (chan_name.Contains("epics_")||chan_name.Contains("slow_")){
+  if (chan_name.Contains("_mean")) {unit="/1";} else{unit="/1";}
+}
 if (chan_name.Contains("asym_")||chan_name.Contains("cor_")){
   if (chan_name.Contains("_mean")) {unit="/ppb";} else{unit="/ppm";}
 }
@@ -52,7 +55,13 @@ if (chan_name.Contains("yield_")){
 TTreeFormula f("name",chan_name, chan_t);
 
 if(f.GetNdim()!=0){
-Int_t nEntries=chan_t->Draw("run_number:minirun_n:"+chan_name+unit+":"+chan_name+"_error"+unit,"abs("+chan_name+unit+")<0.999e6 && abs("+chan_name+"_error"+unit+")<0.999e6", "goff");
+TBranch* br = chan_t->GetListOfBranches()->FindObject(chan_name+"_error");
+Int_t nEntries = 0;
+if (br) {
+  nEntries=chan_t->Draw("run_number:minirun_n:"+chan_name+unit+":"+chan_name+"_error"+unit,"abs("+chan_name+unit+")<0.999e6 && abs("+chan_name+"_error"+unit+")<0.999e6", "goff");
+}
+else {
+  nEntries=chan_t->Draw("run_number:minirun_n:"+chan_name+unit+":1.0e-15","abs("+chan_name+unit+")<0.999e6", "goff");
 Double_t index[nEntries];
 for(int i=0; i<nEntries;i++){
    index[i]=i;

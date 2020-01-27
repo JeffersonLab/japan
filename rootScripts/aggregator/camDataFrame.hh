@@ -74,7 +74,7 @@ void Channel::storeData(TTree * outputTree){
     outputTree->Branch(Form("%s_nentries",name.Data()),&nEntries);
   }
   if (type == "slow"){
-    outputTree->Branch(Form("%s",name.Data()),&singleEntry);
+    outputTree->Branch(Form("%s_mean",name.Data()),&singleEntry);
   }
   if (type == "slopes"){
     outputTree->Branch(Form("%s_slope",name.Data()),&slope);
@@ -379,7 +379,8 @@ RDataFrame Source::readSource(){
           tsw.Start();
         }
         if (tmpChan.type == "slow"){
-          tmpChan.histo = slow.Histo1D(tmpChan.name.Data()); // FIXME want try/except to fill a histo that returns -1e6 mean -1e6 rms
+          tmpChan.histo = slow.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Histo1D(tmpChan.branchName.Data());
+          //tmpChan.histo = slow.Histo1D(tmpChan.name.Data()); // FIXME want try/except to fill a histo that returns -1e6 mean -1e6 rms
           channels.push_back(tmpChan);
           if (debug > 1) {cout << "Done Getting Histo1D for " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;}
           tsw.Start();

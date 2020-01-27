@@ -150,6 +150,6 @@ for (auto iter=source.list.begin();iter!=source.list.end(); iter++){
 
 c.Print(output+".pdf]","pdf");
 out.close();
-std::cout<< "All done drawing " << source.list.size() << "channels";
+std::cout<< "All done drawing " << source.list.size() << "channels" << std::endl;
 
 }

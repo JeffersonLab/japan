@@ -33,11 +33,11 @@ else
 
   echo Looking at ${minirun_lines[@]}
   hadd -f ${OUTPUTROOTFILEDIR}/minirun_${1}.root ${minirun_lines[@]}
-  hadd -f ${OUTPUTROOTFILEDIR}/run_${1}.root ${run_lines[@]}
+  #hadd -f ${OUTPUTROOTFILEDIR}/run_${1}.root ${run_lines[@]}
 
   # Add units
   root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/minirun_${1}.root\"\)
-  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/run_${1}.root\"\)
+  #root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/run_${1}.root\"\)
 
 fi
 

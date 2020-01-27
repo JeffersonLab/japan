@@ -37,7 +37,14 @@ auto chan_t=tree;
 
 // global cuts
 TString gc1= "&&"+ chan_name+"!=0 && abs("+ chan_name+")<0.99e6";
-TString gc2= "&&"+ chan_name+"_error!=0 && abs("+chan_name+"_error)<0.99e6";
+TBranch* br1 = chan_t->GetListOfBranches()->FindObject(chan_name+"_error");
+TString gc2 = "";
+if (br1) {
+  gc2= "";
+}
+else {
+  gc2= "&&"+ chan_name+"_error!=0 && abs("+chan_name+"_error)<0.99e6";
+}
 //
 // device cut
 TString lc="";
@@ -61,16 +68,38 @@ TTreeFormula f("name",chan_name, chan_t);
 if(f.GetNdim()!=0){
 TCanvas c(chan_name, chan_name, 1200,1000);
 
-Int_t nEntries=chan_t->Draw("n_runs:"+chan_name+":"+chan_name+"_error",cut1 , "goff");
+TBranch* br2 = chan_t->GetListOfBranches()->FindObject(chan_name+"_error");
+Int_t nEntries = 0;
+if (br2) {
+  nEntries=chan_t->Draw("n_runs:"+chan_name+":"+chan_name+"_error",cut1 , "goff");
+}
+else {
+  nEntries=chan_t->Draw("n_runs:"+chan_name+":0",cut1 , "goff");
+}
 TGraphErrors g1 = drawReg(nEntries, chan_t->GetV1(), chan_t->GetV2(), chan_t->GetV3());
     
-nEntries= chan_t->Draw("n_runs:"+chan_name+":"+chan_name+"_error",cut2 ,  "goff");
+if (br2) {
+  nEntries= chan_t->Draw("n_runs:"+chan_name+":"+chan_name+"_error",cut2 ,  "goff");
+}
+else {
+  nEntries= chan_t->Draw("n_runs:"+chan_name+":0",cut2 ,  "goff");
+}
 TGraphErrors g2 = drawReg(nEntries, chan_t->GetV1(), chan_t->GetV2(), chan_t->GetV3());
 
-nEntries= chan_t->Draw("n_runs:"+chan_name+":"+chan_name+"_error", cut3, "goff");
+if (br2) {
+  nEntries= chan_t->Draw("n_runs:"+chan_name+":"+chan_name+"_error", cut3, "goff");
+}
+else {
+  nEntries= chan_t->Draw("n_runs:"+chan_name+":0", cut3, "goff");
+}
 TGraphErrors g3= drawReg(nEntries, chan_t->GetV1(), chan_t->GetV2(), chan_t->GetV3());
 
-nEntries =chan_t->Draw("n_runs:"+chan_name+":"+chan_name+"_error", cut4, "goff");
+if (br2) {
+  nEntries =chan_t->Draw("n_runs:"+chan_name+":"+chan_name+"_error", cut4, "goff");
+}
+else {
+  nEntries =chan_t->Draw("n_runs:"+chan_name+":0", cut4, "goff");
+}
 TGraphErrors g4= drawReg(nEntries, chan_t->GetV1(), chan_t->GetV2(), chan_t->GetV3());
 
 if (  !chan_name.Contains("yield") &&  !chan_name.Contains("rms")){ 
@@ -250,6 +279,7 @@ while (auto *var= var_iter.Next()){
    
    }
 }   
+}
 
 void Source::drawAllRange(Int_t min = 0, Int_t max = 10000){
   
