@@ -1,5 +1,6 @@
 #include "realtimeBmodAna.C"
 //https://logbooks.jlab.org/entry/3763550
+using namespace std;
 Int_t QuerySlugNumber(Int_t run_number){
   // Experimenting Function to Get slug number based on run number 
   // Author : Tao Ye

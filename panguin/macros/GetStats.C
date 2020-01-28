@@ -43,7 +43,7 @@ void GetStats(){
     Int_t nent = hist->GetEntries();
     Double_t avgCurrent = hist->GetMean();
     Double_t totalCharge = avgCurrent*(1/1.0e6)*(nent/120);
-    statStr[4] = Form("Total Good Q this run (3C = slug)");
+    statStr[4] = Form("Total Good Q this run (2C = slug)");
     statStrNumbers[4] = Form(" = %.2f C", totalCharge);
 
     r->Project(hist->GetName(), "CodaEventNumber", "");
@@ -63,12 +63,16 @@ void GetStats(){
     Float_t iniY = 0.90, diffY = 0.05;
     text.DrawLatex(0.10, 0.93, "Stats->for endrun HALOG"); 
     text.SetTextSize(0.06);
+    gSystem->Exec("echo \"Live ROOTfile last updated at `stat -c %z /adaq1/work1/apar/japanOutput_realtime/prexALL_999999.root`\" > /adaqfs/home/apar/scripts/stats.dat");
+    gSystem->Exec("echo \"Stats file last updated at `stat -c %z /adaqfs/home/apar/scripts/stats.dat`\" >> /adaqfs/home/apar/scripts/stats.dat");
+    //gSystem->Exec("echo \"Now is `date +\%F\%_H:\%M:\%S.\%N\%_z`\" >> /adaqfs/home/apar/scripts/stats.dat");
+
     for (Int_t j = 0 ; j < Nstats ; j++){
       text.DrawLatex(0.10, iniY - (j*2.5+1)*diffY, statStr[j]); 
       text.DrawLatex(0.10, iniY - (j*2.5+2)*diffY, statStrNumbers[j]); 
       string = string + statStr[j] + statStrNumbers[j] + "\n\n";
     }
-    gSystem->Exec(Form("echo \"%s\" > /adaqfs/home/apar/scripts/stats.dat",string.Data()));
+    gSystem->Exec(Form("echo \"%s\" >> /adaqfs/home/apar/scripts/stats.dat",string.Data()));
     if(hist) delete hist;
   }
 }
