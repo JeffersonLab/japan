@@ -17,7 +17,6 @@ Last Modified: August 1, 2018 1:41 PM
 
 // Parent Class
 #include "VQwDataHandler.h"
-//class LinReg_Bevington_Pebay
 #include "LinReg_Bevington_Pebay.h"
 
 // ROOT headers

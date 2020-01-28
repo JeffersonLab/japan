@@ -17,6 +17,7 @@ using namespace std;
 
 //header file
 #include "VQwDataHandler.h"
+#include "QwDataHandlerArray.h"
 
 //#include "QwCombiner.h"
 
@@ -59,6 +60,7 @@ VQwDataHandler::VQwDataHandler(const VQwDataHandler &source)
   ParseSeparator(source.ParseSeparator),
   fKeepRunningSum(source.fKeepRunningSum)
 {
+  fMaxBurstIndex = source.GetParent()->GetMaxBurstIndex();
   fErrorFlagPtr  = source.fErrorFlagPtr;
   fDependentVar  = source.fDependentVar;
   fDependentType = source.fDependentType;

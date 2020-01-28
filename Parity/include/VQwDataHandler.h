@@ -180,6 +180,7 @@ class VQwDataHandler:  virtual public VQwDataHandlerCloneable, public MQwPublish
    Bool_t fKeepRunningSum;
    Bool_t fRunningsumFillsTree;
    VQwDataHandler *fRunningsum;
+   Int_t fMaxBurstIndex;
 };
 
 #endif // VQWDATAHANDLER_H_

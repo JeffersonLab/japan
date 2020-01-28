@@ -169,6 +169,8 @@ class QwDataHandlerArray:
 
     void FinishDataHandler();
 
+    Int_t GetMaxBurstIndex() { return fMaxBurstIndex;}
+
   protected:
 
     void SetPointer(QwHelicityPattern& helicitypattern) {

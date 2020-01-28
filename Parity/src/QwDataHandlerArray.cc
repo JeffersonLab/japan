@@ -17,15 +17,15 @@
 
 //*****************************************************************//
 /**
- * Create a handler array based on the configuration option 'detectors'
+ * Create a handler array based on the configuration option 'helicitypattern'
  */
 QwDataHandlerArray::QwDataHandlerArray(QwOptions& options, QwHelicityPattern& helicitypattern, const TString &run)
-  : fHelicityPattern(0),fSubsystemArray(0),fDataHandlersMapFile(""),fArrayScope(kPatternScope)
+  : fHelicityPattern(0),fSubsystemArray(0),fDataHandlersMapFile(""),fArrayScope(kPatternScope),fMaxBurstIndex(0xf7777777)
 {
   ProcessOptions(options);
   if (fDataHandlersMapFile != ""){
     QwParameterFile mapfile(fDataHandlersMapFile.c_str());
-    fMaxBurstIndex = helicitypattern->GetMaxBurstIndex();
+    fMaxBurstIndex = helicitypattern.GetMaxBurstIndex();
     QwMessage << "Loading handlers from " << fDataHandlersMapFile << "." << QwLog::endl;
     LoadDataHandlersFromParameterFile(mapfile, helicitypattern, run);
   }
@@ -35,7 +35,7 @@ QwDataHandlerArray::QwDataHandlerArray(QwOptions& options, QwHelicityPattern& he
  * Create a handler array based on the configuration option 'detectors'
  */
 QwDataHandlerArray::QwDataHandlerArray(QwOptions& options, QwSubsystemArrayParity& detectors, const TString &run)
-  : fHelicityPattern(0),fSubsystemArray(0),fDataHandlersMapFile(""),fArrayScope(kEventScope),fMaxBurstIndex(0x7fffffff)
+  : fHelicityPattern(0),fSubsystemArray(0),fDataHandlersMapFile(""),fArrayScope(kEventScope)
 {
   ProcessOptions(options);
   if (fDataHandlersMapFile != ""){

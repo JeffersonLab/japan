@@ -20,6 +20,7 @@ Last Modified: August 1, 2018 1:41 PM
 #include "LRBCorrector.h"
 
 // Qweak headers
+#include "QwDataHandlerArray.h"
 #include "VQwDataElement.h"
 #include "QwVQWK_Channel.h"
 #include "QwParameterFile.h"
@@ -210,7 +211,20 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
       fStats[fStatNames[iStat]][cycle] = alphasS->operator()(0,0);
         //(*alphasS)(0,0);
     }
+  }
 
+  fLinRegs.resize(fLastCycle);
+  for (Short_t cycle=1; cycle<=fLastCycle; cycle++){
+    if (fLastCycle > 1) { // Then we have multiple bursts to look at
+      fillLinRegObject(fLinRegs.at(cycle-1),cycle);
+    }
+  }
+  if ( fLastCycle > GetParent()->GetMaxBurstIndex() ) {
+    AddTwoBursts(fLastCycle-1,fLastCycle); 
+  }
+
+  // Assign slopes after doing the merge above
+  for (Short_t cycle=1; cycle<=fLastCycle; cycle++){
     // Assign sensitivities
     fSensitivity[cycle].resize(fDependentType.size());
     for (size_t i = 0; i != fDependentType.size(); ++i) {
@@ -219,16 +233,6 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
         fSensitivity[cycle].at(i).at(j) = -1.0*( fMats.at("slopes").at(cycle).operator()(j,i));
       }
     }
-  }
-  fLinRegs.resize(fLastCycle);
-  for (Short_t cycle=1; cycle<=fLastCycle; cycle++){
-//    fLinRegs.at(cycle) = LinRegBevPeb(this,cycle);
-
-//    tmpLRBP = LinRegBevPeb();
-    fillLinRegObject(fLinRegs.at(cycle-1),cycle);
-  }
-  if ( fLastCycle > GetParent()->GetMaxBurstIndex() ) {
-    AddTwoBursts(fLastCycle-1,fLastCycle); 
   }
 
   corFile->Close();
