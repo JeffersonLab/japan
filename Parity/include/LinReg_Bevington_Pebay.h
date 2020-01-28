@@ -9,6 +9,8 @@
  * "Data reduction and error analysis for the physical sciences" / Philip R. Bevington, D. Keith Robinson. Bevington, Philip R., 1933- Boston : McGraw-Hill, c2003.
  * "Formulas for Robust, One-Pass Parallel Computation of Covariances and Arbitrary-Order Statistical Moments" Philippe Peba, SANDIA REPORT SAND2008-6212, Unlimited Release, Printed September 2008
  *********************************************************************/
+// 
+#include "LRBCorrector.h"
 
 // System headers
 #include <utility>
@@ -26,6 +28,13 @@ class LinRegBevPeb {
   Int_t fErrorFlag;             ///< is information valid
   Long64_t fGoodEventNumber;    ///< accumulated so far  
 
+  // Lowercase p = prime = corrected
+  // S = sigma = second moment
+  // R = raw correlations
+  // M = mean = first moment
+  // V = variance = sigma squared
+  // P = independent variable
+  // Y =   dependent variable
   /// correlations
   TMatrixD mRPY, mRYP;
   TMatrixD mRPP, mRYY;
@@ -58,6 +67,7 @@ class LinRegBevPeb {
 
   LinRegBevPeb();
   LinRegBevPeb(const LinRegBevPeb& source);
+  LinRegBevPeb(LRBCorrector* LRBdata, Short_t cycle);
   virtual ~LinRegBevPeb() { };
 
   void solve();

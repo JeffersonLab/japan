@@ -37,6 +37,7 @@ Last Modified: August 1, 2018 1:41 PM
 #include <TEventList.h> 
 
 #include <TMatrixD.h>
+#include <TVector.h>
 
 // Register this handler with the factory
 RegisterHandlerFactory(LRBCorrector);
@@ -156,26 +157,56 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
   QwMessage << "Slope matrix has " << key->GetCycle() << " cycle(s)." << QwLog::endl;
   fLastCycle = key->GetCycle(); // last cycle
   for (Short_t cycle=1; cycle<=fLastCycle; cycle++){
-    TKey* key_cycle = corFile->GetKey("slopes", cycle);
-    TMatrixD *alphasM = (TMatrixD *) key_cycle->ReadObj();
-    if (alphasM == 0) {
-      QwWarning << "Slope matrix is null" << QwLog::endl;
-      corFile->Close();
-      return 0;
+    for (Int_t iMat = 0; iMat < fMatNames.size() ; iMat++) {
+      TKey* key_cycle = corFile->GetKey(fMatNames.at(iMat), cycle);
+      TMatrixD *alphasM = (TMatrixD *) key_cycle->ReadObj();
+      if (alphasM == 0) {
+        QwWarning << fMatNames.at(iMat) << " matrix is null" << QwLog::endl;
+        corFile->Close();
+        return 0;
+      }
+      if (alphasM->GetNrows() != Int_t(fIndependentType.size()) && alphasM->GetNrows() != Int_t(fDependentType.size())) {
+        QwWarning << fMatNames.at(iMat) << " matrix has wrong number of rows: "
+          << alphasM->GetNrows() << " != " << fIndependentType.size() << " or " << fDependentType.size()
+          << QwLog::endl;
+        corFile->Close();
+        return 0;
+      }
+      if (alphasM->GetNcols() != Int_t(fDependentType.size()) && alphasM->GetNcols() != Int_t(fDependentType.size())) {
+        QwWarning << fMatNames.at(iMat) << " matrix has wrong number of cols: "
+          << alphasM->GetNcols() << " != " << fIndependentType.size() << " or " << fDependentType.size()
+          << QwLog::endl;
+        corFile->Close();
+        return 0;
+      }
+      fMats[fMatNames.at(iMat)][cycle] = *alphasM;
     }
-    if (alphasM->GetNrows() != Int_t(fIndependentType.size())) {
-      QwWarning << "Slope matrix has wrong number of rows: "
-		<< alphasM->GetNrows() << " != " << fIndependentType.size()
-		<< QwLog::endl;
-      corFile->Close();
-      return 0;
+    for (Int_t iVec = 0; iVec < fVecNames.size() ; iVec++) {
+      TKey* key_cycle = corFile->GetKey(fVecNames.at(iVec), cycle);
+      TVectorD *alphasV = (TVectorD *) key_cycle->ReadObj();
+      if (alphasV == 0) {
+        QwWarning << fVecNames.at(iVec) << " vector is null" << QwLog::endl;
+        corFile->Close();
+        return 0;
+      }
+      if (alphasV->GetNrows() != Int_t(fIndependentType.size()) && alphasV->GetNrows() != Int_t(fDependentType.size())) {
+        QwWarning << fVecNames.at(iVec) << " vector has wrong number of rows: "
+          << alphasV->GetNrows() << " != " << fIndependentType.size() << " or " << fDependentType.size()
+          << QwLog::endl;
+        corFile->Close();
+        return 0;
+      }
+      fVecs[fVecNames.at(iVec)][cycle] = *alphasV;
     }
-    if (alphasM->GetNcols() != Int_t(fDependentType.size())) {
-      QwWarning << "Slope matrix has wrong number of cols: "
-		<< alphasM->GetNcols() << " != " << fDependentType.size()
-		<< QwLog::endl;
-      corFile->Close();
-      return 0;
+    for (Int_t iStat = 0; iStat < fStatNames.size() ; iStat++) {
+      TKey* key_cycle = corFile->GetKey(fStatNames.at(iStat), cycle);
+      TMatrixD *alphasS = (TMatrixD *) key_cycle->ReadObj();
+      if (alphasS == 0) {
+        QwWarning << fStatNames.at(iStat) << " vector is null" << QwLog::endl;
+        corFile->Close();
+        return 0;
+      }
+      fStats[fStatNames.at(iStat)][cycle] = *alphasS(0,0);
     }
 
     // Assign sensitivities
@@ -183,9 +214,12 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
     for (size_t i = 0; i != fDependentType.size(); ++i) {
       fSensitivity[cycle].at(i).resize(fIndependentType.size());
       for (size_t j = 0; j != fIndependentType.size(); ++j) {
-	fSensitivity[cycle].at(i).at(j) = -1.0*(*alphasM)(j,i);
+        fSensitivity[cycle].at(i).at(j) = -1.0*(*fMats.at("slopes").at(cycle))(j,i);
       }
     }
+  }
+  for (Short_t cycle=1; cycle<=fLastCycle; cycle++){
+    fLinRegs.at(cycle) = LinRegBevPeb(this,cycle);
   }
 
   corFile->Close();
@@ -239,4 +273,17 @@ void LRBCorrector::ProcessData() {
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
     CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar, fSensitivity[cycle][i]);
   }
+}
+
+Int_t LRBCorrector::AddTwoBursts(Short_t i1 = 0, Short_t i2 = 0) {
+  if (i1 == i2) { return 0 ; }
+  //for (Int_t iDV = 0; iDV < fDependentName.size(); iDV++) {
+  //  for (Int_t iIV = 0; iIV < fIndependentName.size(); iIV++) {
+  //    fCorrelation[i1].at(iDV).at(iIV) = fCorrelation[i1].at(iDV).at(iIV) + fCorrelation[i2].at(iDV).at(iIV) + (((fStat[i1].at(0)*fStat[i2].at(0)/(fStat[i1].at(0)+fStat[i2].at(0))))*(fIVmeans[i1].at(iIV)-fIVmeans[i2].at(iIV))*(fDVmeans[i1].at(iDV)-fDVmeans[i2].at(iDV)));
+  //  }
+  //}
+  fLinRegs.at(i1) = fLinRegs.at(i1)+fLinRegs.at(i2);
+  fLinRegs.at(i1).solve();
+  fLinRegs.at(i2) = fLinRegs.at(i1);
+  return 1;
 }
