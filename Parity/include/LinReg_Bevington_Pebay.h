@@ -10,7 +10,7 @@
  * "Formulas for Robust, One-Pass Parallel Computation of Covariances and Arbitrary-Order Statistical Moments" Philippe Peba, SANDIA REPORT SAND2008-6212, Unlimited Release, Printed September 2008
  *********************************************************************/
 // 
-#include "LRBCorrector.h"
+class LRBCorrector;
 
 // System headers
 #include <utility>
@@ -67,7 +67,7 @@ class LinRegBevPeb {
 
   LinRegBevPeb();
   LinRegBevPeb(const LinRegBevPeb& source);
-  LinRegBevPeb(LRBCorrector* LRBdata, Short_t cycle);
+  LinRegBevPeb(const LRBCorrector* LRBdata, Short_t cycle);
   virtual ~LinRegBevPeb() { };
 
   void solve();
@@ -120,6 +120,7 @@ class LinRegBevPeb {
 
   /// Friend class with correlator for ROOT tree output
   friend class QwCorrelator;
+  friend class LRBCorrector;
 };
 
 /// Output stream operator

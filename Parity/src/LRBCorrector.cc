@@ -16,6 +16,7 @@ Last Modified: August 1, 2018 1:41 PM
 
 #include "QwHelicityPattern.h"
 
+//#include "LinReg_Bevington_Pebay.h"
 #include "LRBCorrector.h"
 
 // Qweak headers
@@ -157,56 +158,57 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
   QwMessage << "Slope matrix has " << key->GetCycle() << " cycle(s)." << QwLog::endl;
   fLastCycle = key->GetCycle(); // last cycle
   for (Short_t cycle=1; cycle<=fLastCycle; cycle++){
-    for (Int_t iMat = 0; iMat < fMatNames.size() ; iMat++) {
-      TKey* key_cycle = corFile->GetKey(fMatNames.at(iMat), cycle);
+    for (Int_t iMat = 0; iMat < nMats ; iMat++) {
+      TKey* key_cycle = corFile->GetKey(fMatNames[iMat], cycle);
       TMatrixD *alphasM = (TMatrixD *) key_cycle->ReadObj();
       if (alphasM == 0) {
-        QwWarning << fMatNames.at(iMat) << " matrix is null" << QwLog::endl;
+        QwWarning << fMatNames[iMat] << " matrix is null" << QwLog::endl;
         corFile->Close();
         return 0;
       }
       if (alphasM->GetNrows() != Int_t(fIndependentType.size()) && alphasM->GetNrows() != Int_t(fDependentType.size())) {
-        QwWarning << fMatNames.at(iMat) << " matrix has wrong number of rows: "
+        QwWarning << fMatNames[iMat] << " matrix has wrong number of rows: "
           << alphasM->GetNrows() << " != " << fIndependentType.size() << " or " << fDependentType.size()
           << QwLog::endl;
         corFile->Close();
         return 0;
       }
       if (alphasM->GetNcols() != Int_t(fDependentType.size()) && alphasM->GetNcols() != Int_t(fDependentType.size())) {
-        QwWarning << fMatNames.at(iMat) << " matrix has wrong number of cols: "
+        QwWarning << fMatNames[iMat] << " matrix has wrong number of cols: "
           << alphasM->GetNcols() << " != " << fIndependentType.size() << " or " << fDependentType.size()
           << QwLog::endl;
         corFile->Close();
         return 0;
       }
-      fMats[fMatNames.at(iMat)][cycle] = *alphasM;
+      fMats[fMatNames[iMat]][cycle] = *alphasM;
     }
-    for (Int_t iVec = 0; iVec < fVecNames.size() ; iVec++) {
-      TKey* key_cycle = corFile->GetKey(fVecNames.at(iVec), cycle);
+    for (Int_t iVec = 0; iVec < nVecs ; iVec++) {
+      TKey* key_cycle = corFile->GetKey(fVecNames[iVec], cycle);
       TVectorD *alphasV = (TVectorD *) key_cycle->ReadObj();
       if (alphasV == 0) {
-        QwWarning << fVecNames.at(iVec) << " vector is null" << QwLog::endl;
+        QwWarning << fVecNames[iVec] << " vector is null" << QwLog::endl;
         corFile->Close();
         return 0;
       }
       if (alphasV->GetNrows() != Int_t(fIndependentType.size()) && alphasV->GetNrows() != Int_t(fDependentType.size())) {
-        QwWarning << fVecNames.at(iVec) << " vector has wrong number of rows: "
+        QwWarning << fVecNames[iVec] << " vector has wrong number of rows: "
           << alphasV->GetNrows() << " != " << fIndependentType.size() << " or " << fDependentType.size()
           << QwLog::endl;
         corFile->Close();
         return 0;
       }
-      fVecs[fVecNames.at(iVec)][cycle] = *alphasV;
+      fVecs[fVecNames[iVec]][cycle] = *alphasV;
     }
-    for (Int_t iStat = 0; iStat < fStatNames.size() ; iStat++) {
-      TKey* key_cycle = corFile->GetKey(fStatNames.at(iStat), cycle);
+    for (Int_t iStat = 0; iStat < nStats ; iStat++) {
+      TKey* key_cycle = corFile->GetKey(fStatNames[iStat], cycle);
       TMatrixD *alphasS = (TMatrixD *) key_cycle->ReadObj();
       if (alphasS == 0) {
-        QwWarning << fStatNames.at(iStat) << " vector is null" << QwLog::endl;
+        QwWarning << fStatNames[iStat] << " vector is null" << QwLog::endl;
         corFile->Close();
         return 0;
       }
-      fStats[fStatNames.at(iStat)][cycle] = *alphasS(0,0);
+      fStats[fStatNames[iStat]][cycle] = alphasS->operator()(0,0);
+        //(*alphasS)(0,0);
     }
 
     // Assign sensitivities
@@ -214,16 +216,78 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
     for (size_t i = 0; i != fDependentType.size(); ++i) {
       fSensitivity[cycle].at(i).resize(fIndependentType.size());
       for (size_t j = 0; j != fIndependentType.size(); ++j) {
-        fSensitivity[cycle].at(i).at(j) = -1.0*(*fMats.at("slopes").at(cycle))(j,i);
+        fSensitivity[cycle].at(i).at(j) = -1.0*( fMats.at("slopes").at(cycle).operator()(j,i));
       }
     }
   }
+  fLinRegs.resize(fLastCycle);
   for (Short_t cycle=1; cycle<=fLastCycle; cycle++){
-    fLinRegs.at(cycle) = LinRegBevPeb(this,cycle);
+//    fLinRegs.at(cycle) = LinRegBevPeb(this,cycle);
+
+//    tmpLRBP = LinRegBevPeb();
+    fillLinRegObject(fLinRegs.at(cycle-1),cycle);
+  }
+  if ( fLastCycle > GetParent()->GetMaxBurstIndex() ) {
+    AddTwoBursts(fLastCycle-1,fLastCycle); 
   }
 
   corFile->Close();
   return 0;
+}
+
+void LRBCorrector::fillLinRegObject(LinRegBevPeb& value,Short_t cycle)
+{
+  //value.nP = fVecs.at("IV_mean").at(cycle).nCols();
+  //value.nY = fVecs.at("DV_mean").at(cycle).nCols();
+  value.nP = fIndependentName.size();
+  value.nY = fDependentName.size();
+  value.init();
+  // Lowercase p = prime = corrected
+  // S = sigma = second moment
+  // R = raw correlations
+  // M = mean = first moment
+  // V = variance = sigma squared
+  // P = independent variable
+  // Y =   dependent variable
+  value.mMP = fVecs.at("IV_mean").at(cycle);
+  value.mMY = fVecs.at("DV_mean").at(cycle);
+  value.mMYp = fVecs.at("DV_mean_prime").at(cycle);
+
+  value.mVPP = fMats.at("IV_IV_rawVariance").at(cycle);
+  value.mVPY = fMats.at("IV_DV_rawVariance").at(cycle);
+  value.mVYP.Transpose(value.mVPY);
+  value.mVYY = fMats.at("DV_DV_rawVariance").at(cycle);
+  value.mVYYp = fMats.at("DV_DV_rawVariance_prime").at(cycle);
+
+  value.mVP = fVecs.at("IV_rawVariance").at(cycle);
+  value.mVY = fVecs.at("DV_rawVariance").at(cycle);
+  value.mVYp = fVecs.at("DV_rawVariance_prime").at(cycle);
+
+  value.mSPP = fMats.at("IV_IV_normVariance").at(cycle);
+  value.mSPY = fMats.at("IV_DV_normVariance").at(cycle);
+  value.mSYP.Transpose(value.mSPY);
+  value.mSYY = fMats.at("DV_DV_normVariance").at(cycle);
+  value.mSYYp = fMats.at("DV_DV_normVariance_prime").at(cycle);
+
+  value.Axy = fMats.at("slopes").at(cycle);
+  value.Ayx.Transpose(value.Axy);
+  value.dAxy = fMats.at("sigSlopes").at(cycle);
+  value.dAyx.Transpose(value.dAxy);
+
+  value.mSP = fVecs.at("IV_sigma").at(cycle);
+  value.mSY = fVecs.at("DV_sigma").at(cycle);
+  value.mSYp = fVecs.at("DV_sigma_primt").at(cycle);
+
+  value.mRPP = fMats.at("IV_IV_correlation").at(cycle);
+  value.mRPY = fMats.at("IV_DV_correlation").at(cycle);
+  value.mRYP.Transpose(value.mRPY);
+  value.mRYY = fMats.at("DV_DV_correlation").at(cycle);
+  value.mRYYp = fMats.at("DV_DV_correlation_prime").at(cycle);
+
+  value.fGoodEventNumber = fStats.at("MyStats").at(cycle);
+  value.fErrorFlag = 0;
+  //QwMessage << fGoodEventNumber << QwLog::endl;
+
 }
 
 

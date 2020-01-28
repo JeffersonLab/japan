@@ -199,6 +199,7 @@ class QwDataHandlerArray:
     std::vector<std::string> fDataHandlersDisabledByType; ///< List of disabled names
 
     Bool_t fPrintRunningSum;
+    Int_t fMaxBurstIndex;
 
     /// Test whether this handler array can contain a particular handler
     static Bool_t CanContain(VQwDataHandler* handler) {

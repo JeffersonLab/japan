@@ -88,6 +88,10 @@ class QwHelicityPattern {
     return (( fBurstLength > 0 && fGoodPatterns >= fBurstLength ) && ( fBurstCounter<fMaxBurstIndex ));
   }
 
+  Int_t GetMaxBurstIndex(){
+    return fMaxBurstIndex;
+  }
+
   void  CalculateAsymmetry();
   void GetTargetChargeStat(Double_t & asym, Double_t & error, Double_t & width);//retrieves the target charge asymmetry,asymmetry error ,asymmetry width
 

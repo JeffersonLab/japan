@@ -12,6 +12,7 @@
 #include <math.h>
 
 #include "LinReg_Bevington_Pebay.h"
+#include "LRBCorrector.h"
 
 #include "QwLog.h"
 
@@ -35,8 +36,9 @@ LinRegBevPeb::LinRegBevPeb(const LinRegBevPeb& source)
 
 //=================================================
 //=================================================
-LinRegBevPeb::LinRegBevPeb(const LRBCorrector& LRBdata, Short_t cycle)
-: nP(LRBdata.fIndependentNames.size()),nY(LRBdata.fDependentNames.size()),
+/*
+LinRegBevPeb::LinRegBevPeb(const LRBCorrector* LRBdata, Short_t cycle)
+: nP(LRBdata->fIndependentName.size()),nY(LRBdata->fDependentName.size()),
   fErrorFlag(-1),
   fGoodEventNumber(0)
 {
@@ -48,45 +50,46 @@ LinRegBevPeb::LinRegBevPeb(const LRBCorrector& LRBdata, Short_t cycle)
   // V = variance = sigma squared
   // P = independent variable
   // Y =   dependent variable
-  mMP = LRBdata.fVecs.at("IV_mean").at(cycle);
-  mMY = LRBdata.fVecs.at("DV_mean").at(cycle);
-  mMYp = LRBdata.fVecs.at("DV_mean_prime").at(cycle);
+  mMP = LRBdata->fVecs.at("IV_mean").at(cycle);
+  mMY = LRBdata->fVecs.at("DV_mean").at(cycle);
+  mMYp = LRBdata->fVecs.at("DV_mean_prime").at(cycle);
 
-  mVPP = LRBdata.fMats.at("IV_IV_rawVariance").at(cycle);
-  mVPY = LRBdata.fMats.at("IV_DV_rawVariance").at(cycle);
+  mVPP = LRBdata->fMats.at("IV_IV_rawVariance").at(cycle);
+  mVPY = LRBdata->fMats.at("IV_DV_rawVariance").at(cycle);
   mVYP.Transpose(mVPY);
-  mVYY = LRBdata.fMats.at("DV_DV_rawVariance").at(cycle);
-  mVYYp = LRBdata.fMats.at("DV_DV_rawVariance_prime").at(cycle);
+  mVYY = LRBdata->fMats.at("DV_DV_rawVariance").at(cycle);
+  mVYYp = LRBdata->fMats.at("DV_DV_rawVariance_prime").at(cycle);
 
-  mVP = LRBdata.fVecs.at("IV_rawVariance").at(cycle);
-  mVY = LRBdata.fVecs.at("DV_rawVariance").at(cycle);
-  mVYp = LRBdata.fVecs.at("DV_rawVariance_prime").at(cycle);
+  mVP = LRBdata->fVecs.at("IV_rawVariance").at(cycle);
+  mVY = LRBdata->fVecs.at("DV_rawVariance").at(cycle);
+  mVYp = LRBdata->fVecs.at("DV_rawVariance_prime").at(cycle);
 
-  mSPP = LRBdata.fMats.at("IV_IV_normVariance").at(cycle);
-  mSPY = LRBdata.fMats.at("IV_DV_normVariance").at(cycle);
+  mSPP = LRBdata->fMats.at("IV_IV_normVariance").at(cycle);
+  mSPY = LRBdata->fMats.at("IV_DV_normVariance").at(cycle);
   mSYP.Transpose(mSPY);
-  mSYY = LRBdata.fMats.at("DV_DV_normVariance").at(cycle);
-  mSYYp = LRBdata.fMats.at("DV_DV_normVariance_prime").at(cycle);
+  mSYY = LRBdata->fMats.at("DV_DV_normVariance").at(cycle);
+  mSYYp = LRBdata->fMats.at("DV_DV_normVariance_prime").at(cycle);
 
-  Axy = LRBdata.fMats.at("slopes").at(cycle);
+  Axy = LRBdata->fMats.at("slopes").at(cycle);
   Ayx.Transpose(Axy);
-  dAxy = LRBdata.fMats.at("sigSlopes").at(cycle);
+  dAxy = LRBdata->fMats.at("sigSlopes").at(cycle);
   dAyx.Transpose(dAxy);
 
-  mSP = LRBdata.fVecs.at("IV_sigma").at(cycle);
-  mSY = LRBdata.fVecs.at("DV_sigma").at(cycle);
-  mSYp = LRBdata.fVecs.at("DV_sigma_primt").at(cycle);
+  mSP = LRBdata->fVecs.at("IV_sigma").at(cycle);
+  mSY = LRBdata->fVecs.at("DV_sigma").at(cycle);
+  mSYp = LRBdata->fVecs.at("DV_sigma_primt").at(cycle);
 
-  mRPP = LRBdata.fMats.at("IV_IV_correlation").at(cycle);
-  mRPY = LRBdata.fMats.at("IV_DV_correlation").at(cycle);
+  mRPP = LRBdata->fMats.at("IV_IV_correlation").at(cycle);
+  mRPY = LRBdata->fMats.at("IV_DV_correlation").at(cycle);
   mRYP.Transpose(mRPY);
-  mRYY = LRBdata.fMats.at("DV_DV_correlation").at(cycle);
-  mRYYp = LRBdata.fMats.at("DV_DV_correlation_prime").at(cycle);
+  mRYY = LRBdata->fMats.at("DV_DV_correlation").at(cycle);
+  mRYYp = LRBdata->fMats.at("DV_DV_correlation_prime").at(cycle);
 
-  fGoodEventNumber = LRBdata.fStats.at("MyStats").at(cycle);
+  fGoodEventNumber = LRBdata->fStats.at("MyStats").at(cycle);
   QwMessage << fGoodEventNumber << QwLog::endl;
 
 }
+*/
 
 //=================================================
 //=================================================

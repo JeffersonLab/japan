@@ -17,6 +17,7 @@ Last Modified: August 1, 2018 1:41 PM
 
 // Parent Class
 #include "VQwDataHandler.h"
+//class LinReg_Bevington_Pebay
 #include "LinReg_Bevington_Pebay.h"
 
 // ROOT headers
@@ -54,29 +55,18 @@ class LRBCorrector : public VQwDataHandler, public MQwDataHandlerCloneable<LRBCo
       }
     };
 
-  protected:
-    LRBCorrector() { }
 
-    std::string fAlphaFileBase;
-    std::string fAlphaFileSuff;
-    std::string fAlphaFilePath;
-
-    std::vector< EQwHandleType > fIndependentType;
     std::vector< std::string > fIndependentName;
-    std::vector< std::string > fIndependentFull;
-    //TH1D  IVname;1  names of IVs
-    //TH1D  DVname;1  names of IVs
-
-    std::vector< const VQwHardwareChannel* > fIndependentVar;
-    std::vector< Double_t > fIndependentValues;
 
     Short_t fLastCycle;
-    std::map<Short_t,std::vector<std::vector<Double_t>>> fSensitivity;
     std::map<Short_t,Int_t> fNstat; 
 
     std::map<TString, std::map<Short_t,Double_t>> fStats; // Burstwise filled vectors, map of name vs. LinReg Vector
     std::map<TString, std::map<Short_t,TVectorD>> fVecs;  // Burstwise filled vectors, map of name vs. LinReg Vector
     std::map<TString, std::map<Short_t,TMatrixD>> fMats;  // Burstwise filled vectors, map of name vs. LinReg Matrix
+    const Int_t nStats = 1;
+    const Int_t nVecs = 12;
+    const Int_t nMats = 16;
     TString fStatNames[1] = {
       "MyStat"};
     TString fVecNames[12]  = {
@@ -110,7 +100,30 @@ class LRBCorrector : public VQwDataHandler, public MQwDataHandlerCloneable<LRBCo
       "A_xy",
       "A_yx"};
 
-    std::map<Short_t,LinRegBevPeb> fLinRegs;
+    //std::map<Short_t,LinRegBevPeb> fLinRegs;
+    std::vector<LinRegBevPeb> fLinRegs;
+    void fillLinRegObject(LinRegBevPeb&,Short_t);
+
+
+
+
+  protected:
+    LRBCorrector() { }
+
+    std::string fAlphaFileBase;
+    std::string fAlphaFileSuff;
+    std::string fAlphaFilePath;
+
+    std::vector< EQwHandleType > fIndependentType;
+    std::vector< std::string > fIndependentFull;
+    //TH1D  IVname;1  names of IVs
+    //TH1D  DVname;1  names of IVs
+
+    std::vector< const VQwHardwareChannel* > fIndependentVar;
+    std::vector< Double_t > fIndependentValues;
+
+    std::map<Short_t,std::vector<std::vector<Double_t>>> fSensitivity;
+
     
 };
 
