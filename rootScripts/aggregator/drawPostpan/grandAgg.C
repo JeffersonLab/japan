@@ -2,9 +2,9 @@
 #include "TTree.h"
 
 
-void grandAgg(TString filename, TString output, Int_t min = 0, Int_t max = 10000){
+void grandAgg(TString filename, TString output, Int_t signCorrect = 0, Int_t min = 0, Int_t max = 10000){
 
-Source source(filename, "agg",output);
+Source source(filename, "agg",output,signCorrect);
 source.printInfo();
 TCanvas c("c", "c", 800,600);
 c.Print(output+".pdf[", "pdf");

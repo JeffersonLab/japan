@@ -19,7 +19,7 @@ class Channel{
     void draw(TTree *, TString);
     TGraphErrors drawReg(Int_t, Double_t *, Double_t *, Double_t *, Double_t *, Double_t *);
     std::vector<TH1F> drawPull(Int_t, Double_t *, Double_t *, Double_t *, Double_t *, Double_t *);
-    void printInfo() { std::cout << "Plotting "<< name<<" vs runnumber" << endl;}
+    void printInfo() { std::cout << "Plotting "<< name<<" graph" << endl;}
 };  
 
 
