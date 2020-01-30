@@ -102,6 +102,7 @@ class LRBCorrector : public VQwDataHandler, public MQwDataHandlerCloneable<LRBCo
     //std::map<Short_t,LinRegBevPeb> fLinRegs;
     std::vector<LinRegBevPeb> fLinRegs;
     void fillLinRegObject(LinRegBevPeb&,Short_t);
+    void updateFromLinRegs(Short_t);
 
 
 

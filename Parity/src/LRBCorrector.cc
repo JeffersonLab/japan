@@ -161,12 +161,12 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
   for (Short_t cycle=1; cycle<=fLastCycle; cycle++){
     for (Int_t iMat = 0; iMat < nMats ; iMat++) {
       TKey* key_cycle = corFile->GetKey(fMatNames[iMat], cycle);
-      TMatrixD *alphasM = (TMatrixD *) key_cycle->ReadObj();
+      TMatrixD *alphasM((TMatrixD *) key_cycle->ReadObj());
       if (alphasM == 0) {
         QwWarning << fMatNames[iMat] << " matrix is null" << QwLog::endl;
         corFile->Close();
         return 0;
-      }
+      }/*
       if (alphasM->GetNrows() != Int_t(fIndependentType.size()) && alphasM->GetNrows() != Int_t(fDependentType.size())) {
         QwWarning << fMatNames[iMat] << " matrix has wrong number of rows: "
           << alphasM->GetNrows() << " != " << fIndependentType.size() << " or " << fDependentType.size()
@@ -180,35 +180,35 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
           << QwLog::endl;
         corFile->Close();
         return 0;
-      }
-      fMats[fMatNames[iMat]][cycle] = *alphasM;
+      }*/
+      fMats[fMatNames[iMat]].insert({cycle,*alphasM});
     }
     for (Int_t iVec = 0; iVec < nVecs ; iVec++) {
       TKey* key_cycle = corFile->GetKey(fVecNames[iVec], cycle);
-      TVectorD *alphasV = (TVectorD *) key_cycle->ReadObj();
+      TVectorD *alphasV((TVectorD *) key_cycle->ReadObj());
       if (alphasV == 0) {
         QwWarning << fVecNames[iVec] << " vector is null" << QwLog::endl;
         corFile->Close();
         return 0;
       }
-      if (alphasV->GetNrows() != Int_t(fIndependentType.size()) && alphasV->GetNrows() != Int_t(fDependentType.size())) {
-        QwWarning << fVecNames[iVec] << " vector has wrong number of rows: "
-          << alphasV->GetNrows() << " != " << fIndependentType.size() << " or " << fDependentType.size()
-          << QwLog::endl;
-        corFile->Close();
-        return 0;
-      }
-      fVecs[fVecNames[iVec]][cycle] = *alphasV;
+      //if (alphasV->GetNrows() != Int_t(fIndependentType.size()) && alphasV->GetNrows() != Int_t(fDependentType.size())) {
+      //  QwWarning << fVecNames[iVec] << " vector has wrong number of rows: "
+      //    << alphasV->GetNrows() << " != " << fIndependentType.size() << " or " << fDependentType.size()
+      //    << QwLog::endl;
+      //  corFile->Close();
+      //  return 0;
+      //}
+      fVecs[fVecNames[iVec]].insert({cycle,*alphasV});
     }
     for (Int_t iStat = 0; iStat < nStats ; iStat++) {
       TKey* key_cycle = corFile->GetKey(fStatNames[iStat], cycle);
-      TMatrixD *alphasS = (TMatrixD *) key_cycle->ReadObj();
+      TMatrixD *alphasS((TMatrixD *) key_cycle->ReadObj());
       if (alphasS == 0) {
         QwWarning << fStatNames[iStat] << " vector is null" << QwLog::endl;
         corFile->Close();
         return 0;
       }
-      fStats[fStatNames[iStat]][cycle] = alphasS->operator()(0,0);
+      fStats[fStatNames[iStat]].insert({cycle,alphasS->operator()(0,0)});
         //(*alphasS)(0,0);
     }
   }
@@ -216,14 +216,19 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
   fLinRegs.resize(fLastCycle);
   for (Short_t cycle=1; cycle<=fLastCycle; cycle++){
     if (fLastCycle > 1) { // Then we have multiple bursts to look at
+      LinRegBevPeb tmpLinReg;
+      fLinRegs.push_back(tmpLinReg);
+      QwMessage << "We have multiple bursts, filling a set of LinReg objects" << QwLog::endl;
       fillLinRegObject(fLinRegs.at(cycle-1),cycle);
     }
   }
-  if ( fLastCycle > GetParent()->GetMaxBurstIndex() ) {
+  if ( fLastCycle > GetParent()->GetMaxBurstIndex()+1 ) {
+    QwMessage << "Merging the final two bursts, #" << fLastCycle-1 << " and #" << fLastCycle <<QwLog::endl;
     AddTwoBursts(fLastCycle-1,fLastCycle); 
   }
 
   // Assign slopes after doing the merge above
+  QwMessage << "Populating LRBCorrector slopes" << QwLog::endl;
   for (Short_t cycle=1; cycle<=fLastCycle; cycle++){
     // Assign sensitivities
     fSensitivity[cycle].resize(fDependentType.size());
@@ -294,6 +299,50 @@ void LRBCorrector::fillLinRegObject(LinRegBevPeb& value,Short_t cycle)
 
 }
 
+void LRBCorrector::updateFromLinRegs(Short_t cycle)
+{
+  // Lowercase p = prime = corrected
+  // S = sigma = second moment
+  // R = raw correlations
+  // M = mean = first moment
+  // V = variance = sigma squared
+  // P = independent variable
+  // Y =   dependent variable
+  fVecs.at("IV_mean").at(cycle+1) = fLinRegs.at(cycle).mMP;
+  fVecs.at("DV_mean").at(cycle+1) = fLinRegs.at(cycle).mMY;
+  fVecs.at("DV_mean_prime").at(cycle+1) = fLinRegs.at(cycle).mMYp;
+
+  fMats.at("IV_IV_rawVariance").at(cycle+1) = fLinRegs.at(cycle).mVPP;
+  fMats.at("IV_DV_rawVariance").at(cycle+1) = fLinRegs.at(cycle).mVPY;
+  fMats.at("DV_DV_rawVariance").at(cycle+1) = fLinRegs.at(cycle).mVYY;
+  fMats.at("DV_DV_rawVariance_prime").at(cycle+1) = fLinRegs.at(cycle).mVYYp;
+
+  fVecs.at("IV_rawVariance").at(cycle+1) = fLinRegs.at(cycle).mVP;
+  fVecs.at("DV_rawVariance").at(cycle+1) = fLinRegs.at(cycle).mVY;
+  fVecs.at("DV_rawVariance_prime").at(cycle+1) = fLinRegs.at(cycle).mVYp;
+
+  fMats.at("IV_IV_normVariance").at(cycle+1) = fLinRegs.at(cycle).mSPP;
+  fMats.at("IV_DV_normVariance").at(cycle+1) = fLinRegs.at(cycle).mSPY;
+  fMats.at("DV_DV_normVariance").at(cycle+1) = fLinRegs.at(cycle).mSYY;
+  fMats.at("DV_DV_normVariance_prime").at(cycle+1) = fLinRegs.at(cycle).mSYYp;
+
+  fMats.at("slopes").at(cycle+1) = fLinRegs.at(cycle).Axy;
+  fMats.at("sigSlopes").at(cycle+1) = fLinRegs.at(cycle).dAxy;
+
+  fVecs.at("IV_sigma").at(cycle+1) = fLinRegs.at(cycle).mSP;
+  fVecs.at("DV_sigma").at(cycle+1) = fLinRegs.at(cycle).mSY;
+  fVecs.at("DV_sigma_prime").at(cycle+1) = fLinRegs.at(cycle).mSYp;
+
+  fMats.at("IV_IV_correlation").at(cycle+1) = fLinRegs.at(cycle).mRPP;
+  fMats.at("IV_DV_correlation").at(cycle+1) = fLinRegs.at(cycle).mRPY;
+  fMats.at("DV_DV_correlation").at(cycle+1) = fLinRegs.at(cycle).mRYY;
+  fMats.at("DV_DV_correlation_prime").at(cycle+1) = fLinRegs.at(cycle).mRYYp;
+
+  fStats.at("MyStats").at(cycle+1) = fLinRegs.at(cycle).fGoodEventNumber;
+  //QwMessage << fGoodEventNumber << QwLog::endl;
+
+}
+
 
 Int_t LRBCorrector::ConnectChannels(
     QwSubsystemArrayParity& asym,
@@ -330,7 +379,7 @@ Int_t LRBCorrector::ConnectChannels(
   }
 
   QwMessage << "In LRBCorrector::ConnectChannels; Number of IVs: " << fIndependentVar.size()
-            << " Number of DVs: " << fDependentVar.size() << QwLog::endl;
+            << ", Number of DVs: " << fDependentVar.size() << QwLog::endl;
   return 0;
 }
 
@@ -345,13 +394,14 @@ void LRBCorrector::ProcessData() {
 
 Int_t LRBCorrector::AddTwoBursts(Short_t i1 = 0, Short_t i2 = 0) {
   if (i1 == i2) { return 0 ; }
-  //for (Int_t iDV = 0; iDV < fDependentName.size(); iDV++) {
-  //  for (Int_t iIV = 0; iIV < fIndependentName.size(); iIV++) {
-  //    fCorrelation[i1].at(iDV).at(iIV) = fCorrelation[i1].at(iDV).at(iIV) + fCorrelation[i2].at(iDV).at(iIV) + (((fStat[i1].at(0)*fStat[i2].at(0)/(fStat[i1].at(0)+fStat[i2].at(0))))*(fIVmeans[i1].at(iIV)-fIVmeans[i2].at(iIV))*(fDVmeans[i1].at(iDV)-fDVmeans[i2].at(iDV)));
-  //  }
-  //}
+  // Else go to the last two bursts and make both equal to the result of adding the two together
+  // (because I'm paranoid that the i2th one may still get used somehow, even with max-burst-index set)
   fLinRegs.at(i1) = fLinRegs.at(i1)+fLinRegs.at(i2);
   fLinRegs.at(i1).solve();
   fLinRegs.at(i2) = fLinRegs.at(i1);
+  updateFromLinRegs(i1+1);
+  updateFromLinRegs(i2+1);
+  QwMessage << "Merged Bursts LinRebBevPeb object calculated: " << QwLog::endl;
+  fLinRegs.at(i1).print();
   return 1;
 }

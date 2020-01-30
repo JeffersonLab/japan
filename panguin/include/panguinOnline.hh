@@ -15,6 +15,9 @@
 #include <TQObject.h>
 #include <vector>
 #include <TString.h>
+#include <TMatrixTBase.h>
+#include <TMatrixT.h>
+#include <TMatrixD.h>
 #include <TCut.h>
 #include <TTimer.h>
 #include "TH1.h"
