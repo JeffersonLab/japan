@@ -1,71 +1,30 @@
 #include "realtimeBmodAna.C"
-//https://logbooks.jlab.org/entry/3763550
-using namespace std;
-Int_t QuerySlugNumber(Int_t run_number){
-  // Experimenting Function to Get slug number based on run number 
-  // Author : Tao Ye
-  TSQLResult* res;
-  TSQLRow *row;
-  cout << " -- Getting Slug Number from RCDB -- " << endl;
-  cout << " -- Connecting to RCDB -- " << endl;
-  TSQLServer *rcdb = TSQLServer::Connect("mysql://hallcdb.jlab.org:3306/a-rcdb","rcdb","");
-  cout << " -- ServerInfo: " << rcdb->ServerInfo() << endl;
-  cout << " -- Host : " << rcdb->GetHost() << endl;
-  cout << " -- Query DataBase " << endl;
-  TString select_q ="SELECT run_number,name,int_value "; 
-  TString from_q =  "FROM `a-rcdb`.conditions,`a-rcdb`.condition_types ";
-  TString where_q = Form("WHERE conditions.condition_type_id=condition_types.id and name='slug' and run_number='%d'",
-       run_number);
-  res = rcdb->Query(select_q + from_q + where_q);
-  if(res==NULL){
-    cout << " -- Failed to Query " << endl;
-    cout << " -- Bye-bye! " << endl;
-    delete row;
-    delete res;
-    cout << " -- Closing Connection to RCDB " << endl;
-    rcdb->Close();
-    delete rcdb;
-    return -1;
-  }
-
-  int nFields =res->GetFieldCount();
-  row = res->Next();
-  if(row==NULL){
-    cout << " -- Failed to load slug number " << endl;
-    cout << " -- Bye-bye! " << endl;
-    delete row;
-    delete res;
-    cout << " -- Closing Connection " << endl;
-    rcdb->Close();
-    delete rcdb;
-    return -1;
-  }
-  cout << " ----------------------------- " << endl;
-  for(int j=0; j< nFields; j++)
-    cout << "\t" << row->GetField(j) ;
-  cout << endl;
-  const char* slug_char = row->GetField(2);
-  int slug_id = TString(slug_char).Atoi();
-  delete row;
-  cout << " ----------------------------- " << endl;
-  cout << " -- Slug Number found  " << slug_id << endl;
-  return 0;
-}
-
-void plotAD(Int_t runnum = 999999, Long_t coils = 1133557664422){
+void plotAD(Int_t runnum = 999999, Long_t coils = 1357642){
   realtimeBmodAna();
   gStyle->SetOptStat(0);
   TPad *c2 = new TPad("cBMWPlotSens","cBMWPlotSens",0,0,1,1);
   Int_t slug_number = 0;
   if(runnum == 999999){
-    TString s = gSystem->GetFromPipe("~/scripts/getRunNumber");
-    TString s2 = gSystem->GetFromPipe("~/scripts/getSlugNumber");
-    slug_number = s2.Atoi();
+    TString tmpRunFile = gDirectory->GetName();
+    TString tmpRunNum = "0";
+    if (tmpRunFile.Contains("999999")){
+      Printf("Doing online rootfile BMOD analysis");
+      tmpRunNum = "999999";
+      TString s2 = gSystem->GetFromPipe("~/scripts/getSlugNumber");
+      slug_number = s2.Atoi();
+    }
+    else {
+      tmpRunNum = tmpRunFile(tmpRunFile.Length()-13,4);
+      Printf("Doing run %s BMOD analysis",tmpRunNum.Data());
+      runnum = tmpRunNum.Atoi();
+      slug_number = gSystem->GetFromPipe(Form("rcnd %d slug",runnum)).Atoi();
+    }
   }
   else {
-    slug_number = QuerySlugNumber(runnum);
+    slug_number = gSystem->GetFromPipe(Form("rcnd %d slug",runnum)).Atoi();
   }
   TChain* dit = new TChain("dit");
+  Printf("Current run %d Alphas and Deltas",runnum);
   Printf("Getting alphas and deltas from /adaqfs/home/apar/PREX/japan/panguin/macros/BeamMod/slopes/dithering_slopes_%ld_slug%d.root",coils,slug_number);
   dit->AddFile(Form("/adaqfs/home/apar/PREX/japan/panguin/macros/BeamMod/slopes/dithering_slopes_%ld_slug%d.root",coils,slug_number));
   c2->Divide(4,3);
