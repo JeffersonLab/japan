@@ -1,3 +1,6 @@
+#include "realtimeBmodAna.C"
+//https://logbooks.jlab.org/entry/3763550
+using namespace std;
 Int_t QuerySlugNumber(Int_t run_number){
   // Experimenting Function to Get slug number based on run number 
   // Author : Tao Ye
@@ -12,7 +15,7 @@ Int_t QuerySlugNumber(Int_t run_number){
   TString select_q ="SELECT run_number,name,int_value "; 
   TString from_q =  "FROM `a-rcdb`.conditions,`a-rcdb`.condition_types ";
   TString where_q = Form("WHERE conditions.condition_type_id=condition_types.id and name='slug' and run_number='%d'",
-			 run_number);
+       run_number);
   res = rcdb->Query(select_q + from_q + where_q);
   if(res==NULL){
     cout << " -- Failed to Query " << endl;
@@ -50,6 +53,7 @@ Int_t QuerySlugNumber(Int_t run_number){
 }
 
 void plotAD(Int_t runnum = 999999, Long_t coils = 1133557664422){
+  realtimeBmodAna();
   gStyle->SetOptStat(0);
   TPad *c2 = new TPad("cBMWPlotSens","cBMWPlotSens",0,0,1,1);
   Int_t slug_number = 0;
