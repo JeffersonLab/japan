@@ -399,8 +399,8 @@ Int_t LRBCorrector::AddTwoBursts(Short_t i1 = 0, Short_t i2 = 0) {
   fLinRegs.at(i1) = fLinRegs.at(i1)+fLinRegs.at(i2);
   fLinRegs.at(i1).solve();
   fLinRegs.at(i2) = fLinRegs.at(i1);
-  updateFromLinRegs(i1+1);
-  updateFromLinRegs(i2+1);
+  updateFromLinRegs(i1);
+  updateFromLinRegs(i2);
   QwMessage << "Merged Bursts LinRebBevPeb object calculated: " << QwLog::endl;
   fLinRegs.at(i1).print();
   return 1;
