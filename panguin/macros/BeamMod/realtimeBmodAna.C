@@ -1,10 +1,8 @@
 ////////realtimeBmodAna.C
 ///Panguin gui compatible diagnostic plots for shift taking online replay 
 
-// #include "plotAD.C"
 void realtimeBmodAna() {
   gStyle->SetOptStat(1221);
-//plotAD(999999,1357642);
   TTree* tree_R = (TTree*)gDirectory->Get("evt");
   int events = tree_R->GetEntries();
   tree_R->Draw(">>elist1","","entrylist");  //picks out unique cycle numbers
@@ -34,10 +32,23 @@ void realtimeBmodAna() {
   TString s = gSystem->GetFromPipe("cat /adaqfs/home/apar/PREX/japan/panguin/macros/BeamMod/last_cycle_num.txt");
   Double_t lastCyclenum = s.Atof();
   Printf("currentCyclenum = %f, lastCEN = %f, lastCyclenum = %f, currentCEN = %f, %d Total entries, %d entries with BMW active",currentCyclenum,lastCEN,lastCyclenum,currentCEN,events,nonzero);
-  if ((lastCyclenum < currentCyclenum) && (currentCEN > 15*120 + lastCEN)) {
-    // FIXME the goal of this if condition is to prevent the analysis from running once every 10 seconds in panguin. Ideally we just check if the file was editted in the last 5 minutes. If no then analyze
+  TString runFile = gDirectory->GetName();
+  TString runNum = "0";
+  if (runFile.Contains("999999")){
+    Printf("Preparing to do online rootfile BMOD analysis");
+    runNum = "999999";
+  }
+  else {
+    runNum = runFile(runFile.Length()-13,4);
+    Printf("Preparing to do run %s BMOD analysis",runNum.Data());
+  }
+  if (runNum!="999999" || ((lastCyclenum < currentCyclenum) && (currentCEN > 15*120 + lastCEN))) {
+    //FIXME If you get problems with GOOD cycles being ignore by this script, then uncomment the line below and remove the 15 second time check condition... it should be fine
+    //if (runNum!="999999" || ((lastCyclenum < currentCyclenum))) { 
+
+    // The goal of this if condition is to prevent the analysis from running once every 10 seconds in panguin. Ideally we just check if the file was editted in the last 5 minutes. If no then analyze
     Printf("Running BMOD Analysis from inside PANGUIN");
     gSystem->Exec(Form("echo %d > /adaqfs/home/apar/PREX/japan/panguin/macros/BeamMod/last_cycle_num.txt",(Int_t)currentCyclenum));
-    gSystem->Exec(Form("/adaqfs/home/apar/PREX/japan/panguin/macros/BeamMod/onlineBmodAna.sh"));
+    gSystem->Exec(Form("/adaqfs/home/apar/PREX/japan/panguin/macros/BeamMod/onlineRunAvgBmodAna.sh %s",runNum.Data()));
   }
 }

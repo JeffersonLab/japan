@@ -1,8 +1,8 @@
 #include "realtimeBmodAna.C"
-void plotAD(Int_t runnum = 999999, Long_t coils = 1357642){
-  realtimeBmodAna();
+void plotAD_1357642(Int_t runnum = 999999, Long_t coils = 1357642){
+  //realtimeBmodAna();
   gStyle->SetOptStat(0);
-  TPad *c2 = new TPad("cBMWPlotSens","cBMWPlotSens",0,0,1,1);
+  TCanvas* c2 = new TCanvas();
   Int_t slug_number = 0;
   if(runnum == 999999){
     TString tmpRunFile = gDirectory->GetName();
@@ -30,6 +30,8 @@ void plotAD(Int_t runnum = 999999, Long_t coils = 1357642){
   c2->Divide(4,3);
   c2->Draw();
   c2->cd(1);
+  //dit->Draw("alpha35_4eX4aX:scandata1","","*");
+  //dit->Draw("alpha35_4eX4aX:scandata2","","*");
   dit->Draw("alpha35_4eX4aX:cyclenum","","*");
   c2->cd(2);
   dit->Draw("alpha15_4eX4aX:cyclenum","","*");
@@ -53,5 +55,5 @@ void plotAD(Int_t runnum = 999999, Long_t coils = 1357642){
   dit->Draw("delta26_11X12X4aY:cyclenum","","*");
   c2->cd(12);
   dit->Draw("delta24_11X12X4aY:cyclenum","","*");
-  //c2->SaveAs(Form("%s_alphas-deltas.pdf",input.substr(0,input.find(".root")).c_str()));
+  c2->SaveAs(Form("/adaqfs/home/apar/PREX/japan/panguin/macros/BeamMod/slopes/dithering_alphas-deltas_%d_%d.pdf",coils,slug_number));
 }
