@@ -182,6 +182,7 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
         return 0;
       }*/
       fMats[fMatNames[iMat]].insert({cycle,*alphasM});
+      fMats[fMatNames[iMat]].at(cycle).Print();
     }
     for (Int_t iVec = 0; iVec < nVecs ; iVec++) {
       TKey* key_cycle = corFile->GetKey(fVecNames[iVec], cycle);
@@ -285,7 +286,7 @@ void LRBCorrector::fillLinRegObject(LinRegBevPeb& value,Short_t cycle)
 
   value.mSP = fVecs.at("IV_sigma").at(cycle);
   value.mSY = fVecs.at("DV_sigma").at(cycle);
-  value.mSYp = fVecs.at("DV_sigma_primt").at(cycle);
+  value.mSYp = fVecs.at("DV_sigma_prime").at(cycle);
 
   value.mRPP = fMats.at("IV_IV_correlation").at(cycle);
   value.mRPY = fMats.at("IV_DV_correlation").at(cycle);
@@ -293,9 +294,10 @@ void LRBCorrector::fillLinRegObject(LinRegBevPeb& value,Short_t cycle)
   value.mRYY = fMats.at("DV_DV_correlation").at(cycle);
   value.mRYYp = fMats.at("DV_DV_correlation_prime").at(cycle);
 
-  value.fGoodEventNumber = fStats.at("MyStats").at(cycle);
+  value.fGoodEventNumber = fStats.at("MyStat").at(cycle);
+  QwMessage << "Test 1.20: cycle " << cycle << QwLog::endl;
   value.fErrorFlag = 0;
-  //QwMessage << fGoodEventNumber << QwLog::endl;
+  QwMessage << "Test 1.21: cycle " << cycle << QwLog::endl;
 
 }
 
@@ -338,7 +340,7 @@ void LRBCorrector::updateFromLinRegs(Short_t cycle)
   fMats.at("DV_DV_correlation").at(cycle+1) = fLinRegs.at(cycle).mRYY;
   fMats.at("DV_DV_correlation_prime").at(cycle+1) = fLinRegs.at(cycle).mRYYp;
 
-  fStats.at("MyStats").at(cycle+1) = fLinRegs.at(cycle).fGoodEventNumber;
+  fStats.at("MyStat").at(cycle+1) = fLinRegs.at(cycle).fGoodEventNumber;
   //QwMessage << fGoodEventNumber << QwLog::endl;
 
 }
