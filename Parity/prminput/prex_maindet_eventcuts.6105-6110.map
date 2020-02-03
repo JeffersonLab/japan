@@ -1,4 +1,4 @@
-! For runs 3564 and 3565 (HV off left, Quads off Right) - want to local cut the main RHRS detectors, global cut the main LHRS detectors
+! For runs 6105 to 6110 (LHRS trips) - want to local cut the main LHRS detectors
 
 EVENTCUTS = 3
 IntegrationPMT, usl,		-100000,	100000,	l,	0
