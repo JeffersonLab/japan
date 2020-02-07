@@ -66,7 +66,7 @@ void regMulPlot(TString type = "burst_lrb_std", TString det = "us_avg") {
   TTree* tree_Rp;
   TString draw;
   TString cut;
-  if (ind > 1) {
+/*  if (ind > 1) {
     tree_R = (TTree*)gDirectory->Get("mulc");
     tree_Rp = (TTree*)gDirectory->Get("mul");
     tree_R->AddFriend(tree_Rp);
@@ -77,6 +77,21 @@ void regMulPlot(TString type = "burst_lrb_std", TString det = "us_avg") {
     drawDiffs[3]="mul.diff_bpm4eY";
     drawDiffs[4]="mul.diff_bpm12X";
     cut = Form("mul.ErrorFlag==0&&asym_%s.Device_Error_Code==0",det.Data());
+  }*/
+  if (ind > 1) {
+    tree_R = (TTree*)gDirectory->Get("mul");
+    if (det.Contains("dd")) {
+      draw = "(asym_usl.hw_sum-asym_usr.hw_sum)/2";
+    }
+    else {
+      draw = "(asym_usl.hw_sum+asym_usr.hw_sum)/2";
+    }
+    drawDiffs[0]="diff_bpm4aX";
+    drawDiffs[1]="diff_bpm4aY";
+    drawDiffs[2]="diff_bpm4eX";
+    drawDiffs[3]="diff_bpm4eY";
+    drawDiffs[4]="diff_bpm12X";
+    cut = Form("ErrorFlag==0&&asym_usl.Device_Error_Code==0&&asym_usr.Device_Error_Code==0");
   }
   else {
     tree_R = (TTree*)gDirectory->Get("mul");

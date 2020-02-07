@@ -27,9 +27,15 @@ void plotAD(Int_t runnum = 999999, Long_t coils = 1357642){
   Printf("Current run %d Alphas and Deltas",runnum);
   Printf("Getting alphas and deltas from /adaqfs/home/apar/PREX/japan/panguin/macros/BeamMod/slopes/dithering_slopes_%ld_slug%d.root",coils,slug_number);
   dit->AddFile(Form("/adaqfs/home/apar/PREX/japan/panguin/macros/BeamMod/slopes/dithering_slopes_%ld_slug%d.root",coils,slug_number));
+  //dit->AddFile(Form("/adaqfs/home/apar/PREX/japan/panguin/macros/BeamMod/slopes/tonight.root",coils,slug_number));
+  
+  //dit->Draw("alpha35_4eXaX:cyclenum:runnum>>run", "", "goff");
+  //TGraph *g=new TGraph(dit->GetV2(), dit->GetV3());
   c2->Divide(4,3);
   c2->Draw();
   c2->cd(1);
+  //dit->Draw("alpha35_4eX4aX:scandata1","","*");
+  //dit->Draw("alpha35_4eX4aX:scandata2","","*");
   dit->Draw("alpha35_4eX4aX:cyclenum","","*");
   c2->cd(2);
   dit->Draw("alpha15_4eX4aX:cyclenum","","*");

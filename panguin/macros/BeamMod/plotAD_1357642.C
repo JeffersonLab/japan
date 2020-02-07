@@ -55,5 +55,5 @@ void plotAD_1357642(Int_t runnum = 999999, Long_t coils = 1357642){
   dit->Draw("delta26_11X12X4aY:cyclenum","","*");
   c2->cd(12);
   dit->Draw("delta24_11X12X4aY:cyclenum","","*");
-  c2->SaveAs(Form("/adaqfs/home/apar/PREX/japan/panguin/macros/BeamMod/slopes/dithering_alphas-deltas_%d_%d.pdf",coils,slug_number));
+  c2->SaveAs(Form("/adaqfs/home/apar/PREX/japan/panguin/macros/BeamMod/slopes/dithering_alphas-deltas_%ld_%d.pdf",coils,slug_number));
 }
