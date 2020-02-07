@@ -7,12 +7,14 @@ from argparse import ArgumentParser
 parser     = ArgumentParser()
 parser.add_argument("-f", "--conf", dest="devicelist", help="Device List and Analyses for camguin", required=True, metavar="CONF", default="input.txt")
 parser.add_argument("-r", "--run", dest="runnumber", help="Run number", required=True, metavar="RUN", default="1")
+parser.add_argument("-b", "--basename", dest="basename", help="Base ROOT File name", metavar="BASENAME", default="prexPrompt_pass1")
 parser.add_argument("-F", "--fullruns", dest="fullruns", help="Do mini runs flag", metavar="FULLRUNS", default="0")
 #parser.add_argument("-s", "--slug", dest="slug", help="slug flag", metavar="SLUG", default="-1")
 
 args       = vars(parser.parse_args())
 run        = int(args['runnumber'])
 devicelist = args['devicelist']
+basename   = args['basename']
 fullruns   = args['fullruns']
 #slug       = args['slug']
 # Get slug: 
@@ -41,9 +43,9 @@ if int(fullruns) == 0:
   start = 0
   for mini in range(start,nMiniRuns):
     print("Looking at mini run # = "+str(mini))
-    os.system("./wrapper.sh -f "+str(devicelist)+" -r "+str(run)+" -m "+str(mini)+" -s 000 -n "+str(slug)+" ") # FIXME backgrounding here so that it will do all miniruns at once
+    os.system("./wrapper.sh -f "+str(devicelist)+" -r "+str(run)+" -m "+str(mini)+" -s 000 -n "+str(slug)+" -b "+str(basename)+" ") # FIXME backgrounding here so that it will do all miniruns at once
   print("\n\n\n\nCompletely Done with miniruns for run {}\n\n".format(run))
 else: # Do full run only (obviously this can be editted to do both in one go... but people want them separate - once we get the agg-rootfile names done correctly we can handle this internally to camguin)
     print("Looking at Full run")
-    os.system("./wrapper.sh -f "+str(devicelist)+" -r "+str(run)+" -m "+str(-1)+" -s 000 -n "+str(slug)+" ")
+    os.system("./wrapper.sh -f "+str(devicelist)+" -r "+str(run)+" -m "+str(-1)+" -s 000 -n "+str(slug)+" -b "+str(basename)+" ")
     print("\n\n\n\nCompletely Done with run {}\n\n".format(run))

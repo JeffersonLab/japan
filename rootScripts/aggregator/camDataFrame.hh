@@ -84,8 +84,8 @@ void Channel::storeData(TTree * outputTree){
 
 class Source {
   public:
-    TString run,nruns,split,minirun,input;
-    Source(TString run_n, TString n_runs, TString n_minirun, TString n_split, TString in): run(run_n), nruns(n_runs), minirun(n_minirun), split(n_split), input(in) {}
+    TString run,nruns,split,minirun,input,basename;
+    Source(TString run_n, TString n_runs, TString n_minirun, TString n_split, TString in, TString base_name): run(run_n), nruns(n_runs), minirun(n_minirun), split(n_split), input(in), basename(base_name) {}
     RDataFrame readSource();
     void printInfo() { std::cout << "Processing run  " << run  << ". " << std::endl;} 
     void drawAll();
@@ -279,9 +279,10 @@ RDataFrame Source::readSource(){
   TChain * mini_tree     = new TChain("mini");
   TChain * mulc_tree     = new TChain("mulc");
   TChain * mulc_lrb_tree = new TChain("mulc_lrb");
+  TChain * mulc_lrb_alldet_tree = new TChain("mulc_lrb_alldet_burst");
 
-  mul_tree->Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root",run.Data(),split.Data()));
-  slow_tree->Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root",run.Data(),split.Data()));
+  mul_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root",basename.Data(), run.Data(),split.Data()));
+  slow_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root",basename.Data(), run.Data(),split.Data()));
   reg_tree->Add(Form("/chafs2/work1/apar/postpan-outputs/prexPrompt_%s_%s_regress_postpan.root", run.Data(),split.Data()));
   TString ditheringFileNameDF = gSystem->Getenv("DITHERING_ROOTFILES");
   if (ditheringFileNameDF != ""){
@@ -289,8 +290,9 @@ RDataFrame Source::readSource(){
     dit_tree->Add(Form("%s/prexPrompt_dither_%s_000.root", ditheringFileNameDF.Data(), run.Data()));
   }
   mini_tree->Add(Form("/chafs2/work1/apar/postpan-outputs/prexPrompt_%s_%s_regress_postpan.root", run.Data(),split.Data()));
-  mulc_tree->Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root", run.Data(),split.Data()));
-  mulc_lrb_tree->Add(Form("/chafs2/work1/apar/japanOutput/prexPrompt_pass1_%s.%s.root", run.Data(),split.Data()));
+  mulc_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root",basename.Data(), run.Data(),split.Data()));
+  mulc_lrb_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root", basename.Data(), run.Data(),split.Data()));
+  mulc_lrb_alldet_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root", basename.Data(), run.Data(),split.Data()));
 
   mul_tree->AddFriend(reg_tree);
   if (ditheringFileNameDF != ""){
@@ -298,7 +300,13 @@ RDataFrame Source::readSource(){
     mul_tree->AddFriend(dit_tree);
   }
   mul_tree->AddFriend(mulc_tree);
-  mul_tree->AddFriend(mulc_lrb_tree);
+  TString outputDir = getOutputDir_h();
+  if (outputDir.Contains("SAM") || outputDir.Contains("AT")) {
+    mul_tree->AddFriend(mulc_lrb_alldet_tree);
+  }
+  else {
+    mul_tree->AddFriend(mulc_lrb_tree);
+  }
 
   //miniruns = mini_tree->Scan("minirun",""); // FIXME for later minirun looping addition
 
@@ -425,7 +433,6 @@ RDataFrame Source::readSource(){
   Double_t tmpSplitN = split.Atof();
   Double_t tmpMinirunN = minirun.Atof();
 
-  TString outputDir = getOutputDir_h();
   TString aggregatorFileName = Form("%s/aggregator.root",outputDir.Data()); // FIXME, this is very specific, and doesn't allow for aggregating over slugs, for instance
   // Store all trees
   if (tmpMinirunN <= -1) {
@@ -447,7 +454,7 @@ RDataFrame Source::readSource(){
   if (debug > 1) {cout << "Done setting up output tree --"; tsw.Print(); cout << endl;}
   tsw.Start();
 
-  //for (auto tmpChan:channels) {
+  //for (auto tmpChan:channels) 
   for (Int_t loop = 0 ; loop<channels.size() ; loop++) {
     channels.at(loop).storeData(outputTree);
   }
