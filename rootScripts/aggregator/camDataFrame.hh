@@ -132,8 +132,73 @@ void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_
     TIter slopesIter(slopesList);
     while (TLeaf *slopes=(TLeaf*)slopesIter.Next()){
       if (debug>4) Printf("Checking dither slope %s",((TString)slopes->GetName()).Data());
-      if ((TString)slopes->GetName() != "cyclenum"){
-        ditTree->Draw(Form("%s",slopes->GetName()),"flag==1","goff");
+      if ((TString)slopes->GetName() == "cyclenum" || (TString)slopes->GetName() == "run" || (TString)slopes->GetName() == "flag" ||  (TString)slopes->GetName() == "scandata1" || (TString)slopes->GetName() == "scandata2"){
+        ditTree->Draw(Form("%s",slopes->GetName()),Form("flag==1 && run==%d",runNumber),"goff");
+        TH1* tmpHist = (TH1*)gROOT->FindObject("htemp");
+        outname = "dit_"+(TString)slopes->GetName()+"_mean";
+        if (debug>5) Printf("Adding to agg: %s = %f",outname.Data(),1e-3*(Double_t)tmpHist->GetMean());
+        Channel tmpChan;
+        tmpChan.type = "meanrms";
+        tmpChan.name = "dit_"+(TString)slopes->GetName();
+        tmpChan.avg = (Double_t)tmpHist->GetMean();
+        tmpChan.avgErr = (Double_t)tmpHist->GetMeanError();
+        tmpChan.rms = (Double_t)tmpHist->GetMean();
+        tmpChan.rmsErr = (Double_t)tmpHist->GetRMSError();
+        tmpChan.nEntries = (Double_t)tmpHist->GetEntries();
+        channels.push_back(tmpChan);
+      }
+      else if (((TString)slopes->GetName()).Contains("coil")){
+        ditTree->Draw(Form("%s",slopes->GetName()),Form("flag==1 && run==%d",runNumber),"goff");
+        TH1* tmpHist = (TH1*)gROOT->FindObject("htemp");
+        outname = "dit_"+(TString)slopes->GetName()+"_slope";
+        if (debug>5) Printf("Adding to agg: %s = %f",outname.Data(),(Double_t)tmpHist->GetMean());
+        Channel tmpChan;
+        tmpChan.type = "slow";
+        tmpChan.name = "dit_"+(TString)slopes->GetName();
+        if (tmpHist->GetEntries() == 0) {
+          tmpChan.singleEntry = (Double_t)tmpHist->GetMean();
+          channels.push_back(tmpChan);
+        }
+        else {
+          tmpChan.singleEntry = (Double_t)tmpHist->GetMean();
+          channels.push_back(tmpChan);
+        }
+      }
+      else if (((TString)slopes->GetName()).Contains("alpha") || ((TString)slopes->GetName()).Contains("beta") || ((TString)slopes->GetName()).Contains("delta") || ((TString)slopes->GetName()).Contains("coil")){
+        // SKIP -> Let dithering plots do all this
+        continue;
+        /*
+        ditTree->Draw(Form("%s",slopes->GetName()),Form("flag==1 && run==%d",runNumber),"goff");
+        TH1* tmpHist = (TH1*)gROOT->FindObject("htemp");
+        outname = "dit_"+(TString)slopes->GetName()+"_slope";
+        if (debug>5) Printf("Adding to agg: %s = %f",outname.Data(),(Double_t)tmpHist->GetMean());
+        Channel tmpChan;
+        tmpChan.type = "meanrms";
+        tmpChan.name = "dit_"+(TString)slopes->GetName();
+        if (tmpHist->GetEntries() == 0) {
+          tmpChan.avg = -1.0e6;
+          tmpChan.avgErr = -1.0e6;
+          tmpChan.rms = -1.0e6;
+          tmpChan.rmsErr = -1.0e6;
+          tmpChan.nEntries = -1.0e6;
+          channels.push_back(tmpChan);
+        }
+        else {
+          tmpChan.avg = (Double_t)tmpHist->GetMean();
+          tmpChan.avgErr = (Double_t)tmpHist->GetRMSError();
+          tmpChan.rms = (Double_t)tmpHist->GetMean();
+          tmpChan.rmsErr = (Double_t)tmpHist->GetRMSError();
+          tmpChan.nEntries = (Double_t)tmpHist->GetEntries();
+          channels.push_back(tmpChan);
+        }
+        */
+      }
+      else if (((TString)slopes->GetName()).Contains("Ndata")) {
+        continue;
+      }
+      else {
+        // Do slug averaging
+        ditTree->Draw(Form("%s",slopes->GetName()),Form("flag==1"),"goff");
         TH1* tmpHist = (TH1*)gROOT->FindObject("htemp");
         outname = "dit_"+(TString)slopes->GetName()+"_slope";
         if (debug>5) Printf("Adding to agg: %s = %f",outname.Data(),1e-3*(Double_t)tmpHist->GetMean());

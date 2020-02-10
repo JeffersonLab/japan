@@ -48,7 +48,6 @@ then
   export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/SAMs/
   unset DITHERING_ROOTFILES
   unset DITHERING_ROOTFILES_SLOPES
-  unset DITHERING_ROOTFILES_SLOPES_RUN
 fi
 
 if [ $CONFIG = "dithering_input.txt" ];
@@ -56,7 +55,6 @@ then
   echo "Doing Dithering analysis"
   export DITHERING_ROOTFILES=/chafs2/work1/apar/DitherCorrection/
   export DITHERING_ROOTFILES_SLOPES=/chafs2/work1/apar/BMODextractor/
-  export DITHERING_ROOTFILES_SLOPES_RUN=/chafs1/work1/apar/cameronc/WAC/backups/dithering_slopes_backups
   export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/dithering/
 fi
 
