@@ -170,6 +170,7 @@ void Channel::draw(TTree* tree,TString output){
     TMultiGraph mg;
     TMultiGraph mg1;
     TMultiGraph mg2;
+    TMultiGraph mg3;
     mg.Add(&g1);
     mg.Add(&g2);
     mg.Add(&g3);
@@ -180,9 +181,13 @@ void Channel::draw(TTree* tree,TString output){
     mg2.Add(&g3);
     mg1.Fit(fconst_p,"Q");
     mg2.Fit(fconst_m,"Q");
+    mg3.Add(&g1);
+    mg3.Add(&g2);
+    mg3.Add(&g3);
+    mg3.Add(&g4);
     if (signCorrect) {
       mg.SetTitle(chan_name+" vs Slug, Sign Corrected");
-      mg.Fit(fconst_all,"Q");
+      mg3.Fit(fconst_all,"Q");
     }
     else {
       mg.SetTitle(chan_name+" vs Slug");
