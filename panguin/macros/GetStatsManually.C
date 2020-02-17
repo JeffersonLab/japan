@@ -31,10 +31,10 @@ void GetStatsManually(Int_t runNum = 999999){
     statStr[1] = Form("EventCut passing events");
     statStrNumbers[1] = Form(" = %d (%.2f%%)", ok, perok);
 
-    r->Project(hist->GetName(), "CodaEventNumber", "bcm_dg_ds<120","goff");
+    r->Project(hist->GetName(), "CodaEventNumber", "bcm_dg_ds<50","goff");
     Int_t low = hist->GetEntries();
     Double_t perlow= low*100./tot;
-    statStr[2] = Form("Current < 120 #muA events");
+    statStr[2] = Form("Current < 50 #muA events");
     statStrNumbers[2] = Form(" = %d (%.2f%%)", low, perlow);
 
     r->Project(hist->GetName(), "CodaEventNumber", "bpm12XP>50000 || bpm12XM>50000 || bpm12YP>50000 || bpm12YM>50000","goff");
@@ -43,12 +43,16 @@ void GetStatsManually(Int_t runNum = 999999){
     statStr[3] = Form("BPM12 wire saturation events");
     statStrNumbers[3] = Form(" = %d (%.2f%%)", bpmsat, perbpmsat);
 
-    r->Project(hist->GetName(), "cav4cQ.hw_sum", "ErrorFlag==0","goff");
+    r->Project(hist->GetName(), "bcm_an_us.hw_sum", "bcm_an_us>0.1");
+    Int_t nentFULL = hist->GetEntries();
+    Double_t avgCurrentFULL = hist->GetMean();
+    Double_t totalChargeFULL = avgCurrentFULL*(1/1.0e6)*(nentFULL/120);
+    r->Project(hist->GetName(), "bcm_an_us.hw_sum", "ErrorFlag==0","goff");
     Int_t nent = hist->GetEntries();
     Double_t avgCurrent = hist->GetMean();
     Double_t totalCharge = avgCurrent*(1/1.0e6)*(nent/120);
-    statStr[4] = Form("Total Good Q this run (3C = slug)");
-    statStrNumbers[4] = Form(" = %.2f C", totalCharge);
+    statStr[4] = Form("Total Good Q this run (2C = slug)");
+    statStrNumbers[4] = Form(" = %.3f C ABU / %.3f C no cuts", totalCharge,totalChargeFULL);
 
     r->Project(hist->GetName(), "CodaEventNumber", "","goff");
     Double_t goodTime = ((nent/120.0)/60.0);
@@ -65,6 +69,7 @@ void GetStatsManually(Int_t runNum = 999999){
       string = string + statStr[j] + statStrNumbers[j] + "\n\n";
     }
     gSystem->Exec(Form("echo \"%s\" > /adaqfs/home/apar/scripts/stats.dat",string.Data()));
+    gSystem->Exec(Form("echo \"%s\" > /adaqfs/home/apar/scripts/stats/stats_%d.dat",string.Data(),runNum));
     if(hist) delete hist;
   }
 }
