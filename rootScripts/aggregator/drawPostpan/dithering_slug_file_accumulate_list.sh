@@ -1,6 +1,10 @@
 #! /bin/sh
-ROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/slugRootfiles/dithering/"
-OUTPUTROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/slugRootfiles/dithering/grandRootfile/"
+stub=""
+if [ "$#" -ge 3 ]; then
+  stub=$3
+fi
+ROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/slugRootfiles/dithering${stub}/"
+OUTPUTROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/slugRootfiles/dithering${stub}/grandRootfile/"
 #OUTPUTROOTFILEDIR="./"
 if [ "$#" -lt 1 ]; then
   echo "Error: Need to pass a list file name number \"slug##\".list"
@@ -22,10 +26,14 @@ else
     num_lines=$i
   done
 
-  hadd -f ${OUTPUTROOTFILEDIR}/grand_${lines[0]}-${lines[$num_lines]}.root ${run_lines[@]}
+  name="${lines[0]}-${lines[$num_lines]}"
+  if [ "$#" -ge 2 ]; then
+    name=$2
+  fi
+  hadd -f ${OUTPUTROOTFILEDIR}/grand_${name}.root ${run_lines[@]}
 
   # Add units
-  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/grand_${lines[0]}-${lines[$num_lines]}.root\"\)
+  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/grand_${name}.root\"\)
 
 fi
 
