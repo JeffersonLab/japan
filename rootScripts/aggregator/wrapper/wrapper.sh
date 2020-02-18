@@ -56,6 +56,16 @@ then
   export DITHERING_ROOTFILES=/chafs2/work1/apar/DitherCorrection/
   export DITHERING_ROOTFILES_SLOPES=/chafs2/work1/apar/BMODextractor/
   export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/dithering/
+  export DITHERING_STUB=""
+fi
+
+if [ $CONFIG = "dithering_1X_input.txt" ];
+then
+  echo "Doing Dithering_1X analysis"
+  export DITHERING_ROOTFILES=/chafs2/work1/apar/DitherCorrection/
+  export DITHERING_ROOTFILES_SLOPES=/chafs2/work1/apar/BMODextractor/
+  export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/dithering_1X/
+  export DITHERING_STUB="_1X"
 fi
 
 root -l -q -b ../camDataFrame.C"(\"$RUNNUM\",\"$NRUNS\",\"$MINIRUNNUM\",\"$SPLITNUM\",\"$CONFIG\",\"$BASENAME\")"
