@@ -717,8 +717,8 @@ void BMOD::edittree(TString oldFileName = "test.root")
       for(int idet=0;idet<nDet;idet++){
         for(int ibpm=0;ibpm<nBPM;ibpm++){
           if ( parameterVectors.count("Flag Sigma Cut") != 0 && abs(tmpVecss.at(idet).at(ibpm).at(i)-tmpMeans.at(idet).at(ibpm)) > atof((parameterVectors["Flag Sigma Cut"].at(0).c_str()))*tmpRMSs.at(idet).at(ibpm)) {
-          //  Printf("Cycle hit %f sigma cut, flag = 0",atof((parameterVectors["Flag Sigma Cut"].at(0).c_str())));
-          //  Printf("Slope %f doesn't fit within %f of mean %f",tmpVecss.at(idet).at(ibpm).at(i),atof((parameterVectors["Flag Sigma Cut"].at(0).c_str()))*tmpRMSs.at(idet).at(ibpm),tmpMeans.at(idet).at(ibpm));
+            Printf("Cycle hit %f sigma cut, flag = 0",atof((parameterVectors["Flag Sigma Cut"].at(0).c_str())));
+            Printf("Slope %f doesn't fit within %f of mean %f",tmpVecss.at(idet).at(ibpm).at(i),atof((parameterVectors["Flag Sigma Cut"].at(0).c_str()))*tmpRMSs.at(idet).at(ibpm),tmpMeans.at(idet).at(ibpm));
             flag = 0;
           }
           //else {
