@@ -47,10 +47,10 @@ EVENTCUTS = 3
 !So pedestals are applied before appyling the cuts.
 
 !device_type,  device_name, channel_name, lower_limit, upper_limit, local(l)/global(g), stability_RMS, burplevel
- bpmstripline,	bpm1, 	xm,	1000,	55000,	g,	0,	0
- bpmstripline,	bpm1, 	xp,	1000,	55000,	g,	0,	0
- bpmstripline,	bpm1, 	ym,	1000,	55000,	g,	0,	0
- bpmstripline,	bpm1, 	yp,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm1, 	xm,	-55000,	-1000,	g,	0,	0
+ bpmstripline,	bpm1, 	xp,	-55000,	-1000,	g,	0,	0
+ bpmstripline,	bpm1, 	ym,	-55000,	-1000,	g,	0,	0
+ bpmstripline,	bpm1, 	yp,	-55000,	-1000,	g,	0,	0
  bpmstripline,	bpm4a,	xm,	1000,	55000,	g,	0,	2000
  bpmstripline,	bpm4a,	xp,	1000,	55000,	g,	0,	2000
  bpmstripline,	bpm4a,	ym,	1000,	55000,	g,	0,	2000
