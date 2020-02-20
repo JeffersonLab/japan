@@ -37,12 +37,12 @@ done
 [ -z "$NRUNS" ] && usage 6
 [ -z "$BASENAME" ] && usage 7
 
-if [ $CONFIG = "PQB_input.txt" ];
+if [[ "$CONFIG" == "PQB_input.txt" ]];
 then
   export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/PQB/
 fi
 
-if [ $CONFIG = "SAMs_input.txt" ];
+if [[ "$CONFIG" == "SAMs_input.txt" ]];
 then
   echo "Doing SAM analysis"
   export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/SAMs/
@@ -50,7 +50,7 @@ then
   unset DITHERING_ROOTFILES_SLOPES
 fi
 
-if [ $CONFIG = "dithering_input.txt" ];
+if [[ "$CONFIG" == "dithering_input."* ]];
 then
   echo "Doing Dithering analysis"
   export DITHERING_ROOTFILES=/chafs2/work1/apar/DitherCorrection/
@@ -59,7 +59,7 @@ then
   export DITHERING_STUB=""
 fi
 
-if [ $CONFIG = "dithering_1X_input.txt" ];
+if [[ "$CONFIG" == "dithering_1X_input."* ]];
 then
   echo "Doing Dithering_1X analysis"
   export DITHERING_ROOTFILES=/chafs2/work1/apar/DitherCorrection/

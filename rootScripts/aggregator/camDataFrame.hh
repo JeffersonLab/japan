@@ -103,7 +103,8 @@ void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_
   Printf("Getting slopes");
 
   TString ditSlopeFileNamebase = gSystem->Getenv("DITHERING_ROOTFILES_SLOPES");
-  TString ditSlopeFileName = ditSlopeFileNamebase + "/dit_alldet_slopes_slug" + nRuns + ".root";
+  TString ditStub = gSystem->Getenv("DITHERING_STUB");
+  TString ditSlopeFileName = ditSlopeFileNamebase + "/dit_alldet_slopes" + ditStub + "_slug" + nRuns + ".root";
   if( !gSystem->AccessPathName(ditSlopeFileName) ) {
     Printf("Getting dithering slopes from %s",ditSlopeFileName.Data());
     TChain *ditTree = new TChain("dit");
@@ -343,35 +344,45 @@ RDataFrame Source::readSource(){
   TChain * dit_tree      = new TChain("dit");
   TChain * mini_tree     = new TChain("mini");
   TChain * mulc_tree     = new TChain("mulc");
-  TChain * mulc_lrb_tree = new TChain("mulc_lrb");
-  TChain * mulc_lrb_alldet_tree = new TChain("mulc_lrb_alldet_burst");
+  TChain * mulc_lrb_burst_tree = new TChain("mulc_lrb_burst");
+  TChain * mulc_lrb_alldet_burst_tree = new TChain("mulc_lrb_alldet_burst");
 
   mul_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root",basename.Data(), run.Data(),split.Data()));
   slow_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root",basename.Data(), run.Data(),split.Data()));
   reg_tree->Add(Form("/chafs2/work1/apar/postpan-outputs/prexPrompt_%s_%s_regress_postpan.root", run.Data(),split.Data()));
   TString ditheringFileNameDF = gSystem->Getenv("DITHERING_ROOTFILES");
+  TString ditheringFileStub = gSystem->Getenv("DITHERING_STUB");
   if (ditheringFileNameDF != ""){
     Printf("Looking for Dithering corrected files in %s",ditheringFileNameDF.Data());
-    dit_tree->Add(Form("%s/prexPrompt_dither_%s_000.root", ditheringFileNameDF.Data(), run.Data()));
+    dit_tree->Add(Form("%s/prexPrompt_dither%s_%s_000.root", ditheringFileNameDF.Data(), ditheringFileStub.Data(), run.Data()));
   }
   mini_tree->Add(Form("/chafs2/work1/apar/postpan-outputs/prexPrompt_%s_%s_regress_postpan.root", run.Data(),split.Data()));
   mulc_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root",basename.Data(), run.Data(),split.Data()));
-  mulc_lrb_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root", basename.Data(), run.Data(),split.Data()));
-  mulc_lrb_alldet_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root", basename.Data(), run.Data(),split.Data()));
+  mulc_lrb_burst_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root", basename.Data(), run.Data(),split.Data()));
+  mulc_lrb_alldet_burst_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root", basename.Data(), run.Data(),split.Data()));
 
   mul_tree->AddFriend(reg_tree);
-  if (ditheringFileNameDF != ""){
-    Printf("Obtained Dithering corrected files in %s",ditheringFileNameDF.Data());
-    mul_tree->AddFriend(dit_tree);
-  }
-  mul_tree->AddFriend(mulc_tree);
+  ///mul_tree->AddFriend(mulc_tree);
   TString outputDir = getOutputDir_h();
-  if (outputDir.Contains("SAM") || outputDir.Contains("AT")) {
-    mul_tree->AddFriend(mulc_lrb_alldet_tree);
-  }
-  else {
-    mul_tree->AddFriend(mulc_lrb_tree);
-  }
+  //if (outputDir.Contains("SAM") || outputDir.Contains("AT")) {
+  //  mul_tree->AddFriend(mulc_tree);
+  //}
+  //else {
+    if (ditheringFileNameDF != ""){
+      Printf("Obtained Dithering corrected files in %s",ditheringFileNameDF.Data());
+      Printf("Using dit tree");
+      mul_tree->AddFriend(dit_tree);
+   //   mul_tree->AddFriend(mulc_tree);
+    }
+  //  else {
+  //    Printf("Using mulc_lrb_burst");
+  //    mul_tree->AddFriend(mulc_lrb_burst_tree);
+   //   mul_tree->AddFriend(mulc_tree);
+   // }
+  //}
+  Printf("Using mulc_lrb_alldet_burst");
+  mul_tree->AddFriend(mulc_lrb_alldet_burst_tree);
+  mul_tree->AddFriend(mulc_tree);
 
   //miniruns = mini_tree->Scan("minirun",""); // FIXME for later minirun looping addition
 
