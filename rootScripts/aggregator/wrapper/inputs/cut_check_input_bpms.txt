@@ -1,0 +1,12 @@
+diff_bpm4aX_vs_event,1e3*diff_bpm4aX.hw_sum:CodaEventNumber,summary,Canvas Name=Target BPM diff vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Draw Option=ap;Canvas Nx=2;Canvas Ny=2;Canvas X=1;Canvas Y=1;Graph=True
+diff_bpm4aY_vs_event,1e3*diff_bpm4aY.hw_sum:CodaEventNumber,summary,Canvas Name=Target BPM diff vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Draw Option=ap;Canvas Nx=2;Canvas Ny=2;Canvas X=2;Canvas Y=1;Graph=True
+diff_bpm4eX_vs_event,1e3*diff_bpm4eX.hw_sum:CodaEventNumber,summary,Canvas Name=Target BPM diff vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Draw Option=ap;Canvas Nx=2;Canvas Ny=2;Canvas X=1;Canvas Y=2;Graph=True
+diff_bpm4eY_vs_event,1e3*diff_bpm4eY.hw_sum:CodaEventNumber,summary,Canvas Name=Target BPM diff vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Draw Option=ap;Canvas Nx=2;Canvas Ny=2;Canvas X=2;Canvas Y=2;Graph=True
+diff_bpm12X_vs_event,1e3*diff_bpm12X.hw_sum:CodaEventNumber,summary,Canvas Name=Arc BPM diff vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Draw Option=ap;Canvas Nx=2;Canvas Ny=2;Canvas X=1;Canvas Y=1;Graph=True
+diff_bpm12Y_vs_event,1e3*diff_bpm12Y.hw_sum:CodaEventNumber,summary,Canvas Name=Arc BPM diff vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Draw Option=ap;Canvas Nx=2;Canvas Ny=2;Canvas X=2;Canvas Y=1;Graph=True
+diff_bpm11X_vs_event,1e3*diff_bpm11X.hw_sum:CodaEventNumber,summary,Canvas Name=Arc BPM diff vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Draw Option=ap;Canvas Nx=2;Canvas Ny=2;Canvas X=1;Canvas Y=2;Graph=True
+diff_bpm11Y_vs_event,1e3*diff_bpm11Y.hw_sum:CodaEventNumber,summary,Canvas Name=Arc BPM diff vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Draw Option=ap;Canvas Nx=2;Canvas Ny=2;Canvas X=2;Canvas Y=2;Graph=True
+yield_bpm4aX_vs_event,yield_bpm4aX.hw_sum:CodaEventNumber,summary,Canvas Name=Target BPM yield vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Draw Option=ap;Canvas Nx=2;Canvas Ny=2;Canvas X=1;Canvas Y=1;Graph=True
+yield_bpm4aY_vs_event,yield_bpm4aY.hw_sum:CodaEventNumber,summary,Canvas Name=Target BPM yield vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Draw Option=ap;Canvas Nx=2;Canvas Ny=2;Canvas X=2;Canvas Y=1;Graph=True
+yield_bpm4eX_vs_event,yield_bpm4eX.hw_sum:CodaEventNumber,summary,Canvas Name=Target BPM yield vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Draw Option=ap;Canvas Nx=2;Canvas Ny=2;Canvas X=1;Canvas Y=2;Graph=True
+yield_bpm4eY_vs_event,yield_bpm4eY.hw_sum:CodaEventNumber,summary,Canvas Name=Target BPM yield vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Draw Option=ap;Canvas Nx=2;Canvas Ny=2;Canvas X=2;Canvas Y=2;Graph=True

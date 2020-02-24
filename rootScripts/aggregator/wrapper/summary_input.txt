@@ -1,7 +1,7 @@
 asym_us_vs_event,asym_usl.hw_sum:CodaEventNumber,summary,Canvas Name=TestEvents;Cut=ErrorFlag==0;SetOptStat=2211
-asym_us_vs,asym_usl.hw_sum:asym_usr.hw_sum,summary,Canvas Name=Test2;Cut=ErrorFlag==0
-asym_bcm_an_us,asym_bcm_an_us.hw_sum:CodaEventNumber,summary,Cut=ErrorFlag==0;Canvas Name=Test1
-asym_bcm_an_us,asym_bcm_an_us.hw_sum:CodaEventNumber,summary,Cut=ErrorFlag==0;MarkerStyle=20;MarkerSize=.5;MarkerColor=2;DrawOpt=SAME;Canvas Name=Test1
-us_avg,reg.reg_asym_us_avg,summary,Cut=ErrorFlag==0
-usl_correction,reg.reg_asym_usl-asym_usl.hw_sum,summary,Cut=ErrorFlag==0
-usl,asym_usl.hw_sum,summary,Cut=ErrorFlag==0
+asym_us_vs,1e6*asym_usl.hw_sum:1e6*asym_usr.hw_sum,summary,Canvas Name=Test2;Cut=ErrorFlag==0
+asym_bcm_an_us,1e6*asym_bcm_an_us.hw_sum:CodaEventNumber,summary,Cut=ErrorFlag==0;Canvas Name=Test1
+asym_bcm_an_us,1e6*asym_bcm_an_us.hw_sum:CodaEventNumber,summary,Cut=ErrorFlag==0;MarkerStyle=20;MarkerSize=.5;MarkerColor=2;DrawOpt=SAME;Canvas Name=Test1
+us_avg,1e6*reg.reg_asym_us_avg,summary,Cut=ErrorFlag==0;Histogram Title=Regressed US Average
+usl_correction,1e6*reg.reg_asym_usl-1e6*asym_usl.hw_sum,summary,Cut=ErrorFlag==0;Histogram Title=US Left Main Detector Correction
+usl,asym_usl.hw_sum,summary,Cut=ErrorFlag==0;Histogram Title=Raw US Left Main Detector
