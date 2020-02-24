@@ -62,7 +62,11 @@ Int_t TreeGetter::expandData(){
   fileOutput->cd();
   TList* treeList = new TList;
   // Start at the end of the list and go backwards. Sort below undoes this, but this ensures the newest branch list dominates MergeTrees.
-  for (Int_t f = listOfFileIndices.size()-1 ; f >= 0; f--) {
+  //for (Int_t f = listOfFileIndices.size()-1 ; f >= 0; f--) {
+  //  treeList->Add((TChain*)fileInput.at(f)->Get(treeName.c_str()));
+  //}
+  treeList->Add((TChain*)fileInput.at(listOfFileIndices.size()-1)->Get(treeName.c_str()));
+  for (Int_t f = 0 ; f < listOfFileIndices.size()-1; f++) {
     treeList->Add((TChain*)fileInput.at(f)->Get(treeName.c_str()));
   }
   TChain* tmpTree = (TChain*)TChain::MergeTrees(treeList);
