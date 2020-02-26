@@ -20,7 +20,7 @@ class Channel{
     std::vector <Double_t> rmss;
     std::vector <Double_t> rmsErrs;
     std::vector <Double_t> nentries;*/
-    void drawPlot (std::map<TString,TCanvas*>);
+    void drawPlot (std::map<TString,TPad*>);
     void getData();
     void getSlowData();
     void storeData(TTree *);
@@ -48,8 +48,8 @@ void Channel::fill_channels(TString inputFile = "input.txt"){
   return;
 }; */
 
-void Channel::drawPlot(std::map<TString,TCanvas*> canvases){
-  canvases[details["Canvas Name"]]->cd(details["Canvas X"].Atoi()+(details["Canvas Nx"].Atoi()*(details["Canvas Y"].Atoi()-1)));
+void Channel::drawPlot(std::map<TString,TPad*> pads){
+  pads[details["Canvas Name"]]->cd(details["Canvas X"].Atoi()+(details["Canvas Nx"].Atoi()*(details["Canvas Y"].Atoi()-1)));
   // FIXME insert auto->histo* pointer to be assigned later based on dimension
   if (details.count("Draw Option") == 0) {
     details["Draw Option"] = "";
@@ -92,8 +92,9 @@ void Channel::drawPlot(std::map<TString,TCanvas*> canvases){
     }
   }
   if (details["Dimension"] == "3") histo3D->Draw(details["Draw Option"]);
-  gPad->Update();
+  pads[details["Canvas Name"]]->Update();
   // Fitting
+  
   if (details.count("Fit Function") > 0) {
     if (details.count("SetOptFit") == 0) {
       details["SetOptStat"] = "0";
@@ -105,30 +106,6 @@ void Channel::drawPlot(std::map<TString,TCanvas*> canvases){
       details["SetOptFit"] = "0";
     }
   }
-
-  // Stat Box
-  TPaveStats *psus;
-  if (details["Dimension"] == "1") { 
-    psus = (TPaveStats*)histo1D->FindObject("stats");
-  }
-  if (details["Dimension"] == "2") { 
-    psus = (TPaveStats*)histo2D->FindObject("stats");
-  }
-  if (details["Dimension"] == "3") { 
-    psus = (TPaveStats*)histo3D->FindObject("stats");
-  }
-  if(psus!=NULL){
-    psus->SetOptStat(details["SetOptStat"].Atoi());
-    psus->SetOptFit(details["SetOptFit"].Atoi());
-    psus->Draw();
-    /*psus->SetX1NDC(0.0); // 2D stat box on left (assumes positive correlation statbox)
-      psus->SetY1NDC(0.95);
-      psus->SetX2NDC(0.35);
-      psus->SetY2NDC(0.7);
-      */
-  }
-  gPad->Update();
-  canvases[details["Canvas Name"]]->Update();
 
   if (details.count("Fit Function") > 0) {
     if (details.count("Fit X Low Limit") > 0 && details.count("Fit X High Limit") > 0){
@@ -145,29 +122,29 @@ void Channel::drawPlot(std::map<TString,TCanvas*> canvases){
       if (details["Dimension"] == "3") details["Fit X High Limit"] = histo3D->GetMean()+details["Fit X Sigma Limit"].Atoi()*(histo3D->GetRMS());
       if (details["Dimension"] == "1") {
         histo1D->Fit(details["Fit Function"],details["Fit Options"],"",details["Fit X Low Limit"].Atof(),details["Fit X High Limit"].Atof());
-        canvases[details["Canvas Name"]]->Update();
+        pads[details["Canvas Name"]]->Update();
       }
       if (details["Dimension"] == "2") {
         histo2D->Fit(details["Fit Function"],details["Fit Options"],"",details["Fit X Low Limit"].Atof(),details["Fit X High Limit"].Atof());
-        canvases[details["Canvas Name"]]->Update();
+        pads[details["Canvas Name"]]->Update();
       }
       if (details["Dimension"] == "3") {
         histo3D->Fit(details["Fit Function"],details["Fit Options"],"",details["Fit X Low Limit"].Atof(),details["Fit X High Limit"].Atof());
-        canvases[details["Canvas Name"]]->Update();
+        pads[details["Canvas Name"]]->Update();
       }
     }
     else {
       if (details["Dimension"] == "1") {
         histo1D->Fit(details["Fit Function"],details["Fit Options"]);
-        canvases[details["Canvas Name"]]->Update();
+        pads[details["Canvas Name"]]->Update();
       }
       if (details["Dimension"] == "2") {
         histo2D->Fit(details["Fit Function"],details["Fit Options"]);
-        canvases[details["Canvas Name"]]->Update();
+        pads[details["Canvas Name"]]->Update();
       }
       if (details["Dimension"] == "3") {
         histo3D->Fit(details["Fit Function"],details["Fit Options"]);
-        canvases[details["Canvas Name"]]->Update();
+        pads[details["Canvas Name"]]->Update();
       }
     }
     if (details["Dimension"] == "1") { 
@@ -180,15 +157,15 @@ void Channel::drawPlot(std::map<TString,TCanvas*> canvases){
       histo2D->Draw(details["Draw Option"]);
       if (details.count("Fit Function") > 0) {
         histo2D->GetFunction(details["Fit Function"])->Draw("same");
-        TPaveStats* st = (TPaveStats*)canvases[details["Canvas Name"]]->GetPrimitive("stats");
+        pads[details["Canvas Name"]]->Update();
+        TPaveStats* st = (TPaveStats*)pads[details["Canvas Name"]]->GetPrimitive("stats");
         if (st) {
           st->SetName("MyStats");
           st->SetOptFit(1);
           st->SetOptStat(0);
           histo2D->SetStats(0);
-          canvases[details["Canvas Name"]]->Modified();
-          canvases[details["Canvas Name"]]->Update();
-          gPad->Modified();
+          pads[details["Canvas Name"]]->Modified();
+          pads[details["Canvas Name"]]->Update();
           st->Draw();
           ///st->Delete();
         }
@@ -203,24 +180,56 @@ void Channel::drawPlot(std::map<TString,TCanvas*> canvases){
         histo3D->GetFunction(details["Fit Function"])->Draw("same");
       }
     }
-    if (details.count("Top Label") > 0){
-      TText * t1 = new TText(0.2,0.95,details["Top Label"]);
-      t1->SetNDC();
-      t1->SetTextSize(0.05);
-      t1->Draw("same");
+  }
+  else {
+    // Stat Box
+    TPaveStats *psus;
+    if (details["Dimension"] == "1") { 
+      psus = (TPaveStats*)pads[details["Canvas Name"]]->GetPrimitive("stats");
     }
-    if (details.count("Side Label") > 0){
-      TText * t1 = new TText(0.05,0.4,details["Side Label"]);
-      t1->SetNDC();
-      t1->SetTextSize(0.05);
-      t1->Draw("same");
+    if (details["Dimension"] == "2") { 
+      psus = (TPaveStats*)pads[details["Canvas Name"]]->GetPrimitive("stats");
     }
-    if (details.count("Full Label") > 0){
-      TText * t1 = new TText(0.3,0.4,details["Full Label"]);
-      t1->SetNDC();
-      t1->SetTextSize(0.05);
-      t1->Draw();
+    if (details["Dimension"] == "3") { 
+      psus = (TPaveStats*)pads[details["Canvas Name"]]->GetPrimitive("stats");
     }
+    if(psus!=NULL){
+      psus->SetName("MyStats");
+      psus->SetOptFit(details["SetOptFit"].Atoi());
+      psus->SetOptStat(details["SetOptStat"].Atoi());
+      /*psus->SetX1NDC(0.0); // 2D stat box on left (assumes positive correlation statbox)
+        psus->SetY1NDC(0.95);
+        psus->SetX2NDC(0.35);
+        psus->SetY2NDC(0.7);
+        */
+      if (details["Dimension"] == "1") histo1D->SetStats(0);
+      if (details["Dimension"] == "2") histo2D->SetStats(0);
+      if (details["Dimension"] == "3") histo3D->SetStats(0);
+      pads[details["Canvas Name"]]->Modified();
+      psus->Draw();
+    }
+    else {
+      Printf("Error, no stats object");
+    }
+  }
+
+  if (details.count("Top Label") > 0){
+    TText * t1 = new TText(0.2,0.95,details["Top Label"]);
+    t1->SetNDC();
+    t1->SetTextSize(0.05);
+    t1->Draw("same");
+  }
+  if (details.count("Side Label") > 0){
+    TText * t1 = new TText(0.05,0.4,details["Side Label"]);
+    t1->SetNDC();
+    t1->SetTextSize(0.05);
+    t1->Draw("same");
+  }
+  if (details.count("Full Label") > 0){
+    TText * t1 = new TText(0.3,0.4,details["Full Label"]);
+    t1->SetNDC();
+    t1->SetTextSize(0.05);
+    t1->Draw();
   }
 };
 
@@ -445,6 +454,7 @@ RDataFrame Source::readSource(){
   tswAll.Start();
   if (debug > 1) { cout << "Beginning TChain Setup --"; tsw.Print(); cout << endl;}
   tsw.Start();
+  TChain * evt_tree      = new TChain("evt");
   TChain * mul_tree      = new TChain("mul");
   TChain * slow_tree     = new TChain("slow");
   TChain * reg_tree      = new TChain("reg");
@@ -454,6 +464,7 @@ RDataFrame Source::readSource(){
   TChain * mulc_lrb_burst_tree = new TChain("mulc_lrb_burst");
 
   TString DataFolder = gSystem->Getenv("QW_ROOTFILES");
+  evt_tree->Add(Form("%s/%s_%s.%s.root",DataFolder.Data(),basename.Data(),run.Data(),split.Data()));
   mul_tree->Add(Form("%s/%s_%s.%s.root",DataFolder.Data(),basename.Data(),run.Data(),split.Data()));
   slow_tree->Add(Form("%s/%s_%s.%s.root",DataFolder.Data(),basename.Data(),run.Data(),split.Data()));
   reg_tree->Add(Form("/chafs2/work1/apar/postpan-outputs/prexPrompt_%s_%s_regress_postpan.root", run.Data(),split.Data()));
@@ -473,6 +484,7 @@ RDataFrame Source::readSource(){
   }
   mul_tree->AddFriend(mulc_lrb_burst_tree);
   mul_tree->AddFriend(mulc_tree);
+  TChain * tree      = mul_tree;
   //        mul_tree->Draw("mul.asym_usl.hw_sum","ErrorFlag==0");
   //        TH1 * tmp1Xhist = (TH1*)gROOT->FindObject("htemp");
   //        Printf("Test 0.1, drawing Y:X");
@@ -480,11 +492,13 @@ RDataFrame Source::readSource(){
 
   //miniruns = mini_tree->Scan("minirun",""); // FIXME for later minirun looping addition
 
+  RDataFrame e(*evt_tree);
   RDataFrame d(*mul_tree);//,device_list);
   RDataFrame slow(*slow_tree);
   if (debug > 1) { cout << "Filtering through ErrorFlag==0 --"; tsw.Print(); cout << endl; }
   tsw.Start();
-  auto d_good=d.Filter("reg.ok_cut==1");
+  auto e_good=e.Filter("ErrorFlag==0");
+  auto d_good=d.Filter("ErrorFlag==0");
   //if (ditheringFileNameDF != ""){
   //  d_good=d.Filter("dit.ErrorFlag==0");
   //}
@@ -501,8 +515,12 @@ RDataFrame Source::readSource(){
 
   std::vector<Channel> channels;
   std::vector<Channel> summaries;
-  std::map<TString,TCanvas*> canvases;
+  std::map<TString,TPad*> pads;
   std::vector<TString> canvasNames;
+  TCanvas * c1 = new TCanvas();
+  Int_t winWidth = 600;
+  c1->SetWindowSize(1600,1200);
+  c1->cd();
 
   // Getting device list
   string line;
@@ -614,11 +632,13 @@ RDataFrame Source::readSource(){
       if (details.count("Canvas Nx") == 0) details["Canvas Nx"] = "1";
       if (details.count("Canvas Ny") == 0) details["Canvas Ny"] = "1";
 
-      if (canvases.count(details["Canvas Name"]) == 0) {
+      if (pads.count(details["Canvas Name"]) == 0) {
         // Should be TPads?
-        TCanvas * tempC = new TCanvas(details["Canvas Name"]);
+        TPad * tempC = new TPad(details["Canvas Name"],details["Canvas Name"],0,0,1,1);
         tempC->Divide(details["Canvas Nx"].Atoi(),details["Canvas Ny"].Atoi());
-        canvases[details["Canvas Name"]] = tempC;
+        c1->SetWindowSize((winWidth+1)*details["Canvas Nx"].Atoi(),winWidth*details["Canvas Nx"].Atoi());
+        c1->cd();
+        pads[details["Canvas Name"]] = tempC;
         canvasNames.push_back(details["Canvas Name"]);
       }
 
@@ -631,6 +651,11 @@ RDataFrame Source::readSource(){
       tmpChan.type = type;
       tmpChan.details = details;
       details.clear();
+      if (tmpChan.details.count("Tree")>0 && tmpChan.details["Tree"] == "evt") {
+        d = e;
+        d_good = e_good;
+        tree = evt_tree;
+      }
       if (tmpChan.type == "summary"){
         if (tmpChan.details.count("Dimension")>0 && (tmpChan.details["Dimension"].Atoi()==1)) {
           TString cutstr = "1==1";
@@ -646,7 +671,7 @@ RDataFrame Source::readSource(){
           TString branchXname = Form("%s",tmpChan.details["DrawX"].Copy().ReplaceAll(".","_").ReplaceAll("-","_").ReplaceAll("1e3*","").ReplaceAll("1e6*","").Data());
           //TString branchXname = Form("x_%s",tmpChan.details["DrawX"].Copy().ReplaceAll(".","_").ReplaceAll("-","_").ReplaceAll("1e6*","").Data());
 
-          mul_tree->Draw(tmpChan.details["DrawX"]+">>htempX",cutstr,"goff");
+          tree->Draw(tmpChan.details["DrawX"]+">>htempX",cutstr,"goff");
           TH1 * tmp1Xhist = (TH1*)gROOT->FindObject("htempX");
           if (tmpChan.details.count("N Bins X") == 0){
             tmpChan.details["N Bins X"] = (TString)Form("%d",tmp1Xhist->GetNbinsX());
@@ -704,28 +729,6 @@ RDataFrame Source::readSource(){
           if (minirun != "-1"){
             cutstr += Form("&&reg.minirun==%s",minirun.Data());
           }
-          mul_tree->Draw(tmpChan.details["DrawX"]+">>htempX",cutstr,"goff");
-          TH1 * tmp2Xhist = (TH1*)gROOT->FindObject("htempX");
-          mul_tree->Draw(tmpChan.details["DrawY"]+">>htempY",cutstr,"goff");
-          TH1 * tmp2Yhist = (TH1*)gROOT->FindObject("htempY");
-          if (tmpChan.details.count("N Bins X") == 0){
-            tmpChan.details["N Bins X"] = (TString)Form("%d",tmp2Xhist->GetNbinsX());
-          }
-          if (tmpChan.details.count("Low Bin Limit X") == 0){
-            tmpChan.details["Low Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(0));
-          }
-          if (tmpChan.details.count("High Bin Limit X") == 0){
-            tmpChan.details["High Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(tmp2Xhist->GetNbinsX()-1));
-          }
-          if (tmpChan.details.count("N Bins Y") == 0){
-            tmpChan.details["N Bins Y"] = (TString)Form("%d",tmp2Yhist->GetNbinsX());
-          }
-          if (tmpChan.details.count("Low Bin Limit Y") == 0){
-            tmpChan.details["Low Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(0));
-          }
-          if (tmpChan.details.count("High Bin Limit Y") == 0){
-            tmpChan.details["High Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(tmp2Yhist->GetNbinsX()-1));
-          }
           if (minirun == "-1"){
             if (tmpChan.details.count("Cut") > 0){
               auto tmp_d_xy = d
@@ -746,23 +749,85 @@ RDataFrame Source::readSource(){
               //auto tmp_d_x
               //  .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
               //  .Define(branchYname.Data(),tmpChan.details["DrawY"].Data());
-              tmpChan.graph2D = tmp_d_xy
-                .Graph(Form("%s",branchXname.Data()),Form("%s",branchYname.Data()));
-              tmpChan.graph2D->Sort();
-              tmpChan.histo2D = tmp_d_xy
-                .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
+              if (tmpChan.details.count("Graph") > 0 && tmpChan.details["Graph"] == "True") {
+                tmpChan.graph2D = tmp_d_xy
+                  .Graph(Form("%s",branchXname.Data()),Form("%s",branchYname.Data()));
+                tmpChan.graph2D->Sort();
+                tmpChan.graph2D->SetNameTitle(tmpChan.details["Histogram Title"],tmpChan.details["Histogram Title"]);
+                tmpChan.graph2D->GetXaxis()->SetTitle(tmpChan.details["DrawX"]);
+                tmpChan.graph2D->GetYaxis()->SetTitle(tmpChan.details["DrawY"]);
+              }
+              else {
+                tree->Draw(tmpChan.details["DrawX"]+">>htempX",cutstr,"goff");
+                TH1 * tmp2Xhist = (TH1*)gROOT->FindObject("htempX");
+                tree->Draw(tmpChan.details["DrawY"]+">>htempY",cutstr,"goff");
+                TH1 * tmp2Yhist = (TH1*)gROOT->FindObject("htempY");
+                if (tmpChan.details.count("N Bins X") == 0){
+                  tmpChan.details["N Bins X"] = (TString)Form("%d",tmp2Xhist->GetNbinsX());
+                }
+                if (tmpChan.details.count("Low Bin Limit X") == 0){
+                  tmpChan.details["Low Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(0));
+                }
+                if (tmpChan.details.count("High Bin Limit X") == 0){
+                  tmpChan.details["High Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(tmp2Xhist->GetNbinsX()-1));
+                }
+                if (tmpChan.details.count("N Bins Y") == 0){
+                  tmpChan.details["N Bins Y"] = (TString)Form("%d",tmp2Yhist->GetNbinsX());
+                }
+                if (tmpChan.details.count("Low Bin Limit Y") == 0){
+                  tmpChan.details["Low Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(0));
+                }
+                if (tmpChan.details.count("High Bin Limit Y") == 0){
+                  tmpChan.details["High Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(tmp2Yhist->GetNbinsX()-1));
+                }
+                tmpChan.histo2D = tmp_d_xy
+                  .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
                 //.Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
+                tmp2Xhist->Delete();
+                tmp2Yhist->Delete();
+              }
             }
             else {
               auto tmp_d = d
                 .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
                 .Define(branchYname.Data(),tmpChan.details["DrawY"].Data());
-              tmpChan.graph2D = tmp_d
-                .Graph(branchXname.Data(),branchYname.Data());
-              tmpChan.graph2D->Sort();
-              tmpChan.histo2D = tmp_d
-                .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
+              if (tmpChan.details.count("Graph") > 0 && tmpChan.details["Graph"] == "True") {
+                tmpChan.graph2D = tmp_d
+                  .Graph(branchXname.Data(),branchYname.Data());
+                tmpChan.graph2D->Sort();
+                tmpChan.graph2D->SetNameTitle(tmpChan.details["Histogram Title"],tmpChan.details["Histogram Title"]);
+                tmpChan.graph2D->GetXaxis()->SetTitle(tmpChan.details["DrawX"]);
+                tmpChan.graph2D->GetYaxis()->SetTitle(tmpChan.details["DrawY"]);
+              }
+              else {
+                tree->Draw(tmpChan.details["DrawX"]+">>htempX",cutstr,"goff");
+                TH1 * tmp2Xhist = (TH1*)gROOT->FindObject("htempX");
+                tree->Draw(tmpChan.details["DrawY"]+">>htempY",cutstr,"goff");
+                TH1 * tmp2Yhist = (TH1*)gROOT->FindObject("htempY");
+                if (tmpChan.details.count("N Bins X") == 0){
+                  tmpChan.details["N Bins X"] = (TString)Form("%d",tmp2Xhist->GetNbinsX());
+                }
+                if (tmpChan.details.count("Low Bin Limit X") == 0){
+                  tmpChan.details["Low Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(0));
+                }
+                if (tmpChan.details.count("High Bin Limit X") == 0){
+                  tmpChan.details["High Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(tmp2Xhist->GetNbinsX()-1));
+                }
+                if (tmpChan.details.count("N Bins Y") == 0){
+                  tmpChan.details["N Bins Y"] = (TString)Form("%d",tmp2Yhist->GetNbinsX());
+                }
+                if (tmpChan.details.count("Low Bin Limit Y") == 0){
+                  tmpChan.details["Low Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(0));
+                }
+                if (tmpChan.details.count("High Bin Limit Y") == 0){
+                  tmpChan.details["High Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(tmp2Yhist->GetNbinsX()-1));
+                }
+                tmpChan.histo2D = tmp_d
+                  .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
                 //.Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
+                tmp2Xhist->Delete();
+                tmp2Yhist->Delete();
+              }
             }
           }
           else {
@@ -772,28 +837,88 @@ RDataFrame Source::readSource(){
                 .Alias(branchXname.Data(),tmpChan.details["DrawX"].Data())
                 .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
                 .Filter(Form("reg.minirun==%s",minirun.Data()));
-              tmpChan.graph2D = tmp_d
-                .Graph(branchXname.Data(),branchYname.Data());
-              tmpChan.graph2D->Sort();
-              tmpChan.histo2D = tmp_d
-                .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
+              if (tmpChan.details.count("Graph") > 0 && tmpChan.details["Graph"] == "True") {
+                tmpChan.graph2D = tmp_d
+                  .Graph(branchXname.Data(),branchYname.Data());
+                tmpChan.graph2D->Sort();
+                tmpChan.graph2D->SetNameTitle(tmpChan.details["Histogram Title"],tmpChan.details["Histogram Title"]);
+                tmpChan.graph2D->GetXaxis()->SetTitle(tmpChan.details["DrawX"]);
+                tmpChan.graph2D->GetYaxis()->SetTitle(tmpChan.details["DrawY"]);
+              }
+              else {
+                tree->Draw(tmpChan.details["DrawX"]+">>htempX",cutstr,"goff");
+                TH1 * tmp2Xhist = (TH1*)gROOT->FindObject("htempX");
+                tree->Draw(tmpChan.details["DrawY"]+">>htempY",cutstr,"goff");
+                TH1 * tmp2Yhist = (TH1*)gROOT->FindObject("htempY");
+                if (tmpChan.details.count("N Bins X") == 0){
+                  tmpChan.details["N Bins X"] = (TString)Form("%d",tmp2Xhist->GetNbinsX());
+                }
+                if (tmpChan.details.count("Low Bin Limit X") == 0){
+                  tmpChan.details["Low Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(0));
+                }
+                if (tmpChan.details.count("High Bin Limit X") == 0){
+                  tmpChan.details["High Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(tmp2Xhist->GetNbinsX()-1));
+                }
+                if (tmpChan.details.count("N Bins Y") == 0){
+                  tmpChan.details["N Bins Y"] = (TString)Form("%d",tmp2Yhist->GetNbinsX());
+                }
+                if (tmpChan.details.count("Low Bin Limit Y") == 0){
+                  tmpChan.details["Low Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(0));
+                }
+                if (tmpChan.details.count("High Bin Limit Y") == 0){
+                  tmpChan.details["High Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(tmp2Yhist->GetNbinsX()-1));
+                }
+                tmpChan.histo2D = tmp_d
+                  .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
                 //.Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
+                tmp2Xhist->Delete();
+                tmp2Yhist->Delete();
+              }
             }
             else {
               auto tmp_d = d
                 .Alias(branchXname.Data(),tmpChan.details["DrawX"].Data())
                 .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
                 .Filter(Form("reg.minirun==%s",minirun.Data()));
-              tmpChan.graph2D = tmp_d
-                .Graph(branchXname.Data(),branchYname.Data());
-              tmpChan.graph2D->Sort();
-              tmpChan.histo2D = tmp_d
-                .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
+              if (tmpChan.details.count("Graph") > 0 && tmpChan.details["Graph"] == "True") {
+                tmpChan.graph2D = tmp_d
+                  .Graph(branchXname.Data(),branchYname.Data());
+                tmpChan.graph2D->Sort();
+                tmpChan.graph2D->SetNameTitle(tmpChan.details["Histogram Title"],tmpChan.details["Histogram Title"]);
+                tmpChan.graph2D->GetXaxis()->SetTitle(tmpChan.details["DrawX"]);
+                tmpChan.graph2D->GetYaxis()->SetTitle(tmpChan.details["DrawY"]);
+              }
+              else {
+                tree->Draw(tmpChan.details["DrawX"]+">>htempX",cutstr,"goff");
+                TH1 * tmp2Xhist = (TH1*)gROOT->FindObject("htempX");
+                tree->Draw(tmpChan.details["DrawY"]+">>htempY",cutstr,"goff");
+                TH1 * tmp2Yhist = (TH1*)gROOT->FindObject("htempY");
+                if (tmpChan.details.count("N Bins X") == 0){
+                  tmpChan.details["N Bins X"] = (TString)Form("%d",tmp2Xhist->GetNbinsX());
+                }
+                if (tmpChan.details.count("Low Bin Limit X") == 0){
+                  tmpChan.details["Low Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(0));
+                }
+                if (tmpChan.details.count("High Bin Limit X") == 0){
+                  tmpChan.details["High Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(tmp2Xhist->GetNbinsX()-1));
+                }
+                if (tmpChan.details.count("N Bins Y") == 0){
+                  tmpChan.details["N Bins Y"] = (TString)Form("%d",tmp2Yhist->GetNbinsX());
+                }
+                if (tmpChan.details.count("Low Bin Limit Y") == 0){
+                  tmpChan.details["Low Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(0));
+                }
+                if (tmpChan.details.count("High Bin Limit Y") == 0){
+                  tmpChan.details["High Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(tmp2Yhist->GetNbinsX()-1));
+                }
+                tmpChan.histo2D = tmp_d
+                  .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
                 //.Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
+                tmp2Xhist->Delete();
+                tmp2Yhist->Delete();
+              }
             }
           }
-          tmp2Xhist->Delete();
-          tmp2Yhist->Delete();
         }
         if (tmpChan.details.count("Dimension")>0 && (tmpChan.details["Dimension"].Atoi()==3)) {
           TString branchXname = Form("x_%s",tmpChan.details["DrawX"].Copy().ReplaceAll(".","_").ReplaceAll("-","_").ReplaceAll("1e3*","").ReplaceAll("1e6*","").Data());
@@ -894,10 +1019,10 @@ RDataFrame Source::readSource(){
   }
   for (auto &tmpChan:summaries){
     if (tmpChan.details.count("Canvas Name") != 0) {
-      if (canvases.count(tmpChan.details["Canvas Name"])){
-      //if (canvases.count(tmpChan.details["Canvas Name"].Data()))
+      if (pads.count(tmpChan.details["Canvas Name"])){
+      //if (pads.count(tmpChan.details["Canvas Name"].Data()))
         Printf("Trying canvas named %s",tmpChan.details["Canvas Name"].Data());
-        tmpChan.drawPlot(canvases);
+        tmpChan.drawPlot(pads);
       }
       else {
         Printf("Error, no canvas of name %s available",tmpChan.details["Canvas Name"].Data());
@@ -945,27 +1070,38 @@ RDataFrame Source::readSource(){
   outputTree->Write("agg",TObject::kOverwrite);
   aggregatorFile->Close();
 
-  TString aggregatorPDFFileName = Form("%s/aggregator_%s.pdf",outputDir.Data(),basename.Data()); // FIXME, this is very specific, and doesn't allow for aggregating over slugs, for instance
+  TString aggregatorPDFFileName = Form("%s/aggregator_%s",outputDir.Data(),basename.Data()); // FIXME, this is very specific, and doesn't allow for aggregating over slugs, for instance
   if (tmpMinirunN <= -1) {
-    aggregatorPDFFileName = Form("%s/run_aggregator_%s_%d.pdf",outputDir.Data(),basename.Data(),(Int_t)tmpRunN);
+    aggregatorPDFFileName = Form("%s/run_aggregator_%s_%d",outputDir.Data(),basename.Data(),(Int_t)tmpRunN);
   }
   else {
-    aggregatorPDFFileName = Form("%s/minirun_aggregator_%s_%d_%d.pdf",outputDir.Data(),basename.Data(),(Int_t)tmpRunN,(Int_t)tmpMinirunN);
+    aggregatorPDFFileName = Form("%s/minirun_aggregator_%s_%d_%d",outputDir.Data(),basename.Data(),(Int_t)tmpRunN,(Int_t)tmpMinirunN);
   }
-  //for (Int_t loop = 0 ; loop<canvases.size() ; loop++) 
+  //for (Int_t loop = 0 ; loop<pads.size() ; loop++) 
   Int_t loop = 0;
   for (auto ite : canvasNames){
     if (loop == 0 && canvasNames.size()!=1) {
-      canvases[ite]->SaveAs(aggregatorPDFFileName+"(");
+      pads[ite]->SaveAs(aggregatorPDFFileName+"_full.pdf"+"(");
+      //pads[ite]->SaveAs(aggregatorPDFFileName+"_"+loop+".pdf");
+      pads[ite]->SaveAs(aggregatorPDFFileName+"_"+loop+".png");
     }
     else if (loop == canvasNames.size()-1 && canvasNames.size()!=1) {
-      canvases[ite]->SaveAs(aggregatorPDFFileName+")");
+      pads[ite]->SaveAs(aggregatorPDFFileName+"_full.pdf"+")");
+      //pads[ite]->SaveAs(aggregatorPDFFileName+"_"+loop+".pdf");
+      pads[ite]->SaveAs(aggregatorPDFFileName+"_"+loop+".png");
     }
     else {
-      canvases[ite]->SaveAs(aggregatorPDFFileName);
+      pads[ite]->SaveAs(aggregatorPDFFileName+"_full.pdf");
+      //pads[ite]->SaveAs(aggregatorPDFFileName+"_"+loop+".pdf");
+      pads[ite]->SaveAs(aggregatorPDFFileName+"_"+loop+".png");
     }
+    //gSystem->Exec(Form("convert -density 300 -trim %s_%d.pdf -quality 100 -flatten -sharpen 0x1.0 %s_%d.png",aggregatorPDFFileName.Data(),loop,aggregatorPDFFileName.Data(),loop));
     loop++;
   }
+  //gSystem->Exec(Form("pdfunite %s_*.pdf %s.pdf",aggregatorPDFFileName.Data(),aggregatorPDFFileName.Data()));
+//  gSystem->Exec(Form("convert %s_*.png %s.pdf",aggregatorPDFFileName.Data(),aggregatorPDFFileName.Data()));
+  gSystem->Exec(Form("convert $(ls -rt %s_*.png) %s.pdf",aggregatorPDFFileName.Data(),aggregatorPDFFileName.Data()));
+  gSystem->Exec(Form("rm -f $(ls -rt %s_*.png)",aggregatorPDFFileName.Data()));
 
   cout << "Done with ALL, run " << run << " and minirun " << minirun << " --"; tswAll.Print(); cout << endl;
   tswAll.Start();
