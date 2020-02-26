@@ -659,6 +659,14 @@ void BMOD::edittree(TString oldFileName = "test.root")
 
     Int_t flag = 1;
     newtree->SetBranchAddress("flag",&flag);
+    // Slug segment, trivially == 1, set by user later if needed
+    Int_t segment = 1;
+    if (newtree->GetBranch("segment")) {
+      newtree->SetBranchAddress("segment",&segment);
+    }
+    else {
+      newtree->Branch("segment",&segment);
+    }
 
     std::vector<std::vector<std::vector<Double_t>>> tmpVecss;
     std::vector<std::vector<Double_t>> tmpVecs;
@@ -846,6 +854,8 @@ void BMOD::saveSlopeData() {
   Double_t scandata1 = 0.0;
   Double_t scandata2 = 0.0;
   Int_t flag = 1;
+  // Slug segment, trivially == 1, set by user later if needed
+  Int_t segment = 1;
   Double_t cycleNum = 0;
   if(dit_tree==NULL){
     dit_tree = new TTree("dit","dit");
@@ -900,6 +910,9 @@ void BMOD::saveSlopeData() {
     dit_tree->Branch("flag",
         &flag,
         "flag/I");
+    dit_tree->Branch("segment",
+        &segment,
+        "segment/I");
   }    
   else{
     for(int idet=0;idet<nDet;idet++){
@@ -947,6 +960,12 @@ void BMOD::saveSlopeData() {
         &scandata2);
     dit_tree->SetBranchAddress("flag",
         &flag);
+    if (dit_tree->GetBranch("segment")) {
+      dit_tree->SetBranchAddress("segment",&segment);
+    }
+    else {
+      dit_tree->Branch("segment",&segment);
+    }
   }
 
   for(int i=0;i<cycles.size();i++){

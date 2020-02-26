@@ -19,3 +19,4 @@ current Cut:bcm_dg_ds>5
 Old Cut:(ErrorFlag & 0x7bfe6fff)==0
 Cut:(ErrorFlag & 0xda7e6bff)==0
 Tree:evt_bmw
+Run Average:True

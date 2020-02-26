@@ -346,10 +346,15 @@ void BMOD::calculateSensitivities(){
     parameterVectors["Cut"] = tmpCutStrVec;
   }
 
+  Int_t runAvg = (parameterVectors.count("Run Average") != 0 && parameterVectors["Run Average"].at(0) == "True");
+  if (runAvg) { 
+    Printf("Doing run averaged BMOD analysis");
+  }
   //const int n=cycleNumbers.size();//number of cycle
   //Double_t cycleNumbers[n];
   //Int_t Is_fill[n];
   for(int i=0;i<cycleNumbers.size();i++){
+    if (i > 0 && runAvg) continue;
     Cycle tmpCycle;
     tmpCycle.cycleNumber = cycleNumbers[i];
     for(int ibpm=0;ibpm<nBPM;ibpm++){
@@ -402,10 +407,20 @@ void BMOD::calculateSensitivities(){
 
 
   for(Int_t i=0;i<cycles.size();i++){
-    tree_R->Draw("scandata1>>hist_sd1",Form("cleandata==1 && bmwcycnum==%f",cycles[i].cycleNumber),"goff");
+    if (runAvg) { 
+      tree_R->Draw("scandata1>>hist_sd1",Form("cleandata==1"),"goff");
+    }
+    else{
+      tree_R->Draw("scandata1>>hist_sd1",Form("cleandata==1 && bmwcycnum==%f",cycles[i].cycleNumber),"goff");
+    }
     TH1F* hist_sd1 = (TH1F *)gDirectory->Get("hist_sd1");
     cycles.at(i).scandata1_mean = hist_sd1->GetMean();
-    tree_R->Draw("scandata2>>hist_sd2",Form("cleandata==1 && bmwcycnum==%f",cycles[i].cycleNumber),"goff");
+    if (runAvg) { 
+      tree_R->Draw("scandata2>>hist_sd2",Form("cleandata==1"),"goff");
+    }
+    else {
+      tree_R->Draw("scandata2>>hist_sd2",Form("cleandata==1 && bmwcycnum==%f",cycles[i].cycleNumber),"goff");
+    }
     TH1F* hist_sd2 = (TH1F *)gDirectory->Get("hist_sd2");
     cycles.at(i).scandata2_mean = hist_sd2->GetMean();
   
@@ -430,10 +445,19 @@ void BMOD::calculateSensitivities(){
       for(int icoil=0;icoil<nCoil;icoil++){
         //int ndata = tree_R->Draw(Form("%lf*(%s):(%s*%lf)",factor,bpmName.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
         // Get Mean for normalized sensitivity calculation
-        int ndata = tree_R->Draw(Form("(%s):(bmod_trim%s*%lf)",name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
-            Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
-            //Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
-              parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil],cycles[i].cycleNumber));
+        int ndata = 0;
+        if (runAvg) { 
+          ndata = tree_R->Draw(Form("(%s):(bmod_trim%s*%lf)",name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
+              Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20",
+              //Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+                parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil]));
+        }
+        else {
+          ndata = tree_R->Draw(Form("(%s):(bmod_trim%s*%lf)",name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
+              Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+              //Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+                parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil],cycles[i].cycleNumber));
+        }
         if(ndata<50){
           Printf("-- Sensitivity for Device: %s",name.Data());
           Printf("-- CycleNumber: %f",cycles[i].cycleNumber);
@@ -464,10 +488,18 @@ void BMOD::calculateSensitivities(){
           if (j<nBPM){
             this_mean = 1.0;
           }
-          ndata = tree_R->Draw(Form("(%lf/%lf)*(%s):(bmod_trim%s*%lf)",factor,this_mean,name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
-              Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
-              //Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
-                parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil],cycles[i].cycleNumber));
+          if (runAvg) { 
+            ndata = tree_R->Draw(Form("(%lf/%lf)*(%s):(bmod_trim%s*%lf)",factor,this_mean,name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
+                Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20",
+                //Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+                  parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil]));
+          }
+          else {
+            ndata = tree_R->Draw(Form("(%lf/%lf)*(%s):(bmod_trim%s*%lf)",factor,this_mean,name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
+                Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+                //Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+                  parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil],cycles[i].cycleNumber));
+          }
 
           double this_slope,this_error;
           Printf("-- Sensitivity for Device: %s",name.Data());
@@ -658,6 +690,14 @@ void BMOD::edittree(TString oldFileName = "test.root")
 
     Int_t flag = 1;
     newtree->SetBranchAddress("flag",&flag);
+    // Slug segment, trivially == 1, set by user later if needed
+    Int_t segment = 1;
+    if (newtree->GetBranch("segment")) {
+      newtree->SetBranchAddress("segment",&segment);
+    }
+    else {
+      newtree->Branch("segment",&segment);
+    }
 
     std::vector<std::vector<std::vector<Double_t>>> tmpVecss;
     std::vector<std::vector<Double_t>> tmpVecs;
@@ -716,8 +756,8 @@ void BMOD::edittree(TString oldFileName = "test.root")
       for(int idet=0;idet<nDet;idet++){
         for(int ibpm=0;ibpm<nBPM;ibpm++){
           if ( parameterVectors.count("Flag Sigma Cut") != 0 && abs(tmpVecss.at(idet).at(ibpm).at(i)-tmpMeans.at(idet).at(ibpm)) > atof((parameterVectors["Flag Sigma Cut"].at(0).c_str()))*tmpRMSs.at(idet).at(ibpm)) {
-          //  Printf("Cycle hit %f sigma cut, flag = 0",atof((parameterVectors["Flag Sigma Cut"].at(0).c_str())));
-          //  Printf("Slope %f doesn't fit within %f of mean %f",tmpVecss.at(idet).at(ibpm).at(i),atof((parameterVectors["Flag Sigma Cut"].at(0).c_str()))*tmpRMSs.at(idet).at(ibpm),tmpMeans.at(idet).at(ibpm));
+            Printf("Cycle hit %f sigma cut, flag = 0",atof((parameterVectors["Flag Sigma Cut"].at(0).c_str())));
+            Printf("Slope %f doesn't fit within %f of mean %f",tmpVecss.at(idet).at(ibpm).at(i),atof((parameterVectors["Flag Sigma Cut"].at(0).c_str()))*tmpRMSs.at(idet).at(ibpm),tmpMeans.at(idet).at(ibpm));
             flag = 0;
           }
           //else {
@@ -845,6 +885,8 @@ void BMOD::saveSlopeData() {
   Double_t scandata1 = 0.0;
   Double_t scandata2 = 0.0;
   Int_t flag = 1;
+  // Slug segment, trivially == 1, set by user later if needed
+  Int_t segment = 1;
   Double_t cycleNum = 0;
   if(dit_tree==NULL){
     dit_tree = new TTree("dit","dit");
@@ -899,6 +941,9 @@ void BMOD::saveSlopeData() {
     dit_tree->Branch("flag",
         &flag,
         "flag/I");
+    dit_tree->Branch("segment",
+        &segment,
+        "segment/I");
   }    
   else{
     for(int idet=0;idet<nDet;idet++){
@@ -946,6 +991,12 @@ void BMOD::saveSlopeData() {
         &scandata2);
     dit_tree->SetBranchAddress("flag",
         &flag);
+    if (dit_tree->GetBranch("segment")) {
+      dit_tree->SetBranchAddress("segment",&segment);
+    }
+    else {
+      dit_tree->Branch("segment",&segment);
+    }
   }
 
   for(int i=0;i<cycles.size();i++){
