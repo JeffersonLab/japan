@@ -2,29 +2,14 @@
 !fit with GetAllPedestals_Caryn_Amali_run6563_bcmanus_steps_witherr.C
 !SAM/DETS/BCMS can be used for Ca48 AT data and used for longitudinal
 
-!usl, 1571.13, 0.000076
+usl, 1571.13, 0.000076
 usr, 1665.02, 0.000076
 !dsl, 1053.57, -46.159793
 !dsr, 878.28, -1233.685056
-!atl1, 1232.71, 0.000076
-!atl2, 3774.38, 0.000076
+atl1, 1232.71, 0.000076
+atl2, 3774.38, 0.000076
 atr1, 1552.31, 0.000076
 atr2, 3212.42, 0.000076
-
-
-
-!Using macro GetAllPedestals_Caryn_Amali_run6196_anus.C
-!Run5653,10-175uA
-!Calibrations fit relative to
-!(bcm_an_us.hw_sum_raw/bcm_an_us.num_samples--37.94)*0.009289 from 10-175uA
-
-usl, 3209.62, 0.000076 
-!usr, 3421.04, 0.000076 
-atl1, 2650.58, 0.000076 
-atl2, 4666.30, 0.000076 
-!atr1, 3747.55, 0.000076 
-!atr2, 2556.65, 0.000076 
-
 
 !OLD
 dsl, -31.01, 0.000076
