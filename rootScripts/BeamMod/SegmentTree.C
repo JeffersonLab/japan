@@ -63,6 +63,7 @@ void SegmentTree(TString oldFileName = "test.root", Double_t cyclenumber = -1, I
     }
     else {
       newtree->Branch("segment",&segment);
+      segmentL = newtree->GetLeaf("segment");
     }
 
     TLeaf* cycNumL = oldtree->GetLeaf("cyclenum");
@@ -70,9 +71,9 @@ void SegmentTree(TString oldFileName = "test.root", Double_t cyclenumber = -1, I
     Int_t tmpSegmentNum = 1;
     for (auto i : ROOT::TSeqI(nentries)) {
       cycNumL->GetBranch()->GetEntry(i);
-      segmentL->GetBranch()->GetEntry(i);
       tmpCycNum = cycNumL->GetValue();
       if (oldtree->GetBranch("segment")) {
+        segmentL->GetBranch()->GetEntry(i);
         tmpSegmentNum = segmentL->GetValue();
       }
       else {
