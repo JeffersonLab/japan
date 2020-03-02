@@ -1,4 +1,5 @@
 ///Panguin gui compatible diagnostic plots for shift taking online replay 
+//#include "GetStats.C"
 void slopeCheck(TString type = "burst_lrb_std", Double_t refRMS4eX = 10, Double_t refRMS12X = -40, Double_t burstLen = 9000.0) {
   gStyle->SetOptStat(0);
   TTree* tree_R = (TTree*)gDirectory->Get(type);
@@ -79,7 +80,7 @@ void slopeCheck(TString type = "burst_lrb_std", Double_t refRMS4eX = 10, Double_
 
     tMGraphPlot[i] = new TMultiGraph();
     if (i==0){
-      tMGraphPlot[i]->SetTitle("4aX Slopes");
+      tMGraphPlot[i]->SetTitle("1X Slopes");
     }
     if (i==1){
       tMGraphPlot[i]->SetTitle("4aY Slopes");
@@ -113,6 +114,7 @@ void slopeCheck(TString type = "burst_lrb_std", Double_t refRMS4eX = 10, Double_
   legend1->AddEntry(tGraphPlotL[0],"Left","p");
   legend1->AddEntry(tGraphPlotR[1],"Right","p");
   legend1->AddEntry(tGraphPlotRef[4],"Expected","lp");
+  legend1->SetTextSize(.09);
   legend1->Draw();
 
   cPlot->cd(6);

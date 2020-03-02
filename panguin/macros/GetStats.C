@@ -47,7 +47,7 @@ void GetStats(){
     Int_t nent = hist->GetEntries();
     Double_t avgCurrent = hist->GetMean();
     Double_t totalCharge = avgCurrent*(1/1.0e6)*(nent/120);
-    statStr[4] = Form("Total Good Q this run (2C = slug)");
+    statStr[4] = Form("Total Good Q this run (4C = slug)");
     statStrNumbers[4] = Form(" = %.3f C ABU / %.3f C no cuts", totalCharge,totalChargeFULL);
     //statStrNumbers[4] = Form(" = %.2f C", totalCharge);
 

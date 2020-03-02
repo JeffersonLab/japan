@@ -132,22 +132,24 @@ void fullRMScheck(TString type = "burst_lrb_std", Double_t refRMSlrRaw = 1700.0,
   }
   cPlot->cd(1);
   //auto legend = new TLegend(0.1,0.7,0.4,0.9);
-  auto legend1 = new TLegend(0.7,0.7,0.9,0.925);
+  auto legend1 = new TLegend(0.6,0.7,0.9,0.925);
   legend1->SetHeader("L/R Main Dets","C");
   legend1->SetNColumns(1);
   legend1->AddEntry(tGraphPlotReg[0],"Left","p");
   legend1->AddEntry(tGraphPlotReg[1],"Right","p");
   legend1->AddEntry(tGraphPlotRef[0],"Max RMS","lp");
+  legend1->SetTextSize(.06);
   legend1->Draw();
 
   cPlot->cd(3);
   //auto legend = new TLegend(0.1,0.7,0.4,0.9);
-  auto legend2 = new TLegend(0.7,0.7,0.9,0.925);
+  auto legend2 = new TLegend(0.6,0.7,0.9,0.925);
   legend2->SetHeader("Combo Main Dets","C");
   legend2->SetNColumns(1);
   legend2->AddEntry(tGraphPlotReg[2],"Avg","p");
   legend2->AddEntry(tGraphPlotReg[3],"DD","p");
   legend2->AddEntry(tGraphPlotRef[0],"Max RMS","lp");
+  legend2->SetTextSize(.06);
   legend2->Draw();
 
   // FIXME wants:
