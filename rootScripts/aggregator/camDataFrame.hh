@@ -658,20 +658,18 @@ RDataFrame Source::readSource(){
       }
       if (tmpChan.type == "summary"){
         if (tmpChan.details.count("Dimension")>0 && (tmpChan.details["Dimension"].Atoi()==1)) {
-          TString cutstr = "1==1";
-          if (tmpChan.details.count("Cut") > 0){
-            cutstr = tmpChan.details["Cut"];
-          }
-          else {
-            cutstr = "ErrorFlag==0";
+          if (tmpChan.details.count("Cut") == 0){
+            tmpChan.details["Cut"] = "ErrorFlag==0";
           }
           if (minirun != "-1"){
-            cutstr += Form("&&reg.minirun==%s",minirun.Data());
+            if (tmpChan.details.count("Tree")==0 || tmpChan.details["Tree"] != "evt") {
+              tmpChan.details["Cut"] += Form("&&reg.minirun==%s",minirun.Data());
+            }
           }
           TString branchXname = Form("%s",tmpChan.details["DrawX"].Copy().ReplaceAll(".","_").ReplaceAll("-","_").ReplaceAll("1e3*","").ReplaceAll("1e6*","").Data());
           //TString branchXname = Form("x_%s",tmpChan.details["DrawX"].Copy().ReplaceAll(".","_").ReplaceAll("-","_").ReplaceAll("1e6*","").Data());
 
-          tree->Draw(tmpChan.details["DrawX"]+">>htempX",cutstr,"goff");
+          tree->Draw(tmpChan.details["DrawX"]+">>htempX",tmpChan.details["Cut"],"goff");
           TH1 * tmp1Xhist = (TH1*)gROOT->FindObject("htempX");
           if (tmpChan.details.count("N Bins X") == 0){
             tmpChan.details["N Bins X"] = (TString)Form("%d",tmp1Xhist->GetNbinsX());
@@ -682,241 +680,127 @@ RDataFrame Source::readSource(){
           if (tmpChan.details.count("High Bin Limit X") == 0){
             tmpChan.details["High Bin Limit X"] = (TString)Form("%f",tmp1Xhist->GetBinCenter(tmp1Xhist->GetNbinsX()-1));
           }
-          if (minirun == "-1"){
-            if (tmpChan.details.count("Cut") > 0){
-              tmpChan.histo1D = d // FIXME should I use d_good here always? Is it safe to re-define the same node? Does Cut 1==1 work always?
-                .Filter(Form("%s",tmpChan.details["Cut"].Data()))
-                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
-                //.Histo1D(branchXname.Data());
-                .Histo1D({branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof()}, branchXname.Data());
-            }
-            else {
-              tmpChan.histo1D = d // If 1==1 works then these else's are unnecessary
-                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
-                //.Histo1D(branchXname.Data());
-                .Histo1D({branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof()}, branchXname.Data());
-            }
-          }
-          else {
-            if (tmpChan.details.count("Cut") > 0){
-              tmpChan.histo1D = d
+          if (tmpChan.details.count("Cut") > 0){
+            tmpChan.histo1D = d // FIXME should I use d_good here always? Is it safe to re-define the same node? Does Cut 1==1 work always?
               .Filter(Form("%s",tmpChan.details["Cut"].Data()))
               .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
-              .Filter(Form("reg.minirun==%s",minirun.Data()))
-              //.Histo1D(branchXname.Data());
               .Histo1D({branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof()}, branchXname.Data());
-            }
-            else {
-              tmpChan.histo1D = d
+          }
+          else {
+            tmpChan.histo1D = d // If 1==1 works then these else's are unnecessary
               .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
-              .Filter(Form("reg.minirun==%s",minirun.Data()))
-              //.Histo1D(branchXname.Data());
               .Histo1D({branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof()}, branchXname.Data());
-            }
           }
           tmp1Xhist->Delete();
         }
         if (tmpChan.details.count("Dimension")>0 && (tmpChan.details["Dimension"].Atoi()==2)) {
           TString branchXname = Form("x_%s",tmpChan.details["DrawX"].Copy().ReplaceAll(".","_").ReplaceAll("-","_").ReplaceAll("1e3*","").ReplaceAll("1e6*","").Data());
           TString branchYname = Form("y_%s",tmpChan.details["DrawY"].Copy().ReplaceAll(".","_").ReplaceAll("-","_").ReplaceAll("1e3*","").ReplaceAll("1e6*","").Data());
-          TString cutstr = "1==1";
-          if (tmpChan.details.count("Cut") > 0){
-            cutstr = tmpChan.details["Cut"];
-          }
-          else {
-            cutstr = "ErrorFlag==0";
+          if (tmpChan.details.count("Cut") == 0){
+            tmpChan.details["Cut"] = "ErrorFlag==0";
           }
           if (minirun != "-1"){
-            cutstr += Form("&&reg.minirun==%s",minirun.Data());
+            if (tmpChan.details.count("Tree")==0 || tmpChan.details["Tree"] != "evt") {
+              tmpChan.details["Cut"] += Form("&&reg.minirun==%s",minirun.Data());
+            }
           }
-          if (minirun == "-1"){
-            if (tmpChan.details.count("Cut") > 0){
-              auto tmp_d_xy = d
-                .Filter(Form("%s",tmpChan.details["Cut"].Data()));
-              // FIXME, ROOT 6.18 and higher have a method called HasColumn which effectively does the same as the next 11 lines... would be ideal to use it instead, or methodize what I have here.
-              RDFDetail::ColumnNames_t allCols = d.GetColumnNames();
-              Bool_t hasX = false;
-              Bool_t hasY = false;
-              const auto ccolnamesEnd = allCols.end();
-              hasX = (ccolnamesEnd != std::find(allCols.begin(), ccolnamesEnd, branchXname.Data()));
-              hasY = (ccolnamesEnd != std::find(allCols.begin(), ccolnamesEnd, branchYname.Data()));
-              if (!hasX) {
-                tmp_d_xy = tmp_d_xy.Define(branchXname.Data(),tmpChan.details["DrawX"].Data());
-              }
-              if (!hasY) {
-                tmp_d_xy = tmp_d_xy.Define(branchYname.Data(),tmpChan.details["DrawY"].Data());
-              }
-              //auto tmp_d_x
-              //  .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
-              //  .Define(branchYname.Data(),tmpChan.details["DrawY"].Data());
-              if (tmpChan.details.count("Graph") > 0 && tmpChan.details["Graph"] == "True") {
-                tmpChan.graph2D = tmp_d_xy
-                  .Graph(Form("%s",branchXname.Data()),Form("%s",branchYname.Data()));
-                tmpChan.graph2D->Sort();
-                tmpChan.graph2D->SetNameTitle(tmpChan.details["Histogram Title"],tmpChan.details["Histogram Title"]);
-                tmpChan.graph2D->GetXaxis()->SetTitle(tmpChan.details["DrawX"]);
-                tmpChan.graph2D->GetYaxis()->SetTitle(tmpChan.details["DrawY"]);
-              }
-              else {
-                tree->Draw(tmpChan.details["DrawX"]+">>htempX",cutstr,"goff");
-                TH1 * tmp2Xhist = (TH1*)gROOT->FindObject("htempX");
-                tree->Draw(tmpChan.details["DrawY"]+">>htempY",cutstr,"goff");
-                TH1 * tmp2Yhist = (TH1*)gROOT->FindObject("htempY");
-                if (tmpChan.details.count("N Bins X") == 0){
-                  tmpChan.details["N Bins X"] = (TString)Form("%d",tmp2Xhist->GetNbinsX());
-                }
-                if (tmpChan.details.count("Low Bin Limit X") == 0){
-                  tmpChan.details["Low Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(0));
-                }
-                if (tmpChan.details.count("High Bin Limit X") == 0){
-                  tmpChan.details["High Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(tmp2Xhist->GetNbinsX()-1));
-                }
-                if (tmpChan.details.count("N Bins Y") == 0){
-                  tmpChan.details["N Bins Y"] = (TString)Form("%d",tmp2Yhist->GetNbinsX());
-                }
-                if (tmpChan.details.count("Low Bin Limit Y") == 0){
-                  tmpChan.details["Low Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(0));
-                }
-                if (tmpChan.details.count("High Bin Limit Y") == 0){
-                  tmpChan.details["High Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(tmp2Yhist->GetNbinsX()-1));
-                }
-                tmpChan.histo2D = tmp_d_xy
-                  .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
-                //.Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
-                tmp2Xhist->Delete();
-                tmp2Yhist->Delete();
-              }
+          if (tmpChan.details.count("Cut") > 0){
+            auto tmp_d_xy = d
+              .Filter(Form("%s",tmpChan.details["Cut"].Data()));
+            // FIXME, ROOT 6.18 and higher have a method called HasColumn which effectively does the same as the next 11 lines... would be ideal to use it instead, or methodize what I have here.
+            RDFDetail::ColumnNames_t allCols = d.GetColumnNames();
+            Bool_t hasX = false;
+            Bool_t hasY = false;
+            const auto ccolnamesEnd = allCols.end();
+            hasX = (ccolnamesEnd != std::find(allCols.begin(), ccolnamesEnd, branchXname.Data()));
+            hasY = (ccolnamesEnd != std::find(allCols.begin(), ccolnamesEnd, branchYname.Data()));
+            if (!hasX) {
+              tmp_d_xy = tmp_d_xy.Define(branchXname.Data(),tmpChan.details["DrawX"].Data());
+            }
+            if (!hasY) {
+              tmp_d_xy = tmp_d_xy.Define(branchYname.Data(),tmpChan.details["DrawY"].Data());
+            }
+            //auto tmp_d_x
+            //  .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+            //  .Define(branchYname.Data(),tmpChan.details["DrawY"].Data());
+            if (tmpChan.details.count("Graph") > 0 && tmpChan.details["Graph"] == "True") {
+              tmpChan.graph2D = tmp_d_xy
+                .Graph(Form("%s",branchXname.Data()),Form("%s",branchYname.Data()));
+              tmpChan.graph2D->Sort();
+              tmpChan.graph2D->SetNameTitle(tmpChan.details["Histogram Title"],tmpChan.details["Histogram Title"]);
+              tmpChan.graph2D->GetXaxis()->SetTitle(tmpChan.details["DrawX"]);
+              tmpChan.graph2D->GetYaxis()->SetTitle(tmpChan.details["DrawY"]);
             }
             else {
-              auto tmp_d = d
-                .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
-                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data());
-              if (tmpChan.details.count("Graph") > 0 && tmpChan.details["Graph"] == "True") {
-                tmpChan.graph2D = tmp_d
-                  .Graph(branchXname.Data(),branchYname.Data());
-                tmpChan.graph2D->Sort();
-                tmpChan.graph2D->SetNameTitle(tmpChan.details["Histogram Title"],tmpChan.details["Histogram Title"]);
-                tmpChan.graph2D->GetXaxis()->SetTitle(tmpChan.details["DrawX"]);
-                tmpChan.graph2D->GetYaxis()->SetTitle(tmpChan.details["DrawY"]);
+              tree->Draw(tmpChan.details["DrawX"]+">>htempX",tmpChan.details["Cut"],"goff");
+              TH1 * tmp2Xhist = (TH1*)gROOT->FindObject("htempX");
+              tree->Draw(tmpChan.details["DrawY"]+">>htempY",tmpChan.details["Cut"],"goff");
+              TH1 * tmp2Yhist = (TH1*)gROOT->FindObject("htempY");
+              if (tmpChan.details.count("N Bins X") == 0){
+                tmpChan.details["N Bins X"] = (TString)Form("%d",tmp2Xhist->GetNbinsX());
               }
-              else {
-                tree->Draw(tmpChan.details["DrawX"]+">>htempX",cutstr,"goff");
-                TH1 * tmp2Xhist = (TH1*)gROOT->FindObject("htempX");
-                tree->Draw(tmpChan.details["DrawY"]+">>htempY",cutstr,"goff");
-                TH1 * tmp2Yhist = (TH1*)gROOT->FindObject("htempY");
-                if (tmpChan.details.count("N Bins X") == 0){
-                  tmpChan.details["N Bins X"] = (TString)Form("%d",tmp2Xhist->GetNbinsX());
-                }
-                if (tmpChan.details.count("Low Bin Limit X") == 0){
-                  tmpChan.details["Low Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(0));
-                }
-                if (tmpChan.details.count("High Bin Limit X") == 0){
-                  tmpChan.details["High Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(tmp2Xhist->GetNbinsX()-1));
-                }
-                if (tmpChan.details.count("N Bins Y") == 0){
-                  tmpChan.details["N Bins Y"] = (TString)Form("%d",tmp2Yhist->GetNbinsX());
-                }
-                if (tmpChan.details.count("Low Bin Limit Y") == 0){
-                  tmpChan.details["Low Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(0));
-                }
-                if (tmpChan.details.count("High Bin Limit Y") == 0){
-                  tmpChan.details["High Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(tmp2Yhist->GetNbinsX()-1));
-                }
-                tmpChan.histo2D = tmp_d
-                  .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
-                //.Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
-                tmp2Xhist->Delete();
-                tmp2Yhist->Delete();
+              if (tmpChan.details.count("Low Bin Limit X") == 0){
+                tmpChan.details["Low Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(0));
               }
+              if (tmpChan.details.count("High Bin Limit X") == 0){
+                tmpChan.details["High Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(tmp2Xhist->GetNbinsX()-1));
+              }
+              if (tmpChan.details.count("N Bins Y") == 0){
+                tmpChan.details["N Bins Y"] = (TString)Form("%d",tmp2Yhist->GetNbinsX());
+              }
+              if (tmpChan.details.count("Low Bin Limit Y") == 0){
+                tmpChan.details["Low Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(0));
+              }
+              if (tmpChan.details.count("High Bin Limit Y") == 0){
+                tmpChan.details["High Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(tmp2Yhist->GetNbinsX()-1));
+              }
+              tmpChan.histo2D = tmp_d_xy
+                .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
+              //.Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
+              tmp2Xhist->Delete();
+              tmp2Yhist->Delete();
             }
           }
           else {
-            if (tmpChan.details.count("Cut") > 0){
-              auto tmp_d = d
-                .Filter(Form("%s",tmpChan.details["Cut"].Data()))
-                .Alias(branchXname.Data(),tmpChan.details["DrawX"].Data())
-                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
-                .Filter(Form("reg.minirun==%s",minirun.Data()));
-              if (tmpChan.details.count("Graph") > 0 && tmpChan.details["Graph"] == "True") {
-                tmpChan.graph2D = tmp_d
-                  .Graph(branchXname.Data(),branchYname.Data());
-                tmpChan.graph2D->Sort();
-                tmpChan.graph2D->SetNameTitle(tmpChan.details["Histogram Title"],tmpChan.details["Histogram Title"]);
-                tmpChan.graph2D->GetXaxis()->SetTitle(tmpChan.details["DrawX"]);
-                tmpChan.graph2D->GetYaxis()->SetTitle(tmpChan.details["DrawY"]);
-              }
-              else {
-                tree->Draw(tmpChan.details["DrawX"]+">>htempX",cutstr,"goff");
-                TH1 * tmp2Xhist = (TH1*)gROOT->FindObject("htempX");
-                tree->Draw(tmpChan.details["DrawY"]+">>htempY",cutstr,"goff");
-                TH1 * tmp2Yhist = (TH1*)gROOT->FindObject("htempY");
-                if (tmpChan.details.count("N Bins X") == 0){
-                  tmpChan.details["N Bins X"] = (TString)Form("%d",tmp2Xhist->GetNbinsX());
-                }
-                if (tmpChan.details.count("Low Bin Limit X") == 0){
-                  tmpChan.details["Low Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(0));
-                }
-                if (tmpChan.details.count("High Bin Limit X") == 0){
-                  tmpChan.details["High Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(tmp2Xhist->GetNbinsX()-1));
-                }
-                if (tmpChan.details.count("N Bins Y") == 0){
-                  tmpChan.details["N Bins Y"] = (TString)Form("%d",tmp2Yhist->GetNbinsX());
-                }
-                if (tmpChan.details.count("Low Bin Limit Y") == 0){
-                  tmpChan.details["Low Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(0));
-                }
-                if (tmpChan.details.count("High Bin Limit Y") == 0){
-                  tmpChan.details["High Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(tmp2Yhist->GetNbinsX()-1));
-                }
-                tmpChan.histo2D = tmp_d
-                  .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
-                //.Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
-                tmp2Xhist->Delete();
-                tmp2Yhist->Delete();
-              }
+            auto tmp_d = d
+              .Define(branchXname.Data(),tmpChan.details["DrawX"].Data())
+              .Define(branchYname.Data(),tmpChan.details["DrawY"].Data());
+            if (tmpChan.details.count("Graph") > 0 && tmpChan.details["Graph"] == "True") {
+              tmpChan.graph2D = tmp_d
+                .Graph(branchXname.Data(),branchYname.Data());
+              tmpChan.graph2D->Sort();
+              tmpChan.graph2D->SetNameTitle(tmpChan.details["Histogram Title"],tmpChan.details["Histogram Title"]);
+              tmpChan.graph2D->GetXaxis()->SetTitle(tmpChan.details["DrawX"]);
+              tmpChan.graph2D->GetYaxis()->SetTitle(tmpChan.details["DrawY"]);
             }
             else {
-              auto tmp_d = d
-                .Alias(branchXname.Data(),tmpChan.details["DrawX"].Data())
-                .Define(branchYname.Data(),tmpChan.details["DrawY"].Data())
-                .Filter(Form("reg.minirun==%s",minirun.Data()));
-              if (tmpChan.details.count("Graph") > 0 && tmpChan.details["Graph"] == "True") {
-                tmpChan.graph2D = tmp_d
-                  .Graph(branchXname.Data(),branchYname.Data());
-                tmpChan.graph2D->Sort();
-                tmpChan.graph2D->SetNameTitle(tmpChan.details["Histogram Title"],tmpChan.details["Histogram Title"]);
-                tmpChan.graph2D->GetXaxis()->SetTitle(tmpChan.details["DrawX"]);
-                tmpChan.graph2D->GetYaxis()->SetTitle(tmpChan.details["DrawY"]);
+              tree->Draw(tmpChan.details["DrawX"]+">>htempX",tmpChan.details["Cut"],"goff");
+              TH1 * tmp2Xhist = (TH1*)gROOT->FindObject("htempX");
+              tree->Draw(tmpChan.details["DrawY"]+">>htempY",tmpChan.details["Cut"],"goff");
+              TH1 * tmp2Yhist = (TH1*)gROOT->FindObject("htempY");
+              if (tmpChan.details.count("N Bins X") == 0){
+                tmpChan.details["N Bins X"] = (TString)Form("%d",tmp2Xhist->GetNbinsX());
               }
-              else {
-                tree->Draw(tmpChan.details["DrawX"]+">>htempX",cutstr,"goff");
-                TH1 * tmp2Xhist = (TH1*)gROOT->FindObject("htempX");
-                tree->Draw(tmpChan.details["DrawY"]+">>htempY",cutstr,"goff");
-                TH1 * tmp2Yhist = (TH1*)gROOT->FindObject("htempY");
-                if (tmpChan.details.count("N Bins X") == 0){
-                  tmpChan.details["N Bins X"] = (TString)Form("%d",tmp2Xhist->GetNbinsX());
-                }
-                if (tmpChan.details.count("Low Bin Limit X") == 0){
-                  tmpChan.details["Low Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(0));
-                }
-                if (tmpChan.details.count("High Bin Limit X") == 0){
-                  tmpChan.details["High Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(tmp2Xhist->GetNbinsX()-1));
-                }
-                if (tmpChan.details.count("N Bins Y") == 0){
-                  tmpChan.details["N Bins Y"] = (TString)Form("%d",tmp2Yhist->GetNbinsX());
-                }
-                if (tmpChan.details.count("Low Bin Limit Y") == 0){
-                  tmpChan.details["Low Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(0));
-                }
-                if (tmpChan.details.count("High Bin Limit Y") == 0){
-                  tmpChan.details["High Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(tmp2Yhist->GetNbinsX()-1));
-                }
-                tmpChan.histo2D = tmp_d
-                  .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
-                //.Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
-                tmp2Xhist->Delete();
-                tmp2Yhist->Delete();
+              if (tmpChan.details.count("Low Bin Limit X") == 0){
+                tmpChan.details["Low Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(0));
               }
+              if (tmpChan.details.count("High Bin Limit X") == 0){
+                tmpChan.details["High Bin Limit X"] = (TString)Form("%f",tmp2Xhist->GetBinCenter(tmp2Xhist->GetNbinsX()-1));
+              }
+              if (tmpChan.details.count("N Bins Y") == 0){
+                tmpChan.details["N Bins Y"] = (TString)Form("%d",tmp2Yhist->GetNbinsX());
+              }
+              if (tmpChan.details.count("Low Bin Limit Y") == 0){
+                tmpChan.details["Low Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(0));
+              }
+              if (tmpChan.details.count("High Bin Limit Y") == 0){
+                tmpChan.details["High Bin Limit Y"] = (TString)Form("%f",tmp2Yhist->GetBinCenter(tmp2Yhist->GetNbinsX()-1));
+              }
+              tmpChan.histo2D = tmp_d
+                .Histo2D({branchYname+"_"+branchXname, tmpChan.details["Histogram Title"], tmpChan.details["N Bins X"].Atoi(), tmpChan.details["Low Bin Limit X"].Atof(), tmpChan.details["High Bin Limit X"].Atof(), tmpChan.details["N Bins Y"].Atoi(), tmpChan.details["Low Bin Limit Y"].Atof(), tmpChan.details["High Bin Limit Y"].Atof()}, branchXname.Data(),branchYname.Data());
+              //.Histo2D(ROOT::RDF::TH2DModel(), branchXname.Data(),branchYname.Data());
+              tmp2Xhist->Delete();
+              tmp2Yhist->Delete();
             }
           }
         }
