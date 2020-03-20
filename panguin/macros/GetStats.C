@@ -21,7 +21,7 @@ void GetStats(){
     statStr[0] = Form("Total Number of events");
     statStrNumbers[0] = Form(" = %d", tot);
 
-    r->Project(hist->GetName(), "CodaEventNumber", "ErrorFlag==0");
+    r->Project(hist->GetName(), "CodaEventNumber", "ErrorFlag==0||(ErrorFlag & 0xda7e6bff)==0");
     Int_t ok = hist->GetEntries();
     Double_t perok= ok*100./tot;
     statStr[1] = Form("EventCut passing events");
@@ -43,7 +43,7 @@ void GetStats(){
     Int_t nentFULL = hist->GetEntries();
     Double_t avgCurrentFULL = hist->GetMean();
     Double_t totalChargeFULL = avgCurrentFULL*(1/1.0e6)*(nentFULL/120);
-    r->Project(hist->GetName(), "bcm_an_us.hw_sum", "ErrorFlag==0");
+    r->Project(hist->GetName(), "bcm_an_us.hw_sum", "ErrorFlag==0||(ErrorFlag & 0xda7e6bff)==0");
     Int_t nent = hist->GetEntries();
     Double_t avgCurrent = hist->GetMean();
     Double_t totalCharge = avgCurrent*(1/1.0e6)*(nent/120);
@@ -75,7 +75,7 @@ void GetStats(){
     for (Int_t j = 0 ; j < Nstats ; j++){
       text.DrawLatex(0.10, iniY - (j*2.5+1)*diffY, statStr[j]); 
       text.DrawLatex(0.10, iniY - (j*2.5+2)*diffY, statStrNumbers[j]); 
-      string = string + statStr[j] + statStrNumbers[j] + "\n\n";
+      string = string + "\n\t" + statStr[j] + statStrNumbers[j];
     }
     gSystem->Exec(Form("echo \"%s\" >> /adaqfs/home/apar/scripts/stats.dat",string.Data()));
     if(hist) delete hist;

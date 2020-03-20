@@ -8,12 +8,12 @@ void longSlopeCheck(TString type = "burst_lrb_std", Double_t refRMS4eX = 10, Dou
   TChain* tree_agg = new TChain("agg");
   gSystem->Exec("export runNum=`~/scripts/getRunNumber`; export runNum2=`echo $runNum-30 | bc`; python /adaqfs/home/apar/pvdb/prex/examples/make_run_list.py --run=$runNum2-$runNum --type=Production --current=20 --target=48Ca --slug=`~/scripts/getSlugNumber`");
   //gSystem->Exec("export runNum=`~/scripts/getRunNumber`; export runNum2=`echo $runNum-100 | bc`; python /adaqfs/home/apar/pvdb/prex/examples/make_run_list.py --run=$runNum2-$runNum --type=Production --current=20 --target=48Ca --slug=149");
-  ifstream infile("/adaqfs/home/apar/PREX/japan/panguin/list.txt");
+  std::ifstream* infile = new std::ifstream("/adaqfs/home/apar/PREX/japan/panguin/list.txt");
   TString currentRunNum = gSystem->GetFromPipe("/adaqfs/home/apar/scripts/getRunNumber");
   std::vector<Int_t> listOfFileIndices;
   std::string line;
-  if (infile.is_open()) {
-    while(getline(infile,line)){
+  if (infile->is_open()) {
+    while(getline(*infile,line)){
       listOfFileIndices.push_back(atoi(line.c_str()));
     }
   }
@@ -165,27 +165,6 @@ void longSlopeCheck(TString type = "burst_lrb_std", Double_t refRMS4eX = 10, Dou
   cPlot->cd(6);
 
   GetStats();
+  infile->close();
 
-  // FIXME wants:
-  // * Conditional warning text about too large RMSs
-  // * Better red line
-  // * Description of what is shown and what it should be
-  //
-  /*
-  cPlot->cd(4);
-  TLatex Line1;
-  TLatex Line2;
-  TLatex Line3;
-  Line1.SetTextSize(.2);
-  Line1.SetTextAlign(12);
-  Line2.SetTextSize(.15);
-  Line2.SetTextAlign(12);
-  Line3.SetTextSize(.3);
-  Line3.SetTextAlign(12);
-
-  cPlot->cd(4);
-  Line1.DrawLatex(.3,.25,"Stability Errors!");
-  Line2.DrawLatex(.25,.5,"If RMS exceeds line");
-  Line3.DrawLatex(.12,.75,"Call RC now!");
-  */
 }
