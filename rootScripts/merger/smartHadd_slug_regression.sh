@@ -4,7 +4,7 @@ OUTPUTROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/slugRootfiles/grandRootfile/"
 #OUTPUTROOTFILEDIR="./"
 if [ "$#" -lt 1 ]; then
   echo "Error: Need to pass a list file name number \"slug##\".list"
-  echo "Usage: ./smartHadd_slug_regression.sh list.txt (input file list, \\n separated) outputFileName.txt (a text file with the name in it..., optional argument)"
+  echo "Usage: ./smartHadd_slug_regression.sh list.txt (input file list, \\n separated) outputFileName (a name..., optional argument)"
 else
   IFS=$'\n' read -d '' -r -a lines < ${1}
   # all lines

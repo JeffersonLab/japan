@@ -8,7 +8,7 @@ OUTPUTROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/slugRootfiles/dithering${stub
 #OUTPUTROOTFILEDIR="./"
 if [ "$#" -lt 1 ]; then
   echo "Error: Need to pass a list file name number \"slug##\".list"
-  echo "Usage: ./smartHadd_slug_dithering.sh list.txt (input file list, \\n separated) outputFileName.txt (a text file with the name in it..., optional argument) stub (a stub argument for dithering analysis... i.e. \"_1X\")"
+  echo "Usage: ./smartHadd_slug_dithering.sh list.txt (input file list, \\n separated) outputFileName (a name..., optional argument) stub (a stub argument for dithering analysis... i.e. \"_1X\")"
 else
   IFS=$'\n' read -d '' -r -a lines < ${1}
   # all lines
