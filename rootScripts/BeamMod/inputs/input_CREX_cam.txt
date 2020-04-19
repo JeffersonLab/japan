@@ -3,20 +3,21 @@ Just Sensitivities:False
 2 Coils:1,3,7,4,2
 3 Coils:1,5,7,6,2
 Coils:1,3,7,4,6
-BPMs Slope Names:1X,4eX,11X12X,4aY,4eY
+BPMs Slope Names:4aX,4eX,11X12X,4aY,4eY
 PREX BPMs:bpm4aX,bpm4eX,0.4*bpm11X+bpm12X,bpm4aY,bpm4eY
-BPMs:bpm1X,bpm4eX,bpm12X,bpm4aY,bpm4eY
+BPMs:bpm4aX,bpm4eX,bpm12X,bpm4aY,bpm4eY
 Main Detectors:usl,usr,atl1,atl2,atr1,atr2
-Detectors:bcm_an_us,bcm_an_ds,bcm_dg_us,bcm_dg_ds,bpm4aX,bpm4eX,bpm1X,bpm4aY,bpm4eY,bpm1Y,bpm11X,bpm12X,bpm16X,bpm0i02X,bpm0i02Y,bpm1i02X,bpm1i02Y,bpm2i01X,bpm2i01Y,bpm2i02X,bpm2i02Y,bcm0l02
+Detectors:usl,usr,atl1,atl2,atr1,atr2,sam1,sam2,sam3,sam4,sam5,sam6,sam7,sam8
 Important Detectors:2
 Flag Sigma Cut:10.5
 IFARM ROOT input path:/lustre/expphy/volatile/halla/parity/japanOutput/prexPrompt_pass1_#.000.root
 ROOT input path:~/PREX/prompt/japanOutput/prexPrompt_pass1_#.000.root
-Output path:./slopes_monitors/
-Rootfile Output Path:./slopes_monitors/
+Output path:./slopes/
+Rootfile Output Path:./slopes/
 Rootfile Output Runwise:False
 current Cut:bcm_dg_ds>5
 Old Cut:(ErrorFlag & 0x7bfe6fff)==0
 Cut:(ErrorFlag & 0xda7e6bff)==0
 Tree:evt_bmw
-Run Average:True
+Stitch:True
+Stitch Limit:22
