@@ -1,0 +1,100 @@
+! adc sample size  16564
+! Input => Channel Name, Offset, Scale Factor from raw ADC/integration window
+! example: TestChanne  , 0     , 76.293e-6 ! Gives volts, if looking at raw further divide by num_samples in full integration window
+!----
+!END	    		        
+
+! Unser calibration based on Run 1214 , HAPLOG 3609, also consistent with dave mack 3.7mV/uA halog entry 3689440 
+UNSER,   -174.1,     2.066e-2	    
+
+
+
+!!! Hall C bcm two point calibration from run 5371
+!! hallc_bcm_4c,  -360.17, 0.0011264648
+!!  Multipoint calibration from run 5382
+  hallc_bcm_4c,  -524.0,   0.0041998972
+
+!Using macro GetAllPedestals_Caryn_Amali_run5778_anus.C
+!Run5778,10-175uA - https://logbooks.jlab.org/entry/3765971
+!Calibrations fit relative to (bcm_an_us.hw_sum_raw/bcm_an_us.num_samples--645.63)*0.008924 from 10-175uA:
+
+cav4bQ, -415.19, 0.006746
+cav4dQ, -378.00, 0.017685
+bcm_an_us, -645.63, 0.008924
+bcm_an_ds, -492.69, 0.008831
+bcm_an_ds3, -1114.17, 0.002577
+!bcm_an_ds10, 8809.76, 0.001071
+bcm_dg_us, -332.74, 0.004383
+bcm_dg_ds, -589.44, 0.003465
+bcm_dg_usc, -506.17, 0.004108
+bcm_dg_dsc, -480.54, 0.003225
+
+!Using macro GetAllPedestals_Caryn_Amali_run5778_anus_morecuts.C
+!excluded 3 points that have position motion
+!Run5778,10-175uA - https://logbooks.jlab.org/entry/3765971
+!Calibrations fit relative to (bcm_an_us.hw_sum_raw/bcm_an_us.num_samples--645.63)*0.008924 from 10-175uA:
+cav4cQ, -688.35, 0.012403
+!using10-100uA
+bcm_an_ds10, -800.69, 0.000906
+
+!Run5778, BPM calibration - https://logbooks.jlab.org/entry/3766410
+!Calibrations fit relative to (bcm_an_us.hw_sum_raw/bcm_an_us.num_samples--645.63)*0.008924
+!combined four fits to get the pedestals
+
+bpm4aXP, 162.60, 1.0
+bpm4aXM, 717.66, 1.0
+bpm4aYP, 278.55, 1.0
+bpm4aYM, 264.41, 1.0
+bpm4eXP, 660.73, 1.0
+bpm4eXM, 1046.64, 1.0
+bpm4eYP, 304.03, 1.0
+bpm4eYM, 721.19, 1.0
+bpm4acXP, -1556.95, 1.0
+bpm4acXM, -1157.93, 1.0
+bpm4acYP, 131.01, 1.0
+bpm4acYM, 519.16, 1.0
+bpm4ecXP, 330.69, 1.0
+bpm4ecXM, 1164.53, 1.0
+bpm4ecYP, 634.19, 1.0
+bpm4ecYM, 1099.56, 1.0
+bpm11XP, 1495.99, 1.0
+bpm11XM, 778.51, 1.0
+bpm11YP, 1109.63, 1.0
+bpm11YM, 1082.46, 1.0
+bpm12XP, 3713.63, 1.0
+bpm12XM, 3809.22, 1.0
+bpm12YP, 3587.22, 1.0
+bpm12YM, 3214.93, 1.0
+bpm16XP, 1158.97, 1.0
+bpm16XM, 1740.65, 1.0
+bpm16YP, 393.90, 1.0
+bpm16YM, 277.94, 1.0
+bpm1p02bXP, -2893.55, 1.0
+bpm1p02bXM, -627.52, 1.0
+bpm1p02bYP, -3614.13, 1.0
+bpm1p02bYM, -2786.71, 1.0
+bpm1p03aXP, -3804.06, 1.0
+bpm1p03aXM, -4729.25, 1.0
+bpm1p03aYP, -1937.54, 1.0
+bpm1p03aYM, -2418.26, 1.0
+bpm1XP, -2044.10, 1.0
+bpm1XM, -2741.87, 1.0
+bpm1YP, -4384.24, 1.0
+bpm1YM, -3940.74, 1.0
+
+!!  Cavity BPM offsets determined  for 40-50uA from run 2965 by using the
+!!  unser.
+!!  Cavity bpms XI and YI gains were set to give positions consistent with the
+!!  stripline BPMs.  The commented values were the pedestals from the fit to
+!!  the BCMs.
+!! Cavities have problems in CREX running - not yet calibrated by Musson
+  cav4bXI,  -350.396,    0.0216191
+  cav4bYI,  -278.993,    0.0118156
+
+!! FIXE ME: XI YI pedestal 
+  cav4cXI, -408.33, 0.003221
+  cav4cYI, -186.39, 0.003221
+
+  cav4dXI,  -525.044,    0.0218225
+  cav4dYI,  1084.72,    0.00207035
+

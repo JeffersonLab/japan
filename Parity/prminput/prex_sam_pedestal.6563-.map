@@ -1,0 +1,17 @@
+!Using macro GetAllPedestals_Caryn_Amali_run6196_anus.C
+
+!Run6563,Ca48, 10-150uA 2x2
+
+!Calibrations fit relative to
+!GetAllPedestals_Caryn_Amali_run6563_bcmanus_steps_witherr.C from 10-175uA:
+!can be used for Ca48 AT data and used for longitudinal.
+
+sam1, 11046.37, 0.000076
+sam2, 13720.63, 0.000076
+sam3, 9766.93, 0.000076
+sam4, 12725.34, 0.000076
+sam5, 11434.79, 0.000076
+sam6, 13403.24, 0.000076
+sam7, 12285.25, 0.000076
+sam8, 12392.29, 0.000076
+

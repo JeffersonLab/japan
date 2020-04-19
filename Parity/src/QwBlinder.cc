@@ -93,7 +93,9 @@ QwBlinder::QwBlinder(const EQwBlindingStrategy blinding_strategy):
   fSeed = kDefaultSeed;
   fSeedID = 0;
 
-  fUseCREXPositions = kFALSE;  
+  fCREXTargetIndex  = -1;
+
+  Int_t tgt_index;
 
   // Read parameter file
   QwParameterFile blinder("blinder.map");
@@ -103,9 +105,17 @@ QwBlinder::QwBlinder(const EQwBlindingStrategy blinding_strategy):
     QwVerbose << "Using blinding box: " << fMaximumBlindingAsymmetry << " ppm" << QwLog::endl;
   if (blinder.FileHasVariablePair("=", "max_factor", fMaximumBlindingFactor))
     QwVerbose << "Using blinding factor: " << fMaximumBlindingFactor << QwLog::endl;
-  blinder.FileHasVariablePair("=", "use_crex_target_position", fUseCREXPositions);
-  QwMessage << "Are we using the CREX target position? " << fUseCREXPositions << QwLog::endl;
-  if (fUseCREXPositions){
+  if (blinder.FileHasVariablePair("=", "crex_target_index", tgt_index)){
+    if (tgt_index>=kCREXTgtIndexMin && tgt_index<=kCREXTgtIndexMax){
+      fCREXTargetIndex = tgt_index;
+    } else {
+      QwError << "Invalid CREX target index for blindable events!  Exiting!" 
+	      << QwLog::endl;
+      exit(100);
+    }
+  }
+  QwMessage << "What is the blindable CREX target position (-1 means we're using the PREX positions)? " << fCREXTargetIndex << QwLog::endl;
+  if (fCREXTargetIndex>=kCREXTgtIndexMin){
     fSeed.Prepend(TString("[Using CREX positions!]  "));
     QwMessage << "Updated the seed string: " << fSeed << QwLog::endl;
   }
@@ -320,18 +330,37 @@ void QwBlinder::Update(const QwEPICSEvent& epics)
       //	  << "QWtgt_name=" << position << " "
 	    << "QWTGTPOS=" << tgt_pos << " "
 	    << QwLog::endl;
-    if (fUseCREXPositions &&
+
+    //
+    // ****  Target index 1:  Beginning of CREX
+    if (fCREXTargetIndex==1 &&
 	(tgt_pos>14.5e6 && tgt_pos<18.0e6) ){
       //  Calcium-48 target position
       SetTargetBlindability(QwBlinder::kBlindable);
 
-    } else if (fUseCREXPositions &&
+    } else if (fCREXTargetIndex==1 &&
 	       ( (tgt_pos>-1.0e3 && tgt_pos<14.5e6)
 		 || (tgt_pos>18.0e6 && tgt_pos<61.e6) ) ){
       //  Reasonable non-calcium-48 target positions
       SetTargetBlindability(QwBlinder::kNotBlindable);
 
-    } else if ( fUseCREXPositions==kFALSE && 
+     
+      //
+      // ****  Target index 2:  After 20January change in target location
+    } else if (fCREXTargetIndex==2 &&
+	(tgt_pos>11.5e6 && tgt_pos<14.5e6) ){
+      //  Calcium-48 target position (old Ca-40 position)
+      SetTargetBlindability(QwBlinder::kBlindable);
+
+    } else if (fCREXTargetIndex==2 &&
+	       ( (tgt_pos>-1.0e3 && tgt_pos<11.5e6)
+		 || (tgt_pos>14.5e6 && tgt_pos<61.e6) ) ){
+      //  Reasonable non-calcium-48 target positions
+      SetTargetBlindability(QwBlinder::kNotBlindable);
+
+      //
+      //  ****  Target index -1:  These are the PREX positions
+    } else if ( fCREXTargetIndex==-1 && 
 		(/*  Target positions before 1 August 2019.*/
 		 ( (tgt_pos > 3e6 && tgt_pos < 6.9e6) 
 		   || (tgt_pos > 7.3e6 && tgt_pos < 7.7e6))
@@ -342,7 +371,7 @@ void QwBlinder::Update(const QwEPICSEvent& epics)
       //  Lead-208 target positions
       SetTargetBlindability(QwBlinder::kBlindable);
 
-    } else if  ( fUseCREXPositions==kFALSE && 
+    } else if  ( fCREXTargetIndex==-1 && 
 		 (/*  Target positions before 1 August 2019.*/
 		  ((tgt_pos > -1e3 && tgt_pos < 3e6) 
 		   || (tgt_pos > 6.8e6 && tgt_pos < 7.2e6)
