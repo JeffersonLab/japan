@@ -54,34 +54,80 @@ void Channel::drawPlot(std::map<TString,TPad*> pads){
   if (details.count("Draw Option") == 0) {
     details["Draw Option"] = "";
   }
-  if (details.count("Marker Color") > 0) { // To get a red plot of similar data with a different cut you need to do a draw same on a fresh channel with the same Canvas coordinates
-    histo1D->SetMarkerColor(details["Marker Color"].Atoi()); // Integer
-    histo2D->SetMarkerColor(details["Marker Color"].Atoi()); // Integer
-    histo3D->SetMarkerColor(details["Marker Color"].Atoi()); // Integer
-  }
-  if (details.count("Marker Style") > 0) {
-    histo1D->SetMarkerStyle(details["Marker Style"].Atoi()); // Integer
-    histo2D->SetMarkerStyle(details["Marker Style"].Atoi()); // Integer
-    histo3D->SetMarkerStyle(details["Marker Style"].Atoi()); // Integer
-  }
-  if (details.count("Marker Size") > 0) {
-    histo1D->SetMarkerSize(details["Marker Size"].Atoi()); // Integer
-    histo2D->SetMarkerSize(details["Marker Size"].Atoi());
-    histo3D->SetMarkerSize(details["Marker Size"].Atoi());
-  }
+  Printf("Draw Option = %s",details["Draw Option"].Data());
   if (details.count("SetOptFit") == 0) {
     details["SetOptFit"] = "1";
   }
   if (details.count("SetOptStat") == 0) {
     details["SetOptStat"] = "0";
-    Printf("SetOptStat = %s",details["SetOptStat"].Data());
   }
-  else {
-    Printf("SetOptStat = %s",details["SetOptStat"].Data());
+  Printf("SetOptStat = %s",details["SetOptStat"].Data());
+  if (details["SetOptStat"] == "0") {
+    if (details["Dimension"] == "1") {
+      histo1D->SetStats(0);
+    }
+    if (details["Dimension"] == "2") {
+      if (details.count("Graph") == 0 || details["Graph"] == "False") {
+        histo2D->SetStats(0);
+      }
+    }
+    if (details["Dimension"] == "3") {
+      histo3D->SetStats(0);
+    }
   }
   gStyle->SetStatW(0.3);
   gStyle->SetStatH(0.25);
+  if (details.count("Marker Color") > 0) { // To get a red plot of similar data with a different cut you need to do a draw same on a fresh channel with the same Canvas coordinates
+    if (details["Dimension"] == "1") {
+      histo1D->SetMarkerColor(details["Marker Color"].Atoi()); // Integer
+    }
+    if (details["Dimension"] == "2") {
+      if (details.count("Graph") > 0 && details["Graph"] == "True") {
+        graph2D->SetMarkerColor(details["Marker Color"].Atoi()); // Integer
+      }
+      else {
+        histo2D->SetMarkerColor(details["Marker Color"].Atoi()); // Integer
+      }
+    }
+    if (details["Dimension"] == "3") {
+      histo3D->SetMarkerColor(details["Marker Color"].Atoi()); // Integer
+    }
+  }
+  if (details.count("Marker Style") > 0) {
+    if (details["Dimension"] == "1") {
+      histo1D->SetMarkerStyle(details["Marker Style"].Atoi()); // Integer
+    }
+    if (details["Dimension"] == "2") {
+      if (details.count("Graph") > 0 && details["Graph"] == "True") {
+        graph2D->SetMarkerStyle(details["Marker Style"].Atoi()); // Integer
+      }
+      else {
+        histo2D->SetMarkerStyle(details["Marker Style"].Atoi()); // Integer
+      }
+    }
+    if (details["Dimension"] == "3") {
+      histo3D->SetMarkerStyle(details["Marker Style"].Atoi()); // Integer
+    }
+  }
+  if (details.count("Marker Size") > 0) {
+    if (details["Dimension"] == "1") {
+      histo1D->SetMarkerSize(details["Marker Size"].Atoi()); // Integer
+    }
+    if (details["Dimension"] == "2") {
+      if (details.count("Graph") > 0 && details["Graph"] == "True") {
+        graph2D->SetMarkerSize(details["Marker Size"].Atoi());
+      }
+      else {
+        histo2D->SetMarkerSize(details["Marker Size"].Atoi());
+      }
+    }
+    if (details["Dimension"] == "3") {
+      histo3D->SetMarkerSize(details["Marker Size"].Atoi());
+    }
+  }
   // Initial Draw
+  gStyle->SetOptFit(details["SetOptFit"].Atoi());
+  gStyle->SetOptStat(details["SetOptStat"].Atoi());
   if (details["Dimension"] == "1") histo1D->Draw(details["Draw Option"]); // "SAME" would be nice to work automatically here
   if (details["Dimension"] == "2") {
     if (details.count("Graph") > 0 && details["Graph"] == "True") {
@@ -183,15 +229,20 @@ void Channel::drawPlot(std::map<TString,TPad*> pads){
   }
   else {
     // Stat Box
-    TPaveStats *psus;
+    TPaveStats *psus;// = (TPaveStats*)pads[details["Canvas Name"]]->GetPrimitive("stats");
     if (details["Dimension"] == "1") { 
-      psus = (TPaveStats*)pads[details["Canvas Name"]]->GetPrimitive("stats");
+      psus = (TPaveStats*)histo1D->FindObject("stats");
     }
     if (details["Dimension"] == "2") { 
-      psus = (TPaveStats*)pads[details["Canvas Name"]]->GetPrimitive("stats");
+      if (details.count("Graph") > 0 && details["Graph"] == "True") {
+        psus = (TPaveStats*)pads[details["Canvas Name"]]->GetPrimitive("stats");
+      }
+      else {
+        psus = (TPaveStats*)histo2D->FindObject("stats");
+      }
     }
     if (details["Dimension"] == "3") { 
-      psus = (TPaveStats*)pads[details["Canvas Name"]]->GetPrimitive("stats");
+      psus = (TPaveStats*)histo3D->FindObject("stats");
     }
     if(psus!=NULL){
       psus->SetName("MyStats");
@@ -209,7 +260,7 @@ void Channel::drawPlot(std::map<TString,TPad*> pads){
       psus->Draw();
     }
     else {
-      Printf("Error, no stats object");
+      Printf("No stats object");
     }
   }
 
@@ -517,10 +568,12 @@ RDataFrame Source::readSource(){
   std::vector<Channel> summaries;
   std::map<TString,TPad*> pads;
   std::vector<TString> canvasNames;
-  TCanvas * c1 = new TCanvas();
+  std::vector<TCanvas *> cs;
+  //TCanvas * c1 = new TCanvas();
   Int_t winWidth = 600;
-  c1->SetWindowSize(1600,1200);
-  c1->cd();
+  //c1->SetWindowSize(1600,1200);
+  //c1->SetCanvasSize(1600,1200);
+  //c1->cd();
 
   // Getting device list
   string line;
@@ -634,10 +687,13 @@ RDataFrame Source::readSource(){
 
       if (pads.count(details["Canvas Name"]) == 0) {
         // Should be TPads?
-        TPad * tempC = new TPad(details["Canvas Name"],details["Canvas Name"],0,0,1,1);
+        TCanvas * cTemp = new TCanvas();
+        cTemp->SetWindowSize((winWidth+1)*details["Canvas Nx"].Atoi(),winWidth*details["Canvas Ny"].Atoi());
+        cTemp->SetCanvasSize((winWidth+1)*details["Canvas Nx"].Atoi(),winWidth*details["Canvas Ny"].Atoi());
+        cTemp->cd();
+        cs.push_back(cTemp);
+        TPad * tempC = new TPad(details["Canvas Name"],details["Canvas Name"],0,0,1,1);//winWidth*details["Canvas Nx"].Atoi(),winWidth*details["Canvas Ny"].Atoi(),1,1);
         tempC->Divide(details["Canvas Nx"].Atoi(),details["Canvas Ny"].Atoi());
-        c1->SetWindowSize((winWidth+1)*details["Canvas Nx"].Atoi(),winWidth*details["Canvas Nx"].Atoi());
-        c1->cd();
         pads[details["Canvas Name"]] = tempC;
         canvasNames.push_back(details["Canvas Name"]);
       }

@@ -1,0 +1,55 @@
+asym_dd_an_us_ds_cor,1e6*asym_bcm_an_us.hw_sum:1e6*asym_bcm_an_ds.hw_sum,summary,Canvas Name=BCM AN US vs DS DD vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Draw Option=prof;Canvas Nx=5;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=False;Fit Function=pol1
+asym_dd_an_us_ds_cor_scat,1e6*asym_bcm_an_us.hw_sum:1e6*asym_bcm_an_ds.hw_sum,summary,Canvas Name=BCM AN US vs DS DD vs Events;Cut=ErrorFlag==0;SetOptStat=0;Canvas Nx=5;Canvas Ny=1;Canvas X=2;Canvas Y=1;Graph=False
+asym_dd_an_us_ds_hist,1e6*asym_bcm_an_us.hw_sum-1e6*asym_bcm_an_ds.hw_sum,summary,Canvas Name=BCM AN US vs DS DD vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Fit Function=gaus;Canvas Nx=5;Canvas Ny=1;Canvas X=3;Canvas Y=1;Graph=False
+asym_dd_an_us_ds_hist,1e6*asym_bcm_an_us.hw_sum-1e6*asym_bcm_an_ds.hw_sum,summary,Canvas Name=BCM AN US vs DS DD vs Events;Cut=ErrorFlag==0;SetOptStat=0;Canvas Nx=5;Canvas Ny=1;Canvas X=4;Canvas Y=1;Graph=False
+asym_dd_an_vs_event_1,1e6*asym_bcm_an_us.hw_sum-1e6*asym_bcm_an_ds.hw_sum:CodaEventNumber,summary,Canvas Name=BCM AN US vs DS DD vs Events;Cut=ErrorFlag==0;SetOptStat=0;Draw Option=candle3;Canvas Nx=5;Canvas Ny=1;Canvas X=5;Canvas Y=1;Graph=False
+yield_bcm_an_us_vs_event_1,yield_bcm_an_us.hw_sum:CodaEventNumber,summary,Canvas Name=Analog US BCM;Cut=1==1;Draw Option=alp;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+yield_bcm_an_us_vs_event_2,yield_bcm_an_us.hw_sum:CodaEventNumber,summary,Canvas Name=Analog US BCM;Cut=ErrorFlag!=0;Draw Option=*SAME;Marker Color=2;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+yield_bcm_an_us_1,yield_bcm_an_us.hw_sum,summary,Canvas Name=Analog US BCM;Cut=ErrorFlag==0;SetOptStat=1211;Canvas Nx=4;Canvas Ny=1;Canvas X=2;Canvas Y=1;Graph=False
+asym_bcm_an_us_vs_event_1,1e6*asym_bcm_an_us.hw_sum:pattern_number,summary,Canvas Name=Analog US BCM;SetStat=0;SetOptStat=0;Cut=ErrorFlag==0;Draw Option=candle3;Canvas Nx=4;Canvas Ny=1;Canvas X=3;Canvas Y=1;Graph=False
+asym_bcm_an_us_1,1e6*asym_bcm_an_us.hw_sum,summary,Canvas Name=Analog US BCM;Cut=ErrorFlag==0;SetOptStat=1211;Canvas Nx=4;Canvas Ny=1;Canvas X=4;Canvas Y=1;Graph=False
+yield_bpm1X_vs_event_1,yield_bpm1X.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 1X vs Events;Cut=1==1;Draw Option=alp;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+yield_bpm1X_vs_event_2,yield_bpm1X.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 1X vs Events;Cut=ErrorFlag!=0;Draw Option=*SAME;Marker Color=2;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+diff_bpm1X_hist_1,1e6*diff_bpm1X.hw_sum,summary,Canvas Name=BPM 1X vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Fit Function=gaus;Canvas Nx=4;Canvas Ny=1;Canvas X=2;Canvas Y=1;Graph=False
+diff_bpm1X_hist_2,1e6*diff_bpm1X.hw_sum,summary,Canvas Name=BPM 1X vs Events;Cut=ErrorFlag==0;SetOptStat=0;Canvas Nx=4;Canvas Ny=1;Canvas X=3;Canvas Y=1;Graph=False
+diff_bpm1X_v_event,1e6*diff_bpm1X.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 1X vs Events;Cut=ErrorFlag==0;SetOptStat=0;Draw Option=candle3;Canvas Nx=4;Canvas Ny=1;Canvas X=4;Canvas Y=1;Graph=False
+yield_bpm4aX_vs_event_1,yield_bpm4aX.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 4aX vs Events;Cut=1==1;Draw Option=alp;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+yield_bpm4aX_vs_event_2,yield_bpm4aX.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 4aX vs Events;Cut=ErrorFlag!=0;Draw Option=*SAME;Marker Color=2;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+diff_bpm4aX_hist_1,1e6*diff_bpm4aX.hw_sum,summary,Canvas Name=BPM 4aX vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Fit Function=gaus;Canvas Nx=4;Canvas Ny=1;Canvas X=2;Canvas Y=1;Graph=False
+diff_bpm4aX_hist_2,1e6*diff_bpm4aX.hw_sum,summary,Canvas Name=BPM 4aX vs Events;Cut=ErrorFlag==0;SetOptStat=0;Canvas Nx=4;Canvas Ny=1;Canvas X=3;Canvas Y=1;Graph=False
+diff_bpm4aX_v_event,1e6*diff_bpm4aX.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 4aX vs Events;Cut=ErrorFlag==0;SetOptStat=0;Draw Option=candle3;Canvas Nx=4;Canvas Ny=1;Canvas X=4;Canvas Y=1;Graph=False
+yield_bpm4aY_vs_event_1,yield_bpm4aY.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 4aY vs Events;Cut=1==1;Draw Option=alp;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+yield_bpm4aY_vs_event_2,yield_bpm4aY.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 4aY vs Events;Cut=ErrorFlag!=0;Draw Option=*SAME;Marker Color=2;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+diff_bpm4aY_hist_1,1e6*diff_bpm4aY.hw_sum,summary,Canvas Name=BPM 4aY vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Fit Function=gaus;Canvas Nx=4;Canvas Ny=1;Canvas X=2;Canvas Y=1;Graph=False
+diff_bpm4aY_hist_2,1e6*diff_bpm4aY.hw_sum,summary,Canvas Name=BPM 4aY vs Events;Cut=ErrorFlag==0;SetOptStat=0;Canvas Nx=4;Canvas Ny=1;Canvas X=3;Canvas Y=1;Graph=False
+diff_bpm4aY_v_event,1e6*diff_bpm4aY.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 4aY vs Events;Cut=ErrorFlag==0;SetOptStat=0;Draw Option=candle3;Canvas Nx=4;Canvas Ny=1;Canvas X=4;Canvas Y=1;Graph=False
+yield_bpm4eX_vs_event_1,yield_bpm4eX.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 4eX vs Events;Cut=1==1;Draw Option=alp;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+yield_bpm4eX_vs_event_2,yield_bpm4eX.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 4eX vs Events;Cut=ErrorFlag!=0;Draw Option=*SAME;Marker Color=2;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+diff_bpm4eX_hist_1,1e6*diff_bpm4eX.hw_sum,summary,Canvas Name=BPM 4eX vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Fit Function=gaus;Canvas Nx=4;Canvas Ny=1;Canvas X=2;Canvas Y=1;Graph=False
+diff_bpm4eX_hist_2,1e6*diff_bpm4eX.hw_sum,summary,Canvas Name=BPM 4eX vs Events;Cut=ErrorFlag==0;SetOptStat=0;Canvas Nx=4;Canvas Ny=1;Canvas X=3;Canvas Y=1;Graph=False
+diff_bpm4eX_v_event,1e6*diff_bpm4eX.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 4eX vs Events;Cut=ErrorFlag==0;SetOptStat=0;Draw Option=candle3;Canvas Nx=4;Canvas Ny=1;Canvas X=4;Canvas Y=1;Graph=False
+yield_bpm4eY_vs_event_1,yield_bpm4eY.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 4eY vs Events;Cut=1==1;Draw Option=alp;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+yield_bpm4eY_vs_event_2,yield_bpm4eY.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 4eY vs Events;Cut=ErrorFlag!=0;Draw Option=*SAME;Marker Color=2;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+diff_bpm4eY_hist_1,1e6*diff_bpm4eY.hw_sum,summary,Canvas Name=BPM 4eY vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Fit Function=gaus;Canvas Nx=4;Canvas Ny=1;Canvas X=2;Canvas Y=1;Graph=False
+diff_bpm4eY_hist_2,1e6*diff_bpm4eY.hw_sum,summary,Canvas Name=BPM 4eY vs Events;Cut=ErrorFlag==0;SetOptStat=0;Canvas Nx=4;Canvas Ny=1;Canvas X=3;Canvas Y=1;Graph=False
+diff_bpm4eY_v_event,1e6*diff_bpm4eY.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 4eY vs Events;Cut=ErrorFlag==0;SetOptStat=0;Draw Option=candle3;Canvas Nx=4;Canvas Ny=1;Canvas X=4;Canvas Y=1;Graph=False
+yield_bpm11X_vs_event_1,yield_bpm11X.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 11X vs Events;Cut=1==1;Draw Option=alp;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+yield_bpm11X_vs_event_2,yield_bpm11X.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 11X vs Events;Cut=ErrorFlag!=0;Draw Option=*SAME;Marker Color=2;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+diff_bpm11X_hist_1,1e6*diff_bpm11X.hw_sum,summary,Canvas Name=BPM 11X vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Fit Function=gaus;Canvas Nx=4;Canvas Ny=1;Canvas X=2;Canvas Y=1;Graph=False
+diff_bpm11X_hist_2,1e6*diff_bpm11X.hw_sum,summary,Canvas Name=BPM 11X vs Events;Cut=ErrorFlag==0;SetOptStat=0;Canvas Nx=4;Canvas Ny=1;Canvas X=3;Canvas Y=1;Graph=False
+diff_bpm11X_v_event,1e6*diff_bpm11X.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 11X vs Events;Cut=ErrorFlag==0;SetOptStat=0;Draw Option=candle3;Canvas Nx=4;Canvas Ny=1;Canvas X=4;Canvas Y=1;Graph=False
+yield_bpm11Y_vs_event_1,yield_bpm11Y.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 11Y vs Events;Cut=1==1;Draw Option=alp;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+yield_bpm11Y_vs_event_2,yield_bpm11Y.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 11Y vs Events;Cut=ErrorFlag!=0;Draw Option=*SAME;Marker Color=2;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+diff_bpm11Y_hist_1,1e6*diff_bpm11Y.hw_sum,summary,Canvas Name=BPM 11Y vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Fit Function=gaus;Canvas Nx=4;Canvas Ny=1;Canvas X=2;Canvas Y=1;Graph=False
+diff_bpm11Y_hist_2,1e6*diff_bpm11Y.hw_sum,summary,Canvas Name=BPM 11Y vs Events;Cut=ErrorFlag==0;SetOptStat=0;Canvas Nx=4;Canvas Ny=1;Canvas X=3;Canvas Y=1;Graph=False
+diff_bpm11Y_v_event,1e6*diff_bpm11Y.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 11Y vs Events;Cut=ErrorFlag==0;SetOptStat=0;Draw Option=candle3;Canvas Nx=4;Canvas Ny=1;Canvas X=4;Canvas Y=1;Graph=False
+yield_bpm12X_vs_event_1,yield_bpm12X.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 12X vs Events;Cut=1==1;Draw Option=alp;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+yield_bpm12X_vs_event_2,yield_bpm12X.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 12X vs Events;Cut=ErrorFlag!=0;Draw Option=*SAME;Marker Color=2;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+diff_bpm12X_hist_1,1e6*diff_bpm12X.hw_sum,summary,Canvas Name=BPM 12X vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Fit Function=gaus;Canvas Nx=4;Canvas Ny=1;Canvas X=2;Canvas Y=1;Graph=False
+diff_bpm12X_hist_2,1e6*diff_bpm12X.hw_sum,summary,Canvas Name=BPM 12X vs Events;Cut=ErrorFlag==0;SetOptStat=0;Canvas Nx=4;Canvas Ny=1;Canvas X=3;Canvas Y=1;Graph=False
+diff_bpm12X_v_event,1e6*diff_bpm12X.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 12X vs Events;Cut=ErrorFlag==0;SetOptStat=0;Draw Option=candle3;Canvas Nx=4;Canvas Ny=1;Canvas X=4;Canvas Y=1;Graph=False
+yield_bpm12Y_vs_event_1,yield_bpm12Y.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 12Y vs Events;Cut=1==1;Draw Option=alp;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+yield_bpm12Y_vs_event_2,yield_bpm12Y.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 12Y vs Events;Cut=ErrorFlag!=0;Draw Option=*SAME;Marker Color=2;Canvas Nx=4;Canvas Ny=1;Canvas X=1;Canvas Y=1;Graph=True
+diff_bpm12Y_hist_1,1e6*diff_bpm12Y.hw_sum,summary,Canvas Name=BPM 12Y vs Events;Cut=ErrorFlag==0;SetOptStat=2211;Fit Function=gaus;Canvas Nx=4;Canvas Ny=1;Canvas X=2;Canvas Y=1;Graph=False
+diff_bpm12Y_hist_2,1e6*diff_bpm12Y.hw_sum,summary,Canvas Name=BPM 12Y vs Events;Cut=ErrorFlag==0;SetOptStat=0;Canvas Nx=4;Canvas Ny=1;Canvas X=3;Canvas Y=1;Graph=False
+diff_bpm12Y_v_event,1e6*diff_bpm12Y.hw_sum:CodaEventNumber,summary,Canvas Name=BPM 12Y vs Events;Cut=ErrorFlag==0;SetOptStat=0;Draw Option=candle3;Canvas Nx=4;Canvas Ny=1;Canvas X=4;Canvas Y=1;Graph=False
