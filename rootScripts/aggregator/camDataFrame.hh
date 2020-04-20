@@ -22,6 +22,7 @@ class Channel{
     ROOT::RDF::RResultPtr<TH1D> histo;
     TString name;
     TString branchName;
+    //TString branchCuts; Do a search and replace for hw_sum, if exists replace with Device_Error_Code ..... == 0, else no added cut
     TString type = "meanrms";
     TString draw;
     //Int_t minirun;
@@ -109,7 +110,7 @@ void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_
     Printf("Getting dithering slopes from %s",ditSlopeFileName.Data());
     TChain *ditTree = new TChain("dit");
     ditTree->Add(ditSlopeFileName);
-    TLeaf *ditRunNum = ditTree->GetLeaf("cyclenum");
+    //TLeaf *ditRunNum = ditTree->GetLeaf("cyclenum");
     TObjArray *slopesList = ditTree->GetListOfLeaves();
     TString outname = "";
     /*for (Int_t a = 0; a<ditTree->GetEntries(); a++){
@@ -134,36 +135,49 @@ void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_
     while (TLeaf *slopes=(TLeaf*)slopesIter.Next()){
       if (debug>4) Printf("Checking dither slope %s",((TString)slopes->GetName()).Data());
       if ((TString)slopes->GetName() == "cyclenum" || (TString)slopes->GetName() == "run" || (TString)slopes->GetName() == "flag" ||  (TString)slopes->GetName() == "scandata1" || (TString)slopes->GetName() == "scandata2"){
-        ditTree->Draw(Form("%s",slopes->GetName()),Form("flag==1 && run==%d",runNumber),"goff");
-        TH1* tmpHist = (TH1*)gROOT->FindObject("htemp");
-        outname = "dit_"+(TString)slopes->GetName()+"_mean";
-        if (debug>5) Printf("Adding to agg: %s = %f",outname.Data(),1e-3*(Double_t)tmpHist->GetMean());
+        Int_t nen = ditTree->Draw(Form("%s",slopes->GetName()),Form("flag==1 && run==%d",runNumber),"goff");
         Channel tmpChan;
+        outname = "dit_"+(TString)slopes->GetName()+"_mean";
         tmpChan.type = "meanrms";
         tmpChan.name = "dit_"+(TString)slopes->GetName();
-        tmpChan.avg = (Double_t)tmpHist->GetMean();
-        tmpChan.avgErr = (Double_t)tmpHist->GetMeanError();
-        tmpChan.rms = (Double_t)tmpHist->GetMean();
-        tmpChan.rmsErr = (Double_t)tmpHist->GetRMSError();
-        tmpChan.nEntries = (Double_t)tmpHist->GetEntries();
+        if (nen == 0) { 
+          tmpChan.avg = -1.0e6;
+          tmpChan.avgErr = -1.0e6;
+          tmpChan.rms = -1.0e6;
+          tmpChan.rmsErr = -1.0e6;
+          tmpChan.nEntries = 0;
+        }
+        else {
+          TH1* tmpHist = (TH1*)gROOT->FindObject("htemp");
+          if (debug>5) Printf("Adding to agg: %s = %f",outname.Data(),1e-3*(Double_t)tmpHist->GetMean());
+          tmpChan.avg = (Double_t)tmpHist->GetMean();
+          tmpChan.avgErr = (Double_t)tmpHist->GetMeanError();
+          tmpChan.rms = (Double_t)tmpHist->GetMean();
+          tmpChan.rmsErr = (Double_t)tmpHist->GetRMSError();
+          tmpChan.nEntries = (Double_t)tmpHist->GetEntries();
+        }
         channels.push_back(tmpChan);
       }
       else if (((TString)slopes->GetName()).Contains("coil")){
-        ditTree->Draw(Form("%s",slopes->GetName()),Form("flag==1 && run==%d",runNumber),"goff");
-        TH1* tmpHist = (TH1*)gROOT->FindObject("htemp");
-        outname = "dit_"+(TString)slopes->GetName()+"_slope";
-        if (debug>5) Printf("Adding to agg: %s = %f",outname.Data(),(Double_t)tmpHist->GetMean());
+        Int_t nen = ditTree->Draw(Form("%s",slopes->GetName()),Form("flag==1 && run==%d",runNumber),"goff");
         Channel tmpChan;
+        outname = "dit_"+(TString)slopes->GetName()+"_slope";
         tmpChan.type = "slow";
         tmpChan.name = "dit_"+(TString)slopes->GetName();
-        if (tmpHist->GetEntries() == 0) {
-          tmpChan.singleEntry = (Double_t)tmpHist->GetMean();
-          channels.push_back(tmpChan);
+        if (nen == 0) {
+          tmpChan.singleEntry = -1.0e6;
         }
         else {
-          tmpChan.singleEntry = (Double_t)tmpHist->GetMean();
-          channels.push_back(tmpChan);
+          TH1* tmpHist = (TH1*)gROOT->FindObject("htemp");
+          if (debug>5) Printf("Adding to agg: %s = %f",outname.Data(),(Double_t)tmpHist->GetMean());
+          if (tmpHist->GetEntries() == 0) {
+            tmpChan.singleEntry = (Double_t)tmpHist->GetMean();
+          }
+          else {
+            tmpChan.singleEntry = -1.0e6;
+          }
         }
+        channels.push_back(tmpChan);
       }
       else if (((TString)slopes->GetName()).Contains("alpha") || ((TString)slopes->GetName()).Contains("beta") || ((TString)slopes->GetName()).Contains("delta") || ((TString)slopes->GetName()).Contains("coil")){
         // SKIP -> Let dithering plots do all this
@@ -199,15 +213,21 @@ void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_
       }
       else {
         // Do slug averaging
-        ditTree->Draw(Form("%s",slopes->GetName()),Form("flag==1"),"goff");
-        TH1* tmpHist = (TH1*)gROOT->FindObject("htemp");
-        outname = "dit_"+(TString)slopes->GetName()+"_slope";
-        if (debug>5) Printf("Adding to agg: %s = %f",outname.Data(),1e-3*(Double_t)tmpHist->GetMean());
+        Int_t nen = ditTree->Draw(Form("%s",slopes->GetName()),Form("flag==1"),"goff");
         Channel tmpChan;
+        outname = "dit_"+(TString)slopes->GetName()+"_slope";
         tmpChan.type = "slopes";
         tmpChan.name = "dit_"+(TString)slopes->GetName();
-        tmpChan.slope = 1e-3*(Double_t)tmpHist->GetMean();
-        tmpChan.slopeError = 1e-3*(Double_t)tmpHist->GetMeanError();
+        if (nen == 0) {
+          tmpChan.slope = -1.0e6;
+          tmpChan.slopeError = -1.0e6;
+        }
+        else {
+          TH1* tmpHist = (TH1*)gROOT->FindObject("htemp");
+          if (debug>5) Printf("Adding to agg: %s = %f",outname.Data(),1e-3*(Double_t)tmpHist->GetMean());
+          tmpChan.slope = 1e-3*(Double_t)tmpHist->GetMean();
+          tmpChan.slopeError = 1e-3*(Double_t)tmpHist->GetMeanError();
+        }
         channels.push_back(tmpChan);
       }
     }
@@ -234,14 +254,24 @@ void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_
         if (debug>4) Printf("Checking dither slope %s",((TString)slopes->GetName()).Data());
         if ((TString)slopes->GetName() != "run" && (TString)slopes->GetName() != "cyclenum" && (Int_t)ditRunNum->GetValue(0) == runNumber){
           outname = "dit_"+(TString)slopes->GetName()+"_slope";
-          ditTree->Draw(Form("%s",slopes->GetName()),Form("run==%d && flag==1",runNumber),"goff");
-          TH1* tmpHist = (TH1*)gROOT->FindObject("htemp");
+          Int_t nen = ditTree->Draw(Form("%s",slopes->GetName()),Form("run==%d && flag==1",runNumber),"goff");
           Channel tmpChan;
           tmpChan.type = "slopes";
           tmpChan.name = "dit_run_"+(TString)slopes->GetName();
-          if (tmpHist != 0){
-            tmpChan.slope      = 1e-3*(Double_t)tmpHist->GetMean();
-            tmpChan.slopeError = 1e-3*(Double_t)tmpHist->GetMeanError();
+          if (nen == 0) {
+            tmpChan.slope      = -1.0e6;
+            tmpChan.slopeError = -1.0e6;
+          }
+          else {
+            TH1* tmpHist = (TH1*)gROOT->FindObject("htemp");
+            if (tmpHist != 0){
+              tmpChan.slope      = 1e-3*(Double_t)tmpHist->GetMean();
+              tmpChan.slopeError = 1e-3*(Double_t)tmpHist->GetMeanError();
+            }
+            else {
+              tmpChan.slope      = -1.0e6;
+              tmpChan.slopeError = -1.0e6;
+            }
           }
           // FIXME This method assumes the run and cycle exist in the slopes file (not true if it failed at slope calculation)
           //if (debug>5) Printf("Adding to agg: %s = %f",outname.Data(),(Double_t)slopes->GetValue(0));
@@ -347,21 +377,28 @@ RDataFrame Source::readSource(){
   TChain * mulc_lrb_burst_tree = new TChain("mulc_lrb_burst");
   TChain * mulc_lrb_alldet_burst_tree = new TChain("mulc_lrb_alldet_burst");
 
-  mul_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root",basename.Data(), run.Data(),split.Data()));
-  slow_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root",basename.Data(), run.Data(),split.Data()));
-  reg_tree->Add(Form("/chafs2/work1/apar/postpan-outputs/prexPrompt_%s_%s_regress_postpan.root", run.Data(),split.Data()));
+  TString baseDir = gSystem->Getenv("QW_ROOTFILES");
+  TString postpanBaseDir = gSystem->Getenv("POSTPAN_ROOTFILES");
+  mul_tree->Add(Form("%s/%s_%s.%s.root",baseDir.Data(),basename.Data(), run.Data(),split.Data()));
+  slow_tree->Add(Form("%s/%s_%s.%s.root",baseDir.Data(),basename.Data(), run.Data(),split.Data()));
+  reg_tree->Add(Form("%s/prexPrompt_%s_%s_regress_postpan.root",postpanBaseDir.Data(), run.Data(),split.Data()));
   TString ditheringFileNameDF = gSystem->Getenv("DITHERING_ROOTFILES");
   TString ditheringFileStub = gSystem->Getenv("DITHERING_STUB");
   if (ditheringFileNameDF != ""){
     Printf("Looking for Dithering corrected files in %s",ditheringFileNameDF.Data());
     dit_tree->Add(Form("%s/prexPrompt_dither%s_%s_000.root", ditheringFileNameDF.Data(), ditheringFileStub.Data(), run.Data()));
   }
-  mini_tree->Add(Form("/chafs2/work1/apar/postpan-outputs/prexPrompt_%s_%s_regress_postpan.root", run.Data(),split.Data()));
-  mulc_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root",basename.Data(), run.Data(),split.Data()));
-  mulc_lrb_burst_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root", basename.Data(), run.Data(),split.Data()));
-  mulc_lrb_alldet_burst_tree->Add(Form("/chafs2/work1/apar/japanOutput/%s_%s.%s.root", basename.Data(), run.Data(),split.Data()));
+  mini_tree->Add(Form("%s/prexPrompt_%s_%s_regress_postpan.root",postpanBaseDir.Data(), run.Data(),split.Data()));
+  TFile tmpFile(Form("%s/%s_%s.%s.root", baseDir.Data(),basename.Data(), run.Data(),split.Data()));
+  Int_t mulc_valid = (tmpFile.GetListOfKeys())->Contains("mulc");
+  mulc_tree->Add(Form("%s/%s_%s.%s.root",baseDir.Data(),basename.Data(), run.Data(),split.Data()));
+  mulc_lrb_burst_tree->Add(Form("%s/%s_%s.%s.root", baseDir.Data(),basename.Data(), run.Data(),split.Data()));
+  Int_t mulc_lrb_alldet_burst_valid = (tmpFile.GetListOfKeys())->Contains("mulc_lrb_alldet_burst");
+  mulc_lrb_alldet_burst_tree->Add(Form("%s/%s_%s.%s.root", baseDir.Data(),basename.Data(), run.Data(),split.Data()));
 
-  mul_tree->AddFriend(reg_tree);
+  if (reg_tree) {
+    mul_tree->AddFriend(reg_tree);
+  }
   ///mul_tree->AddFriend(mulc_tree);
   TString outputDir = getOutputDir_h();
   //if (outputDir.Contains("SAM") || outputDir.Contains("AT")) {
@@ -370,8 +407,10 @@ RDataFrame Source::readSource(){
   //else {
     if (ditheringFileNameDF != ""){
       Printf("Obtained Dithering corrected files in %s",ditheringFileNameDF.Data());
-      Printf("Using dit tree");
-      mul_tree->AddFriend(dit_tree);
+      if (dit_tree) {
+        Printf("Using dit tree");
+        mul_tree->AddFriend(dit_tree);
+      }
    //   mul_tree->AddFriend(mulc_tree);
     }
   //  else {
@@ -380,9 +419,13 @@ RDataFrame Source::readSource(){
    //   mul_tree->AddFriend(mulc_tree);
    // }
   //}
-  Printf("Using mulc_lrb_alldet_burst");
-  mul_tree->AddFriend(mulc_lrb_alldet_burst_tree);
-  mul_tree->AddFriend(mulc_tree);
+  if (mulc_lrb_alldet_burst_valid) {
+    Printf("Using mulc_lrb_alldet_burst");
+    mul_tree->AddFriend(mulc_lrb_alldet_burst_tree);
+  }
+  if (mulc_valid) {
+    mul_tree->AddFriend(mulc_tree);
+  }
 
   //miniruns = mini_tree->Scan("minirun",""); // FIXME for later minirun looping addition
 
@@ -390,7 +433,17 @@ RDataFrame Source::readSource(){
   RDataFrame slow(*slow_tree);
   if (debug > 1) { cout << "Filtering through ErrorFlag==0 --"; tsw.Print(); cout << endl; }
   tsw.Start();
-  auto d_good=d.Filter("reg.ok_cut==1");
+//////// FIXME default CREX cut: auto d_good=d.Filter("reg.ok_cut==1");
+  //auto d_good=d.Filter("(ErrorFlag&0xda7e6bff)==0");
+  Int_t test = 0;
+  auto d_good=d.Filter([test](Double_t c){
+      return ((((Int_t)c))==test); // ErrorFlag == 0 -> All Global cuts pass
+      //return ((((Int_t)c)&0xda7e6bff)==test); // ErrorFlag&0xda7e6bff -> (BMOD is active || Global ErrorFlag cut) == 0
+      //return ((((Int_t)c)&0xda7e6bff)==test && (((Int_t)c)&0x9000)==0x9000); // ErrorFlag&0xda7e6bff -> (BMOD is active && Global ErrorFlag cut) == 0
+      }
+      ,{"ErrorFlag"});
+  //auto d_good = d.Filter"(ErrorFlag&0xda7e6bff)==0");
+
   //if (ditheringFileNameDF != ""){
   //  d_good=d.Filter("dit.ErrorFlag==0");
   //}
@@ -450,8 +503,22 @@ RDataFrame Source::readSource(){
       tmpChan.type = type;
       try{
         if (minirun != "-1" && (tmpChan.type != "slopes" && tmpChan.type != "slow")){
+          //if (((TString)tmpChan.branchName.Data()).Contains(".hw_sum")) {
+          //  TString errCode(tmpChan.branchName(0,tmpChan.branchName.Length()-7));
+          //  errCode = errCode + ".Device_Error_Code";
+          //  if (debug > -1) Printf("Executing \"tmpChan.histo = d_good.Define("+tmpChan.branchName+","+tmpChan.draw+").Filter(Form(\"reg.minirun==%s&&%s==0))\".Histo1D("+tmpChan.branchName+")",minirun.Data(),errCode.Data());
+            //tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Filter(Form("reg.minirun==%s&&%s==0",minirun.Data(),errCode.Data())).Histo1D(tmpChan.branchName.Data());
+          //}
+          //else {
           if (debug > 1) Printf("Executing \"tmpChan.histo = d_good.Define("+tmpChan.branchName+","+tmpChan.draw+").Filter(Form(\"reg.minirun==%s\".Histo1D("+tmpChan.branchName+")",minirun.Data());
-          tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Filter(Form("reg.minirun==%s",minirun.Data())).Histo1D(tmpChan.branchName.Data());
+          // FIXME Original Postpan dependent minirun numbering//  tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Filter(Form("reg.minirun==%s",minirun.Data())).Histo1D(tmpChan.branchName.Data());
+          tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Filter(Form("BurstCounter==%s",minirun.Data())).Histo1D(tmpChan.branchName.Data());
+          /*tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Filter([minirun.Data()](Double_t b) {
+          *    return (((Int_t)b)==(Int_t)atoi(minirun.c_str()));
+          *    }
+          *    ,{"BurstCounter"}).Histo1D(tmpChan.branchName.Data());
+          */
+          //}
           channels.push_back(tmpChan);
           if (debug > 1) {cout << "Done Getting Histo1D for " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;}
           tsw.Start();

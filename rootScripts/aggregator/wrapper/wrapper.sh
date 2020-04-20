@@ -42,6 +42,19 @@ then
   export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/PQB/
 fi
 
+if [[ "$CONFIG" == "burp_input.txt" ]];
+then
+  export QW_ROOTFILES=/aonl1/work1/quinn/
+  export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/burp/
+fi
+
+if [[ "$CONFIG" == "AT_input.txt" ]];
+then
+  export QW_ROOTFILES=/lustre/expphy/volatile/halla/parity/japanOutput/respin1-transverse-22March/
+  export POSTPAN_ROOTFILES=/lustre/expphy/volatile/halla/parity/postpan_respin/
+  export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/AT/
+fi
+
 if [[ "$CONFIG" == "SAMs_input.txt" ]];
 then
   echo "Doing SAM analysis"
