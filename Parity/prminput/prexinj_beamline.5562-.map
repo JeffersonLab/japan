@@ -161,6 +161,7 @@ normclock=clk4MHz_1
 !q_targ, bpmstripline, bpm2i01, ef
 # q_targ, bpmstripline, bpm0i02, ef ###  Effective charge of BPM0i02
 
+!q_targA, bpmstripline, bpm2i02, ef
 !q_targB, bpmstripline, bpm2i02, ef
 !q_targC, bpmstripline, bpm2i02, ef
 
