@@ -13,6 +13,13 @@
   tree-name  = mulc_dit
   tree-comment = Helicity event data tree (BMod corrected)
 
+[QwCombiner]
+  name       = BModCombiner for combos
+  priority   = 0
+  map        = prex_combiner_dit_combo.map
+  tree-name  = mulc_dit_combo
+  tree-comment = Helicity event data tree (BMod corrected)
+
 ## ---- run-level correctors ---- 
 
 [LRBCorrector]

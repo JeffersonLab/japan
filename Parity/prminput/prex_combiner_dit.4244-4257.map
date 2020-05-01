@@ -1,73 +1,64 @@
-# Rules for this file
-# - no repeating dependent variables in the same section
-#   (probably also not in different sections, come to think of it)
-#
-# - Alias names start with "@" after the "asym" or "diff" prefix.
-#   They should also be all lower case.
-#
-## Dithering slopes from run 5412 by V.Owen 
 [asym:@dit_asym_usl]
-asym:usl, 1.0
-diff:bpm4aX, 25.68
-diff:bpm4aY, -0.7439
-diff:bpm4eX, -67.14
-diff:bpm4eY, 17.65
-diff:bpm11X12X, -35.92
+asym:usl,1.0
+diff:bpm4aX,-25.6822e-3
+diff:bpm4eX,67.138e-3
+diff:bpm4aY,0.743898e-3
+diff:bpm4eY,-17.6455e-3
+diff:diff_bpmE,35.9179e-3
 
 [asym:@dit_asym_usr]
-asym:usr, 1.0
-diff:bpm4aX, -10.34
-diff:bpm4aY, -0.5825
-diff:bpm4eX, 28.36
-diff:bpm4eY, 17.77
-diff:bpm11X12X, -45.83
+asym:usr,1.0
+diff:bpm4aX,10.3408e-3
+diff:bpm4eX,-28.3612e-3
+diff:bpm4aY,0.582491e-3
+diff:bpm4eY,-17.7695e-3
+diff:diff_bpmE,45.8265e-3
 
 [asym:@dit_asym_dsl]
-asym:dsl, 1.0
-diff:bpm4aX, 26.87
-diff:bpm4aY, -0.5481
-diff:bpm4eX, -71.62
-diff:bpm4eY, 17.13
-diff:bpm11X12X, -37.11
+asym:dsl,1.0
+diff:bpm4aX,-26.8674e-3
+diff:bpm4eX,71.6228e-3
+diff:bpm4aY,0.548148e-3
+diff:bpm4eY,-17.1332e-3
+diff:diff_bpmE,37.1118e-3
 
 [asym:@dit_asym_dsr]
-asym:dsr, 1.0
-diff:bpm4aX, -9.464
-diff:bpm4aY, -1.086
-diff:bpm4eX, 19.5 
-diff:bpm4eY, 20.59
-diff:bpm11X12X, -50.99
-
+asym:dsr,1.0
+diff:bpm4aX,9.46406e-3
+diff:bpm4eX,-19.5018e-3
+diff:bpm4aY,1.08635e-3
+diff:bpm4eY,-20.5879e-3
+diff:diff_bpmE,50.993e-3
 
 [asym:@dit_asym_atl1]
-asym:atl1, 1.0
-diff:bpm4aX, -16.94
-diff:bpm4aY, 6.534
-diff:bpm4eX, 90.61
-diff:bpm4eY, -26.43
-diff:bpm11X12X, 33.36
+asym:atl1,1.0
+diff:bpm4aX,16.939e-3
+diff:bpm4eX,-90.6053e-3
+diff:bpm4aY,-6.5338e-3
+diff:bpm4eY,26.4292e-3
+diff:diff_bpmE,-33.36e-3
 
 [asym:@dit_asym_atl2]
-asym:atl2, 1.0
-diff:bpm4aX, 108
-diff:bpm4aY, -7.354
-diff:bpm4eX, -200.9
-diff:bpm4eY, 108.2
-diff:bpm11X12X, -278.6
-
+asym:atl2,1.0
+diff:bpm4aX,-108.027e-3
+diff:bpm4eX,200.926e-3
+diff:bpm4aY,7.35351e-3
+diff:bpm4eY,-108.241e-3
+diff:diff_bpmE,278.58e-3
 
 [asym:@dit_asym_atr1]
-asym:atr1, 1.0
-diff:bpm4aX, 86.34
-diff:bpm4aY, 8.592
-diff:bpm4eX, -245.6
-diff:bpm4eY, 54.51
-diff:bpm11X12X,-246
+asym:atr1,1.0
+diff:bpm4aX,-86.3443e-3
+diff:bpm4eX,245.556e-3
+diff:bpm4aY,-8.59162e-3
+diff:bpm4eY,-54.5088e-3
+diff:diff_bpmE,246.026e-3
 
 [asym:@dit_asym_atr2]
-asym:atr2, 1.0
-diff:bpm4aX, 79.97
-diff:bpm4aY, -6.503
-diff:bpm4eX, -101.6
-diff:bpm4eY, 120
-diff:bpm11X12X, -349
+asym:atr2,1.0
+diff:bpm4aX,-79.967e-3
+diff:bpm4eX,101.638e-3
+diff:bpm4aY,6.50281e-3
+diff:bpm4eY,-120.039e-3
+diff:diff_bpmE,348.974e-3
+
