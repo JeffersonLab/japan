@@ -56,7 +56,7 @@ sample_size=4096
     VQWK, 4, 1,  bpmstripline,  BPM1xm
     VQWK, 4, 2,  bpmstripline,  BPM1yp 
     VQWK, 4, 3,  bpmstripline,  BPM1ym
-    VQWK, 4, 4,  bpmstripline,  BPM16xp!bcm, bcm_dg_ds,    40,	 1e6,	 g,	1.4
+    VQWK, 4, 4,  bpmstripline,  BPM16xp
     VQWK, 4, 5,  bpmstripline,  BPM16xm
     VQWK, 4, 6,  bpmstripline,  BPM16yp
     VQWK, 4, 7,  bpmstripline,  BPM16ym

@@ -1,0 +1,6 @@
+#  This un-ranged and empty config file will be used to adjust the
+#  normalization and blinding current thresholds for certian ranges.
+
+QwDetectorArray.norm_threshold      = 4.0
+QwBlindDetectorArray.norm_threshold = 4.0
+blinder.beam-current-threshold      = 4.0

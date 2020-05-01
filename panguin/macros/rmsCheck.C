@@ -43,14 +43,14 @@ void rmsCheck(TString type = "burst_lrb_std", Double_t refRMSraw = 1900.0, Doubl
   //
   //TString drawRawMean[2] = {"burst.asym_usl.hw_sum","burst.asym_usr.hw_sum"};
   //TString drawRawRMS[2]  = {"burst.asym_usl.hw_sum_err*1e6*sqrt(burst.asym_usl.num_samples)","burst.asym_usr.hw_sum_err*1e6*sqrt(burst.asym_usr.num_samples)"};
-  //TString drawRawMean[2] = {"MY[0]*1e6","MY[2]*1e6"};
-  //TString drawRawRMS[2]  = {"dMY[0]*1e6","dMY[2]*1e6"};
-  //TString drawRegMean[2] = {"MYp[0]*1e6","MYp[2]*1e6"};
-  //TString drawRegRMS[2]  = {"dMYp[0]*1e6","dMYp[2]*1e6"};
+  //TString drawRawMean[2] = {"MY[0]*1e6","MY[1]*1e6"};
+  //TString drawRawRMS[2]  = {"dMY[0]*1e6","dMY[1]*1e6"};
+  //TString drawRegMean[2] = {"MYp[0]*1e6","MYp[1]*1e6"};
+  //TString drawRegRMS[2]  = {"dMYp[0]*1e6","dMYp[1]*1e6"};
   TString drawUSL[4] = {"MY[0]*1e6","dMY[0]*1e6","MYp[0]*1e6","dMYp[0]*1e6"};
-  TString drawUSLerr[4] = {Form("dMY[0]*1e6/sqrt(%f)",burstLen),Form("dMYp[0]*1e6/sqrt(%f)",burstLen),"0","0"};
-  TString drawUSR[4] = {"MY[2]*1e6","dMY[2]*1e6","MYp[2]*1e6","dMYp[2]*1e6"};
-  TString drawUSRerr[4] = {Form("dMY[2]*1e6/sqrt(%f)",burstLen),Form("dMY[2]*1e6/sqrt(%f)",burstLen),"0","0"};
+  TString drawUSLerr[4] = {Form("dMY[0]*1e6/sqrt(%f)",burstLen),"0",Form("dMYp[0]*1e6/sqrt(%f)",burstLen),"0"};
+  TString drawUSR[4] = {"MY[1]*1e6","dMY[1]*1e6","MYp[1]*1e6","dMYp[1]*1e6"};
+  TString drawUSRerr[4] = {Form("dMY[1]*1e6/sqrt(%f)",burstLen),"0",Form("dMY[1]*1e6/sqrt(%f)",burstLen),"0"};
   TMultiGraph *tMGraphPlot[4];  //plots one super cycle
   TGraph *tGraphPlotL[4];  //plots one super cycle
   TGraph *tGraphPlotR[4];  //plots one super cycle
