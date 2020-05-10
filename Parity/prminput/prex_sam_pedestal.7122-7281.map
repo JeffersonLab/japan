@@ -1,0 +1,10 @@
+!SAM Pedestal
+!For run 7122, from cameron's pedestal analysis: http://ace.phys.virginia.edu:80/HAPPEX/4081
+ sam1, 11239.16, 0.000076 
+ sam2, 13935.35, 0.000076 
+ sam3, 10772.23, 0.000076 
+ sam4, 12848.08, 0.000076 
+ sam5, 11640.56, 0.000076 
+ sam6, 13502.98, 0.000076 
+ sam7, 12338.87, 0.000076 
+ sam8, 12506.11, 0.000076 
