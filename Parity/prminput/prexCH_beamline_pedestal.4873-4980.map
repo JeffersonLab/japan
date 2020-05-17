@@ -1,0 +1,68 @@
+! Unser calibration based on Run 1214 , HAPLOG 3609, also consistent with dave mack 3.7mV/uA halog entry 3689440 
+UNSER,   -174.1,     2.066e-2	    
+
+!BCM an_us Calibration from cameron's pedestal 2 http://ace.phys.virginia.edu/HAPPEX/4094
+ bcm_an_us, -640.46, 0.006144
+
+!BCM an_ds Calibration from cameron's pedestal 2
+ bcm_an_ds, -482.70, 0.006190
+ bcm_an_ds3, -702.19, 0.001822
+ bcm_an_ds10,112480.15, 0.059844
+
+!BCM dg_us Calibration from cameron's pedestal 1
+ bcm_dg_us, -1494.62, 0.002637
+
+!BCM dg_ds Calibration from cameron's pedestal 2
+ bcm_dg_ds, -442.01, 0.002333
+  
+!ds10x is saturated at this current range, pedestal is copied from 20-30 uA current scan
+ bcm_an_ds10,  -2589.54,  0.000267 
+
+!BPM pedestal from run 4902 using caryn's analysis https://logbooks.jlab.org/entry/3810512
+ bpm4aXP, 971.59, 1.000000 
+ bpm4aXM, 11.23, 1.000000 
+ bpm4aYP, 1193.85, 1.000000 
+ bpm4aYM, -58.39, 1.000000 
+ bpm4eXP, 1380.06, 1.000000 
+ bpm4eXM, 548.59, 1.000000 
+ bpm4eYP, 1047.35, 1.000000 
+ bpm4eYM, 54.27, 1.000000 
+ bpm4acXP, -306.50, 1.000000 
+ bpm4acXM, -1717.46, 1.000000 
+ bpm4acYP, 577.55, 1.000000 
+ bpm4acYM, -280.35, 1.000000 
+ bpm4ecXP, 980.53, 1.000000 
+ bpm4ecXM, 521.60, 1.000000 
+ bpm4ecYP, 1382.38, 1.000000 
+ bpm4ecYM, 612.33, 1.000000 
+ bpm11XP, 1466.26, 1.000000 
+ bpm11XM, 955.77, 1.000000 
+ bpm11YP, 793.84, 1.000000 
+ bpm11YM, 1008.47, 1.000000 
+ bpm12XP, 3307.40, 1.000000 
+ bpm12XM, 4292.49, 1.000000 
+ bpm12YP, 3072.58, 1.000000 
+ bpm12YM, 3850.24, 1.000000 
+ bpm16XP, 1326.12, 1.000000 
+ bpm16XM, 1717.25, 1.000000 
+ bpm16YP, 490.95, 1.000000 
+ bpm16YM, 388.31, 1.000000 
+ bpm1p02bXP, -7631.35, 1.000000 
+ bpm1p02bXM, 948.15, 1.000000 
+ bpm1p02bYP, -4204.28, 1.000000 
+ bpm1p02bYM, -982.68, 1.000000 
+ bpm1p03aXP, -5977.87, 1.000000 
+ bpm1p03aXM, -2816.03, 1.000000 
+ bpm1p03aYP, -2498.85, 1.000000 
+ bpm1p03aYM, -2969.68, 1.000000 
+ bpm1XP, -1781.25, 1.000000 
+ bpm1XM, -7729.40, 1.000000 
+ bpm1YP, 8628.06, 1.000000 
+ bpm1YM, -12407.08, 1.000000 
+
+!Cavity BPMs pedestal calibration from run 4872 http://ace.phys.virginia.edu/HAPPEX/4094
+!Gains set to 1 for now
+ cav4cQ, -349.92, 0.001382 
+ cav4cXI, -383.89, 1
+ cav4cYI, -234.15, 1
+
