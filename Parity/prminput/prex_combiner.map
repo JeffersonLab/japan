@@ -161,6 +161,22 @@ asym:bpm4eX, -0.5
 asym:bpm4aY, 0.5
 asym:bpm4eY, -0.5
 
+[diff:@diff_bpm4aesumX]
+diff:bpm4eX, 0.18
+diff:bpm4aX, 1.0
+
+[diff:@diff_bpm4aediffX]
+diff:bpm4eX, 0.18
+diff:bpm4aX, -1.0
+
+[diff:@diff_bpm4aesumY]
+diff:bpm4eY, 1.0
+diff:bpm4aY, 0.65
+
+[diff:@diff_bpm4aediffY]
+diff:bpm4eY, 1.0
+diff:bpm4aY, -0.65
+
 [PUBLISH]
 ! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
   asym_left_avg, asym, asym_left_avg, c
