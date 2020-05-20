@@ -1,22 +1,19 @@
 ! Unser calibration based on Run 1214 , HAPLOG 3609, also consistent with dave mack 3.7mV/uA halog entry 3689440 
-UNSER,   -174.1,     2.066e-2	    
+ UNSER,   -174.1,     2.066e-2	    
 
 !BCM an_us Calibration from cameron's pedestal 1 http://ace.phys.virginia.edu/HAPPEX/4094
- bcm_an_us, -464.41, 0.002667
+ bcm_an_us, -569.20, 0.002667
 
 !BCM an_ds Calibration from cameron's pedestal 1
- bcm_an_ds, -271.60, 0.002782
- bcm_an_ds3, -388.48, 0.000808
- bcm_an_ds10, 7012089225201.94, 0.000000
+ bcm_an_ds, -371.56, 0.002782
+ bcm_an_ds3, -732.50, 0.000808
+ bcm_an_ds10, -882.56, 0.000000
 
 !BCM dg_us Calibration from cameron's pedestal 1
- bcm_dg_us, -1494.62, 0.002637
+ bcm_dg_us, -228.86, 0.002922
 
 !BCM dg_ds Calibration from cameron's pedestal 1
- bcm_dg_ds, -396.62, 0.002701
-  
-!ds10x is saturated at this current range, pedestal is copied from 20-30 uA current scan
- bcm_an_ds10,  -2589.54,  0.000267 
+ bcm_dg_ds, -499.86, 0.002701
 
 !BPM pedestal from run 2770 using caryn's analysis https://logbooks.jlab.org/entry/3810512
  bpm1XP, -3418.46, 1.000000 
@@ -54,13 +51,7 @@ UNSER,   -174.1,     2.066e-2
 
 !Cavity BPMs pedestal calibration from run 2965 http://ace.phys.virginia.edu/HAPPEX/4094
 !Gains set to 1 for now
- cav4bQ, -206.70, 0.003441 
- cav4cQ, -583.65, 0.003130 
- cav4dQ, -15.22, 0.003352 
- cav4bXI, -409.79, 1 
- cav4bYI, -644.98, 1 
- cav4cXI, -583.61, 1 
- cav4cYI, -300.46, 1 
- cav4dXI, -452.10, 1 
- cav4dYI, -658.87, 1 
+ cav4cQ, -925.54, 0.003080 
+ cav4cXI, -365.15, 1
+ cav4cYI, -6.06, 1
 

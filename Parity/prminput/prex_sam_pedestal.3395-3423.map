@@ -1,0 +1,12 @@
+!SAM calibration from run 3138 using cameron's analysis http://ace.phys.virginia.edu:80/HAPPEX/4094
+ sam1, 12146.52, 0.000076
+ sam2, 12801.67, 0.000076
+ sam3, 11160.49, 0.000076
+ sam4, 12396.46, 0.000076
+ sam5, 12500.64, 0.000076
+ sam7, 11485.25, 0.000076
+
+!SAM 6 and 8 use 3424 due to change in preamp
+ sam6, 14147.73, 0.000076
+ sam8, 13295.29, 0.000076
+

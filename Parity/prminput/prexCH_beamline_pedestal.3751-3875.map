@@ -2,21 +2,18 @@
 UNSER,   -174.1,     2.066e-2	    
 
 !BCM an_us Calibration from cameron's pedestal 2 http://ace.phys.virginia.edu/HAPPEX/4094
- bcm_an_us, -640.46, 0.006144
+ bcm_an_us, -640.97, 0.006150
 
 !BCM an_ds Calibration from cameron's pedestal 2
- bcm_an_ds, -482.70, 0.006190
- bcm_an_ds3, -702.19, 0.001822
- bcm_an_ds10,112480.15, 0.059844
+ bcm_an_ds, -482.74, 0.006190
+ bcm_an_ds3, -703.88, 0.001820
+ bcm_an_ds10, -2253.98, 0.000614
 
-!BCM dg_us Calibration from cameron's pedestal 1
- bcm_dg_us, -1494.62, 0.002637
+!BCM dg_us Calibration from cameron's pedestal 2
+ bcm_dg_us, -196.36, 0.002885
 
 !BCM dg_ds Calibration from cameron's pedestal 2
- bcm_dg_ds, -442.01, 0.002333
-  
-!ds10x is saturated at this current range, pedestal is copied from 20-30 uA current scan
- bcm_an_ds10,  -2589.54,  0.000267 
+ bcm_dg_ds, -441.73, 0.002328
 
 !BPM pedestal from run 3737 using caryn's analysis https://logbooks.jlab.org/entry/3810512
  bpm4aXP, 686.57, 1.0 
@@ -54,7 +51,7 @@ UNSER,   -174.1,     2.066e-2
 
 !Cavity BPMs pedestal calibration from run 3751 http://ace.phys.virginia.edu/HAPPEX/4094
 !Gains set to 1 for now
- cav4cQ, -504.35, 0.001369 
- cav4cXI, -382.75, 1
- cav4cYI, -276.95, 1
+ cav4cQ, -567.39, 0.003110
+ cav4cXI, -467.97, 1
+ cav4cYI, -287.14, 1
 
