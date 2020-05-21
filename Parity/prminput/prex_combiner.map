@@ -177,6 +177,9 @@ diff:bpm4aY, 0.65
 diff:bpm4eY, 1.0
 diff:bpm4aY, -0.65
 
+[diff:@diff_bpmE]
+diff:bpm12X, 1.0
+
 [PUBLISH]
 ! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
   asym_left_avg, asym, asym_left_avg, c
