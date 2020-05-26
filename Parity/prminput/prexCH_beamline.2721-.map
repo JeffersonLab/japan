@@ -54,10 +54,10 @@ sample_size=4084
     VQWK, 4, 1,  bpmstripline,  BPM1xm
     VQWK, 4, 2,  bpmstripline,  BPM1yp 
     VQWK, 4, 3,  bpmstripline,  BPM1ym
-    VQWK, 4, 4,  bpmstripline,  BPM8xp
-    VQWK, 4, 5,  bpmstripline,  BPM8xm
-    VQWK, 4, 6,  bpmstripline,  BPM8yp
-    VQWK, 4, 7,  bpmstripline,  BPM8ym
+    VQWK, 4, 4,  bpmstripline,  BPM8yp
+    VQWK, 4, 5,  bpmstripline,  BPM8ym
+    VQWK, 4, 6,  bpmstripline,  BPM8xp
+    VQWK, 4, 7,  bpmstripline,  BPM8xm
 
 !ADC5
     VQWK, 5, 0,  bcm,  ch_tsettle
