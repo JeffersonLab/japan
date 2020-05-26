@@ -7,11 +7,10 @@ sample_size=4096
 !Sample size should be unchanged - ask Paul King
 !
 ! module.type, module.num  chan.num, det.type, det.name, if unrotated then last column ->UNROTATED
-!!! NOTE: This is the first run with BPM 11, which becomes our nominal Energy Monitor (shared with 12 for dithering)
-!Cameron edit 7/16/2019 -> new maps, BPMs 11, 12, 16, see http://ace.phys.virginia.edu/HAPPEX/3820
+
 
 !ADC0
-  VQWK, 0, 0,  bcm,  QWK_0_0
+    VQWK, 0, 0,  bcm,  BCM_AN_US
     VQWK, 0, 1,  bcm,  BCM_DG_US
     VQWK, 0, 2,  bcm,  QWK_0_2
     VQWK, 0, 3,  bpmcavity,  CAV4BYI
@@ -43,23 +42,22 @@ sample_size=4096
 !ADC3
     VQWK, 3, 0,  bpmcavity,  CAV4BXI 
     VQWK, 3, 1,  bcm,  hallc_bcm_4c
-    VQWK, 3, 2,  bpmstripline,  BPM11xp
+    VQWK, 3, 2,  bpmstripline,  BPM14xp
     VQWK, 3, 3,  bcm,  ch_battery_1
-    VQWK, 3, 4,  bcm,  BCM_AN_US
-    VQWK, 3, 5,  bpmstripline,  BPM11xm
-    VQWK, 3, 6,  bpmstripline,  BPM11yp
-    VQWK, 3, 7,  bpmstripline,  BPM11ym
+    VQWK, 3, 4,  bcm,  QWK_3_4
+    VQWK, 3, 5,  bpmstripline,  BPM14xm
+    VQWK, 3, 6,  bpmstripline,  BPM14yp
+    VQWK, 3, 7,  bpmstripline,  BPM14ym
 
 !ADC4
-!Cameron edit 7/16/2019 -> new maps, BPMs 11, 12, 16, see http://ace.phys.virginia.edu/HAPPEX/3820
     VQWK, 4, 0,  bpmstripline,  BPM1xp
     VQWK, 4, 1,  bpmstripline,  BPM1xm
     VQWK, 4, 2,  bpmstripline,  BPM1yp 
     VQWK, 4, 3,  bpmstripline,  BPM1ym
-    VQWK, 4, 4,  bpmstripline,  BPM16xp
-    VQWK, 4, 5,  bpmstripline,  BPM16xm
-    VQWK, 4, 6,  bpmstripline,  BPM16yp
-    VQWK, 4, 7,  bpmstripline,  BPM16ym
+    VQWK, 4, 4,  bpmstripline,  BPM8yp
+    VQWK, 4, 5,  bpmstripline,  BPM8ym
+    VQWK, 4, 6,  bpmstripline,  BPM8xp
+    VQWK, 4, 7,  bpmstripline,  BPM8xm
 
 !ADC5
     VQWK, 5, 0,  bcm,  ch_tsettle

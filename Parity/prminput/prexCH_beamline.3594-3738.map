@@ -7,8 +7,7 @@ sample_size=4096
 !Sample size should be unchanged - ask Paul King
 !
 ! module.type, module.num  chan.num, det.type, det.name, if unrotated then last column ->UNROTATED
-!!! NOTE: This is the first run with BPM 11, which becomes our nominal Energy Monitor (shared with 12 for dithering)
-!Cameron edit 7/16/2019 -> new maps, BPMs 11, 12, 16, see http://ace.phys.virginia.edu/HAPPEX/3820
+
 
 !ADC0
   VQWK, 0, 0,  bcm,  QWK_0_0
@@ -95,8 +94,7 @@ sample_size=4096
 
 begin=combinedbcm
 name=bcm_target
-  bcm_an_us, bcm, 2.0
-  bcm_an_ds, bcm, 1.0
+  bcm_dg_ds, bcm, 1.0
 end=combinedbcm
 
 !! bank=0x2 
