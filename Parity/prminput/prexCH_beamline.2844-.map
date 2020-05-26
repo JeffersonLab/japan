@@ -90,6 +90,11 @@ sample_size=4084
     VQWK, 7, 6,  bpmstripline,  BPM4ecYM
     VQWK, 7, 7,  bpmstripline,  BPM4ecYP
 
+begin=combinedbcm
+name=bcm_target
+  bcm_an_us, bcm, 2.0
+  bcm_an_ds, bcm, 1.0
+end=combinedbcm
 
 !! bank=0x2 
 !!
@@ -115,4 +120,4 @@ sample_size=4084
 
 [PUBLISH]
 ! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
-  q_targ, bcm, bcm_an_ds3, c
+  q_targ, combinedbcm, bcm_target, c

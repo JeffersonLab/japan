@@ -110,13 +110,15 @@ sample_size=4096
 !!   SCALER, 0,   14, bcm, BCM_scal_DDD 
 !!   SCALER, 1,   0,  clock, ch_tstable_clock_4mhz 
 
-
-
+begin=combinedbcm
+name=bcm_target
+  bcm_an_us, bcm, 2.0
+  bcm_an_ds, bcm, 1.0
+end=combinedbcm
 
 
 [PUBLISH]
 ! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
- ! q_targ, bcm, bcm_an_ds3, c
 
   x_targ, bpmstripline, bpm4e, y
   y_targ, bpmstripline, bpm4e, x
@@ -127,4 +129,5 @@ sample_size=4096
 
  xy_pos_x, bpmstripline, bpm4e, x
  xy_pos_y, bpmstripline, bpm4e, y 
- q_targ, bcm, bcm_an_ds3, c
+
+ q_targ, combinedbcm, bcm_target, c

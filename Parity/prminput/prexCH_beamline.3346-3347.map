@@ -10,7 +10,7 @@ sample_size=4096
 
 
 !ADC0
-  VQWK, 0, 0,  bcm,  QWK_0_0
+    VQWK, 0, 0,  bcm,  BCM_AN_US
     VQWK, 0, 1,  bcm,  BCM_DG_US
     VQWK, 0, 2,  bcm,  QWK_0_2
     VQWK, 0, 3,  bpmcavity,  CAV4BYI
@@ -44,7 +44,7 @@ sample_size=4096
     VQWK, 3, 1,  bcm,  hallc_bcm_4c
     VQWK, 3, 2,  bpmstripline,  BPM14xp
     VQWK, 3, 3,  bcm,  ch_battery_1
-    VQWK, 3, 4,  bcm,  BCM_AN_US
+    VQWK, 3, 4,  bcm,  QWK_3_4
     VQWK, 3, 5,  bpmstripline,  BPM14xm
     VQWK, 3, 6,  bpmstripline,  BPM14yp
     VQWK, 3, 7,  bpmstripline,  BPM14ym
@@ -92,11 +92,9 @@ sample_size=4096
     VQWK, 7, 7,  bpmstripline,  BPM4ecYP
 
 
-
 begin=combinedbcm
 name=bcm_target
-  bcm_an_us, bcm, 2.0
-  bcm_an_ds, bcm, 1.0
+  bcm_dg_ds, bcm, 1.0
 end=combinedbcm
 
 !! bank=0x2 
