@@ -93,6 +93,11 @@ sample_size=4096
     VQWK, 7, 7,  bpmstripline,  BPM4ecYP
 
 
+begin=combinedbcm
+name=bcm_target
+  bcm_dg_ds, bcm, 1.0
+end=combinedbcm
+
 !! bank=0x2 
 !!
 !! scaler_buffer_offset=1 
@@ -127,5 +132,4 @@ sample_size=4096
 
  xy_pos_x, bpmstripline, bpm4e, x
  xy_pos_y, bpmstripline, bpm4e, y 
-! Changing the normalizer for slug 12 to the digital BCM to mitigate noise
- q_targ, bcm, bcm_dg_ds, c
+ q_targ, combinedbcm, bcm_target, c
