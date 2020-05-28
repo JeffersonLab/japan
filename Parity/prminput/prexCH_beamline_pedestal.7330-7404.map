@@ -1,0 +1,71 @@
+!Unser calibration based on Run 1214 , HAPLOG 3609, also consistent with dave mack 3.7mV/uA halog entry 3689440 
+ UNSER, -174.1, 2.066e-2	    
+
+!From run 5382 https://logbooks.jlab.org/entry/3755873
+ hallc_bcm_4c, -524.0, 0.0041998972
+
+!From cameron's global unser fits. http://ace.phys.virginia.edu:80/HAPPEX/4081
+!Device Name, p0 Fit Pedestal, p0 Fit Pedestal Error, TH1 weighted mean Pedestal, TH1 weighted mean Pedestal Error, Gain scale factor
+ bcm_an_us, -582.88, 0.008941
+ bcm_an_ds, -425.66, 0.008836
+ bcm_an_ds3, -856.45, 0.002586
+ bcm_an_ds10, -1476.36, 0.001063
+ bcm_dg_us, -179.02, 0.004423
+ bcm_dg_ds, -428.47, 0.003502
+ bcm_dg_usc, -355.01, 0.004142
+ bcm_dg_dsc, -285.45, 0.003263
+ 
+!BPM Pedestals from run 7330 https://logbooks.jlab.org/entry/3810512
+ bpm4aXP, 626.20, 1.000000 
+ bpm4aXM, 663.60, 1.000000 
+ bpm4aYP, 571.90, 1.000000 
+ bpm4aYM, 556.08, 1.000000 
+ bpm4eXP, 1291.29, 1.000000 
+ bpm4eXM, 1069.16, 1.000000 
+ bpm4eYP, 531.23, 1.000000 
+ bpm4eYM, 884.01, 1.000000 
+ bpm4acXP, -1212.47, 1.000000 
+ bpm4acXM, -1049.75, 1.000000 
+ bpm4acYP, 307.82, 1.000000 
+ bpm4acYM, 632.65, 1.000000 
+ bpm4ecXP, 938.87, 1.000000 
+ bpm4ecXM, 1163.31, 1.000000 
+ bpm4ecYP, 893.35, 1.000000 
+ bpm4ecYM, 1263.25, 1.000000 
+ bpm11XP, 3565.14, 1.000000 
+ bpm11XM, 1103.25, 1.000000 
+ bpm11YP, 2311.31, 1.000000 
+ bpm11YM, 952.64, 1.000000 
+ bpm12XP, 4896.67, 1.000000 
+ bpm12XM, 4109.92, 1.000000 
+ bpm12YP, 5334.12, 1.000000 
+ bpm12YM, 3338.20, 1.000000 
+ bpm16XP, 2079.91, 1.000000 
+ bpm16XM, 2509.46, 1.000000 
+ bpm16YP, 1081.96, 1.000000 
+ bpm16YM, 1207.63, 1.000000 
+ bpm1p02bXP, -3507.98, 1.000000 
+ bpm1p02bXM, -3511.37, 1.000000 
+ bpm1p02bYP, -3802.24, 1.000000 
+ bpm1p02bYM, -3280.62, 1.000000 
+ bpm1p03aXP, -4177.47, 1.000000 
+ bpm1p03aXM, -4944.90, 1.000000 
+ bpm1p03aYP, -1903.95, 1.000000 
+ bpm1p03aYM, -2671.69, 1.000000 
+ bpm1XP, -2692.45, 1.000000 
+ bpm1XM, -3030.78, 1.000000 
+ bpm1YP, -3219.36, 1.000000 
+ bpm1YM, -4565.12, 1.000000 
+
+!Cavity pedestals determined from run 7282 from cameron's analysis
+!Gains set to 1 until further analysis.
+cav4bQ, -161.22, 0.006732 
+cav4cQ, -617.07, 0.012610 
+cav4dQ, -310.90, 0.017580 
+cav4bXI, -246.49, 1
+cav4bYI, -735.11, 1
+cav4cXI, -476.90, 1
+cav4cYI, -259.80, 1
+cav4dXI, -360.69, 1
+cav4dYI, -86.95, 1
+

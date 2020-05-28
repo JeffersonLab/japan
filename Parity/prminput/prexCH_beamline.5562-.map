@@ -121,11 +121,11 @@ sample_size=4096
 x_targ, bpmstripline, bpm4e, y
 y_targ, bpmstripline, bpm4e, x
   
-q_targA, bpmstripline, bpm4e, ef
-q_targB, bpmstripline, bpm4e, ef
-q_targC, bcm, hallc_bcm_4c, c
+ q_targA, bpmstripline, bpm4e, ef
+ q_targB, bpmstripline, bpm4e, ef
+ q_targC, bcm, hallc_bcm_4c, c
 
 xy_pos_x, bpmstripline, bpm4e, x
 xy_pos_y, bpmstripline, bpm4e, y 
-!! q_targ is 0l02 for feedback testing
+! q_targ is 0l02 for feedback testing
 q_targ, bcm, bcm_an_us, c

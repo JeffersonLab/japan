@@ -1,0 +1,22 @@
+!leftover values from before mapfile consolidation
+ vqwk_25_0ch4, 0, 0.000076
+ vqwk_25_0ch5, 0, 0.000076
+ battery1L, 0, 0.000076
+ battery2L, 0, 0.000076
+ vqwk_26_0ch4, 0, 0.000076
+ vqwk_26_0ch5, 0, 0.000076
+ battery1R, 0, 0.000076
+ battery2R, 0, 0.000076
+
+!For run 6739, from caryn's pedestal analysis: https://logbooks.jlab.org/entry/3810512
+!downstream pedestal set to 0 
+ usl, 1049.93, 0.000076 
+ usr, 1272.68, 0.000076 
+ dsl, 0, 0
+ dsr, 0, 0
+
+!AT detectors calibration from run 6739 also caryn's pedestals
+ atl1, 1032.05, 0.000076 
+ atl2, 928.14, 0.000076 
+ atr1, 1107.93, 0.000076 
+ atr2, 576.41, 0.000076 

@@ -15,8 +15,8 @@
  dsl, 1389.94, 0.002167
  dsr, 1212.38, 0.002105
 
-!AT detectors calibration from run 5653 also camerons pedestals
- atl1, 867.81, 0.000076 
- atr1, 1466.99, 0.000076 
- atl2, 1324.87, 0.000076 
- atr2, 327.38, 0.000076 
+!AT detectors calibration from run 6563 also camerons pedestals
+ atl1, 1382.71, 0.000076 
+ atr1, 1792.74, 0.000076 
+ atl2, 3882.61, 0.000076 
+ atr2, 3334.67, 0.000076 

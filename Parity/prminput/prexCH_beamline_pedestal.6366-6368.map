@@ -1,0 +1,71 @@
+!Unser calibration based on Run 1214 , HAPLOG 3609, also consistent with dave mack 3.7mV/uA halog entry 3689440 
+ UNSER, -174.1, 2.066e-2	    
+
+!From run 5382 https://logbooks.jlab.org/entry/3755873
+ hallc_bcm_4c, -524.0, 0.0041998972
+
+!From cameron's global unser fits. http://ace.phys.virginia.edu:80/HAPPEX/4081
+!Device Name, p0 Fit Pedestal, p0 Fit Pedestal Error, TH1 weighted mean Pedestal, TH1 weighted mean Pedestal Error, Gain scale factor
+ bcm_an_us, -582.88, 0.008941
+ bcm_an_ds, -425.66, 0.008836
+ bcm_an_ds3, -856.45, 0.002586
+ bcm_an_ds10, -1476.36, 0.001063
+ bcm_dg_us, -179.02, 0.004423
+ bcm_dg_ds, -428.47, 0.003502
+ bcm_dg_usc, -355.01, 0.004142
+ bcm_dg_dsc, -285.45, 0.003263
+ 
+!BPM Pedestals from run 6558 https://logbooks.jlab.org/entry/3810512
+ bpm4aXP, 803.84, 1.000000 
+ bpm4aXM, 734.72, 1.000000 
+ bpm4aYP, 1130.83, 1.000000 
+ bpm4aYM, 212.85, 1.000000 
+ bpm4eXP, 1591.29, 1.000000 
+ bpm4eXM, 1089.48, 1.000000 
+ bpm4eYP, 1288.76, 1.000000 
+ bpm4eYM, 594.57, 1.000000 
+ bpm4acXP, -766.22, 1.000000 
+ bpm4acXM, -742.32, 1.000000 
+ bpm4acYP, 1138.87, 1.000000 
+ bpm4acYM, 480.69, 1.000000 
+ bpm4ecXP, 1177.72, 1.000000 
+ bpm4ecXM, 1162.67, 1.000000 
+ bpm4ecYP, 1655.07, 1.000000 
+ bpm4ecYM, 1047.70, 1.000000 
+ bpm11XP, 3115.61, 1.000000 
+ bpm11XM, 995.36, 1.000000 
+ bpm11YP, 1002.35, 1.000000 
+ bpm11YM, 2381.89, 1.000000 
+ bpm12XP, 5716.50, 1.000000 
+ bpm12XM, 3300.44, 1.000000 
+ bpm12YP, 3387.46, 1.000000 
+ bpm12YM, 5009.20, 1.000000 
+ bpm16XP, 1336.59, 1.000000 
+ bpm16XM, 3039.65, 1.000000 
+ bpm16YP, 1784.15, 1.000000 
+ bpm16YM, 237.75, 1.000000 
+ bpm1p02bXP, -3591.64, 1.000000 
+ bpm1p02bXM, -3722.91, 1.000000 
+ bpm1p02bYP, -4020.87, 1.000000 
+ bpm1p02bYM, -3264.95, 1.000000 
+ bpm1p03aXP, -4335.43, 1.000000 
+ bpm1p03aXM, -4833.99, 1.000000 
+ bpm1p03aYP, -2185.39, 1.000000 
+ bpm1p03aYM, -2990.89, 1.000000 
+ bpm1XP, -4274.47, 1.000000 
+ bpm1XM, -2149.39, 1.000000 
+ bpm1YP, 5716.30, 1.000000 
+ bpm1YM, -4387.01, 1.000000 
+
+!Cavity pedestals determined from run 6732 from caryn's transverse analysis
+!Gains set to 1 until further analysis.
+ cav4bQ, 25.02, 0.006921 
+ cav4cQ, -621.77, 0.012560 
+ cav4dQ, -294.67, 0.017814 
+ cav4bXI, -229.14, 1
+ cav4bYI, -695.25, 1
+ cav4cXI, -440.82, 1
+ cav4cYI, -164.64, 1
+ cav4dXI, -333.78, 1
+ cav4dYI, 7.97, 1
+
