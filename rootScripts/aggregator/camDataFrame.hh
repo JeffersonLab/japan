@@ -379,16 +379,24 @@ RDataFrame Source::readSource(){
 
   TString baseDir = gSystem->Getenv("QW_ROOTFILES");
   TString postpanBaseDir = gSystem->Getenv("POSTPAN_ROOTFILES");
+  if ( gSystem->AccessPathName(Form("%s/%s_%s.%s.root",baseDir.Data(),basename.Data(), run.Data(),split.Data())) ) {
+    Printf("%s/%s_%s.%s.root not found",baseDir.Data(),basename.Data(), run.Data(),split.Data());
+  }
   mul_tree->Add(Form("%s/%s_%s.%s.root",baseDir.Data(),basename.Data(), run.Data(),split.Data()));
   slow_tree->Add(Form("%s/%s_%s.%s.root",baseDir.Data(),basename.Data(), run.Data(),split.Data()));
-  reg_tree->Add(Form("%s/prexPrompt_%s_%s_regress_postpan.root",postpanBaseDir.Data(), run.Data(),split.Data()));
+  Int_t reg_tree_valid = 0;
+  if ( !gSystem->AccessPathName(Form("%s/prexPrompt_%s_%s_regress_postpan.root",postpanBaseDir.Data(), run.Data(),split.Data())) ) {
+    Printf("Using %s/prexPrompt_%s_%s_regress_postpan.root",postpanBaseDir.Data(), run.Data(),split.Data());
+    reg_tree->Add(Form("%s/prexPrompt_%s_%s_regress_postpan.root",postpanBaseDir.Data(), run.Data(),split.Data()));
+    mini_tree->Add(Form("%s/prexPrompt_%s_%s_regress_postpan.root",postpanBaseDir.Data(), run.Data(),split.Data()));
+    reg_tree_valid = 1;
+  }
   TString ditheringFileNameDF = gSystem->Getenv("DITHERING_ROOTFILES");
   TString ditheringFileStub = gSystem->Getenv("DITHERING_STUB");
   if (ditheringFileNameDF != ""){
     Printf("Looking for Dithering corrected files in %s",ditheringFileNameDF.Data());
     dit_tree->Add(Form("%s/prexPrompt_dither%s_%s_000.root", ditheringFileNameDF.Data(), ditheringFileStub.Data(), run.Data()));
   }
-  mini_tree->Add(Form("%s/prexPrompt_%s_%s_regress_postpan.root",postpanBaseDir.Data(), run.Data(),split.Data()));
   TFile tmpFile(Form("%s/%s_%s.%s.root", baseDir.Data(),basename.Data(), run.Data(),split.Data()));
   Int_t mulc_valid = (tmpFile.GetListOfKeys())->Contains("mulc");
   mulc_tree->Add(Form("%s/%s_%s.%s.root",baseDir.Data(),basename.Data(), run.Data(),split.Data()));
@@ -396,7 +404,7 @@ RDataFrame Source::readSource(){
   Int_t mulc_lrb_alldet_burst_valid = (tmpFile.GetListOfKeys())->Contains("mulc_lrb_alldet_burst");
   mulc_lrb_alldet_burst_tree->Add(Form("%s/%s_%s.%s.root", baseDir.Data(),basename.Data(), run.Data(),split.Data()));
 
-  if (reg_tree) {
+  if (reg_tree_valid) {
     mul_tree->AddFriend(reg_tree);
   }
   ///mul_tree->AddFriend(mulc_tree);
@@ -439,7 +447,8 @@ RDataFrame Source::readSource(){
   auto d_good=d.Filter([test](Double_t c){
       return ((((Int_t)c))==test); // ErrorFlag == 0 -> All Global cuts pass
       //return ((((Int_t)c)&0xda7e6bff)==test); // ErrorFlag&0xda7e6bff -> (BMOD is active || Global ErrorFlag cut) == 0
-      //return ((((Int_t)c)&0xda7e6bff)==test && (((Int_t)c)&0x9000)==0x9000); // ErrorFlag&0xda7e6bff -> (BMOD is active && Global ErrorFlag cut) == 0
+      //return ((((Int_t)c)&0xda7e6bff)==test && (((Int_t)c)&0x9000)==0x9000); // ErrorFlag&0xda7e6bff -> (BMOD is active && Global ErrorFlag cut) == 0 -> BMOD only
+      //return ((((Int_t)c)&0x99726bff)==0 && (((Int_t)c)&0x20000000)==0x20000000); // Explicitly look at all burp cut failing data, but still cut out beam trip and Beam+Regular stability cuts, and user "bad" event cuts, and all device cuts -> Include BMOD
       }
       ,{"ErrorFlag"});
   //auto d_good = d.Filter"(ErrorFlag&0xda7e6bff)==0");

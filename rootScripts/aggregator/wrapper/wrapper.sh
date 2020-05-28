@@ -45,7 +45,7 @@ fi
 if [[ "$CONFIG" == "burp_input.txt" ]];
 then
   export QW_ROOTFILES=/aonl1/work1/quinn/
-  export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/burp/
+  #export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/burp/
 fi
 
 if [[ "$CONFIG" == "AT_input.txt" ]];
@@ -79,6 +79,15 @@ then
   export DITHERING_ROOTFILES_SLOPES=/chafs2/work1/apar/BMODextractor/
   export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/dithering_1X/
   export DITHERING_STUB="_1X"
+fi
+
+if [[ "$CONFIG" == "dithering_input_PREX_AT."* ]];
+then
+  echo "Doing Dithering_1X analysis"
+  export DITHERING_ROOTFILES=/chafs2/work1/apar/DitherCorrection/
+  export DITHERING_ROOTFILES_SLOPES=/chafs2/work1/apar/BMODextractor/
+  export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/dithering_AT/
+  export DITHERING_STUB="_AT"
 fi
 
 root -l -q -b ../camDataFrame.C"(\"$RUNNUM\",\"$NRUNS\",\"$MINIRUNNUM\",\"$SPLITNUM\",\"$CONFIG\",\"$BASENAME\")"
