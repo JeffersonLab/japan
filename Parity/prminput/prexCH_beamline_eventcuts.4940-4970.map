@@ -30,14 +30,14 @@ EVENTCUTS = 3
 ! 70 uA running BCM, BPM tracking non-saturation, global promotion of device error codes
  bcm, bcm_an_us,		1,	1e6,	l 
  bcm, bcm_dg_ds,		1,	1e6,	g,	0
- bpmstripline, bpm4a, xm, 1000, 55000, g, 0, 1000
- bpmstripline, bpm4a, xp, 1000, 55000, g, 0, 1000
- bpmstripline, bpm4a, ym, 1000, 55000, g, 0, 1000
- bpmstripline, bpm4a, yp, 1000, 55000, g, 0, 1000
- bpmstripline, bpm4e, xm, 1000, 55000, g, 0, 1000
- bpmstripline, bpm4e, xp, 1000, 55000, g, 0, 1000
- bpmstripline, bpm4e, ym, 1000, 55000, g, 0, 1000
- bpmstripline, bpm4e, yp, 1000, 55000, g, 0, 1000
+ bpmstripline, bpm4a, xm, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm4a, xp, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm4a, ym, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm4a, yp, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm4e, xm, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm4e, xp, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm4e, ym, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm4e, yp, 1000, 55000, g, 0, 2000
  bpmstripline, bpm12, xm, 1000, 55000, g, 0, 1000
  bpmstripline, bpm12, xp, 1000, 55000, g, 0, 1000
  bpmstripline, bpm12, ym, 1000, 55000, g, 0, 1000

@@ -33,14 +33,14 @@ EVENTCUTS = 3
  bcm, bcm_dg_ds,		35,	1e6,	g,	1.4
 ! Adding the upstream BCM too, mostly for verification that it has no hardware errors and that it is also seeing the same beam
  !bcm, bcm_an_us,		5,	1e6,	g, 0
- bpmstripline, bpm4a, xm, 1000, 55000, g, 0, 1000
- bpmstripline, bpm4a, xp, 1000, 55000, g, 0, 1000
- bpmstripline, bpm4a, ym, 1000, 55000, g, 0, 1000
- bpmstripline, bpm4a, yp, 1000, 55000, g, 0, 1000
- bpmstripline, bpm4e, xm, 1000, 55000, g, 0, 1000
- bpmstripline, bpm4e, xp, 1000, 55000, g, 0, 1000
- bpmstripline, bpm4e, ym, 1000, 55000, g, 0, 1000
- bpmstripline, bpm4e, yp, 1000, 55000, g, 0, 1000
+ bpmstripline, bpm4a, xm, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm4a, xp, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm4a, ym, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm4a, yp, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm4e, xm, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm4e, xp, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm4e, ym, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm4e, yp, 1000, 55000, g, 0, 2000
  bpmstripline, bpm12, xm, 1000, 55000, g, 0, 1000
  bpmstripline, bpm12, xp, 1000, 55000, g, 0, 1000
  bpmstripline, bpm12, ym, 1000, 55000, g, 0, 1000
