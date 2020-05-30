@@ -38,14 +38,14 @@ EVENTCUTS = 3
  bpmstripline, bpm4e, xp, 1000, 55000, g, 0, 2000
  bpmstripline, bpm4e, ym, 1000, 55000, g, 0, 2000
  bpmstripline, bpm4e, yp, 1000, 55000, g, 0, 2000
- bpmstripline, bpm12, xm, 1000, 55000, g, 0, 1000
- bpmstripline, bpm12, xp, 1000, 55000, g, 0, 1000
- bpmstripline, bpm12, ym, 1000, 55000, g, 0, 1000
- bpmstripline, bpm12, yp, 1000, 55000, g, 0, 1000
- bpmstripline, bpm11, xm, 1000, 55000, g, 0, 1000
- bpmstripline, bpm11, xp, 1000, 55000, g, 0, 1000
- bpmstripline, bpm11, ym, 1000, 55000, g, 0, 1000
- bpmstripline, bpm11, yp, 1000, 55000, g, 0, 1000
+ bpmstripline, bpm12, xm, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm12, xp, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm12, ym, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm12, yp, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm11, xm, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm11, xp, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm11, ym, 1000, 55000, g, 0, 2000
+ bpmstripline, bpm11, yp, 1000, 55000, g, 0, 2000
 ! bpmstripline,	bpm11,	effectivecharge, 0, 1.8e5, g, 0
 ! bpmstripline,	bpm4e,	effectivecharge, 0, 1.8e5, g, 0
 ! bpmstripline,	bpm4a,	effectivecharge, 0, 1.8e5, g, 0

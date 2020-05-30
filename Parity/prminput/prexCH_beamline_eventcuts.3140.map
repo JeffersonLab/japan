@@ -57,7 +57,7 @@ EVENTCUTS = 3
  bpmstripline,	bpm4e,	xp,	1000,	55000,	g,	0,	2000
  bpmstripline,	bpm4e,	ym,	1000,	55000,	g,	0,	2000
  bpmstripline,	bpm4e,	yp,	1000,	55000,	g,	0,	2000
- bpmstripline,	bpm12,	xm,	1000,	55000,	g,	0,	1000
- bpmstripline,	bpm12,	xp,	1000,	55000,	g,	0,	1000
- bpmstripline,	bpm12,	ym,	1000,	55000,	g,	0,	1000
- bpmstripline,	bpm12,	yp,	1000,	55000,	g,	0,	1000
+ bpmstripline,	bpm12,	xm,	1000,	55000,	g,	0,	2000
+ bpmstripline,	bpm12,	xp,	1000,	55000,	g,	0,	2000
+ bpmstripline,	bpm12,	ym,	1000,	55000,	g,	0,	2000
+ bpmstripline,	bpm12,	yp,	1000,	55000,	g,	0,	2000
