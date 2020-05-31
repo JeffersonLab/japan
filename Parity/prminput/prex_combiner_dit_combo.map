@@ -3,24 +3,24 @@ asym:dit_asym_usl,0.5
 asym:dit_asym_usr,0.5
 
 [asym:@dit_asym_us_dd]
-asym:dit_asym_usl,1.0
-asym:dit_asym_usr,-1.0
+asym:dit_asym_usl,0.5
+asym:dit_asym_usr,-0.5
 
 [asym:@dit_asym_ds_avg]
 asym:dit_asym_dsl,0.5
 asym:dit_asym_dsr,0.5
 
 [asym:@dit_asym_ds_dd]
-asym:dit_asym_dsl,1.0
-asym:dit_asym_dsr,-1.0
+asym:dit_asym_dsl,0.5
+asym:dit_asym_dsr,-0.5
 
 [asym:@dit_asym_left_dd]
-asym:dit_asym_usl,1.0
-asym:dit_asym_dsl,-1.0
+asym:dit_asym_usl,0.5
+asym:dit_asym_dsl,-0.5
 
 [asym:@dit_asym_right_dd]
-asym:dit_asym_usr,1.0
-asym:dit_asym_dsr,-1.0
+asym:dit_asym_usr,0.5
+asym:dit_asym_dsr,-0.5
 
 [asym:@dit_asym_left_avg]
 asym:dit_asym_usl,0.5
