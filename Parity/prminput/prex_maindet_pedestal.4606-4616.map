@@ -1,8 +1,8 @@
 !Man detector and AT calibrations from run 4610, using cameron's analysis http://ace.phys.virginia.edu/HAPPEX/4095
  usl, 1391.90, 0.000076
  usr, 1192.54, 0.000076
- dsl, 1537.23, 0.001271
- dsr, 817.50, 0.001386
+ dsl, 1537.23, 0.000076
+ dsr, 817.50, 0.000076
 
  atl1, 567.32, 0.000076
  atr1, 1120.34, 0.000076

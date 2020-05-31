@@ -1,8 +1,8 @@
 !Man detector and AT calibrations from run 4806, using cameron's analysis http://ace.phys.virginia.edu/HAPPEX/4095
  usl, 1149.98, 0.000076
  usr, 1166.71, 0.000076
- dsl, 1004.71, 0.001228
- dsr, 771.90, 0.001421
+ dsl, 1004.71, 0.000076
+ dsr, 771.90, 0.000076
 
 !AT's use beam off peds from old mapfiles https://logbooks.jlab.org/entry/3737500
  atr1, 1062.45, 7.629e-05

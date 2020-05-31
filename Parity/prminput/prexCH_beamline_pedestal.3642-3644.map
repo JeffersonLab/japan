@@ -1,13 +1,13 @@
 ! Unser calibration based on Run 1214 , HAPLOG 3609, also consistent with dave mack 3.7mV/uA halog entry 3689440 
 UNSER,   -174.1,     2.066e-2	    
 
-!BCM an_us Calibration from cameron's pedestal 1 http://ace.phys.virginia.edu/HAPPEX/4094
- bcm_an_us, -569.20, 0.002667
+!BCM an_us Calibration from cameron's pedestal 2 http://ace.phys.virginia.edu/HAPPEX/4094
+ bcm_an_us, -640.97, 0.006150
 
-!BCM an_ds Calibration from cameron's pedestal 1
- bcm_an_ds, -371.56, 0.002782
- bcm_an_ds3, -732.50, 0.000808
- bcm_an_ds10, -882.56, 0.000000
+!BCM an_ds Calibration from cameron's pedestal 2
+ bcm_an_ds, -482.74, 0.006190
+ bcm_an_ds3, -703.88, 0.001820
+ bcm_an_ds10, -2253.98, 0.000614
 
 !BCM dg_us Calibration from cameron's pedestal 2
  bcm_dg_us, -196.36, 0.002885
