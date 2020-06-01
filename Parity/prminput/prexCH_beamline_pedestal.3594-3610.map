@@ -51,9 +51,9 @@ UNSER,   -174.1,     2.066e-2
  bpm4ecYP, 1312.01, 1.000000 
  bpm4ecYM, 1017.50, 1.000000 
 
-!Cavity BPMs pedestal calibration from run 3430 http://ace.phys.virginia.edu/HAPPEX/4094
+!Cavity BPMs pedestal calibration from run 3597 http://ace.phys.virginia.edu/HAPPEX/4094
 !Gains set to 1 for now
-cav4cQ,-645.33,0.25,0.003206
-cav4cXI, -531.14, 1
-cav4cYI, -245.55, 1
+ cav4cQ, -807.23, 0.003085
+ cav4cXI, -496.85, 1
+ cav4cYI, -236.94, 1
 

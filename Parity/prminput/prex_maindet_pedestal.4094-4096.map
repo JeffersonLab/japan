@@ -1,0 +1,21 @@
+!Man detector and AT calibrations from run 3751, using cameron's analysis http://ace.phys.virginia.edu/HAPPEX/4095
+ usl, 1366.99, 0.000076
+ usr, 1337.57, 0.000076
+ dsl, 1583.37, 0.000076
+ dsr, 753.22, 0.000076
+
+ atl1, 556.65, 0.000076
+ atr1, 996.05, 0.000076
+ atl2, 1254.56, 0.000076
+ atr2, 692.44, 0.000076
+
+!These devices are holdovers from before the mapfiles were recreated. 
+ vqwk_25_0ch4, 0, 0.000076
+ vqwk_25_0ch5, 0, 0.000076
+ battery1L, 0, 0.000076
+ battery2L, 0, 0.000076 
+
+ vqwk_26_0ch4, 0, 0.000076
+ vqwk_26_0ch5, 0, 0.000076
+ battery1R, 0, 0.000076
+ battery2R, 0, 0.000076
