@@ -27,7 +27,7 @@ EVENTCUTS = 3
 !***************************************************
 !for bcm devices
 !device_type, device_name,      lower limit, upper limit, local(l)/global(g), stability percentage
- bcm, bcm_an_ds3,		55,	1e6,	g,	0.8
+ combinedbcm, bcm_target,		55,	1e6,	g,	0.8
  bpmstripline, bpm4a, xm, 1000, 55000, g, 0, 1000
  bpmstripline, bpm4a, xp, 1000, 55000, g, 0, 1000
  bpmstripline, bpm4a, ym, 1000, 55000, g, 0, 1000

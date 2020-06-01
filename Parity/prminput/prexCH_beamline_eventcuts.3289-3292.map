@@ -37,7 +37,7 @@ EVENTCUTS = 3
 !(QwVQWK_Channel::fHardwareBlockSum)
 
 !device_type, device_name, lower_limit, upper_limit, local(l)/global(g), stability_RMS, burplevel
- bcm,	bcm_an_ds,	35,	1e6,	g,	1.2
+ combinedbcm, bcm_target,	35,	1e6,	g,	1.2
 
 
 
