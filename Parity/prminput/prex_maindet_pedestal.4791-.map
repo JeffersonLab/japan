@@ -1,0 +1,33 @@
+!! 70 uA pedestals for Main Detectors
+!! https://logbooks.jlab.org/entry/3720995 
+!Run4309 (bpm calibration scan) 55-70uA relative to (bcm_dg_ds.hw_sum_raw/bcm_dg_ds.num_samples--351.06)*0.002318
+!!!  AT detector pedestals taken from the 4648 pedestals for use during the blinded quartz test at "nominal high voltages"
+usl, 1897.43, 0.000076
+dsl, 2296.38, 0.000076
+usr, 1504.19, 0.000076
+dsr, 734.94, 0.000076
+
+!atl1, 726.69, 0.000076
+!atl2, 1201.75, 0.000076
+vqwk_25_0ch4, 0, 0.000076
+vqwk_25_0ch5, 0, 0.000076
+battery1L, 0, 0.000076
+battery2L, 0, 0.000076
+
+!atr1, 1120.23, 0.000076
+!atr2, 764.30, 0.000076
+vqwk_26_0ch4, 0, 0.000076
+vqwk_26_0ch5, 0, 0.000076
+battery1R ,   0, 0.000076
+battery2R ,   0, 0.000076
+
+!beam off pedestals from devi's halog ( https://logbooks.jlab.org/entry/3737500 )
+
+!usr, 1336.2, 7.629e-05
+!dsr, 1068.03, 7.629e-05
+atr1, 1062.45, 7.629e-05
+atr2, 748.151, 7.629e-05
+!usl, 959.359, 7.629e-05
+!dsl, 1001.7, 7.629e-05
+atl1, 714.12, 7.629e-05
+atl2, 1194.25, 7.629e-05

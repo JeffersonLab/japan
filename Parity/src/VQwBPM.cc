@@ -50,6 +50,7 @@ void VQwBPM::GetElectronicFactors(Double_t BSENfactor, Double_t AlphaX, Double_t
   Bool_t ldebug = kFALSE;
 
   fQwStriplineCalibration = BSENfactor*18.81;
+  fQwStriplineCorrection = 0.250014;
 
   fRelativeGains[0]=AlphaX;
   fRelativeGains[1]=AlphaY;
@@ -58,6 +59,7 @@ void VQwBPM::GetElectronicFactors(Double_t BSENfactor, Double_t AlphaX, Double_t
     std::cout<<"\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n";
     std::cout<<this->GetElementName();
     std::cout<<"\nfQwStriplineCalibration = "<<fQwStriplineCalibration<<std::endl;
+    std::cout<<"\nfQwStriplineCorrection = "<<fQwStriplineCorrection<<std::endl;
     std::cout<<"AlphaX = "<<fRelativeGains[0]<<std::endl;
     std::cout<<"AlphaY = "<<fRelativeGains[1]<<std::endl;
     
@@ -102,20 +104,20 @@ void VQwBPM::SetSingleEventCuts(TString ch_name, Double_t minX, Double_t maxX)
   tmpptr->SetSingleEventCuts(minX,maxX);
 }
 
-void VQwBPM::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t minX, Double_t maxX, Double_t stability)
+void VQwBPM::SetSingleEventCuts(TString ch_name, UInt_t errorflag,Double_t minX, Double_t maxX, Double_t stability, Double_t burplevel)
 {
   VQwHardwareChannel* tmpptr = GetSubelementByName(ch_name);
   errorflag|=kBPMErrorFlag;//update the device flag
   QwMessage << GetElementName() << " " << ch_name 
 	    << " LL " <<  minX <<" UL " << maxX <<QwLog::endl;
-  tmpptr->SetSingleEventCuts(errorflag,minX,maxX,stability);
+  tmpptr->SetSingleEventCuts(errorflag,minX,maxX,stability,burplevel);
 }
-
 
 VQwBPM& VQwBPM::operator= (const VQwBPM &value)
 {
   if (GetElementName()!=""){
     fQwStriplineCalibration = value.fQwStriplineCalibration;
+    fQwStriplineCorrection = value.fQwStriplineCorrection;
     bRotated = value.bRotated;
     fRotationAngle = value.fRotationAngle;
     fCosRotation = value.fCosRotation;

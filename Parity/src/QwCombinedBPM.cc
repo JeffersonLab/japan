@@ -937,40 +937,40 @@ void QwCombinedBPM<T>::CalculateRunningAverage()
 
 
 template<typename T>
-void QwCombinedBPM<T>::AccumulateRunningSum(const VQwBPM& value)
+void QwCombinedBPM<T>::AccumulateRunningSum(const VQwBPM& value, Int_t count, Int_t ErrorMask)
 {
-  AccumulateRunningSum(*dynamic_cast<const QwCombinedBPM<T>* >(&value));
+  AccumulateRunningSum(*dynamic_cast<const QwCombinedBPM<T>* >(&value), count, ErrorMask);
 }
 
 template<typename T>
-void QwCombinedBPM<T>::AccumulateRunningSum(const QwCombinedBPM<T>& value)
+void QwCombinedBPM<T>::AccumulateRunningSum(const QwCombinedBPM<T>& value, Int_t count, Int_t ErrorMask)
 {
   for (Short_t axis = kXAxis; axis < kNumAxes; axis++){
-    fSlope[axis].AccumulateRunningSum(value.fSlope[axis]);
-    fIntercept[axis].AccumulateRunningSum(value.fIntercept[axis]);
-    fAbsPos[axis].AccumulateRunningSum(value.fAbsPos[axis]);
-    fMinimumChiSquare[axis].AccumulateRunningSum(value.fMinimumChiSquare[axis]);
+    fSlope[axis].AccumulateRunningSum(value.fSlope[axis], count, ErrorMask);
+    fIntercept[axis].AccumulateRunningSum(value.fIntercept[axis], count, ErrorMask);
+    fAbsPos[axis].AccumulateRunningSum(value.fAbsPos[axis], count, ErrorMask);
+    fMinimumChiSquare[axis].AccumulateRunningSum(value.fMinimumChiSquare[axis], count, ErrorMask);
   }
-  fEffectiveCharge.AccumulateRunningSum(value.fEffectiveCharge);
+  fEffectiveCharge.AccumulateRunningSum(value.fEffectiveCharge, count, ErrorMask);
 }
 
 template<typename T>
-void QwCombinedBPM<T>::DeaccumulateRunningSum(VQwBPM& value)
+void QwCombinedBPM<T>::DeaccumulateRunningSum(VQwBPM& value, Int_t ErrorMask)
 {
-  DeaccumulateRunningSum(*dynamic_cast<QwCombinedBPM<T>* >(&value));
+  DeaccumulateRunningSum(*dynamic_cast<QwCombinedBPM<T>* >(&value), ErrorMask);
 }
 
 template<typename T>
-void QwCombinedBPM<T>::DeaccumulateRunningSum(QwCombinedBPM<T>& value)
+void QwCombinedBPM<T>::DeaccumulateRunningSum(QwCombinedBPM<T>& value, Int_t ErrorMask)
 {
 
   for (Short_t axis = kXAxis; axis < kNumAxes; axis++){
-    fSlope[axis].DeaccumulateRunningSum(value.fSlope[axis]);
-    fIntercept[axis].DeaccumulateRunningSum(value.fIntercept[axis]);
-    fAbsPos[axis].DeaccumulateRunningSum(value.fAbsPos[axis]);
-    fMinimumChiSquare[axis].DeaccumulateRunningSum(value.fMinimumChiSquare[axis]);
+    fSlope[axis].DeaccumulateRunningSum(value.fSlope[axis], ErrorMask);
+    fIntercept[axis].DeaccumulateRunningSum(value.fIntercept[axis], ErrorMask);
+    fAbsPos[axis].DeaccumulateRunningSum(value.fAbsPos[axis], ErrorMask);
+    fMinimumChiSquare[axis].DeaccumulateRunningSum(value.fMinimumChiSquare[axis], ErrorMask);
   }
-  fEffectiveCharge.DeaccumulateRunningSum(value.fEffectiveCharge);
+  fEffectiveCharge.DeaccumulateRunningSum(value.fEffectiveCharge, ErrorMask);
 
 }
 

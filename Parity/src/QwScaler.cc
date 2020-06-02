@@ -65,6 +65,7 @@ Int_t QwScaler::LoadChannelMap(TString mapfile)
 
   // Include header for this scaler bank
   UInt_t header = 1;
+  UInt_t buffer_offset = 0;
 
   // By default the scalers are not differential
   Bool_t differential = false;
@@ -77,6 +78,7 @@ Int_t QwScaler::LoadChannelMap(TString mapfile)
   mapstr.AddBreakpointKeyword("norm");
   mapstr.AddBreakpointKeyword("header");
   mapstr.AddBreakpointKeyword("differential");
+  mapstr.AddBreakpointKeyword("scaler_buffer_offset");
 
   while (mapstr.ReadNextLine()) {
     RegisterRocBankMarker(mapstr);
@@ -107,6 +109,9 @@ Int_t QwScaler::LoadChannelMap(TString mapfile)
         }
         QwMessage << "Normalization channel: " << channame << QwLog::endl;
         QwMessage << "Normalization factor: " << current_norm_factor << QwLog::endl;
+      } else if (varname == "scaler_buffer_offset") {
+        // Buffer offset
+        buffer_offset = value;
       } else if (varname == "header") {
         // Header for this block of channels
         header = value;
@@ -139,9 +144,9 @@ Int_t QwScaler::LoadChannelMap(TString mapfile)
 
       UInt_t offset = 0;
       if (modtype == "SIS3801" || modtype == "SIS3801D24" || modtype == "SIS3801D32") {
-        offset = QwSIS3801D24_Channel::GetBufferOffset(modnum, channum, header);
+        offset = QwSIS3801D24_Channel::GetBufferOffset(modnum, channum, header)+buffer_offset;
       } else if (modtype == "STR7200") {
-        offset = QwSIS3801D32_Channel::GetBufferOffset(modnum, channum, header);
+        offset = QwSIS3801D32_Channel::GetBufferOffset(modnum, channum, header)+buffer_offset;
       } else {
         QwError << "Unrecognized module type " << modtype << QwLog::endl;
         continue;
@@ -469,11 +474,26 @@ void QwScaler::Scale(Double_t factor)
 /**
  * Accumulate the running sum
  */
-void QwScaler::AccumulateRunningSum(VQwSubsystem* value)
+void QwScaler::AccumulateRunningSum(VQwSubsystem* value, Int_t count, Int_t ErrorMask)
 {
   if (Compare(value)) {
-    fGoodEventCount++;
-    *this  += value;
+    QwScaler* scaler = dynamic_cast<QwScaler*>(value);
+    for (size_t i = 0; i < fScaler.size(); i++) {
+      fScaler.at(i)->AccumulateRunningSum(scaler->fScaler.at(i), count, ErrorMask);
+    }
+  }
+}
+
+/**
+ * Deaccumulate the running sum
+ */
+void QwScaler::DeaccumulateRunningSum(VQwSubsystem* value, Int_t ErrorMask)
+{
+  if (Compare(value)) {
+    QwScaler* scaler = dynamic_cast<QwScaler*>(value);
+    for (size_t i = 0; i < fScaler.size(); i++) {
+      fScaler.at(i)->DeaccumulateRunningSum(scaler->fScaler.at(i), ErrorMask);
+    }
   }
 }
 
@@ -482,10 +502,8 @@ void QwScaler::AccumulateRunningSum(VQwSubsystem* value)
  */
 void QwScaler::CalculateRunningAverage()
 {
-  if (fGoodEventCount <= 0) {
-    Scale(0);
-  } else {
-    Scale(1.0/fGoodEventCount);
+  for (size_t i = 0; i < fScaler.size(); i++) {
+    fScaler.at(i)->CalculateRunningAverage();
   }
 }
 
@@ -498,6 +516,19 @@ Bool_t QwScaler::ApplySingleEventCuts()
 {
   return true;
 }
+
+/*Bool_t QwScaler::CheckForBurpFail(const VQwSubsystem *subsys){
+  Bool_t burpstatus = kFALSE;
+  VQwSubsystem* tmp = const_cast<VQwSubsystem *>(subsys);
+  if(Compare(tmp)) {
+    const QwScaler* input = dynamic_cast<const QwScaler*>(subsys);
+    for (size_t i = 0; i < input->fScaler.size(); i++) {
+      //QwError << "************* test " << typeid(this->fScaler[i]).name() << "*****************" << QwLog::endl;
+      burpstatus |= (this->fScaler.at(i))->CheckForBurpFail(input->fScaler.at(i));
+    }
+  }
+  return burpstatus;
+}*/
 
 void QwScaler::IncrementErrorCounters()
 {
@@ -562,6 +593,7 @@ void QwScaler::PrintInfo() const
  */
 void QwScaler::PrintValue() const
 {
+  QwMessage << "=== QwScaler: " << GetName() << " ===" << QwLog::endl;
   for(size_t i = 0; i < fScaler.size(); i++) {
     fScaler.at(i)->PrintValue();
   }

@@ -1,0 +1,37 @@
+ROC=25
+Bank=0x5
+vqwk_buffer_offset=1
+
+sample_size=4096
+!
+  VQWK, 0, 0,  bcm ,  mainl_0_0  
+  VQWK, 0, 1,  bcm ,  mainl_0_1  
+  VQWK, 0, 2,  bcm ,  mainl_0_2  
+  VQWK, 0, 3,  bcm ,  mainl_0_3  
+  VQWK, 0, 4,  bcm ,  mainl_0_4  
+  VQWK, 0, 5,  bcm ,  mainl_0_5  
+  VQWK, 0, 6,  bcm ,  mainl_0_6  
+  VQWK, 0, 7,  bcm ,  mainl_0_7  
+
+ROC=26
+Bank=0x5
+vqwk_buffer_offset=1
+sample_size=4096
+!
+  VQWK, 0, 0,  bcm ,  mainr_0_0  
+  VQWK, 0, 1,  bcm ,  mainr_0_1  
+  VQWK, 0, 2,  bcm ,  mainr_0_2  
+  VQWK, 0, 3,  bcm ,  mainr_0_3  
+  VQWK, 0, 4,  bcm ,  mainr_0_4  
+  VQWK, 0, 5,  bcm ,  mainr_0_5  
+  VQWK, 0, 6,  bcm ,  mainr_0_6  
+  VQWK, 0, 7,  bcm ,  mainr_0_7  
+!
+  VQWK, 1, 0,  bcm ,  mainr_1_0  
+  VQWK, 1, 1,  bcm ,  mainr_1_1  
+  VQWK, 1, 2,  bcm ,  mainr_1_2  
+  VQWK, 1, 3,  bcm ,  mainr_1_3  
+  VQWK, 1, 4,  bcm ,  mainr_1_4  
+  VQWK, 1, 5,  bcm ,  mainr_1_5  
+  VQWK, 1, 6,  bcm ,  mainr_1_6  
+  VQWK, 1, 7,  bcm ,  mainr_1_7  

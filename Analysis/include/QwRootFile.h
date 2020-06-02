@@ -61,6 +61,9 @@ class QwRootTree {
       // Construct tree
       ConstructNewTree();
 
+      // Construct branch
+      ConstructUnitsBranch();
+
       // Construct branches and vector
       ConstructBranchAndVector(object);
     }
@@ -83,10 +86,18 @@ class QwRootTree {
 
   private:
 
+    static const TString kUnitsName;
+    static Double_t kUnitsValue[];
+
     /// Construct the tree
     void ConstructNewTree() {
       QwMessage << "New tree: " << fName << ", " << fDesc << QwLog::endl;
       fTree = new TTree(fName.c_str(), fDesc.c_str());
+    }
+
+    void ConstructUnitsBranch() {
+      std::string name = "units";
+      fTree->Branch(name.c_str(), &kUnitsValue, kUnitsName);
     }
 
     /// Construct index from this tree to another tree
@@ -331,6 +342,10 @@ class QwRootFile {
 
     /// \brief Construct the histograms of a generic object
     template < class T >
+    void ConstructObjects(const std::string& name, T& object);
+
+    /// \brief Construct the histograms of a generic object
+    template < class T >
     void ConstructHistograms(const std::string& name, T& object);
     /// Fill histograms of the subsystem array
     template < class T >
@@ -347,6 +362,7 @@ class QwRootFile {
 
     /// Create a new tree with name and description
     void NewTree(const std::string& name, const std::string& desc) {
+      if (IsTreeDisabled(name)) return;
       this->cd();
       QwRootTree *tree = 0;
       if (! HasTreeByName(name)) {
@@ -491,6 +507,7 @@ class QwRootFile {
     /// change to a permanent name when closing the file.
     TString fPermanentName;
     Bool_t fMakePermanent;
+    Bool_t fUseTemporaryFile;
 
     /// Search for non-empty trees or histograms in the file
     Bool_t HasAnyFilled(void);
@@ -729,6 +746,40 @@ void QwRootFile::FillTreeBranches(
 
 
 /**
+ * Construct the objects directory of a generic object
+ * @param name Name for objects directory
+ * @param object Subsystem array
+ */
+template < class T >
+void QwRootFile::ConstructObjects(const std::string& name, T& object)
+{
+  // Create the objects in a directory
+  if (fRootFile) {
+    std::string type = typeid(object).name();
+    fDirsByName[name] =
+        fRootFile->GetDirectory(("/" + name).c_str()) ?
+            fRootFile->GetDirectory(("/" + name).c_str()) :
+            fRootFile->GetDirectory("/")->mkdir(name.c_str());
+    fDirsByType[type].push_back(name);
+    object.ConstructObjects(fDirsByName[name]);
+  }
+
+  // No support for directories in a map file
+  if (fMapFile) {
+    QwMessage << "QwRootFile::ConstructObjects::detectors address "
+	      << &object
+	      << " and its name " << name
+	      << QwLog::endl;
+
+    std::string type = typeid(object).name();
+    fDirsByName[name] = fMapFile->GetDirectory()->mkdir(name.c_str());
+    fDirsByType[type].push_back(name);
+    object.ConstructObjects();
+  }
+}
+
+
+/**
  * Construct the histogram of a generic object
  * @param name Name for histogram directory
  * @param object Subsystem array
@@ -742,7 +793,10 @@ void QwRootFile::ConstructHistograms(const std::string& name, T& object)
   // Create the histograms in a directory
   if (fRootFile) {
     std::string type = typeid(object).name();
-    fDirsByName[name] = fRootFile->GetDirectory("/")->mkdir(name.c_str());
+    fDirsByName[name] =
+        fRootFile->GetDirectory(("/" + name).c_str()) ?
+            fRootFile->GetDirectory(("/" + name).c_str()) :
+            fRootFile->GetDirectory("/")->mkdir(name.c_str());
     fDirsByType[type].push_back(name);
     object.ConstructHistograms(fDirsByName[name]);
   }
@@ -753,7 +807,7 @@ void QwRootFile::ConstructHistograms(const std::string& name, T& object)
 	      << &object  
 	      << " and its name " << name 
 	      << QwLog::endl;
-    
+
     std::string type = typeid(object).name();
     fDirsByName[name] = fMapFile->GetDirectory()->mkdir(name.c_str());
     fDirsByType[type].push_back(name);

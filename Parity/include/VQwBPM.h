@@ -90,7 +90,7 @@ class VQwBPM : public VQwDataElement {
   void   SetRotationOff();
 
   void    SetSingleEventCuts(TString, Double_t, Double_t);
-  void    SetSingleEventCuts(TString, UInt_t, Double_t, Double_t, Double_t);
+  void    SetSingleEventCuts(TString, UInt_t, Double_t, Double_t, Double_t, Double_t);
   virtual UInt_t UpdateErrorFlag() = 0;
   virtual void UpdateErrorFlag(const VQwBPM *ev_error) = 0;
 
@@ -159,11 +159,11 @@ public:
 /*   void PrintValue() const; */
 /*   void PrintInfo() const; */
   virtual void CalculateRunningAverage() = 0;
-  virtual void AccumulateRunningSum(const VQwBPM& value) {
+  virtual void AccumulateRunningSum(const VQwBPM& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF) {
     std::cerr << "AccumulateRunningSum not implemented for BPM named="
       <<GetElementName()<<"\n";
   };
-  virtual void DeaccumulateRunningSum(VQwBPM& value) = 0;
+  virtual void DeaccumulateRunningSum(VQwBPM& value, Int_t ErrorMask=0xFFFFFFF) = 0;
 
   virtual void ConstructHistograms(TDirectory *folder, TString &prefix) = 0;
   virtual void FillHistograms() = 0;
@@ -275,6 +275,7 @@ public:
 /*     fAbsPos_base[1] = NULL; */
 /*     fEffectiveCharge_base = NULL; */
     fQwStriplineCalibration = 18.81; // adc counts/mm default value
+    fQwStriplineCorrection = 0.250014;
     for(Short_t i=0;i<2;i++) {
       fRelativeGains[i]=1.0;
       fGains[i]=1.0;
@@ -299,6 +300,7 @@ public:
   // Position calculation related paramters
   Double_t fPositionCenter[3];
   Double_t fQwStriplineCalibration;
+  Double_t fQwStriplineCorrection;
   Double_t fRelativeGains[2];
   Double_t fGains[2];
   static const TString axis[3];

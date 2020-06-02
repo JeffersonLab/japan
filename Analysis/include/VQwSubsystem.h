@@ -21,6 +21,7 @@
 
 // Qweak headers
 #include "MQwHistograms.h"
+#include "MQwPublishable.h"
 // Note: the factory header is included here because every subsystem
 // has to register itself with a subsystem factory.
 #include "QwFactory.h"
@@ -56,7 +57,7 @@ class QwParameterFile;
  * This will define the interfaces used in communicating with the
  * CODA routines.
  */
-class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms {
+class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms, public MQwPublishable_child<QwSubsystemArray,VQwSubsystem> {
 
  public:
 
@@ -91,62 +92,31 @@ class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms {
   virtual void ProcessOptions(QwOptions &options) { };
 
 
-  TString GetSubsystemName() const {return fSystemName;};
+  TString GetName() const {return fSystemName;};
   Bool_t  HasDataLoaded() const  {return fIsDataLoaded;}
 
-  /// \brief Set the parent of this subsystem to the specified array
-  void SetParent(QwSubsystemArray* parent);
-  /// \brief Get the parent of this subsystem
-  QwSubsystemArray* GetParent(const unsigned int parent = 0) const;
   /// \brief Get the sibling with specified name
   VQwSubsystem* GetSibling(const std::string& name) const;
 
 
  public:
 
-  /// \brief Publish a variable name to the parent subsystem array
-  Bool_t PublishInternalValue(const TString& name, const TString& desc, const VQwHardwareChannel* value) const;
-  /// \brief Publish all variables of the subsystem
-  virtual Bool_t PublishInternalValues() const {
-    return kTRUE; // when not implemented, this returns success
-  };
+  virtual std::vector<TString> GetParamFileNameList();
+  virtual std::map<TString, TString> GetDetectorMaps();
+
   /// \brief Try to publish an internal variable matching the submitted name
   virtual Bool_t PublishByRequest(TString device_name){
     return kFALSE; // when not implemented, this returns failure
   };
 
-  /// \brief Request a named value which is owned by an external subsystem;
-  ///        the request will be handled by the parent subsystem array
-  Bool_t RequestExternalValue(const TString& name, VQwHardwareChannel* value) const;
-
-  /// \brief Return a pointer to a varialbe to the parent subsystem array to be
-  ///        delivered to a different subsystem.
-  
-  virtual const VQwHardwareChannel* ReturnInternalValue(const TString& name) const{
-    std::cout << " VQwHardwareChannel::ReturnInternalValue for value name, " << name.Data()
-              << " define the routine in the respective subsystem to process this!  " <<std::endl;
-    return 0;
+  /// \brief Publish all variables of the subsystem
+  virtual Bool_t PublishInternalValues() const {
+    return kTRUE; // when not implemented, this returns success
   };
-
-  /// \brief Return a named value to the parent subsystem array to be
-  ///        delivered to a different subsystem.
-  virtual Bool_t ReturnInternalValue(const TString& name,
-                                      VQwHardwareChannel* value) const {
-    return kFALSE;
-  };
-  
-  virtual std::vector<TString> GetParamFileNameList();
-  virtual std::map<TString, TString> GetDetectorMaps();
 
  protected:
-  /// Map of published internal values
-  std::map<TString, VQwHardwareChannel*> fPublishedInternalValues;
-  /// List of parameters to be published (loaded at the channel map)
-  std::vector<std::vector<TString> > fPublishList;
 
-  void UpdatePublishedValue(const TString& name, VQwHardwareChannel* data_channel) {
-    fPublishedInternalValues[name] = data_channel;
-  };
+  std::vector<std::vector<TString> > fPublishList;
 
  public:
 
@@ -202,6 +172,27 @@ class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms {
   // Not all derived classes will have the following functions
   virtual void  RandomizeEventData(int helicity = 0, double time = 0.0) { };
   virtual void  EncodeEventData(std::vector<UInt_t> &buffer) { };
+
+
+  /// \name Objects construction and maintenance
+  // @{
+  /// Construct the objects for this subsystem
+  virtual void  ConstructObjects() {
+    TString tmpstr("");
+    ConstructObjects((TDirectory*) NULL, tmpstr);
+  };
+  /// Construct the objects for this subsystem in a folder
+  virtual void  ConstructObjects(TDirectory *folder) {
+    TString tmpstr("");
+    ConstructObjects(folder, tmpstr);
+  };
+  /// Construct the objects for this subsystem with a prefix
+  virtual void  ConstructObjects(TString &prefix) {
+    ConstructObjects((TDirectory*) NULL, prefix);
+  };
+  /// \brief Construct the objects for this subsystem in a folder with a prefix
+  virtual void  ConstructObjects(TDirectory *folder, TString &prefix) { };
+  // @}
 
 
   /// \name Histogram construction and maintenance
@@ -356,11 +347,6 @@ class VQwSubsystem: virtual public VQwSubsystemCloneable, public MQwHistograms {
   std::vector< std::vector<BankID_t> > fBank_IDs;
   /// Vector of marker words per ROC & subbank associated with this subsystem
   std::vector< std::vector< std::vector<UInt_t> > > fMarkerWords;
-
-
-  /// Vector of pointers to subsystem arrays that contain this subsystem
-  std::vector<QwSubsystemArray*> fArrays;
-
 
  protected:
 

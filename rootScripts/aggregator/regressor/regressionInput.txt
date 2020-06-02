@@ -1,0 +1,24 @@
+Global ErrorFlag                          (Leaf to be used as global cut error code)
+Speed 1.00                                (Relative correction amount per fit pass, last pass always has speed = 1)
+Fit-Type parity                           (parity/linear, dipole)
+Non-Linear-Fit 0.0                        (Non linear fit = 1.0, depends on the uncertainties too, and it needs more than one pass to get the parameter uncertainties and to converge)
+Fit-Pass-Limit 1                          (Only calculate the new parameters once = 1, if this number is large then either the fit will meet criteria below or will stop at the limit)
+Fit-Stability-Criteria 0.01               (If all of the parameters change by less than this factor then the fit has converged into a local Chi^2 x-imum)
+Fit-Runaway-Scale-RMS-Criteria 0.0000001  (If all of the parameters relative change scale factor fall in a distribution with this RMS then rescale them down by 1e6)
+Fit-Runaway-Scale-Value-Criteria 2.0      (If all of the parameters meet above criteria and avg change scale factor is above this number then rescale them down by 1e6)
+Responding                                (Variables to independently regress)
+asym_usl .hw_sum .Device_Error_Code       (Branch name, data leaf - NULL for branch==leaf, error code leaf - NULL for no error codes)
+User 0.0
+Manipulated                               (Input variables with which to regress)
+diff_bpm4aX .hw_sum .Device_Error_Code 0.000 1.0    (Branch name, data leaf, error code leaf, initial parameter guess, relative weighting)
+User 0.0
+diff_bpm4aY .hw_sum .Device_Error_Code 0.000 1.0
+User 0.0
+diff_bpm4ecX .hw_sum .Device_Error_Code 0.000 1.0
+User 0.0
+diff_bpm4ecY .hw_sum .Device_Error_Code 0.000 1.0
+User 0.0
+diff_bpm11X .hw_sum .Device_Error_Code 0.000 1.0
+User 0.0
+constant NULL NULL 0.000 1.0 (Non-ROOT Data Entry)
+User 0.0

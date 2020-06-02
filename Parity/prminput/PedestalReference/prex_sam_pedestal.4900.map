@@ -1,0 +1,11 @@
+!! SAM Pedestal
+!https://logbooks.jlab.org/entry/3728776
+!For run 4808, Fit from 10-70uA, relative to digital downstream bcm_dg_ds.hw_sum_raw/bcm_dg_ds.num_samples--351.06)*0.002318
+sam1, 12159.60, 0.000076 
+sam2, 13974.27, 0.000076 
+sam3, 12612.91, 0.000076 
+sam4, 14357.25, 0.000076 
+sam5, 12473.76, 0.000076 
+sam6, 13343.25, 0.000076 
+sam7, 12494.61, 0.000076 
+sam8, 12445.67, 0.000076 

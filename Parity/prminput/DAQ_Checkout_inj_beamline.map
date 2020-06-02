@@ -1,0 +1,132 @@
+
+ROC=24
+Bank=0x02
+vqwk_buffer_offset=1
+
+!same sample size for ADCs in a given bank
+sample_size=4096
+!
+!
+! module.type, module.num  chan.num, det.type, det.name
+
+
+!ADC0
+    VQWK, 0, 0, bcm, inj_0_0
+    VQWK, 0, 1, bcm, inj_0_1
+    VQWK, 0, 2, bcm, inj_0_2
+    VQWK, 0, 3, bcm, inj_0_3
+    VQWK, 0, 4, bcm, inj_0_4
+    VQWK, 0, 5, bcm, inj_0_5
+    VQWK, 0, 6, bcm, inj_0_6
+    VQWK, 0, 7, bcm, inj_0_7
+
+!ADC0
+    VQWK, 1, 0, bcm, inj_1_0
+    VQWK, 1, 1, bcm, inj_1_1
+    VQWK, 1, 2, bcm, inj_1_2
+    VQWK, 1, 3, bcm, inj_1_3
+    VQWK, 1, 4, bcm, inj_1_4
+    VQWK, 1, 5, bcm, inj_1_5
+    VQWK, 1, 6, bcm, inj_1_6
+    VQWK, 1, 7, bcm, inj_1_7
+
+!ADC0
+    VQWK, 2, 0, bcm, inj_2_0
+    VQWK, 2, 1, bcm, inj_2_1
+    VQWK, 2, 2, bcm, inj_2_2
+    VQWK, 2, 3, bcm, inj_2_3
+    VQWK, 2, 4, bcm, inj_2_4
+    VQWK, 2, 5, bcm, inj_2_5
+    VQWK, 2, 6, bcm, inj_2_6
+    VQWK, 2, 7, bcm, inj_2_7
+
+!ADC0
+    VQWK, 3, 0, bcm, inj_3_0
+    VQWK, 3, 1, bcm, inj_3_1
+    VQWK, 3, 2, bcm, inj_3_2
+    VQWK, 3, 3, bcm, inj_3_3
+    VQWK, 3, 4, bcm, inj_3_4
+    VQWK, 3, 5, bcm, inj_3_5
+    VQWK, 3, 6, bcm, inj_3_6
+    VQWK, 3, 7, bcm, inj_3_7
+
+!ADC0
+    VQWK, 4, 0, bcm, inj_4_0
+    VQWK, 4, 1, bcm, inj_4_1
+    VQWK, 4, 2, bcm, inj_4_2
+    VQWK, 4, 3, bcm, inj_4_3
+    VQWK, 4, 4, bcm, inj_4_4
+    VQWK, 4, 5, bcm, inj_4_5
+    VQWK, 4, 6, bcm, inj_4_6
+    VQWK, 4, 7, bcm, inj_4_7
+
+!ADC0
+    VQWK, 5, 0, bcm, inj_5_0
+    VQWK, 5, 1, bcm, inj_5_1
+    VQWK, 5, 2, bcm, inj_5_2
+    VQWK, 5, 3, bcm, inj_5_3
+    VQWK, 5, 4, bcm, inj_5_4
+    VQWK, 5, 5, bcm, inj_5_5
+    VQWK, 5, 6, bcm, inj_5_6
+    VQWK, 5, 7, bcm, inj_5_7
+
+!ADC0
+    VQWK, 6, 0, bcm, inj_6_0
+    VQWK, 6, 1, bcm, inj_6_1
+    VQWK, 6, 2, bcm, inj_6_2
+    VQWK, 6, 3, bcm, inj_6_3
+    VQWK, 6, 4, bcm, inj_6_4
+    VQWK, 6, 5, bcm, inj_6_5
+    VQWK, 6, 6, bcm, inj_6_6
+    VQWK, 6, 7, bcm, inj_6_7
+
+!ADC0
+    VQWK, 7, 0, bcm, inj_7_0
+    VQWK, 7, 1, bcm, inj_7_1
+    VQWK, 7, 2, bcm, inj_7_2
+    VQWK, 7, 3, bcm, inj_7_3
+    VQWK, 7, 4, bcm, inj_7_4
+    VQWK, 7, 5, bcm, inj_7_5
+    VQWK, 7, 6, bcm, inj_7_6
+    VQWK, 7, 7, bcm, inj_7_7
+
+!ADC0
+    VQWK, 8, 0, bcm, inj_8_0
+    VQWK, 8, 1, bcm, inj_8_1
+    VQWK, 8, 2, bcm, inj_8_2
+    VQWK, 8, 3, bcm, inj_8_3
+    VQWK, 8, 4, bcm, inj_8_4
+    VQWK, 8, 5, bcm, inj_8_5
+    VQWK, 8, 6, bcm, inj_8_6
+    VQWK, 8, 7, bcm, inj_8_7
+
+!ADC0
+    VQWK, 9, 0, bcm, inj_9_0
+    VQWK, 9, 1, bcm, inj_9_1
+    VQWK, 9, 2, bcm, inj_9_2
+    VQWK, 9, 3, bcm, inj_9_3
+    VQWK, 9, 4, bcm, inj_9_4
+    VQWK, 9, 5, bcm, inj_9_5
+    VQWK, 9, 6, bcm, inj_9_6
+    VQWK, 9, 7, bcm, inj_9_7
+
+!ADC0
+    VQWK, 10, 0, bcm, inj_10_0
+    VQWK, 10, 1, bcm, inj_10_1
+    VQWK, 10, 2, bcm, inj_10_2
+    VQWK, 10, 3, bcm, inj_10_3
+    VQWK, 10, 4, bcm, inj_10_4
+    VQWK, 10, 5, bcm, inj_10_5
+    VQWK, 10, 6, bcm, inj_10_6
+    VQWK, 10, 7, bcm, inj_10_7
+
+!ADC0
+    VQWK, 11, 0, bcm, inj_11_0
+    VQWK, 11, 1, bcm, inj_11_1
+    VQWK, 11, 2, bcm, inj_11_2
+    VQWK, 11, 3, bcm, inj_11_3
+    VQWK, 11, 4, bcm, inj_11_4
+    VQWK, 11, 5, bcm, inj_11_5
+    VQWK, 11, 6, bcm, inj_11_6
+    VQWK, 11, 7, bcm, inj_11_7
+

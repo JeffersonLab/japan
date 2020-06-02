@@ -41,12 +41,14 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
   public:
 
     friend class VQwDataHandler;
+    friend class QwAlarmHandler;
     friend class QwCombiner;
     friend class QwCorrelator;
     friend class LRBCorrector;
+    friend class QwExtractor;
 
     /// Constructor with options
-    QwSubsystemArrayParity(QwOptions& options): QwSubsystemArray(options, CanContain),fErrorFlag(0),fErrorFlagTreeIndex(-1) { };
+    QwSubsystemArrayParity(QwOptions& options);
     /// Copy constructor by reference
     QwSubsystemArrayParity(const QwSubsystemArrayParity& source);
     /// Default destructor
@@ -67,7 +69,6 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
     /// \brief Fill the database
     void FillDB(QwParityDB *db, TString type);
     void FillErrDB(QwParityDB *db, TString type);
-    const QwSubsystemArrayParity *dummy_source;
 
     /// \brief Assignment operator
     QwSubsystemArrayParity& operator=  (const QwSubsystemArrayParity &value);
@@ -86,11 +87,11 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
 
 
     /// \brief Update the running sums for devices accumulated for the global error non-zero events/patterns
-    void AccumulateRunningSum(const QwSubsystemArrayParity& value);
+    void AccumulateRunningSum(const QwSubsystemArrayParity& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
     /// \brief Update the running sums for devices check only the error flags at the channel level. Only used for stability checks
-    void AccumulateAllRunningSum(const QwSubsystemArrayParity& value);
+    void AccumulateAllRunningSum(const QwSubsystemArrayParity& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
     /// \brief Remove the entry value from the running sums for devices
-    void DeaccumulateRunningSum(const QwSubsystemArrayParity& value);
+    void DeaccumulateRunningSum(const QwSubsystemArrayParity& value, Int_t ErrorMask=0xFFFFFFF);
 
     /// \brief Calculate the average for all good events
     void CalculateRunningAverage();
@@ -113,11 +114,16 @@ class QwSubsystemArrayParity: public QwSubsystemArray {
     ///        internal error flags.
     void IncrementErrorCounters();
 
+    Bool_t CheckForBurpFail(QwSubsystemArrayParity &event);
+    Bool_t CheckBadEventRange();
     /// \brief Report the number of events failed due to HW and event cut failures
     void PrintErrorCounters() const;
     /// \brief Return the error flag to the main routine
-    UInt_t GetEventcutErrorFlag() const{
+    UInt_t GetEventcutErrorFlag() const {
       return fErrorFlag;
+    };
+    const UInt_t* GetEventcutErrorFlagPointer() const {
+      return &fErrorFlag;
     };
 
     /// \brief Update the error flag internally from all the subsystems

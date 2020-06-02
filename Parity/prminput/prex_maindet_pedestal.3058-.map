@@ -1,0 +1,21 @@
+!! MAIN and AT detectors
+!! beam off pedestal using run3057
+usl, 964.622, 76.293e-6
+dsl, 1001.13, 76.293e-6
+atl1, 723.243, 76.293e-6
+atl2, 1192.49, 76.293e-6
+vqwk_25_0ch4, 0, 76.293e-6
+vqwk_25_0ch5, 0, 76.293e-6
+battery1L, 0, 76.293e-6
+battery2L, 0, 76.293e-6
+
+
+usr, 1317.76, 76.293e-6
+dsr, 1063.68, 76.293e-6
+atr1, 1107.53, 76.293e-6
+atr2, 759.548, 76.293e-6
+vqwk_26_0ch4, 0, 76.293e-6
+vqwk_26_0ch5, 0, 76.293e-6
+battery1R, 0, 76.293e-6
+battery2R, 0, 76.293e-6
+

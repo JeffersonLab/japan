@@ -52,18 +52,32 @@ public:
     InitializeChannel(name,datatosave);
   };
   VQwScaler_Channel(const VQwScaler_Channel& source)
-  : VQwHardwareChannel(source),MQwMockable(source),
-    fValue_Raw_Old(source.fValue_Raw_Old),
-    fValue_Raw(source.fValue_Raw),
-    fValue(source.fValue),
-    fValueM2(source.fValueM2),
-    fValueError(source.fValueError),
-    // TODO:  Don't copy the pointer; we need to regenerate it somehow.
-    //fNormChannelPtr(source.fNormChannelPtr);
-    fClockNormalization(source.fClockNormalization),
-    fNormChannelName(source.fNormChannelName),
-    fNeedsExternalClock(source.fNeedsExternalClock),
-    fIsDifferentialScaler(source.fIsDifferentialScaler)
+    : VQwHardwareChannel(source),MQwMockable(source),
+      fValue_Raw_Old(source.fValue_Raw_Old),
+      fValue_Raw(source.fValue_Raw),
+      fValue(source.fValue),
+      fValueM2(source.fValueM2),
+      fValueError(source.fValueError),
+      // TODO:  Don't copy the pointer; we need to regenerate it somehow.
+      //fNormChannelPtr(source.fNormChannelPtr);
+      fClockNormalization(source.fClockNormalization),
+      fNormChannelName(source.fNormChannelName),
+      fNeedsExternalClock(source.fNeedsExternalClock),
+      fIsDifferentialScaler(source.fIsDifferentialScaler)
+  { }
+  VQwScaler_Channel(const VQwScaler_Channel& source, VQwDataElement::EDataToSave datatosave)
+    : VQwHardwareChannel(source,datatosave),MQwMockable(source),
+      fValue_Raw_Old(source.fValue_Raw_Old),
+      fValue_Raw(source.fValue_Raw),
+      fValue(source.fValue),
+      fValueM2(source.fValueM2),
+      fValueError(source.fValueError),
+      // TODO:  Don't copy the pointer; we need to regenerate it somehow.
+      //fNormChannelPtr(source.fNormChannelPtr);
+      fClockNormalization(source.fClockNormalization),
+      fNormChannelName(source.fNormChannelName),
+      fNeedsExternalClock(source.fNeedsExternalClock),
+      fIsDifferentialScaler(source.fIsDifferentialScaler)
   { }
   virtual ~VQwScaler_Channel() { };
 
@@ -141,6 +155,8 @@ public:
 
   Bool_t ApplySingleEventCuts();//check values read from modules are at desired level
 
+  Bool_t CheckForBurpFail(const VQwDataElement *ev_error){return kFALSE;};
+
   void IncrementErrorCounters();
 
   /// report number of events failed due to HW and event cut failure
@@ -157,16 +173,14 @@ public:
   virtual void  FillTreeVector(std::vector<Double_t> &values) const = 0;
   void  ConstructBranch(TTree *tree, TString &prefix);
 
-  inline void AccumulateRunningSum(const VQwScaler_Channel& value){
-    AccumulateRunningSum(value, value.fGoodEventCount);
-  }
-  void AccumulateRunningSum(const VQwScaler_Channel &value, Int_t count);
-  void AccumulateRunningSum(const VQwHardwareChannel *value, Int_t count){
+
+  void AccumulateRunningSum(const VQwScaler_Channel &value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
+  void AccumulateRunningSum(const VQwHardwareChannel *value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF){
     const VQwScaler_Channel *tmp_ptr = dynamic_cast<const VQwScaler_Channel*>(value);
-    if (tmp_ptr != NULL) AccumulateRunningSum(*tmp_ptr, count);
+    if (tmp_ptr != NULL) AccumulateRunningSum(*tmp_ptr, count, ErrorMask);
   };
-  inline void DeaccumulateRunningSum(const VQwScaler_Channel& value){
-    AccumulateRunningSum(value, -1);
+  inline void DeaccumulateRunningSum(const VQwScaler_Channel& value, Int_t ErrorMask){
+    AccumulateRunningSum(value, -1, ErrorMask);
   };
   
   void PrintValue() const;
@@ -218,12 +232,17 @@ class QwScaler_Channel: public VQwScaler_Channel
 {
   public:
 
-    // Define the constructors (cascade)
-    QwScaler_Channel(): VQwScaler_Channel() { };
-    QwScaler_Channel(const QwScaler_Channel& source)
+  // Define the constructors (cascade)
+  QwScaler_Channel(): VQwScaler_Channel() { };
+  QwScaler_Channel(const QwScaler_Channel& source)
     : VQwScaler_Channel(source) { };
-    QwScaler_Channel(TString name, TString datatosave = "raw")
+  QwScaler_Channel(TString name, TString datatosave = "raw")
     : VQwScaler_Channel(name,datatosave) { };
+  QwScaler_Channel(const QwScaler_Channel& source, VQwDataElement::EDataToSave datatosave)
+    : VQwScaler_Channel(source,datatosave) { };
+
+  using VQwHardwareChannel::Clone;
+  VQwHardwareChannel* Clone(VQwDataElement::EDataToSave datatosave) const;
 
   public:
 
@@ -236,7 +255,6 @@ class QwScaler_Channel: public VQwScaler_Channel
 
 
 };
-
 
 //  These typedef's should be the last things in the file.
 //  Class template instationation must be made in the source

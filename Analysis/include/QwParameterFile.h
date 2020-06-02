@@ -145,6 +145,15 @@ class QwParameterFile {
 
     Bool_t FileHasVariablePair(const std::string& separatorchars, const std::string& varname, std::string& varvalue);
     Bool_t FileHasVariablePair(const std::string& separatorchars, const TString& varname, TString& varvalue);
+    template <typename T>
+    Bool_t FileHasVariablePair(const std::string& separatorchars, const std::string& varname, T& varvalue) {
+      std::string strvalue;
+      Bool_t status = FileHasVariablePair(separatorchars, varname, strvalue);
+      if (status){
+	varvalue = ConvertValue<T>(strvalue);
+      }
+      return status;
+    }
 
     Bool_t LineHasSectionHeader();
     Bool_t LineHasSectionHeader(std::string& secname);
@@ -270,6 +279,8 @@ class QwParameterFile {
     /// \brief Parse a range of integers as #:# where either can be missing
     static std::pair<int,int> ParseIntRange(const std::string& separatorchars, const std::string& range);
 
+    /// \brief Parse an integer as #[kM] with optional metric scale factor
+    static int ParseInt(const std::string& value);
 
   protected:
 

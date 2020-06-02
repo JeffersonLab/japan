@@ -22,6 +22,7 @@
 #include "VQwDataHandler.h"
 #include "QwOptions.h"
 #include "QwHelicityPattern.h"
+#include "MQwPublishable.h"
 
 // Forward declarations
 class QwParityDB;
@@ -39,7 +40,10 @@ class QwPromptSummary;
  *   with the CODA routines.
  *
  */
-class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> > {
+class QwDataHandlerArray:
+    public std::vector<boost::shared_ptr<VQwDataHandler> >,
+    public MQwPublishable<QwDataHandlerArray,VQwDataHandler>
+{
  private:
   typedef std::vector<boost::shared_ptr<VQwDataHandler> >  HandlerPtrs;
  public:
@@ -55,30 +59,37 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     QwDataHandlerArray(); // not implement, will thrown linker error on use
 
   public:
-    /// Constructor with options
+    /// Constructor from helicity pattern with options
     QwDataHandlerArray(QwOptions& options, QwHelicityPattern& helicitypattern, const TString &run);
+    /// Constructor from subsystem array with options
+    QwDataHandlerArray(QwOptions& options, QwSubsystemArrayParity& detectors, const TString &run);
     /// Copy constructor by reference
     QwDataHandlerArray(const QwDataHandlerArray& source);
     /// Default destructor
     virtual ~QwDataHandlerArray();
 
-  /// \brief Define configuration options for global array
-  static void DefineOptions(QwOptions &options);
-  /// \brief Process configuration options for the datahandler array itself
-  void ProcessOptions(QwOptions &options);
+    /// \brief Define configuration options for global array
+    static void DefineOptions(QwOptions &options);
+    /// \brief Process configuration options for the datahandler array itself
+    void ProcessOptions(QwOptions &options);
 
-  void LoadDataHandlersFromParameterFile(QwParameterFile& detectors, QwHelicityPattern& helicitypattern, const TString &run);
+    /// \brief Load from mapfile with T = helicity pattern or subsystem array
+    template<class T>
+    void LoadDataHandlersFromParameterFile(QwParameterFile& mapfile, T& detectors, const TString &run);
 
-  /// \brief Add the datahandler to this array
-  void push_back(VQwDataHandler* handler);
-  void push_back(boost::shared_ptr<VQwDataHandler> handler);
+    /// \brief Add the datahandler to this array
+    void push_back(VQwDataHandler* handler);
+    void push_back(boost::shared_ptr<VQwDataHandler> handler);
 
     /// \brief Get the handler with the specified name
     VQwDataHandler* GetDataHandlerByName(const TString& name);
 
     std::vector<VQwDataHandler*> GetDataHandlerByType(const std::string& type);
 
-    void ConstructTreeBranches(QwRootFile *treerootfile);
+    void ConstructTreeBranches(
+        QwRootFile *treerootfile,
+        const std::string& treeprefix = "",
+        const std::string& branchprefix = "");
 
     /// \brief Construct a branch and vector for this handler with a prefix
     void ConstructBranchAndVector(TTree *tree, TString& prefix, std::vector <Double_t> &values);
@@ -86,8 +97,20 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     void FillTreeBranches(QwRootFile *treerootfile);
     /// \brief Fill the vector for this handler
     void FillTreeVector(std::vector<Double_t>& values) const;
-    /// \brief Fill the histograms for this handler
-    void FillHistograms();
+
+    /// Construct the histograms for this subsystem
+    void  ConstructHistograms() {
+      ConstructHistograms((TDirectory*) NULL);
+    };
+    /// Construct the histograms for this subsystem in a folder
+    void  ConstructHistograms(TDirectory *folder) {
+      TString prefix = "";
+      ConstructHistograms(folder, prefix);
+    };
+    /// \brief Construct the histograms in a folder with a prefix
+    void  ConstructHistograms(TDirectory *folder, TString &prefix);
+    /// \brief Fill the histograms
+    void  FillHistograms();
 
     /// \brief Fill the database
     void FillDB(QwParityDB *db, TString type);
@@ -96,6 +119,15 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
 
     void  ClearEventData();
     void  ProcessEvent();
+
+    void UpdateBurstCounter(Short_t burstcounter)
+    {
+      if (!empty()) {
+	for(iterator handler = begin(); handler != end(); ++handler){
+	  (*handler)->UpdateBurstCounter(burstcounter);
+	}
+      }
+    }
 
     /// \brief Assignment operator
     QwDataHandlerArray& operator=  (const QwDataHandlerArray &value);
@@ -116,9 +148,9 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     void AccumulateRunningSum();
 
     /// \brief Update the running sums for devices accumulated for the global error non-zero events/patterns
-    void AccumulateRunningSum(const QwDataHandlerArray& value);
+    void AccumulateRunningSum(const QwDataHandlerArray& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
     /// \brief Update the running sums for devices check only the error flags at the channel level. Only used for stability checks
-    void AccumulateAllRunningSum(const QwDataHandlerArray& value);
+    void AccumulateAllRunningSum(const QwDataHandlerArray& value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);
 
     /// \brief Calculate the average for all good events
     void CalculateRunningAverage();
@@ -136,17 +168,37 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     void ProcessDataHandlerEntry();
 
     void FinishDataHandler();
+
   protected:
-  /// Filename of the global detector map
-  std::string fDataHandlersMapFile;
 
-  /// Pointer for the original data source
-  QwHelicityPattern *fDataSource;
+    void SetPointer(QwHelicityPattern& helicitypattern) {
+      fHelicityPattern = &helicitypattern;
+    }
+    void SetPointer(QwSubsystemArrayParity& detectors) {
+      fSubsystemArray = &detectors;
+    }
 
-  std::vector<std::string> fDataHandlersDisabledByName; ///< List of disabled types
-  std::vector<std::string> fDataHandlersDisabledByType; ///< List of disabled names
+    /// Pointer for the original data source
+    QwHelicityPattern *fHelicityPattern;
+    QwSubsystemArrayParity *fSubsystemArray;
 
-  Bool_t fPrintRunningSum;
+    /// Filename of the global detector map
+    std::string fDataHandlersMapFile;
+
+    Bool_t ScopeMismatch(TString name){
+      name.ToLower();
+      EDataHandlerArrayScope tmpscope = kUnknownScope;
+      if (name=="event") tmpscope = kEventScope;
+      if (name=="pattern") tmpscope = kPatternScope;
+      return (fArrayScope != tmpscope);
+    }
+    enum EDataHandlerArrayScope {kUnknownScope=-1, kEventScope, kPatternScope};
+    EDataHandlerArrayScope fArrayScope;
+
+    std::vector<std::string> fDataHandlersDisabledByName; ///< List of disabled types
+    std::vector<std::string> fDataHandlersDisabledByType; ///< List of disabled names
+
+    Bool_t fPrintRunningSum;
 
     /// Test whether this handler array can contain a particular handler
     static Bool_t CanContain(VQwDataHandler* handler) {

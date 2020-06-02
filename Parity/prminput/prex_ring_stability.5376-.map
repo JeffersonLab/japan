@@ -1,0 +1,3 @@
+ring.size = 200
+ring.stability_cut = 1
+ring.holdoff = 1000

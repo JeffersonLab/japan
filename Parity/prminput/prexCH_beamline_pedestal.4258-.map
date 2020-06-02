@@ -1,0 +1,109 @@
+! adc sample size  16564
+! Input => Channel Name, Offset, Scale Factor from raw ADC/integration window
+! example: TestChanne  , 0     , 76.293e-6 ! Gives volts, if looking at raw further divide by num_samples in full integration window
+!----
+!END	    		        
+
+! Unser calibration based on Run 1214 , HAPLOG 3609, also consistent with dave mack 3.7mV/uA halog entry 3689440 
+UNSER,   -174.1,     2.066e-2	    
+
+
+
+!!! Hall C bcm calibration from run 2946. Check halog 3695862. 
+!!! Updated to run 3372, halog 3705189
+
+! BCM https://logbooks.jlab.org/entry/3720995
+hallc_bcm_4c, -155, 0.001507
+!When fit from 10-70uA, the BCM pedestals relative to the unser for Run4229 were
+bcm_an_us, -693.35, 0.006085
+bcm_an_ds3, -605.73, 0.001824
+bcm_an_ds, -536.08, 0.006112
+bcm_dg_us, -129.09, 0.002894
+bcm_dg_ds, -351.06, 0.002318
+bcm_an_ds10, -316.07, 0.000635
+cav4cQ, -605.23, 0.003082 
+   
+  
+!BPM Pedestals  https://logbooks.jlab.org/entry/3720995
+!BPM pedestals for Run 4309 55-70uA relative to (bcm_dg_ds.hw_sum_raw/bcm_dg_ds.num_samples--351.06)*0.002318 --had to fit bpm4eXM and bpm12YM by hand cause macro had an issue
+
+
+!https://logbooks.jlab.org/node/add/logentry from run 3928 70uA, 240Hz with beam through Compton. 2 data points 60,70uA with gains off on iocse10. These could in principle be applied from runs starting going through the compton onwards (so Run3909 onwards was going through Compton)
+bpm4aXP, 1451.09, 1.0
+bpm4aXM, -42.74, 1.0
+bpm4aYP, 1584.20, 1.0
+bpm4aYM, -204.91, 1.0
+bpm4eXP, 1819.33, 1.0
+bpm4eXM, 733.784, 1.0
+bpm4eYP, 1311.33, 1.0
+bpm4eYM, 440.80, 1.0
+bpm4acXP, -90.89, 1.0
+bpm4acXM, -1622.22, 1.0
+bpm4acYP, 1178.93, 1.0
+bpm4acYM, -226.43, 1.0
+bpm4ecXP, 1298.37, 1.0
+bpm4ecXM, 532.29, 1.0
+bpm4ecYP, 1548.77, 1.0
+bpm4ecYM, 830.82, 1.0
+bpm11XP, 1784.79, 1.0
+bpm11XM, 1418.25, 1.0
+bpm11YP, 1371.68, 1.0
+bpm11YM, 1258.10, 1.0
+bpm12XP, 3891.59, 1.0
+bpm12XM, 4234.95, 1.0
+bpm12YP, 4004.67, 1.0
+bpm12YM, 3514.99, 1.0
+bpm16XP, 1438.58, 1.0
+bpm16XM, 1733.63, 1.0
+bpm16YP, 359.53, 1.0
+bpm16YM, 595.74, 1.0
+bpm1p02bXP, -3435.21, 1.0
+bpm1p02bXM, -2717.68, 1.0
+bpm1p02bYP, -3872.57, 1.0
+bpm1p02bYM, -2873.54, 1.0
+bpm1p03aXP, -5664.70, 1.0
+bpm1p03aXM, -4910.93, 1.0
+bpm1p03aYP, -2830.63, 1.0
+bpm1p03aYM, -2319.58, 1.0
+bpm1XP, -5118.76, 1.0
+bpm1XM, -1526.92, 1.0
+bpm1YP, -4934.73, 1.0
+bpm1YM, -1371.19, 1.0 
+
+
+!https://logbooks.jlab.org/node/add/logentry from run 3928 70uA, 240Hz with beam through Compton. 2 data points 60,70uA with gains off on iocse10. These could in principle be applied from runs starting going through the compton onwards (so Run3909 onwards was going through Compton)
+bpm1p02bXP, -3465.80, 1.0 
+bpm1p02bXM, -2669.72, 1.0 
+bpm1p02bYP, -3835.37, 1.0 
+bpm1p02bYM, -2918.58, 1.0 
+bpm1p03aXP, -5347.88, 1.0 
+bpm1p03aXM, -4946.05, 1.0 
+bpm1p03aYP, -2576.19, 1.0 
+bpm1p03aYM, -2273.54, 1.0 
+
+
+!!  Cavity BPM offsets determined  for 40-50uA from run 2965 by using the
+!!  unser.
+!!  Cavity bpms XI and YI gains were set to give positions consistent with the
+!!  stripline BPMs.  The commented values were the pedestals from the fit to
+!!  the BCMs.
+  cav4bQ, -1243.93, 0.003278
+  cav4bXI,  -350.396,    0.0216191
+  cav4bYI,  -278.993,    0.0118156
+!!cav4bXI, -313.61, -0.118434
+!!cav4bYI, -29.58, -0.009883
+
+!!cav4cQ pdedstal from https://logbooks.jlab.org/entry/3711368
+!  cav4cQ, -1484.29, 0.003034 
+  !! FIXE ME: XI YI pedestal 
+  cav4cXI, -408.33, 0.003221
+  cav4cYI, -186.39, 0.003221
+
+!!cav4cXI, -529.38, 0.017139
+!!cav4cYI, 219.36, -0.012486
+  cav4dQ, -1829.75, 0.003070
+  cav4dXI,  -525.044,    0.0218225
+  cav4dYI,  1084.72,    0.00207035
+!!cav4dXI, -398.41, 0.034273
+!!cav4dYI, 1317.22, -0.003728
+

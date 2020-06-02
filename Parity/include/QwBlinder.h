@@ -85,6 +85,7 @@ class QwBlinder {
   
   ///  Error flag value 
   static const UInt_t kErrorFlag_BlinderFail = 0x200;
+  constexpr static const Double_t kValue_BlinderFail   = -1.0;
 
   static void DefineOptions(QwOptions &options);
 
@@ -97,6 +98,8 @@ class QwBlinder {
 
     /// \brief Update the status with new external information
     void ProcessOptions(QwOptions& options);
+    /// \brief Update the status using a random number
+    void Update();
     /// \brief Update the status with new external information
     void Update(QwParityDB* db);
     /// \brief Update the status with new external information
@@ -211,6 +214,22 @@ class QwBlinder {
 
     const Bool_t& IsBlinderOkay() const {return fBlinderIsOkay;};
 
+    void ConstructObjects(TDirectory *folder, TString &prefix) {
+      if (folder != NULL) folder->cd();
+      const TObjString* seed = new TObjString(fSeed);
+      folder->WriteTObject(seed, prefix + "seed", "WriteDelete");
+      const TObjString* seedID = new TObjString(Form("%u",fSeedID));
+      folder->WriteTObject(seedID, prefix + "seedID", "WriteDelete");
+      const TObjString* strategy = new TObjString(Form("%u", fBlindingStrategy));
+      folder->WriteTObject(strategy, prefix + "strategy", "WriteDelete");
+      const TObjString* max_asymmetry = new TObjString(Form("%f",fMaximumBlindingAsymmetry));
+      folder->WriteTObject(max_asymmetry, prefix + "max_asymmetry", "WriteDelete");
+      const TObjString* max_factor = new TObjString(Form("%f",fMaximumBlindingFactor));
+      folder->WriteTObject(max_factor, prefix + "max_factor", "WriteDelete");
+      const TObjString* checksum = new TObjString(fChecksum.c_str());
+      folder->WriteTObject(checksum, prefix + "checksum", "WriteDelete");
+    };
+
  private:
     ///  Indicates the first value recieved of the blindability of the target 
     EQwBlinderStatus fTargetBlindability_firstread;
@@ -220,10 +239,12 @@ class QwBlinder {
     EQwWienMode fWienMode;
     Int_t fIHWPPolarity_firstread;
     Int_t fIHWPPolarity;
+    Bool_t fSpinDirectionForced;
     void SetTargetBlindability(EQwBlinderStatus status);
     void SetWienState(EQwWienMode wienmode);
     void SetIHWPPolarity(Int_t ihwppolarity);
 
+    Bool_t fUseCREXPositions;
 
     Double_t fBeamCurrentThreshold;
     Bool_t fBeamIsPresent;
@@ -242,14 +263,17 @@ class QwBlinder {
     const QwBlinder& operator= (const QwBlinder& __attribute__((unused)) blinder) { return *this; };
 
     //  Variables and functions used in blinding the detector asymmetries
-    const EQwBlindingStrategy fBlindingStrategy; /// Blinding strategy
+    EQwBlindingStrategy fBlindingStrategy; /// Blinding strategy
     Double_t fBlindingOffset; /// The term to be added to detector asymmetries
     Double_t fBlindingOffset_Base; /// The term to be added to detector asymmetries, before polarity correction
     Double_t fBlindingFactor; /// The factor to be mutliplied to detector asymmetries
 
 
-    static const Double_t kMaximumBlindingAsymmetry; /// Maximum blinding asymmetry (in ppm)
-    static const Double_t kMaximumBlindingFactor;    /// Maximum blinding factor (in % from identity)
+    static const Double_t kDefaultMaximumBlindingAsymmetry; /// Default maximum blinding asymmetry (in ppm)
+    static const Double_t kDefaultMaximumBlindingFactor;    /// Default maximum blinding factor (in fraction from identity)
+
+    Double_t fMaximumBlindingAsymmetry; /// Maximum blinding asymmetry (in ppm)
+    Double_t fMaximumBlindingFactor;    /// Maximum blinding factor (in fraction from identity)
 
     UInt_t fSeedID;      /// ID of seed used (seeds.seed_id)
     TString fSeed;       /// Seed string (seeds.seed)
@@ -283,6 +307,9 @@ class QwBlinder {
 
     ///  Reads the seed from the database object
     Int_t ReadSeed(QwParityDB* db);
+
+    ///  Read the seed string generated utilizing a random number generator
+    Int_t ReadRandomSeed();
 
     void WriteChecksum(QwParityDB* db);     ///  Writes fSeedID and fBFChecksum to DB for this analysis ID
     void WriteTestValues(QwParityDB* db);   ///  Writes fTestNumber and fBlindTestValue to DB for this analysis ID

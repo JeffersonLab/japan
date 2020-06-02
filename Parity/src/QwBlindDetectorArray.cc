@@ -35,6 +35,10 @@ void QwBlindDetectorArray::DefineOptions(QwOptions &options){
     ("QwBlindDetectorArray.normalize",
      po::value<bool>()->default_bool_value(true),
      "Normalize the detectors by beam current");
+  options.AddOptions()
+    ("QwBlindDetectorArray.norm_threshold",
+     po::value<double>()->default_value(2.5),
+     "Normalize the detectors for currents above this value");
 }
 
 
@@ -51,6 +55,7 @@ void QwBlindDetectorArray::ProcessOptions(QwOptions &options){
 	      << "Detector yields WILL NOT be normalized."
 	      << QwLog::endl;
   }
+  fNormThreshold = options.GetValue<double>("QwDetectorArray.norm_threshold");
 }
 
 
@@ -169,8 +174,6 @@ Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
 
   std::vector<TString> combinedchannelnames;
   std::vector<Double_t> weight;
-  Int_t currentrocread=0;
-  Int_t currentbankread=0;
   Int_t wordsofar=0;
   Int_t currentsubbankindex=-1;
   Int_t sample_size=0;
@@ -303,7 +306,7 @@ Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
             {
               if (localMainDetID.fTypeID==kQwIntegrationPMT)
                 {
-                  QwIntegrationPMT localIntegrationPMT(GetSubsystemName(),localMainDetID.fdetectorname);
+                  QwIntegrationPMT localIntegrationPMT(GetName(),localMainDetID.fdetectorname);
 		  if (keyword=="not_blindable"
 		      || keyword2=="not_blindable")
 		    localIntegrationPMT.SetBlindability(kFALSE);
@@ -321,7 +324,7 @@ Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
 
               else if (localMainDetID.fTypeID==kQwCombinedPMT)
                 {
-		  QwCombinedPMT localcombinedPMT(GetSubsystemName(),localMainDetID.fdetectorname);
+		  QwCombinedPMT localcombinedPMT(GetName(),localMainDetID.fdetectorname);
 		  if (keyword=="not_normalizable" 
 		      || keyword2=="not_normalizable")
 		    localcombinedPMT.SetNormalizability(kFALSE);
@@ -488,6 +491,7 @@ Int_t QwBlindDetectorArray::LoadEventCuts(TString filename)
 	    Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for IntegrationPMT value
 	    Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for IntegrationPMT value
 	    varvalue = mapstr.GetTypedNextToken<TString>();//global/local
+      Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
             varvalue.ToLower();
 	    Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
 	    QwMessage << "QwBlindDetectorArray Error Code passing to QwIntegrationPMT " << GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut) << QwLog::endl;
@@ -495,13 +499,14 @@ Int_t QwBlindDetectorArray::LoadEventCuts(TString filename)
 	    //std::cout<<"*****************************"<<std::endl;
 	    //std::cout<<" Type "<<device_type<<" Name "<<device_name<<" Index ["<<det_index <<"] "<<" device flag "<<check_flag<<std::endl;
 
-	    fIntegrationPMT[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut);
+	    fIntegrationPMT[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut,burplevel);
 	    //std::cout<<"*****************************"<<std::endl;
 
 	  } else if (device_type == GetQwPMTInstrumentTypeName(kQwCombinedPMT)){
 	    Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for CombinedPMT value
 	    Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for CombinedPMT value
 	    varvalue = mapstr.GetTypedNextToken<TString>();//global/local
+      Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
             varvalue.ToLower();
 	    Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
 	    QwMessage << "QwBlindDetectorArray Error Code passing to QwCombinedPMT " << GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut) << QwLog::endl;
@@ -509,7 +514,7 @@ Int_t QwBlindDetectorArray::LoadEventCuts(TString filename)
 	    //std::cout<<"*****************************"<<std::endl;
 	    //std::cout<<" Type "<<device_type<<" Name "<<device_name<<" Index ["<<det_index <<"] "<<" device flag "<<check_flag<<std::endl;
 
-	    fCombinedPMT[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut);
+	    fCombinedPMT[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut,burplevel);
 	    //std::cout<<"*****************************"<<std::endl;
 	    
 	  }
@@ -726,7 +731,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
     }    
   }else{
     bIsExchangedDataValid = kFALSE;
-    QwError << GetSubsystemName() << " could not get external value for "
+    QwError << GetName() << " could not get external value for "
 	    << fTargetX.GetElementName() << QwLog::endl;
   }
 
@@ -737,7 +742,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
     }
   }else{
     bIsExchangedDataValid = kFALSE;
-    QwError << GetSubsystemName() << " could not get external value for "
+    QwError << GetName() << " could not get external value for "
 	    << fTargetY.GetElementName() << QwLog::endl;
   }
 
@@ -748,7 +753,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
     }
   }else{
     bIsExchangedDataValid = kFALSE;
-    QwError << GetSubsystemName() << " could not get external value for "
+    QwError << GetName() << " could not get external value for "
 	    << fTargetXprime.GetElementName() << QwLog::endl;
   }
   
@@ -759,7 +764,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
     }
   }else{
     bIsExchangedDataValid = kFALSE;
-    QwError << GetSubsystemName() << " could not get external value for "
+    QwError << GetName() << " could not get external value for "
 	    << fTargetYprime.GetElementName() << QwLog::endl;
   }
   
@@ -770,7 +775,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
     }
   }else{
     bIsExchangedDataValid = kFALSE;
-    QwError << GetSubsystemName() << " could not get external value for "
+    QwError << GetName() << " could not get external value for "
 	    << fTargetEnergy.GetElementName() << QwLog::endl;
   }
     
@@ -872,6 +877,19 @@ UInt_t QwBlindDetectorArray::GetEventcutErrorFlag() //return the error flag
   return ErrorFlag;
 }
 
+Bool_t QwBlindDetectorArray::CheckForBurpFail(const VQwSubsystem *subsys){
+  Bool_t burpstatus = kFALSE;
+  VQwSubsystem* tmp = const_cast<VQwSubsystem *>(subsys);
+  if(Compare(tmp)) {
+    const QwBlindDetectorArray* input = dynamic_cast<const QwBlindDetectorArray*>(subsys);
+    for(size_t i=0;i<input->fIntegrationPMT.size();i++)
+      burpstatus |= (this->fIntegrationPMT[i]).CheckForBurpFail(&(input->fIntegrationPMT[i]));
+    for(size_t i=0;i<input->fCombinedPMT.size();i++)
+      burpstatus |= (this->fCombinedPMT[i]).CheckForBurpFail(&(input->fCombinedPMT[i]));
+  }
+  return burpstatus;
+}
+
 void QwBlindDetectorArray::IncrementErrorCounters()
 {
   for(size_t i=0;i<fIntegrationPMT.size();i++){
@@ -967,7 +985,7 @@ void  QwBlindDetectorArray::ExchangeProcessedData()
 	else
 	  {
 	    bIsExchangedDataValid = kFALSE;
-	    QwError << GetSubsystemName() << " could not get external value for "
+	    QwError << GetName() << " could not get external value for "
 		    << variable->GetElementName() << QwLog::endl;
 	  }
       } // end of loop over variables
@@ -983,7 +1001,7 @@ void  QwBlindDetectorArray::ExchangeProcessedData()
     }
     else{
       bIsExchangedDataValid = kFALSE;
-      QwError << GetSubsystemName() << " could not get external value for "
+      QwError << GetName() << " could not get external value for "
 	      << fTargetCharge.GetElementName() << QwLog::endl;
     }
     
@@ -1005,7 +1023,8 @@ void  QwBlindDetectorArray::ProcessEvent_2()
           std::cout<<"pedestal, calfactor, average volts = "<<pedestal<<", "<<calfactor<<", "<<volts<<std::endl;
         }
 
-      if (bNormalization) this->DoNormalization();
+      if (bNormalization && fTargetCharge.GetValue()>fNormThreshold)
+	this->DoNormalization();
     }
   else
     {
@@ -1252,26 +1271,26 @@ void QwBlindDetectorArray::CalculateRunningAverage()
   return;
 }
 
-void QwBlindDetectorArray::AccumulateRunningSum(VQwSubsystem* value1)
+void QwBlindDetectorArray::AccumulateRunningSum(VQwSubsystem* value1, Int_t count, Int_t ErrorMask)
 {
   if (Compare(value1)) {
     QwBlindDetectorArray* value = dynamic_cast<QwBlindDetectorArray*>(value1);
 
     for (size_t i = 0; i < fIntegrationPMT.size(); i++)
-      fIntegrationPMT[i].AccumulateRunningSum(value->fIntegrationPMT[i]);
+      fIntegrationPMT[i].AccumulateRunningSum(value->fIntegrationPMT[i], count, ErrorMask);
     for (size_t i = 0; i < fCombinedPMT.size(); i++)
-      fCombinedPMT[i].AccumulateRunningSum(value->fCombinedPMT[i]);
+      fCombinedPMT[i].AccumulateRunningSum(value->fCombinedPMT[i], count, ErrorMask);
   }
 }
 
-void QwBlindDetectorArray::DeaccumulateRunningSum(VQwSubsystem* value1){
+void QwBlindDetectorArray::DeaccumulateRunningSum(VQwSubsystem* value1, Int_t ErrorMask){
   if (Compare(value1)) {
     QwBlindDetectorArray* value = dynamic_cast<QwBlindDetectorArray*>(value1);
 
     for (size_t i = 0; i < fIntegrationPMT.size(); i++)
-      fIntegrationPMT[i].DeaccumulateRunningSum(value->fIntegrationPMT[i]);
+      fIntegrationPMT[i].DeaccumulateRunningSum(value->fIntegrationPMT[i], ErrorMask);
     for (size_t i = 0; i < fCombinedPMT.size(); i++)
-      fCombinedPMT[i].DeaccumulateRunningSum(value->fCombinedPMT[i]);
+      fCombinedPMT[i].DeaccumulateRunningSum(value->fCombinedPMT[i], ErrorMask);
   }  
 };
 
@@ -1467,7 +1486,7 @@ void  QwBlindDetectorArray::FillDB(QwParityDB *db, TString datatype)
 
 void  QwBlindDetectorArray::PrintValue() const
 {
-  QwMessage << "=== QwBlindDetectorArray: " << GetSubsystemName() << " ===" << QwLog::endl;
+  QwMessage << "=== QwBlindDetectorArray: " << GetName() << " ===" << QwLog::endl;
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
     fIntegrationPMT[i].PrintValue();
   for (size_t i = 0; i < fCombinedPMT.size(); i++)
