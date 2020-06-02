@@ -162,7 +162,7 @@ Bool_t QwBlindDetectorArray::PublishByRequest(TString device_name)
     break;
   }
   if (!status)  
-    QwError << "QwBlindDetectorArray::PublishByRequest:  Failed to publish channel name:  " << device_name << QwLog::endl;
+    QwDebug << "QwBlindDetectorArray::PublishByRequest:  Failed to publish channel name:  " << device_name << QwLog::endl;
   return status;
 }
 
