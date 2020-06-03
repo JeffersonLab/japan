@@ -1,0 +1,57 @@
+! Unser calibration based on Run 1214 , HAPLOG 3609, also consistent with dave mack 3.7mV/uA halog entry 3689440 
+UNSER,   -174.1,     2.066e-2	    
+
+!BCM an_us Calibration from cameron's pedestal 1 http://ace.phys.virginia.edu/HAPPEX/4094
+ bcm_an_us, -569.20, 0.002667
+
+!BCM an_ds Calibration from cameron's pedestal 1
+ bcm_an_ds, -371.56, 0.002782
+ bcm_an_ds3, -732.50, 0.000808
+ bcm_an_ds10, -882.56, 0.000000
+
+!BCM dg_us Calibration from cameron's pedestal 1
+ bcm_dg_us, -228.86, 0.002922
+
+!BCM dg_ds Calibration from cameron's pedestal 1
+ bcm_dg_ds, -499.86, 0.002701
+
+!BPM pedestal from run 3396 using caryn's analysis https://logbooks.jlab.org/entry/3810512
+ bpm1XP, -2931.95, 1.000000 
+ bpm1XM, -3042.83, 1.000000 
+ bpm1YP, -3728.52, 1.000000 
+ bpm1YM, -3830.13, 1.000000 
+ bpm4aXP, 438.05, 1.000000 
+ bpm4aXM, 392.87, 1.000000 
+ bpm4aYP, 770.95, 1.000000 
+ bpm4aYM, 182.35, 1.000000 
+ bpm4eXP, 1322.45, 1.000000 
+ bpm4eXM, 956.29, 1.000000 
+ bpm4eYP, 788.89, 1.000000 
+ bpm4eYM, 586.01, 1.000000 
+ bpm4acXP, -220.97, 1.000000 
+ bpm4acXM, -619.92, 1.000000 
+ bpm4acYP, 433.07, 1.000000 
+ bpm4acYM, 136.13, 1.000000 
+ bpm4ecXP, 1141.26, 1.000000 
+ bpm4ecXM, 955.09, 1.000000 
+ bpm4ecYP, 1312.01, 1.000000 
+ bpm4ecYM, 1017.50, 1.000000 
+ bpm11XP, 1665.76, 1.000000 
+ bpm11XM, 423.06, 1.000000 
+ bpm11YP, 56.99, 1.000000 
+ bpm11YM, 1077.16, 1.000000 
+ bpm12XP, 3749.51, 1.000000 
+ bpm12XM, 3515.35, 1.000000 
+ bpm12YP, 3421.94, 1.000000 
+ bpm12YM, 3351.42, 1.000000 
+ bpm16XP, 905.65, 1.000000 
+ bpm16XM, 1786.39, 1.000000 
+ bpm16YP, 431.91, 1.000000 
+ bpm16YM, -160.78, 1.000000 
+
+!Cavity BPMs pedestal calibration from run 3138 http://ace.phys.virginia.edu/HAPPEX/4094
+!Gains set to 1 for now
+ cav4cQ, -730.77, 0.003117
+ cav4cXI, -450.39, 1
+ cav4cYI, -249.34, 1
+

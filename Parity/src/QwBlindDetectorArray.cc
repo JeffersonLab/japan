@@ -162,7 +162,7 @@ Bool_t QwBlindDetectorArray::PublishByRequest(TString device_name)
     break;
   }
   if (!status)  
-    QwError << "QwBlindDetectorArray::PublishByRequest:  Failed to publish channel name:  " << device_name << QwLog::endl;
+    QwDebug << "QwBlindDetectorArray::PublishByRequest:  Failed to publish channel name:  " << device_name << QwLog::endl;
   return status;
 }
 
@@ -434,11 +434,12 @@ Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
     }
   }
   // Print list of variables to publish
-  QwMessage << "Variables to publish:" << QwLog::endl;
-  for (size_t jj = 0; jj < fPublishList.size(); jj++)
-    QwMessage << fPublishList.at(jj).at(0) << " " << fPublishList.at(jj).at(1) << " "
-              << fPublishList.at(jj).at(2) << " " << fPublishList.at(jj).at(3) << QwLog::endl;
-
+  if (fPublishList.size()>0){
+    QwMessage << "Variables to publish:" << QwLog::endl;
+    for (size_t jj = 0; jj < fPublishList.size(); jj++)
+      QwMessage << fPublishList.at(jj).at(0) << " " << fPublishList.at(jj).at(1) << " "
+		<< fPublishList.at(jj).at(2) << " " << fPublishList.at(jj).at(3) << QwLog::endl;
+  }
   if (ldebug)
     {
       std::cout<<"Done with Load channel map\n";

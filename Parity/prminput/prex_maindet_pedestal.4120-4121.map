@@ -1,0 +1,21 @@
+!Man detector and AT calibrations from run 4123, using caryn's analysis http://logbooks.jlab.org/3810512
+ usl, 1547.79, 0.000076 
+ usr, 1186.09, 0.000076 
+ dsl, 1672.19, 0.000076 
+ dsr, 830.30, 0.000076 
+
+ atl1, 116.91, 0.000076 
+ atl2, 1156.49, 0.000076 
+ atr1, 1419.96, 0.000076 
+ atr2, 526.56, 0.000076 
+
+!These devices are holdovers from before the mapfiles were recreated. 
+ vqwk_25_0ch4, 0, 0.000076
+ vqwk_25_0ch5, 0, 0.000076
+ battery1L, 0, 0.000076
+ battery2L, 0, 0.000076 
+
+ vqwk_26_0ch4, 0, 0.000076
+ vqwk_26_0ch5, 0, 0.000076
+ battery1R, 0, 0.000076
+ battery2R, 0, 0.000076

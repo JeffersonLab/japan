@@ -615,7 +615,7 @@ Bool_t QwSubsystemArrayParity::CheckBadEventRange(){
 
 void  QwSubsystemArrayParity::ConstructBranchAndVector(TTree *tree, TString& prefix, std::vector<Double_t>& values){
   QwSubsystemArray::ConstructBranchAndVector(tree, prefix, values);
-  if (prefix=="yield_" || prefix==""){
+  if (prefix.Contains("yield_") || prefix==""){
     values.push_back(0.0);
     fErrorFlagTreeIndex = values.size()-1;
     tree->Branch("ErrorFlag",&(values[fErrorFlagTreeIndex]),"ErrorFlag/D");

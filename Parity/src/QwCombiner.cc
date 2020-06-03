@@ -169,9 +169,11 @@ Int_t QwCombiner::LoadChannelMap(const std::string& mapfile)
     delete section2;
   }
   // Print list of variables to publish
-  QwMessage << "Variables to publish:" << QwLog::endl;
-  for (size_t jj = 0; jj < fPublishList.size(); jj++){
-    QwMessage << fPublishList.at(jj).at(0) << " " << fPublishList.at(jj).at(1) << " " << fPublishList.at(jj).at(2) << " " << fPublishList.at(jj).at(3) << QwLog::endl;
+  if (fPublishList.size()>0){
+    QwMessage << "Variables to publish:" << QwLog::endl;
+    for (size_t jj = 0; jj < fPublishList.size(); jj++){
+      QwMessage << fPublishList.at(jj).at(0) << " " << fPublishList.at(jj).at(1) << " " << fPublishList.at(jj).at(2) << " " << fPublishList.at(jj).at(3) << QwLog::endl;
+    }
   }
   return 0;
 }
@@ -204,7 +206,9 @@ Int_t QwCombiner::ConnectChannels(
     } else if(fDependentName.at(dv).at(0) == '@' ){
         name = fDependentName.at(dv).substr(1,fDependentName.at(dv).length());
     }else{
-      switch (fDependentType.at(dv)) {
+      dv_ptr = this->RequestExternalPointer(fDependentFull.at(dv));
+      if (dv_ptr==NULL){
+	switch (fDependentType.at(dv)) {
         case kHandleTypeAsym:
           dv_ptr = asym.RequestExternalPointer(fDependentName.at(dv));
           break;
@@ -217,6 +221,7 @@ Int_t QwCombiner::ConnectChannels(
 		                << ", for asym/diff combiner does not have proper type, type=="
 		                << fDependentType.at(dv) << "."<< QwLog::endl;
           break;
+	}
       }
 
       vqwk = dynamic_cast<const QwVQWK_Channel*>(dv_ptr);
@@ -255,7 +260,9 @@ Int_t QwCombiner::ConnectChannels(
     for (size_t iv = 0; iv < fIndependentName.at(dv).size(); iv++) {
       // Get the independent variables
       const VQwHardwareChannel* iv_ptr = 0;
-      switch (fIndependentType.at(dv).at(iv)) {
+      iv_ptr = RequestExternalPointer(fIndependentName.at(dv).at(iv));
+      if (iv_ptr == NULL){
+	switch (fIndependentType.at(dv).at(iv)) {
         case kHandleTypeAsym:
           iv_ptr = asym.RequestExternalPointer(fIndependentName.at(dv).at(iv));
           break;
@@ -266,9 +273,7 @@ Int_t QwCombiner::ConnectChannels(
           QwWarning << "Independent variable for combiner has unknown type."
                     << QwLog::endl;
           break;
-      }
-      if (iv_ptr == NULL){
-        iv_ptr = RequestExternalPointer(fIndependentName.at(dv).at(iv));
+	}
       }
       if (iv_ptr) {
         //QwMessage << " iv: " << fIndependentName.at(dv).at(iv) << " (sens = " << fSensitivity.at(dv).at(iv) << ")" << QwLog::endl;

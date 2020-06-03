@@ -1,0 +1,65 @@
+! Unser calibration based on Run 1214 , HAPLOG 3609, also consistent with dave mack 3.7mV/uA halog entry 3689440 
+UNSER,   -174.1,     2.066e-2	    
+
+!BCM an_us Calibration from cameron's pedestal 2 http://ace.phys.virginia.edu/HAPPEX/4094
+ bcm_an_us, -640.97, 0.006150
+
+!BCM an_ds Calibration from cameron's pedestal 2
+ bcm_an_ds, -482.74, 0.006190
+ bcm_an_ds3, -703.88, 0.001820
+ bcm_an_ds10, -2253.98, 0.000614
+
+!BCM dg_us Calibration from cameron's pedestal 2
+ bcm_dg_us, -196.36, 0.002885
+
+!BCM dg_ds Calibration from cameron's pedestal 2
+ bcm_dg_ds, -441.73, 0.002328
+
+!BPM pedestal from run 4309 using caryn's analysis https://logbooks.jlab.org/entry/3810512
+ bpm4aXP, 1103.51, 1.000000 
+ bpm4aXM, -360.62, 1.000000 
+ bpm4aYP, 1235.93, 1.000000 
+ bpm4aYM, -519.73, 1.000000 
+ bpm4eXP, 1478.30, 1.000000 
+ bpm4eXM, 385.93, 1.000000 
+ bpm4eYP, 968.59, 1.000000 
+ bpm4eYM, 113.03, 1.000000 
+ bpm4acXP, -452.97, 1.000000 
+ bpm4acXM, -1955.15, 1.000000 
+ bpm4acYP, 826.02, 1.000000 
+ bpm4acYM, -530.46, 1.000000 
+ bpm4ecXP, 955.26, 1.000000 
+ bpm4ecXM, 217.90, 1.000000 
+ bpm4ecYP, 1196.84, 1.000000 
+ bpm4ecYM, 502.31, 1.000000 
+ bpm11XP, 1421.23, 1.000000 
+ bpm11XM, 1095.87, 1.000000 
+ bpm11YP, 1014.75, 1.000000 
+ bpm11YM, 888.15, 1.000000 
+ bpm12XP, 3564.53, 1.000000 
+ bpm12XM, 3916.67, 1.000000 
+ bpm12YP, 3673.74, 1.000000 
+ bpm12YM, 3230.73, 1.000000 
+ bpm16XP, 1090.17, 1.000000 
+ bpm16XM, 1372.81, 1.000000 
+ bpm16YP, -4.20, 1.000000 
+ bpm16YM, 232.92, 1.000000 
+ bpm1p02bXP, -3103.96, 1.000000 
+ bpm1p02bXM, -2479.30, 1.000000 
+ bpm1p02bYP, -3541.99, 1.000000 
+ bpm1p02bYM, -2650.08, 1.000000 
+ bpm1p03aXP, -5353.00, 1.000000 
+ bpm1p03aXM, -4599.76, 1.000000 
+ bpm1p03aYP, -2496.59, 1.000000 
+ bpm1p03aYM, -2093.93, 1.000000 
+ bpm1XP, -4795.19, 1.000000 
+ bpm1XM, -1269.38, 1.000000 
+ bpm1YP, -4685.41, 1.000000 
+ bpm1YM, -1013.87, 1.000000   
+
+!Cavity BPMs pedestal calibration from run 4806 http://ace.phys.virginia.edu/HAPPEX/4094
+!Gains set to 1 for now
+ cav4cQ, -694.23, 0.003090
+ cav4cXI, -454.08, 1
+ cav4cYI, -244.92, 1
+
