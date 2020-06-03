@@ -38,7 +38,7 @@ EVENTCUTS = 3
 
 !device_type, device_name, lower_limit, upper_limit, local(l)/global(g), stability_RMS, burplevel
 
- bcm,	bcm_an_us,	25,	1e6,	g,	1.7
+ bcm,	bcm_an_us,	3,	1e6,	g,	1.7
  bcm,	bcm_an_ds,	-10,	1e6,	g
 
 !****************************************************				
