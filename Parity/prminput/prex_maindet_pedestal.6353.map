@@ -1,0 +1,23 @@
+!leftover values from before mapfile consolidation
+ vqwk_25_0ch4, 0, 0.000076
+ vqwk_25_0ch5, 0, 0.000076
+ battery1L, 0, 0.000076
+ battery2L, 0, 0.000076
+ vqwk_26_0ch4, 0, 0.000076
+ vqwk_26_0ch5, 0, 0.000076
+ battery1R, 0, 0.000076
+ battery2R, 0, 0.000076
+
+!main detectors use calibrations from cameron's global 
+!from run 6560 pedestal analysis: http://ace.phys.virginia.edu:80/HAPPEX/4081
+!downstream pedestal set to 0 
+ usl, 1300.69, 0.000076 
+ usr, 1165.41, 0.000076 
+ dsl, 0, 0
+ dsr, 0, 0
+
+!AT detectors calibration from run 6560 also camerons pedestals
+ atl1, 1039.79, 0.000076 
+ atr1, 1032.30, 0.000076 
+ atl2, 1543.18, 0.000076 
+ atr2, 710.58, 0.000076 

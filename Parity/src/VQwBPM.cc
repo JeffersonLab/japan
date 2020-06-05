@@ -179,7 +179,7 @@ VQwBPM& VQwBPM::operator= (const VQwBPM &value)
 
 void VQwBPM::SetRootSaveStatus(TString &prefix)
 {
-  if(prefix=="diff_"||prefix=="yield_"|| prefix=="asym_")
+  if(prefix.Contains("diff_")||prefix.Contains("yield_")|| prefix.Contains("asym_"))
     bFullSave=kFALSE;
   
   return;

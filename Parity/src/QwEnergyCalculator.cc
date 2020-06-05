@@ -53,7 +53,7 @@ void QwEnergyCalculator::Set(const VQwBPM* device, TString type, TString propert
 
 void QwEnergyCalculator::SetRootSaveStatus(TString &prefix)
 {
-  if(prefix=="diff_"||prefix=="yield_"|| prefix=="asym_")
+  if(prefix.Contains("diff_")||prefix.Contains("yield_")|| prefix.Contains("asym_"))
     bFullSave=kFALSE;
   
   return;
@@ -391,8 +391,8 @@ void  QwEnergyCalculator::ConstructHistograms(TDirectory *folder, TString &prefi
   }
   else{
     TString thisprefix=prefix;
-    if(prefix=="asym_")
-      thisprefix="diff_";
+    if(prefix.Contains("asym_"))
+      thisprefix.ReplaceAll("asym_","diff_");
     SetRootSaveStatus(thisprefix);
     fEnergyChange.ConstructHistograms(folder, thisprefix);
   }
@@ -416,8 +416,8 @@ void  QwEnergyCalculator::ConstructBranchAndVector(TTree *tree, TString &prefix,
   }
   else{
     TString thisprefix=prefix;
-    if(prefix=="asym_")
-      thisprefix="diff_";
+    if(prefix.Contains("asym_"))
+      thisprefix.ReplaceAll("asym_","diff_");
     
     SetRootSaveStatus(thisprefix);
     
@@ -434,8 +434,8 @@ void  QwEnergyCalculator::ConstructBranch(TTree *tree, TString &prefix){
   }
   else{
     TString thisprefix=prefix;
-    if(prefix=="asym_")
-      thisprefix="diff_";
+    if(prefix.Contains("asym_"))
+      thisprefix.ReplaceAll("asym_","diff_");
 
     SetRootSaveStatus(thisprefix);
     fEnergyChange.ConstructBranch(tree,thisprefix);
@@ -454,8 +454,8 @@ void  QwEnergyCalculator::ConstructBranch(TTree *tree, TString &prefix, QwParame
   else
     if (modulelist.HasValue(devicename)){
       TString thisprefix=prefix;
-      if(prefix=="asym_")
-	thisprefix="diff_";
+      if(prefix.Contains("asym_"))
+	thisprefix.ReplaceAll("asym_","diff_");
       SetRootSaveStatus(thisprefix);   
       fEnergyChange.ConstructBranch(tree,thisprefix);
       QwMessage <<" Tree leave added to "<<devicename<<QwLog::endl;

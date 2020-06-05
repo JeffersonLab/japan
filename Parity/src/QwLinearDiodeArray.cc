@@ -587,8 +587,8 @@ void  QwLinearDiodeArray::ConstructHistograms(TDirectory *folder, TString &prefi
     fEffectiveCharge.ConstructHistograms(folder, prefix);
     TString thisprefix=prefix;
 
-    if(prefix=="asym_")
-      thisprefix="diff_";
+    if(prefix.Contains("asym_"))
+      thisprefix.ReplaceAll("asym_","diff_");
     SetRootSaveStatus(prefix);
     size_t i = 0;
     if(bFullSave) {
@@ -626,8 +626,8 @@ void  QwLinearDiodeArray::ConstructBranchAndVector(TTree *tree, TString &prefix,
   }
   else {
     TString thisprefix=prefix;
-    if(prefix=="asym_")
-      thisprefix="diff_";
+    if(prefix.Contains("asym_"))
+      thisprefix.ReplaceAll("asym_","diff_");
 
     SetRootSaveStatus(prefix);
 
@@ -651,8 +651,8 @@ void  QwLinearDiodeArray::ConstructBranch(TTree *tree, TString &prefix)
   }
   else {
     TString thisprefix=prefix;
-    if(prefix=="asym_")
-      thisprefix="diff_";
+    if(prefix.Contains("asym_"))
+      thisprefix.ReplaceAll("asym_","diff_");
 
     SetRootSaveStatus(prefix);
 
@@ -681,8 +681,8 @@ void  QwLinearDiodeArray::ConstructBranch(TTree *tree, TString &prefix, QwParame
     {
       if (modulelist.HasValue(devicename)){
 	TString thisprefix=prefix;
-	if(prefix=="asym_")
-	  thisprefix="diff_";
+	if(prefix.Contains("asym_"))
+	  thisprefix.ReplaceAll("asym_","diff_");
 
 	SetRootSaveStatus(prefix);
 

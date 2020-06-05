@@ -27,11 +27,11 @@ EVENTCUTS = 3
 !***************************************************
 !for bcm devices
 !device_type, device_name,      lower limit, upper limit, local(l)/global(g), stability percentage
-! FIXME TURNED OFF THESE TWO CUTS
-!bcm, bcm_dg_ds,    40,	 1e6,	 g,	1.4 
-bcm, bcm_dg_ds,    500, 1e10,	 g
-bcm, hallc_bcm_4c, 10,  1e6,    l 
+!!! CREX RUNNING
+ bcm, bcm_an_us,     100,  1e6,  g
+ bcm, hallc_bcm_4c,  2,   1e6,  l 
 ! END TWO CUTS
+!bcm, bcm_dg_ds,    500, 1e10, g
 ! bpmstripline,	bpm12,	effectivecharge, 0, 1.8e5, g, 500
 ! bpmstripline, bpm4a, ym, 10000, 50000, l
 

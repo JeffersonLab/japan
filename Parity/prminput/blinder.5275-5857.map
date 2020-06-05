@@ -1,0 +1,15 @@
+# Blinder parameter
+
+# strategy = Disabled | Additive | Multiplicative | AdditiveMultiplicative (case insensitive)
+strategy = additive
+
+# seed = unquoted string without starting or ending spaces
+  seed = It is a capital mistake to theorize before one has data. Insensibly one begins to twist facts to suit theories, instead of theories to suit facts.---A Scandal in Bohemia, Arthur Conan Doyle.
+
+# max_asymmetry = positive float in ppm such that additive blinding asymmetry is between 0 +/- (this value)
+max_asymmetry = 0.900
+
+# max_factor = positive float fraction such that multiplicative blinding asymmetry is between 1 +/- (this value)
+max_factor = 0.0
+
+crex_target_index = 1

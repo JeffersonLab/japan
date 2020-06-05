@@ -666,8 +666,8 @@ void  QwQPD::ConstructHistograms(TDirectory *folder, TString &prefix)
     fEffectiveCharge.ConstructHistograms(folder, prefix);
     TString thisprefix=prefix;
 
-    if(prefix=="asym_")
-      thisprefix="diff_";
+    if(prefix.Contains("asym_"))
+      thisprefix.ReplaceAll("asym_","diff_");
     SetRootSaveStatus(prefix);
     Short_t i = 0;
     if(bFullSave) {
@@ -707,8 +707,8 @@ void  QwQPD::ConstructBranchAndVector(TTree *tree, TString &prefix, std::vector<
   }
   else {
     TString thisprefix=prefix;
-    if(prefix=="asym_")
-      thisprefix="diff_";
+    if(prefix.Contains("asym_"))
+      thisprefix.ReplaceAll("asym_","diff_");
 
     SetRootSaveStatus(prefix);
 
@@ -733,8 +733,8 @@ void  QwQPD::ConstructBranch(TTree *tree, TString &prefix)
   }
   else {
     TString thisprefix=prefix;
-    if(prefix=="asym_")
-      thisprefix="diff_";
+    if(prefix.Contains("asym_"))
+      thisprefix.ReplaceAll("asym_","diff_");
 
     SetRootSaveStatus(prefix);
     
@@ -764,8 +764,8 @@ void  QwQPD::ConstructBranch(TTree *tree, TString &prefix, QwParameterFile& modu
     {
       if (modulelist.HasValue(devicename)){
 	TString thisprefix=prefix;
-	if(prefix=="asym_")
-	  thisprefix="diff_";
+	if(prefix.Contains("asym_"))
+	  thisprefix.ReplaceAll("asym_","diff_");
 
 	SetRootSaveStatus(prefix);
 
