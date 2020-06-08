@@ -186,3 +186,11 @@
   tree-name  = lrb_all
   tree-comment = Correlations (all variables)
 
+
+[QwExtractor]
+  name       = BMWExtractor
+  priority   = 0
+  scope      = event
+  tree-name  = bmw          # not implemented at this time, currently hardcoded
+  tree-comment = Bmod Data  # not implemented at this time, currently hardcoded
+
