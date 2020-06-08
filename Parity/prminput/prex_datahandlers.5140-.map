@@ -92,3 +92,11 @@
   map        = prex_combiner.map
   tree-name  = mulc
   tree-comment = Helicity event data tree (corrected)
+
+[QwExtractor]
+  name       = BMWExtractor
+  priority   = 0
+  scope      = event
+  tree-name  = bmw          # not implemented at this time, currently hardcoded
+  tree-comment = Bmod Data  # not implemented at this time, currently hardcoded
+
