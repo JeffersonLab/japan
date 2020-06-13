@@ -288,34 +288,36 @@ void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_
   if(minirunNumber<0){
     TString lrbFileNameBase = gSystem->Getenv("LRB_ROOTFILES");
     TString lrbFileName = lrbFileNameBase + "/blueR"+runNumber+".000new.slope.root";  
-    TFile f(lrbFileName);
+    if ( !gSystem->AccessPathName(lrbFileName)) {
+      TFile f(lrbFileName);
 
-    std::map<TString, Int_t> IVname;
-    std::map<TString, Int_t> DVname;
+      std::map<TString, Int_t> IVname;
+      std::map<TString, Int_t> DVname;
 
-    TH1D* m=(TH1D*) f.Get("IVname");
-    for (auto i=0; i<m->GetEntries();i++){
-      TString ivname=m->GetXaxis()->GetBinLabel(i+1);
-      IVname[ivname]=i;
-    }
+      TH1D* m=(TH1D*) f.Get("IVname");
+      for (auto i=0; i<m->GetEntries();i++){
+        TString ivname=m->GetXaxis()->GetBinLabel(i+1);
+        IVname[ivname]=i;
+      }
 
-    TH1D* n=(TH1D*) f.Get("DVname");
-    for (auto i=0; i<n->GetEntries(); i++){
-      TString dvname=n->GetXaxis()->GetBinLabel(i+1);
-      DVname[dvname]=i;
-    }
+      TH1D* n=(TH1D*) f.Get("DVname");
+      for (auto i=0; i<n->GetEntries(); i++){
+        TString dvname=n->GetXaxis()->GetBinLabel(i+1);
+        DVname[dvname]=i;
+      }
 
 
-    TMatrixT<double> slopes=*(TMatrixT<double>*) f.Get("slopes");
-    TMatrixT<double> sigSlopes=*(TMatrixT<double>*) f.Get("sigSlopes");
-    for (auto& i: DVname){ 
-      for (auto& j: IVname){
-        Channel tmpChan;
-        tmpChan.type = "slopes";
-        tmpChan.name = "cor_"+i.first+"_"+j.first;
-        tmpChan.slope = slopes(j.second,i.second);
-        tmpChan.slopeError = sigSlopes(j.second,i.second);
-        channels.push_back(tmpChan);
+      TMatrixT<double> slopes=*(TMatrixT<double>*) f.Get("slopes");
+      TMatrixT<double> sigSlopes=*(TMatrixT<double>*) f.Get("sigSlopes");
+      for (auto& i: DVname){ 
+        for (auto& j: IVname){
+          Channel tmpChan;
+          tmpChan.type = "slopes";
+          tmpChan.name = "cor_"+i.first+"_"+j.first;
+          tmpChan.slope = slopes(j.second,i.second);
+          tmpChan.slopeError = sigSlopes(j.second,i.second);
+          channels.push_back(tmpChan);
+        }
       }
     }
   }
@@ -379,6 +381,7 @@ RDataFrame Source::readSource(){
 
   TString baseDir = gSystem->Getenv("QW_ROOTFILES");
   TString postpanBaseDir = gSystem->Getenv("POSTPAN_ROOTFILES");
+  Printf("Checking for postpan files in %s",postpanBaseDir.Data());
   if ( gSystem->AccessPathName(Form("%s/%s_%s.%s.root",baseDir.Data(),basename.Data(), run.Data(),split.Data())) ) {
     Printf("%s/%s_%s.%s.root not found",baseDir.Data(),basename.Data(), run.Data(),split.Data());
   }
@@ -390,6 +393,9 @@ RDataFrame Source::readSource(){
     reg_tree->Add(Form("%s/prexPrompt_%s_%s_regress_postpan.root",postpanBaseDir.Data(), run.Data(),split.Data()));
     mini_tree->Add(Form("%s/prexPrompt_%s_%s_regress_postpan.root",postpanBaseDir.Data(), run.Data(),split.Data()));
     reg_tree_valid = 1;
+  }
+  else {
+    Printf("No postpan file");
   }
   TString ditheringFileNameDF = gSystem->Getenv("DITHERING_ROOTFILES");
   TString ditheringFileStub = gSystem->Getenv("DITHERING_STUB");
@@ -520,7 +526,9 @@ RDataFrame Source::readSource(){
           //}
           //else {
           if (debug > 1) Printf("Executing \"tmpChan.histo = d_good.Define("+tmpChan.branchName+","+tmpChan.draw+").Filter(Form(\"reg.minirun==%s\".Histo1D("+tmpChan.branchName+")",minirun.Data());
-          // FIXME Original Postpan dependent minirun numbering//  tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Filter(Form("reg.minirun==%s",minirun.Data())).Histo1D(tmpChan.branchName.Data());
+          // FIXME Original Postpan dependent minirun numbering//  
+          //tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Filter(Form("reg.minirun==%s",minirun.Data())).Histo1D(tmpChan.branchName.Data());
+          // FIXME NEW JAPAN BASED 
           tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Filter(Form("BurstCounter==%s",minirun.Data())).Histo1D(tmpChan.branchName.Data());
           /*tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Filter([minirun.Data()](Double_t b) {
           *    return (((Int_t)b)==(Int_t)atoi(minirun.c_str()));

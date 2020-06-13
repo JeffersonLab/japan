@@ -50,9 +50,10 @@ fi
 
 if [[ "$CONFIG" == "AT_input.txt" ]];
 then
+  echo "PREX Regression AT"
   export QW_ROOTFILES=/lustre/expphy/volatile/halla/parity/japanOutput/respin1-transverse-22March/
   export POSTPAN_ROOTFILES=/lustre/expphy/volatile/halla/parity/postpan_respin/
-  export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/AT/
+  export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/PREX_regression_AT/
 fi
 
 if [[ "$CONFIG" == "SAMs_input.txt" ]];
@@ -88,6 +89,7 @@ then
   export DITHERING_ROOTFILES_SLOPES=/chafs2/work1/apar/BMODextractor/
   export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/dithering_AT/
   export DITHERING_STUB="_AT"
+  export POSTPAN_ROOTFILES=/lustre/expphy/volatile/halla/parity/postpan_respin/
 fi
 
 root -l -q -b ../camDataFrame.C"(\"$RUNNUM\",\"$NRUNS\",\"$MINIRUNNUM\",\"$SPLITNUM\",\"$CONFIG\",\"$BASENAME\")"
