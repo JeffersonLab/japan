@@ -1,6 +1,6 @@
 #! /bin/sh
-ROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/burp/minirun_aggregator_#_#.root"
-OUTPUTROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/burp/slugRootfiles/"
+ROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/minirun_aggregator_#_#.root"
+OUTPUTROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/slugRootfiles/"
 #OUTPUTROOTFILEDIR="./"
 if [ "$#" -lt 1 ]; then
   echo "Error: Need to pass a list file name"
