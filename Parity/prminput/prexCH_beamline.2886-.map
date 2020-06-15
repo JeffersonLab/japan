@@ -50,15 +50,14 @@ sample_size=4084
     VQWK, 3, 7,  bpmstripline,  BPM14ym
 
 !ADC4
-!Caryn edit BPM8 7/3/2019. XP was 4_5 and XM was 4_4 which is backwards so swapped them to correct mapping
     VQWK, 4, 0,  bpmstripline,  BPM1xp
     VQWK, 4, 1,  bpmstripline,  BPM1xm
     VQWK, 4, 2,  bpmstripline,  BPM1yp 
     VQWK, 4, 3,  bpmstripline,  BPM1ym
-    VQWK, 4, 4,  bpmstripline,  BPM8xp
-    VQWK, 4, 5,  bpmstripline,  BPM8xm
-    VQWK, 4, 6,  bpmstripline,  BPM8yp
-    VQWK, 4, 7,  bpmstripline,  BPM8ym
+    VQWK, 4, 4,  bpmstripline,  BPM8yp
+    VQWK, 4, 5,  bpmstripline,  BPM8ym
+    VQWK, 4, 6,  bpmstripline,  BPM8xp
+    VQWK, 4, 7,  bpmstripline,  BPM8xm
 
 !ADC5
     VQWK, 5, 0,  bcm,  ch_tsettle
@@ -91,6 +90,11 @@ sample_size=4084
     VQWK, 7, 6,  bpmstripline,  BPM4ecYM
     VQWK, 7, 7,  bpmstripline,  BPM4ecYP
 
+begin=combinedbcm
+name=bcm_target
+  bcm_an_us, bcm, 2.0
+  bcm_an_ds, bcm, 1.0
+end=combinedbcm
 
 !! bank=0x2 
 !!
@@ -116,7 +120,6 @@ sample_size=4084
 
 [PUBLISH]
 ! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
- ! q_targ, bcm, bcm_an_ds3, c
 
   x_targ, bpmstripline, bpm4e, y
   y_targ, bpmstripline, bpm4e, x
@@ -127,4 +130,4 @@ sample_size=4084
 
  xy_pos_x, bpmstripline, bpm4e, x
  xy_pos_y, bpmstripline, bpm4e, y 
- q_targ, bcm, bcm_an_ds3, c
+ q_targ, combinedbcm, bcm_target, c

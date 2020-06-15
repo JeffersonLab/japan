@@ -1,0 +1,65 @@
+!Unser calibration based on Run 1214 , HAPLOG 3609, also consistent with dave mack 3.7mV/uA halog entry 3689440 
+ UNSER, -174.1, 2.066e-2	    
+
+!From run 5382 https://logbooks.jlab.org/entry/3755873
+ hallc_bcm_4c, -524.0, 0.0041998972
+
+!From cameron's global unser fits. http://ace.phys.virginia.edu:80/HAPPEX/4081
+!Device Name, p0 Fit Pedestal, p0 Fit Pedestal Error, TH1 weighted mean Pedestal, TH1 weighted mean Pedestal Error, Gain scale factor
+ bcm_an_us, -582.88, 0.008941
+ bcm_an_ds, -425.66, 0.008836
+ bcm_an_ds3, -856.45, 0.002586
+ bcm_an_ds10, -1476.36, 0.001063
+ bcm_dg_us, -179.02, 0.004423
+ bcm_dg_ds, -428.47, 0.003502
+ bcm_dg_usc, -355.01, 0.004142
+ bcm_dg_dsc, -285.45, 0.003263
+ 
+!BPM Pedestals from run 5433 https://logbooks.jlab.org/entry/3810512
+ bpm4aXP, -196.33, 1.000000 
+ bpm4aXM, 1306.26, 1.000000 
+ bpm4aYP, 1410.72, 1.000000 
+ bpm4aYM, -206.50, 1.000000 
+ bpm4eXP, 483.81, 1.000000 
+ bpm4eXM, 1587.06, 1.000000 
+ bpm4eYP, 1350.86, 1.000000 
+ bpm4eYM, 141.19, 1.000000 
+ bpm4acXP, -1756.98, 1.000000 
+ bpm4acXM, -505.91, 1.000000 
+ bpm4acYP, 1054.56, 1.000000 
+ bpm4acYM, -58.40, 1.000000 
+ bpm4ecXP, 125.34, 1.000000 
+ bpm4ecXM, 1736.81, 1.000000 
+ bpm4ecYP, 1712.26, 1.000000 
+ bpm4ecYM, 479.59, 1.000000 
+ bpm11XP, 1322.71, 1.000000 
+ bpm11XM, 1567.17, 1.000000 
+ bpm11YP, 1145.81, 1.000000 
+ bpm11YM, 798.18, 1.000000 
+ bpm12XP, 3592.21, 1.000000 
+ bpm12XM, 4278.20, 1.000000 
+ bpm12YP, 3978.50, 1.000000 
+ bpm12YM, 3432.91, 1.000000 
+ bpm16XP, 2631.13, 1.000000 
+ bpm16XM, 406.49, 1.000000 
+ bpm16YP, -1107.37, 1.000000 
+ bpm16YM, 1902.76, 1.000000 
+ bpm1p02bXP, -26001.23, 1.000000 
+ bpm1p02bXM, -26075.50, 1.000000 
+ bpm1p02bYP, -29651.70, 1.000000 
+ bpm1p02bYM, -29705.17, 1.000000 
+ bpm1p03aXP, -22304.35, 1.000000 
+ bpm1p03aXM, -21927.67, 1.000000 
+ bpm1p03aYP, -23288.43, 1.000000 
+ bpm1p03aYM, -23296.17, 1.000000 
+ bpm1XP, -2067.04, 1.000000 
+ bpm1XM, -4145.78, 1.000000 
+ bpm1YP, -4803.52, 1.000000 
+ bpm1YM, -2545.16, 1.000000 
+
+!Cavity pedestals determined from run 5436 from cameron's analysis
+!Gains set to 1 until further analysis, 4b and 4d are useless so no pedestal is set.
+ cav4cQ, -536.79, 0.005749 
+ cav4cXI, -632.45, 1
+ cav4cYI, -455.19, 1
+
