@@ -1,0 +1,7 @@
+! left-arm running of slug 0
+
+EVENTCUTS = 3
+IntegrationPMT, usl,		-10000,	100000,	g,	0
+IntegrationPMT, dsl,		-10000,	100000,	g,	0
+IntegrationPMT, usr,		-100001,	-100000,	l,	0
+IntegrationPMT, dsr,		-100001,	-100000,	l,	0

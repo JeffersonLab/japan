@@ -1,0 +1,34 @@
+!! SAM Pedestal
+!! For 70 uA runs, calibrated from run 3430
+
+!! Pedestal from run 3430 fit from 50-70uA 
+!sam1, 12028.04, 0.000076 
+!sam2, 12268.53, 0.000076 
+!sam3, 26995.98, 0.000076 
+!sam4, 11244.48, 0.000076 
+!sam5, 12424.20, 0.000076 
+!sam6, 13177.65, 0.000076 
+!sam7, 9440.54, 0.000076 
+!sam8, 12375.19, 0.000076 
+
+!!Run3430 Fit SAMs and detectors from 60-70uA relative to (bcm_an_ds.hw_sum_raw/bcm_an_ds.num_samples--387.81)*0.002774 from a bcm fit from 10-70uA https://logbooks.jlab.org/entry/3706784 relative to UNSER:
+sam1, 12198.80, 0.000076
+sam2, 11466.35, 0.000076
+sam3, 31691.92, 0.000076
+sam4, 8634.71, 0.000076
+sam5, 12304.00, 0.000076
+sam6, 13890.83, 0.000076
+sam7, 11444.85, 0.000076
+sam8, 13721.91, 0.000076
+
+!!https://logbooks.jlab.org/node/add/logentry?followup=3707321 test for 10-70uA fit for 3430 
+!sam1, 12157.56, 0.000076
+!sam2, 12759.03, 0.000076
+!sam3, 11681.37, 0.000076
+!sam4, 11801.15, 0.000076
+!sam5, 12507.08, 0.000076
+!sam6, 13337.29, 0.000076
+!sam7, 12152.03, 0.000076
+!sam8, 12433.45, 0.000076
+
+

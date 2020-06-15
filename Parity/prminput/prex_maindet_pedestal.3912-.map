@@ -1,0 +1,30 @@
+!! 70 uA pedestals for Main Detectors
+!! Fit to run3751 10-70uA relative to analog upstream: (bcm_an_us.hw_sum_raw/bcm_an_us.num_samples--696.84)*0.00602 https://logbooks.jlab.org/entry/3716538 :
+usl, 1319.64, 0.000076
+dsl, 1471.26, 0.000076
+usr, 1449.21, 0.000076
+dsr, 1011.76, 0.000076
+atl1, 784.07, 0.000076
+atl2, 1452.38, 0.000076
+atr1, 1265.52, 0.000076
+atr2, 921.03, 0.000076 
+
+!Fit to run3751 50-70uA relative to analog upstream: (bcm_an_us.hw_sum_raw/bcm_an_us.num_samples--696.84)*0.00602 https://logbooks.jlab.org/entry/3716538:
+!usl, 1787.06, 0.000076
+!dsl, 1842.35, 0.000076
+!usr, 332.79, 0.000076
+!dsr, -1262.53, 0.000076
+!atl1, -1204.61, 0.000076
+!atl2, 261.59, 0.000076
+!atr1, -703.61, 0.000076
+!atr2, 33.85, 0.000076 
+
+vqwk_25_0ch4, 0, 0.000076
+vqwk_25_0ch5, 0, 0.000076
+battery1L, 0, 0.000076
+battery2L, 0, 0.000076
+
+vqwk_26_0ch4, 0, 0.000076
+vqwk_26_0ch5, 0, 0.000076
+battery1R ,   0, 0.000076
+battery2R ,   0, 0.000076

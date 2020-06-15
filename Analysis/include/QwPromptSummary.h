@@ -42,7 +42,7 @@ class PromptSummaryElement :  public TObject
 
   // Yield      : fHardwareBlockSumM2 
   // YieldError : fHardwareBlockSumError = sqrt(fHardwareBlockSumM2) / fGoodEventCount;
-  void SetNumGoodEvents        (const Double_t in) { fNumGoodEvents=in;};
+  //void SetNumGoodEvents        (const Double_t in) { fNumGoodEvents=in;};
 
   void SetYield                (const Double_t in) { fYield=in; };
   void SetYieldError           (const Double_t in) { fYieldError=in; };
@@ -62,9 +62,16 @@ class PromptSummaryElement :  public TObject
   void SetDifferenceWidth      (const Double_t in) { fAsymDiffWidth=in; };
   void SetDifferenceUnit       (const TString  in) { fAsymDiffUnit=in; };
 
-
   // Yield 
-  const Double_t GetNumGoodEvents ()    { return fNumGoodEvents;};
+  const Double_t GetNumGoodEvents ()    {
+    //  Returns the number of entries corresponding to the asymmetry error/width ratio
+    if(fAsymDiffError!=0){
+      Double_t temp = (fAsymDiffWidth/fAsymDiffError);
+      return temp*temp;
+    }else{
+      return 0;
+    }
+  };
     
   const Double_t GetYield         () { return fYield; };
   const Double_t GetYieldError    () { return fYieldError; };
@@ -83,7 +90,6 @@ class PromptSummaryElement :  public TObject
   const Double_t GetDifferenceError() { return fAsymDiffError; };
   const Double_t GetDifferenceWidth() { return fAsymDiffWidth; };
   const TString  GetDifferenceUnit () { return fAsymDiffUnit; };
-
 
   void Set(TString type, const Double_t a, const Double_t a_err, const Double_t a_width);
 
@@ -141,6 +147,8 @@ class QwPromptSummary  :  public TObject
   void SetRunletNumber(const Int_t in) {fRunletNumber = in;};
   const Int_t GetRunletNumber() {return fRunletNumber;};
 
+  void SetPatternSize(const Int_t in) { fPatternSize=in; };
+  const Int_t GetPatternSize() { return fPatternSize; };
 
   void AddElement(PromptSummaryElement *in);
   PromptSummaryElement* GetElementByName(TString name);
@@ -168,7 +176,7 @@ class QwPromptSummary  :  public TObject
 private:
 
 
- 
+  Int_t fPatternSize;
 
   TString PrintTextSummaryHeader();
   TString PrintTextSummaryTailer();
@@ -177,8 +185,7 @@ private:
   void    SetupElementList();
   
   Int_t   fRunNumber;
-  Int_t   fRunletNumber;
-  
+  Int_t   fRunletNumber;  
 
   Bool_t  fLocalDebug;
 

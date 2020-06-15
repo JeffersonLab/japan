@@ -1,4 +1,6 @@
 ! adc sample size  16564
+! Input => Channel Name, Offset, Scale Factor from raw ADC/integration window
+! example: TestChanne  , 0     , 76.293e-6 ! Gives volts, if looking at raw further divide by num_samples in full integration window
 !----
 !END	    		        
 

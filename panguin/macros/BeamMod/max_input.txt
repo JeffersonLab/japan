@@ -1,0 +1,17 @@
+NO Just Sensitivities:False
+1 Coils:5,3,7,4,6
+2 Coils:1,3,7,4,2
+3 Coils:1,5,7,6,2
+Good Coils:1,3,7,6,4
+Coils:1,1,3,3,5,5,7,6,6,4,4,2,2
+BPMs Slope Names:4aX,4eX,4aX,4eX,4aX,4eX,11X12X,4aY,4eY,4aY,4eY,4aY,4eY
+PREX BPMs:bpm4aX,bpm4eX,bpm4aX,bpm4eX,bpm4aX,bpm4eX,bpm11X+0.4*bpm12X,bpm4aY,bpm4eY,bpm4aY,bpm4eY,bpm4aY,bpm4eY
+BPMs:bpm4aX,bpm4eX,bpm4aX,bpm4eX,bpm4aX,bpm4eX,bpm12X,bpm4aY,bpm4eY,bpm4aY,bpm4eY,bpm4aY,bpm4eY
+Detectors:usl,usr,dsl,dsr,sam1,sam2,sam3,sam4,sam5,sam6,sam7,sam8
+Flag Sigma Cut:3.0
+ROOT input path:$QW_ROOTFILES/prexPrompt_pass1_#.000.root
+Output path:./slopes/
+Rootfile Output Path:./slopes/
+Rootfile Output Runwise:False
+Cut:bcm_dg_ds>5
+Tree:evt_bmw

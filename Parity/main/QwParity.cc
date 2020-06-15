@@ -38,6 +38,7 @@
 #include "QwPromptSummary.h"
 #include "QwCorrelator.h"
 #include "LRBCorrector.h"
+#include "QwExtractor.h"
 #include "QwDataHandlerArray.h"
 
 // Qweak subsystems
@@ -98,11 +99,12 @@ Int_t main(Int_t argc, Char_t* argv[])
   //  QwPromptSummary promptsummary;
 
   ///  Start loop over all runs
+  Int_t run_number = 0;
   while (eventbuffer.OpenNextStream() == CODA_OK) {
 
     ///  Begin processing for the first run
 
-    Int_t run_number = eventbuffer.GetRunNumber();
+    run_number = eventbuffer.GetRunNumber();
     TString run_label = eventbuffer.GetRunLabel();
 
     ///  Set the current event number for parameter file lookup
@@ -143,7 +145,7 @@ Int_t main(Int_t argc, Char_t* argv[])
     QwSubsystemArrayParity ringoutput(detectors);
 
     /// Create the data handler arrays
-    QwDataHandlerArray datahandlerarray_evt(gQwOptions,detectors,run_label);
+    QwDataHandlerArray datahandlerarray_evt(gQwOptions,ringoutput,run_label);
     QwDataHandlerArray datahandlerarray_mul(gQwOptions,helicitypattern,run_label);
     QwDataHandlerArray datahandlerarray_burst(gQwOptions,helicitypattern,run_label);
 
@@ -213,7 +215,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     datahandlerarray_evt.ConstructTreeBranches(treerootfile, "evt_");
     datahandlerarray_mul.ConstructTreeBranches(treerootfile);
-    datahandlerarray_burst.ConstructTreeBranches(burstrootfile, "burst_");
+    datahandlerarray_burst.ConstructTreeBranches(burstrootfile, "burst_", "|stat");
 
     treerootfile->ConstructTreeBranches("evts", "Running sum tree", eventsum, "|stat");
     treerootfile->ConstructTreeBranches("muls", "Running sum tree", patternsum, "|stat");
@@ -326,7 +328,7 @@ Int_t main(Int_t argc, Char_t* argv[])
           datahandlerarray_evt.ProcessDataHandlerEntry();
 
           // Fill data handler histograms
-          datahandlerarray_evt.FillHistograms();
+          historootfile->FillHistograms(datahandlerarray_evt);
 
           // Fill data handler tree branches
           datahandlerarray_evt.FillTreeBranches(treerootfile);
@@ -363,7 +365,7 @@ Int_t main(Int_t argc, Char_t* argv[])
               datahandlerarray_burst.ProcessDataHandlerEntry();
 
               // Fill data handler histograms
-              datahandlerarray_mul.FillHistograms();
+              historootfile->FillHistograms(datahandlerarray_mul);
 
               // Fill data handler tree branches
               datahandlerarray_mul.FillTreeBranches(treerootfile);
@@ -375,7 +377,7 @@ Int_t main(Int_t argc, Char_t* argv[])
               //datahandlerarray_burst.AccumulateRunningSum(datahandlerarray_mul);
 
               // Burst mode
-              if (helicitypattern.IsEndOfBurst()) {
+              if (patternsum_per_burst.IsEndOfBurst()) {
 
                 // Calculate average over this burst
                 patternsum_per_burst.CalculateRunningAverage();
@@ -400,11 +402,14 @@ Int_t main(Int_t argc, Char_t* argv[])
                 datahandlerarray_burst.FinishDataHandler();
 
                 // Fill data handler histograms
-                datahandlerarray_burst.FillHistograms();
+                burstrootfile->FillHistograms(datahandlerarray_burst);
 
                 // Fill data handler tree branches
                 datahandlerarray_burst.FillTreeBranches(burstrootfile);
 
+		helicitypattern.IncrementBurstCounter();
+		datahandlerarray_mul.UpdateBurstCounter(helicitypattern.GetBurstCounter());
+		datahandlerarray_burst.UpdateBurstCounter(helicitypattern.GetBurstCounter());
                 // Clear the data
                 patternsum_per_burst.ClearEventData();
                 datahandlerarray_burst.ClearEventData();
@@ -427,7 +432,37 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     //  TODO Drain event run
 
-    //  TODO Finalize burst
+    //  Finalize burst
+    if (patternsum_per_burst.HasBurstData()){
+      // Calculate average over this burst
+      patternsum_per_burst.CalculateRunningAverage();
+
+      // Fill the burst into the sum over all bursts
+      burstsum.AccumulateRunningSum(patternsum_per_burst);
+
+      if (gQwOptions.GetValue<bool>("print-burstsum")) {
+	QwMessage << " Running average of this burst" << QwLog::endl;
+	QwMessage << " =============================" << QwLog::endl;
+	patternsum_per_burst.PrintValue();
+      }
+
+      // Fill histograms
+      burstrootfile->FillHistograms(patternsum_per_burst);
+
+      // Fill burst tree branches
+      burstrootfile->FillTreeBranches(patternsum_per_burst);
+      burstrootfile->FillTree("burst");
+    
+      // Finish data handler for burst
+      datahandlerarray_burst.FinishDataHandler();
+
+      // Fill data handler histograms
+      burstrootfile->FillHistograms(datahandlerarray_burst);
+
+      // Fill data handler tree branches
+      datahandlerarray_burst.FillTreeBranches(burstrootfile);
+      patternsum_per_burst.PrintIndexMapFile(run_number);
+    }
 
     //  Perform actions at the end of the event loop on the
     //  detectors object, which ought to have handles for the
@@ -439,11 +474,7 @@ Int_t main(Int_t argc, Char_t* argv[])
 
     // Finish data handlers
     datahandlerarray_evt.FinishDataHandler();
-    datahandlerarray_evt.FillTreeBranches(treerootfile);
     datahandlerarray_mul.FinishDataHandler();
-    datahandlerarray_mul.FillTreeBranches(treerootfile);
-    datahandlerarray_burst.FinishDataHandler();
-    datahandlerarray_burst.FillTreeBranches(burstrootfile);
 
     // Calculate running averages
     eventsum.CalculateRunningAverage();

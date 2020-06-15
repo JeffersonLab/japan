@@ -1,0 +1,12 @@
+!Here are the pedestals fit from 10-70uA for run4652
+!at "-2000V high voltages" in detectors with respect to bcm_dg_ds:
+!(bcm_dg_ds.hw_sum_raw/bcm_dg_ds.num_samples--351.06)*0.002318
+!https://logbooks.jlab.org/entry/3725878
+sam1, 12174.04, 0.000076
+sam2, 13536.02, 0.000076
+sam3, 12548.16, 0.000076
+sam4, 14031.94, 0.000076
+sam5, 12513.43, 0.000076
+sam6, 13377.55, 0.000076
+sam7, 12595.11, 0.000076
+sam8, 12471.81, 0.000076

@@ -43,7 +43,7 @@ bool QwCorrelator::fPrintCorrelations = false;
 QwCorrelator::QwCorrelator(const TString& name)
 : VQwDataHandler(name),
   fBlock(-1),
-  fDisableHistos(false),
+  fDisableHistos(true),
   fAlphaOutputFileBase("blueR"),
   fAlphaOutputFileSuff("new.slope.root"),
   fAlphaOutputPath("."),
@@ -52,8 +52,11 @@ QwCorrelator::QwCorrelator(const TString& name)
   fAliasOutputFileBase("regalias_"),
   fAliasOutputFileSuff(""),
   fAliasOutputPath("."),
-  nP(0),nY(0)
+  fNameNoSpaces(name),
+  nP(0),nY(0),
+  fCycleCounter(0)
 {
+  fNameNoSpaces.ReplaceAll(" ","_");
   // Set default tree name and descriptions (in VQwDataHandler)
   fTreeName = "lrb";
   fTreeComment = "Correlations";
@@ -76,7 +79,8 @@ QwCorrelator::QwCorrelator(const QwCorrelator& source)
   fAliasOutputFileBase(source.fAliasOutputFileBase),
   fAliasOutputFileSuff(source.fAliasOutputFileSuff),
   fAliasOutputPath(source.fAliasOutputPath),
-  nP(source.nP),nY(source.nY)
+  nP(source.nP),nY(source.nY),
+  fCycleCounter(source.fCycleCounter)
 {
   QwWarning << "QwCorrelator copy constructor required but untested" << QwLog::endl;
 
@@ -185,6 +189,10 @@ void QwCorrelator::CalcCorrelations()
   // Check if any channels are active
   if (nP == 0 || nY == 0) {
     return;
+  }
+
+  if (fPrintCorrelations) {
+    QwMessage << "QwCorrelator: name=" << GetName() << QwLog::endl;
   }
 
   // Print entry summary
@@ -303,24 +311,20 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
     // Get the dependent variables
 
-    VQwHardwareChannel* dv_ptr = 0;
-    QwVQWK_Channel* new_vqwk = NULL;
-    QwVQWK_Channel* vqwk = NULL;
-    string name = "";
-    string reg = "reg_";
+    const VQwHardwareChannel* dv_ptr = 0;
     
     if (fDependentType.at(dv)==kHandleTypeMps){
       //  Quietly ignore the MPS type when we're connecting the asym & diff
       continue;
-    } else if(fDependentName.at(dv).at(0) == '@' ){
-      name = fDependentName.at(dv).substr(1,fDependentName.at(dv).length());
     }else{
-      switch (fDependentType.at(dv)) {
+      dv_ptr = this->RequestExternalPointer(fDependentFull.at(dv));
+      if (dv_ptr==NULL){
+	switch (fDependentType.at(dv)) {
         case kHandleTypeAsym:
-          dv_ptr = asym.ReturnInternalValueForFriends(fDependentName.at(dv));
+          dv_ptr = asym.RequestExternalPointer(fDependentName.at(dv));
           break;
         case kHandleTypeDiff:
-          dv_ptr = diff.ReturnInternalValueForFriends(fDependentName.at(dv));
+          dv_ptr = diff.RequestExternalPointer(fDependentName.at(dv));
           break;
         default:
           QwWarning << "QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff): "
@@ -328,33 +332,21 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
                     << ", for asym/diff correlator does not have proper type, type=="
                     << fDependentType.at(dv) << "." << QwLog::endl;
           break;
+        }
       }
-
-      vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
-      name = vqwk->GetElementName().Data();
-      name.insert(0, reg);
-      new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
-      new_vqwk->SetElementName(name);
-    }
-
-    // alias
-    if(fDependentName.at(dv).at(0) == '@'){
-      //QwMessage << "dv: " << name << QwLog::endl;
-      new_vqwk = new QwVQWK_Channel(name, VQwDataElement::kDerived);
-    }
-    // defined type
-    else if(dv_ptr!=NULL){
-      //QwMessage << "dv: " << fDependentName.at(dv) << QwLog::endl;
-    }else {
-      QwWarning << "Dependent variable " << fDependentName.at(dv) << " could not be found, "
-                << "or is not a VQWK channel." << QwLog::endl;
-      continue; 
+      if (dv_ptr == NULL){
+	QwWarning << "QwCombiner::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
+		  << fDependentName.at(dv)
+		  << ", was not found (fullname=="
+		  << fDependentFull.at(dv)<< ")." << QwLog::endl;
+	 continue;
+      }
     }
 
     // pair creation
-    if(vqwk != NULL){
+    if(dv_ptr != NULL){
       // fDependentVarType.push_back(fDependentType.at(dv));
-      fDependentVar.push_back(vqwk);
+      fDependentVar.push_back(dv_ptr);
     }
 
   }
@@ -365,10 +357,10 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
     const VQwHardwareChannel* iv_ptr = 0;
     switch (fIndependentType.at(iv)) {
       case kHandleTypeAsym:
-        iv_ptr = asym.ReturnInternalValue(fIndependentName.at(iv));
+        iv_ptr = asym.RequestExternalPointer(fIndependentName.at(iv));
         break;
       case kHandleTypeDiff:
-        iv_ptr = diff.ReturnInternalValue(fIndependentName.at(iv));
+        iv_ptr = diff.RequestExternalPointer(fIndependentName.at(iv));
         break;
       default:
         QwWarning << "Independent variable for correlator has unknown type."
@@ -415,10 +407,16 @@ void QwCorrelator::ConstructTreeBranches(
     return;
   }
 
+  // Create alpha and alias files before trying to create the tree
+  OpenAlphaFile(treeprefix);
+  OpenAliasFile(treeprefix);
+
   // Construct tree name and create new tree
   const std::string name = treeprefix + fTreeName;
   treerootfile->NewTree(name, fTreeComment.c_str());
   fTree = treerootfile->GetTree(name);
+  // Check to make sure the tree was created successfully
+  if (fTree == NULL) return;
 
   // Set up branches
   fTree->Branch(TString(branchprefix + "total_count"), &fTotalCount);
@@ -470,17 +468,14 @@ void QwCorrelator::ConstructTreeBranches(
   branchm(fTree,linReg.mRYY,  "RYY");
   branchm(fTree,linReg.mRYYp, "RYYp");
 
-  branchv(fTree,linReg.mMP,  "MP");
-  branchv(fTree,linReg.mMY,  "MY");
-  branchv(fTree,linReg.mMYp, "MYp");
+  branchv(fTree,linReg.mMP,  "MP");   // Parameter mean
+  branchv(fTree,linReg.mMY,  "MY");   // Uncorrected mean 
+  branchv(fTree,linReg.mMYp, "MYp");  // Corrected mean
 
-  branchv(fTree,linReg.mSP,  "dMP");
-  branchv(fTree,linReg.mSY,  "dMY");
-  branchv(fTree,linReg.mSYp, "dMYp");
+  branchv(fTree,linReg.mSP,  "dMP");  // Parameter mean error
+  branchv(fTree,linReg.mSY,  "dMY");  // Uncorrected mean error
+  branchv(fTree,linReg.mSYp, "dMYp"); // Corrected mean error
 
-  // Create alpha and alias files
-  OpenAlphaFile(treeprefix);
-  OpenAliasFile(treeprefix);
 }
 
 /// \brief Construct the histograms in a folder with a prefix
@@ -619,12 +614,12 @@ void QwCorrelator::WriteAlphaFile()
 
   //... IVs
   TH1D hiv("IVname","names of IVs",nP,-0.5,nP-0.5);
-  for (int i=0;i<nP;i++) hiv.Fill(fIndependentFull[i],i);
+  for (int i=0;i<nP;i++) hiv.Fill(fIndependentFull[i].c_str(),i);
   hiv.Write();
 
   //... DVs
   TH1D hdv("DVname","names of IVs",nY,-0.5,nY-0.5);
-  for (int i=0;i<nY;i++) hdv.Fill(fDependentFull[i],i);
+  for (int i=0;i<nY;i++) hdv.Fill(fDependentFull[i].c_str(),i);
   hdv.Write();
 
   // sigmas
@@ -720,22 +715,19 @@ void QwCorrelator::WriteAliasFile()
     return;
   }
 
-  // Initialize call counter
-  static int i = 0;
-
-  fAliasOutputFile << " if (i == " << i << ") {" << std::endl;
+  fAliasOutputFile << " if (i == " << fCycleCounter << ") {" << std::endl;
   fAliasOutputFile << Form("  TTree* tree = (TTree*) gDirectory->Get(\"mul\");") << std::endl;
   for (int i = 0; i < nY; i++) {
-    fAliasOutputFile << Form("  tree->SetAlias(\"reg_%s\",",fDependentFull[i].Data()) << std::endl;
-    fAliasOutputFile << Form("         \"%s",fDependentFull[i].Data());
+    fAliasOutputFile << Form("  tree->SetAlias(\"reg_%s\",",fDependentFull[i].c_str()) << std::endl;
+    fAliasOutputFile << Form("         \"%s",fDependentFull[i].c_str());
     for (int j = 0; j < nP; j++) {
-      fAliasOutputFile << Form("%+.4e*%s", -linReg.Axy(j,i), fIndependentFull[j].Data());
+      fAliasOutputFile << Form("%+.4e*%s", -linReg.Axy(j,i), fIndependentFull[j].c_str());
     }
     fAliasOutputFile << "\");" << std::endl;
   }
   fAliasOutputFile << " }" << std::endl;
 
   // Increment call counter
-  i++;
+  fCycleCounter++;
 }
 

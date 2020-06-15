@@ -51,6 +51,9 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
 
   void ProcessData();
+  void FinishDataHandler(){
+    CalcCorrelations();
+  }
   void CalcCorrelations();
 
   /// \brief Construct the tree branches
@@ -75,8 +78,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 
   bool fDisableHistos;
   
-  std::vector< TString > fIndependentFull;
-  std::vector< TString > fDependentFull;
+  std::vector< std::string > fIndependentFull;
     
   //  Using the fDependentType and fDependentName from base class, but override the IV arrays
   std::vector< EQwHandleType > fIndependentType;
@@ -114,6 +116,7 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
 
  private:
 		
+  TString fNameNoSpaces;
   int nP, nY;
 
   // monitoring histos for iv & dv
@@ -124,6 +127,8 @@ class QwCorrelator : public VQwDataHandler, public MQwDataHandlerCloneable<QwCor
   std::vector<std::vector<TH2D>> fH2dv;
 
   LinRegBevPeb linReg;
+
+  Int_t fCycleCounter;
 
   // Default constructor
   QwCorrelator();

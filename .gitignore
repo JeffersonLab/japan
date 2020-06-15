@@ -59,3 +59,6 @@ z_*
 
 # setup files
 SetupFiles/SET_ME_UP.*
+
+# Max burst indices
+Parity/prminput/max_burst_index.*

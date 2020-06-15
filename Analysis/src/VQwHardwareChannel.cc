@@ -6,6 +6,7 @@
 #include "QwDBInterface.h"
 #endif
 #include "QwParameterFile.h"
+#include "QwOptions.h"
 
 VQwHardwareChannel::VQwHardwareChannel():
   fNumberOfDataWords(0),
@@ -17,6 +18,8 @@ VQwHardwareChannel::VQwHardwareChannel():
   fErrorConfigFlag = 0;
   fBurpHoldoff = 10;
   fBurpThreshold = -1.0;
+  
+  ProcessOptions();
 }
 
 VQwHardwareChannel::VQwHardwareChannel(const VQwHardwareChannel& value)
@@ -61,6 +64,10 @@ VQwHardwareChannel::VQwHardwareChannel(const VQwHardwareChannel& value, VQwDataE
 {
 }
 
+void VQwHardwareChannel::ProcessOptions(){
+  if (gQwOptions.HasValue("burp.holdoff"))
+    fBurpHoldoff=gQwOptions.GetValue<int>("burp.holdoff");
+}
 
 void VQwHardwareChannel::SetSingleEventCuts(Double_t min, Double_t max)
 {

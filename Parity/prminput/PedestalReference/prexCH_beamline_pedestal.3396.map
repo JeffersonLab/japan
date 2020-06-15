@@ -1,0 +1,94 @@
+! adc sample size  16564
+! Input => Channel Name, Offset, Scale Factor from raw ADC/integration window
+! example: TestChanne  , 0     , 76.293e-6 ! Gives volts, if looking at raw further divide by num_samples in full integration window
+!----
+!END	    		        
+
+! Unser calibration based on Run 1214 , HAPLOG 3609, also consistent with dave mack 3.7mV/uA halog entry 3689440 
+UNSER,   -174.1,     2.066e-2	    
+
+! BCM Calibration from run 3395 45-55 uA (based on UNSER) and ands10 at 20 -30uA
+
+bcm_an_us, -1454.82, 0.002518 
+bcm_an_ds, -1021.86, 0.002671 
+bcm_an_ds3, -3446.00, 0.000770 
+bcm_an_ds10, -1792.04, 0.000275 
+bcm_dg_us, -1077.78, 0.002763 
+bcm_dg_ds, -1420.85, 0.002557 
+
+!!! Hall C bcm calibration from run 2946. Check halog 3695862. 
+!!! Updated to run 3372, halog 3705189
+
+hallc_bcm_4c, -155, 0.001507
+   
+! BPM Pedestals from Tao - https://logbooks.jlab.org/entry/3705645
+! prexCH_beamline_pedestal.3396.map - apply it as a template pedestal map for 50 uA runs from last night since we added bpm 11 and bpm 16 .
+
+bpm4aXP, 370.46, 1.0 
+bpm4aXM, 314.16, 1.0 
+bpm4aYP, 736.05, 1.0 
+bpm4aYM, 84.99, 1.0
+
+bpm4eXP, 1291.68, 1.0 
+bpm4eXM, 858.10, 1.0 
+bpm4eYP, 721.62, 1.0 
+bpm4eYM, 499.06, 1.0
+
+bpm4acXP, -288.79, 1.0 
+bpm4acXM, -719.30, 1.0 
+bpm4acYP, 395.55, 1.0 
+bpm4acYM, 39.37, 1.0
+
+bpm4ecXP, 1137.86, 1.0 
+bpm4ecXM, 891.51, 1.0 
+bpm4ecYP, 1255.71, 1.0 
+bpm4ecYM, 934.41, 1.0
+
+bpm11XP, 1665.21, 1.0 
+bpm11XM, 309.22, 1.0 
+bpm11YP, -47.94, 1.0 
+bpm11YM, 1056.89, 1.0
+
+bpm12XP, 3730.84, 1.0 
+bpm12XM, 3436.31, 1.0 
+bpm12YP, 3326.08, 1.0 
+bpm12YM, 3328.70, 1.0
+
+bpm16XP, 830.26, 1.0 
+bpm16XM, 1735.43, 1.0 
+bpm16YP, 387.07, 1.0 
+bpm16YM, -226.60, 1.0 
+
+!bpm1p02bXP, -17199.95, 1.0 
+!bpm1p02bXM, -748629.32, 1.0 
+!bpm1p02bYP, -78433.90, 1.0 
+!bpm1p02bYM, -20079.82, 1.0 
+!bpm1p03aXP, -664159.99, 1.0 
+!bpm1p03aXM, -8870.07, 1.0 
+!bpm1p03aYP, -11885.71, 1.0 
+!bpm1p03aYM, -9728.28, 1.0 
+
+
+!!  Cavity BPM offsets determined  for 40-50uA from run 2965 by using the
+!!  unser.
+!!  Cavity bpms XI and YI gains were set to give positions consistent with the
+!!  stripline BPMs.  The commented values were the pedestals from the fit to
+!!  the BCMs.
+  cav4bQ, -1243.93, 0.003278
+  cav4bXI,  -350.396,    0.0216191
+  cav4bYI,  -278.993,    0.0118156
+!!cav4bXI, -313.61, -0.118434
+!!cav4bYI, -29.58, -0.009883
+!!! cav4c calibrations obtained from run 3395. Check halog 3702581.
+  cav4cQ, -1242.14, 0.003031 
+!! FIXME XI YI pedestal
+  cav4cXI, -408.33, 0.003221
+  cav4cYI, -186.39, 0.003221
+!!cav4cXI, -529.38, 0.017139
+!!cav4cYI, 219.36, -0.012486
+  cav4dQ, -1829.75, 0.003070
+  cav4dXI,  -525.044,    0.0218225
+  cav4dYI,  1084.72,    0.00207035
+!!cav4dXI, -398.41, 0.034273
+!!cav4dYI, 1317.22, -0.003728
+

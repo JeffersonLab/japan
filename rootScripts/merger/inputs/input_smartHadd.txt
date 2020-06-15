@@ -1,0 +1,3 @@
+Trees=agg
+ROOT input path=/chafs2/work1/apar/aggRootfiles/slugRootfiles/minirun_slug#.root
+Rootfile Output Path=./test/test.root

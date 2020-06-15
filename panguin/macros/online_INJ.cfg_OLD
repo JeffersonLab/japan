@@ -1,0 +1,197 @@
+#Caryn's macro
+# Configuration file for the online GUI 
+#  All lines containing "#" are treated as comments (ignored)
+#  Last line MUST be blank.
+#  Multiple spaces are treated as one space.
+# To switch to log scale, add the option logy after the name of 
+# the histogram 
+
+# Uncomment the below line to monitor the fill of a ROOTfile.
+watchfile
+
+# Defined cuts
+definecut evcut  (CodaEventNumber>5&&bcm_an_us>40)
+definecut goodcut (CodaEventNumber>5&&ErrorFlag==0&&bcm_an_us>40)
+
+### column row
+newpage 1 1
+	title plotInjFC2 
+#	macro ~/PREX/japan/panguin/macros/Integrated.C("muls","diff_bpm1i02X","CodaEventNumber>5 && ErrorFlag==0",20)
+#        macro showIntegrated.C("muls","diff_bpm1i02X",evcut,20)
+	 macro ./PlotBPMSmacros/PlotInjBPMS_FC2.C("yield_bcm_an_us>30&&CodaEventNumber>5&&ErrorFlag==0")
+
+newpage 1 1
+	title plotInjAll 
+#	macro ~/PREX/japan/panguin/macros/Integrated.C("muls","diff_bpm1i02X","CodaEventNumber>5 && ErrorFlag==0",20)
+#        macro showIntegrated.C("muls","diff_bpm1i02X",evcut,20)
+	 macro ./PlotBPMSmacros/PlotInjBPMS.C("yield_bcm_an_us>30&&CodaEventNumber>5&&ErrorFlag==0")
+
+newpage 2 3
+	title BPM 2I01 vs Event Number
+        bpm2i01WS:CodaEventNumber evcut
+        bpm2i01X:CodaEventNumber evcut
+        bpm2i01Y:CodaEventNumber evcut
+	1e6*asym_bpm2i01WS -tree mul
+	1e3*diff_bpm2i01X   -tree mul
+	1e3*diff_bpm2i01Y  -tree mul
+
+### column row
+newpage 2 3
+	title BPM 2I02 vs Event Number
+        bpm2i02WS:CodaEventNumber evcut
+        bpm2i02X:CodaEventNumber evcut
+        bpm2i02Y:CodaEventNumber evcut
+	1E6*asym_bpm2i02WS -tree mul
+	1e3*diff_bpm2i02X  -tree mul
+	1e3*diff_bpm2i02Y  -tree mul
+
+### column row
+newpage 2 3
+	title BPM 1I02 vs Event Number
+        bpm1i02WS:CodaEventNumber evcut
+        bpm1i02X:CodaEventNumber evcut
+        bpm1i02Y:CodaEventNumber evcut
+	asym_bpm1i02WS -title "WS asym" -tree mul
+	diff_bpm1i02X -title "X Diff 1i02" -tree mul
+	diff_bpm1i02Y -title "Y Diff 1i02" -tree mul
+
+### column row
+newpage 2 3
+	title BPM 1I04 vs Event Number
+        bpm1i04WS:CodaEventNumber evcut
+        bpm1i04X:CodaEventNumber evcut
+        bpm1i04Y:CodaEventNumber evcut
+	asym_bpm1i04WS -title "WS asym" -tree mul
+	diff_bpm1i04X -title "X Diff 1i04" -tree mul
+	diff_bpm1i04Y -title "Y Diff 1i04" -tree mul
+
+### column row
+newpage 2 3
+	title BPM 1I06 vs Event Number
+        bpm1i06WS:CodaEventNumber evcut
+        bpm1i06X:CodaEventNumber evcut
+        bpm1i06Y:CodaEventNumber evcut
+	asym_bpm1i06WS -title "WS asym" -tree mul
+	diff_bpm1i06X -title "X Diff 1i06" -tree mul
+	diff_bpm1i06Y -title "Y Diff 1i06" -tree mul
+
+### column row
+newpage 2 3
+	title BPM 0I01 vs Event Number
+        bpm0i01WS:CodaEventNumber evcut
+        bpm0i01X:CodaEventNumber evcut
+        bpm0i01Y:CodaEventNumber evcut
+	asym_bpm0i01WS -title "WS asym" -tree mul
+	diff_bpm0i01X -title "X Diff 0i01" -tree mul
+	diff_bpm0i01Y -title "Y Diff 0i01" -tree mul
+
+### column row
+newpage 2 3
+	title BPM 0I01A vs Event Number
+        bpm0i01aWS:CodaEventNumber evcut
+        bpm0i01aX:CodaEventNumber evcut
+        bpm0i01aY:CodaEventNumber evcut
+	asym_bpm0i01aWS -title "WS asym" -tree mul
+	diff_bpm0i01aX -title "X Diff 0i01a" -tree mul
+	diff_bpm0i01aY -title "Y Diff 0i01a" -tree mul
+
+### column row
+newpage 2 3
+	title BPM 0I02 vs Event Number
+        bpm0i02WS:CodaEventNumber evcut
+        bpm0i02X:CodaEventNumber evcut
+        bpm0i02Y:CodaEventNumber evcut
+	asym_bpm0i02WS -title "WS asym" -tree mul
+	diff_bpm0i02X -title "X Diff 0i02" -tree mul
+	diff_bpm0i02Y -title "Y Diff 0i02" -tree mul
+
+### column row
+newpage 2 3
+	title BPM 0I02A vs Event Number
+        bpm0i02aWS:CodaEventNumber evcut
+        bpm0i02aX:CodaEventNumber evcut
+        bpm0i02aY:CodaEventNumber evcut
+	asym_bpm0i02aWS -title "WS asym" -tree mul
+	diff_bpm0i02aX -title "X Diff 0i02a" -tree mul
+	diff_bpm0i02aY -title "Y Diff 0i02a" -tree mul
+
+### column row
+newpage 2 3
+	title BPM 0I05 vs Event Number
+        bpm0i05WS:CodaEventNumber evcut
+        bpm0i05X:CodaEventNumber evcut
+        bpm0i05Y:CodaEventNumber evcut
+	asym_bpm0i05WS -title "WS asym" -tree mul
+	diff_bpm0i05X -title "X Diff 0i05" -tree mul
+	diff_bpm0i05Y -title "Y Diff 0i05" -tree mul
+
+### column row
+newpage 2 3
+	title BPM 0I07 vs Event Number
+        bpm0i07WS:CodaEventNumber evcut
+        bpm0i07X:CodaEventNumber evcut
+        bpm0i07Y:CodaEventNumber evcut
+	asym_bpm0i07WS -title "WS asym" -tree mul
+	diff_bpm0i07X -title "X Diff 0i07" -tree mul
+	diff_bpm0i07Y -title "Y Diff 0i07" -tree mul
+
+### column row
+newpage 2 3
+	title BPM 0L01 vs Event Number
+        bpm0l01WS:CodaEventNumber evcut
+        bpm0l01X:CodaEventNumber evcut
+        bpm0l01Y:CodaEventNumber evcut
+	asym_bpm0l01WS -title "WS asym" -tree mul
+	diff_bpm0l01X -title "X Diff 0l01" -tree mul
+	diff_bpm0l01Y -title "Y Diff 0l01" -tree mul
+
+### column row
+newpage 2 3
+	title BPM 0L02 vs Event Number
+        bpm0l02WS:CodaEventNumber evcut
+        bpm0l02X:CodaEventNumber evcut
+        bpm0l02Y:CodaEventNumber evcut
+	asym_bpm0l02WS -title "WS asym" -tree mul
+	diff_bpm0l02X -title "X Diff 0l02" -tree mul
+	diff_bpm0l02Y -title "Y Diff 0l02" -tree mul
+
+newpage 1 3
+	title BPM 2I02 vs Event Number
+        bpm2i02X:CodaEventNumber evcut
+        bpm2i02Y:CodaEventNumber evcut
+        bpm2i02WS:CodaEventNumber evcut
+
+newpage 1 3
+	title BPM 1I02 vs Event Number
+        bpm1i02X:CodaEventNumber evcut
+        bpm1i02Y:CodaEventNumber evcut
+        bpm1i02WS:CodaEventNumber evcut
+
+newpage 1 3
+	title BPM 1I06 vs Event Number
+        bpm1i06X:CodaEventNumber evcut
+        bpm1i06Y:CodaEventNumber evcut
+        bpm1i06WS:CodaEventNumber evcut
+
+
+newpage 2 3
+	title BPM 1I Pattern diffs vs Event Number
+        diff_bpm1i02X:CodaEventNumber evcut  -tree mul
+	diff_bpm1i06X:CodaEventNumber evcut  -tree mul
+        diff_bpm1i02Y:CodaEventNumber evcut  -tree mul
+       	diff_bpm1i06Y:CodaEventNumber evcut  -tree mul
+	asym_bpm1i02WS:CodaEventNumber evcut  -tree mul
+	asym_bpm1i06WS:CodaEventNumber evcut  -tree mul
+
+newpage 2 3
+	title BPM 1I Pair diffs vs Event Number
+        diff_bpm1i02X:CodaEventNumber evcut  -tree pr
+	diff_bpm1i06X:CodaEventNumber evcut  -tree pr
+        diff_bpm1i02Y:CodaEventNumber evcut  -tree pr
+       	diff_bpm1i06Y:CodaEventNumber evcut  -tree pr
+	asym_bpm1i02WS:CodaEventNumber evcut  -tree pr
+	asym_bpm1i06WS:CodaEventNumber evcut  -tree pr
+
+
+
+

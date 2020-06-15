@@ -85,6 +85,7 @@ class QwBlinder {
   
   ///  Error flag value 
   static const UInt_t kErrorFlag_BlinderFail = 0x200;
+  constexpr static const Double_t kValue_BlinderFail   = -1.0;
 
   static void DefineOptions(QwOptions &options);
 
@@ -243,6 +244,12 @@ class QwBlinder {
     void SetWienState(EQwWienMode wienmode);
     void SetIHWPPolarity(Int_t ihwppolarity);
 
+    //  Target position look-up index for PREX/CREX.
+    //  Index value of -1 is for the PREX positons
+    //  CREX index values in date order go from "min" to "Max" and must correspond to cases in the QwBlinder::Update(const QwEPICSEvent& epics) function.
+    Int_t  fCREXTargetIndex;
+    Int_t  kCREXTgtIndexMin = 1;
+    Int_t  kCREXTgtIndexMax = 2;
 
     Double_t fBeamCurrentThreshold;
     Bool_t fBeamIsPresent;

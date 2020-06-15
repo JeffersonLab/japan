@@ -52,18 +52,32 @@ public:
     InitializeChannel(name,datatosave);
   };
   VQwScaler_Channel(const VQwScaler_Channel& source)
-  : VQwHardwareChannel(source),MQwMockable(source),
-    fValue_Raw_Old(source.fValue_Raw_Old),
-    fValue_Raw(source.fValue_Raw),
-    fValue(source.fValue),
-    fValueM2(source.fValueM2),
-    fValueError(source.fValueError),
-    // TODO:  Don't copy the pointer; we need to regenerate it somehow.
-    //fNormChannelPtr(source.fNormChannelPtr);
-    fClockNormalization(source.fClockNormalization),
-    fNormChannelName(source.fNormChannelName),
-    fNeedsExternalClock(source.fNeedsExternalClock),
-    fIsDifferentialScaler(source.fIsDifferentialScaler)
+    : VQwHardwareChannel(source),MQwMockable(source),
+      fValue_Raw_Old(source.fValue_Raw_Old),
+      fValue_Raw(source.fValue_Raw),
+      fValue(source.fValue),
+      fValueM2(source.fValueM2),
+      fValueError(source.fValueError),
+      // TODO:  Don't copy the pointer; we need to regenerate it somehow.
+      //fNormChannelPtr(source.fNormChannelPtr);
+      fClockNormalization(source.fClockNormalization),
+      fNormChannelName(source.fNormChannelName),
+      fNeedsExternalClock(source.fNeedsExternalClock),
+      fIsDifferentialScaler(source.fIsDifferentialScaler)
+  { }
+  VQwScaler_Channel(const VQwScaler_Channel& source, VQwDataElement::EDataToSave datatosave)
+    : VQwHardwareChannel(source,datatosave),MQwMockable(source),
+      fValue_Raw_Old(source.fValue_Raw_Old),
+      fValue_Raw(source.fValue_Raw),
+      fValue(source.fValue),
+      fValueM2(source.fValueM2),
+      fValueError(source.fValueError),
+      // TODO:  Don't copy the pointer; we need to regenerate it somehow.
+      //fNormChannelPtr(source.fNormChannelPtr);
+      fClockNormalization(source.fClockNormalization),
+      fNormChannelName(source.fNormChannelName),
+      fNeedsExternalClock(source.fNeedsExternalClock),
+      fIsDifferentialScaler(source.fIsDifferentialScaler)
   { }
   virtual ~VQwScaler_Channel() { };
 
@@ -218,14 +232,17 @@ class QwScaler_Channel: public VQwScaler_Channel
 {
   public:
 
-    // Define the constructors (cascade)
-    QwScaler_Channel(): VQwScaler_Channel() { };
-    QwScaler_Channel(const QwScaler_Channel& source)
+  // Define the constructors (cascade)
+  QwScaler_Channel(): VQwScaler_Channel() { };
+  QwScaler_Channel(const QwScaler_Channel& source)
     : VQwScaler_Channel(source) { };
-    QwScaler_Channel(TString name, TString datatosave = "raw")
+  QwScaler_Channel(TString name, TString datatosave = "raw")
     : VQwScaler_Channel(name,datatosave) { };
+  QwScaler_Channel(const QwScaler_Channel& source, VQwDataElement::EDataToSave datatosave)
+    : VQwScaler_Channel(source,datatosave) { };
 
-  VQwHardwareChannel* Clone();
+  using VQwHardwareChannel::Clone;
+  VQwHardwareChannel* Clone(VQwDataElement::EDataToSave datatosave) const;
 
   public:
 

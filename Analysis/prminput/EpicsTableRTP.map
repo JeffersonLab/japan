@@ -1,0 +1,365 @@
+! The exclamation mark (!) is for comment in this file.
+!
+! 06-17-2011: added Qtor related 4 variables:  qw:qt_mps_i_target,qw:qt_mps_i_set, qw:qt_mps_i_dcct, Q1HallP
+! 07-08-2010: added "String" in more variables by identifying them using
+! caget epicsVarName (e.g. caget QW_T_miA) in a machine where caget command can be issued.
+!
+! 06-28-2010: first svn commit of this table (rsubedi)
+! Table for epics variables whose values can be stored in a MySQL database.
+! This table has three columns. The first column is the name for an epics
+! variable. The second column at the moment is just a flag to insert epics data
+! in the MySQL database. The third column is related to those epics variables
+! that have only string-value (e.g. the epics varaible for the half wave plate
+! is IGL1I00DI24_24M and has either IN or OUT value).
+!
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  Special keywords
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+NominalWienAngle = 74.5   ! This is the "nominal" Wien launch angle in degrees, NOT the HWienAngle.  This is what HWienAngle would need to be if we were using it alone.
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! NAME				DB_TABLE			TYPE		!  COMMENT
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+HALLA:p				slow_controls_data		float		! Tiefenbach 6GeV Beam energy (MeV), Hall A momentum (Tiefenbach) (HALLA:p)
+MMSHLAE				slow_controls_data		float		! Set Beam energy (MeV), Hall A setup momentum (MMSHLAE), Beamline set energy
+HacL_D1_P0rb			slow_controls_data		float		! Left Arm D1 momentum, Left arm momentum 
+HacL_CalcAngle			slow_controls_data		float		! 
+HacL_D1_NMR:SIG			slow_controls_data		float		! Left Arm D1 NMR
+HacL_lvdt1_raw.VAL		slow_controls_data		float		! LVDT Position Ch1
+HacL_lvdt2_raw.VAL		slow_controls_data		float		! LVDT Position Ch2
+HacL_lvdt3_raw.VAL		slow_controls_data		float		! LVDT Position Ch2
+HacR_D1_P0rb			slow_controls_data		float		! Right arm momentum, Right Arm D1 momentum
+HacR_CalcAngle			slow_controls_data		float		! 
+HacR_D1_NMR:SIG			slow_controls_data		float		! Right Arm D1 NMR
+HacR_lvdt1_raw.VAL		slow_controls_data		float		! RVDT Position Ch1 
+HacR_lvdt2_raw.VAL		slow_controls_data		float		! RVDT Position Ch2
+HacR_lvdt3_raw.VAL		slow_controls_data		float		! RVDT Position Ch2
+Hac_VMIC1182ha19:Encoder	slow_controls_data		float		! Hac_VMIC1182ha19:Encoder, R_VMIC1182 for iocha19
+HacR_alignAGL			slow_controls_data		float		! Right arm angle, Right Arm Scattering Angle
+IBC3H00CRCUR4			slow_controls_data		float		! Beam Current (Hall C), Hall C Current, "not sure what IBC3H00CRCUR4 is, yet added above because it was in the .db file epics variable list"
+IGL1I00OD16_16			slow_controls_data		string		! another HWP, INSERTABLE waveplate
+IGL1I00DIOFLRD			slow_controls_data		float		! Fake Half-Wave Plate (8960=OUT)
+APEXPOS				slow_controls_data		float		! Target encoder position
+pcrex90BDSPOS.VAL  slow_controls_data		float		! Target encoder position
+pcrex90BDS_PullString.VAL  slow_controls_data		float		! Target encoder position
+HALLA:dpp			slow_controls_data		float		! Tiefenbach 6GeV orbit correction (dpp), Hall A momentum orbit correction (dpp)
+INJ:p				slow_controls_data		float		! Injector Measured Energy
+ARC1:p				slow_controls_data		float		! 
+ARC2:p				slow_controls_data		float		! 
+ARC3:p				slow_controls_data		float		! 
+ARC4:p				slow_controls_data		float		! 
+ARC5:p				slow_controls_data		float		! 
+ARC6:p				slow_controls_data		float		! 
+MBSY1C				slow_controls_data		float		! MBSY1c Magnet Current, Hall A ARC Status
+MBSY1C.BDL			slow_controls_data		float		! MBSY1c Bdl 
+MBSY1CM				slow_controls_data		float		! Hall A ARC Current  
+MBSY1C.S			slow_controls_data		float		! Hall A ARC Set Current
+MCZDSNMRLOCK			slow_controls_data		float		! Lock [Y/N] 
+MCZDSZD				slow_controls_data		float		! Position [mm] 
+MCZDSRDFMAI			slow_controls_data		float		! Field [T] 
+IPM1C12.XPOS			slow_controls_data		float		! IPM1C12.XPOS  
+hac_bcm_average			slow_controls_data		float		! Beam Current, Average current of the two cavities
+HacL_alignAGL			slow_controls_data		float		! Left arm angle, Left Arm Scattering Angle
+EHAR_A_IXPEAK			slow_controls_data		float		! Fast Raster-A Ix
+EHAR_A_IYPEAK			slow_controls_data		float		! Fast Raster-A Iy
+EHAR_B_IXPEAK			slow_controls_data		float		! Fast Raster-B Ix
+EHAR_B_IYPEAK			slow_controls_data		float		! Fast Raster-B Iy
+halla_MeV			slow_controls_data		float		! Hall A energy  (halla_MeV), Tiefenbach energy
+hallc_MeV			slow_controls_data		float		! Hall C energy  (hallc_MeV) 
+HacL_Q1_P0rb			slow_controls_data		float		! Left Arm Q1 momentum  
+HacL_Q1_LS450:FLD_DATA		slow_controls_data		float		! Left Arm Q1 gauss meter
+HacL_Q2_HP3458A:IOUT		slow_controls_data		float		! Left Arm Q2 power supply current
+HacL_Q2_P0rb			slow_controls_data		float		! Left Arm Q2 momentum 
+HacL_Q2_LS450:FLD_DATA		slow_controls_data		float		! Left Arm Q2 gauss meter
+HacL_VMIC1182:0_Ch17		slow_controls_data		string		! Left Arm Q2 power supply polarity
+HacL_D1_HP3458A:IOUT		slow_controls_data		float		! Left Arm D1 power supply current
+HacL_Q3_HP3458A:IOUT		slow_controls_data		float		! Left Arm Q3 power supply current
+HacL_Q3_P0rb			slow_controls_data		float		! Left Arm Q3 momentum
+HacL_Q3_LS450:FLD_DATA		slow_controls_data		float		! Left Arm Q3 gauss meter
+HacL_VMIC1182:0_Ch26		slow_controls_data		string		! Left Arm Q3 power supply polarity
+HacL_D_LS450:FLD_DATA		slow_controls_data		float		! Left Arm B Field Hall Probe (D-G)
+HacR_Q1_P0rb			slow_controls_data		float		! Right Arm Q1 momentum
+MQ172RM				slow_controls_data		float		! Right Arm Q1 power supply
+HacR_Q1_LS450:FLD_DATA		slow_controls_data		float		! Right Arm Q1 gauss meter
+HacR_Q2_HP3458A:IOUT		slow_controls_data		float		! Right Arm Q2 power supply current
+HacR_Q2_P0rb			slow_controls_data		float		! Right Arm Q2 momentum 
+HacR_Q2_LS450:FLD_DATA		slow_controls_data		float		! Right Arm Q2 gauss meter 
+HacR_VMIC1182:0_Ch17		slow_controls_data		string		! Right Arm Q2 power supply polarity 
+HacR_D1_HP3458A:IOUT		slow_controls_data		float		! Right Arm D1 power supply current 
+HacR_Q3_HP3458A:IOUT		slow_controls_data		float		! Right Arm Q3 power supply current
+HacR_Q3_P0rb			slow_controls_data		float		! Right Arm Q3 momentum 
+HacR_Q3_LS450:FLD_DATA		slow_controls_data		float		! Right Arm Q3 gauss meter 
+HacR_VMIC1182:0_Ch26		slow_controls_data		string		! Right Arm Q3 power supply polarity 
+HacR_D_LS450:FLD_DATA		slow_controls_data		float		! Right Arm B Field Hall Probe (D-G)
+HrsH_VDC_rCURTop		slow_controls_data		float		! Left Arm Top VDC Current 
+HrsH_VDC_rCURBot		slow_controls_data		float		! Left Arm Bottom VDC Current 
+HrsH_VDC_rHVTop			slow_controls_data		float		! Left Arm Top VDC voltage
+HrsH_VDC_rHVBot			slow_controls_data		float		! Left Arm Bottom VDC voltage
+LVDCthres:volt1Read		slow_controls_data		float		! Left Arm Top VDC threshold (V)
+LVDCthres:volt2Read		slow_controls_data		float		! Left Arm Bottom VDC threshold (V)
+HRSE_DTECTR_HPE1313A:0_Ch1	slow_controls_data		float		! Right Arm Top VDC Current 
+HRSE_DTECTR_HPE1313A:0_Ch3	slow_controls_data		float		! Right Arm Bottom VDC Current 
+HRSE_DTECTR_HPE1313A:0_Ch0	slow_controls_data		float		! Right Arm Top VDC voltage 
+HRSE_DTECTR_HPE1313A:0_Ch2	slow_controls_data		float		! Right Arm Bottom VDC voltage 
+RVDCthres:volt1Read		slow_controls_data		float		! Right Arm Top VDC threshold (V) 
+RVDCthres:volt2Read		slow_controls_data		float		! Right Arm Bottom VDC threshold (V)
+hac_unser_current		slow_controls_data		float		! Current on Unser monitor, Unser Monitor (useful for calib)
+hac_bcm_dvm1_current		slow_controls_data		float		! Current on Upstream bcm 
+hac_bcm_dvm2_current		slow_controls_data		float		! Current on Downstream bcm 
+IPM1H00XVGAc.B			slow_controls_data		float		! 
+IPM1H00YVGAc.B			slow_controls_data		float		! 
+IPM1H00XVGAr			slow_controls_data		float		! 
+IPM1H00YVGAr			slow_controls_data		float		! 
+IPM1H05CURA.C			slow_controls_data		float		! 
+IPM1H05CURB.C			slow_controls_data		float		! 
+IPM1H05CURB.B			slow_controls_data		float		! 
+IPM1H00XPM1HZ			slow_controls_data		float		! 
+IPM1H00YPM1HZ			slow_controls_data		float		! 
+IPM1H00DACSL1c.A		slow_controls_data		float		! DACSL1 A    (new receiver)
+IPM1H00DACSL1c.B		slow_controls_data		float		! DACSL1 B    (new receiver)
+IPM1H00DACSL2c.A		slow_controls_data		float		! DACSL2 A     (new receiver)
+IPM1H00DACSL2c.B		slow_controls_data		float		! DACSL2 B     (new receiver)
+IPM1H05CURA			slow_controls_data		float		! Current on Upstream bcm  (new receiver)
+IPM1H05CURB			slow_controls_data		float		! Current on Downstream bcm    (new receiver)
+IBC0L02Current			slow_controls_data		float		! Current on IBC0L02 (source), Injector 0L02 current
+ibcm1				slow_controls_data		float		! Hall C Current 
+Arc1_dpp			slow_controls_data		float		! Arc1 dp/p 
+Arc2_dpp			slow_controls_data		float		! Arc2 dp/p 
+EHAR_LIXWidth			slow_controls_data		float		! Raster X width
+EHAR_LIYWidth			slow_controls_data		float		! Raster Y width
+HacL_COL:ENC			slow_controls_data		float		! Left Arm Collimator
+Hac_VMIC1182ha18:Encoder	slow_controls_data		float		! Hac_VMIC1182ha18:Encoder, L_VMIC1182 for iocha18
+HacL_CalcPoint			slow_controls_data		float		! 
+HacL_HPE1313A:0_Ch58		slow_controls_data		float		! HacL_HPE1313A:0_Ch58
+HacL_HPE1313A:0_Ch55		slow_controls_data		float		! HacL_HPE1313A:0_Ch55
+HacL_HPE1313A:0_Ch54		slow_controls_data		float		! HacL_HPE1313A:0_Ch54
+HacL_AglMrk			slow_controls_data		float		! Left Arm Angle Floor Angle 
+HacL_AglVrn			slow_controls_data		float		! Left Arm Angle Vernier
+HacH_DTC_HPE1313A:0_Ch63	slow_controls_data		float		! Left VDC -DISC LVL Top 
+HacH_DTC_HPE1313A:0_Ch62	slow_controls_data		float		! Left VDC -DISC LVL Bottom 
+HacH_DTC_HPE1313A:0_Ch61	slow_controls_data		float		! Left VDC -DISC LVL Voltage1
+HacH_DTC_HPE1313A:0_Ch60	slow_controls_data		float		! Left VDC -DISC LVL Voltage2
+HRSE_DTECTR_VMIC4140:0_Ch2	slow_controls_data		float		! Left VDC -DISC LVL Top Set
+HRSE_DTECTR_VMIC4140:0_Ch3	slow_controls_data		float		! Left VDC -DISC LVL Bottom Set
+HacR_COL:ENC			slow_controls_data		float		! Right Arm Arm Collimator
+HacR_CalcPoint			slow_controls_data		float		! 
+HacR_HPE1313A:0_Ch58		slow_controls_data		float		! HacR_HPE1313A:0_Ch58
+HacR_HPE1313A:0_Ch55		slow_controls_data		float		! HacR_HPE1313A:0_Ch55
+HacR_HPE1313A:0_Ch54		slow_controls_data		float		! HacR_HPE1313A:0_Ch54
+HacR_AglMrk			slow_controls_data		float		! Right Arm Angle Floor Angle
+HacR_AglVrn			slow_controls_data		float		! Right Arm Angle Vernier
+IPM1C12.XPOS			slow_controls_data		float		! IPM1C12.XPOS
+IPM1H04A.XPOS			slow_controls_data		float		! IPM1H04A.XPOS
+IPM1H04A.YPOS			slow_controls_data		float		! IPM1H04A.YPOS
+IPM1H04E.XPOS			slow_controls_data		float		! IPM1H04E.XPOS
+IPM1H04E.YPOS			slow_controls_data		float		! IPM1H04E.YPOS
+IPM1H04A.XSOF			slow_controls_data		float		! Survey X offset bpmA 
+IPM1H04A.YSOF			slow_controls_data		float		! Survey Y offset bpmA
+IPM1H04E.XSOF			slow_controls_data		float		! Survey X offset bpmB 
+IPM1H04E.YSOF			slow_controls_data		float		! Survey Y offset bpmB 
+VWienAngle			slow_controls_data		float		! Wien angle (Vertical)
+MWF1I04.BDL			slow_controls_data		float		! Wien Vertical BDL (Gcm)
+IGL1I00OD16_4			slow_controls_data		string		! Wien HV Polarity 
+IGL1I00DAC6			slow_controls_data		float		! Wien electrode Voltage 
+Phi_FG				slow_controls_data		float		! Wien angle (Solenoids)
+MFG1I04A.BDL			slow_controls_data		float		! Wien BDL (First Solenoid) (Gcm)
+MFG1I04B.BDL			slow_controls_data		float		! Wien BDL (Second Solenoid) (Gcm) 
+HWienAngle			slow_controls_data		float		! Wien angle (Horizontal) 
+MWF0I02.BDL			slow_controls_data		float		! Wien BDL (Gcm)  
+IGL1I00OD16_9			slow_controls_data		string		! Wien HV Polarity (Horizontal) 
+IGL1I00DAC5			slow_controls_data		float		! Wien electrode Voltage (Horizontal)
+psub_aa_pos			slow_controls_data		float		! Laser attenuation Hall A, Hall-A Laser attenuation
+IGL1I00DAC0			slow_controls_data		float		! Laser power  Hall A 
+psub_pl_pos			slow_controls_data		float		! Rotating waveplate, ROTATING waveplate (readback)
+IGL1I00DI24_24M			slow_controls_data		string		! Beam Half-wave plate (off=out), Beam IHWP
+HELDELAYs			slow_controls_data		string		! Helicity Delay Set 
+HELPATTERNs			slow_controls_data		string		! Helicity Pattern Set
+HELCLOCKs			slow_controls_data		string		! Helicity Clock Set 
+HELTSETTLEd			slow_controls_data		float		! Helicity Settle Read, Helicity T-Settle
+HELTSTABLEd			slow_controls_data		float		! Helicity Stable Read 
+HELDELAYd			slow_controls_data		string		! Helicity Delay Read, Helicity Reporting Delay
+HELPATTERNd			slow_controls_data		string		! Helicity Pattern, Helicity Pair/Quartet Pattern
+HELCLOCKd			slow_controls_data		string		! Helicity Clock Read, Helicity Clock
+HELFREQ				slow_controls_data		float		! Helicity Frequency 
+IOR1H04AT			slow_controls_data		string		! target OTR  In/Out 
+MQK1H01M			slow_controls_data		float		! MQK1H01M
+MQO1H02M			slow_controls_data		float		! MQO1H02M
+MQM1H02M			slow_controls_data		float		! MQM1H02M
+MQO1H03M			slow_controls_data		float		! MQO1H03M
+MQO1H03AM			slow_controls_data		float		! MQO1H03AM
+MQA1H04M			slow_controls_data		float		! MQA1H04M
+HacH_DTC_HPE1313A:0_Ch35	slow_controls_data		float		! Left Main Det x 
+HacH_DTC_HPE1313A:0_Ch32	slow_controls_data		float		! Left Main Det y, Right Main Det y
+HacB_VMIC1182:0_Ch32		slow_controls_data		string		! Target In
+HacB_VMIC1182:0_Ch33		slow_controls_data		string		! Target Out
+HacB_VMIC1182:0_Ch34		slow_controls_data		string		! Helium Pressure
+IBC0L02:bcmtctemp_r		slow_controls_data		float		! 
+IPM1H04B:bcmtctemp_r		slow_controls_data		float		! 
+IPM1H04C:bcmtctemp_r		slow_controls_data		float		! 
+IPM1H04D:bcmtctemp_r		slow_controls_data		float		! 
+ibc3h00:bcmtctemp_r		slow_controls_data		float		! 
+IBC3H04:bcmtctemp_r		slow_controls_data		float		! 
+IBC3H05:bcmtctemp_r		slow_controls_data		float		! 
+ipm2c21a:bcmtctemp_r		slow_controls_data		float		! 
+ipm2c24a:bcmtctemp_r		slow_controls_data		float		! 
+ipm2h01:bcmtctemp_r		slow_controls_data		float		! 
+IPMAD00:bcmtctemp_r		slow_controls_data		float		! 
+IPM5C11A:bcmtctemp_r		slow_controls_data		float		! 
+IPM1C12 			slow_controls_data		float		! 
+IPM1C12.XPOS			slow_controls_data		float		! 
+IPM1C12.YPOS			slow_controls_data		float		! 
+IPM3C12				slow_controls_data		float		! 
+IPM3C12.XPOS			slow_controls_data		float		! 
+IPM3C12.YPOS			slow_controls_data		float		! 
+hac_bcm_dvm1_read		slow_controls_data		float		! Raw voltage from Upstream bcm
+hac_bcm_dvm2_read		slow_controls_data		float		! Raw voltage from Upstream bcm
+MBSY1C_energy			slow_controls_data		float		! another energy
+IBC1H04CRCUR2			slow_controls_data		float		! 
+FCupsCORRECTED.VAL		slow_controls_data		float		! Faraday cup#2 current
+MBC1C20HM			slow_controls_data		float		! 
+HA:K224:Current			slow_controls_data		float		! 
+hac_unser_read			slow_controls_data		float		! 
+IGL1I00HALLAMODE		slow_controls_data		string		! Hall-A Beam Mode
+IGL1I00HALLBMODE		slow_controls_data		string		! Hall-B Beam Mode
+IGL1I00HALLCMODE		slow_controls_data		string		! Hall-C Beam Mode
+psub_ab_pos			slow_controls_data		float		! Hall-B Laser attenuation
+psub_ac_pos			slow_controls_data		float		! Hall-C Laser attenuation
+SMRPOSA				slow_controls_data		float		! Hall-A Slit position
+SMRPOSB				slow_controls_data		float		! Hall-B Slit position
+SMRPOSC				slow_controls_data		float		! Hall-C Slit position
+ICS1I00Out			slow_controls_data		string		! Lock status of Hall A laser
+IGL1I00AI18			slow_controls_data		float		! Laser Encloser temp center of room
+IGL1I00AI19			slow_controls_data		float		! Temp inside laser box
+IPM2C24A.IENG			slow_controls_data		float		! Hall B BCM
+IGL1I00PStrans			slow_controls_data		float		! Injector Transmission
+IFY0L03T			slow_controls_data		string		! Faraday cup#2 in/out
+psub_pl_ipos			slow_controls_data		float		! ROTATING waveplate
+psub_pl_move			slow_controls_data		float		! ROTATING waveplate moving
+IGL1I00lo2hdw			slow_controls_data		float		! PC Status On/Off
+IGL1I00OD16_8			slow_controls_data		string		! PC Set On/Off
+EHAR_STAT			slow_controls_data		float		! Raster status
+CFI6712				slow_controls_data		float		! 
+CFI6812				slow_controls_data		float		! 
+COMPTON_LASERP_si		slow_controls_data		float		! Laser power
+COMPTON_PW1PCAV_ca		slow_controls_data		float		! Calculated power in cavity
+COMPTON_PW2PCAV_ca		slow_controls_data		float		! Photodiode on table
+COMPTON_Y1SS_ca			slow_controls_data		float		! Laser X position on QPD 1
+COMPTON_X1SS_ca			slow_controls_data		float		! Laser Y position on QPD 1
+COMPTON_Y2SS_ca			slow_controls_data		float		! Laser X position on QPD 2
+COMPTON_X2SS_ca			slow_controls_data		float		! Laser Y position on QPD 2
+COMPTON_XYSUM1_ca		slow_controls_data		float		! QPD 1 sum
+COMPTON_XYSUM2_ca		slow_controls_data		float		! QPD 2 sum
+COMPTON_POS1_si			slow_controls_data		float		! Position set point for adjustable mirror 1 (either x or y)
+COMPTON_POS3_si			slow_controls_data		float		! Position set point for adjustable mirror 2 (either x or y)
+COMPTON_AXM1_si			slow_controls_data		float		! Mirror 1 axis selection
+COMPTON_AXM3_si			slow_controls_data		float		! Mirror 2 axis selection
+COMPTON_LASERT_MIN		slow_controls_data		float		! Laser crystal minimum temperature (epics constant used for calculating temperature offsets)
+COMPTON_LASERT_si		slow_controls_data		float		! Laser temperature set point
+COMPTON_SU_POLAR_mo		slow_controls_data		string		! Polarisation set point of laser in cavity
+COMPTON_SERVO_PDRai		slow_controls_data		float		! Signal reflected from cavity input mirror
+COMPTON_SERVO_GAINao		slow_controls_data		float		! "Gain" of locking servo
+COMPTON_SERVO_SEUILao		slow_controls_data		float		! "Tracking level (V)" of locking servo
+COMPTON_SERVO_SLOWai		slow_controls_data		float		! Slow locking signal sent to laser
+COMPTON_SERVO_FASTai		slow_controls_data		float		! Fast locking signal sent to laser
+COMPTON_CAVPOLAR_ca		slow_controls_data		float		! Calculated polarisation in cavity
+COMPTON_PW1R_S2_ca		slow_controls_data		float		! Signal of one polarisation state after Wollaston prism
+COMPTON_PW1R_S1_ca		slow_controls_data		float		! Signal of other polarisation state after Wollaston prism
+COMPTON_PVAL_Y_ao		slow_controls_data		float		! Step size for rotating half wave plate scan
+COMPTON_CAVSLOW_bo		slow_controls_data		string		! Slow ramping of laser temperature when not locked (1 = on)
+COMPTON_CAVPLUSOFT_ca.B		slow_controls_data		float		! Speed of laser temperature slow ramp up
+COMPTON_CAVMOINSOFT_ca.B	slow_controls_data		float		! Speed of laser temperature slow ramp down
+HRSE_DTECTR_HPE1313A:0_Ch10	slow_controls_data		float		! 
+HRSE_DTECTR_HPE1313A:0_Ch7	slow_controls_data		float		! 
+HRSE_DTECTR_HPE1313A:0_Ch9	slow_controls_data		float		! 
+HRSE_DTECTR_HPE1313A:0_Ch8	slow_controls_data		float		! 
+HacH_DTC_HPE1313A:0_Ch33	slow_controls_data		float		! 
+HacH_DTC_HPE1313A:0_Ch34	slow_controls_data		float		! 
+IPM1C12.FSUM			slow_controls_data		float		! 1C12 X+
+IPM1C12.TSUM			slow_controls_data		float		! X-
+IPM1C12.SSUM			slow_controls_data		float		! Y+
+IPM1C12.RSUM			slow_controls_data		float		! Y-
+IPM1C12.XIFG			slow_controls_data		float		! X GAIN
+IPM1C12.YIFG			slow_controls_data		float		! Y GAIN, IPM1C12.YPOS
+IPM1C12Alrm.B2			slow_controls_data		float		! X HI SAT
+IPM1C12Alrm.B3			slow_controls_data		float		! Y HI SAT
+IPM1H04A.FSUM			slow_controls_data		float		! 1H04A
+IPM1H04A.TSUM			slow_controls_data		float		! 
+IPM1H04A.SSUM			slow_controls_data		float		! 
+IPM1H04A.RSUM			slow_controls_data		float		! 
+IPM1H04A.XIFG			slow_controls_data		float		! 
+IPM1H04A.YIFG			slow_controls_data		float		! 
+IPM1H04B.FSUM			slow_controls_data		float		! 1H04B
+IPM1H04B.TSUM			slow_controls_data		float		! 
+IPM1H04B.SSUM			slow_controls_data		float		! 
+IPM1H04B.RSUM			slow_controls_data		float		! 
+IPM1H04B.XIFG			slow_controls_data		float		! 
+IPM1H04B.YIFG			slow_controls_data		float		! 
+FB_A:status:FB_status_in.B	slow_controls_data		float		! Gain Search on FFB Control, 0 when off. Turned on when "Gain Fail" during FFB
+FB_A:pause.RVAL			slow_controls_data		float		! 
+FB_A:status:mbbi2.B2		slow_controls_data		float		! 
+FB_A:abs_energy_RB		slow_controls_data		string		! 
+FB_A:BPM:gain_RF		slow_controls_data		string		! 
+FB_A:BPM:auto_agc		slow_controls_data		string		! 
+WienAngle			slow_controls_data		float		! 
+IGL1I00OD16_5			slow_controls_data		string		! 
+OPCR00Lpico_pos_h		slow_controls_data		float		! 
+OPCR00LR1hcurrent_pos		slow_controls_data		float		! 
+IFY0IA1CORRECTED.VAL		slow_controls_data		float		! 
+itov5out			slow_controls_data		float		! 
+IFY0IMSCORRECTED.VAL		slow_controls_data		float		! 
+enlk4A:floatspare1		slow_controls_data		float		! 
+FB_A:do_charge_asym		slow_controls_data		string		! 
+FB_A:do_pos_asym		slow_controls_data		string		! 
+FB_A:status:beam		slow_controls_data		string		! 
+FB_A:charge_asym		slow_controls_data		float		! 
+FB_A:BPM:N1:pos_asym.VALA	slow_controls_data		float		! 
+FB_A:BPM:N1:pos_asym.VALB	slow_controls_data		float		! 
+FB_A:BPM:N2:pos_asym.VALA	slow_controls_data		float		! 
+FB_A:BPM:N2:pos_asym.VALB	slow_controls_data		float		! 
+FB_A:BPM:N3:pos_asym.VALA	slow_controls_data		float		! 
+FB_A:BPM:N3:pos_asym.VALB	slow_controls_data		float		! 
+FB_A:BPM:N4:pos_asym.VALA	slow_controls_data		float		! 
+FB_A:BPM:N4:pos_asym.VALB	slow_controls_data		float		! 
+FB_A:BPM:N5:pos_asym.VALA	slow_controls_data		float		! 
+FB_A:BPM:N5:pos_asym.VALB	slow_controls_data		float		! 
+FB_A:BPM:N6:pos_asym.VALA	slow_controls_data		float		! 
+FB_A:BPM:N6:pos_asym.VALB	slow_controls_data		float		! 
+FB_A:BPM:N7:pos_asym.VALA	slow_controls_data		float		! 
+FB_A:BPM:N7:pos_asym.VALB	slow_controls_data		float		! 
+FB_A:BPM:N8:pos_asym.VALA	slow_controls_data		float		! 
+FB_A:BPM:N8:pos_asym.VALB	slow_controls_data		float		! 
+hallc:bcm2			slow_controls_data		float		! 
+FB_C:do_charge_asym		slow_controls_data		string		! 
+FB_C:do_pos_asym		slow_controls_data		string		! 
+FB_C:status:beam		slow_controls_data		string		! 
+FB_C:charge_asym		slow_controls_data		float		! 
+FB_C:BPM:N1:pos_asym.VALA	slow_controls_data		float		! 
+FB_C:BPM:N1:pos_asym.VALB	slow_controls_data		float		! 
+FB_C:BPM:N2:pos_asym.VALA	slow_controls_data		float		! 
+FB_C:BPM:N2:pos_asym.VALB	slow_controls_data		float		! 
+FB_C:BPM:N3:pos_asym.VALA	slow_controls_data		float		! 
+FB_C:BPM:N3:pos_asym.VALB	slow_controls_data		float		! 
+FB_C:BPM:N4:pos_asym.VALA	slow_controls_data		float		! 
+FB_C:BPM:N4:pos_asym.VALB	slow_controls_data		float		! 
+FB_C:BPM:N5:pos_asym.VALA	slow_controls_data		float		! 
+FB_C:BPM:N5:pos_asym.VALB	slow_controls_data		float		! 
+FB_C:BPM:N6:pos_asym.VALA	slow_controls_data		float		! 
+FB_C:BPM:N6:pos_asym.VALB	slow_controls_data		float		! 
+FB_C:BPM:N7:pos_asym.VALA	slow_controls_data		float		! 
+FB_C:BPM:N7:pos_asym.VALB	slow_controls_data		float		! 
+CTD673				slow_controls_data		float		! 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  Composite slow control variables
+!    These are variables for which there is not an actual EPICS variable,
+!    but a value is generated internally by the QwEPICSEvent class.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+WienMode        	slow_controls_data	String	 !  This will indicate the spin direction in the hall as defined by the Wien setting + precession
+RTPPITA1CNT	slow_controls_data		float		! 
+RTPPITA2CNT	slow_controls_data		float		! 
+RTPQWP1CNT	slow_controls_data		float		! 
+RTPQWP2CNT	slow_controls_data		float		! 
+RTPAPOSUCNT	slow_controls_data		float		! 
+RTPAPOSVCNT	slow_controls_data		float		! 
+RTPDPOSUCNT	slow_controls_data		float		! 
+RTPDPOSVCNT	slow_controls_data		float		!

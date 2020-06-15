@@ -93,6 +93,10 @@ QwBlinder::QwBlinder(const EQwBlindingStrategy blinding_strategy):
   fSeed = kDefaultSeed;
   fSeedID = 0;
 
+  fCREXTargetIndex  = -1;
+
+  Int_t tgt_index;
+
   // Read parameter file
   QwParameterFile blinder("blinder.map");
   if (blinder.FileHasVariablePair("=", "seed", fSeed))
@@ -101,6 +105,20 @@ QwBlinder::QwBlinder(const EQwBlindingStrategy blinding_strategy):
     QwVerbose << "Using blinding box: " << fMaximumBlindingAsymmetry << " ppm" << QwLog::endl;
   if (blinder.FileHasVariablePair("=", "max_factor", fMaximumBlindingFactor))
     QwVerbose << "Using blinding factor: " << fMaximumBlindingFactor << QwLog::endl;
+  if (blinder.FileHasVariablePair("=", "crex_target_index", tgt_index)){
+    if (tgt_index>=kCREXTgtIndexMin && tgt_index<=kCREXTgtIndexMax){
+      fCREXTargetIndex = tgt_index;
+    } else {
+      QwError << "Invalid CREX target index for blindable events!  Exiting!" 
+	      << QwLog::endl;
+      exit(100);
+    }
+  }
+  QwMessage << "What is the blindable CREX target position (-1 means we're using the PREX positions)? " << fCREXTargetIndex << QwLog::endl;
+  if (fCREXTargetIndex>=kCREXTgtIndexMin){
+    fSeed.Prepend(TString("[Using CREX positions!]  "));
+    QwMessage << "Updated the seed string: " << fSeed << QwLog::endl;
+  }
   std::string strategy;
   if (blinder.FileHasVariablePair("=", "strategy", strategy)) {
     std::transform(strategy.begin(), strategy.end(), strategy.begin(), ::tolower);
@@ -279,8 +297,8 @@ void QwBlinder::Update(const QwSubsystemArrayParity& detectors)
 
     // Check that the current on target is above acceptable limit
     Bool_t tmp_beam = kFALSE;
-    //    if (detectors.ReturnInternalValue(q_targ.GetElementName(), &q_targ)) {
-    if (detectors.ReturnInternalValue("q_targ", &q_targ)) {
+    //    if (detectors.RequestExternalValue(q_targ.GetElementName(), &q_targ)) {
+    if (detectors.RequestExternalValue("q_targ", &q_targ)) {
       if (q_targ.GetValue() > fBeamCurrentThreshold){
 	// 	std::cerr << "q_targ.GetValue()==" 
 	// 		  << q_targ.GetValue() << std::endl;
@@ -312,24 +330,68 @@ void QwBlinder::Update(const QwEPICSEvent& epics)
       //	  << "QWtgt_name=" << position << " "
 	    << "QWTGTPOS=" << tgt_pos << " "
 	    << QwLog::endl;
-    if ((tgt_pos > 3e6 && tgt_pos < 6.9e6) 
-	|| (tgt_pos > 7.3e6 && tgt_pos < 7.7e6)) {
+
+    //
+    // ****  Target index 1:  Beginning of CREX
+    if (fCREXTargetIndex==1 &&
+	(tgt_pos>14.5e6 && tgt_pos<18.0e6) ){
+      //  Calcium-48 target position
+      SetTargetBlindability(QwBlinder::kBlindable);
+
+    } else if (fCREXTargetIndex==1 &&
+	       ( (tgt_pos>-1.0e3 && tgt_pos<14.5e6)
+		 || (tgt_pos>18.0e6 && tgt_pos<61.e6) ) ){
+      //  Reasonable non-calcium-48 target positions
+      SetTargetBlindability(QwBlinder::kNotBlindable);
+
+     
+      //
+      // ****  Target index 2:  After 20January change in target location
+    } else if (fCREXTargetIndex==2 &&
+	(tgt_pos>11.5e6 && tgt_pos<14.5e6) ){
+      //  Calcium-48 target position (old Ca-40 position)
+      SetTargetBlindability(QwBlinder::kBlindable);
+
+    } else if (fCREXTargetIndex==2 &&
+	       ( (tgt_pos>-1.0e3 && tgt_pos<11.5e6)
+		 || (tgt_pos>14.5e6 && tgt_pos<61.e6) ) ){
+      //  Reasonable non-calcium-48 target positions
+      SetTargetBlindability(QwBlinder::kNotBlindable);
+
+      //
+      //  ****  Target index -1:  These are the PREX positions
+    } else if ( fCREXTargetIndex==-1 && 
+		(/*  Target positions before 1 August 2019.*/
+		 ( (tgt_pos > 3e6 && tgt_pos < 6.9e6) 
+		   || (tgt_pos > 7.3e6 && tgt_pos < 7.7e6))
+		 /*  Target positions after 1 August 2019.*/
+		 ||( (tgt_pos>30.e6 && tgt_pos<69e6)
+		     || (tgt_pos>73e6 && tgt_pos<78e6)
+		     ) ) ){
       //  Lead-208 target positions
       SetTargetBlindability(QwBlinder::kBlindable);
-    } else if ((tgt_pos > -1e3 && tgt_pos < 3e6) 
-	       || (tgt_pos > 6.8e6 && tgt_pos < 7.2e6)
-	       || (tgt_pos > 7.7e6 && tgt_pos < 10e6)){
+
+    } else if  ( fCREXTargetIndex==-1 && 
+		 (/*  Target positions before 1 August 2019.*/
+		  ((tgt_pos > -1e3 && tgt_pos < 3e6) 
+		   || (tgt_pos > 6.8e6 && tgt_pos < 7.2e6)
+		   || (tgt_pos > 7.7e6 && tgt_pos < 10e6))
+		  /*  Target positions after 1 August 2019.*/
+		  || ( (tgt_pos>17e6 && tgt_pos<30e6)
+		       || (tgt_pos>69e6 && tgt_pos<73e6)
+		       || (tgt_pos>78e6 && tgt_pos<90e6)
+		       )
+		  ) ){
       //  Positions are not lead-208 targets.
       SetTargetBlindability(QwBlinder::kNotBlindable);
+
     } else {
       SetTargetBlindability(QwBlinder::kIndeterminate);
       QwWarning << "Target parameters used by the blinder are indeterminate: "
 	//  << "QWtgt_name=" << position << " "
 		<< "QWTGTPOS=" << tgt_pos << " "
 		<< QwLog::endl;
-
-
-    }
+    } // End of tests on target positions
   }
   // Check for the beam polarity information
   //     IGL1I00DI24_24M         Beam Half-wave plate Read(off=out)

@@ -22,6 +22,7 @@
 #include "VQwDataHandler.h"
 #include "QwOptions.h"
 #include "QwHelicityPattern.h"
+#include "MQwPublishable.h"
 
 // Forward declarations
 class QwParityDB;
@@ -39,7 +40,10 @@ class QwPromptSummary;
  *   with the CODA routines.
  *
  */
-class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> > {
+class QwDataHandlerArray:
+    public std::vector<boost::shared_ptr<VQwDataHandler> >,
+    public MQwPublishable<QwDataHandlerArray,VQwDataHandler>
+{
  private:
   typedef std::vector<boost::shared_ptr<VQwDataHandler> >  HandlerPtrs;
  public:
@@ -116,6 +120,15 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
     void  ClearEventData();
     void  ProcessEvent();
 
+    void UpdateBurstCounter(Short_t burstcounter)
+    {
+      if (!empty()) {
+	for(iterator handler = begin(); handler != end(); ++handler){
+	  (*handler)->UpdateBurstCounter(burstcounter);
+	}
+      }
+    }
+
     /// \brief Assignment operator
     QwDataHandlerArray& operator=  (const QwDataHandlerArray &value);
     /*
@@ -171,6 +184,16 @@ class QwDataHandlerArray:  public std::vector<boost::shared_ptr<VQwDataHandler> 
 
     /// Filename of the global detector map
     std::string fDataHandlersMapFile;
+
+    Bool_t ScopeMismatch(TString name){
+      name.ToLower();
+      EDataHandlerArrayScope tmpscope = kUnknownScope;
+      if (name=="event") tmpscope = kEventScope;
+      if (name=="pattern") tmpscope = kPatternScope;
+      return (fArrayScope != tmpscope);
+    }
+    enum EDataHandlerArrayScope {kUnknownScope=-1, kEventScope, kPatternScope};
+    EDataHandlerArrayScope fArrayScope;
 
     std::vector<std::string> fDataHandlersDisabledByName; ///< List of disabled types
     std::vector<std::string> fDataHandlersDisabledByType; ///< List of disabled names
