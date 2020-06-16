@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 parser     = ArgumentParser()
 parser.add_argument("-f", "--conf", dest="devicelist", help="Device List and Analyses for camguin", required=True, metavar="CONF", default="input.txt")
 parser.add_argument("-r", "--run", dest="runnumber", help="Run number", required=True, metavar="RUN", default="1")
-parser.add_argument("-b", "--basename", dest="basename", help="Base ROOT File name", metavar="BASENAME", default="prexPrompt_pass1")
+parser.add_argument("-b", "--basename", dest="basename", help="Base ROOT File name", metavar="BASENAME", default="prexPrompt_pass2")
 parser.add_argument("-F", "--fullruns", dest="fullruns", help="Do mini runs flag", metavar="FULLRUNS", default="0")
 #parser.add_argument("-s", "--slug", dest="slug", help="slug flag", metavar="SLUG", default="-1")
 
@@ -28,7 +28,7 @@ print("The slug is slug: "+str(slug))
 # minirun loop simply updates the MINIRUNNUM environment variable as it loops through.
 # Alternate solution is to procedurally generate the cut string: "minirun==# && ok_cut==1",1 (where 1 is the overwrite cut telling Device_Error_Code to go away)
 print("Extracting from run " + str(run))
-cmds = ['root','-l','-q','-b','-L','getNMiniruns_postpan.C("'+str(run)+'")']
+cmds = ['root','-l','-q','-b','-L','getNMiniruns_japan.C("'+str(run)+'")']
 nMiniRuns = 0
 output = "NULL"
 output = subprocess.Popen(cmds, stdout=subprocess.PIPE).stdout.read().strip().decode('ascii') # Needs to be decoded... be careful
