@@ -382,11 +382,29 @@ RDataFrame Source::readSource(){
   TString baseDir = gSystem->Getenv("QW_ROOTFILES");
   TString postpanBaseDir = gSystem->Getenv("POSTPAN_ROOTFILES");
   Printf("Checking for postpan files in %s",postpanBaseDir.Data());
-  if ( gSystem->AccessPathName(Form("%s/%s_%s.%s.root",baseDir.Data(),basename.Data(), run.Data(),split.Data())) ) {
-    Printf("%s/%s_%s.%s.root not found",baseDir.Data(),basename.Data(), run.Data(),split.Data());
+  TString base_file_name = Form("%s/%s_%s.%s.root",baseDir.Data(),basename.Data(), run.Data(),split.Data());
+  if ( gSystem->AccessPathName(base_file_name) ) {
+    Printf("%s not found!",base_file_name.Data());
+    TString stemlist[5] = {"prexPrompt_pass2_",
+      "prexPrompt_pass1_", 
+      "prexALL_",
+      "prexALLminusR_",
+      "prexinj_"};
+    for  (int i=0; i<5; i++){
+      base_file_name = Form("%s/%s%s.%s.root",baseDir.Data(),
+          stemlist[i].Data(),run.Data(),split.Data());
+      if (!gSystem->AccessPathName(base_file_name)) {break;}
+    }
+    if (!gSystem->AccessPathName(base_file_name)) {
+      std::cerr << "Opened file "<< base_file_name << std::endl;
+    } else {
+      std::cerr << "No file found for run " << run << " in path " 
+          << baseDir << std::endl;
+      return NULL;
+    }
   }
-  mul_tree->Add(Form("%s/%s_%s.%s.root",baseDir.Data(),basename.Data(), run.Data(),split.Data()));
-  slow_tree->Add(Form("%s/%s_%s.%s.root",baseDir.Data(),basename.Data(), run.Data(),split.Data()));
+  mul_tree->Add(base_file_name);
+  slow_tree->Add(base_file_name);
   Int_t reg_tree_valid = 0;
   if ( !gSystem->AccessPathName(Form("%s/prexPrompt_%s_%s_regress_postpan.root",postpanBaseDir.Data(), run.Data(),split.Data())) ) {
     Printf("Using %s/prexPrompt_%s_%s_regress_postpan.root",postpanBaseDir.Data(), run.Data(),split.Data());
@@ -399,16 +417,16 @@ RDataFrame Source::readSource(){
   }
   TString ditheringFileNameDF = gSystem->Getenv("DITHERING_ROOTFILES");
   TString ditheringFileStub = gSystem->Getenv("DITHERING_STUB");
-  if (ditheringFileNameDF != ""){
+  if (ditheringFileNameDF != "" && !gSystem->AccessPathName(Form("%s/prexPrompt_dither%s_%s_000.root", ditheringFileNameDF.Data(), ditheringFileStub.Data(), run.Data()))) {
     Printf("Looking for Dithering corrected files in %s",ditheringFileNameDF.Data());
     dit_tree->Add(Form("%s/prexPrompt_dither%s_%s_000.root", ditheringFileNameDF.Data(), ditheringFileStub.Data(), run.Data()));
   }
-  TFile tmpFile(Form("%s/%s_%s.%s.root", baseDir.Data(),basename.Data(), run.Data(),split.Data()));
+  TFile tmpFile(Fbase_file_name);
   Int_t mulc_valid = (tmpFile.GetListOfKeys())->Contains("mulc");
-  mulc_tree->Add(Form("%s/%s_%s.%s.root",baseDir.Data(),basename.Data(), run.Data(),split.Data()));
-  mulc_lrb_burst_tree->Add(Form("%s/%s_%s.%s.root", baseDir.Data(),basename.Data(), run.Data(),split.Data()));
+  mulc_tree->Add(base_file_name);
+  mulc_lrb_burst_tree->Add(Fbase_file_name);
   Int_t mulc_lrb_alldet_burst_valid = (tmpFile.GetListOfKeys())->Contains("mulc_lrb_alldet_burst");
-  mulc_lrb_alldet_burst_tree->Add(Form("%s/%s_%s.%s.root", baseDir.Data(),basename.Data(), run.Data(),split.Data()));
+  mulc_lrb_alldet_burst_tree->Add(Fbase_file_name);
 
   if (reg_tree_valid) {
     mul_tree->AddFriend(reg_tree);

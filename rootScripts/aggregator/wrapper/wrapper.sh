@@ -93,4 +93,4 @@ then
 fi
 
 root -l -q -b ../camDataFrame.C"(\"$RUNNUM\",\"$NRUNS\",\"$MINIRUNNUM\",\"$SPLITNUM\",\"$CONFIG\",\"$BASENAME\")"
-echo -e "Done with run: $RUNNUM, minirun: $MINIRUNNUM, slug: $NRUNS"
+echo -e "Done run: $RUNNUM, minirun: $MINIRUNNUM, slug: $NRUNS"
