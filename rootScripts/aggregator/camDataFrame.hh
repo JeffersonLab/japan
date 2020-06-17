@@ -460,21 +460,44 @@ RDataFrame Source::readSource(){
   }
 
   //miniruns = mini_tree->Scan("minirun",""); // FIXME for later minirun looping addition
+  //
+
+  TString cutChoice = gSystem->Getenv("CAM_CUT");
 
   RDataFrame d(*mul_tree);//,device_list);
   RDataFrame slow(*slow_tree);
   if (debug > 1) { cout << "Filtering through ErrorFlag==0 --"; tsw.Print(); cout << endl; }
   tsw.Start();
+  Int_t test = 0;
+  // c++ 11 lambda function - drdobbs.com/cpp/lambdas-in-c11/240168241
+  //    [capture section] using = instead of test,cutChoice auto-grabs all values referenced. 
+  //    "-> int" is optional type casting for compiler simplicity
+  auto metCut = [test,cutChoice](Double_t c) -> int {
+    if (cutChoice=="" || cutChoice=="Default" || cutChoice=="ErrorFlag") {
+      return ((((Int_t)c))==test);
+    }
+    if (cutChoice=="BMOD" || cutChoice=="IncludeBMOD") {
+      return ((((Int_t)c)&0xda7e6bff)==test);
+    }
+    if (cutChoice=="BMODonly") {
+      return ((((Int_t)c)&0xda7e6bff)==test && (((Int_t)c)&0x9000)==0x9000);
+    }
+    if (cutChoice=="BurpOnly" || cutChoice=="BurpFailed") {
+      return ((((Int_t)c)&0x99726bff)==test && (((Int_t)c)&0x20000000)==0x20000000);
+    }
+  };
+  auto d_good=d.Filter(metCut, {"ErrorFlag"});
+
 //////// FIXME default CREX cut: auto d_good=d.Filter("reg.ok_cut==1");
   //auto d_good=d.Filter("(ErrorFlag&0xda7e6bff)==0");
-  Int_t test = 0;
+  /* FIXME Original ErrorFlag case
   auto d_good=d.Filter([test](Double_t c){
       return ((((Int_t)c))==test); // ErrorFlag == 0 -> All Global cuts pass
       //return ((((Int_t)c)&0xda7e6bff)==test); // ErrorFlag&0xda7e6bff -> (BMOD is active || Global ErrorFlag cut) == 0
       //return ((((Int_t)c)&0xda7e6bff)==test && (((Int_t)c)&0x9000)==0x9000); // ErrorFlag&0xda7e6bff -> (BMOD is active && Global ErrorFlag cut) == 0 -> BMOD only
-      //return ((((Int_t)c)&0x99726bff)==0 && (((Int_t)c)&0x20000000)==0x20000000); // Explicitly look at all burp cut failing data, but still cut out beam trip and Beam+Regular stability cuts, and user "bad" event cuts, and all device cuts -> Include BMOD
+      //return ((((Int_t)c)&0x99726bff)==test && (((Int_t)c)&0x20000000)==0x20000000); // Explicitly look at all burp cut failing data, but still cut out beam trip and Beam+Regular stability cuts, and user "bad" event cuts, and all device cuts -> Include BMOD
       }
-      ,{"ErrorFlag"});
+      ,{"ErrorFlag"}); */
   //auto d_good = d.Filter"(ErrorFlag&0xda7e6bff)==0");
 
   //if (ditheringFileNameDF != ""){
