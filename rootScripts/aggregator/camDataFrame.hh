@@ -432,7 +432,12 @@ RDataFrame Source::readSource(){
     mul_tree->AddFriend(reg_tree);
   }
   ///mul_tree->AddFriend(mulc_tree);
-  TString outputDir = getOutputDir_h();
+  //// FIXME remove dependence on camIO.hh
+  TString outputDir = gSystem->Getenv("CAM_OUTPUTDIR");
+  if (outputDir == "" || outputDir == "NULL"){
+    Printf("Error: Output dir (%s) invalid, must be a string\n",outDir.Data());
+    outputDir = "./";
+  }
   //if (outputDir.Contains("SAM") || outputDir.Contains("AT")) {
   //  mul_tree->AddFriend(mulc_tree);
   //}
