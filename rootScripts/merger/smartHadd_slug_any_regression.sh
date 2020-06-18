@@ -1,14 +1,19 @@
 #! /bin/sh
-ROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/slugRootfiles/grandRootfile_#/grand_aggregator.root"
-OUTPUTROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/slugRootfiles/grandRootfile/"
-#OUTPUTROOTFILEDIR="./"
+if [[ "$CAM_OUTPUTDIR" == "" ]];
+  # Default case, no environment set up yet
+  export CAM_OUTPUTDIR="/chafs2/work1/apar/aggRootfiles"
+fi
+# Default assumed outputs
+CAM_OUTPUT="${CAM_OUTPUTDIR}/slugRootfiles/grandRootfile_#/grand_aggregator.root"
+NEW_CAM_OUTPUT="${CAM_OUTPUTDIR}/slugRootfiles/grandRootfile"
 if [ "$#" -lt 1 ]; then
   echo "Error: Need to pass a list file name number \"slug##\".list"
   echo "Usage: ./smartHadd_slug_regression.sh list.txt (input file list, \\n separated) outputFileName (a name..., optional argument)"
 else
   if [ "$#" -eq 3 ]; then
-    ROOTFILEDIR="${3}/slugRootfiles/grandRootfile_#/grand_aggregator.root"
-    OUTPUTROOTFILEDIR="${3}/slugRootfiles/grandRootfile/"
+    # Special case, user defined output
+    CAM_OUTPUT="${3}/slugRootfiles/grandRootfile_#/grand_aggregator.root"
+    NEW_CAM_OUTPUT="${3}/slugRootfiles/grandRootfile"
   fi
   IFS=$'\n' read -d '' -r -a lines < ${1}
   # all lines
@@ -21,7 +26,7 @@ else
 
   # Do miniruns
   for i in "${!lines[@]}"; do
-  #  run_temp="${ROOTFILEDIR}/grandRootfile_${lines[$i]}/grand_aggregator.root"
+  #  run_temp="${CAM_OUTPUT}/grandRootfile_${lines[$i]}/grand_aggregator.root"
     #run_lines[$i]=$run_temp
     num_lines=$i
   done
@@ -30,8 +35,8 @@ else
   if [ "$#" -ge 2 ]; then
     name=$2
   fi
-  root -l -b -q ~/PREX/japan/rootScripts/merger/smartHadd.C\(\"${1}\",\"${ROOTFILEDIR}\",\"${OUTPUTROOTFILEDIR}/grand_${name}.root\",\"n_runs\",\"run_number\",\"agg\"\)
+  root -l -b -q ~/PREX/japan/rootScripts/merger/smartHadd.C\(\"${1}\",\"${CAM_OUTPUT}\",\"${NEW_CAM_OUTPUT}/grand_${name}.root\",\"n_runs\",\"run_number\",\"agg\"\)
 
   # Add units
-  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${OUTPUTROOTFILEDIR}/grand_${name}.root\"\)
+  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${NEW_CAM_OUTPUT}/grand_${name}.root\"\)
 fi
