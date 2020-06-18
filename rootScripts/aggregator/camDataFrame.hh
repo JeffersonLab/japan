@@ -95,10 +95,10 @@ class Source {
 };
 
 void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t nRuns = -1){
-  runNumber = getRunNumber_h(runNumber);
-  splitNumber = getSplitNumber_h(splitNumber);
-  minirunNumber = getMinirunNumber_h(minirunNumber);
-  nRuns     = getNruns_h(nRuns);
+  //runNumber = getRunNumber_h(runNumber);
+  //splitNumber = getSplitNumber_h(splitNumber);
+  //minirunNumber = getMinirunNumber_h(minirunNumber);
+  //nRuns     = getNruns_h(nRuns);
   Double_t data_slope = 0;
   Double_t data_slope_error = 0;
   Printf("Getting slopes");
@@ -363,6 +363,7 @@ RDataFrame Source::readSource(){
   EnableImplicitMT();
 
   /*--------------------------------------------*/
+  //debug=10;
 
   TStopwatch tsw;
   TStopwatch tswAll;
@@ -421,12 +422,12 @@ RDataFrame Source::readSource(){
     Printf("Looking for Dithering corrected files in %s",ditheringFileNameDF.Data());
     dit_tree->Add(Form("%s/prexPrompt_dither%s_%s_000.root", ditheringFileNameDF.Data(), ditheringFileStub.Data(), run.Data()));
   }
-  TFile tmpFile(Fbase_file_name);
+  TFile tmpFile(base_file_name);
   Int_t mulc_valid = (tmpFile.GetListOfKeys())->Contains("mulc");
   mulc_tree->Add(base_file_name);
-  mulc_lrb_burst_tree->Add(Fbase_file_name);
+  mulc_lrb_burst_tree->Add(base_file_name);
   Int_t mulc_lrb_alldet_burst_valid = (tmpFile.GetListOfKeys())->Contains("mulc_lrb_alldet_burst");
-  mulc_lrb_alldet_burst_tree->Add(Fbase_file_name);
+  mulc_lrb_alldet_burst_tree->Add(base_file_name);
 
   if (reg_tree_valid) {
     mul_tree->AddFriend(reg_tree);
@@ -435,14 +436,14 @@ RDataFrame Source::readSource(){
   //// FIXME remove dependence on camIO.hh
   TString outputDir = gSystem->Getenv("CAM_OUTPUTDIR");
   if (outputDir == "" || outputDir == "NULL"){
-    Printf("Error: Output dir (%s) invalid, must be a string\n",outDir.Data());
+    Printf("Error: Output dir (%s) invalid, must be a string\n",outputDir.Data());
     outputDir = "./";
   }
   //if (outputDir.Contains("SAM") || outputDir.Contains("AT")) {
   //  mul_tree->AddFriend(mulc_tree);
   //}
   //else {
-    if (ditheringFileNameDF != ""){
+    if (ditheringFileNameDF != "" && !gSystem->AccessPathName(Form("%s/prexPrompt_dither%s_%s_000.root", ditheringFileNameDF.Data(), ditheringFileStub.Data(), run.Data()))) {
       Printf("Obtained Dithering corrected files in %s",ditheringFileNameDF.Data());
       if (dit_tree) {
         Printf("Using dit tree");
@@ -477,7 +478,7 @@ RDataFrame Source::readSource(){
   // c++ 11 lambda function - drdobbs.com/cpp/lambdas-in-c11/240168241
   //    [capture section] using = instead of test,cutChoice auto-grabs all values referenced. 
   //    "-> int" is optional type casting for compiler simplicity
-  auto metCut = [test,cutChoice](Double_t c) -> int {
+  auto metCut = [test,cutChoice](Double_t c) -> bool {
     if (cutChoice=="" || cutChoice=="Default" || cutChoice=="ErrorFlag") {
       return ((((Int_t)c))==test);
     }
@@ -490,20 +491,23 @@ RDataFrame Source::readSource(){
     if (cutChoice=="BurpOnly" || cutChoice=="BurpFailed") {
       return ((((Int_t)c)&0x99726bff)==test && (((Int_t)c)&0x20000000)==0x20000000);
     }
+    else return false;
   };
   auto d_good=d.Filter(metCut, {"ErrorFlag"});
 
 //////// FIXME default CREX cut: auto d_good=d.Filter("reg.ok_cut==1");
+  //auto d_good=d.Filter("(ErrorFlag)==0");
   //auto d_good=d.Filter("(ErrorFlag&0xda7e6bff)==0");
-  /* FIXME Original ErrorFlag case
+  //FIXME Original ErrorFlag case
+  /*
   auto d_good=d.Filter([test](Double_t c){
       return ((((Int_t)c))==test); // ErrorFlag == 0 -> All Global cuts pass
       //return ((((Int_t)c)&0xda7e6bff)==test); // ErrorFlag&0xda7e6bff -> (BMOD is active || Global ErrorFlag cut) == 0
       //return ((((Int_t)c)&0xda7e6bff)==test && (((Int_t)c)&0x9000)==0x9000); // ErrorFlag&0xda7e6bff -> (BMOD is active && Global ErrorFlag cut) == 0 -> BMOD only
       //return ((((Int_t)c)&0x99726bff)==test && (((Int_t)c)&0x20000000)==0x20000000); // Explicitly look at all burp cut failing data, but still cut out beam trip and Beam+Regular stability cuts, and user "bad" event cuts, and all device cuts -> Include BMOD
       }
-      ,{"ErrorFlag"}); */
-  //auto d_good = d.Filter"(ErrorFlag&0xda7e6bff)==0");
+      ,{"ErrorFlag"});
+  */
 
   //if (ditheringFileNameDF != ""){
   //  d_good=d.Filter("dit.ErrorFlag==0");
