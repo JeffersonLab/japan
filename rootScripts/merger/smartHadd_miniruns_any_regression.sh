@@ -1,5 +1,5 @@
 #! /bin/sh
-if [[ "$CAM_OUTPUTDIR" == "" ]];
+if [[ "$CAM_OUTPUTDIR" == "" ]]; then
   # Default case, no environment set up yet
   export CAM_OUTPUTDIR="/chafs2/work1/apar/aggRootfiles"
 fi
