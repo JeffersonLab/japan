@@ -39,6 +39,7 @@ EVENTCUTS = 3
 !device_type, device_name, lower_limit, upper_limit, local(l)/global(g), stability_RMS, burplevel
 
  bcm,	bcm_an_us,	105,	1e6,	g,	1.7
+ bcm,	bcm_an_ds,	-10,	1e6,	g
 
 !****************************************************				
 !for bpmstrpline devices
@@ -47,6 +48,10 @@ EVENTCUTS = 3
 !So pedestals are applied before appyling the cuts.
 
 !device_type,  device_name, channel_name, lower_limit, upper_limit, local(l)/global(g), stability_RMS, burplevel
+ bpmstripline,	bpm1, 	xm,	-55000,	-1000,	g,	0,	0
+ bpmstripline,	bpm1, 	xp,	-55000,	-1000,	g,	0,	0
+ bpmstripline,	bpm1, 	ym,	-55000,	-1000,	g,	0,	0
+ bpmstripline,	bpm1, 	yp,	-55000,	-1000,	g,	0,	0
  bpmstripline,	bpm4a,	xm,	1000,	55000,	g,	0,	2000
  bpmstripline,	bpm4a,	xp,	1000,	55000,	g,	0,	2000
  bpmstripline,	bpm4a,	ym,	1000,	55000,	g,	0,	2000
@@ -55,14 +60,16 @@ EVENTCUTS = 3
  bpmstripline,	bpm4e,	xp,	1000,	55000,	g,	0,	2000
  bpmstripline,	bpm4e,	ym,	1000,	55000,	g,	0,	2000
  bpmstripline,	bpm4e,	yp,	1000,	55000,	g,	0,	2000
-!bpmstripline,	bpm11,	xm,	1000,	55000,	g,	0,	2000
-!bpmstripline,	bpm11,	xp,	1000,	55000,	g,	0,	2000
-!bpmstripline,	bpm11,	ym,	1000,	55000,	g,	0,	2000
-!bpmstripline,	bpm11,	yp,	1000,	55000,	g,	0,	2000
+ bpmstripline,	bpm11,	xm,	1000,	55000,	g,	0,	2000
+ bpmstripline,	bpm11,	xp,	1000,	55000,	g,	0,	2000
+ bpmstripline,	bpm11,	ym,	1000,	55000,	g,	0,	2000
+ bpmstripline,	bpm11,	yp,	1000,	55000,	g,	0,	2000
  bpmstripline,	bpm12,	xm,	1000,	55000,	g,	0,	2000
  bpmstripline,	bpm12,	xp,	1000,	55000,	g,	0,	2000
  bpmstripline,	bpm12,	ym,	1000,	55000,	g,	0,	2000
  bpmstripline,	bpm12,	yp,	1000,	55000,	g,	0,	2000
+
+! For Target Protection, etc.
  bpmstripline,	bpm4a,	absx,	-200,	200,	g,	0.7,	0.7
  bpmstripline,	bpm4a,	absy,	-200,	200,	g,	0.7,	0.7
  bpmstripline,	bpm4e,	absx,	-200,	200,	g,	0.7,	0.7

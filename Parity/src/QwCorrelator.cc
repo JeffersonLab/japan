@@ -355,7 +355,9 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
   for (size_t iv = 0; iv < fIndependentName.size(); iv++) {
     // Get the independent variables
     const VQwHardwareChannel* iv_ptr = 0;
-    switch (fIndependentType.at(iv)) {
+    iv_ptr = this->RequestExternalPointer(fIndependentFull.at(iv));
+    if (iv_ptr==NULL){
+      switch (fIndependentType.at(iv)) {
       case kHandleTypeAsym:
         iv_ptr = asym.RequestExternalPointer(fIndependentName.at(iv));
         break;
@@ -366,6 +368,7 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
         QwWarning << "Independent variable for correlator has unknown type."
                   << QwLog::endl;
         break;
+      }
     }
     if (iv_ptr) {
       fIndependentVar.push_back(iv_ptr);

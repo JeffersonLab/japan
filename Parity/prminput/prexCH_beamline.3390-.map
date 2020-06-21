@@ -51,7 +51,6 @@ sample_size=4096
     VQWK, 3, 7,  bpmstripline,  BPM11ym
 
 !ADC4
-!Caryn edit BPM8 7/3/2019. XP was 4_5 and XM was 4_4 which is backwards so swapped them to correct mapping
 !Cameron edit 7/16/2019 -> new maps, BPMs 11, 12, 16, see http://ace.phys.virginia.edu/HAPPEX/3820
     VQWK, 4, 0,  bpmstripline,  BPM1xp
     VQWK, 4, 1,  bpmstripline,  BPM1xm
@@ -94,6 +93,12 @@ sample_size=4096
     VQWK, 7, 7,  bpmstripline,  BPM4ecYP
 
 
+begin=combinedbcm
+name=bcm_target
+  bcm_an_us, bcm, 2.0
+  bcm_an_ds, bcm, 1.0
+end=combinedbcm
+
 !! bank=0x2 
 !!
 !! scaler_buffer_offset=1 
@@ -118,7 +123,6 @@ sample_size=4096
 
 [PUBLISH]
 ! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
- ! q_targ, bcm, bcm_an_ds3, c
 
   x_targ, bpmstripline, bpm4e, y
   y_targ, bpmstripline, bpm4e, x
@@ -129,4 +133,4 @@ sample_size=4096
 
  xy_pos_x, bpmstripline, bpm4e, x
  xy_pos_y, bpmstripline, bpm4e, y 
- q_targ, bcm, bcm_an_ds3, c
+ q_targ, combinedbcm, bcm_target, c
