@@ -6,6 +6,10 @@ if [ "$#" -lt 1 ]; then
   echo "Error: Need to pass a list file name"
   echo "Usage: ./smartHadd_miniruns_regression.sh list.txt (input file list, \\n separated) outputFileName (a name..., optional argument)"
 else
+  if [ "$#" -eq 3 ]; then
+    ROOTFILEDIR="${3}/minirun_aggregator_#_#.root"
+    OUTPUTROOTFILEDIR="${3}/slugRootfiles/"
+  fi
   IFS=$'\n' read -d '' -r -a lines < ${1}
   # all lines
   echo "Hadding all runs: ${lines[@]}"
