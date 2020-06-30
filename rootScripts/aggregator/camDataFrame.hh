@@ -379,6 +379,8 @@ RDataFrame Source::readSource(){
   TChain * mulc_tree     = new TChain("mulc");
   TChain * mulc_lrb_burst_tree = new TChain("mulc_lrb_burst");
   TChain * mulc_lrb_alldet_burst_tree = new TChain("mulc_lrb_alldet_burst");
+  TChain * mulc_dit_tree = new TChain("mulc_dit");
+  TChain * mulc_dit_combo_tree = new TChain("mulc_dit_combo");
 
   TString baseDir = gSystem->Getenv("QW_ROOTFILES");
   TString postpanBaseDir = gSystem->Getenv("POSTPAN_ROOTFILES");
@@ -425,7 +427,12 @@ RDataFrame Source::readSource(){
   TFile tmpFile(base_file_name);
   Int_t mulc_valid = (tmpFile.GetListOfKeys())->Contains("mulc");
   mulc_tree->Add(base_file_name);
+  Int_t mulc_lrb_burst_valid = (tmpFile.GetListOfKeys())->Contains("mulc_lrb_burst");
   mulc_lrb_burst_tree->Add(base_file_name);
+  Int_t mulc_dit_valid = (tmpFile.GetListOfKeys())->Contains("mulc_dit");
+  mulc_dit_tree->Add(base_file_name);
+  Int_t mulc_dit_combo_valid = (tmpFile.GetListOfKeys())->Contains("mulc_dit_combo");
+  mulc_dit_combo_tree->Add(base_file_name);
   Int_t mulc_lrb_alldet_burst_valid = (tmpFile.GetListOfKeys())->Contains("mulc_lrb_alldet_burst");
   mulc_lrb_alldet_burst_tree->Add(base_file_name);
 
@@ -457,6 +464,18 @@ RDataFrame Source::readSource(){
    //   mul_tree->AddFriend(mulc_tree);
    // }
   //}
+  if (mulc_lrb_burst_valid) {
+    Printf("Using mulc_lrb_burst");
+    mul_tree->AddFriend(mulc_lrb_burst_tree);
+  }
+  if (mulc_dit_valid) {
+    Printf("Using mulc_dit");
+    mul_tree->AddFriend(mulc_dit_tree);
+  }
+  if (mulc_dit_combo_valid) {
+    Printf("Using mulc_dit_combo");
+    mul_tree->AddFriend(mulc_dit_combo_tree);
+  }
   if (mulc_lrb_alldet_burst_valid) {
     Printf("Using mulc_lrb_alldet_burst");
     mul_tree->AddFriend(mulc_lrb_alldet_burst_tree);
@@ -485,7 +504,7 @@ RDataFrame Source::readSource(){
     if (cutChoice=="BMOD" || cutChoice=="IncludeBMOD") {
       return ((((Int_t)c)&0xda7e6bff)==test);
     }
-    if (cutChoice=="BMODonly") {
+    if (cutChoice=="OnlyBMOD" || cutChoice=="BMODonly") {
       return ((((Int_t)c)&0xda7e6bff)==test && (((Int_t)c)&0x9000)==0x9000);
     }
     if (cutChoice=="BurpOnly" || cutChoice=="BurpFailed") {
