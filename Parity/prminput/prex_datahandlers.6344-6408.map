@@ -13,6 +13,13 @@
   tree-name  = mulc_dit
   tree-comment = Helicity event data tree (BMod corrected)
 
+[QwCombiner]
+  name       = BModCombiner for combos
+  priority   = 0
+  map        = prex_combiner_dit_combo.map
+  tree-name  = mulc_dit_combo
+  tree-comment = Helicity event data tree (BMod corrected)
+
 ## ---- run-level correctors ---- 
 
 [LRBCorrector]
@@ -36,6 +43,16 @@
   tree-comment = Helicity event data tree (corrected by LinRegBlue) with 4aX
 
 [LRBCorrector]
+  name       = LinRegBlue targBPM Corrector (run-level slopes)
+  priority   = 10
+  map        = prex_corrolator_targBPM.conf
+  slope-file-base = blueR
+  slope-file-suff = new_targBPM.slope.root
+  slope-path = ./LRBoutput/
+  tree-name  = mulc_lrb_targBPM
+  tree-comment = Helicity event data tree (corrected by LinRegBlue) with target BPMs
+
+[LRBCorrector]
   name       = LinRegBlue AllDet Corrector (run-level slopes)
   priority   = 10
   map        = prex_corrolator_alldet.conf
@@ -54,6 +71,16 @@
   slope-path = ./LRBoutput/
   tree-name  = mulc_lrb_alldet_orig
   tree-comment = Helicity event data tree (corrected by LinRegBlue) with 4aX
+
+[LRBCorrector]
+  name       = LinRegBlue AllDet targBPMs Corrector (run-level slopes)
+  priority   = 10
+  map        = prex_corrolator_alldet_targBPM.conf
+  slope-file-base = blueR
+  slope-file-suff = alldet_targBPM.slope.root
+  slope-path = ./LRBoutput/
+  tree-name  = mulc_lrb_alldet_targBPM
+  tree-comment = Helicity event data tree (corrected by LinRegBlue) with target BPMs
 
 [LRBCorrector]
   name       = LinRegBlue Overloaded Corrector (run-level slopes)
@@ -88,6 +115,16 @@
   tree-comment = Helicity event data tree (corrected by LinRegBlue) with 4aX
 
 [LRBCorrector]
+  name       = LinRegBlue targBPM Corrector (burst-level slopes)
+  priority   = 10
+  map        = prex_corrolator_targBPM.conf
+  slope-file-base = burst_blueR
+  slope-file-suff = new_targBPM.slope.root
+  slope-path = ./LRBoutput/
+  tree-name  = mulc_lrb_targBPM_burst
+  tree-comment = Helicity event data tree (corrected by LinRegBlue) with target BPMs
+
+[LRBCorrector]
   name       = LinRegBlue AllDet Corrector (burst-level slopes)
   priority   = 10
   map        = prex_corrolator_alldet.conf
@@ -106,6 +143,16 @@
   slope-path = ./LRBoutput/
   tree-name  = mulc_lrb_alldet_orig_burst
   tree-comment = Helicity event data tree (corrected by LinRegBlue) with 4aX
+
+[LRBCorrector]
+  name       = LinRegBlue AllDet targBPM Corrector (burst-level slopes)
+  priority   = 10
+  map        = prex_corrolator_alldet_targBPM.conf
+  slope-file-base = burst_blueR
+  slope-file-suff = alldet_targBPM.slope.root
+  slope-path = ./LRBoutput/
+  tree-name  = mulc_lrb_alldet_targBPM_burst
+  tree-comment = Helicity event data tree (corrected by LinRegBlue) with target BPMs
 
 [LRBCorrector]
   name       = LinRegBlue Overloaded Corrector (burst-level slopes)
@@ -146,6 +193,20 @@
   tree-comment = Correlations with 4aX
 
 [QwCorrelator]
+  name       = lrb_std_targBPM
+  priority   = 50
+  map        = prex_corrolator_targBPM.conf
+  slope-file-base = blueR
+  slope-file-suff = new_targBPM.slope.root
+  slope-path = ./LRBoutput/
+  alias-file-base = regalias_
+  alias-file-suff = targBPM
+  alias-path = ./LRBoutput/
+  disable-histos = true
+  tree-name  = lrb_std_targBPM
+  tree-comment = Correlations with targetBPMs
+
+[QwCorrelator]
   name       = AllDetCorrelator
   priority   = 50
   map        = prex_corrolator_alldet.conf
@@ -172,6 +233,20 @@
   disable-histos = true
   tree-name  = lrb_alldet_orig
   tree-comment = Correlations (All detector channels) with 4aX
+
+[QwCorrelator]
+  name       = AllDet targBPM Correlator
+  priority   = 50
+  map        = prex_corrolator_alldet_targBPM.conf
+  slope-file-base = blueR
+  slope-file-suff = alldet_targBPM.slope.root
+  slope-path = ./LRBoutput/
+  alias-file-base = regalias_
+  alias-file-suff = alldet_targBPM
+  alias-path = ./LRBoutput/
+  disable-histos = true
+  tree-name  = lrb_alldet_targBPM
+  tree-comment = Correlations (All detector channels) with target BPMs
 
 [QwCorrelator]
   name       = lrb_std_block0
@@ -246,6 +321,7 @@
   disable-histos = true
   tree-name  = lrb_all
   tree-comment = Correlations (all variables)
+
 
 [QwExtractor]
   name       = BMWExtractor
