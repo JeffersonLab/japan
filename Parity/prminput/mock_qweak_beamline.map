@@ -5,7 +5,7 @@ Bank=0x3102
 !
 ! module.type, module.num  chan.num, det.type, det.name, if unrotated then last column ->UNROTATED
 
-sample_size=16680
+sample_size=15000
 !ADC11
   VQWK, 0, 0,  bpmstripline,  QWK_0R06XP
   VQWK, 0, 1,  bpmstripline,  QWK_0R06XM
@@ -36,11 +36,27 @@ sample_size=16680
   VQWK, 2, 6,  bpmstripline,  QWK_1H04YP
   VQWK, 2, 7,  bpmstripline,  QWK_1H04YM
 
+!ADC14 
+  VQWK, 3, 0, bpmstripline, QWK_1H05XP
+  VQWK, 3, 1, bpmstripline, QWK_1H05XM
+  VQWK, 3, 2, bpmstripline, QWK_1H05YP
+  VQWK, 3, 3, bpmstripline, QWK_1H05YM
+  VQWK, 3, 4, bpmstripline, QWK_1H06XP
+  VQWK, 3, 5, bpmstripline, QWK_1H06XM
+  VQWK, 3, 6, bpmstripline, QWK_1H06YP
+  VQWK, 3, 7, bpmstripline, QWK_1H06YM
+
+!begin=combinedbpm
+!name=bpm_target
+!qwk_0r06, bpmstripline, 1.0, 1.0, 1.0
+!qwk_0l06, bpmstripline, 1.0, 1.0, 1.0
+!end=combinedbpm
 
 begin=combinedbpm
 name=bpm_target
-qwk_0r06, bpmstripline, 1.0, 1.0, 1.0
-qwk_0l06, bpmstripline, 1.0, 1.0, 1.0
+qwk_1h04, bpmstripline, 1.0, 1.0, 1.0
+qwk_1h05, bpmstripline, 1.0, 1.0, 1.0
+qwk_1h06, bpmstripline, 1.0, 1.0, 1.0
 end=combinedbpm
 
 begin=combinedbcm

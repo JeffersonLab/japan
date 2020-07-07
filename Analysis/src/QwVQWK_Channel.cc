@@ -17,7 +17,7 @@ const Bool_t QwVQWK_Channel::kDEBUG = kFALSE;
 const Int_t  QwVQWK_Channel::kWordsPerChannel = 6;
 const Int_t  QwVQWK_Channel::kMaxChannels     = 8;
 
-const Double_t QwVQWK_Channel::kTimePerSample = 2.0 * Qw::us;
+const Double_t QwVQWK_Channel::kTimePerSample = (2.0/30.0) * Qw::us; //2.0 originally
 
 /*!  Conversion factor to translate the average bit count in an ADC
  *   channel into average voltage.
@@ -269,10 +269,23 @@ void QwVQWK_Channel::RandomizeEventData(int helicity, double time)
   // sqrt_fBlocksPerEvent = sqrt(fBlocksPerEvent);
 
   // Calculate drift (if time is not specified, it stays constant at zero)
+  //Double_t drift = 0.0;
+  //for (UInt_t i = 0; i < fMockDriftFrequency.size(); i++) {
+  //  drift += fMockDriftAmplitude[i] * sin(2.0 * Qw::pi * fMockDriftFrequency[i] * time + fMockDriftPhase[i]);
+  //}
+
+  // updated to calculate the drift for each block individually
   Double_t drift = 0.0;
-  for (UInt_t i = 0; i < fMockDriftFrequency.size(); i++) {
-    drift += fMockDriftAmplitude[i] * sin(2.0 * Qw::pi * fMockDriftFrequency[i] * time + fMockDriftPhase[i]);
+  for (Int_t i = 0; i < fBlocksPerEvent; i++){
+    drift = 0.0;
+    if (i >= 1){
+      time += (fNumberOfSamples_map/4.0)*kTimePerSample;
+    }
+    for (UInt_t i = 0; i < fMockDriftFrequency.size(); i++) {
+      drift += fMockDriftAmplitude[i] * sin(2.0 * Qw::pi * fMockDriftFrequency[i] * time + fMockDriftPhase[i]);
+    }
   }
+
   // Calculate signal
   fHardwareBlockSum = 0.0;
   fHardwareBlockSumM2 = 0.0; // second moment is zero for single events
@@ -285,7 +298,7 @@ void QwVQWK_Channel::RandomizeEventData(int helicity, double time)
     } else {
       fBlock[i] *= 1.0 + helicity*fMockAsymmetry;
     }
-    fBlock[i] += fMockGaussianSigma*tmpvar;
+    fBlock[i] += fMockGaussianSigma*tmpvar*sqrt(fBlocksPerEvent);
 /*    
     fBlock[i] = //GetRandomValue();
      fMockGaussianMean * (1 + helicity * fMockAsymmetry) 

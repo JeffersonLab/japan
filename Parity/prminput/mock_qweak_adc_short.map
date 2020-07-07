@@ -1,6 +1,6 @@
 ROC=6
 Bank=0x6110
-sample_size=16680
+sample_size=15000
 !
 !
 ! module.type, module.num, module.chan, det.type, det.name

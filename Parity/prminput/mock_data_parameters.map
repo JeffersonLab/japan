@@ -4,36 +4,40 @@ bpmstripline,     qwk_0r06,       1.0e-3,       6.0,          3.0e-3,       1.0e
 bpmstripline,     qwk_0l06,       1.0e-3,       6.0,          3.0e-3,       1.0e-3,       -1.5,         4.0e-3
 bpmstripline,     qwk_1c12,       1.0e-3,       6.0,          3.0e-3,       1.0e-3,       -1.5,         4.0e-3
 bpmstripline,     qwk_1h04,       1.0e-3,       6.0,          3.0e-3,       1.0e-3,       -1.5,         4.0e-3
+bpmstripline,     qwk_1h05,       1.0e-3,       6.0,          3.0e-3        1.0e-3        -1.5,         4.0e-3
+bpmstripline,     qwk_1h06,       1.0e-3,       6.0,          3.0e-3        1.0e-3        -1.5,         4.0e-3
 
 !BPMStripline resolution smearing:              xres          yres
-bpmstripline,     qwk_0r06,       resolution    1.0e-4,       1.0e-4
-bpmstripline,     qwk_0l06,       resolution    1.0e-4,       1.0e-4
-bpmstripline,     qwk_1c12,       resolution    1.0e-4,       1.0e-4
-bpmstripline,     qwk_1h04,       resolution    1.0e-4,       1.0e-4
+bpmstripline,     qwk_0r06,       resolution    0.0e-3,       0.0e-3
+bpmstripline,     qwk_0l06,       resolution    0.0e-3,       0.0e-3
+bpmstripline,     qwk_1c12,       resolution    0.0e-3,       0.0e-3
+bpmstripline,     qwk_1h04,       resolution    0.0e-3,       0.0e-3
+bpmstripline,     qwk_1h05,       resolution    0.0e-3,       0.0e-3
+bpmstripline,     qwk_1h06,       resolution    0.0e-3,       0.0e-3
 
 !CombinedBPM parameters
-!device_type,     device_name,                  asym,         mean,         sigma
-combinedbpm,      bpm_target,     xpos          0.0e-2,       0.0,          1.0e-3
-combinedbpm,      bpm_target,     ypos          0.0e-2,       0.0,          1.0e-3
-combinedbpm,      bpm_target,     xslope        0.0e-6,       0.0,          1.0e-7
-combinedbpm,      bpm_target,     yslope        0.0e-6,       0.0,          1.0e-7
+!device_type,     device_name,                  asym,         mean,         sigma(jitter)
+combinedbpm,      bpm_target,     xpos          0.0e-3,       0.0,          5.0e-2
+combinedbpm,      bpm_target,     ypos          0.0e-2,       0.0,          5.0e-2
+combinedbpm,      bpm_target,     xslope        0.0e-6,       0.0,          5.0e-6
+combinedbpm,      bpm_target,     yslope        0.0e-6,       0.0,          5.0e-6 
 
 !  CombinedBPM drifts              	      amplitude (abs), phase shift (rad), frequency (Hz)
-combinedbpm,      bpm_target,     xpos      drift     1.0e-2,      0.456,        29.0
-combinedbpm,      bpm_target,     ypos      drift     1.0e-2,      0.456,        37.0
-combinedbpm,      bpm_target,     xslope    drift     3.0e-6,      0.654,        41.0
-combinedbpm,      bpm_target,     yslope    drift     3.0e-6,      0.654,        31.0
+combinedbpm,      bpm_target,     xpos      drift     1.0e-2,      0.456,        45.0 !1
+combinedbpm,      bpm_target,     ypos      drift     1.0e-2,      0.456,        47.0 !1
+combinedbpm,      bpm_target,     xslope    drift     3.0e-6,      0.654,        49.0 !3
+combinedbpm,      bpm_target,     yslope    drift     3.0e-6,      0.654,        43.0 !3
 
 !BCM parameters
-!device_type,     device_name,    asym,         mean,         sigma
-bcm,              qwk_bcm0l00,    0.0e-0,       100.0,        0.02
-bcm,              qwk_bcm0l01,    1.0e-1,       100.0,        0.02
-bcm,              qwk_bcm0l02,    2.0e-2,       100.0,        0.02
-bcm,              qwk_bcm0l03,    3.0e-3,       100.0,        0.02
-bcm,              qwk_bcm0l04,    4.0e-4,       100.0,        0.02
-bcm,              qwk_bcm0l05,    5.0e-5,       100.0,        0.02
-bcm,              qwk_bcm0l06,    6.0e-6,       100.0,        0.02
-bcm,              qwk_bcm0l07,    7.0e-7,       100.0,        0.02
+!device_type,     device_name,    asym,         mean,         sigma(jitter)
+bcm,              qwk_bcm0l00,    0.0e-0,       100.0,        0.00 !0.02 all
+bcm,              qwk_bcm0l01,    1.0e-1,       100.0,        0.00
+bcm,              qwk_bcm0l02,    2.0e-2,       100.0,        0.00
+bcm,              qwk_bcm0l03,    3.0e-3,       100.0,        0.00
+bcm,              qwk_bcm0l04,    4.0e-4,       100.0,        0.00
+bcm,              qwk_bcm0l05,    5.0e-5,       100.0,        0.00
+bcm,              qwk_bcm0l06,    6.0e-6,       100.0,        0.00
+bcm,              qwk_bcm0l07,    7.0e-7,       100.0,        0.00
 
 !BCM resolution smearing
 bcm,              qwk_bcm0l00,    resolution    0.0
@@ -46,24 +50,24 @@ bcm,              qwk_bcm0l06,    resolution    0.0
 bcm,              qwk_bcm0l07,    resolution    0.0
 
 !CombinedBCM parameters
-!device_type,     device_name,    asym,         mean,         sigma
-combinedbcm,      bcm_target,     0.0,          100.0,        0.02
+!device_type,     device_name,    asym,         mean,         sigma(jitter)
+combinedbcm,      bcm_target,     0.0,          100.0,        0.02 !0.02
 
 !CombinedBCM drifts are defined as amplitude (abs unit),  phase shift (rad), frequency (Hz)
 !combinedbcm,     bcm_target,     drift         2.0,          0.8,          0.03
 !combinedbcm,     bcm_target,     drift         3.0,          0.6,          0.05
 !combinedbcm,     bcm_target,     drift         4.0,          0.4,          0.07
 !combinedbcm,     bcm_target,     drift         5.0,          0.2,          0.11
-combinedbcm,      bcm_target,     drift         0.01,         0.0,          60.0
+combinedbcm,      bcm_target,     drift         0.01,         0.0,          60.0 !0.01
 
 !CombinedBCM beamtrip:                          Period,       Length,       Ramp
 combinedbcm,      bcm_target,     beamtrip      50000.0,      5.0,          15.0
 
 !EnergyCalculator parameters
-!device type,     device name,    asym,         mean,         sigma
-energycalculator, target_energy,  0.0e-5,       -0.0e-3,      1.0e-6
+!device type,     device name,    asym,         mean,         sigma(jitter)
+energycalculator, target_energy,  0.0e-5,       -0.0e-3,      1.0e-6 !1.0e-6
 
 !EnergyCalculator drifts               amplitude (abs), phase shift (rad), frequency (Hz)
-energycalculator, target_energy,  drift         1.0e-5,        0.0,          43.0
+energycalculator, target_energy,  drift         1.0e-5,        0.0,          43.0 !1.0e-5
 
 

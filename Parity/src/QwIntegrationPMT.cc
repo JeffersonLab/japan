@@ -145,6 +145,7 @@ void QwIntegrationPMT::RandomizeMollerEvent(int helicity, const QwBeamCharge& ch
   fTriumf_ADC.ForceMapfileSampleSize();
   //  Double_t voltage_width = sqrt(fTriumf_ADC.GetValue()*window_length/fVoltPerHz)/(window_length/fVoltPerHz);
   Double_t voltage_width = sqrt( fTriumf_ADC.GetValue() / (fTriumf_ADC.GetNumberOfSamples()*QwVQWK_Channel::kTimePerSample/Qw::sec/fVoltPerHz) );
+  //std::cout << "Voltage Width: " << voltage_width << std::endl;
   fTriumf_ADC.SmearByResolution(voltage_width);
   fTriumf_ADC.SetRawEventData();
 
