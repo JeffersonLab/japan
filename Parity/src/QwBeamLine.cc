@@ -1038,11 +1038,11 @@ Int_t QwBeamLine::LoadInputParameters(TString pedestalfile)
 void QwBeamLine::RandomizeEventData(int helicity, double time)
 {
   // Randomize all QwBPMStripline buffers
-  for (size_t i = 0; i < fStripline.size(); i++)
-  {
-    fStripline[i].get()->RandomizeEventData(helicity, time);
+  //for (size_t i = 0; i < fStripline.size(); i++)
+  //{
+  //  fStripline[i].get()->RandomizeEventData(helicity, time);
     //    fStripline[i].get()->PrintInfo();
-  }
+  //}
 
   for (size_t i = 0; i < fCavity.size(); i++)
     fCavity[i].RandomizeEventData(helicity, time);
@@ -1079,8 +1079,9 @@ void QwBeamLine::RandomizeEventData(int helicity, double time)
 //  print the bpm device name, and get the x and y and z? values and print them
 //      std::cout << "bpm " << bpm->GetElementName() << std::endl;
 //      std::cout << "xpos= " << bpm->GetPosition(VQwBPM::kXAxis) << std::endl;
-//      std::cout << "ypos= " << bpm->GetPosition(VQwBPM::kYAxis) << std::endl; // << "ypos= " <<  << "zpos= " <<  << std::endl;
-        //bpm->PrintInfo();
+//      std::cout << "ypos= " << bpm->GetPosition(VQwBPM::kYAxis) << std::endl;
+//      std::cout << "zpos= " << bpm->GetPosition(VQwBPM::kZAxsi) << std::endl;
+//        bpm->PrintInfo();
         //  Call the new function in stripline class to fill all internal variables from the fAbsPos for the bpm object
       }
     }
@@ -2325,7 +2326,7 @@ void QwBeamLine::PrintValue() const
   for (size_t i = 0; i < fBCM.size();       i++) fBCM[i].get()->PrintValue();
   QwMessage << "HaloMonitor" << QwLog::endl;
   for (size_t i = 0; i < fHaloMonitor.size();       i++) fHaloMonitor[i].PrintValue();
-  QwMessage << "BPM combo" << QwLog::endl;
+  QwMessage << "BCM combo" << QwLog::endl;
   for (size_t i = 0; i < fBCMCombo.size();  i++) fBCMCombo[i].get()->PrintValue();
   QwMessage << "BPM combo" << QwLog::endl;
   for (size_t i = 0; i < fBPMCombo.size();  i++) fBPMCombo[i].get()->PrintValue();

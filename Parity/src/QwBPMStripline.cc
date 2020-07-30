@@ -542,7 +542,7 @@ Int_t QwBPMStripline<T>::ProcessEvBuffer(UInt_t* buffer, UInt_t word_position_in
   else
     {
     std::cerr <<
-      "QwBPMStripline::ProcessEvBuffer(): attemp to fill in raw date for a wire that doesn't exist \n";
+      "QwBPMStripline::ProcessEvBuffer(): attempt to fill in raw data for a wire that doesn't exist \n";
     }
   return word_position_in_buffer;
 }
@@ -1104,7 +1104,7 @@ void QwBPMStripline<T>::RandomizeEventData(int helicity, double time)
   //  std::cout << "In QwBPMStripline<T>::RandomizeEventData" << std::endl;
   for(i=kXAxis;i<kNumAxes;i++){
     fAbsPos[i].RandomizeEventData(helicity, time); 
-    //  fAbsPos[i].PrintInfo();
+    //fAbsPos[i].PrintInfo();
   }
   this->FillRawEventData();
 }
@@ -1189,11 +1189,14 @@ void QwBPMStripline<T>::FillRawEventData()
     fRelPos[i] = fAbsPos[i];
     fRelPos[i].Scale(fGains[i]);
     fRelPos[i].AddChannelOffset(-1.0*fPositionCenter[i]);
+    //fRelPos[i].PrintValue();
   }
 
   for(i=kXAxis; i<kNumAxes; i++){ 
     tmp1.AssignScaledValue(fRelPos[i],   fCosRotation);
     tmp2.AssignScaledValue(fRelPos[1-i], fSinRotation);
+    //std::cout << "CosRotation: " << fCosRotation << std::endl;
+    //std::cout << "SinRotation: " << fSinRotation << std::endl;
     if (i == kXAxis) {
       rawpos[i].Sum(tmp1,tmp2);
     } else {
@@ -1217,11 +1220,15 @@ void QwBPMStripline<T>::FillRawEventData()
          fWire[i*2].AssignScaledValue(tmp2, 1.0);
          fWire[i*2+1].Ratio(tmp2, tmp1);
       }
+
+      //fWire[i*2].PrintValue();
+      //fWire[i*2+1].PrintValue();
+
       fWire[i*2].SetRawEventData();
       fWire[i*2+1].SetRawEventData();
       //std::cout <<  "*******In QwBPMStripline::FillRawEventData for channel:\t" << this->GetElementName() << std::endl;
-      //fWire[i*2].PrintValue();
-      //fWire[i*2+1].PrintValue();
+      //fWire[i*2].PrintInfo();
+      //fWire[i*2+1].PrintInfo();
     }
 
 
