@@ -1,6 +1,10 @@
 #! /bin/sh
-ROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/dithering/"
-OUTPUTROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/slugRootfiles/dithering/"
+stub=""
+if [ "$#" -ge 2 ]; then
+  stub=$2
+fi
+ROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/dithering${stub}/"
+OUTPUTROOTFILEDIR="/chafs2/work1/apar/aggRootfiles/slugRootfiles/dithering${stub}/"
 #OUTPUTROOTFILEDIR="./"
 if [ "$#" -lt 1 ]; then
   echo "Error: Need to pass a list file name number \"slug##\".list"

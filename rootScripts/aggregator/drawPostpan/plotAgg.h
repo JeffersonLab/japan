@@ -19,7 +19,7 @@ class Channel{
     void draw(TTree *, TString);
     TGraphErrors drawReg(Int_t, Double_t *, Double_t *, Double_t *, Double_t *, Double_t *);
     std::vector<TH1F> drawPull(Int_t, Double_t *, Double_t *, Double_t *, Double_t *, Double_t *);
-    void printInfo() { std::cout << "Plotting "<< name<<" vs runnumber" << endl;}
+    void printInfo() { std::cout << "Plotting "<< name<<" graph" << endl;}
 };  
 
 
@@ -30,6 +30,9 @@ TString unit="";
 if (chan_name.Contains("slope")){
   unit="*nm/ppb";
 } else { 
+if (chan_name.Contains("epics_")||chan_name.Contains("slow_")){
+  if (chan_name.Contains("_mean")) {unit="/1";} else{unit="/1";}
+}
 if (chan_name.Contains("asym_")||chan_name.Contains("cor_")){
   if (chan_name.Contains("_mean")) {unit="/ppb";} else{unit="/ppm";}
 }
@@ -52,7 +55,15 @@ if (chan_name.Contains("yield_")){
 TTreeFormula f("name",chan_name, chan_t);
 
 if(f.GetNdim()!=0){
-Int_t nEntries=chan_t->Draw("run_number:minirun_n:"+chan_name+unit+":"+chan_name+"_error"+unit,"abs("+chan_name+unit+")<0.999e6 && abs("+chan_name+"_error"+unit+")<0.999e6", "goff");
+TBranch* br = (TBranch*)chan_t->GetListOfBranches()->FindObject(chan_name+"_error");
+Int_t nEntries = 0;
+if (br) {
+  //nEntries=chan_t->Draw("run_number:minirun_n:"+chan_name+unit+":"+chan_name+"_error"+unit,"abs("+chan_name+unit+")<0.999e6 && abs("+chan_name+"_error"+unit+")<0.999e6", "goff");
+  nEntries=chan_t->Draw("run_number:minirun_n:"+chan_name+unit+":"+chan_name+"_error"+unit,"abs("+chan_name+unit+")<0.999e6 && abs("+chan_name+"_error"+unit+")<0.999e6 && abs("+chan_name+"_error"+unit+")>1.0e-15 ", "goff");
+}
+else {
+  nEntries=chan_t->Draw("run_number:minirun_n:"+chan_name+unit+":1.0e-15","abs("+chan_name+unit+")<0.999e6", "goff");
+}
 Double_t index[nEntries];
 for(int i=0; i<nEntries;i++){
    index[i]=i;
@@ -168,53 +179,84 @@ class Source {
 };
 
 void Source::drawAll(){
-  
-auto filename= this->output+this->slug;
-TString empty = "CAM_OUTPUTDIR: Undefined variable.";
-//if (gSystem->Exec("echo $CAM_OUTPUTDIR")==empty) {
-//  Printf("Error: Must define an output directory, setting to default = ./");
-//  gSystem->Setenv("CAM_OUTPUTDIR","./");
-//}
-writeFile_h("ihwp", this->ihwp, -1, -1, -1, slug);
-writeFile_h("wein", this->wein, -1, -1, -1, slug);
-writeFile_h("hrs", this->hrs, -1, -1, -1, slug);
+  Double_t tmpRunN     = -1.0;
+  Double_t tmpNRuns    = -1.0;
+  Double_t tmpSplitN   = -1.0;
+  Double_t tmpMinirunN = -1.0;
 
-TObjArray *var_list=(this->T)->GetListOfBranches();
-TIter var_iter(var_list);
+  auto filename= this->output+this->slug;
 
-while (auto *var= var_iter.Next()){
-   TString name(var->GetName());
-   bool createPlotObj = ((name.Contains("_mean") || name.Contains("_slope") || name.Contains("_pslope")|| name.Contains("_rms")) && !(name.Contains("_error"))); 
-   if (createPlotObj) {
-     Channel channel(var->GetName());     
-     channel.printInfo();
-     channel.draw(this->T, filename);
-     (this->list).push_back(channel);
-     writeFile_h(var->GetName(), channel.value, -1,-1,-1, slug);     
-     writeFile_h(Form("%s_error", var->GetName()), channel.value_err, -1, -1, -1, slug);
-      
-   }
-} 
+  TString empty = "CAM_OUTPUTDIR: Undefined variable.";
+  TString outputDir = "";
+  TString out_dir = gSystem->Getenv("CAM_OUTPUTDIR"); 
+  if (out_dir == "" || out_dir == "NULL"){
+    Printf("Error: Output dir (%s) invalid, must be a string\n",out_dir.Data     ());
+    out_dir = "./";
+  }
+  outputDir = out_dir; 
 
+  TString aggregatorFileName = Form("%s/aggregator.root",outputDir.Data()); // FIXME, this is very specific, and doesn't allow for aggregating over slugs, for instance
+  // Store all trees
+  aggregatorFileName = Form("%s/grand_aggregator.root",outputDir.Data());
+  TFile *aggregatorFile = new TFile(aggregatorFileName,"UPDATE");
+  aggregatorFile->cd();
+  TTree * outputTree = new TTree("agg","Aggregator Tree");
+  // Intentionally not using a struct here to match prior aggregator output definition 
+  // and to simplify life for other people, and to allow for non-mean kinds of variables to be used
+  tmpNRuns = (Double_t)this->slug;
+  outputTree->Branch("run_number", &tmpRunN);
+  outputTree->Branch("n_runs", &tmpNRuns);
+  outputTree->Branch("split_n", &tmpSplitN);
+  outputTree->Branch("minirun_n", &tmpMinirunN);
 
+  //if (gSystem->Exec("echo $CAM_OUTPUTDIR")==empty) {
+  //  Printf("Error: Must define an output directory, setting to default = ./");
+  //  gSystem->Setenv("CAM_OUTPUTDIR","./");
+  //}
+  // Make a root file - add branches to it - fill run_number, n_runs, minirun_n, split_n with -1 for safety
+  Double_t tmpIHWP = this->ihwp;
+  Double_t tmpWIEN = this->wein; // Misspelled wien
+  Double_t tmpHRS  = this->hrs;
+  outputTree->Branch("ihwp", &tmpIHWP);
+  outputTree->Branch("wein", &tmpWIEN);
+  outputTree->Branch("hrs", &tmpHRS);
+
+  TObjArray *var_list=(this->T)->GetListOfBranches();
+  TIter var_iter(var_list);
+
+  Int_t nChans = 0;
+  while (auto *var= var_iter.Next()){
+    TString name(var->GetName());
+    bool createPlotObj = ((name.Contains("_mean") || name.Contains("_slope") || name.Contains("_pslope")|| name.Contains("_rms")) && !(name.Contains("_error"))); 
+    if (createPlotObj) {
+      Channel *channel = new Channel(var->GetName());     
+      channel->printInfo();
+      channel->draw(this->T, filename);
+      (this->list).push_back(*channel);
+      outputTree->Branch(name.Data(),&(channel->value));
+      outputTree->Branch(Form("%s_error",name.Data()),&(channel->value_err));
+      //outputTree->Branch(name.Data(),channel->value);
+      //outputTree->Branch(Form("%s_error",name.Data()),channel->value_err);
+      //outputTree->Branch(name.Data(),this->list.at(nChans).value);
+      //outputTree->Branch(Form("%s_error",name.Data()),this->list.at(nChans).value_err);
+      nChans++;
+    }
+  } 
+  outputTree->Fill();
+  outputTree->Write("agg",TObject::kOverwrite);
+  aggregatorFile->Close();
 
 }
 
 Channel Source::GetChannelByName(TString name){
 
-Channel chan("");
-for(auto iter=(this->list).begin();iter!=(this->list).end();iter++){
- if (iter->name==name){
-  chan=*iter;
-  break;
- }
-} 
-//printf("Found %s", (chan.name).Data());
-return chan;
-  
-
+  Channel chan("");
+  for(auto iter=(this->list).begin();iter!=(this->list).end();iter++){
+    if (iter->name==name){
+      chan=*iter;
+      break;
+    }
+  } 
+  //printf("Found %s", (chan.name).Data());
+  return chan;
 }
-
-
-
-
