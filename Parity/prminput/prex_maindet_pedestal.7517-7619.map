@@ -1,0 +1,19 @@
+!leftover values from before mapfile consolidation
+ vqwk_25_0ch4, 0, 0.000076
+ vqwk_25_0ch5, 0, 0.000076
+ battery1L, 0, 0.000076
+ battery2L, 0, 0.000076
+ vqwk_26_0ch4, 0, 0.000076
+ vqwk_26_0ch5, 0, 0.000076
+ battery1R, 0, 0.000076
+ battery2R, 0, 0.000076
+
+ usl, 0, 0.000076
+ usr, 0, 0.000076
+ dsl, 0, 0.000076
+ dsr, 0, 0.000076
+
+ atl1, 0, 0.000076 
+ atr1, 0, 0.000076 
+ atl2, 0, 0.000076 
+ atr2, 0, 0.000076 
