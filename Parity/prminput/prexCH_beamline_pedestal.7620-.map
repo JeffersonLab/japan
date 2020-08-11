@@ -2,7 +2,7 @@
  UNSER, -174.1, 2.066e-2	    
 
 !From run 5382 https://logbooks.jlab.org/entry/3755873
- hallc_bcm_4c, -524.0, 0.0041998972
+ hallc_bcm_4c, -155, 0.001507
 
 !From cameron's global unser fits. http://ace.phys.virginia.edu:80/HAPPEX/4081
 !Device Name, p0 Fit Pedestal, p0 Fit Pedestal Error, TH1 weighted mean Pedestal, TH1 weighted mean Pedestal Error, Gain scale factor
