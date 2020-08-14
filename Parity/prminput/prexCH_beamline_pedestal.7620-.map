@@ -4,6 +4,10 @@
 !From run 5382 https://logbooks.jlab.org/entry/3755873
  hallc_bcm_4c, -155, 0.001507
 
+!  The pedestal for beam_mod_ramp should match the "bmod_ramp" pedestal value from the prex_beammod_pedestal.*.map.
+!  The baseline offset in run 7628 is -293.509, so set the channel pedestal to -283.509.
+beam_mod_ramp,  -283.509,  1.000
+
 !BCM Pedestals w.r.t. Unser -> using BCM Analog US -590.61,0.008982
 !Fit from 25uA -> range
 !For run 7712, from cameron's pedestal analysis: HALOG https://logbooks.jlab.org/entry/3827134

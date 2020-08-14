@@ -1,1 +1,3 @@
-bmod_ramp, -225, 1.0
+!  The pedestal value for the bmod_ramp should be set to "true pedestal + 10" for ease of use in the bmod scripts
+!  The baseline offset in run 7628 is -293.509, so set -283.509.
+bmod_ramp,  -283.509,  1.000
