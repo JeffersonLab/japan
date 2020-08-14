@@ -10,10 +10,10 @@
 
 !main detectors use calibrations from cameron's global 
 !pedestal analysis: http://ace.phys.virginia.edu:80/HAPPEX/4081
- usl, 1119.59, 0.002269
- usr, 1413.69, 0.002298
- dsl, 1389.94, 0.002167
- dsr, 1212.38, 0.002105
+ usl, 1119.59, 0.000076
+ usr, 1413.69, 0.000076
+ dsl, 1389.94, 0.000076
+ dsr, 1212.38, 0.000076
 
 !AT detectors calibration from run 6196 also camerons pedestals
  atl1, 1003.67, 0.000076 

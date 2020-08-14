@@ -11,8 +11,8 @@
 !main detectors use calibrations from cameron's global from 6563
 !pedestal analysis: http://ace.phys.virginia.edu:80/HAPPEX/4081
 !downstream pedestal set to 0 
- usl, 1119.59, 0.002269
- usr, 1413.69, 0.002298
+ usl, 1119.59, 0.000076
+ usr, 1413.69, 0.000076
  dsl, 0, 0
  dsr, 0, 0
 
