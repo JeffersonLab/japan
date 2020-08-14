@@ -8,15 +8,16 @@
  battery1R, 0, 0.000076
  battery2R, 0, 0.000076
 
-!main detectors use calibrations from cameron's global 
-!pedestal analysis: http://ace.phys.virginia.edu:80/HAPPEX/4081
- usl, 1119.59, 0.000076 
- usr, 1413.69, 0.000076 
- dsl, 1389.94, 0.000076 
- dsr, 1212.38, 0.000076 
+!Maindet and AT Pedestals w.r.t. Unser -> Use BCM Analog US -590.61,0.008982
+!Fit from 25uA -> range
+!For run 7712, from cameron's pedestal analysis: HALOG https://logbooks.jlab.org/entry/3827134
+ usl, 1244.62, 0.000076
+ usr, 1288.38, 0.000076
+ dsl, 1030.92, 0.000076
+ dsr, 879.85,  0.000076
 
-!AT detectors calibration from run 7406 also camerons pedestals
- atl1, 997.20, 0.000076 
- atr1, 1253.14, 0.000076 
- atl2, 7842.18, 0.000076 
- atr2, 827.09, 0.000076 
+!Same analysis
+ atl1, 1477.82, 0.000076
+ atr1, 1206.02, 0.000076
+ atl2, 1098.96, 0.000076
+ atr2, 696.91,  0.000076
