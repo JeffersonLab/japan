@@ -382,8 +382,8 @@ void BMOD::calculateSensitivities(){
   }*/
   TH1F* hist_trim;
   for (Int_t k = 0; k<nCoil; k++){
-    tree_R->Draw(Form("bmod_trim%s>>hist_trim%d",parameterVectors["Coils"][k].c_str(),k),"beam_mod_ramp<0","goff");
-    //tree_R->Draw(Form("bmod_trim%s>>hist_trim%d",parameterVectors["Coils"][k].c_str(),k),"bmod_ramp<0","goff");
+    //tree_R->Draw(Form("bmod_trim%s>>hist_trim%d",parameterVectors["Coils"][k].c_str(),k),"beam_mod_ramp<0","goff");
+    tree_R->Draw(Form("bmod_trim%s>>hist_trim%d",parameterVectors["Coils"][k].c_str(),k),"bmod_ramp<0","goff");
     hist_trim = (TH1F *)gDirectory->Get(Form("hist_trim%d",k));
     trim_base.push_back(hist_trim->GetXaxis()->GetBinCenter(hist_trim->GetMaximumBin()));
   }
@@ -448,14 +448,14 @@ void BMOD::calculateSensitivities(){
         int ndata = 0;
         if (runAvg) { 
           ndata = tree_R->Draw(Form("(%s):(bmod_trim%s*%lf)",name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
-              Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20",
-              //Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+              //Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20",
+              Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20",
                 parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil]));
         }
         else {
           ndata = tree_R->Draw(Form("(%s):(bmod_trim%s*%lf)",name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
-              Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
-              //Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+              //Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+              Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
                 parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil],cycles[i].cycleNumber));
         }
         if(ndata<50){
@@ -490,14 +490,14 @@ void BMOD::calculateSensitivities(){
           }
           if (runAvg) { 
             ndata = tree_R->Draw(Form("(%lf/%lf)*(%s):(bmod_trim%s*%lf)",factor,this_mean,name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
-                Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20",
-                //Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+                //Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20",
+                Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20",
                   parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil]));
           }
           else {
             ndata = tree_R->Draw(Form("(%lf/%lf)*(%s):(bmod_trim%s*%lf)",factor,this_mean,name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
-                Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
-                //Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+                //Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
+                Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
                   parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil],cycles[i].cycleNumber));
           }
 
