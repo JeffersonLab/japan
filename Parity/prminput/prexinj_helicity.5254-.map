@@ -71,6 +71,7 @@ WORD, 0,  0, helicitydata,  inj_timebrd_oversampleword
 WORD, 0,  0, helicitydata,  inj_timebrd_dac16
 WORD, 0,  0, helicitydata,  inj_timebrd_dac12
 SKIP 2
+!!!!!!!! TS Tagger board, not included in inj.crl 
 WORD, 0,  0, helicitydata,  inj_tstagger
 
 
