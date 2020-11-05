@@ -38,7 +38,7 @@ EVENTCUTS = 3
 
 !device_type, device_name, lower_limit, upper_limit, local(l)/global(g), stability_RMS, burplevel
 
- bcm,	bcm_an_us,	80,	1e6,	g,	1.7
+ bcm,	bcm_an_us,	100,	1e6,	g,	1.7
  bcm,	bcm_an_ds,	-10,	1e6,	g
 
 !****************************************************				
@@ -75,5 +75,5 @@ EVENTCUTS = 3
  bpmstripline,	bpm4e,	absx,	-200,	200,	g,	0.7,	0.7
  bpmstripline,	bpm4e,	absy,	-200,	200,	g,	0.7
 
-! Add an extra cut to remove BPM 12 X > 0.0
- bpmstripline,	bpm12,	absx,	-200,	0.0,	g
+! Add an extra cut to remove BPM 12 X > 0.5
+ bpmstripline,	bpm12,	absx,	-2.4,	-1.3,	g, 0, 0.7

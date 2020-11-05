@@ -31,14 +31,6 @@ beam_mod_ramp,  -283.509,  1.000
    cav4dXI, -382.59, 1.099988
    cav4dYI, -81.61, -0.032988
 
-! I'm not sure about these cavity BPMs at all
-cav4bXI, -303.72, -0.031745
-cav4bYI, -495.91, -0.015333
-cav4cXI, -513.42, 1.926277
-cav4cYI, -310.48, -0.027078
-cav4dXI, -382.49, 0.747343
-cav4dYI, -76.15, -0.034536
-
 
  
 !BPM Pedestals from run 7711: https://logbooks.jlab.org/entry/3827133

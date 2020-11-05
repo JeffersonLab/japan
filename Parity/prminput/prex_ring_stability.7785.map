@@ -1,0 +1,8 @@
+#testing burp changes to fix bpm12x jumps
+
+ring.size = 200
+ring.stability_cut = 1
+ring.holdoff = 1000
+ 
+burp.extent = 100
+burp.holdoff = 500
