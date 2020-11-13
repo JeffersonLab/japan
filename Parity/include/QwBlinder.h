@@ -16,6 +16,7 @@
 
 // ROOT headers
 #include <TString.h>
+#include <TObjString.h>
 #include <TMD5.h>
 
 // Qweak headers
