@@ -1,0 +1,79 @@
+!This file contains beamline event cut properties
+!*********************************************************************************************
+!Global switch to turn ON and OFF eventcut check
+!Available settings
+!***************************************************
+!To turn OFF all checks
+!EVENTCUTS = 0 
+
+!***************************************************
+!To turn OFF event cuts and perform only HW checks
+!EVENTCUTS = 1
+
+!***************************************************
+!To turn ON both event cuts and HW checks
+! EVENTCUTS = 2
+
+!***************************************************
+!To turn do both event cuts and HW checks and only flag event cut failed events
+EVENTCUTS = 3
+
+!IMPORTANT
+!---------
+!Make sure when puting tabs in the map file entries, always put ", " before inserting a tab. 
+!Otherwise the routine QwParameterFile::GetNextToken(", ") will get confuse.
+
+!Comments
+!--------
+!Devices that are not in the list are not subjected event cut checks
+!All devices  will be tested for HW checks.
+
+
+
+
+!***************************************************
+!for bcm devices
+!only upper and lower limit of the calibrated charge on the ADC HW sum. 
+!(QwVQWK_Channel::fHardwareBlockSum)
+
+!device_type, device_name, lower_limit, upper_limit, local(l)/global(g), stability_RMS, burplevel
+
+ bcm,	bcm_an_us,	80,	1e6,	g,	1.7
+ bcm,	bcm_an_ds,	-10,	1e6,	g
+
+!****************************************************				
+!for bpmstrpline devices
+!channel_name can be relx, rely, absx, absy, wsum, xp, xm, yp, ym
+!Cuts are applied after the VQwSubsystem::ProcessEvent() routine. 
+!So pedestals are applied before appyling the cuts.
+
+!device_type,  device_name, channel_name, lower_limit, upper_limit, local(l)/global(g), stability_RMS, burplevel
+ bpmstripline,	bpm1, 	xm,	-55000,	-1000,	g,	0,	0
+ bpmstripline,	bpm1, 	xp,	-55000,	-1000,	g,	0,	0
+ bpmstripline,	bpm1, 	ym,	-55000,	-1000,	g,	0,	0
+ bpmstripline,	bpm1, 	yp,	-55000,	-1000,	g,	0,	0
+ bpmstripline,	bpm4a,	xm,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm4a,	xp,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm4a,	ym,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm4a,	yp,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm4e,	xm,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm4e,	xp,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm4e,	ym,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm4e,	yp,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm11,	xm,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm11,	xp,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm11,	ym,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm11,	yp,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm12,	xm,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm12,	xp,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm12,	ym,	1000,	55000,	g,	0,	0
+ bpmstripline,	bpm12,	yp,	1000,	55000,	g,	0,	0
+
+! For Target Protection, etc.
+ bpmstripline,	bpm4a,	absx,	-200,	200,	g,	0.7,	0.7
+ bpmstripline,	bpm4a,	absy,	-200,	200,	g,	0.7
+ bpmstripline,	bpm4e,	absx,	-200,	200,	g,	0.7,	0.7
+ bpmstripline,	bpm4e,	absy,	-200,	200,	g,	0.7
+
+! Run 7657 - Add an extra cut to remove BPM 12 X > -0.5 mm 
+ bpmstripline,	bpm12,	absx,	-200,	-0.5,	g

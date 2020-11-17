@@ -159,7 +159,7 @@ Int_t QwBeamLine::LoadChannelMap(TString mapfile)
 	      // calculate the total weights of the charge
 	      sumQweights = 0.0;
 	      for(size_t i=0;i<fDeviceName.size();i++)
-		sumQweights+=fQWeight[i];
+		sumQweights+=abs(fQWeight[i]);
 	      combolistdecoded = kTRUE;
 	      break;
 	    }

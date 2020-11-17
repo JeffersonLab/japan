@@ -1,0 +1,20 @@
+!leftover values from before mapfile consolidation
+ vqwk_25_0ch4, 0, 0.000076
+ vqwk_25_0ch5, 0, 0.000076
+ battery1L, 0, 0.000076
+ battery2L, 0, 0.000076
+ vqwk_26_0ch4, 0, 0.000076
+ vqwk_26_0ch5, 0, 0.000076
+ battery1R, 0, 0.000076
+ battery2R, 0, 0.000076
+
+
+  ! from: https:https://logbooks.jlab.org/entry/3848390
+  usr, 1158.68, 7.629e-05
+    dsr, 877.808, 7.629e-05
+    atr1, 1005.94, 7.629e-05
+    atr2, 654.85, 7.629e-05
+    usl, 1090.98, 7.629e-05
+    dsl, 1014.81, 7.629e-05
+    atl1, 1345.77, 7.629e-05
+    atl2, 1011.7, 7.629e-05

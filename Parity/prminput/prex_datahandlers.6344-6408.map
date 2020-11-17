@@ -33,7 +33,7 @@
   tree-comment = Helicity event data tree (corrected by LinRegBlue)
 
 [LRBCorrector]
-  name       = LinRegBlue Corrector (run-level slopes)
+  name       = LinRegBlue Corrector orig (run-level slopes)
   priority   = 10
   map        = prex_corrolator_orig.conf
   slope-file-base = blueR
@@ -63,7 +63,7 @@
   tree-comment = Helicity event data tree (corrected by LinRegBlue)
 
 [LRBCorrector]
-  name       = LinRegBlue AllDet Corrector (run-level slopes)
+  name       = LinRegBlue AllDet Corrector orig (run-level slopes)
   priority   = 10
   map        = prex_corrolator_alldet_orig.conf
   slope-file-base = blueR
@@ -105,7 +105,7 @@
   tree-comment = Helicity event data tree (corrected by LinRegBlue)
 
 [LRBCorrector]
-  name       = LinRegBlue Corrector (burst-level slopes)
+  name       = LinRegBlue Corrector orig (burst-level slopes)
   priority   = 10
   map        = prex_corrolator_orig.conf
   slope-file-base = burst_blueR
@@ -135,7 +135,7 @@
   tree-comment = Helicity event data tree (corrected by LinRegBlue)
 
 [LRBCorrector]
-  name       = LinRegBlue AllDet Corrector (burst-level slopes)
+  name       = LinRegBlue AllDet orig Corrector (burst-level slopes)
   priority   = 10
   map        = prex_corrolator_alldet_orig.conf
   slope-file-base = burst_blueR
@@ -221,7 +221,7 @@
   tree-comment = Correlations (All detector channels)
 
 [QwCorrelator]
-  name       = AllDetCorrelator
+  name       = AllDetCorrelator Orig
   priority   = 50
   map        = prex_corrolator_alldet_orig.conf
   slope-file-base = blueR
