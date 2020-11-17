@@ -110,8 +110,11 @@ sample_size=4096
 !!   SCALER, 0,   14, bcm, BCM_scal_DDD 
 !!   SCALER, 1,   0,  clock, ch_tstable_clock_4mhz 
 
-
-
+begin=combinedbcm
+name=bcm_an_diff
+  bcm_an_us, bcm, +1.0
+  bcm_an_ds, bcm, -1.0
+end=combinedbcm
 
 
 [PUBLISH]
