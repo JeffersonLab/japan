@@ -1,5 +1,6 @@
-! Run 8510, Unser scaled pedestals
-
+!SAM Pedestal w.r.t. Unser -> Use BCM Analog US
+!Fit from 25uA -> range
+!For special Ca40 run period
  sam1, 11396.60, 0.000076 
  sam2, 14069.20, 0.000076 
  sam3, 9936.81, 0.000076 

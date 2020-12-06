@@ -8,31 +8,29 @@
 !  The baseline offset in run 7628 is -293.509, so set the channel pedestal to -283.509.
 beam_mod_ramp,  -283.509,  1.000
 
+!BCM Pedestals w.r.t. Unser -> using BCM Analog US
+!Fit from 25uA -> range
+!For the whose second CREX run, from cameron's pedestal analysis
+!http://ace.phys.virginia.edu/HAPPEX/4417
+!Device Name, p0 Fit Pedestal, p0 Fit Pedestal Error, TH1 weighted mean Pedestal, TH1 weighted mean Pedestal Error, Gain scale factor
+bcm_an_us,  -583.20,0.008956
+bcm_an_ds,  -327.88,0.008820
+bcm_an_ds3, -680.44,0.002592
+bcm_an_ds10,-941.20,0.000907
+bcm_dg_us,  -134.78,0.004423
+bcm_dg_ds,  -115.39,0.003565
+bcm_dg_usc, -301.65,0.004142
+bcm_dg_dsc, -232.90,0.003325
 
-! https://logbooks.jlab.org/entry/3837605
-! Run 8109, Unser scaled pedestals - fit from 25 uA - 150 range against BCM_AN_US unser-like run 8108
-! Using ~/cameronc/analyses/pedestal-calibrations/GetBCMPedestals_Cameron_anyrun_all_witherr.C
-! Device Name, Pedestal, Gain scale factor
-bcm_an_us, -579.49, 0.009000
-bcm_an_ds, -324.20, 0.008861
-bcm_an_ds3, -700.36, 0.002605
-bcm_an_ds10, -806.77, 0.000912
-bcm_dg_us, -166.11, 0.004426
-bcm_dg_ds, -170.90, 0.003567
-bcm_dg_usc, -333.03, 0.004146
-bcm_dg_dsc, -289.86, 0.003327
-cav4bQ, -297.05, 0.006871
-cav4cQ, -603.31, 0.012401
-cav4dQ, -336.63, 0.017397
-
-! I'm not sure about these cavity BPMs at all
-cav4bXI, -303.72, -0.031745
-cav4bYI, -495.91, -0.015333
-cav4cXI, -513.42, 1.926277
-cav4cYI, -310.48, -0.027078
-cav4dXI, -382.49, 0.747343
-cav4dYI, -76.15, -0.034536
-
+cav4bQ, -248.87,0.006705
+cav4cQ, -634.85,0.012485
+cav4dQ, -315.93,0.017320
+cav4bXI,-385.15,-0.033762
+cav4bYI,-597.99,-0.014512
+cav4cXI,-509.16,0.940368
+cav4cYI,-268.41,-0.026513
+cav4dXI,-400.09,0.833234
+cav4dYI,-68.11,-0.033133
 
  
 !BPM Pedestals from run 8189: https://logbooks.jlab.org/entry/3839941
