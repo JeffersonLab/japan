@@ -76,3 +76,5 @@ EVENTCUTS = 3
  bpmstripline,	bpm4a,	absy,	-200,	200,	g,	0.7
  bpmstripline,	bpm4e,	absx,	-200,	200,	g,	0.7,	0.7
  bpmstripline,	bpm4e,	absy,	-200,	200,	g,	0.7
+
+ bpmstripline,	bpm12,	absx,	-200,	200,	g, 0, 0.7

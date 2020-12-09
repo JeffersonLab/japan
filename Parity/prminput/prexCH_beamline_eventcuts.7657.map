@@ -78,4 +78,4 @@ EVENTCUTS = 3
  bpmstripline,	bpm4e,	absy,	-200,	200,	g,	0.7
 
 ! Run 7657 - Add an extra cut to remove BPM 12 X > -0.5 mm 
- bpmstripline,	bpm12,	absx,	-200,	-0.5,	g
+ bpmstripline,	bpm12,	absx,	-200,	-0.5,	g, 0, 0.7
