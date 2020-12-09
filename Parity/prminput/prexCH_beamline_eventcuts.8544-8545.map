@@ -41,6 +41,8 @@ EVENTCUTS = 3
  bcm,	bcm_an_us,	30,	1e6,	g,	1.7
  bcm,	bcm_an_ds,	-10,	1e6,	g
 
+  combinedbcm, bcm_an_diff,       -10,     +10,    l,      0,   0.15
+
 !****************************************************				
 !for bpmstrpline devices
 !channel_name can be relx, rely, absx, absy, wsum, xp, xm, yp, ym
