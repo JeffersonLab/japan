@@ -115,6 +115,12 @@ name=bcm_target
   bcm_an_us, bcm, 1.0
 end=combinedbcm
 
+begin=combinedbcm
+name=bcm_an_diff
+  bcm_an_us, bcm, +1.0
+  bcm_an_ds, bcm, -1.0
+end=combinedbcm
+
 [PUBLISH]
 ! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
 
