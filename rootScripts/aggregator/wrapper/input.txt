@@ -331,3 +331,5 @@ same,IGL1I00DI24_24M,slow
 same,IGL1I00OD16_16,slow
 same,RTPAPOSUCNT,slow
 same,RTPAPOSVCNT,slow
+same,RTPPITA1CNT,slow
+same,RTPPITA2CNT,slow
