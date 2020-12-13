@@ -1,4 +1,4 @@
-! For runs 3564 and 3565 (HV off left, Quads off Right) - want to local cut the main RHRS detectors, global cut the main LHRS detectors
+! Main detector eventcuts
 
 EVENTCUTS = 3
 IntegrationPMT, usl,		-100000,	100000,	g,	0
@@ -6,6 +6,7 @@ IntegrationPMT, dsl,		-100000,	100000,	l,	0
 IntegrationPMT, usr,		-100000,	100000,	g,	0
 IntegrationPMT, dsr,		-100000,	100000,	l,	0
 
+! ATs not yet in a good set up - http://ace.phys.virginia.edu/HAPPEX/4058
 IntegrationPMT, atl1,		-100000,	120000,	l,	0
 IntegrationPMT, atl2,		-100000,	120000,	l,	0
 IntegrationPMT, atr1,		-100000,	120000,	l,	0

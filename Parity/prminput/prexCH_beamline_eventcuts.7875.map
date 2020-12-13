@@ -41,6 +41,8 @@ EVENTCUTS = 3
  bcm,	bcm_an_us,	80,	1e6,	g,	1.7
  bcm,	bcm_an_ds,	-10,	1e6,	g
 
+  combinedbcm, bcm_an_diff,       -10,     +10,    g,      0,   0.15
+
 !****************************************************				
 !for bpmstrpline devices
 !channel_name can be relx, rely, absx, absy, wsum, xp, xm, yp, ym
@@ -76,4 +78,4 @@ EVENTCUTS = 3
  bpmstripline,	bpm4e,	absy,	-200,	200,	g,	0.7
 
 ! Add an extra cut to remove BPM 12 X > 0.5
- bpmstripline,	bpm12,	absx,	-1.8,	-0.3,	g
+ bpmstripline,	bpm12,	absx,	-1.8,	-0.3,	g, 0, 0.7

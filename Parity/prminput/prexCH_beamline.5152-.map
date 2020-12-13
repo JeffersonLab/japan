@@ -112,6 +112,12 @@ sample_size=4096
 
 
 
+begin=combinedbcm
+name=bcm_an_diff
+  bcm_an_us, bcm, +1.0
+  bcm_an_ds, bcm, -1.0
+end=combinedbcm
+
 
 
 [PUBLISH]

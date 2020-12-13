@@ -9,7 +9,7 @@
  battery2R, 0, 0.000076
 
 
-! for beam off pedesal noise
+! for beam off pedesal noise - https://logbooks.jlab.org/entry/3858061
   usl, 1089.73, 0.000076
   usr, 1157.82, 0.000076
   dsl, 1018.31, 0.000076
