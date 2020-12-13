@@ -239,6 +239,54 @@ asym:sam5, 0.25
 asym:sam3, -0.25
 asym:sam7, -0.25
 
+[asym:@asym_sam_1548_avg]
+asym:sam1, 0.25
+asym:sam5, 0.25
+asym:sam4, 0.25
+asym:sam8, 0.25
+
+[asym:@asym_sam_3748_avg]
+asym:sam3, 0.25
+asym:sam7, 0.25
+asym:sam4, 0.25
+asym:sam8, 0.25
+
+[asym:@asym_sam_1526_avg]
+asym:sam1, 0.25
+asym:sam5, 0.25
+asym:sam2, 0.25
+asym:sam6, 0.25
+
+[asym:@asym_sam_3726_avg]
+asym:sam3, 0.25
+asym:sam7, 0.25
+asym:sam2, 0.25
+asym:sam6, 0.25
+
+[asym:@asym_sam_15_48_dd]
+asym:sam1, 0.25
+asym:sam5, 0.25
+asym:sam4, -0.25
+asym:sam8, -0.25
+
+[asym:@asym_sam_37_48_dd]
+asym:sam3, 0.25
+asym:sam7, 0.25
+asym:sam4, -0.25
+asym:sam8, -0.25
+
+[asym:@asym_sam_15_26_dd]
+asym:sam1, 0.25
+asym:sam5, 0.25
+asym:sam2, -0.25
+asym:sam6, -0.25
+
+[asym:@asym_sam_37_26_dd]
+asym:sam3, 0.25
+asym:sam7, 0.25
+asym:sam2, -0.25
+asym:sam6, -0.25
+
 [asym:@asym_sam_1357_avg]
 asym:sam1, 0.25
 asym:sam3, 0.25
@@ -338,6 +386,22 @@ diff:bpm12X, 1
 [diff:@diff_bpmE_11X12X]
 diff:bpm11X, 1.0
 diff:bpm12X, 0.4
+
+[diff:@diff_bpm4aesumX]
+diff:bpm4eX, 0.18
+diff:bpm4aX, 1.0
+
+[diff:@diff_bpm4aediffX]
+diff:bpm4eX, 0.18
+diff:bpm4aX, -1.0
+
+[diff:@diff_bpm4aesumY]
+diff:bpm4eY, 1.0
+diff:bpm4aY, 0.65
+
+[diff:@diff_bpm4aediffY]
+diff:bpm4eY, 1.0
+diff:bpm4aY, -0.65
 
 [diff:@diff_bpmtargetsumX]
 diff:bpm1X,  +0.707107
