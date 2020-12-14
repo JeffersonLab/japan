@@ -1,0 +1,76 @@
+!Unser calibration based on Run 1214 , HAPLOG 3609, also consistent with dave mack 3.7mV/uA halog entry 3689440 
+ UNSER, -174.1, 2.066e-2	    
+
+!From run 5382 https://logbooks.jlab.org/entry/3755873
+ hallc_bcm_4c, -155, 0.001507
+
+!  The pedestal for beam_mod_ramp should match the "bmod_ramp" pedestal value from the prex_beammod_pedestal.*.map.
+!  The baseline offset in run 7628 is -293.509, so set the channel pedestal to -283.509.
+beam_mod_ramp,  -283.509,  1.000
+
+!BCM Pedestals w.r.t. Unser -> using BCM Analog US
+!Fit from 25uA -> range
+!For the whose second CREX run, from cameron's pedestal analysis
+!http://ace.phys.virginia.edu/HAPPEX/4417
+!Device Name, p0 Fit Pedestal, p0 Fit Pedestal Error, TH1 weighted mean Pedestal, TH1 weighted mean Pedestal Error, Gain scale factor
+bcm_an_us,  -583.20,0.008956
+bcm_an_ds,  -327.88,0.008820
+bcm_an_ds3, -680.44,0.002592
+bcm_an_ds10,-941.20,0.000907
+bcm_dg_us,  -134.78,0.004423
+bcm_dg_ds,  -115.39,0.003565
+bcm_dg_usc, -301.65,0.004142
+bcm_dg_dsc, -232.90,0.003325
+
+cav4bQ, -248.87,0.006705
+cav4cQ, -634.85,0.012485
+cav4dQ, -315.93,0.017320
+cav4bXI,-385.15,-0.033762
+cav4bYI,-597.99,-0.014512
+cav4cXI,-509.16,0.940368
+cav4cYI,-268.41,-0.026513
+cav4dXI,-400.09,0.833234
+cav4dYI,-68.11,-0.033133
+
+ 
+!BPM Pedestals from run 8189: https://logbooks.jlab.org/entry/3839941
+ bpm4aXP, 895.64, 1.0
+ bpm4aXM, 111.57, 1.0
+ bpm4aYP, 356.97, 1.0
+ bpm4aYM, 433.91, 1.0
+ bpm4eXP, 1464.48, 1.0
+ bpm4eXM, 578.30, 1.0
+ bpm4eYP, 440.92, 1.0
+ bpm4eYM, 818.90, 1.0
+ bpm4acXP, -1103.23, 1.0
+ bpm4acXM, -1929.51, 1.0
+ bpm4acYP, -122.44, 1.0
+ bpm4acYM, 224.39, 1.0
+ bpm4ecXP, 1003.72, 1.0
+ bpm4ecXM, 586.15, 1.0
+ bpm4ecYP, 770.74, 1.0
+ bpm4ecYM, 1237.68, 1.0
+ bpm11XP, 903.29, 1.0
+ bpm11XM, 1014.92, 1.0
+ bpm11YP, 1354.88, 1.0
+ bpm11YM, 733.78, 1.0
+ bpm12XP, 2781.95, 1.0
+ bpm12XM, 4328.93, 1.0
+ bpm12YP, 4325.78, 1.0
+ bpm12YM, 2701.78, 1.0
+ bpm16XP, 889.10, 1.0
+ bpm16XM, 1923.00, 1.0
+ bpm16YP, 170.56, 1.0
+ bpm16YM, -79.94, 1.0
+ bpm1p02bXP, -3106.56, 1.0
+ bpm1p02bXM, -3324.07, 1.0
+ bpm1p02bYP, -3607.55, 1.0
+ bpm1p02bYM, -2729.13, 1.0
+ bpm1p03aXP, -4137.87, 1.0
+ bpm1p03aXM, -4572.85, 1.0
+ bpm1p03aYP, -1939.11, 1.0
+ bpm1p03aYM, -2462.47, 1.0
+ bpm1XP, -3760.16, 1.0
+ bpm1XM, -2786.34, 1.0
+ bpm1YP, -2954.48, 1.0
+ bpm1YM, -4115.54, 1.0

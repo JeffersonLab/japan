@@ -111,7 +111,16 @@ sample_size=4096
 !!   SCALER, 1,   0,  clock, ch_tstable_clock_4mhz 
 
 
+begin=combinedbcm
+name=bcm_target
+  bcm_an_us, bcm, 1.0
+end=combinedbcm
 
+begin=combinedbcm
+name=bcm_an_diff
+  bcm_an_us, bcm, +1.0
+  bcm_an_ds, bcm, -1.0
+end=combinedbcm
 
 
 [PUBLISH]
@@ -127,4 +136,4 @@ y_targ, bpmstripline, bpm4e, x
 xy_pos_x, bpmstripline, bpm4e, x
 xy_pos_y, bpmstripline, bpm4e, y 
 ! q_targ is 0l02 for feedback testing
-!q_targ, bcm, bcm_an_us, c
+!q_targ, combinedbcm, bcm_target, c

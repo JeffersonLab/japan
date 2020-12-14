@@ -1,0 +1,12 @@
+!SAM Pedestal w.r.t. Unser -> Use BCM Analog US
+!Fit from 25uA -> range
+!For run 8109, from cameron's pedestal analysis
+!http://ace.phys.virginia.edu/HAPPEX/4417
+sam1,11269.40,0.000076
+sam2,13804.12,0.000076
+sam3,11471.28,0.000076
+sam4,12994.15,0.000076
+sam5,11629.20,0.000076
+sam6,13485.27,0.000076
+sam7,12338.50,0.000076
+sam8,12523.26,0.000076
