@@ -16,6 +16,8 @@ asym_us_dd_dit_correction,mulc_dit_combo.dit_asym_us_dd.hw_sum-mulc.asym_us_dd.h
 asym_us_dd_dit_reg_diff,mulc_dit_combo.dit_asym_us_dd.hw_sum-reg.reg_asym_us_dd,meanrms
 asym_us_dd_dit_cor_diff,mulc_dit_combo.dit_asym_us_dd.hw_sum-mulc_lrb_burst.cor_asym_us_dd.hw_sum,meanrms
 asym_us_dd,mulc.asym_us_dd.hw_sum,meanrms
+yield_bcm_an_diff,yield_bcm_an_diff.hw_sum,meanrms
+asym_bcm_an_diff,asym_bcm_an_diff.hw_sum,meanrms
 yield_bcm_target,yield_bcm_target.hw_sum,meanrms
 asym_bcm_target,asym_bcm_target.hw_sum,meanrms
 reg_asym_usl,reg.reg_asym_usl,meanrms
@@ -36,23 +38,7 @@ asym_usr_dit_correction,mulc_dit.dit_asym_usr.hw_sum-reg.asym_usr,meanrms
 asym_usr_dit_reg_diff,mulc_dit.dit_asym_usr.hw_sum-reg.reg_asym_usr,meanrms
 asym_usr_dit_cor_diff,mulc_dit.dit_asym_usr.hw_sum-mulc_lrb_burst.cor_usr.hw_sum,meanrms
 asym_usr,asym_usr.hw_sum,meanrms
-reg_asym_dsl,reg.reg_asym_dsl,meanrms
-asym_dsl_reg_correction,reg.reg_asym_dsl-asym_dsl.hw_sum,meanrms
-cor_asym_dsl,mulc_lrb_burst.cor_dsl.hw_sum,meanrms
-asym_dsl_cor_correction,mulc_lrb_burst.cor_dsl.hw_sum-asym_dsl.hw_sum,meanrms
-dit_asym_dsl,mulc_dit.dit_asym_dsl.hw_sum,meanrms
-asym_dsl_dit_correction,mulc_dit.dit_asym_dsl.hw_sum-reg.asym_dsl,meanrms
-asym_dsl_dit_reg_diff,mulc_dit.dit_asym_dsl.hw_sum-reg.reg_asym_dsl,meanrms
-asym_dsl_dit_cor_diff,mulc_dit.dit_asym_dsl.hw_sum-mulc_lrb_burst.cor_dsl.hw_sum,meanrms
 asym_dsl,asym_dsl.hw_sum,meanrms
-reg_asym_dsr,reg.reg_asym_dsr,meanrms
-asym_dsr_reg_correction,reg.reg_asym_dsr-asym_dsr.hw_sum,meanrms
-cor_asym_dsr,mulc_lrb_burst.cor_dsr.hw_sum,meanrms
-asym_dsr_cor_correction,mulc_lrb_burst.cor_dsr.hw_sum-asym_dsr.hw_sum,meanrms
-dit_asym_dsr,mulc_dit.dit_asym_dsr.hw_sum,meanrms
-asym_dsr_dit_correction,mulc_dit.dit_asym_dsr.hw_sum-reg.asym_dsr,meanrms
-asym_dsr_dit_reg_diff,mulc_dit.dit_asym_dsr.hw_sum-reg.reg_asym_dsr,meanrms
-asym_dsr_dit_cor_diff,mulc_dit.dit_asym_dsr.hw_sum-mulc_lrb_burst.cor_dsr.hw_sum,meanrms
 asym_dsr,asym_dsr.hw_sum,meanrms
 asym_us_agg_avg,(asym_usl.hw_sum+asym_usr.hw_sum)/2,meanrms
 asym_us_agg_dd,(asym_usl.hw_sum-asym_usr.hw_sum)/2,meanrms
@@ -541,7 +527,7 @@ asym_sam1_reg_correction,reg.reg_asym_sam1-asym_sam1.hw_sum,meanrms
 cor_asym_sam1,mulc_lrb_alldet_burst.cor_sam1.hw_sum,meanrms
 asym_sam1_cor_correction,mulc_lrb_alldet_burst.cor_sam1.hw_sum-asym_sam1.hw_sum,meanrms
 dit_asym_sam1,mulc_dit.dit_asym_sam1.hw_sum,meanrms
-asym_sam1_dit_correction,mulc_dit.dit_asym_sam1.hw_sum-asym_sam1.hw_sum,meanrms
+asym_sam1_dit_correction,mulc_dit.dit_asym_sam1.hw_sum-reg.asym_sam1,meanrms
 asym_sam1_dit_reg_diff,mulc_dit.dit_asym_sam1.hw_sum-reg.reg_asym_sam1,meanrms
 asym_sam1_dit_cor_diff,mulc_dit.dit_asym_sam1.hw_sum-mulc_lrb_alldet_burst.cor_sam1.hw_sum,meanrms
 asym_sam1,asym_sam1.hw_sum,meanrms
@@ -550,7 +536,7 @@ asym_sam2_reg_correction,reg.reg_asym_sam2-asym_sam2.hw_sum,meanrms
 cor_asym_sam2,mulc_lrb_alldet_burst.cor_sam2.hw_sum,meanrms
 asym_sam2_cor_correction,mulc_lrb_alldet_burst.cor_sam2.hw_sum-asym_sam2.hw_sum,meanrms
 dit_asym_sam2,mulc_dit.dit_asym_sam2.hw_sum,meanrms
-asym_sam2_dit_correction,mulc_dit.dit_asym_sam2.hw_sum-asym_sam2.hw_sum,meanrms
+asym_sam2_dit_correction,mulc_dit.dit_asym_sam2.hw_sum-reg.asym_sam2,meanrms
 asym_sam2_dit_reg_diff,mulc_dit.dit_asym_sam2.hw_sum-reg.reg_asym_sam2,meanrms
 asym_sam2_dit_cor_diff,mulc_dit.dit_asym_sam2.hw_sum-mulc_lrb_alldet_burst.cor_sam2.hw_sum,meanrms
 asym_sam2,asym_sam2.hw_sum,meanrms
@@ -559,7 +545,7 @@ asym_sam3_reg_correction,reg.reg_asym_sam3-asym_sam3.hw_sum,meanrms
 cor_asym_sam3,mulc_lrb_alldet_burst.cor_sam3.hw_sum,meanrms
 asym_sam3_cor_correction,mulc_lrb_alldet_burst.cor_sam3.hw_sum-asym_sam3.hw_sum,meanrms
 dit_asym_sam3,mulc_dit.dit_asym_sam3.hw_sum,meanrms
-asym_sam3_dit_correction,mulc_dit.dit_asym_sam3.hw_sum-asym_sam3.hw_sum,meanrms
+asym_sam3_dit_correction,mulc_dit.dit_asym_sam3.hw_sum-reg.asym_sam3,meanrms
 asym_sam3_dit_reg_diff,mulc_dit.dit_asym_sam3.hw_sum-reg.reg_asym_sam3,meanrms
 asym_sam3_dit_cor_diff,mulc_dit.dit_asym_sam3.hw_sum-mulc_lrb_alldet_burst.cor_sam3.hw_sum,meanrms
 asym_sam3,asym_sam3.hw_sum,meanrms
@@ -568,7 +554,7 @@ asym_sam4_reg_correction,reg.reg_asym_sam4-asym_sam4.hw_sum,meanrms
 cor_asym_sam4,mulc_lrb_alldet_burst.cor_sam4.hw_sum,meanrms
 asym_sam4_cor_correction,mulc_lrb_alldet_burst.cor_sam4.hw_sum-asym_sam4.hw_sum,meanrms
 dit_asym_sam4,mulc_dit.dit_asym_sam4.hw_sum,meanrms
-asym_sam4_dit_correction,mulc_dit.dit_asym_sam4.hw_sum-asym_sam4.hw_sum,meanrms
+asym_sam4_dit_correction,mulc_dit.dit_asym_sam4.hw_sum-reg.asym_sam4,meanrms
 asym_sam4_dit_reg_diff,mulc_dit.dit_asym_sam4.hw_sum-reg.reg_asym_sam4,meanrms
 asym_sam4_dit_cor_diff,mulc_dit.dit_asym_sam4.hw_sum-mulc_lrb_alldet_burst.cor_sam4.hw_sum,meanrms
 asym_sam4,asym_sam4.hw_sum,meanrms
@@ -577,7 +563,7 @@ asym_sam5_reg_correction,reg.reg_asym_sam5-asym_sam5.hw_sum,meanrms
 cor_asym_sam5,mulc_lrb_alldet_burst.cor_sam5.hw_sum,meanrms
 asym_sam5_cor_correction,mulc_lrb_alldet_burst.cor_sam5.hw_sum-asym_sam5.hw_sum,meanrms
 dit_asym_sam5,mulc_dit.dit_asym_sam5.hw_sum,meanrms
-asym_sam5_dit_correction,mulc_dit.dit_asym_sam5.hw_sum-asym_sam5.hw_sum,meanrms
+asym_sam5_dit_correction,mulc_dit.dit_asym_sam5.hw_sum-reg.asym_sam5,meanrms
 asym_sam5_dit_reg_diff,mulc_dit.dit_asym_sam5.hw_sum-reg.reg_asym_sam5,meanrms
 asym_sam5_dit_cor_diff,mulc_dit.dit_asym_sam5.hw_sum-mulc_lrb_alldet_burst.cor_sam5.hw_sum,meanrms
 asym_sam5,asym_sam5.hw_sum,meanrms
@@ -586,7 +572,7 @@ asym_sam6_reg_correction,reg.reg_asym_sam6-asym_sam6.hw_sum,meanrms
 cor_asym_sam6,mulc_lrb_alldet_burst.cor_sam6.hw_sum,meanrms
 asym_sam6_cor_correction,mulc_lrb_alldet_burst.cor_sam6.hw_sum-asym_sam6.hw_sum,meanrms
 dit_asym_sam6,mulc_dit.dit_asym_sam6.hw_sum,meanrms
-asym_sam6_dit_correction,mulc_dit.dit_asym_sam6.hw_sum-asym_sam6.hw_sum,meanrms
+asym_sam6_dit_correction,mulc_dit.dit_asym_sam6.hw_sum-reg.asym_sam6,meanrms
 asym_sam6_dit_reg_diff,mulc_dit.dit_asym_sam6.hw_sum-reg.reg_asym_sam6,meanrms
 asym_sam6_dit_cor_diff,mulc_dit.dit_asym_sam6.hw_sum-mulc_lrb_alldet_burst.cor_sam6.hw_sum,meanrms
 asym_sam6,asym_sam6.hw_sum,meanrms
@@ -595,7 +581,7 @@ asym_sam7_reg_correction,reg.reg_asym_sam7-asym_sam7.hw_sum,meanrms
 cor_asym_sam7,mulc_lrb_alldet_burst.cor_sam7.hw_sum,meanrms
 asym_sam7_cor_correction,mulc_lrb_alldet_burst.cor_sam7.hw_sum-asym_sam7.hw_sum,meanrms
 dit_asym_sam7,mulc_dit.dit_asym_sam7.hw_sum,meanrms
-asym_sam7_dit_correction,mulc_dit.dit_asym_sam7.hw_sum-asym_sam7.hw_sum,meanrms
+asym_sam7_dit_correction,mulc_dit.dit_asym_sam7.hw_sum-reg.asym_sam7,meanrms
 asym_sam7_dit_reg_diff,mulc_dit.dit_asym_sam7.hw_sum-reg.reg_asym_sam7,meanrms
 asym_sam7_dit_cor_diff,mulc_dit.dit_asym_sam7.hw_sum-mulc_lrb_alldet_burst.cor_sam7.hw_sum,meanrms
 asym_sam7,asym_sam7.hw_sum,meanrms
@@ -604,7 +590,7 @@ asym_sam8_reg_correction,reg.reg_asym_sam8-asym_sam8.hw_sum,meanrms
 cor_asym_sam8,mulc_lrb_alldet_burst.cor_sam8.hw_sum,meanrms
 asym_sam8_cor_correction,mulc_lrb_alldet_burst.cor_sam8.hw_sum-asym_sam8.hw_sum,meanrms
 dit_asym_sam8,mulc_dit.dit_asym_sam8.hw_sum,meanrms
-asym_sam8_dit_correction,mulc_dit.dit_asym_sam8.hw_sum-asym_sam8.hw_sum,meanrms
+asym_sam8_dit_correction,mulc_dit.dit_asym_sam8.hw_sum-reg.asym_sam8,meanrms
 asym_sam8_dit_reg_diff,mulc_dit.dit_asym_sam8.hw_sum-reg.reg_asym_sam8,meanrms
 asym_sam8_dit_cor_diff,mulc_dit.dit_asym_sam8.hw_sum-mulc_lrb_alldet_burst.cor_sam8.hw_sum,meanrms
 asym_sam8,asym_sam8.hw_sum,meanrms
@@ -847,3 +833,4 @@ same,RTPAPOSUCNT,slow
 same,RTPAPOSVCNT,slow
 same,RTPPITA1CNT,slow
 same,RTPPITA2CNT,slow
+rcdb,rcdb,rcdb
