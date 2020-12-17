@@ -77,6 +77,9 @@ void Channel::storeData(TTree * outputTree){
   if (type == "slow"){
     outputTree->Branch(Form("%s_mean",name.Data()),&singleEntry);
   }
+  if (type == "rcdb"){
+    outputTree->Branch(Form("%s",name.Data()),&singleEntry);
+  }
   if (type == "slopes"){
     outputTree->Branch(Form("%s_slope",name.Data()),&slope);
     outputTree->Branch(Form("%s_slope_error",name.Data()),&slopeError);
@@ -88,11 +91,222 @@ class Source {
     TString run,nruns,split,minirun,input,basename;
     Source(TString run_n, TString n_runs, TString n_minirun, TString n_split, TString in, TString base_name): run(run_n), nruns(n_runs), minirun(n_minirun), split(n_split), input(in), basename(base_name) {}
     RDataFrame readSource();
+    std::vector<TString> rcdbNames;
     void printInfo() { std::cout << "Processing run  " << run  << ". " << std::endl;} 
     void drawAll();
     void getSlopes(std::vector<Channel>&, Int_t, Int_t, Int_t, Double_t);
+    void getRCDB(std::vector<Channel>&, Int_t, Int_t, Int_t, Double_t);
     Channel GetChannelByName(TString name);    
 };
+
+void Source::getRCDB(std::vector<Channel> &channels, Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t nRuns = -1){
+  this->rcdbNames = {
+    "slug",
+    "run_type",       // = 'Production'
+    "run_flag",       // = 'Good'
+    "ihwp",           // = 'IN' or 'OUT'
+    "flip_state",     // = 'FLIP-RIGHT' or 'FLIP-LEFT'
+    "horizontal_wien",// = -29.6402
+    "vertical_wien",  // = 88.0008
+    "rhwp",           // = 1500.0
+    "arm_flag",       // = 0, or 1, or 2
+    "beam_current",   // = 109.044
+    "total_charge",   // = 584807.0
+    "target_type",    // = '48Ca', or '40Ca'
+    "target_45encoder",//= 2.0
+    "target_90encoder",//= 13163100.0
+    "dpp",            // = 0.000142342
+    "dpp_stdev",      // = 1.4e-6
+    "energy_avg",     // = 2.156234
+    "energy_sig",     // = 1.4e-6
+  };
+  Int_t success = 0;
+  // Experimenting Function to Get slug number based on run number 
+  // Author : Tao Ye
+
+  TSQLResult* res;
+  TSQLRow *row;
+  cout << "Getting Info from RCDB" << endl;
+  //cout << " -- Connecting to RCDB -- " << endl;
+  TSQLServer *rcdb = TSQLServer::Connect("mysql://hallcdb.jlab.org:3306/a-rcdb","rcdb","");
+  //cout << " -- ServerInfo: " << rcdb->ServerInfo() << endl;
+  cout << " -- Host : " << rcdb->GetHost() << endl;
+  //cout << " -- Query DataBase " << endl;
+  TString select_q ="SELECT run_number,name,int_value ";  //int_value
+  TString from_q =  "FROM `a-rcdb`.conditions,`a-rcdb`.condition_types ";
+  TString where_q = Form("WHERE conditions.condition_type_id=condition_types.id and name='slug' and run_number='%d'",
+			 runNumber);
+  res = rcdb->Query(select_q + from_q + where_q);
+  if(res==NULL){
+    cout << " -- ERROR: Failed to Query " << endl;
+    delete row;
+    delete res;
+    cout << " -- Closing Connection to RCDB " << endl;
+    rcdb->Close();
+    delete rcdb;
+    success = -1;
+  }
+
+  int nFields =res->GetFieldCount();
+  row = res->Next();
+  if(row==NULL){
+    cout << " -- ERROR: Failed to load slug number " << endl;
+    delete row;
+    delete res;
+    cout << " -- Closing Connection to RCDB " << endl;
+    rcdb->Close();
+    delete rcdb;
+    success = -1;
+  }
+  //cout << " ----------------------------- " << endl;
+  //for(int j=0; j< nFields; j++)
+    //cout << "\t" << row->GetField(j) ;
+  //cout << endl;
+  const char* tmp_char = row->GetField(2);
+  int slug_id = TString(tmp_char).Atoi();
+  int wien = 0;
+  int ihwp = 0;
+  int sign = 0;
+  if ( ((Int_t)slug_id) != ((Int_t)nRuns) ){
+    std::cout << " -- ERROR: Slug number from RCDB disagrees with slug number in aggregator command line arguments" << std::endl;
+  }
+  // For each rcdb entry get the entry from RCDB, convert to double or integer, and fill a tmpChan into the vector channels into a singleEntry field.
+  for (Int_t i = 0 ; i<this->rcdbNames.size() ; i++) {
+    Channel tmpChan;
+    tmpChan.type = "rcdb";
+    tmpChan.name = "rcdb_"+(TString)this->rcdbNames.at(i);
+    where_q = Form("WHERE conditions.condition_type_id=condition_types.id and name='%s' and run_number='%d'",
+        this->rcdbNames.at(i).Data(),runNumber);
+    if (this->rcdbNames.at(i) == "slug" || this->rcdbNames.at(i) == "arm_flag") {
+      select_q ="SELECT run_number,name,int_value ";
+    }
+    else if (this->rcdbNames.at(i) == "run_type" || this->rcdbNames.at(i) == "run_flag" || this->rcdbNames.at(i) == "ihwp" || this->rcdbNames.at(i) == "flip_state" || this->rcdbNames.at(i) == "target_type") {
+      select_q ="SELECT run_number,name,text_value ";
+    }
+    else{
+      select_q ="SELECT run_number,name,float_value ";
+    }
+    res = rcdb->Query(select_q + from_q + where_q);
+    nFields =res->GetFieldCount();
+    row = res->Next();
+    if(row==NULL || nFields <= 1 || success==-1){
+      std::cout << " -- RCDB failed to load " << this->rcdbNames.at(i) << std::endl;
+      tmpChan.singleEntry = -1.0e6;
+    }
+    else {
+      // Good connection, good stuff
+      const char* tmp_char2 = row->GetField(2);
+      if (debug > 1) std::cout<<"For " << row->GetField(1) << " we have " << row->GetField(2)<<std::endl;
+      if ( this->rcdbNames.at(i) == "run_type" ){
+        if ((TString)tmp_char2 == "Production"){
+          tmpChan.singleEntry = 1.0;
+        }
+        else if ((TString)tmp_char2 == "Pedestal"){
+          tmpChan.singleEntry = 2.0;
+        }
+        else if ((TString)tmp_char2 == "Calibration"){
+          tmpChan.singleEntry = 3.0;
+        }
+        else if ((TString)tmp_char2 == "ParityScan"){
+          tmpChan.singleEntry = 4.0;
+        }
+        else if ((TString)tmp_char2 == "Test"){
+          tmpChan.singleEntry = 5.0;
+        }
+        else {
+          tmpChan.singleEntry = -1.0;
+        }
+      }
+      else if ( this->rcdbNames.at(i) == "run_flag" ){
+        if ((TString)tmp_char2 == "Good") {
+          tmpChan.singleEntry = 1.0;
+        }
+        else if ((TString)tmp_char2 == "NeedCut" || (TString)tmp_char2 == "NeedCuts") {
+          tmpChan.singleEntry = 2.0;
+        }
+        else if ((TString)tmp_char2 == "Suspicious") {
+          tmpChan.singleEntry = 3.0;
+        }
+        else if ((TString)tmp_char2 == "Bad") {
+          tmpChan.singleEntry = 4.0;
+        }
+        else {
+          tmpChan.singleEntry = -1.0;
+        }
+      }
+      else if ( this->rcdbNames.at(i) == "ihwp" ){
+        if ((TString)tmp_char2 == "IN"){
+          tmpChan.singleEntry = 1.0;
+          ihwp = 1;
+        }
+        else if ((TString)tmp_char2 == "OUT"){
+          tmpChan.singleEntry = 2.0;
+          ihwp = -1;
+        }
+        else {
+          tmpChan.singleEntry = -1.0;
+          ihwp = 0;
+        }
+      }
+      else if ( this->rcdbNames.at(i) == "flip_state" ){
+        if ((TString)tmp_char2 == "Vertical(UP)"){
+          // Transverse Asymmetry
+          tmpChan.singleEntry = 3.0;
+          wien = 1;
+        }
+        else if ((TString)tmp_char2 == "FLIP-LEFT"){
+          tmpChan.singleEntry = 2.0;
+          wien = -1;
+        }
+        else if ((TString)tmp_char2 == "FLIP-RIGHT"){
+          tmpChan.singleEntry = 1.0;
+          wien = 1;
+        }
+        else {
+          tmpChan.singleEntry = -1.0;
+          wien = 0;
+        }
+      }
+      else if ( this->rcdbNames.at(i) == "target_type" ){
+        if ((TString)tmp_char2 == "48Ca"){
+          // Transverse Asymmetry
+          tmpChan.singleEntry = 1.0;
+        }
+        else if ((TString)tmp_char2 == "40Ca"){
+          tmpChan.singleEntry = 2.0;
+        }
+        else if (((TString)tmp_char2).Contains("Pb")){
+          tmpChan.singleEntry = 4.0;
+        }
+        else if (((TString)tmp_char2).Contains("Carbon 1")){
+          tmpChan.singleEntry = 3.0;
+        }
+        else if ((TString)tmp_char2 == "Home"){
+          tmpChan.singleEntry = 5.0;
+        }
+        else {
+          tmpChan.singleEntry = -1.0;
+        }
+      }
+      else {
+        tmpChan.singleEntry = TString(tmp_char2).Atof();
+      }
+    }
+    channels.push_back(tmpChan);
+  }
+  Channel signChan;
+  signChan.name = "rcdb_sign";
+  signChan.type = "rcdb";
+  signChan.singleEntry = ((Double_t)(wien*ihwp));
+  channels.push_back(signChan);
+  delete row;
+  //cout << " ----------------------------- " << endl;
+  //cout << " -- Slug Number found  " << slug_id << endl;
+  //cout << " -- Closing Connection " << endl;
+  rcdb->Close();
+  delete res;
+  delete rcdb;
+}
 
 void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t nRuns = -1){
   //runNumber = getRunNumber_h(runNumber);
@@ -106,6 +320,9 @@ void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_
   TString ditSlopeFileNamebase = gSystem->Getenv("DITHERING_ROOTFILES_SLOPES");
   TString ditStub = gSystem->Getenv("DITHERING_STUB");
   TString ditSlopeFileName = ditSlopeFileNamebase + "/dit_alldet_slopes" + ditStub + "_slug" + nRuns + ".root";
+  if( gSystem->AccessPathName(ditSlopeFileName) ) {
+    Printf("Could not get dithering slopes from %s",ditSlopeFileName.Data());
+  }
   if( !gSystem->AccessPathName(ditSlopeFileName) ) {
     Printf("Getting dithering slopes from %s",ditSlopeFileName.Data());
     TChain *ditTree = new TChain("dit");
@@ -586,7 +803,7 @@ RDataFrame Source::readSource(){
       tmpChan.draw = device;
       tmpChan.type = type;
       try{
-        if (minirun != "-1" && (tmpChan.type != "slopes" && tmpChan.type != "slow")){
+        if (minirun != "-1" && (tmpChan.type != "slopes" && tmpChan.type != "slow" && tmpChan.type != "rcdb")){
           //if (((TString)tmpChan.branchName.Data()).Contains(".hw_sum")) {
           //  TString errCode(tmpChan.branchName(0,tmpChan.branchName.Length()-7));
           //  errCode = errCode + ".Device_Error_Code";
@@ -609,7 +826,7 @@ RDataFrame Source::readSource(){
           if (debug > 1) {cout << "Done Getting Histo1D for " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;}
           tsw.Start();
         }
-        else if (tmpChan.type != "slopes" && tmpChan.type != "slow") {
+        else if (tmpChan.type != "slopes" && tmpChan.type != "slow" && tmpChan.type != "rcdb") {
           tmpChan.histo = d_good.Define(tmpChan.branchName.Data(),tmpChan.draw.Data()).Histo1D(tmpChan.branchName.Data());
           channels.push_back(tmpChan);
           if (debug > 1) {cout << "Done Getting Histo1D for " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;}
@@ -632,6 +849,11 @@ RDataFrame Source::readSource(){
         if (debug > 1) {cout << "Done Getting " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;}
         tsw.Start();
       }
+      if (tmpChan.type == "rcdb") {
+        getRCDB(channels, run.Atoi(), minirun.Atoi(), split.Atoi(), nruns.Atof());
+        if (debug > 1) {cout << "Done Getting " << tmpChan.draw.Data() << " --"; tsw.Print(); cout << endl;}
+        tsw.Start();
+      }
     }
   }
 
@@ -651,6 +873,10 @@ RDataFrame Source::readSource(){
     }
     if (tmpChan.type=="slopes"){
       if (debug > 1) {cout<< tmpChan.name << " Slope = :" << tmpChan.slope<< " --"; tsw.Print(); cout <<std::endl;}
+      tsw.Start();
+    }
+    if (tmpChan.type=="rcdb"){
+      if (debug > 1) {cout<< tmpChan.name << " RCDB Entry = :" << tmpChan.singleEntry << " --"; tsw.Print(); cout <<std::endl;}
       tsw.Start();
     }
   }
