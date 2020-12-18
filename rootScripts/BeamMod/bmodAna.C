@@ -1000,6 +1000,7 @@ void BMOD::saveSlopeData() {
   }
 
   for(int i=0;i<cycles.size();i++){
+    // FIXME FIXME FIXME here ignores invalid cycles
     if(cycles.at(i).BPMvalid==1 && cycles.at(i).Detvalid==1){
       runNum    = runNumber;
       slugNum   = slug_number;
@@ -1018,6 +1019,7 @@ void BMOD::saveSlopeData() {
         }
       }
       // Right here is ignoring data if the slopes == 0
+      // FIXME FIXME FIXME
       if (cycles.at(i).slopesValid == 1) {
         for(int idet=0;idet<nDet;idet++){
           for(int ibpm=0;ibpm<nBPM;ibpm++){
