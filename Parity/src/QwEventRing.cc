@@ -126,7 +126,6 @@ void QwEventRing::push(QwSubsystemArrayParity &event)
       fNextToBeFilled=0;//next event to be filled is the first element  
     }
 
-    this->CheckBurpCut(thisevent);
 
       //check for current ramps
     if (bRING_READY && bStability){
@@ -158,10 +157,10 @@ void QwEventRing::push(QwSubsystemArrayParity &event)
 	        fEvent_Ring[i].UpdateErrorFlag(kBeamTripError);
 	      }
     	}
-      
-
     }
     //ring processing is done at a separate location
+
+    this->CheckBurpCut(thisevent);
   }
 }
 
