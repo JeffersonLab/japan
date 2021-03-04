@@ -165,6 +165,8 @@ void loopAq() {
   counts_plus.push_back((Double_t)counter_plus_local);
   counter_plus = 0;
 
+  previousRun = 0;
+
   for (Int_t i = 0 ; i < prompt_entries ; i++){
     mul_trip_prompt->GetEntry(i);
     Int_t succeed = mul_trip_respin1->GetEntryWithIndex(pr_run_number,pr_CEN);
