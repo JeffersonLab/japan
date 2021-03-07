@@ -41,6 +41,7 @@ class Cycle{
     Int_t BPMvalid = 1;
     Int_t Detvalid = 1;
     Int_t slopesValid = 1;
+    Int_t allDetsSlopesValid = 1;
     Double_t cycleNumber;
     Double_t scandata1_mean;
     Double_t scandata2_mean;
@@ -65,7 +66,9 @@ class BMOD{
     Int_t slug_number = 0;
     Int_t nBPM = 0;
     Int_t nDet = 0;
+    Int_t nCheckedDets = 0;
     Int_t nCoil = 0;
+    Int_t nImportantCoils = 0;
     std::string infile = "NULL";
     TFile *file1;
     TChain *tree_R;
@@ -307,8 +310,14 @@ void BMOD::calculateSensitivities(){
     Printf("ERROR: No Coils listed for Dithering Analysis. Please add a line to input file with an entry \"Coils=comma separated list of bmod_trim# numbers\"");
     return 0;
   }
+  if (parameterVectors.count("Important Detectors") != 0 && parameterVectors["Important Detectors"].size() > 0) {
+    nImportantCoils = (Int_t)std::atoi(parameterVectors["Important Coils"].at(0).c_str());
+  }
+  else {
+    nImportantCoils = parameterVectors["Coils"].size();
+  }
   nCoil = parameterVectors["Coils"].size();
-  for (int l = 0 ; l<nCoil ; l++){
+  for (int l = 0 ; l<nImportantCoils ; l++){ // FIXME nImportantCoils
     CoilListStr = Form("%s%s",CoilListStr.Data(),parameterVectors["Coils"].at(l).c_str());
   }
 
@@ -337,6 +346,12 @@ void BMOD::calculateSensitivities(){
     Printf("Warning: No Detectors listed for Dithering Analysis. Please add a line to input file with an entry \"Detectors=comma separated list of Detector device names\"");
   }
   nDet = parameterVectors["Detectors"].size();
+  if (parameterVectors.count("Important Detectors") != 0 && parameterVectors["Important Detectors"].size() > 0) {
+    nCheckedDets = (Int_t)std::atoi(parameterVectors["Important Detectors"].at(0).c_str());
+  }
+  else {
+    nCheckedDets = nDet;
+  }
 
   if (parameterVectors.count("Cut") == 0) {
     Printf("Warning: no parameter \"Cut\" given, assuming User cut = bcm_dg_ds>60");
@@ -405,6 +420,8 @@ void BMOD::calculateSensitivities(){
   double xbincon=0.0;
   int coilnum=0;
 
+  // FIXME ndata < 50 is hardcoded and arbitrary... config file parameter for sketchy run periods?
+  int ndat = 50;
 
   for(Int_t i=0;i<cycles.size();i++){
     if (runAvg) { 
@@ -427,7 +444,7 @@ void BMOD::calculateSensitivities(){
     //for(int ibpm=0;ibpm<nBPM;ibpm++)
     int j = 0;
     //for(int j=0;j<(nBPM+nDet);j++)
-    while(j<(nBPM+nDet) && cycles[i].BPMvalid!=0){
+    while(j<(nBPM+nDet) && (cycles[i].BPMvalid!=0 || (parameterVectors.count("Save Bad Data") != 0 && parameterVectors["Save Bad Data"].at(0) == "True"))) {
       //bpmName= bpm_array[ibpm];
       //bpmName=parameterVectors["BPMs"][ibpm];
       if (j<nBPM){
@@ -438,7 +455,7 @@ void BMOD::calculateSensitivities(){
         name=parameterVectors["Detectors"][j-nBPM];
         factor=1.0e+6;
       }
-      if (parameterVectors.count("Coils") == 0 || parameterVectors["Coils"].size() == 0) {
+      if (parameterVectors.count("Coils") == 0 || (parameterVectors.count("Coils") != 0 && parameterVectors["Coils"].size() == 0)) {
         Printf("Error: No Trim Card Coils listed for Dithering Analysis. Please add a line to input file with an entry \"Coils=comma separated list of bmod_trim# numbers\"");
         return 1;
       }
@@ -448,36 +465,55 @@ void BMOD::calculateSensitivities(){
         int ndata = 0;
         if (runAvg) { 
           ndata = tree_R->Draw(Form("(%s):(bmod_trim%s*%lf)",name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
-              //Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20",
               Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20",
                 parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil]));
         }
         else {
           ndata = tree_R->Draw(Form("(%s):(bmod_trim%s*%lf)",name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
-              //Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
               Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
                 parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil],cycles[i].cycleNumber));
         }
-        if(ndata<50){
+        if(ndata<ndat){
+          double this_slope,this_error;
           Printf("-- Sensitivity for Device: %s",name.Data());
           Printf("-- CycleNumber: %f",cycles[i].cycleNumber);
           Printf("-- Coil ID: %d",icoil+1);
           Printf("-- NData: %d",ndata);
           Printf("-- Not enough data Discarding this cycle ");
+          this_slope = 0.0;
+          this_error = 0.0;
+
           if (j<nBPM) {
             cycles[i].BPMvalid = 0;
-            icoil = nCoil;
-            j=nBPM+nDet;
-            continue;
+            cycles[i].allDetsSlopesValid = 0;
+            cycles.at(i).BPMfNdata.at(j).at(icoil) += ndata;
+            cycles.at(i).BPMsens[j][icoil]          =  this_slope;
+            cycles.at(i).BPMsens_err[j][icoil]      =  this_error;
+            // FIXME && i < nImportantCoils
+            if (!(parameterVectors.count("Save Bad Data") != 0 && parameterVectors["Save Bad Data"].at(0) == "True") || i>=nImportantCoils) {
+              icoil = nCoil;
+              j=nBPM+nDet;
+              continue;
+            }
           }
           else if (j>=nBPM) {
-            cycles[i].Detvalid = 0;
-            icoil = nCoil;
-            j=nBPM+nDet;
-            continue;
+            if((j-nBPM) < nCheckedDets){
+              cycles[i].Detvalid = 0;
+            }
+            cycles[i].allDetsSlopesValid = 0;
+            cycles.at(i).DetfNdata[j-nBPM][icoil]  += ndata;
+            cycles.at(i).Detsens[j-nBPM][icoil]     =  this_slope;
+            cycles.at(i).Detsens_err[j-nBPM][icoil] =  this_error;
+            // For important detectors set the Detvalid flag
+            // FIXME && i < nImportantCoils
+            if (!(parameterVectors.count("Save Bad Data") != 0 && parameterVectors["Save Bad Data"].at(0) == "True") || i>=nImportantCoils) {
+              icoil = nCoil;
+              j=nBPM+nDet;
+              continue;
+            }
           }
         }
-        else if(ndata>=50 && cycles[i].BPMvalid==1){
+        else if(ndata>=ndat && (cycles[i].BPMvalid==1 || (parameterVectors.count("Save Bad Data") != 0 && parameterVectors["Save Bad Data"].at(0) == "True"))){
           TGraph *g1 = new TGraph(ndata, tree_R->GetV2(),tree_R->GetV1());
           g1->GetXaxis()->SetTitle(Form("bmod_trim%s",parameterVectors["Coils"][icoil].c_str()));
           g1->GetYaxis()->SetTitle(name);
@@ -490,13 +526,11 @@ void BMOD::calculateSensitivities(){
           }
           if (runAvg) { 
             ndata = tree_R->Draw(Form("(%lf/%lf)*(%s):(bmod_trim%s*%lf)",factor,this_mean,name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
-                //Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20",
                 Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20",
                   parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil]));
           }
           else {
             ndata = tree_R->Draw(Form("(%lf/%lf)*(%s):(bmod_trim%s*%lf)",factor,this_mean,name.Data(),parameterVectors["Coils"][icoil].c_str(),chtov),
-                //Form("%s && beam_mod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
                 Form("%s && bmod_ramp>0 && bmwobj==%s && abs(bmod_trim%s-%f)>20 && bmwcycnum==%f",
                   parameterVectors["Cut"].at(0).c_str(),parameterVectors["Coils"][icoil].c_str(),parameterVectors["Coils"][icoil].c_str(),trim_base[icoil],cycles[i].cycleNumber));
           }
@@ -515,12 +549,12 @@ void BMOD::calculateSensitivities(){
           this_error = fun->GetParError(1);
 
           if (j<nBPM) {
-            cycles.at(i).BPMfNdata.at(j).at(icoil)   += ndata;
-            cycles.at(i).BPMsens[j][icoil]     =  this_slope;
-            cycles.at(i).BPMsens_err[j][icoil] =  this_error;
+            cycles.at(i).BPMfNdata.at(j).at(icoil) += ndata;
+            cycles.at(i).BPMsens[j][icoil]          =  this_slope;
+            cycles.at(i).BPMsens_err[j][icoil]      =  this_error;
           }
           else {
-            cycles.at(i).DetfNdata[j-nBPM][icoil]   += ndata;
+            cycles.at(i).DetfNdata[j-nBPM][icoil]  += ndata;
             cycles.at(i).Detsens[j-nBPM][icoil]     =  this_slope;
             cycles.at(i).Detsens_err[j-nBPM][icoil] =  this_error;
           }
@@ -561,15 +595,15 @@ void BMOD::saveSensitivityData() {
   }
 
   double tab_width = 20;
-  const int cutflag=1;
+  //const int cutflag=1;
 
   for(Int_t i=0;i<cycles.size();i++){
-    if(cycles[i].BPMvalid==1){
+    if(cycles[i].BPMvalid==1 || (parameterVectors.count("Save Bad Data") != 0 && parameterVectors["Save Bad Data"].at(0) == "True")){
       for(int ibpm=0;ibpm<nBPM;ibpm++){
         outfile0
           << setw(tab_width) << setiosflags(ios::left) << runNumber 
           << setw(tab_width) << setiosflags(ios::left) << cycles[i].cycleNumber 
-          << setw(tab_width) << setiosflags(ios::left) << cutflag 
+          << setw(tab_width) << setiosflags(ios::left) << (cycles[i].slopesValid && cycles[i].BPMvalid)
           << setw(tab_width) << setiosflags(ios::left) << parameterVectors["BPMs"][ibpm];
         for(int icoil=0;icoil<nCoil;icoil++){
           outfile0
@@ -582,12 +616,12 @@ void BMOD::saveSensitivityData() {
         } // end of coil loop
         outfile0 << std::endl;
       } // end of detector loop
-      if(cycles[i].Detvalid==1){
+      if(cycles[i].Detvalid==1 || (parameterVectors.count("Save Bad Data") != 0 && parameterVectors["Save Bad Data"].at(0) == "True")){
         for(int idet=0;idet<nDet;idet++){
           outfile0
             << setw(tab_width) << setiosflags(ios::left) << runNumber
             << setw(tab_width) << setiosflags(ios::left) << cycles[i].cycleNumber 
-            << setw(tab_width) << setiosflags(ios::left) << cutflag // Now , just one o   
+            << setw(tab_width) << setiosflags(ios::left) << (cycles[i].slopesValid && cycles[i].Detvalid)
             << setw(tab_width) << setiosflags(ios::left) << parameterVectors["Detectors"][idet];
           for(int icoil=0;icoil<nCoil;icoil++){
             outfile0
@@ -610,8 +644,8 @@ void BMOD::invertMatrix() {
   //  Loop over cycles
   for(Int_t i=0;i<cycles.size();i++){
     if(cycles[i].BPMvalid==1 && cycles[i].Detvalid==1){
-      TMatrixD tmpBPMmat(nCoil,nBPM);
-      for(int icoil=0;icoil<nCoil;icoil++){
+      TMatrixD tmpBPMmat(nImportantCoils,nBPM); // FIXME nImportantCoils
+      for(int icoil=0;icoil<nImportantCoils;icoil++){
         for(int ibpm=0;ibpm<nBPM;ibpm++){
           tmpBPMmat[icoil][ibpm] = cycles[i].BPMsens[ibpm][icoil];// BPM data
           cycles[i].BPMData.push_back(tmpBPMmat);
@@ -623,8 +657,8 @@ void BMOD::invertMatrix() {
       // FIXME do some checks on det2 here
 
       for(int idet=0;idet<nDet;idet++){
-        TMatrixD tmpDetVec(nCoil,1);
-        for(int icoil=0;icoil<nCoil;icoil++){
+        TMatrixD tmpDetVec(nImportantCoils,1);
+        for(int icoil=0;icoil<nImportantCoils;icoil++){
           tmpDetVec[icoil][0] = cycles[i].Detsens[idet][icoil];// det sens data
           cycles[i].detData.push_back(tmpDetVec);
         }
@@ -635,6 +669,15 @@ void BMOD::invertMatrix() {
         //}
       }
 
+    }
+    else {
+      for(int idet=0;idet<nDet;idet++){
+        TMatrixD tmpNullDetSlopes(nBPM,1);
+        for(int iBPM=0;iBPM<nBPM;iBPM++){
+          tmpNullDetSlopes(iBPM,0)=0.0;
+        }
+        cycles[i].detSlopes.push_back(tmpNullDetSlopes);
+      }
     }
   }
 }
@@ -688,15 +731,27 @@ void BMOD::edittree(TString oldFileName = "test.root")
     TLeaf* cycNumL = oldtree->GetLeaf("cyclenum");
     Double_t tmpCycNum = 0.0;
 
-    Int_t flag = 1;
-    newtree->SetBranchAddress("flag",&flag);
     // Slug segment, trivially == 1, set by user later if needed
+    Int_t oldsegment = 1;
     Int_t segment = 1;
-    if (newtree->GetBranch("segment")) {
-      newtree->SetBranchAddress("segment",&segment);
+    Int_t oldflag = 1;
+    Int_t flag = 1;
+    Int_t oldalldetsflag = 1;
+    Int_t alldetsflag = 1;
+    if (!(newtree->GetBranch("segment") && newtree->GetBranch("flag") && newtree->GetBranch("alldetsflag"))) {
+      newtree->Branch("segment",&segment);
+      newtree->Branch("flag",&flag);
+      newtree->Branch("alldetsflag",&alldetsflag);
     }
     else {
-      newtree->Branch("segment",&segment);
+      newtree->SetBranchAddress("segment",&segment);
+      newtree->SetBranchAddress("flag",&flag);
+      newtree->SetBranchAddress("alldetsflag",&alldetsflag);
+    }
+    if (oldtree->GetBranch("segment") && oldtree->GetBranch("flag") && oldtree->GetBranch("alldetsflag")) {
+      oldtree->SetBranchAddress("segment",&oldsegment);
+      oldtree->SetBranchAddress("flag",&oldflag);
+      oldtree->SetBranchAddress("alldetsflag",&oldalldetsflag);
     }
 
     std::vector<std::vector<std::vector<Double_t>>> tmpVecss;
@@ -752,13 +807,21 @@ void BMOD::edittree(TString oldFileName = "test.root")
       cycNumL->GetBranch()->GetEntry(i);
       tmpCycNum = cycNumL->GetValue();
       oldtree->GetEntry(i);
-      // FIXME how many detectors' slopes we actually look at is an important question: ignore ATs? Only look at SAMs for CREX?
+      segment=oldsegment;
+      flag=oldflag;
+      alldetsflag=oldalldetsflag;
+      // Use Important Detectors to sub-select important detectors only for cutting here
       for(int idet=0;idet<nDet;idet++){
         for(int ibpm=0;ibpm<nBPM;ibpm++){
+          //flag = (cycles.at(i).BPMvalid * cycles.at(i).Detvalid * cycles.at(i).slopesValid);
+          //alldetsflag = (cycles.at(i).BPMvalid * cycles.at(i).Detvalid * cycles.at(i).allDetsSlopesValid);
           if ( parameterVectors.count("Flag Sigma Cut") != 0 && abs(tmpVecss.at(idet).at(ibpm).at(i)-tmpMeans.at(idet).at(ibpm)) > atof((parameterVectors["Flag Sigma Cut"].at(0).c_str()))*tmpRMSs.at(idet).at(ibpm)) {
             Printf("Cycle hit %f sigma cut, flag = 0",atof((parameterVectors["Flag Sigma Cut"].at(0).c_str())));
             Printf("Slope %f doesn't fit within %f of mean %f",tmpVecss.at(idet).at(ibpm).at(i),atof((parameterVectors["Flag Sigma Cut"].at(0).c_str()))*tmpRMSs.at(idet).at(ibpm),tmpMeans.at(idet).at(ibpm));
-            flag = 0;
+            if (idet < nCheckedDets) {
+              flag = 0;
+            }
+            alldetsflag = 0;
           }
           //else {
           //  Printf("Slope OK");
@@ -766,8 +829,10 @@ void BMOD::edittree(TString oldFileName = "test.root")
           //}
         }
       }
+      Printf("Filling %d flag = %d",i,flag);
       newtree->Fill();
-      flag = 1;
+      //flag = 1;
+      //alldetsflag = 1;
     }
     newtree->Write("dit",TObject::kOverwrite);
     newfile.Close();
@@ -885,6 +950,7 @@ void BMOD::saveSlopeData() {
   Double_t scandata1 = 0.0;
   Double_t scandata2 = 0.0;
   Int_t flag = 1;
+  Int_t alldetsflag = 1;
   // Slug segment, trivially == 1, set by user later if needed
   Int_t segment = 1;
   Double_t cycleNum = 0;
@@ -941,6 +1007,9 @@ void BMOD::saveSlopeData() {
     dit_tree->Branch("flag",
         &flag,
         "flag/I");
+    dit_tree->Branch("alldetsflag",
+        &alldetsflag,
+        "alldetsflag/I");
     dit_tree->Branch("segment",
         &segment,
         "segment/I");
@@ -991,6 +1060,8 @@ void BMOD::saveSlopeData() {
         &scandata2);
     dit_tree->SetBranchAddress("flag",
         &flag);
+    dit_tree->SetBranchAddress("alldetsflag",
+        &alldetsflag);
     if (dit_tree->GetBranch("segment")) {
       dit_tree->SetBranchAddress("segment",&segment);
     }
@@ -1001,26 +1072,32 @@ void BMOD::saveSlopeData() {
 
   for(int i=0;i<cycles.size();i++){
     // FIXME FIXME FIXME here ignores invalid cycles
-    if(cycles.at(i).BPMvalid==1 && cycles.at(i).Detvalid==1){
+    if ((cycles.at(i).BPMvalid==1 && cycles.at(i).Detvalid==1) || (parameterVectors.count("Save Bad Data") != 0 && parameterVectors["Save Bad Data"].at(0) == "True")) {
       runNum    = runNumber;
       slugNum   = slug_number;
       cycleNum  = cycles.at(i).cycleNumber;
       scandata1 = cycles.at(i).scandata1_mean;
       scandata2 = cycles.at(i).scandata2_mean;
       Printf("Adding entry for cycle %f",cycleNum);
-      // The flag variable is determined by whether there is sufficient data for BPM sensitivity calculation
-      flag      = cycles.at(i).BPMvalid;
       for(int idet=0;idet<nDet;idet++){
         for(int ibpm=0;ibpm<nBPM;ibpm++){
-            // We found a null slope
+          // We found a null slope
+          // FIXME FIXME FIXME NOTE: it is hypothetically possible for any given slope to be == 0.0000, but it is unlikely
           if(cycles.at(i).detSlopes.at(idet)[ibpm][0]==0){
-            cycles.at(i).slopesValid = 0;
+            if (idet < nCheckedDets) {
+              cycles.at(i).slopesValid = 0;
+            }
+            cycles.at(i).allDetsSlopesValid = 0;
           }
         }
       }
-      // Right here is ignoring data if the slopes == 0
-      // FIXME FIXME FIXME
-      if (cycles.at(i).slopesValid == 1) {
+      // OLD: The flag variable is determined by whether there is sufficient data for BPM sensitivity calculation
+      // OLD: flag = cycles.at(i).BPMvalid;
+      // NEW: The flag variable is determined by whether there is sufficient data for BPM sens, Important Detector sens, and Slope validity.
+      flag = (cycles.at(i).BPMvalid * cycles.at(i).Detvalid * cycles.at(i).slopesValid);
+      alldetsflag = (cycles.at(i).BPMvalid * cycles.at(i).Detvalid * cycles.at(i).allDetsSlopesValid);
+      // FIXME FIXME FIXME Right here is ignoring data if the slopes == 0
+      if ((cycles.at(i).slopesValid == 1) || (parameterVectors.count("Save Bad Data") != 0 && parameterVectors["Save Bad Data"].at(0) == "True")) {
         for(int idet=0;idet<nDet;idet++){
           for(int ibpm=0;ibpm<nBPM;ibpm++){
             slopes[idet][ibpm] = cycles.at(i).detSlopes.at(idet)[ibpm][0];
