@@ -1,0 +1,99 @@
+#include <iostream>
+#include "TMath.h"
+#include "TMatrixD.h"
+#include "TMatrixDLazy.h"
+#include "TVectorD.h"
+#include "TDecompLU.h"
+#include "TDecompSVD.h"
+#include "TArrayD.h"
+#include "TMatrixD.h"
+#include "TMatrixDBase.h"
+#include <TRandom.h>
+#include <TStyle.h>
+#include <TPaveStats.h>
+#include <TLine.h>
+#include <TLegend.h>
+#include <TVector2.h>
+#include <TH1F.h>
+#include <TH2F.h>
+#include <TF1.h>
+#include <TCanvas.h>
+#include <TFile.h>
+#include <TTree.h>
+#include <TChain.h>
+#include <TString.h>
+#include <TProfile.h>
+#include <sstream>
+#include <iostream>
+#include <TGraphErrors.h>
+#include <iomanip>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <TEntryList.h>
+
+// A ROOT macro to grab the "segment" leaf, if it exists, and to write it with the value in place, or the one desired by the user for cycles > user cycle input number
+void SegmentTree_runnum(TString oldFileName = "test.root", Double_t runnumber = -1, Int_t userSegmentNum = 2, Double_t finalrunnumber = 999999)
+{
+  // Get old file, old tree and set top branch address
+  if(runnumber==-1){
+    cout << "No runnumber passed with macro call!" << endl;
+    return;
+  }
+  cout << "Updating segment number to " << userSegmentNum << " for cycles at and beyond runnumber " << runnumber << endl;
+  Bool_t newFile = gSystem->AccessPathName(oldFileName);
+  // Opposite return convention from the usual
+  if (!newFile){
+
+    TFile* oldfile = TFile::Open(oldFileName);
+    TTree *oldtree;
+    oldfile->GetObject("dit", oldtree);
+    Int_t nentries = oldtree->GetEntries();
+
+    TFile newfile(Form("localTmp_%d.root",(Int_t)runnumber), "recreate");
+    auto newtree = oldtree->CloneTree(0);
+
+    Int_t segment = 1;
+    TLeaf* segmentL;
+    if (oldtree->GetBranch("segment")) {
+      newtree->SetBranchAddress("segment",&segment);
+      segmentL = oldtree->GetLeaf("segment");
+    }
+    else {
+      newtree->Branch("segment",&segment);
+      segmentL = newtree->GetLeaf("segment");
+    }
+
+    TLeaf* runNumL = oldtree->GetLeaf("run");
+    Double_t tmprunNum = 0.0;
+    Int_t tmpSegmentNum = 1;
+    for (auto i : ROOT::TSeqI(nentries)) {
+      runNumL->GetBranch()->GetEntry(i);
+      tmprunNum = runNumL->GetValue();
+      if (oldtree->GetBranch("segment")) {
+        segmentL->GetBranch()->GetEntry(i);
+        tmpSegmentNum = segmentL->GetValue();
+      }
+      else {
+        tmpSegmentNum = 1;
+      }
+      // I made some glitch with newtree vs. old tree
+      if (abs(tmpSegmentNum) > 1000) {
+        tmpSegmentNum = 1;
+      }
+      segment = tmpSegmentNum;
+      if (tmprunNum>=runnumber && tmprunNum<=finalrunnumber) {
+        segment = userSegmentNum;
+      }
+      oldtree->GetEntry(i);
+      newtree->Fill();
+    }
+    newtree->Write("dit",TObject::kOverwrite);
+    newfile.Close();
+    oldfile->Close();
+    delete oldfile;
+    gSystem->Exec(Form("mv localTmp_%d.root %s",(Int_t)runnumber,oldFileName.Data()));
+  }
+}

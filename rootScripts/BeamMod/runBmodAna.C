@@ -605,6 +605,15 @@ void BMOD::invertMatrix() {
       }
 
     }
+    else {
+      for(int idet=0;idet<nDet;idet++){
+        TMatrixD tmpNullDetSlopes(nBPM,1);
+        for(int iBPM=0;iBPM<nBPM;iBPM++){
+          tmpNullDetSlopes(iBPM,0)=0.0;
+        }
+        cycles[i].detSlopes.push_back(tmpNullDetSlopes);
+      }
+    }
   }
 }
 

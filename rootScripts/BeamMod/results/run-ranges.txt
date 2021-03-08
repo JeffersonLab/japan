@@ -1,0 +1,309 @@
+AT 
+Segment, Start Run, End Run, Start Cycle, End Cycle N, Nearest Slug, Flag==0 at boundary?, Comment
+
+26 , 6344, 6348,  6007,  6025, 4001, YES, Ca48 target - run 6348 is a Apos U/V calibration scan
+27 , 6349, 6352,  6026, ~6032, 4003, YES, Ca40 target - run 6353 is a main det voltage calibration run
+28 , 6354, 6357,  6037, ~6047, 4005, NO , Ca48 target again - slight change in slopes from the prior Ca48 data - 6358 is junk data C1%
+29 , 6359, 6363,  6050,  6060, 4007, NO , C1% target - 6364 5 and 6 are all BAD runs
+30 , 6367, 6378,  6061, ~6091, 4009, NO , Pb7 target - continuous chunk of good slopes data with 2 trivial holes - 6379 is a junk run
+31 , 6380, 6385,  6094,  6116, 4011, NO , Ca48 target again
+32 , 6386, 6391,  6117, ~6128, 4013, NO , C1% target again - 6392 and 6393 both have no data due to Beamline dipole trip - 6394 lacks BMOD data but is a Ca40 run
+33 , 6394, 6404,  6133, ~6165, 4017, NO , Ca40 target again
+31*, 6405, 6408,  6169, ~6179, 4019, NO , Ca48 final target data - run 6508 is a bad sensitivity run - NOTE that this short Ca48 segment matches into slopes of segment 28 - set to seg 28
+Runwise - 6408 is an outlier - no BPM 12X coil7 sensitivity failure
+
+
+4000      -> No split
+4000-4001 -> No split
+4001      -> No split
+4001-4002 -> Split
+4002      -> No split (one run, no good cycles)
+4002-4003 -> No split
+....
+...
+
+
+Segment, Start Run, End Run, Start Cycle, End Cycle N, Nearest Slug, Flag==0 at boundary?, Comment
+
+CREX part 1 
+ISSUE: Slug 100 has no good slopes run or cyclewise
+1  , 5408, 5438, ~????, ~????, 100, YES, There are no good run-avg runs in slug 100
+2  , 5439, 5452,  4059, ~4127, 101, YES, transition run 5454 looks a bit funny... probably OK
+3  , 5453, 5489,  4128, ~4254, 106, NO , Three runs by themselves between chunks of data - 12X shift
+4  , 5581, 5583,  4283, ~4295, 106, NO , Three runs by themselves between chunks of data - 12X shift
+5  , 5613, 5620,  4587, ~4609, 106, NO , Three runs by themselves between chunks of data - 12X shift
+6  ,*5636, 5644,  4621, ~4649, 107, YES, Run 5636 is missing from BMOD outputs - don't forget to include it in runranging
+7  , 5645, 5656,  4651, ~4692, 109, YES, Crosses two bad runs in a row - double check in cyclewise analyses - also ends on no-slopes info but sens look good
+Runwise - Bad run 5648, supercycle 4661
+Runwise - Bad run 5649, supercycle 4665
+8 , 5749, 5757,  4710, ~4746, 109, YES, Split slug 109 
+Gap in runs, no BMOD data at all between 5757 and 5770 - low current calibration runs and such
+9 , 5770, 5774,  4789, ~4806, 109, NO , Split end slug 109 - double check wih cyclewise
+10 , 5775, 5778,  4811, ~4824, 109, YES, End of slug 109
+11 , 5786, 5819,  4845, ~5000, 114, YES, Has some outlier runs
+Runwise - Outlier runs 5787, 5791, 5794
+ISSUE: Slug 117 has no full current beam on data - the runs included here are 60 uA suspicious runs
+12 , 5913, 5923,  5140,  5165, 116, YES, Splits slug 117 - just numbering issue really - 5929 should be part of slug 116 in terms of beam tune optics - runs 5913 and 5914 are potentially good calibration runs
+13*, 5924, 5929,  5166,  5184, 117, YES, Run 5924 has a detector move and then a gap until 5929 - this is caused by a detector move and then a too-short slug before a beam optics change at 5939 - so lets keep the one run calculation for 5924 as a good determination here
+14 , 5939, 5972,  5193, ~5331, 120, NO ,
+Runwise - Outlier run 5971 (bad coil7)
+15 , 6031, 6036,  5335, ~5350, 121, NO ,
+Runwise - Outlier run 6035
+16 , 6085, 6099,  5386, ~5427, 122, NO , Mid slug split - gap in cycle numbers
+17 , 6102, 6105,  5471,  5484, 122, YES, 6105 final run in slug 122 has messy sensitivities
+SLUGS 123 and 124 are RHRS ONLY running - so the runranging calculation for RHRS slopes needs to be treated differently
+18 , 6106, 6110,  5485, ~5498, 124, NO , Slugs 123 and 124 are all weird BMOD data - LQ2 tripped and there is some COIL 7 issues
+Runwise - Outlier runs 6108, 6109
+19 , 6116, 6136,  5515, ~5607, 127, NO , 
+20 , 6159, 6177,  5620, ~5665, 128, YES, 
+Runwise - Outlier run 6177 (maybe??) may be realistic - check cyclewise
+21 , 6178, 6218,  5670, ~5795, 131, YES, NOTE run 6196 is in slug runlist but not in BMOD output root files
+22 , 6234, 6241,  5806, ~5837, 132, NO ,
+23 , 6248, 6259,  5841, ~5868, 132, NO , 
+Runwise - Outlier run 6258, 6284 - but I think they are probably real slopes... check cyclewise
+24 , 6284, 6323,  5874, ~5960, 134, YES, Splits slug 134 - also run 6284 is by itself with a flag==0 run next to it
+
+CREX part 2 
+25 , 6328, 6334,  5971, ~6003, 134, YES, Represents the beginning of the NEW BEAM TUNE that starts hours before AT running - This split only shows up in the Alphas-deltas but not slopes
+GAP for AT running here
+
+34 , 6424, 6464,  6181, ~6319, 137, YES, Starts with a few flag==0 runs - right after AT running - the slopes get really messy at 6462 - then run 6424 has no BMOD outputs but should be runranged
+Runwise - Outlier run 6434 and 6462 - but it isn't that bad - sens all look great though
+Runwise - Outlier run 6463 is a wild outlier
+
+GAP for Wien flip here
+
+35*, 6514, 6520,  6323, ~6343, 138, YES, Beginning of Wien left - rough start ALL COIL7 SENS DIED until run 6526
+Runwise - All of 6515, 6516, 6517, 6518, and 6519 are outliers - failed sensitivity calculations completely
+35 , 6514, 6545,  6323, ~6435, 139, NO , Stable mid slug 139 - first 5 runs are bad COIL7 sens
+36 , 6563, 6567,  6461, ~6475, 139, NO , Small shift in slopes at the end of slug 139 to 140 transition - split here because it is a time jump and slug number jump anyway
+37 , 6571, 6600,  6481, ~6607, 142, YES, Looks good - but there is a bunch of failed runs on the border of slugs 142 and 143 - no complete runs in slug 142 at all - 142 wraps 143... - Run 6563 has no BMOD outputs but should be here on the beginning of the run range
+Runwise - 6585 has a misfiring COIL 7 - count it as bad
+38 , 6608, 6625,  6616, ~6669, 143, NO , Missing from root tree is run 6610 and 6612
+39 , 6627, 6639,  6675, ~6721, 144, NO , Splits slug 144
+40 , 6644, 6650,  6728, ~6742, 144, NO , Splits slug 144 - Run 6650 is missing from the BMOD outputs but should be runranged here for sure
+41 , 6662, 6673,  6753, ~6803, 145, YES, Splits slug 145 
+42 , 6684, 6730,  6809, ~6885, 146, YES, Splits slug 146 - Run 6684 is missing from BMOD outputs but should be runranged here
+43 , 6753, 6868,  6888, ~7201, 151, YES, This is a fairly clean span over 5 slugs - splits slug 151 - the last 4 runs are noisier but basically fit the same slope set - Run 6754 is missing from BMOD outputs but should be included in the runrange here
+Runwise - 6792 is an outlier slope (mostly LHRS problem) - Caused by first supercycle having a BPM 12X jump that is not common to neighboring data - could be solved by a cut or remove the first cycle or just chuck the whole run
+44 , 6883, 6896,  7217, ~7264, 152, NO , Splits slug 151 and 2
+45 , 6909, 6992,  7268, ~7609, 158, YES, The last few runs are funny compared to the prior hundred runs
+Runwise - 6927 has funny COIL7 sensitivities and is an outlier
+Runwise - 6955 and 6956 have blips in 12X slopes in their first cycles due to messy energy lock at start of run
+Runwise - 6963 has funny COIL7 sensitivities as well but is not an outlier slope
+46 , 6994, 7026,  7613, ~7749, 160, YES, 
+47 , 7040, 7048,  7803, ~7831, 161, NO ,
+48 , 7058, 7083,  7842, ~7951, 163, YES, The split in the middle of slug 163 is in sensitivities but not slopes ...
+Runwise - 7075 has bad slopes - outlier
+49 , 7086, 7100,  7961, ~8023, 164, NO , Splits slug 164
+50 , 7106, 7131,  8029, ~8088, 166, NO , Splits slug 166
+Runwise - 7131 has funny coil sensitivities but slopes are not bad...
+51 , 7139, 7163,  8094, ~8209, 168, YES, Splits slug 168
+52 , 7165, 7196,  8217, ~8335, 171, NO , Splits slug 171
+Runwise - 7196 has outlier slopes
+53 , 7207, 7216,  8344, ~8384, 172, YES, Splits slug 172 as its first run
+54 , 7226, 7232,  8405, ~8426, 172, NO , Splits slug 172 again
+Runwise - 7232 is an outlier and marked as suspicious, cut out for now
+55 , 7235, 7248,  8429, ~8487, 173, YES, Splits slug 172 and 173
+Runwise - 7238 has weird sensitivities and slopes outliers
+56 , 7249, 7268,  8490, ~8564, 175, YES, Splits slug 175 - contains several sensitivity changes but slopes look consistent
+Runwise - 7267 has funny COIL7 sensitivity but it actually looks good in slopes so no problem
+57 , 7282, 7328,  8568, ~8725, 178, YES, Splits slug 178 - 7282 has no BMOD data but is a good current scan run that can count as production data
+Runwise - 7310 and 7319 have weird COIL7 sensitivities but slopes loog good so no problem
+58 , 7331, 7365,  8730, ~8862, 180, NO , Splits slug 180
+59 , 7368, 7379,  8866, ~8918, 182, NO , Splits first run of slug 182
+60 , 7391, 7409,  8937, ~9003, 183, NO , Splits slug 183 - 7405 through 7507 are potentially good calibration runs
+61 , 7413, 7430,  9011, ~9076, 185, NO , End of CREX part 2 of 3
+
+CREX part 3 - also Wien flips
+62 , 7626, 7635,  9099, ~9126, 186, NO , Noisy beam tune slug at beginning of CREX part 3 - 7626 is the first run and has no BMOD outputs 
+Runwise - 7635 has a funny USR_12X slope that looks like an unreasonable outlier - treat as outlier slope
+63 , 7657, 7701,  9138, ~9218, 188, YES, Splits slug 188
+64 , 7702, 7720,  9220, ~9270, 189, YES, Splits slug 189
+65 , 7734, 7743,  9280, ~9315, 190, YES, Splits slug 190 - has one last run slip to the next period
+66 , 7759, 7778,  9317, ~9350, 192, NO , Splits slug 190 and 192 - also all of Slug 191 is LHRS only
+Runwise - NOTE SLUG 191 is LHRS ONLY so the slope run-range for LHRS slope calculation needs to be treated differently
+67 , 7779, 7797,  9355, ~9442, 193, NO , Slug 192 encompasses slug 193 and has a change in its middle
+68 , 7799, 7817,  9447, ~9530, 194, NO , 
+69 , 7835, 7849,  9553, ~9603, 195, NO , Slug 195 is surrounded by 194 and there is a sensitivities change but slopes are not really needing a split here
+70 , 7860, 7867,  9607, ~9640, 196, YES, Several slugs shuffling around here... and the change in slopes is not large ... just alphas deltas changing and looks like time jumps
+71 , 7870, 7877,  9650, ~9682, 197, YES, Splits slug 197 which is sandwiched by 196
+72 , 7887, 7902,  9692, ~9741, 197, NO ,
+73 , 7903, 7916,  9747, ~9810, 198, NO , Splits slug 198
+74 , 7917, 7963,  9815,~10022, 202, YES, Hairy selection of splits at the end here
+75 , 7964, 7976, 10027,~10052, 202, YES, More sketchy slopes
+76 , 7977, 8004, 10056,~10125, 204, NO ,
+77 , 8012, 8048, 10134,~10275, 205, YES, 
+78 , 8085, 8121, 10282,~10405, 206, YES, Splits slug 206
+79 , 8123, 8138, 10411,~10480, 208, YES, Splits slug 208
+80 , 8142, 8162, 10484,~10573, 210, NO , Splits slug 210
+Runwise - Runs 8143 and 8147 are outliers and should get cut
+81 , 8166, 8183, 10588,~10647, 211, YES, 
+82 , 8186, 8206, 10689,~10733, 212, NO , Splits slug 212
+Runwise - Run 8187 and 8194 is a strong outlier which needs to be cut out
+83 , 8212, 8224, 10752,~10807, 213, NO , This segment has much more noise in slope spread than neighbors
+Runwise - Runs 8214, 8215, 8221, 8222 are all bad 12X slopes (disagree with the cyclewise and have funny sensitivities, likely due to beam noise)
+84 , 8238, 8246, 10876,~10915, 213, YES, Splits slug 213 - short segment
+85 , 8257, 8284, 10950,~11061, 213, NO ,
+86 , 8295, 8313, 11074,~11148, 215, NO , Run 8295 has no BMOD data but should be counted in the segmentation here
+Runwise - Run 8296 is an outlier in slopes so cut out
+87 , 8320, 8342, 11179,~11260, 217, NO , Splits slug 217 final run off
+88 , 8344, 8366, 11274,~11363, 217, YES, Splits slug 217 - 218 and 217 alternate back and forth twice
+Runwise - 8359 is an outlier - probably should be cut - runs plots have no clear problem in them other than lots of trips
+89 , 8368, 8380, 11369,~11423, 218, NO , Splits slug 218
+Runwise - 8371 is an outlier - needs to be cut
+90 , 8390, 8416, 11478,~11595, 219, NO , Split sslug 219
+91 , 8421, 8427, 11618,~11648, 221, YES, Splits slug 221 - final 2 runs are in slug 221
+Runwise - 8426 is an outlier that should be cut
+92 , 8466, 8470, 11691,~11706, 221, NO ,
+93 , 8486, 8506, 11776,~11823, 221, NO , The final run is a lone member of slug 221 and really is in the middle of slug 222
+94 , 8526, 8536, 11824,~11866, 221, NO , Splits slug 221 again
+95 , 8546, 8558, 11907,~11957, 223, NO , End of CREX
+
+
+
+
+Runwise Outliers and questions to look at cyclewise:
+5452 - Accurate 
+5453 - Accurate - Sensitivity wise 5453 belongs in the segment with runs following
+5454 - REMOVE - It has wonky 1X slope calculation
+5648 - REMOVE - totally bad energy slopes
+5649 - REMOVE - totally bad energy slopes
+5787 - REMOVE - RUNWISE slope calculation doesn't match the due to cycle 4848
+5791 - Accurate
+5794 - REMOVE - RUNWISE slope disagrees with cycle 4886
+5924 - Accurate - QUESTIONABLE A detector move and then no bmod data for the rest of the day before a huge beam optics change
+5971 - REMOVE
+6035 - REMOVE
+6106 - Accurate - RHRS only until 6110
+6108 - REMOVE - supercycle 5492 is busted coil7
+6109 - REMOVE - supercycle 5492 is busted coil7
+6177 - Accurate
+6258 - Accurate
+6284 - Accurate
+6408 - REMOVE
+6434 - REMOVE
+6463-6464 - REMOVE - no COIL 7 sensitivities
+6515-6520 - REMOVE all - no COIL 7 sensitivities
+6585 - REMOVE - bad COIL 7
+6792 - Accurate - BPM 12X drifts...
+6927 - Accurate
+6955 - Accurate
+6956 - Accurate
+6963 - REMOVE - bad COIL 7 in cycle 7505
+7075 - REMOVE - bad COIL 7 all across
+7131 - Accurate
+7196 - REMOVE - The first cycle is not representative of the run as a whole - just take prior runs to calculate this guys slopes too
+7232 - REMOVE 
+7238 - REMOVE - US dets have a failed supercycle vs COIL 7 in cycle 8444 and a bad beam excursion in the one completed cycle anyway
+7267 - REMOVE - US dets have a failed supercycle vs COIL 7 in cycle 8559 
+7310 - REMOVE - US dets have a failed supercycle vs COIL 7 in cycle 8648
+7635 - REMOVE - has badly stitched RHRS 12X slope
+8143 - REMOVE - cycle stitching failed somehow
+8147 - REMOVE - cycle stitching failed somehow
+8187 - REMOVE - bad US dets sensitivity stitched
+8194 - REMOVE - bad US dets sensitivity stitched
+8214 - REMOVE
+8215 - REMOVE
+8221 - REMOVE
+8222 - REMOVE
+8296 - REMOVE
+8359 - REMOVE - bad US dets sensitivity stitched
+8371 - REMOVE - bad US dets sensitivity stitched
+8426 - REMOVE - bad US dets sensitivity stitched
+
+Specific cycles to be removed from the Cyclewise analysis ALONE:
+3  - 5471 - 4208 - REMOVE
+7  - 5640 - 4633 - REMOVE
+16 - 5943 - 5210 - REMOVE
+16 - 5959 - 5270 - REMOVE
+16 - 5964 - 5294 - REMOVE
+25 - 6258 - 5867 - REMOVE - just a slight outlier in LHRS
+36 - 6455 - 6279 - REMOVE
+36 - 6463 - 6318 - REMOVE
+44 - 6712 - 6850 - REMOVE
+49 - 7046 - 7822 - REMOVE 
+53 - 7153 - 8163 - REMOVE
+60 - 7338 - 8754 - REMOVE
+60 - 7342 - 8772 - REMOVE 
+60 - 7355 - 8836 - REMOVE
+62 - 7391 - 8937 - REMOVE 
+62 - 7395 - 8957 - REMOVE
+
+
+
+
+
+
+
+
+
+Runlist modify actions:
+* Finished - Check cyclewise plots for the runwise outlier runs - formalize excision list
+* Finished - Double check slug-runlists for any missing runs from ROOT file that need to be ranged
+* Figure out how to handle 1 arm running segments (just separate them out for both arms?)
+* Finished - Backup copy of hadded rootfiles for CREX
+* Finished - Execute run removal 
+* Execute run segment number script
+* Generate new full expt AD plots
+* Scan root file for outliers not caught by eye in slopes vs. time and histograms
+* Regen and make full slugwise AD plots
+
+* Later redo the data segmentation and outlier checking for pure cyclewise data... if meeting suggests to do so
+
+
+Plot making to-do list:
+- Finished - Before doing full scale slope determination do more precise runlist verification - suspicious and need cuts and include calibration runs?
+- Finished - Make a new runlist that is only Production && !Bad, etc.
+- Finished - For every 10 runs from 5000-8450 call this script.
+- Finished -  Make dit-slopes merger for run-list blessed dithering run slopes
+  OR more complicated: make a flag==0 setting script for runs NOT in the blessed runlist file (or in the BAD runlist file and non-Production)
+- Finished -  Add useful-analysis name to ....C
+- Finished -  Reset slugNum == "" if == "0" later on in ....C
+- Finished - Next do more intelligent supercycle remove
+- Finished - Next do segmentation careful study to make sure there are no intermediate runs/supercycles/alternative reasons to split or not split
+
+
+To do list:
+
+- Finished - Look at runwise slopes for CREX 1, 2, 3 
+- Finished - Look at runwise slopes for CREX AT
+- Finished - Check outliers with cyclewise plots
+- Check for any single arm running - segment 18 is RHRS only, 66 is LHRS only
+- Finished - Backup copies of runwise and cyclewise slopes rootfiles and PDFs (make a separate folder away from ROOT files for the data checking plots I've been using, and properly label as preliminary the old slopes outputs that I have not used for this analysis)
+- Finished - Loop over runs and excise outliers and apply segment variable
+- Finished - Regenerate all plots with segment number and no more outliers
+- Finished - Look over AT plots too
+- Finished - Cut out cyclewise plots too 
+- Finished - Go again visually and make sure there are no outliers (plotting by hand and looking at experiment long plot)
+- Finished - Generate new plots with two neighboring segments to see if any segments are superfluous
+
+
+Other tasks:
+- Finishec - Scan over all runs and make sure all important outputs exist
+- Finished - Scan over large BPM targ and 12X cuts and investigate runs by eye
+- Scan each run and compare important quantities in prompt vs. respin (Have Robert use his script, use this to check for wild changes in cuts and for pedestal changes that are larger than expected)
+- Produce beam off pedestals for all channels of interest
+- Reproduce pedestal analyses and investigate large Aq deviation problem
+
+
+
+NOTE: Initial first pass outputs show that using run avg runs vs. cyclewise analysis yields the following
+- 1156 good runwise
+- 231  bad runwise
+- 1332814 Events included runwise (usl_coil7_Ndata with flag==1)
+- 1739 good cyclewise
+- 4320 bad cyclwise
+- 683970 Events included cyclewise (usl_coil7_Ndata with flag==1)
+- So the runwise approach makes 80% of runs succeed
+- But cyclewise only has 25% of the data covered
+- Purely counting CodaEventNumbers included in the BMOD analysis we see that Runwise averaging yields 102% MORE data (cyclewise has 51% of the data as runwise, for main detector vs. coil7 at least... coil1 has 1% more data in cyclewise, but also in runwise)
+
+
+
+
+Alternate BMOD analysis BPM combo: 
+slug 100-108: (bpm4ex+-1.19*bpm1X), 1/sqrt(2)(bpm4aY+-bpm4eY)
+slug 109-118: (bpm4ex+-0.64*bpm1X), 1/sqrt(2)(bpm4aY+-bpm4eY)
+slug 119-139: (bpm4ex+-0.95*bpm1X), 1/sqrt(2)(bpm4aY+-bpm4eY)
+slug 140-223: 1/sqrt(2)(bpm1x+-bpm4eX), 1/sqrt(2)(bpm4aY+-bpm4eY)
