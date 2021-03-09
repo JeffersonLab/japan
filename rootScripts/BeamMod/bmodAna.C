@@ -79,6 +79,7 @@ class BMOD{
     std::vector<Double_t> trim_base;
     std::map<std::string,std::vector<std::string>> parameterVectors;
     TString slopeFilename = "test.root";
+    TString eigenvectorDataRootfile = "blank.root";
     void parseTextFile(std::string);
     void calculateSensitivities();
     void invertMatrix();
@@ -86,6 +87,7 @@ class BMOD{
     void saveSlopeData();
     void copytree(TString, Double_t);
     void edittree(TString);
+    TString getEigenVector(Int_t);
     ~BMOD();
     Int_t getData(Int_t);
 };
@@ -254,6 +256,72 @@ void BMOD::parseTextFile(std::string fileName = "input.txt"){
   }
 }
 
+// Loop over the list of branches in the eigen vector monitor names + BPM format (if evmonName.Contains("evMon#_bpm#") then grab this branch name and grab it's double value, print linear combination result into "name" variable)
+TString BMOD::getEigenVector(Int_t index = 0){
+  // This method is written assuming it is placed after all of the parameterVectors checks done already - needs to be in place of/alongside the reading of "BPMs" and after double checking all of these Eigenvector input file entries are checked for sanity.
+  TString name = "0.0";
+  if (parameterVectors.count("Eigenvector Data Rootfile") == 0 || gSystem->AccessPathName(parameterVectors["Eigenvector Data Rootfile"].at(0).c_str())){
+    Printf("No eigenvector rootfile %s",parameterVectors["Eigenvector Data Rootfile"].at(0).c_str());
+    return "fail";
+  }
+  eigenvectorDataRootfile = (TString)parameterVectors["Eigenvector Data Rootfile"].at(0);
+  TFile * evFile = TFile::Open(eigenvectorDataRootfile);
+  if (parameterVectors.count("Eigenvector Data Tree") == 0 || file1->Get(parameterVectors["Eigenvector Data Tree"].at(0).c_str())){
+    Printf("No %s tree in eigenvector rootfile %s",parameterVectors["Eigenvector Data Tree"].at(0).c_str(),parameterVectors["Eigenvector Data Rootfile"].at(0).c_str());
+    return "fail";
+  }
+  TTree* miniTree;// = (TTree*) evFile->Get("mini");
+  TTree* evTree;// = (TTree*) evFile->Get(parameterVectors["Eigenvector Data Tree"].at(0).c_str());
+  evFile->GetObject(parameterVectors["Eigenvector Data Tree"].at(0).c_str(), evTree);
+  evFile->GetObject("mini",miniTree);
+  miniTree->AddFriend(evTree);
+  miniTree->BuildIndex("run","mini");
+  TObjArray *var_list = evTree->GetListOfBranches();
+  TIter var_iter(var_list);
+  Int_t nEVs = 0;
+  while (auto* var = var_iter.Next()) {
+    TString localName(var->GetName());
+    if (localName.Contains(Form("%s_bpm",parameterVectors["BPMs"].at(index).c_str())) && localName.Contains("_mean") && !localName.Contains("_mean_err")){
+      Int_t test_run = 0.0;
+      Double_t localValue = 0.0;
+      miniTree->SetBranchAddress("run",&test_run);
+      //evTree->SetBranchAddress(Form("%s",localName.Data()),&localValue);
+      miniTree->SetBranchAddress(Form("%s.%s",parameterVectors["Eigenvector Data Tree"].at(0).c_str(),localName.Data()),&localValue);
+      // Get value from tree for current run number, minirun = 0
+      Int_t nbytes = miniTree->GetEntry(miniTree->GetEntryNumberWithIndex(runNumber,0));
+      //if (localValue == 0.0){
+        //Printf("error, run %d",test_run);
+      //}
+      // If no entry matches description then error out? Message? Fill with 0? Fill with most recent prior entry neighbor run - loop backwards from current run number
+      //Printf("Local run %d, value = %f for device %s: %s.%s",runNumber,localValue,localName.Data(),parameterVectors["Eigenvector Data Tree"].at(0).c_str(),localName.Data());
+      if ((nbytes == 0) || (runNumber != test_run)) {
+        Printf("Issue with finding a entry with run number = %d in tree %s in rootfile %s",runNumber,parameterVectors["Eigenvector Data Tree"].at(0).c_str(),parameterVectors["Eigenvector Data Rootfile"].at(0).c_str());
+        Int_t distance = 0;
+        Int_t nbytes2 = 0;
+        while (nbytes == 0 && nbytes2 == 0) {
+          //nbytes = miniTree->GetEntryWithIndex((Int_t)runNumber - distance,0);
+          nbytes = miniTree->GetEntry(miniTree->GetEntryNumberWithIndex(runNumber - distance,0));
+          if (nbytes == 0){
+            //nbytes = miniTree->GetEntryWithIndex((Int_t)runNumber + distance,0);
+            nbytes = miniTree->GetEntry(miniTree->GetEntryNumberWithIndex(runNumber + distance,0));
+          }
+          distance++;
+        }
+        Printf("Success, found a neighboring run, %d, which was %d runs away",test_run,distance);
+      }
+      // What we need for normal mul tree drawing
+      name = name + "+(" + localValue + "*" + localName.ReplaceAll(Form("%s_",parameterVectors["BPMs"].at(index).c_str()),"").ReplaceAll("_mean","") + ")";
+      // What we mean in mini->eigen reg tree nomenclature
+      //name = name + "+(" + localValue + "*" + parameterVectors["Eigenvector Data Tree"].at(0) + "." + localName + ")";
+      nEVs++;
+    }
+  }
+  if (nEVs != nBPM) {
+    Printf("Number of eigenvector monitors (%d) != number of BPMs used in their calculation (%d) - potentially have inappropriate number of degrees of freedom",nEVs,nBPM);
+  }
+  return name;
+}
+
 void BMOD::calculateSensitivities(){
   gStyle->SetOptStat(0); 
   if (parameterVectors.count("Tree") == 0 || !file1->Get(parameterVectors["Tree"].at(0).c_str())){
@@ -331,6 +399,7 @@ void BMOD::calculateSensitivities(){
   }
 
   TString name; // A BUFF
+
   //TString bpmName; // A BUFF
   //TString bpm_array[] = {"bpm4aX","bpm4eX","bpm4aY","bpm4eY","bpm11X+0.4*bpm12X"};
   // Guarantee device vectors is full of contents from parameter vectors
@@ -340,6 +409,33 @@ void BMOD::calculateSensitivities(){
   }
   //const int nBPM = 5;
   nBPM = parameterVectors["BPMs"].size();
+
+  // Cameron Clarke - March 8 2021
+  // New feature: read a minirunwise tree for the eigen vector monitor combinations of component BPMs - it is possible also to grab BurstCounter-wise (based on current cycle num's BurstCounter value - though this is a mul tree object...) or slug or segment-wise if desired to change this up. Runwise is good enough for now (run == runNum, mini = 0).
+  // Plan:
+  //  User flags "Use Eigenvector Combinations" == "True"
+  //  User gives a list of "BPMs" (overloaded with non-eigenvector mode) for extraction from a rootfile
+  //  User gives a rootfile name "Eigenvector Data Rootfile" for extraction of eigenvector combos
+  //  User gives the name of a "Eigenvector Data Tree" for extraction of the specific combos (root file may contain many combo schema)
+  //  Loop over the list of branches in the eigen vector monitor names + BPM format (if evmonName.Contains("evMon#_bpm#") then grab this branch name and grab it's double value, print linear combination result into "name" variable)
+  Int_t useEigenVectors = (parameterVectors.count("Use Eigenvector Combinations") != 0 && parameterVectors["Use Eigenvector Combinations"].size() != 0 && parameterVectors["Use Eigenvector Combinations"].at(0) == "True");
+  if (useEigenVectors) {
+    Printf("Using eigenvector combinations for BMOD analysis");
+    if (parameterVectors.count("Eigenvector Data Rootfile") != 0 && parameterVectors["Eigenvector Data Rootfile"].size() != 0) {
+      eigenvectorDataRootfile = Form("%s",parameterVectors["Eigenvector Data Rootfile"].at(0).c_str());
+      if (parameterVectors.count("Eigenvector Data Tree") != 0 && parameterVectors["Eigenvector Data Tree"].size() != 0) {
+        eigenvectorDataRootfile = Form("%s",parameterVectors["Eigenvector Data Tree"].at(0).c_str());
+      }
+      else {
+        Printf("ERROR: no eigenvector combo data tree name given. Use \"Eigenvector Data Tree\" option in input file to set one");
+        return 0;
+      }
+    }
+    else {
+      Printf("ERROR: no eigenvector combo data rootfile given. Use \"Eigenvector Data Rootfile\" option in input file to set one");
+      return 0;
+    }
+  }
 
   TString detname; // A BUFF
   if (parameterVectors.count("Detectors") == 0 || parameterVectors["Detectors"].size() == 0) {
@@ -448,7 +544,13 @@ void BMOD::calculateSensitivities(){
       //bpmName= bpm_array[ibpm];
       //bpmName=parameterVectors["BPMs"][ibpm];
       if (j<nBPM){
-        name=parameterVectors["BPMs"][j];
+        if (useEigenVectors) {
+          // This method is written assuming it is placed after all of the parameterVectors checks done before ^^
+          name=getEigenVector(j);
+        }
+        else {
+          name=parameterVectors["BPMs"][j];
+        }
         factor=1.0e+3;
       }
       else {
