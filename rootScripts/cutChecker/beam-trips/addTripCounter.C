@@ -31,8 +31,14 @@ void addTripCounter(int runNum = 5408, TString ana = "prompt"){ //(int start, in
   }
 
   TTree *mul_tree;
+  TTree *mulc_lrb_alldet_burst_tree;
+  TTree *mulc;
   //TTree *eig_reg_tree_5_tr;
   input->GetObject("mul", mul_tree);
+  input->GetObject("mulc_lrb_alldet_burst", mulc_lrb_alldet_burst_tree);
+  input->GetObject("mulc", mulc);
+  mul_tree->AddFriend(mulc_lrb_alldet_burst_tree);
+  mul_tree->AddFriend(mulc);
   TTree* out_mul_tree = new TTree("mul_trip","pruned and beam trip detected mul tree");
 
   Short_t BurstCounter;
@@ -63,19 +69,61 @@ void addTripCounter(int runNum = 5408, TString ana = "prompt"){ //(int start, in
     Double_t block3;
     Double_t num_samples;
     Double_t Device_Error_Code;
+    Double_t hw_sum_raw;
+    Double_t block0_raw;
+    Double_t block1_raw;
+    Double_t block2_raw;
+    Double_t block3_raw;
+    Double_t sequence_number;
+  } japan_device_mulc ;
+  typedef struct {
+    Double_t hw_sum;
+    Double_t block0;
+    Double_t block1;
+    Double_t block2;
+    Double_t block3;
+    Double_t num_samples;
+    Double_t Device_Error_Code;
   } japan_device ;
   japan_device bcm_an_us;  // FIXME For now do it all by pointer... does = by pointer in loop work? do I need to write a function to = each internal component?
+  japan_device bcm_an_ds;
+  japan_device_mulc asym_us_avg;
+  japan_device_mulc asym_us_dd;
+  japan_device asym_usl;
+  japan_device asym_usr;
+  japan_device cor_asym_us_avg;
+  japan_device cor_asym_us_dd;
+  japan_device cor_asym_usl;
+  japan_device cor_asym_usr;
   //japan_device * bcm_an_ds;  // FIXME For now do it all by pointer... does = by pointer in loop work? do I need to write a function to = each internal component?
   //japan_device out_bcm_an_us;// = nullptr;
   //japan_device * out_bcm_an_ds = nullptr;
   mul_tree->SetBranchAddress("asym_bcm_an_us",&bcm_an_us);
+  mul_tree->SetBranchAddress("asym_bcm_an_ds",&bcm_an_ds);
   //mul_tree->SetBranchAddress("asym_bcm_an_ds",&bcm_an_ds);
   //out_mul_tree->Branch("asym_bcm_an_us",&bcm_an_us,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
   //out_mul_tree->Branch("asym_bcm_an_ds",&bcm_an_ds,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
 
-  out_mul_tree->Branch("asym_bcm_an_us",&bcm_an_us,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
   //out_mul_tree->Branch("asym_bcm_an_us",&out_bcm_an_us,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
   //out_mul_tree->Branch("asym_bcm_an_ds",&out_bcm_an_ds,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  mul_tree->SetBranchAddress("mulc.asym_us_avg",&asym_us_avg);
+  mul_tree->SetBranchAddress("mulc.asym_us_dd",&asym_us_dd);
+  mul_tree->SetBranchAddress("asym_usl",&asym_usl);
+  mul_tree->SetBranchAddress("asym_usr",&asym_usr);
+  mul_tree->SetBranchAddress("mulc_lrb_alldet_burst.cor_asym_us_avg",&cor_asym_us_avg);
+  mul_tree->SetBranchAddress("mulc_lrb_alldet_burst.cor_asym_us_dd",&cor_asym_us_dd);
+  mul_tree->SetBranchAddress("mulc_lrb_alldet_burst.cor_usl",&cor_asym_usl);
+  mul_tree->SetBranchAddress("mulc_lrb_alldet_burst.cor_usr",&cor_asym_usr);
+  out_mul_tree->Branch("asym_bcm_an_us",&bcm_an_us,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("asym_bcm_an_ds",&bcm_an_ds,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("asym_us_avg",&asym_us_avg,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D:hw_sum_raw/D:block0_raw/D:block1_raw/D:block2_raw/D:block3_raw/D:sequence_number/D");
+  out_mul_tree->Branch("asym_us_dd",&asym_us_dd,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D:hw_sum_raw/D:block0_raw/D:block1_raw/D:block2_raw/D:block3_raw/D:sequence_number/D");
+  out_mul_tree->Branch("asym_usl",&asym_usl,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("asym_usr",&asym_usr,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("cor_asym_us_avg",&cor_asym_us_avg,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("cor_asym_us_dd",&cor_asym_us_dd,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("cor_asym_usl",&cor_asym_usl,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("cor_asym_usr",&cor_asym_usr,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
 
   Long64_t nEntries = mul_tree->GetEntries();
 
@@ -192,8 +240,6 @@ void addTripCounter(int runNum = 5408, TString ana = "prompt"){ //(int start, in
       Printf("%f percent done printing",100.0*ievt/nEntries);
     }
     mul_tree->GetEntry(ievt);
-    //out_bcm_an_us = bcm_an_us; // Does = by pointer work? I guess not??
-    //out_bcm_an_ds = bcm_an_ds; // Does = by pointer work? I guess not??
     for (Int_t k = 0 ; k < singleEntries.size() ; k++) {
       singleEntries.at(k) = singleEntriesValues.at(k);
       //Printf("Entry %d = %f",k,singleEntriesValues.at(k));
