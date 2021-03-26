@@ -10,13 +10,14 @@
 
 !main detectors use calibrations from cameron's global 
 !pedestal analysis: http://ace.phys.virginia.edu:80/HAPPEX/4081
- usl, 1119.59, 0.000076
- usr, 1413.69, 0.000076
+! NOTE these DS detectors are unplugged and meaningless
  dsl, 1389.94, 0.000076
  dsr, 1212.38, 0.000076
 
-!AT detectors calibration from run 6196 also camerons pedestals
- atl1, 1003.67, 0.000076 
- atr1, 1263.04, 0.000076 
- atl2, 1575.82, 0.000076 
- atr2, 902.14, 0.000076 
+! Beam off pedestal analysis based on HAPLOG http://ace.phys.virginia.edu/HAPPEX/4501
+ usl, 1103.76, 0.000076
+ usr, 1157.01, 0.000076
+ atl1,1351.14, 0.000076
+ atl2,1014.04, 0.000076
+ atr1,1008.93, 0.000076
+ atr2,657.778, 0.000076
