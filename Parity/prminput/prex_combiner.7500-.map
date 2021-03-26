@@ -35,6 +35,99 @@ asym:dsr, 0.5
 [asym:@asym_ds_dd]
 asym:dsl, 0.5
 asym:dsr, -0.5
+############################## Combo ATs vs. mains
+[asym:@asym_usl_atl1_avg]
+asym:usl, +0.5
+asym:atl1, +0.5
+[asym:@asym_usl_atl1_dd]
+asym:usl, +0.5
+asym:atl1, -0.5
+[asym:@asym_usl_atl2_avg]
+asym:usl, +0.5
+asym:atl2, +0.5
+[asym:@asym_usl_atl2_dd]
+asym:usl, +0.5
+asym:atl2, -0.5
+[asym:@asym_usr_atr1_avg]
+asym:usr, +0.5
+asym:atr1, +0.5
+[asym:@asym_usr_atr1_dd]
+asym:usr, +0.5
+asym:atr1, -0.5
+[asym:@asym_usr_atr2_avg]
+asym:usr, +0.5
+asym:atr2, +0.5
+[asym:@asym_usr_atr2_dd]
+asym:usr, +0.5
+asym:atr2, -0.5
+[asym:@asym_us_avg_at1lr_avg_avg]
+asym:usl, +0.5
+asym:usr, +0.5
+asym:atl1, +0.5
+asym:atr1, +0.5
+[asym:@asym_us_avg_at1lr_avg_dd]
+asym:usl, +0.5
+asym:usr, +0.5
+asym:atl1, -0.5
+asym:atr1, -0.5
+[asym:@asym_us_avg_at2lr_avg_avg]
+asym:usl, +0.5
+asym:usr, +0.5
+asym:atl2, +0.5
+asym:atr2, +0.5
+[asym:@asym_us_avg_at2lr_avg_dd]
+asym:usl, +0.5
+asym:usr, +0.5
+asym:atl2, -0.5
+asym:atr2, -0.5
+[asym:@asym_us_avg_atlr_avg_avg]
+asym:usl, +0.5
+asym:usr, +0.5
+asym:atl1, +0.25
+asym:atr1, +0.25
+asym:atl2, +0.25
+asym:atr2, +0.25
+[asym:@asym_us_avg_atlr_avg_dd]
+asym:usl, +0.5
+asym:usr, +0.5
+asym:atl1, -0.25
+asym:atr1, -0.25
+asym:atl2, -0.25
+asym:atr2, -0.25
+[asym:@asym_us_dd_at1lr_dd_avg]
+asym:usl, +0.5
+asym:usr, -0.5
+asym:atl1, +0.5
+asym:atr1, -0.5
+[asym:@asym_us_dd_at1lr_dd_dd]
+asym:usl, +0.5
+asym:usr, -0.5
+asym:atl1, -0.5
+asym:atr1, +0.5
+[asym:@asym_us_dd_at2lr_dd_avg]
+asym:usl, +0.5
+asym:usr, -0.5
+asym:atl2, +0.5
+asym:atr2, -0.5
+[asym:@asym_us_dd_at2lr_dd_dd]
+asym:usl, +0.5
+asym:usr, -0.5
+asym:atl2, -0.5
+asym:atr2, +0.5
+[asym:@asym_us_dd_atlr_dd_avg]
+asym:usl, +0.5
+asym:usr, -0.5
+asym:atl1, +0.25
+asym:atr1, -0.25
+asym:atl2, +0.25
+asym:atr2, -0.25
+[asym:@asym_us_dd_atlr_dd_dd]
+asym:usl, +0.5
+asym:usr, -0.5
+asym:atl1, -0.25
+asym:atr1, +0.25
+asym:atl2, -0.25
+asym:atr2, +0.25
 ############################## Combo ATs
 [asym:@asym_atl_avg]
 asym:atl1, 0.5
@@ -418,6 +511,43 @@ diff:bpm4eY, +0.707107
 [diff:@diff_bpmtargetdiffY]
 diff:bpm4aY, +0.707107
 diff:bpm4eY, -0.707107
+
+## Eigenvector monitor BPMs - CREX part 3
+
+[diff:@diff_evMon0]
+diff:bpm1X,  -0.4246990
+diff:bpm4aY, -0.0070270
+diff:bpm4eX, -0.4571620
+diff:bpm4eY, -0.0112140
+diff:bpm12X, +0.7813175
+
+[diff:@diff_evMon1]
+diff:bpm1X,  -0.5341110
+diff:bpm4aY, +0.1496839
+diff:bpm4eX, -0.5334520
+diff:bpm4eY, +0.1610963
+diff:bpm12X, -0.6178960
+
+[diff:@diff_evMon2]
+diff:bpm1X,  -0.1296940
+diff:bpm4aY, -0.7322800
+diff:bpm4eX, -0.1077240
+diff:bpm4eY, -0.6472580
+diff:bpm12X, -0.1280480
+
+[diff:@diff_evMon3]
+diff:bpm1X,  +0.6980964
+diff:bpm4aY, +0.1165687
+diff:bpm4eX, -0.6945260
+diff:bpm4eY, -0.1281650
+diff:bpm12X, -0.0167280
+
+[diff:@diff_evMon4]
+diff:bpm1X,  +0.1294190
+diff:bpm4aY, -0.6572300
+diff:bpm4eX, -0.1157440
+diff:bpm4eY, +0.7333766
+diff:bpm12X, +0.0078048
 
 #####
 #####  Some examples, all commented out.
