@@ -85,16 +85,49 @@ void addTripCounter(int runNum = 5408, TString ana = "prompt"){ //(int start, in
     Double_t num_samples;
     Double_t Device_Error_Code;
   } japan_device ;
+  // BCMs 
   japan_device bcm_an_us;  // FIXME For now do it all by pointer... does = by pointer in loop work? do I need to write a function to = each internal component?
   japan_device bcm_an_ds;
+  // RAW Asyms
   japan_device_mulc asym_us_avg;
   japan_device_mulc asym_us_dd;
   japan_device asym_usl;
   japan_device asym_usr;
+  // Corrected Asyms
   japan_device cor_asym_us_avg;
   japan_device cor_asym_us_dd;
   japan_device cor_asym_usl;
   japan_device cor_asym_usr;
+  // SAMs
+  japan_device asym_sam1;
+  japan_device asym_sam2;
+  japan_device asym_sam3;
+  japan_device asym_sam4;
+  japan_device asym_sam5;
+  japan_device asym_sam6;
+  japan_device asym_sam7;
+  japan_device asym_sam8;
+  japan_device yield_sam1;
+  japan_device yield_sam2;
+  japan_device yield_sam3;
+  japan_device yield_sam4;
+  japan_device yield_sam5;
+  japan_device yield_sam6;
+  japan_device yield_sam7;
+  japan_device yield_sam8;
+  // BPMs
+  japan_device bpm4aX;
+  japan_device bpm4aY;
+  japan_device bpm4eX;
+  japan_device bpm4eY;
+  japan_device bpm1X ;
+  japan_device bpm1Y ;
+  japan_device bpm11X;
+  japan_device bpm11Y;
+  japan_device bpm12X;
+  japan_device bpm12Y;
+  japan_device bpm16X;
+  japan_device bpm16Y;
   //japan_device * bcm_an_ds;  // FIXME For now do it all by pointer... does = by pointer in loop work? do I need to write a function to = each internal component?
   //japan_device out_bcm_an_us;// = nullptr;
   //japan_device * out_bcm_an_ds = nullptr;
@@ -114,6 +147,37 @@ void addTripCounter(int runNum = 5408, TString ana = "prompt"){ //(int start, in
   mul_tree->SetBranchAddress("mulc_lrb_alldet_burst.cor_asym_us_dd",&cor_asym_us_dd);
   mul_tree->SetBranchAddress("mulc_lrb_alldet_burst.cor_usl",&cor_asym_usl);
   mul_tree->SetBranchAddress("mulc_lrb_alldet_burst.cor_usr",&cor_asym_usr);
+  // SAMs
+  mul_tree->SetBranchAddress("asym_sam1",&asym_sam1);
+  mul_tree->SetBranchAddress("asym_sam2",&asym_sam2);
+  mul_tree->SetBranchAddress("asym_sam3",&asym_sam3);
+  mul_tree->SetBranchAddress("asym_sam4",&asym_sam4);
+  mul_tree->SetBranchAddress("asym_sam5",&asym_sam5);
+  mul_tree->SetBranchAddress("asym_sam6",&asym_sam6);
+  mul_tree->SetBranchAddress("asym_sam7",&asym_sam7);
+  mul_tree->SetBranchAddress("asym_sam8",&asym_sam8);
+  mul_tree->SetBranchAddress("yield_sam1",&yield_sam1);
+  mul_tree->SetBranchAddress("yield_sam2",&yield_sam2);
+  mul_tree->SetBranchAddress("yield_sam3",&yield_sam3);
+  mul_tree->SetBranchAddress("yield_sam4",&yield_sam4);
+  mul_tree->SetBranchAddress("yield_sam5",&yield_sam5);
+  mul_tree->SetBranchAddress("yield_sam6",&yield_sam6);
+  mul_tree->SetBranchAddress("yield_sam7",&yield_sam7);
+  mul_tree->SetBranchAddress("yield_sam8",&yield_sam8);
+  // BPMs
+  mul_tree->SetBranchAddress("diff_bpm4aX",&bpm4aX);
+  mul_tree->SetBranchAddress("diff_bpm4aY",&bpm4aY);
+  mul_tree->SetBranchAddress("diff_bpm4eX",&bpm4eX);
+  mul_tree->SetBranchAddress("diff_bpm4eY",&bpm4eY);
+  mul_tree->SetBranchAddress("diff_bpm1X", &bpm1X );
+  mul_tree->SetBranchAddress("diff_bpm1Y", &bpm1Y );
+  mul_tree->SetBranchAddress("diff_bpm11X",&bpm11X);
+  mul_tree->SetBranchAddress("diff_bpm11Y",&bpm11Y);
+  mul_tree->SetBranchAddress("diff_bpm12X",&bpm12X);
+  mul_tree->SetBranchAddress("diff_bpm12Y",&bpm12Y);
+  mul_tree->SetBranchAddress("diff_bpm16X",&bpm16X);
+  mul_tree->SetBranchAddress("diff_bpm16Y",&bpm16Y);
+
   out_mul_tree->Branch("asym_bcm_an_us",&bcm_an_us,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
   out_mul_tree->Branch("asym_bcm_an_ds",&bcm_an_ds,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
   out_mul_tree->Branch("asym_us_avg",&asym_us_avg,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D:hw_sum_raw/D:block0_raw/D:block1_raw/D:block2_raw/D:block3_raw/D:sequence_number/D");
@@ -124,6 +188,34 @@ void addTripCounter(int runNum = 5408, TString ana = "prompt"){ //(int start, in
   out_mul_tree->Branch("cor_asym_us_dd",&cor_asym_us_dd,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
   out_mul_tree->Branch("cor_asym_usl",&cor_asym_usl,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
   out_mul_tree->Branch("cor_asym_usr",&cor_asym_usr,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("asym_sam1",&asym_sam1,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("asym_sam2",&asym_sam2,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("asym_sam3",&asym_sam3,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("asym_sam4",&asym_sam4,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("asym_sam5",&asym_sam5,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("asym_sam6",&asym_sam6,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("asym_sam7",&asym_sam7,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("asym_sam8",&asym_sam8,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("yield_sam1",&yield_sam1,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("yield_sam2",&yield_sam2,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("yield_sam3",&yield_sam3,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("yield_sam4",&yield_sam4,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("yield_sam5",&yield_sam5,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("yield_sam6",&yield_sam6,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("yield_sam7",&yield_sam7,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("yield_sam8",&yield_sam8,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("diff_bpm4aX",&bpm4aX,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("diff_bpm4aY",&bpm4aY,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("diff_bpm4eX",&bpm4eX,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("diff_bpm4eY",&bpm4eY,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("diff_bpm1X", &bpm1X ,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("diff_bpm1Y", &bpm1Y ,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("diff_bpm11X",&bpm11X,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("diff_bpm11Y",&bpm11Y,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("diff_bpm12X",&bpm12X,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("diff_bpm12Y",&bpm12Y,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("diff_bpm16X",&bpm16X,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
+  out_mul_tree->Branch("diff_bpm16Y",&bpm16Y,"hw_sum/D:block0/D:block1/D:block2/D:block3/D:num_samples/D:Device_Error_Code/D");
 
   Long64_t nEntries = mul_tree->GetEntries();
 
