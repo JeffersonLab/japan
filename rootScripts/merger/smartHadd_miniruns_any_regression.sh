@@ -36,8 +36,8 @@ else
   if [ "$#" -ge 2 ]; then
     name=$2
   fi
-  root -l -b -q ~/PREX/japan/rootScripts/merger/smartHadd_miniruns.C\(\"${1}\",\"${CAM_OUTPUT}\",\"${NEW_CAM_OUTPUT}/${name}\",\"run_number\",\"minirun_n\",\"agg\"\)
+  root -l -b -q ${JAPAN_DIR}/rootScripts/merger/smartHadd_miniruns.C\(\"${1}\",\"${CAM_OUTPUT}\",\"${NEW_CAM_OUTPUT}/${name}\",\"run_number\",\"minirun_n\",\"agg\"\)
 
   # Add units
-  root -l -b -q ~/PREX/prompt/Aggregator/wrapper/addUnits.C\(\"${NEW_CAM_OUTPUT}/${name}\"\)
+  root -l -b -q ${JAPAN_DIR}/rootScripts/aggregator/wrapper/addUnits.C\(\"${NEW_CAM_OUTPUT}/${name}\"\)
 fi

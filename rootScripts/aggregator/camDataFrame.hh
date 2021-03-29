@@ -321,7 +321,8 @@ void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_
   TString ditStub = gSystem->Getenv("DITHERING_STUB");
   TString ditSlopeFileName = ditSlopeFileNamebase + "/dit_alldet_slopes" + ditStub + "_slug" + nRuns + ".root";
   if( gSystem->AccessPathName(ditSlopeFileName) ) {
-    Printf("Could not get dithering slopes from %s",ditSlopeFileName.Data());
+    Printf("Could not get dithering slopes from %s, trying experiment long version instead",ditSlopeFileName.Data());
+    ditSlopeFileName = ditSlopeFileNamebase + "/dit_alldet_slopes" + ditStub + ".root";
   }
   if( !gSystem->AccessPathName(ditSlopeFileName) ) {
     Printf("Getting dithering slopes from %s",ditSlopeFileName.Data());
@@ -348,6 +349,7 @@ void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_
         }
       }
     }*/ // Loop Over Entries - Ideal per/cycle way of doing things FIXME
+    Int_t localSegment = 1;
     TIter slopesIter(slopesList);
     while (TLeaf *slopes=(TLeaf*)slopesIter.Next()){
       if (debug>4) Printf("Checking dither slope %s",((TString)slopes->GetName()).Data());
@@ -429,8 +431,61 @@ void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_
         continue;
       }
       else {
-        // Do slug averaging
+        // Do slug averaging 
+        // // FIXME This "slug averaging" assumes that the root file passed in is itself 1 slug at once. 
+        // // In fact it could have been 1 slug with segments (correction is applied segmentwise), and for CREX respin1 I am now using 1 big giant rootfile with segments as the delimeter, rather than slug number
+        // // Therefore let's adjust this algorithm to match the slope calculation used in segment-wise averaging
+        /*
         Int_t nen = ditTree->Draw(Form("%s",slopes->GetName()),Form("flag==1"),"goff");
+        */
+
+        if (ditTree->GetBranch("segment")) {
+          // Used to be that I would scan through the slug and find the nearest good run's segment number. Now, just get the run's segment directly
+          //Int_t nEnts = ditTree->Draw(">>elistSeg",Form("run>=%d && flag==1",runNumber));//,run_cut); run>= cut allows for non-existant runs to be included
+          // FIXME this fails to grab the nearest segment value ... can easily be done if using BuildIndex and GetEntryNumberWithIndex and GetEntry
+          Int_t nEnts = ditTree->Draw(">>elistSeg",Form("run==%d",runNumber));//,run_cut); run>= cut allows for non-existant runs to be included
+          TEventList *elistSeg = (TEventList*)gDirectory->Get("elistSeg");
+          TLeaf* segmentL = ditTree->GetLeaf("segment");
+          segmentL->GetBranch()->GetEntry(elistSeg->GetEntry(0));
+          localSegment = segmentL->GetValue(); // Got the segment value of the 1st cycle in run runNumber
+          if (localSegment == 0) {
+            // I can do this kind of time looping test, or I could just add a cut on segment to the above Draw command... I kinda like this loop though
+            for (Int_t n = 0 ; n < nEnts ; n++ ) {
+              segmentL->GetBranch()->GetEntry(elistSeg->GetEntry(n));
+              localSegment = segmentL->GetValue();
+              if (localSegment != 0) {
+                // Grab the first non-zero entry to get the probably accurate segment number
+                // This allows us to get corrections for runs with no BMOD cycles in a given slug dithering file
+                break;
+              }
+            }
+          }
+          if (localSegment==0) // Special case for broken rootfile... find the nearest segment number 
+          {
+            localSegment=1;
+            // Just do the whole slug and use the largest segment number for runs >= the current run number
+            Int_t nEnts = ditTree->Draw(">>elistSeg2","flag==1");//,run_cut); run>= cut allows for non-existant runs to be included
+            TEventList *elistSeg2 = (TEventList*)gDirectory->Get("elistSeg2");
+            TLeaf* segmentL = ditTree->GetLeaf("segment");
+            TLeaf* runL = ditTree->GetLeaf("run");
+            segmentL->GetBranch()->GetEntry(elistSeg2->GetEntry(0));
+            runL->GetBranch()->GetEntry(elistSeg2->GetEntry(0));
+            localSegment = segmentL->GetValue(); // Got the segment value of the 1st cycle in run runNumber
+            for (Int_t j = 0; j<nEnts; j++) {
+              segmentL->GetBranch()->GetEntry(elistSeg2->GetEntry(j));
+              runL->GetBranch()->GetEntry(elistSeg2->GetEntry(j));
+              if (runL->GetValue() <= runNumber)
+              {
+                localSegment = segmentL->GetValue();
+              }
+            }
+            if (localSegment == 0) {
+              localSegment = 1;
+            }
+          }
+        }
+
+        Int_t nen = ditTree->Draw(Form("%s",slopes->GetName()),Form("flag==1 && segment==%d",localSegment),"goff");
         Channel tmpChan;
         outname = "dit_"+(TString)slopes->GetName()+"_slope";
         tmpChan.type = "slopes";
@@ -448,6 +503,7 @@ void Source::getSlopes(std::vector<Channel> &channels, Int_t runNumber = 0, Int_
         channels.push_back(tmpChan);
       }
     }
+    Printf("Using segment %d of the slug for slug averaged slope calculation",localSegment);
   }
   TString ditRunSlopeFileNamebase = gSystem->Getenv("DITHERING_ROOTFILES_SLOPES");
   TString BlessedDitRunSlopeFileName = ditRunSlopeFileNamebase + "/dit_alldet_slopes_slug63.root";
@@ -588,7 +644,10 @@ RDataFrame Source::readSource(){
   tswAll.Start();
   if (debug > 1) { cout << "Beginning TChain Setup --"; tsw.Print(); cout << endl;}
   tsw.Start();
+  TChain * evt_tree      = new TChain("evt");
+  TChain * evt_tree2      = new TChain("evt");
   TChain * mul_tree      = new TChain("mul");
+  //TChain * mul_tree2      = new TChain("mul");
   TChain * slow_tree     = new TChain("slow");
   TChain * reg_tree      = new TChain("reg");
   TChain * dit_tree      = new TChain("dit");
@@ -623,7 +682,10 @@ RDataFrame Source::readSource(){
       return NULL;
     }
   }
+  evt_tree->Add(base_file_name);
+  evt_tree2->Add(base_file_name);
   mul_tree->Add(base_file_name);
+  //mul_tree2->Add(base_file_name);
   slow_tree->Add(base_file_name);
   Int_t reg_tree_valid = 0;
   if ( !gSystem->AccessPathName(Form("%s/prexPrompt_%s_%s_regress_postpan.root",postpanBaseDir.Data(), run.Data(),split.Data())) ) {
@@ -637,8 +699,9 @@ RDataFrame Source::readSource(){
   }
   TString ditheringFileNameDF = gSystem->Getenv("DITHERING_ROOTFILES");
   TString ditheringFileStub = gSystem->Getenv("DITHERING_STUB");
+  Printf("Checking for Dithering corrected file prexPrompt_dither%s_%s_000.root in %s",ditheringFileStub.Data(), run.Data(),ditheringFileNameDF.Data());
   if (ditheringFileNameDF != "" && !gSystem->AccessPathName(Form("%s/prexPrompt_dither%s_%s_000.root", ditheringFileNameDF.Data(), ditheringFileStub.Data(), run.Data()))) {
-    Printf("Looking for Dithering corrected files in %s",ditheringFileNameDF.Data());
+    Printf("Getting Dithering corrected files in %s",ditheringFileNameDF.Data());
     dit_tree->Add(Form("%s/prexPrompt_dither%s_%s_000.root", ditheringFileNameDF.Data(), ditheringFileStub.Data(), run.Data()));
   }
   TFile tmpFile(base_file_name);
@@ -653,6 +716,8 @@ RDataFrame Source::readSource(){
   Int_t mulc_lrb_alldet_burst_valid = (tmpFile.GetListOfKeys())->Contains("mulc_lrb_alldet_burst");
   mulc_lrb_alldet_burst_tree->Add(base_file_name);
 
+  evt_tree->AddFriend(evt_tree2,"evt");
+  //mul_tree->AddFriend(mul_tree2,"mul");
   if (reg_tree_valid) {
     mul_tree->AddFriend(reg_tree);
   }
@@ -706,6 +771,7 @@ RDataFrame Source::readSource(){
 
   TString cutChoice = gSystem->Getenv("CAM_CUT");
 
+  RDataFrame e(*evt_tree);//,device_list);
   RDataFrame d(*mul_tree);//,device_list);
   RDataFrame slow(*slow_tree);
   if (debug > 1) { cout << "Filtering through ErrorFlag==0 --"; tsw.Print(); cout << endl; }
@@ -727,9 +793,19 @@ RDataFrame Source::readSource(){
     if (cutChoice=="BurpOnly" || cutChoice=="BurpFailed") {
       return ((((Int_t)c)&0x99726bff)==test && (((Int_t)c)&0x20000000)==0x20000000);
     }
+    if (cutChoice=="BeamOff" || cutChoice=="Pedestal" || cutChoice=="Pedestals") {
+      //return (c < 3.0);
+      //return (c < -185.0);
+      return ((c/4096.0) < -185.0);
+    }
     else return false;
   };
   auto d_good=d.Filter(metCut, {"ErrorFlag"});
+  if (cutChoice == "BeamOff" || cutChoice == "Pedestal" || cutChoice == "Pedestals") {
+    //d_good=e.Filter(metCut, {"bcm_an_us.hw_sum"});
+    //d_good=e.Filter(metCut, {"bcm_dg_us.hw_sum_raw/bcm_dg_us.num_samples"});
+    d_good=e.Filter(metCut, {"bcm_dg_us.hw_sum_raw"});
+  }
 
 //////// FIXME default CREX cut: auto d_good=d.Filter("reg.ok_cut==1");
   //auto d_good=d.Filter("(ErrorFlag)==0");
