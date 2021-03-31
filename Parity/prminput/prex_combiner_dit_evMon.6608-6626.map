@@ -1,5 +1,5 @@
 
-[asym:@dit_asym_usr]
+[asym:@eigen_dit_asym_usr]
 asym:usr,1.0
 diff:diff_evMon4,0.0802409
 diff:diff_evMon3,-0.306786
@@ -7,7 +7,7 @@ diff:diff_evMon2,-0.0144774
 diff:diff_evMon1,0.0565783
 diff:diff_evMon0,-0.0516382
 
-[asym:@dit_asym_atr1]
+[asym:@eigen_dit_asym_atr1]
 asym:atr1,1.0
 diff:diff_evMon4,0.0126202
 diff:diff_evMon3,-0.197898
@@ -15,7 +15,7 @@ diff:diff_evMon2,-0.000884849
 diff:diff_evMon1,0.048428
 diff:diff_evMon0,0.0355477
 
-[asym:@dit_asym_atr2]
+[asym:@eigen_dit_asym_atr2]
 asym:atr2,1.0
 diff:diff_evMon4,0.424437
 diff:diff_evMon3,-1.47726
@@ -23,7 +23,7 @@ diff:diff_evMon2,-0.0966216
 diff:diff_evMon1,0.330507
 diff:diff_evMon0,-0.121466
 
-[asym:@dit_asym_sam1]
+[asym:@eigen_dit_asym_sam1]
 asym:sam1,1.0
 diff:diff_evMon4,0.0381145
 diff:diff_evMon3,0.020034
@@ -31,7 +31,7 @@ diff:diff_evMon2,0.0333686
 diff:diff_evMon1,-0.00305939
 diff:diff_evMon0,0.00582672
 
-[asym:@dit_asym_sam2]
+[asym:@eigen_dit_asym_sam2]
 asym:sam2,1.0
 diff:diff_evMon4,-0.219636
 diff:diff_evMon3,0.139604
@@ -39,7 +39,7 @@ diff:diff_evMon2,0.132442
 diff:diff_evMon1,-0.0177218
 diff:diff_evMon0,0.151402
 
-[asym:@dit_asym_sam3]
+[asym:@eigen_dit_asym_sam3]
 asym:sam3,1.0
 diff:diff_evMon4,-0.00355987
 diff:diff_evMon3,0.0961389
@@ -47,7 +47,7 @@ diff:diff_evMon2,-0.0150971
 diff:diff_evMon1,-0.000946522
 diff:diff_evMon0,0.0935093
 
-[asym:@dit_asym_sam4]
+[asym:@eigen_dit_asym_sam4]
 asym:sam4,1.0
 diff:diff_evMon4,0.167684
 diff:diff_evMon3,0.273624
@@ -55,7 +55,7 @@ diff:diff_evMon2,-0.177402
 diff:diff_evMon1,0.0145218
 diff:diff_evMon0,0.143584
 
-[asym:@dit_asym_sam5]
+[asym:@eigen_dit_asym_sam5]
 asym:sam5,1.0
 diff:diff_evMon4,0.0703748
 diff:diff_evMon3,0.0302461
@@ -63,7 +63,7 @@ diff:diff_evMon2,-0.111302
 diff:diff_evMon1,0.0105807
 diff:diff_evMon0,-0.00408636
 
-[asym:@dit_asym_sam6]
+[asym:@eigen_dit_asym_sam6]
 asym:sam6,1.0
 diff:diff_evMon4,0.0679438
 diff:diff_evMon3,0.017888
@@ -71,7 +71,7 @@ diff:diff_evMon2,-0.0832744
 diff:diff_evMon1,0.00871679
 diff:diff_evMon0,-0.0519496
 
-[asym:@dit_asym_sam7]
+[asym:@eigen_dit_asym_sam7]
 asym:sam7,1.0
 diff:diff_evMon4,-0.031989
 diff:diff_evMon3,0.0848111
@@ -79,7 +79,7 @@ diff:diff_evMon2,0.0016782
 diff:diff_evMon1,-0.00153225
 diff:diff_evMon0,0.0305277
 
-[asym:@dit_asym_sam8]
+[asym:@eigen_dit_asym_sam8]
 asym:sam8,1.0
 diff:diff_evMon4,0.0563186
 diff:diff_evMon3,0.0816824

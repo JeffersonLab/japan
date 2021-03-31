@@ -1,5 +1,5 @@
 
-[asym:@dit_asym_usl]
+[asym:@eigen_dit_asym_usl]
 asym:usl,1.0
 diff:diff_evMon4,0.0332897
 diff:diff_evMon3,-0.0614891
@@ -7,7 +7,7 @@ diff:diff_evMon2,-0.00543717
 diff:diff_evMon1,0.0555255
 diff:diff_evMon0,0.0050321
 
-[asym:@dit_asym_atl1]
+[asym:@eigen_dit_asym_atl1]
 asym:atl1,1.0
 diff:diff_evMon4,0.0144936
 diff:diff_evMon3,-0.159643
@@ -15,7 +15,7 @@ diff:diff_evMon2,0.00849658
 diff:diff_evMon1,-0.000621492
 diff:diff_evMon0,-0.0409845
 
-[asym:@dit_asym_atl2]
+[asym:@eigen_dit_asym_atl2]
 asym:atl2,1.0
 diff:diff_evMon4,0.229764
 diff:diff_evMon3,-0.512735
@@ -23,7 +23,7 @@ diff:diff_evMon2,-0.0385367
 diff:diff_evMon1,0.19321
 diff:diff_evMon0,-0.0548636
 
-[asym:@dit_asym_usr]
+[asym:@eigen_dit_asym_usr]
 asym:usr,1.0
 diff:diff_evMon4,0.0650823
 diff:diff_evMon3,-0.21026
@@ -31,7 +31,7 @@ diff:diff_evMon2,-0.00843194
 diff:diff_evMon1,-0.000581909
 diff:diff_evMon0,-0.0506925
 
-[asym:@dit_asym_atr1]
+[asym:@eigen_dit_asym_atr1]
 asym:atr1,1.0
 diff:diff_evMon4,-0.0368933
 diff:diff_evMon3,0.000555714
@@ -39,7 +39,7 @@ diff:diff_evMon2,0.0118955
 diff:diff_evMon1,0.022969
 diff:diff_evMon0,0.0273877
 
-[asym:@dit_asym_atr2]
+[asym:@eigen_dit_asym_atr2]
 asym:atr2,1.0
 diff:diff_evMon4,0.272595
 diff:diff_evMon3,-0.697769
@@ -47,7 +47,7 @@ diff:diff_evMon2,-0.0438138
 diff:diff_evMon1,0.118341
 diff:diff_evMon0,-0.129627
 
-[asym:@dit_asym_sam1]
+[asym:@eigen_dit_asym_sam1]
 asym:sam1,1.0
 diff:diff_evMon4,-0.0137834
 diff:diff_evMon3,0.00327338
@@ -55,7 +55,7 @@ diff:diff_evMon2,0.0669322
 diff:diff_evMon1,-0.00429926
 diff:diff_evMon0,0.00918915
 
-[asym:@dit_asym_sam2]
+[asym:@eigen_dit_asym_sam2]
 asym:sam2,1.0
 diff:diff_evMon4,-0.36741
 diff:diff_evMon3,0.174618
@@ -63,7 +63,7 @@ diff:diff_evMon2,0.21409
 diff:diff_evMon1,0.117846
 diff:diff_evMon0,0.165415
 
-[asym:@dit_asym_sam3]
+[asym:@eigen_dit_asym_sam3]
 asym:sam3,1.0
 diff:diff_evMon4,-0.00755626
 diff:diff_evMon3,0.071598
@@ -71,7 +71,7 @@ diff:diff_evMon2,-0.00321309
 diff:diff_evMon1,0.0485463
 diff:diff_evMon0,0.0505123
 
-[asym:@dit_asym_sam4]
+[asym:@eigen_dit_asym_sam4]
 asym:sam4,1.0
 diff:diff_evMon4,0.088037
 diff:diff_evMon3,0.130649
@@ -79,7 +79,7 @@ diff:diff_evMon2,-0.100711
 diff:diff_evMon1,0.0689675
 diff:diff_evMon0,0.0508226
 
-[asym:@dit_asym_sam5]
+[asym:@eigen_dit_asym_sam5]
 asym:sam5,1.0
 diff:diff_evMon4,-0.0223385
 diff:diff_evMon3,-0.00358828
@@ -87,7 +87,7 @@ diff:diff_evMon2,-0.050894
 diff:diff_evMon1,0.00664902
 diff:diff_evMon0,-0.00265652
 
-[asym:@dit_asym_sam6]
+[asym:@eigen_dit_asym_sam6]
 asym:sam6,1.0
 diff:diff_evMon4,-0.0256932
 diff:diff_evMon3,0.00785769
@@ -95,7 +95,7 @@ diff:diff_evMon2,-0.0306508
 diff:diff_evMon1,-0.00732416
 diff:diff_evMon0,-0.0140089
 
-[asym:@dit_asym_sam7]
+[asym:@eigen_dit_asym_sam7]
 asym:sam7,1.0
 diff:diff_evMon4,-0.0356574
 diff:diff_evMon3,0.069635
@@ -103,7 +103,7 @@ diff:diff_evMon2,0.00392884
 diff:diff_evMon1,0.0147155
 diff:diff_evMon0,0.014109
 
-[asym:@dit_asym_sam8]
+[asym:@eigen_dit_asym_sam8]
 asym:sam8,1.0
 diff:diff_evMon4,0.0513783
 diff:diff_evMon3,0.0643942

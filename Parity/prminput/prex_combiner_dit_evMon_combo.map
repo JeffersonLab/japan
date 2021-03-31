@@ -1,31 +1,31 @@
-[asym:@dit_asym_us_avg]
-asym:dit_asym_usl,0.5
-asym:dit_asym_usr,0.5
+[asym:@eigen_dit_asym_us_avg]
+asym:eigen_dit_asym_usl,0.5
+asym:eigen_dit_asym_usr,0.5
 
-[asym:@dit_asym_us_dd]
-asym:dit_asym_usl,0.5
-asym:dit_asym_usr,-0.5
+[asym:@eigen_dit_asym_us_dd]
+asym:eigen_dit_asym_usl,0.5
+asym:eigen_dit_asym_usr,-0.5
 
-[asym:@dit_asym_ds_avg]
-asym:dit_asym_dsl,0.5
-asym:dit_asym_dsr,0.5
+[asym:@eigen_dit_asym_ds_avg]
+asym:eigen_dit_asym_dsl,0.5
+asym:eigen_dit_asym_dsr,0.5
 
-[asym:@dit_asym_ds_dd]
-asym:dit_asym_dsl,0.5
-asym:dit_asym_dsr,-0.5
+[asym:@eigen_dit_asym_ds_dd]
+asym:eigen_dit_asym_dsl,0.5
+asym:eigen_dit_asym_dsr,-0.5
 
-[asym:@dit_asym_left_dd]
-asym:dit_asym_usl,0.5
-asym:dit_asym_dsl,-0.5
+[asym:@eigen_dit_asym_left_dd]
+asym:eigen_dit_asym_usl,0.5
+asym:eigen_dit_asym_dsl,-0.5
 
-[asym:@dit_asym_right_dd]
-asym:dit_asym_usr,0.5
-asym:dit_asym_dsr,-0.5
+[asym:@eigen_dit_asym_right_dd]
+asym:eigen_dit_asym_usr,0.5
+asym:eigen_dit_asym_dsr,-0.5
 
-[asym:@dit_asym_left_avg]
-asym:dit_asym_usl,0.5
-asym:dit_asym_dsl,0.5
+[asym:@eigen_dit_asym_left_avg]
+asym:eigen_dit_asym_usl,0.5
+asym:eigen_dit_asym_dsl,0.5
 
-[asym:@dit_asym_right_avg]
-asym:dit_asym_usr,0.5
-asym:dit_asym_dsr,0.5
+[asym:@eigen_dit_asym_right_avg]
+asym:eigen_dit_asym_usr,0.5
+asym:eigen_dit_asym_dsr,0.5
