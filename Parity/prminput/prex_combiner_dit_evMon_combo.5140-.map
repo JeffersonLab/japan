@@ -6,29 +6,30 @@ asym:dit_asym_usr,0.5
 asym:dit_asym_usl,0.5
 asym:dit_asym_usr,-0.5
 
-[asym:@dit_asym_ds_avg]
-asym:dit_asym_dsl,0.5
-asym:dit_asym_dsr,0.5
-
-[asym:@dit_asym_ds_dd]
-asym:dit_asym_dsl,0.5
-asym:dit_asym_dsr,-0.5
-
-[asym:@dit_asym_left_dd]
-asym:dit_asym_usl,0.5
-asym:dit_asym_dsl,-0.5
-
-[asym:@dit_asym_right_dd]
-asym:dit_asym_usr,0.5
-asym:dit_asym_dsr,-0.5
-
-[asym:@dit_asym_left_avg]
-asym:dit_asym_usl,0.5
-asym:dit_asym_dsl,0.5
-
-[asym:@dit_asym_right_avg]
-asym:dit_asym_usr,0.5
-asym:dit_asym_dsr,0.5
+## NO DS Detectors
+#[asym:@dit_asym_ds_avg]
+#asym:dit_asym_dsl,0.5
+#asym:dit_asym_dsr,0.5
+#
+#[asym:@dit_asym_ds_dd]
+#asym:dit_asym_dsl,0.5
+#asym:dit_asym_dsr,-0.5
+#
+#[asym:@dit_asym_left_dd]
+#asym:dit_asym_usl,0.5
+#asym:dit_asym_dsl,-0.5
+#
+#[asym:@dit_asym_right_dd]
+##asym:dit_asym_usr,0.5
+#asym:dit_asym_dsr,-0.5
+#
+#[asym:@dit_asym_left_avg]
+#asym:dit_asym_usl,0.5
+#asym:dit_asym_dsl,0.5
+#
+#[asym:@dit_asym_right_avg]
+#asym:dit_asym_usr,0.5
+#asym:dit_asym_dsr,0.5
 
 ############################## Combo ATs vs. mains
 [asym:@dit_asym_usl_atl1_avg]
@@ -161,6 +162,8 @@ asym:dit_asym_atl2, 0.5
 [asym:@dit_asym_at2_dd]
 asym:dit_asym_atr2, 0.5
 asym:dit_asym_atl2, -0.5
+
+### Should be ~= AT horizontal
 [asym:@dit_asym_atl_dd_atr_dd_avg]
 asym:dit_asym_atl1, 0.25
 asym:dit_asym_atl2, -0.25
@@ -184,6 +187,29 @@ asym:dit_asym_atl1, 0.25
 asym:dit_asym_atl2, 0.25
 asym:dit_asym_atr1, -0.25
 asym:dit_asym_atr2, -0.25
+### New after respin 1, duplicates of above, with different names
+### Should be ~= AT horizontal
+[asym:@dit_asym_at1_avg_at2_avg_dd]
+asym:dit_asym_atl1, 0.25
+asym:dit_asym_atl2, -0.25
+asym:dit_asym_atr1, 0.25
+asym:dit_asym_atr2, -0.25
+[asym:@dit_asym_atl1r2_dd_atl2r1_dd_dd]
+asym:dit_asym_atl1, 0.25
+asym:dit_asym_atl2, -0.25
+asym:dit_asym_atr1, 0.25
+asym:dit_asym_atr2, -0.25
+### Should be ~= AT vertical
+[asym:@dit_asym_atl1r2_dd_atl2r1_dd_avg]
+asym:dit_asym_atl1, 0.25
+asym:dit_asym_atl2, 0.25
+asym:dit_asym_atr1, -0.25
+asym:dit_asym_atr2, -0.25
+[asym:@dit_asym_at1_dd_at2_dd_avg]
+asym:dit_asym_atl1, 0.25
+asym:dit_asym_atl2, -0.25
+asym:dit_asym_atr1, -0.25
+asym:dit_asym_atr2, 0.25
 
 ## ---- SAMs -----
 [asym:@dit_asym_sam_15_avg]
