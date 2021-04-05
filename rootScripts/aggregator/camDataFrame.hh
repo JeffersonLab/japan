@@ -647,16 +647,21 @@ RDataFrame Source::readSource(){
   TChain * evt_tree      = new TChain("evt");
   TChain * evt_tree2      = new TChain("evt");
   TChain * mul_tree      = new TChain("mul");
-  //TChain * mul_tree2      = new TChain("mul");
+  TChain * mul_tree2      = new TChain("mul");
   TChain * slow_tree     = new TChain("slow");
   TChain * reg_tree      = new TChain("reg");
   TChain * dit_tree      = new TChain("dit");
   TChain * mini_tree     = new TChain("mini");
   TChain * mulc_tree     = new TChain("mulc");
   TChain * mulc_lrb_burst_tree = new TChain("mulc_lrb_burst");
+  TChain * mulc_lrb_evMon_burst_tree = new TChain("mulc_lrb_evMon_burst");
+  TChain * mulc_lrb_all_burst_tree = new TChain("mulc_lrb_all_burst");
   TChain * mulc_lrb_alldet_burst_tree = new TChain("mulc_lrb_alldet_burst");
+  TChain * mulc_lrb_alldet_evMon_burst_tree = new TChain("mulc_lrb_alldet_evMon_burst");
   TChain * mulc_dit_tree = new TChain("mulc_dit");
+  TChain * mulc_dit_evMon_tree = new TChain("mulc_dit_evMon");
   TChain * mulc_dit_combo_tree = new TChain("mulc_dit_combo");
+  TChain * mulc_dit_evMon_combo_tree = new TChain("mulc_dit_evMon_combo");
 
   TString baseDir = gSystem->Getenv("QW_ROOTFILES");
   TString postpanBaseDir = gSystem->Getenv("POSTPAN_ROOTFILES");
@@ -685,7 +690,7 @@ RDataFrame Source::readSource(){
   evt_tree->Add(base_file_name);
   evt_tree2->Add(base_file_name);
   mul_tree->Add(base_file_name);
-  //mul_tree2->Add(base_file_name);
+  mul_tree2->Add(base_file_name);
   slow_tree->Add(base_file_name);
   Int_t reg_tree_valid = 0;
   if ( !gSystem->AccessPathName(Form("%s/prexPrompt_%s_%s_regress_postpan.root",postpanBaseDir.Data(), run.Data(),split.Data())) ) {
@@ -713,11 +718,21 @@ RDataFrame Source::readSource(){
   mulc_dit_tree->Add(base_file_name);
   Int_t mulc_dit_combo_valid = (tmpFile.GetListOfKeys())->Contains("mulc_dit_combo");
   mulc_dit_combo_tree->Add(base_file_name);
+  Int_t mulc_lrb_all_burst_valid = (tmpFile.GetListOfKeys())->Contains("mulc_lrb_all_burst");
+  mulc_lrb_all_burst_tree->Add(base_file_name);
   Int_t mulc_lrb_alldet_burst_valid = (tmpFile.GetListOfKeys())->Contains("mulc_lrb_alldet_burst");
   mulc_lrb_alldet_burst_tree->Add(base_file_name);
+  Int_t mulc_lrb_evMon_burst_valid = (tmpFile.GetListOfKeys())->Contains("mulc_lrb_evMon_burst");
+  mulc_lrb_evMon_burst_tree->Add(base_file_name);
+  Int_t mulc_lrb_evMon_alldet_burst_valid = (tmpFile.GetListOfKeys())->Contains("mulc_lrb_alldet_evMon_burst");
+  mulc_lrb_alldet_evMon_burst_tree->Add(base_file_name);
+  Int_t mulc_dit_evMon_valid = (tmpFile.GetListOfKeys())->Contains("mulc_dit_evMon");
+  mulc_dit_evMon_tree->Add(base_file_name);
+  Int_t mulc_dit_evMon_combo_valid = (tmpFile.GetListOfKeys())->Contains("mulc_dit_evMon_combo");
+  mulc_dit_evMon_combo_tree->Add(base_file_name);
 
   evt_tree->AddFriend(evt_tree2,"evt");
-  //mul_tree->AddFriend(mul_tree2,"mul");
+  mul_tree->AddFriend(mul_tree2,"mul");
   if (reg_tree_valid) {
     mul_tree->AddFriend(reg_tree);
   }
@@ -758,11 +773,32 @@ RDataFrame Source::readSource(){
     Printf("Using mulc_dit_combo");
     mul_tree->AddFriend(mulc_dit_combo_tree);
   }
+  if (mulc_lrb_all_burst_valid) {
+    Printf("Using mulc_lrb_all_burst");
+    mul_tree->AddFriend(mulc_lrb_all_burst_tree);
+  }
   if (mulc_lrb_alldet_burst_valid) {
     Printf("Using mulc_lrb_alldet_burst");
     mul_tree->AddFriend(mulc_lrb_alldet_burst_tree);
   }
+  if (mulc_lrb_evMon_burst_valid) {
+    Printf("Using mulc_lrb_evMon_burst");
+    mul_tree->AddFriend(mulc_lrb_evMon_burst_tree);
+  }
+  if (mulc_lrb_evMon_alldet_burst_valid) {
+    Printf("Using mulc_lrb_alldet_evMon_burst");
+    mul_tree->AddFriend(mulc_lrb_alldet_evMon_burst_tree);
+  }
+  if (mulc_dit_evMon_valid) {
+    Printf("Using mulc_dit_evMon");
+    mul_tree->AddFriend(mulc_dit_evMon_tree);
+  }
+  if (mulc_dit_evMon_combo_valid) {
+    Printf("Using mulc_dit_evMon_combo");
+    mul_tree->AddFriend(mulc_dit_evMon_combo_tree);
+  }
   if (mulc_valid) {
+    Printf("Using mulc");
     mul_tree->AddFriend(mulc_tree);
   }
 
@@ -972,6 +1008,7 @@ RDataFrame Source::readSource(){
   else{
     aggregatorFileName = Form("%s/minirun_aggregator_%d_%d.root",outputDir.Data(),(Int_t)tmpRunN,(Int_t)tmpMinirunN);
   }
+  Printf("Printing agg outputs to %s",aggregatorFileName.Data());
   TFile *aggregatorFile = new TFile(aggregatorFileName,"UPDATE");
   aggregatorFile->cd();
   TTree * outputTree = new TTree("agg","Aggregator Tree");
