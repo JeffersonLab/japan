@@ -74,7 +74,7 @@
   slope-file-suff = alldet_evMon.slope.root
   slope-path = ./LRBoutput/
   tree-name  = mulc_lrb_alldet_evMon
-  tree-comment = Helicity event data tree (corrected by LinRegBlue) with 4aX
+  tree-comment = Helicity event data tree (corrected by LinRegBlue) using stable eigenvectors
 
 [LRBCorrector]
   name       = LinRegBlue Overloaded Corrector (run-level slopes)
@@ -106,7 +106,7 @@
   slope-file-suff = new_evMon.slope.root
   slope-path = ./LRBoutput/
   tree-name  = mulc_lrb_evMon_burst
-  tree-comment = Helicity event data tree (corrected by LinRegBlue) with 4aX
+  tree-comment = Helicity event data tree (corrected by LinRegBlue) using stable eigenvectors
 
 [LRBCorrector]
   name       = LinRegBlue AllDet Corrector (burst-level slopes)
@@ -126,7 +126,7 @@
   slope-file-suff = alldet_evMon.slope.root
   slope-path = ./LRBoutput/
   tree-name  = mulc_lrb_alldet_evMon_burst
-  tree-comment = Helicity event data tree (corrected by LinRegBlue) with 4aX
+  tree-comment = Helicity event data tree (corrected by LinRegBlue) using stable eigenvectors
 
 [LRBCorrector]
   name       = LinRegBlue Overloaded Corrector (burst-level slopes)
@@ -166,7 +166,7 @@
   alias-path = ./LRBoutput/
   disable-histos = true
   tree-name  = lrb_std_evMon
-  tree-comment = Correlations with 4aX
+  tree-comment = Correlations using stable eigenvectors
 
 [QwCorrelator]
   name       = AllDetCorrelator
@@ -194,7 +194,7 @@
   alias-path = ./LRBoutput/
   disable-histos = true
   tree-name  = lrb_alldet_evMon
-  tree-comment = Correlations (All detector channels) with 4aX
+  tree-comment = Correlations (All detector channels) using stable eigenvectors
 
 [QwCorrelator]
   name       = lrb_std_block0
