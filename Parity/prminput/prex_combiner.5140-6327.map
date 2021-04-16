@@ -538,6 +538,33 @@ diff:bpm4eY, +0.707107
 diff:bpm4aY, +0.707107
 diff:bpm4eY, -0.707107
 
+## Target and dispersion definitions
+# http://ace.phys.virginia.edu/HAPPEX/4520
+# dE/E = bpm12X/4.0meters (4000 mm)
+[diff:@diff_dispE_bpm12X]
+diff:bpm12X, 0.00025 
+
+# target position X = (4eX-4aX)*5.725/4.083 + 4aX
+[diff:@diff_targ_positionX]
+diff:bpm4aX, -0.4021553
+diff:bpm4eX, +1.4021553
+
+# target position Y = (4eY-4aY)*5.725/4.083 + 4aY
+[diff:@diff_targ_positionY]
+diff:bpm4aY, -0.4021553
+diff:bpm4eY, +1.4021553
+
+# target thetaX = (4eX-4aX)/4.083
+[diff:@diff_targ_thetaX]
+diff:bpm4aX, -0.24491795
+diff:bpm4eX, +0.24491795
+
+# target thetaY = (4eY-4aY)/4.083
+[diff:@diff_targ_thetaY]
+diff:bpm4aY, -0.24491795
+diff:bpm4eY, +0.24491795
+
+
 ## Eigenvector monitor BPMs CREX part 1
 
 [diff:@diff_evMon0]
