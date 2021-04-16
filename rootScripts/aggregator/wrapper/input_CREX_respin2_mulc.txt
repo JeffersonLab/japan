@@ -1035,6 +1035,11 @@ diff_bpm_4aY_4ecY_avg,mulc.diff_bpm_4aY_4ecY_avg.hw_sum,meanrms
 diff_bpm_4aY_4ecY_dd,mulc.diff_bpm_4aY_4ecY_dd.hw_sum,meanrms
 diff_bpm_4eY_4ecY_avg,mulc.diff_bpm_4eY_4ecY_avg.hw_sum,meanrms
 diff_bpm_4eY_4ecY_dd,mulc.diff_bpm_4eY_4ecY_dd.hw_sum,meanrms
+diff_dispE_bpm12X,mulc.diff_dispE_bpm12X.hw_sum,meanrms
+diff_targ_positionX,mulc.diff_targ_positionX.hw_sum,meanrms
+diff_targ_positionY,mulc.diff_targ_positionY.hw_sum,meanrms
+diff_targ_thetaX,mulc.diff_targ_thetaX.hw_sum,meanrms
+diff_targ_thetaY,mulc.diff_targ_thetaY.hw_sum,meanrms
 diff_bpmE,mulc.diff_bpmE.hw_sum,meanrms
 diff_bpmEX,mulc.diff_bpmEX.hw_sum,meanrms
 diff_bpmE_11X12X,mulc.diff_bpmE_11X12X.hw_sum,meanrms
