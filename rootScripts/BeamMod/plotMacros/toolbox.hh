@@ -2025,7 +2025,7 @@ void ToolBox::combo_err_segment_getter(TString averaging,TTree* intree, TTree* o
   //outtree_orig = outtree;
 }
 
-void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree* outtree/*_orig*/, TString proto_draw, TString proto_draw_weighting_error, TString proto_drawn_channels_error, std::vector<TString> draws_piece1, std::vector<TString> draws_piece2, std::vector <TString> draws_piece3 = {}, std::vector<TString> cuts = {}, std::vector<TString> cuts2 = {}, Int_t print_per_entry = 0){ 
+void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree* outtree/*_orig*/, TString proto_draw, TString proto_draw_weighting_error, TString proto_drawn_channels_error, std::vector<TString> draws_piece1, std::vector<TString> draws_piece2, std::vector <TString> draws_piece3 = {}, std::vector<TString> cuts = {}, std::vector<TString> cuts2 = {}, Int_t print_per_entry = 0){
   // FIXME FIXME FIXME Add a 3rd tree here to be the tree over which the entries are calculated and the print_per_entry is looped over... 
   // ASSUMES the averaging time scale name works equally well in both trees... if not then add a bunch of logic and another TString here. 
   // (if tree's name == dit then dit_segment->segment should be the only caveat) 
@@ -2088,6 +2088,9 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
   std::vector<std::vector<Double_t>> dataVec2_mean;
   std::vector<std::vector<Double_t>> dataVec2_mean_red_chi2_err;
   std::vector<std::vector<Double_t>> dataVec2_mean_err;
+  std::vector<std::vector<Double_t>> dataVec2_mean_err_global;
+  std::vector<std::vector<Double_t>> dataVec2_mean_err_global_rescale;   // Renormalize between minirun-wise error bar size to main-det weighting
+  std::vector<std::vector<Double_t>> dataVec2_mean_err_local_rescale;    // Renormalize " " but only over the local segment time period
   std::vector<std::vector<Double_t>> dataVec2_stddev;
   std::vector<std::vector<Double_t>> dataVec2_mean_red_chi2;
   std::vector<std::vector<Double_t>> dataVec2_mean_chi2;
@@ -2100,6 +2103,9 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
   std::vector<Double_t> dataVec_mean;
   std::vector<Double_t> dataVec_mean_red_chi2_err;
   std::vector<Double_t> dataVec_mean_err;
+  std::vector<Double_t> dataVec_mean_err_global;
+  std::vector<Double_t> dataVec_mean_err_global_rescale;
+  std::vector<Double_t> dataVec_mean_err_local_rescale;
   std::vector<Double_t> dataVec_stddev;
   std::vector<Double_t> dataVec_mean_red_chi2;
   std::vector<Double_t> dataVec_mean_chi2;
@@ -2114,6 +2120,9 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
     dataVec_mean.clear();
     dataVec_mean_red_chi2_err.clear();
     dataVec_mean_err.clear();
+    dataVec_mean_err_global.clear();
+    dataVec_mean_err_global_rescale.clear();
+    dataVec_mean_err_local_rescale.clear();
     dataVec_stddev.clear();
     dataVec_mean_red_chi2.clear();
     dataVec_mean_chi2.clear();
@@ -2127,6 +2136,9 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
       Double_t dataVec1_mean = 0.0;
       Double_t dataVec1_mean_red_chi2_err = 0.0;
       Double_t dataVec1_mean_err = 0.0;
+      Double_t dataVec1_mean_err_global = 0.0;
+      Double_t dataVec1_mean_err_global_rescale = 0.0;
+      Double_t dataVec1_mean_err_local_rescale = 0.0;
       Double_t dataVec1_stddev = 0.0;
       Double_t dataVec1_mean_red_chi2 = 0.0;
       Double_t dataVec1_mean_chi2 = 0.0;
@@ -2139,6 +2151,9 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
       dataVec_mean.push_back(dataVec1_mean);
       dataVec_mean_red_chi2_err.push_back(dataVec1_mean_red_chi2_err);
       dataVec_mean_err.push_back(dataVec1_mean_err);
+      dataVec_mean_err_global.push_back(dataVec1_mean_err_global);
+      dataVec_mean_err_global_rescale.push_back(dataVec1_mean_err_global_rescale);
+      dataVec_mean_err_local_rescale.push_back(dataVec1_mean_err_local_rescale);
       dataVec_stddev.push_back(dataVec1_stddev);
       dataVec_mean_chi2.push_back(dataVec1_mean_chi2);
       dataVec_mean_red_chi2.push_back(dataVec1_mean_red_chi2);
@@ -2152,6 +2167,9 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
     dataVec2_mean.push_back(dataVec_mean);
     dataVec2_mean_red_chi2_err.push_back(dataVec_mean_red_chi2_err);
     dataVec2_mean_err.push_back(dataVec_mean_err);
+    dataVec2_mean_err_global.push_back(dataVec_mean_err_global);
+    dataVec2_mean_err_global_rescale.push_back(dataVec_mean_err_global_rescale);
+    dataVec2_mean_err_local_rescale.push_back(dataVec_mean_err_local_rescale);
     dataVec2_stddev.push_back(dataVec_stddev);
     dataVec2_mean_red_chi2.push_back(dataVec_mean_red_chi2);
     dataVec2_mean_chi2.push_back(dataVec_mean_chi2);
@@ -2168,6 +2186,9 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
       outtree->Branch(Form("%s_%s_mean",draws_piece1.at(idet).Data(),draws_piece2.at(imon).Data()),&dataVec2_mean[idet][imon]);
       outtree->Branch(Form("%s_%s_mean_red_chi2_err",draws_piece1.at(idet).Data(),draws_piece2.at(imon).Data()),&dataVec2_mean_red_chi2_err[idet][imon]);
       outtree->Branch(Form("%s_%s_mean_err",draws_piece1.at(idet).Data(),draws_piece2.at(imon).Data()),&dataVec2_mean_err[idet][imon]);
+      outtree->Branch(Form("%s_%s_mean_err_global",draws_piece1.at(idet).Data(),draws_piece2.at(imon).Data()),&dataVec2_mean_err_global[idet][imon]);
+      outtree->Branch(Form("%s_%s_mean_err_global_rescale",draws_piece1.at(idet).Data(),draws_piece2.at(imon).Data()),&dataVec2_mean_err_global_rescale[idet][imon]);
+      outtree->Branch(Form("%s_%s_mean_err_local_rescale",draws_piece1.at(idet).Data(),draws_piece2.at(imon).Data()),&dataVec2_mean_err_local_rescale[idet][imon]);
       outtree->Branch(Form("%s_%s_stddev",draws_piece1.at(idet).Data(),draws_piece2.at(imon).Data()),&dataVec2_stddev[idet][imon]);
       outtree->Branch(Form("%s_%s_mean_red_chi2",draws_piece1.at(idet).Data(),draws_piece2.at(imon).Data()),&dataVec2_mean_red_chi2[idet][imon]);
       outtree->Branch(Form("%s_%s_mean_chi2",draws_piece1.at(idet).Data(),draws_piece2.at(imon).Data()),&dataVec2_mean_chi2[idet][imon]);
@@ -2276,12 +2297,15 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
   Double_t run_number = 0;
   Double_t rcdb_ihwp = 0;
   Double_t crex_part_save = 0;
+  Double_t crex_pitt = 0;
+  Double_t crex_slow_control = 0;
+  Double_t crex_slow_control_simple = 0;
   Int_t flag = 0;
   Double_t cyclenum = 0.0;
   Int_t totalEntries = intree->GetEntries();
   Int_t int_avg_time_scale = 0;
   Double_t double_avg_time_scale = 0;
-  if (averaging == "rcdb_slug" || averaging == "rcdb_ihwp" || averaging == "rcdb_flip_state" || averaging == "crex_part" || averaging == "run_number") {
+  if (averaging == "rcdb_slug" || averaging == "rcdb_ihwp" || averaging == "rcdb_flip_state" || averaging == "crex_part" || averaging == "crex_pitt" || averaging == "crex_slow_control" || averaging == "crex_slow_control_simple" || averaging == "run_number") {
     intree->SetBranchAddress(averaging,&double_avg_time_scale);
     rcdb_draws = rcdb_draws + averaging + "+";
   }
@@ -2314,6 +2338,21 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
     outtree->Branch("crex_part",&crex_part_save);
     rcdb_draws = rcdb_draws + "crex_part" + "+";
   }
+  if (averaging != "crex_pitt" && intree->GetBranch("crex_pitt")) {
+    intree->SetBranchAddress("crex_pitt",&crex_pitt_save);
+    outtree->Branch("crex_pitt",&crex_pitt_save);
+    rcdb_draws = rcdb_draws + "crex_pitt" + "+";
+  }
+  if (averaging != "crex_slow_control" && intree->GetBranch("crex_slow_control")) {
+    intree->SetBranchAddress("crex_slow_control",&crex_slow_control_save);
+    outtree->Branch("crex_slow_control",&crex_slow_control_save);
+    rcdb_draws = rcdb_draws + "crex_slow_control" + "+";
+  }
+  if (averaging != "crex_slow_control_simple" && intree->GetBranch("crex_slow_control_simple")) {
+    intree->SetBranchAddress("crex_slow_control_simple",&crex_slow_control_simple_save);
+    outtree->Branch("crex_slow_control_simple",&crex_slow_control_simple_save);
+    rcdb_draws = rcdb_draws + "crex_slow_control_simple" + "+";
+  }
   if (averaging != "run_number" && intree->GetBranch("run_number")) {
     intree->SetBranchAddress("run_number",&run_number);
     outtree->Branch("run_number",&run_number);
@@ -2338,7 +2377,9 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
   Int_t previousAvg_time_scale = -1000; // Default initialize to rediculous number
   Int_t nen=0;
   Int_t outN=0;
+  Int_t nSegments=0;
   for (std::map<Int_t,Int_t>::iterator iter = segments.begin() ; iter != segments.end(); ++iter){
+    nSegments++;
     localAvg_time_scale = iter->first;
     //// Original spot for burstwise printing... not sure if it made sense really
     //else {}
@@ -2532,19 +2573,30 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
           else {
             icut = idet;
           }
-          if (cuts.at(icut) == "") {
-      //Printf("Test e) iterLocalAvg_time_scale = %d",iterLocalAvg_time_scale);
-            nen = intree->Draw(Form("%s:run+0.1*mini:%s:%s",draw.Data(),draw_weighting_error.Data(),drawn_channels_error.Data()),Form("%s>=%d-0.1 && %s<=%d+0.1",averaging.Data(),iterLocalAvg_time_scale,averaging.Data(),iterLocalAvg_time_scale),"goff");
-      //Printf("Test f) iterLocalAvg_time_scale = %d",iterLocalAvg_time_scale);
-            if (imon == 0 && idet == 0){
-              //Printf("C) Avg timescale %s = %d for entry %d",averaging.Data(),iterLocalAvg_time_scale,ient);
-              //Printf("nen = %d, Draw run+0.1*mini:(%s.%s_%s), %s==%d",nen,data_tree_name.Data(),draws_piece1.at(idet).Data(),draws_piece2.at(imon).Data(),averaging.Data(),iterLocalAvg_time_scale);
+          TString localCut = "";
+          if (cuts.at(icut) != "") { 
+            localCut = Form(" && %s",cuts.at(icut).Data());
+          }
+          Double_t sum_global_sigs = 0.0;
+          Double_t sum_det_global_sig2 = 0.0;
+          Double_t weighted_mean_err_scale_global = 1.0;
+          if (nSegments == 1) {
+            // Do global renormalization calculation - on the first segment calculation pass through
+            nen = intree->Draw(Form("%s:run+0.1*mini:%s:%s",draw.Data(),draw_weighting_error.Data(),drawn_channels_error.Data()),Form("%s",cuts.at(icut).Data()),"goff");
+            if (nen != 0) {
+              sum_global_sigs = 0.0;
+              sum_det_global_sig2 = 0.0;
+              for (Int_t k = 0 ; k < nen ; k++) {
+                sum_global_sigs += 1.0/pow(intree->GetV3()[k],2); // Sum of sigmas here = SUM(1/sigma^2)
+                sum_det_global_sig2 += pow(intree->GetV4()[k],2)/pow(intree->GetV3()[k],4);
+              }
+              weighted_mean_err_scale_global = sqrt(sum_det_global_sig2/sum_global_sigs);
             }
           }
-          else {
-            nen = intree->Draw(Form("%s:run+0.1*mini:%s:%s",draw.Data(),draw_weighting_error.Data(),drawn_channels_error.Data()),Form("%s>=%d-0.1 && %s<=%d+0.1 && %s",averaging.Data(),iterLocalAvg_time_scale,averaging.Data(),iterLocalAvg_time_scale,cuts.at(icut).Data()),"goff");
-            //Printf("nen = %d, Draw run+0.1*mini:(%s.%s_%s), %s==%d && %s",nen,data_tree_name.Data(),draws_piece1.at(idet).Data(),draws_piece2.at(imon).Data(),averaging.Data(),iterLocalAvg_time_scale,cuts.at(idet).Data());
-          }
+
+          // Do local renormalization calculation
+          nen = intree->Draw(Form("%s:run+0.1*mini:%s:%s",draw.Data(),draw_weighting_error.Data(),drawn_channels_error.Data()),Form("%s>=%d-0.1 && %s<=%d+0.1 %s",averaging.Data(),iterLocalAvg_time_scale,averaging.Data(),iterLocalAvg_time_scale,localCut.Data()),"goff");
+          //Printf("nen = %d, Draw run+0.1*mini:(%s.%s_%s), %s==%d && %s",nen,data_tree_name.Data(),draws_piece1.at(idet).Data(),draws_piece2.at(imon).Data(),averaging.Data(),iterLocalAvg_time_scale,cuts.at(idet).Data());
 
           if (nen != 0) {
             // Special case calculating sum(errs2)
@@ -2583,7 +2635,8 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
             Double_t self_weighted_mean_stddev = sqrt(sum_deviation_signal_self_sig2/sum_self_sigs);
             Double_t mean_self_red_chi2_tmp1 = 0.0;
             Double_t weighted_mean_err_scale = sqrt(sum_det_sig2/sum_sigs);
-            Double_t weighted_mean_err = sqrt(sum_det_sig2)/sum_sigs;
+            Double_t weighted_mean_err = weighted_mean_err_scale/sqrt(sum_sigs);
+            // Do this in safe scope: Double_t weighted_mean_err_global = weighted_mean_err_scale_global/sqrt(sum_sigs); // FIXME FIXME FIXME FIXME replace sum_sigs with global_sum_sigs???? Need to use the global err scale comparable to the local one????
             Double_t self_weighted_mean_err = sqrt(1.0/sum_self_sigs);
 
             Printf("The weighted mean is = %e/%e = %e",sum_signal_sig2,sum_sigs,weighted_mean);
@@ -2636,6 +2689,11 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
               dataVec2_mean[idet][imon]              = avg_tmp1;
               dataVec2_mean_red_chi2_err[idet][imon] = mean_red_chi2_err_tmp1;
               dataVec2_mean_err[idet][imon]          = mean_err_tmp1;
+              if (nSegments == 1) {
+                dataVec2_mean_err_global_rescale[idet][imon] = weighted_mean_err_scale_global;
+              }
+              dataVec2_mean_err_global[idet][imon]           = dataVec2_mean_err_global_rescale[idet][imon]/sqrt(sum_sigs);
+              dataVec2_mean_err_local_rescale[idet][imon]    = weighted_mean_err_scale;
               dataVec2_stddev[idet][imon]            = weighted_mean_stddev;
               dataVec2_mean_red_chi2[idet][imon]     = mean_red_chi2_tmp1;
               dataVec2_mean_chi2[idet][imon]         = chi2_tmp1;
@@ -2694,7 +2752,7 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
     if (print_per_entry == 1) {
       for (Int_t ient = 0 ; ient<totalEntries ; ient++) {
         intree->GetEntry(ient);
-        if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part") {
+        if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part" || averaging == "crex_pitt" || averaging == "crex_slow_control" || averaging == "crex_slow_control_simple") {
           localAvg_time_scale = (Int_t)double_avg_time_scale;
         }
         if (averaging == "segment" || averaging == "dit_segment" || averaging == "run") {
