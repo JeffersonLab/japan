@@ -15,7 +15,7 @@
  dsr, 1212.38, 0.000076
 
 ! Beam off pedestal analysis based on HAPLOG http://ace.phys.virginia.edu/HAPPEX/4501
- usl, 1009.3,0 0.000076
+ usl, 1009.30  0.000076
  usr, 1157.81, 0.000076
  atl1,845.209, 0.000076
  atl2,3973.66, 0.000076
