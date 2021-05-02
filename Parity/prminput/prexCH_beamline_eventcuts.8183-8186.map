@@ -76,4 +76,4 @@ EVENTCUTS = 3
  bpmstripline,	bpm4e,	absy,	-200,	200,	g,	0.7
 
 ! Add an extra cut to remove BPM 12 X > 0.5
- bpmstripline,	bpm12,	absx,	-1.2,	0.0,	g, 0, 0.7
+ bpmstripline,	bpm12,	absx,	-200,	200,	g, 0, 0.7
