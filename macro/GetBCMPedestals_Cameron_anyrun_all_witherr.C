@@ -8,7 +8,7 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
     Double_t user_ped = -1000000,
     Double_t user_norm = -1000000,
     TString user_bcm ="",
-    Double_t user_lowlimit=-100.0,//25.0, // FIXME temporarily use 25 uA cutoff// -100.0,
+    Double_t user_lowlimit=-100.0,//15.0,// for PREX //25.0 for CREX, // FIXME temporarily use 25 uA cutoff// -100.0,
     Double_t user_uplimit=-100.0,
     TCut user_cut=""){
     //TString mybcm = "(bcm_an_us.hw_sum_raw/bcm_an_us.num_samples--636.04)*0.008921",
@@ -88,13 +88,46 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
     }
   }
   std::map<Int_t,std::vector<TString>> device_blacklist;
-  device_blacklist[2769] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
-  device_blacklist[3395] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
-  device_blacklist[3645] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
-  device_blacklist[3735] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  device_blacklist[2769] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","sam1","sam2","sam3","sam4","sam5","sam6","sam7","sam8","cav4bQ","cav4cQ","cav4dQ","cav4bXI","cav4bYI","cav4cXI","cav4cYI","cav4dXI","cav4dYI","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  device_blacklist[2963] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","sam1","sam2","sam3","sam4","sam5","sam6","sam7","sam8","cav4bQ","cav4dQ","cav4bXI","cav4bYI","cav4dXI","cav4dYI","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  // Insufficient current ramp, all blacklist
+  device_blacklist[2965] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","sam1","sam2","sam3","sam4","sam5","sam6","sam7","sam8","bcm_an_us","bcm_an_ds","bcm_an_ds3","bcm_an_ds10","bcm_dg_us","bcm_dg_ds","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y","cav4bQ","cav4cQ","cav4dQ","cav4bXI","cav4bYI","cav4cXI","cav4cYI","cav4dXI","cav4dYI"};
+  device_blacklist[2967] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","sam1","sam2","sam3","sam4","sam5","sam6","sam7","sam8","cav4dYI","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y","cav4bQ","cav4cQ","cav4dQ","cav4bXI","cav4bYI","cav4cXI","cav4cYI","cav4dXI","cav4dYI"};
+  // On Carbon, so blacklist detectors for sure
+  device_blacklist[3098] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","sam1","sam2","sam3","sam4","sam5","sam6","sam7","sam8","cav4bQ","cav4dQ","cav4bXI","cav4bYI","cav4dXI","cav4dYI","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  device_blacklist[3101] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","sam1","sam2","sam3","sam4","sam5","sam6","sam7","sam8","cav4bQ","cav4dQ","cav4bXI","cav4bYI","cav4dXI","cav4dYI","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  // Insufficient current ramp, all blacklist
+  device_blacklist[3105] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","sam1","sam2","sam3","sam4","sam5","sam6","sam7","sam8","bcm_an_us","bcm_an_ds","bcm_an_ds3","bcm_an_ds10","bcm_dg_us","bcm_dg_ds","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y","cav4bQ","cav4cQ","cav4dQ","cav4bXI","cav4bYI","cav4cXI","cav4cYI","cav4dXI","cav4dYI"};
+  device_blacklist[3106] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","sam1","sam2","sam3","sam4","sam5","sam6","sam7","sam8","cav4bQ","cav4dQ","cav4bXI","cav4bYI","cav4dXI","cav4dYI","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  device_blacklist[3135] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","sam1","sam2","sam3","sam4","sam5","sam6","sam7","sam8","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  // First Beam on with Maindets in place
+  // Run 3138 has a bad BCM scan and sam8, but it is fine for the main detectors 
+  device_blacklist[3138] = {"sam8","atl1","atl2","atr1","atr2","bcm_an_us","bcm_an_ds","bcm_an_ds3","bcm_an_ds10","bcm_dg_us","bcm_dg_ds","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y","cav4bQ","cav4cQ","cav4dQ","cav4bXI","cav4bYI","cav4cXI","cav4cYI","cav4dXI","cav4dYI"};
+  // Run 3125 has HV changes invalidating prior calibrations for SAMs and Main Det HVs
+  // Run 3395 has no target in it
+  device_blacklist[3395] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","sam1","sam2","sam3","sam4","sam5","sam6","sam7","sam8","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  // Insufficient current ramp, all blacklist
+  device_blacklist[3424] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","sam1","sam2","sam3","sam4","sam5","sam6","sam7","sam8","bcm_an_us","bcm_an_ds","bcm_an_ds3","bcm_an_ds10","bcm_dg_us","bcm_dg_ds","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y","cav4bQ","cav4cQ","cav4dQ","cav4bXI","cav4bYI","cav4cXI","cav4cYI","cav4dXI","cav4dYI"};
+  // Insufficient current ramp, all blacklist
+  device_blacklist[3429] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","sam1","sam2","sam3","sam4","sam5","sam6","sam7","sam8","bcm_an_us","bcm_an_ds","bcm_an_ds3","bcm_an_ds10","bcm_dg_us","bcm_dg_ds","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y","cav4bQ","cav4cQ","cav4dQ","cav4bXI","cav4bYI","cav4cXI","cav4cYI","cav4dXI","cav4dYI"};
+  device_blacklist[3430] = {"atl1","atl2","atr1","atr2","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  device_blacklist[3597] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  // BCM analogs unplugged
+  device_blacklist[3645] = {"bcm_an_us","bcm_an_ds","bcm_an_ds3","bcm_an_ds10","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  // BCM analog DS is unfortunately broken during this run, but an_us is fine
+  device_blacklist[3735] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","sam1","sam2","sam3","sam4","sam5","sam6","sam7","sam8","bcm_an_ds","bcm_an_ds3","bcm_an_ds10","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  device_blacklist[3749] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","sam1","sam2","sam3","sam4","sam5","sam6","sam7","sam8","cav4bQ","cav4dQ","cav4bXI","cav4bYI","cav4dXI","cav4dYI","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
   device_blacklist[3751] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
   device_blacklist[4229] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
-  device_blacklist[4901] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  // Potentially insufficient current ramp
+  device_blacklist[4309] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y","cav4bQ","cav4cQ","cav4dQ","cav4bXI","cav4bYI","cav4cXI","cav4cYI","cav4dXI","cav4dYI"};
+  device_blacklist[4610] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  device_blacklist[4650] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  device_blacklist[4652] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  device_blacklist[4806] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  device_blacklist[4872] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
+  // Stubby Quartz
+  device_blacklist[4901] = {"usl","usr","dsl","dsr","atl1","atl2","atr1","atr2","sam1","sam2","sam3","sam4","sam5","sam6","sam7","sam8","bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
   device_blacklist[5360] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
   device_blacklist[5396] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
   device_blacklist[5417] = {"bpm4aX","bpm4aY","bpm4eX","bpm4eY","bpm1X","bpm11X","bpm12X","bpm16X","bpm11Y"};
@@ -172,6 +205,87 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
     "cleandata==1 && scandata2==7 && scandata1>50",
     "cleandata==1 && scandata2==8 && scandata1>50"
   };
+  beam_evtcut[2963] = {
+    "CodaEventNumber<17e3",//50
+    "CodaEventNumber>40e3&&CodaEventNumber<55e3",//50
+    "CodaEventNumber>84e3&&CodaEventNumber<90e3",//40
+    "CodaEventNumber>95e3&&CodaEventNumber<97e3",//40
+    "CodaEventNumber>104e3&&CodaEventNumber<114e3",//40
+    "CodaEventNumber>132e3&&CodaEventNumber<134e3",//30
+    "CodaEventNumber>140e3&&CodaEventNumber<141e3",//30
+    "CodaEventNumber>147e3&&CodaEventNumber<149e3",//30
+    "CodaEventNumber>170e3&&CodaEventNumber<176e3"//20
+  };
+  beam_evtcut[2965] = {
+    "cleandata==1&&scandata1==524&&scandata2!=0",
+    "cleandata==1&&scandata1==451&&scandata2!=0"
+  };
+  beam_evtcut[2967] = {
+    "Entry$>22.93e3 && Entry$<23.23e3",
+    "Entry$>27.1e3 && Entry$<28.4e3",
+    "Entry$>36.2e3 && Entry$<41e3",
+    "Entry$>53e3 && Entry$<53.33e3",
+    "Entry$>33.22e3 && Entry$<33.55e3",
+    "Entry$>45.77e3 && Entry$<46.11e3"
+  };
+  beam_evtcut[3098] = {
+     "Entry$>60e3 && Entry$<68e3", //65uA
+     "scandata2==3 && cleandata", //60
+     "scandata2==4 && cleandata && Entry$<292e3", //55
+     "scandata2==5 && cleandata", //50
+     "scandata2==6 && cleandata && Entry$<336.1e3",//40uA
+     "scandata2==7 && cleandata", //30uA
+     "scandata2==8 && cleandata && Entry$<402e3", //20
+     "Entry$>232e3 && Entry$<240e3"
+  };
+  // 17 uA point has very large error bar
+  beam_evtcut[3101] = {
+    "Entry$>16.3e3 && Entry$<17.3e3",
+    "Entry$>32.4e3 && Entry$<37.2e3",
+    "Entry$>45.17e3 && Entry$<45.56e3",
+    "Entry$>55e3 && Entry$<79e3",
+    "Entry$>81e3 && Entry$<100.5e3",
+    "Entry$>102e3 && Entry$<123.5e3",
+    "Entry$>126.6e3 && Entry$<140e3"
+  };
+  beam_evtcut[3105] = {
+    "CodaEventNumber>10e3&&CodaEventNumber<33e3",  
+    "CodaEventNumber>45e3&&CodaEventNumber<52e3",
+    "CodaEventNumber>58e3&&CodaEventNumber<72e3",
+    "CodaEventNumber>91e3&&CodaEventNumber<96e3"
+  };
+  beam_evtcut[3106] = {
+    "scandata2!=0&&cleandata&&scandata1==495",
+    "scandata2!=0&&cleandata&&scandata1==453",
+    "scandata2!=0&&cleandata&&scandata1==399",
+    "scandata2!=0&&cleandata&&scandata1==302",
+    "scandata2!=0&&cleandata&&scandata1==203"
+  };
+  beam_evtcut[3138] = {
+    "CodaEventNumber<9.4e3",
+    "CodaEventNumber>16.69e3&&CodaEventNumber<16.75e3",
+    "CodaEventNumber>21.87e3&&CodaEventNumber<21.98e3",
+    "CodaEventNumber>60e3&&CodaEventNumber<69.5e3",
+    "CodaEventNumber>79e3&&CodaEventNumber<95e3"
+  };
+  if (ana == "all") {
+    beam_evtcut[3138] = {
+      "scandata2!=0&&cleandata&&scandata1==501",
+      "scandata2!=0&&cleandata&&scandata1==453",
+      "scandata2!=0&&cleandata&&scandata1==400",
+      "scandata2!=0&&cleandata&&scandata1==351",
+      "scandata2!=0&&cleandata&&scandata1==304",
+      "scandata2!=0&&cleandata&&scandata1==248",
+      "scandata2!=0&&cleandata&&scandata1==197" // No 20 uA point for the HALOG entry for some reason
+    };
+  }
+  beam_evtcut[3135] = {
+    "CodaEventNumber>46e3&&CodaEventNumber<47e3",
+    "CodaEventNumber>73.5e3&&CodaEventNumber<75e3",
+    "CodaEventNumber>98.5e3&&CodaEventNumber<100e3",
+    "CodaEventNumber>103.62e3&&CodaEventNumber<103.68e3",
+    "CodaEventNumber>109.15e3&&CodaEventNumber<109.44e3"
+  };
   beam_evtcut[3395] = { 
     "cleandata==1 && scandata2==1 && scandata1>50",
     "cleandata==1 && scandata2==2 && scandata1>50",
@@ -185,6 +299,38 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
     "cleandata==1 && scandata2==10 && scandata1>50",
     "cleandata==1 && scandata2==11 && scandata1>50"
   };
+  beam_evtcut[3424] = { 
+    "cleandata==1 && scandata2==1 && scandata1>0 && CodaEventNumber>37000",
+    "cleandata==1 && scandata2==2 && scandata1>0",
+    "cleandata==1 && scandata2==3 && scandata1>0",
+    "cleandata==1 && scandata2==4 && scandata1>0",
+    "cleandata==1 && scandata2==5 && scandata1>0",
+  };
+  beam_evtcut[3429] = { 
+    "cleandata==1 && scandata2==1 && scandata1>0",
+    "cleandata==1 && scandata2==2 && scandata1>0",
+    "cleandata==1 && scandata2==3 && scandata1>0",
+  };
+  beam_evtcut[3430] = { 
+    "cleandata==1 && scandata2==1 && scandata1>0",
+    "cleandata==1 && scandata2==2 && scandata1>0",
+    "cleandata==1 && scandata2==3 && scandata1>0",
+    "cleandata==1 && scandata2==4 && scandata1>0",
+    "cleandata==1 && scandata2==5 && scandata1>0",
+    "cleandata==1 && scandata2==6 && scandata1>0",
+    "cleandata==1 && scandata2==7 && scandata1>0",
+  };
+  beam_evtcut[3597] = { 
+    "cleandata==1 && scandata2==1 && scandata1>0",
+    "cleandata==1 && scandata2==2 && scandata1>0",
+    "cleandata==1 && scandata2==3 && scandata1>0",
+    "cleandata==1 && scandata2==4 && scandata1>0",
+    "cleandata==1 && scandata2==5 && scandata1>0",
+    "cleandata==1 && scandata2==6 && scandata1>0",
+    "cleandata==1 && scandata2==7 && scandata1>0",
+    "cleandata==1 && scandata2==8 && scandata1>0",
+    "cleandata==1 && scandata2==9 && scandata1>0",
+  };
   beam_evtcut[3645] = { 
     "cleandata && scandata1>0 && scandata2==1",
     "cleandata && scandata1>0 && scandata2==2",
@@ -196,13 +342,19 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
     "cleandata && scandata1>0 && scandata2==8"
   };
   beam_evtcut[3735] = { 
-    "cleandata==1 && scandata2==1 && scandata1>50",
-    "cleandata==1 && scandata2==2 && scandata1>50",
-    "cleandata==1 && scandata2==3 && scandata1>50",
-    "cleandata==1 && scandata2==4 && scandata1>50",
-    "cleandata==1 && scandata2==5 && scandata1>50",
-    "cleandata==1 && scandata2==6 && scandata1>50",
-    "cleandata==1 && scandata2==7 && scandata1>50"
+    "cleandata && scandata1>0 && scandata2==1",
+    "cleandata && scandata1>0 && scandata2==2",
+    "cleandata && scandata1>0 && scandata2==3",
+    "cleandata && scandata1>0 && scandata2==4",
+    "cleandata && scandata1>0 && scandata2==5 && Entry$>115e3",
+    "cleandata && scandata1>0 && scandata2==6",
+    "cleandata && scandata1>0 && scandata2==7"
+  };
+  beam_evtcut[3749] = { 
+    "Entry$>21.5e3 && Entry$<25.8e3",
+    "Entry$>34.7e3 && Entry$<39.4e3",
+    "Entry$>47.2e3 && Entry$<50.2e3",
+    "Entry$>60.6e3 && Entry$<64.7e3"
   };
   beam_evtcut[3751] = { 
     "cleandata && scandata1>0 && scandata2==1&&!(scandata1==700&&CodaEventNumber>85800&&CodaEventNumber<89300)",
@@ -212,6 +364,18 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
     "cleandata && scandata1>0 && scandata2==8",
     "cleandata && scandata1>0 && scandata2==9"
   };
+  if (ana == "all") {
+    beam_evtcut[3751] = { 
+      "cleandata && scandata1>0 && scandata2==1",
+      "cleandata && scandata1>0 && scandata2==2",
+      "cleandata && scandata1>0 && scandata2==3",
+      "cleandata && scandata1>0 && scandata2==4",
+      "cleandata && scandata1>0 && scandata2==5",
+      "cleandata && scandata1>0 && scandata2==6",
+      "cleandata && scandata1>0 && scandata2==8",
+      "cleandata && scandata1>0 && scandata2==9"
+    };
+  }
   beam_evtcut[4229] = { 
     "cleandata && scandata1>0 && (scandata2==0)&&CodaEventNumber>26e3",
     "cleandata && scandata1>0 && scandata2==2&&unser>10",
@@ -224,6 +388,64 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
     "cleandata && scandata1>0 && scandata2==9",
     "cleandata && scandata1>0 && scandata2==10",
     "cleandata && scandata1>0 && (scandata2==1)"
+  };
+  beam_evtcut[4309] = { 
+    "cleandata && scandata1>0 && scandata2==0",
+    "cleandata && scandata1>0 && scandata2==1",
+    "cleandata && scandata1>0 && scandata2==2",
+    "cleandata && scandata1>0 && scandata2==3"
+  };
+  beam_evtcut[4610] = { 
+    "cleandata && scandata1>0 && scandata2==1",
+    "cleandata && scandata1>0 && scandata2==2",
+    "cleandata && scandata1>0 && scandata2==3",
+    "cleandata && scandata1>0 && scandata2==4",
+    "cleandata && scandata1>0 && scandata2==5",
+    "cleandata && scandata1>0 && scandata2==6",
+    "cleandata && scandata1>0 && scandata2==7",
+    "cleandata && scandata1>0 && scandata2==8",
+    "cleandata && scandata1>0 && scandata2==9"
+  };
+  beam_evtcut[4650] = { 
+    "cleandata && scandata1>0 && scandata2==1",
+    "cleandata && scandata1>0 && scandata2==2",
+    "cleandata && scandata1>0 && scandata2==3",
+    "cleandata && scandata1>0 && scandata2==4",
+    "cleandata && scandata1>0 && scandata2==5",
+    "cleandata && scandata1>0 && scandata2==6",
+    "cleandata && scandata1>0 && scandata2==7"
+  };
+  beam_evtcut[4652] = { 
+    "cleandata && scandata1>0 && scandata2==1",
+    "cleandata && scandata1>0 && scandata2==2",
+    "cleandata && scandata1>0 && scandata2==3",
+    "cleandata && scandata1>0 && scandata2==4",
+    "cleandata && scandata1>0 && scandata2==5",
+    "cleandata && scandata1>0 && scandata2==6",
+    "cleandata && scandata1>0 && scandata2==7"
+  };
+  beam_evtcut[4806] = { 
+    "cleandata && scandata1>0 && scandata2==1",
+    "cleandata && scandata1>0 && scandata2==2",
+    "cleandata && scandata1>0 && scandata2==3",
+    "cleandata && scandata1>0 && scandata2==4",
+    "cleandata && scandata1>0 && scandata2==5",
+    "cleandata && scandata1>0 && scandata2==6",
+    "cleandata && scandata1>0 && scandata2==7",
+    "cleandata && scandata1>0 && scandata2==8",
+    "cleandata && scandata1>0 && scandata2==9"
+  };
+  beam_evtcut[4872] = { 
+    "cleandata && scandata1>0 && scandata2==1",
+    "cleandata && scandata1>0 && scandata2==2",
+    "cleandata && scandata1>0 && scandata2==3",
+    "cleandata && scandata1>0 && scandata2==4",
+    "cleandata && scandata1>0 && scandata2==5",
+    "cleandata && scandata1>0 && scandata2==6",
+    "cleandata && scandata1>0 && scandata2==7",
+    "cleandata && scandata1>0 && scandata2==8",
+    "cleandata && scandata1>0 && scandata2==9",
+    "cleandata && scandata1>0 && scandata2==10"
   };
   beam_evtcut[4901] = { 
     "cleandata && scandata1>0 && scandata2==1",
@@ -624,7 +846,66 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
     "cleandata==1 && scandata2==7 && scandata1<50",
     "cleandata==1 && scandata2==8 && scandata1<50",
   };
+  pedestal_evtcut[2963] = {
+    "CodaEventNumber>18e3&&CodaEventNumber<30e3",//50
+    "CodaEventNumber>62e3&&CodaEventNumber<70e3",//50
+    "CodaEventNumber>91e3&&CodaEventNumber<92.5e3",//40
+    "CodaEventNumber>98e3&&CodaEventNumber<101e3",//40
+    "CodaEventNumber>117e3&&CodaEventNumber<128e3",//40
+    "CodaEventNumber>135e3&&CodaEventNumber<138e3",//30
+    "CodaEventNumber>142e3&&CodaEventNumber<143e3",//30
+    "CodaEventNumber>150e3&&CodaEventNumber<160e3",//30
+    "CodaEventNumber>177e3&&CodaEventNumber<180e3"//20
+  };
+  pedestal_evtcut[2967] = {
+    "Entry$>23.5e3 && Entry$<24e3",
+    "Entry$>28.6e3 && Entry$<30e3",
+    "Entry$>42.1e3 && Entry$<44e3",
+    "Entry$>55e3 && Entry$<60e3",
+    "Entry$>42.1e3 && Entry$<44e3",
+    "Entry$>55e3 && Entry$<60e3"
+  };
+  pedestal_evtcut[3098] = {
+     "Entry$>110.5e3 && Entry$<112.5e3",
+     "Entry$>262e3 && Entry$<264e3",
+     "Entry$>298.6e3 && Entry$<303.5e3",
+     "Entry$>298.6e3 && Entry$<303.5e3",
+     "Entry$>298.6e3 && Entry$<303.5e3",
+     "Entry$>403e3 && Entry$<423e3",
+     "Entry$>403e3 && Entry$<423e3",
+     "Entry$>241e3 && Entry$<243.5e3",
+  };
+  pedestal_evtcut[3101] = {
+     "Entry$<16e3",
+     "Entry$>38e3 && Entry$<42.1e3",
+     "Entry$>49.2e3 && Entry$<51.6e3",
+     "Entry$>49.15e3 && Entry$<51.6e3", 
+     "Entry$>49.15e3 && Entry$<51.6e3", 
+     "Entry$>181e3",
+     "Entry$>181e3"
+  };
+  pedestal_evtcut[3105] = {
+    "CodaEventNumber>38.5e3&&CodaEventNumber<41e3",
+    "CodaEventNumber>54e3&&CodaEventNumber<55.5e3",
+    "CodaEventNumber>54e3&&CodaEventNumber<55.5e3",
+    "CodaEventNumber>97e3&&CodaEventNumber<98e3"
+  };
+  pedestal_evtcut[3135] = {
+    "CodaEventNumber>47.1e3&&CodaEventNumber<48.5e3", 
+    "CodaEventNumber>75.2e3&&CodaEventNumber<76.5e3",
+    "CodaEventNumber>100.5e3&&CodaEventNumber<102e3",
+    "CodaEventNumber>103.72e3&&CodaEventNumber<105e3",
+    "CodaEventNumber>110e3&&CodaEventNumber<111e3"
+  };
+  pedestal_evtcut[3138] = {
+    "CodaEventNumber>10e3&&CodaEventNumber<14e3",
+    "CodaEventNumber>16.8e3&&CodaEventNumber<18e3",
+    "CodaEventNumber>22e3&&CodaEventNumber<23e3",
+    "CodaEventNumber>70e3&&CodaEventNumber<71e3",
+    "CodaEventNumber>76e3&&CodaEventNumber<77e3"
+  };
   pedestal_evtcut[3395] = { 
+    /*
     "cleandata==1 && scandata2==1 && scandata1<50",
     "cleandata==1 && scandata2==2 && scandata1<50",
     "cleandata==1 && scandata2==3 && scandata1<50",
@@ -635,7 +916,19 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
     "cleandata==1 && scandata2==8 && scandata1<50",
     "cleandata==1 && scandata2==9 && scandata1<50",
     "cleandata==1 && scandata2==10 && scandata1<50",
-    "cleandata==1 && scandata2==10 && scandata1<50",
+    "cleandata==1 && scandata2==10 && scandata1<50"
+      */
+    "cleandata && scandata1==0 && (scandata2==1)",
+    "cleandata && scandata1==0 && (scandata2==2 || scandata2==1)",
+    "cleandata && scandata1==0 && (scandata2==3 || scandata2==2)",
+    "cleandata && scandata1==0 && (scandata2==4 || scandata2==3)",
+    "cleandata && scandata1==0 && (scandata2==5 || scandata2==4)",
+    "cleandata && scandata1==0 && (scandata2==6 || scandata2==5)",
+    "cleandata && scandata1==0 && (scandata2==7 || scandata2==6)",
+    "cleandata && scandata1==0 && (scandata2==8 || scandata2==7)",
+    "cleandata && scandata1==0 && (scandata2==9 || scandata2==8)",
+    "cleandata && scandata1==0 && (scandata2==10 || scandata2==9)",
+    "cleandata && scandata1==0 && (scandata2==11 || scandata2==10)"
   };
   pedestal_evtcut[3645] = { 
     "cleandata && scandata1==0 && (scandata2==1)",
@@ -648,13 +941,19 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
     "cleandata && scandata1==0 && (scandata2==8 || scandata2==7)"
   };
   pedestal_evtcut[3735] = { 
-    "cleandata==1 && scandata2==1 && scandata1<50",
-    "cleandata==1 && scandata2==2 && scandata1<50",
-    "cleandata==1 && scandata2==3 && scandata1<50",
-    "cleandata==1 && scandata2==4 && scandata1<50",
-    "cleandata==1 && scandata2==5 && scandata1<50",
-    "cleandata==1 && scandata2==6 && scandata1<50",
-    "cleandata==1 && scandata2==7 && scandata1<50",
+    "cleandata && scandata1==0 && (scandata2==1)",
+    "cleandata && scandata1==0 && (scandata2==2 || scandata2==1)",
+    "cleandata && scandata1==0 && (scandata2==3 || scandata2==2)",
+    "cleandata && scandata1==0 && (scandata2==4 || scandata2==3)",
+    "cleandata && scandata1==0 && (scandata2==5 || scandata2==4)",
+    "cleandata && scandata1==0 && (scandata2==6 || scandata2==5)",
+    "cleandata && scandata1==0 && (scandata2==7)"
+  };
+  pedestal_evtcut[3749] = {
+    "Entry$>19.6e3 && Entry$<21.3e3",    
+    "Entry$>33e3 && Entry$<34.6e3",    
+    "Entry$>50.3e3 && Entry$<55.3e3",
+    "Entry$>65e3 && Entry$<80e3"   
   };
   pedestal_evtcut[3751] = {
     "scandata2==1 && (CodaEventNumber>86000&&CodaEventNumber<87100)",
@@ -857,11 +1156,38 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
   // Add in the default initialzed user cuts from the individual macros
   std::map <Int_t,TCut> user_cuts;
   user_cuts[2769] = "";
+  user_cuts[2963] = "bcm_dg_us.Device_Error_Code==0";
+  user_cuts[2965] = "!(scandata2==1&&cleandata==1&&bcm_an_us<40)&&!(scandata2==1&&cleandata==1&&CodaEventNumber<40000)&&!(scandata2==2&&cleandata==1&&CodaEventNumber<80500)";
+  user_cuts[2967] = "";
+  //user_cuts[3098] = "";
+  user_cuts[3098] = "bcm_an_us>15&&cleandata==1&&scandata2!=1&&!(CodaEventNumber>313.4e3&&CodaEventNumber<318e3)";
+  user_cuts[3101] = "";
+  user_cuts[3105] = "";
+  user_cuts[3106] = "bcm_dg_us.Device_Error_Code==0 && bcm_an_ds.Device_Error_Code==0";
+  user_cuts[3135] = "bcm_dg_us.Device_Error_Code==0 && bcm_an_ds.Device_Error_Code==0";
+  user_cuts[3138] = "!(CodaEventNumber>8000&&CodaEventNumber<20000)&&!(CodaEventNumber>69000&&CodaEventNumber<80000)";
   user_cuts[3395] = "";
+  user_cuts[3424] = "";
+  user_cuts[3429] = "ErrorFlag==0&&CodaEventNumber>9500";
+  user_cuts[3430] = "cleandata&&CodaEventNumber>2700&&!(scandata2==2&&CodaEventNumber>29800)&&!(scandata2==3&&CodaEventNumber>35000)&&!(scandata2==7&&CodaEventNumber>111.7e3)&&bmwobj==-1";
+  user_cuts[3597] = "bmwobj==-1&&!(cleandata&&scandata1==400&&(CodaEventNumber>112000&&CodaEventNumber<120000))";
   user_cuts[3645] = "!(scandata2==4&&scandata1>0&&unser<40)&&!(scandata2==2&&scandata1>0&&unser<60)&&!(scandata2==6&&unser<20)";
-  user_cuts[3735] = "scandata2!=0";
+  user_cuts[3735] = "";
+  user_cuts[3749] = "";
   user_cuts[3751] = "";
+  if (ana == "all") {
+    user_cuts[3751] = "!(scandata1==700&&CodaEventNumber>85800&&CodaEventNumber<89300)&&!(scandata1==550&&CodaEventNumber>121e3&&CodaEventNumber<126e3)&&!(scandata1==300&&CodaEventNumber>162e3)";
+  }
   user_cuts[4229] = "";
+  if (ana == "all") {
+    user_cuts[4229] = "cleandata && scandata1>3 && !((scandata2==0)&&CodaEventNumber<26e3)&&!(scandata2==2&&unser<10)&&!(scandata2==7&&CodaEventNumber<285e3)&&scandata2!=1";
+  }
+  user_cuts[4309] = "cleandata&&!(cleandata&&scandata1==550&&CodaEventNumber<175e3)";
+  user_cuts[4610] = "cleandata&&!(scandata1==700&&bcm_an_us<65)&&!(scandata1>300&&bcm_an_us<35)";
+  user_cuts[4650] = "cleandata&&!(scandata2==3&&bcm_an_us<20)";
+  user_cuts[4652] = "cleandata";
+  user_cuts[4806] = "cleandata&&scandata1!=80&&bcm_an_us>5&&!(scandata1==300&&bcm_an_us<25)&&CodaEventNumber>40e3&&!(CodaEventNumber>45500&&CodaEventNumber<46000)&&!(CodaEventNumber>275e3&&CodaEventNumber<298e3)";
+  user_cuts[4872] = "cleandata&&!(scandata1>600&&ErrorFlag!=0)&&!(scandata2==2&&bcm_an_us<75)&&!(scandata2==3&&CodaEventNumber<265e3)&&!(scandata2==8&&bcm_an_us<25)&&!(scandata2==10&&CodaEventNumber<492.5e3)&&CodaEventNumber<492e3&&!(CodaEventNumber>86e3&&CodaEventNumber<90e3)";
   user_cuts[4901] = "";
   user_cuts[5360] = "";
   user_cuts[5396] = "";
@@ -908,11 +1234,31 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
 
   std::map <Int_t,Double_t> uplimit;
   uplimit[2769] = 200.0;
+  uplimit[2963] = 200.0;
+  uplimit[2965] = 200.0;
+  uplimit[2967] = 200.0;
+  uplimit[3098] = 200.0;
+  uplimit[3101] = 200.0;
+  uplimit[3105] = 200.0;
+  uplimit[3106] = 200.0;
+  uplimit[3135] = 200.0;
+  uplimit[3138] = 200.0;
   uplimit[3395] = 200.0;
+  uplimit[3424] = 200.0;
+  uplimit[3429] = 200.0;
+  uplimit[3430] = 200.0;
+  uplimit[3597] = 200.0;
   uplimit[3645] = 200.0;
   uplimit[3735] = 200.0;
+  uplimit[3749] = 200.0;
   uplimit[3751] = 200.0;
   uplimit[4229] = 200.0;
+  uplimit[4309] = 200.0;
+  uplimit[4610] = 200.0;
+  uplimit[4650] = 200.0;
+  uplimit[4652] = 200.0;
+  uplimit[4806] = 200.0;
+  uplimit[4872] = 200.0;
   uplimit[4901] = 200.0;
   uplimit[5360] = 200.0;
   uplimit[5396] = 200.0;
@@ -943,11 +1289,36 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
 
   std::map <Int_t,Double_t> lowlimit;
   lowlimit[2769] = 5.0;
+  lowlimit[2963] = 5.0;
+  lowlimit[2965] = 5.0;
+  lowlimit[2967] = 2.0;
+  lowlimit[3098] = 5.0;
+  lowlimit[3101] = 5.0;
+  lowlimit[3105] = 5.0;
+  //lowlimit[3105] = 44.0;
+  //lowlimit[3106] = 45.0;
+  lowlimit[3106] = 5.0;
+  lowlimit[3135] = 5.0;
+  lowlimit[3138] = 5.0;
+  //lowlimit[3138] = 37.0;
   lowlimit[3395] = 5.0;
+  lowlimit[3424] = 5.0;
+  lowlimit[3429] = 5.0;
+  lowlimit[3430] = 15.0;
+  lowlimit[3597] = 5.0;
   lowlimit[3645] = 5.0;
   lowlimit[3735] = 5.0;
+  lowlimit[3749] = 5.0;
   lowlimit[3751] = 5.0;
   lowlimit[4229] = 5.0;
+  lowlimit[4309] = 5.0;
+  lowlimit[4610] = 5.0;
+  lowlimit[4650] = 5.0;
+  lowlimit[4652] = 5.0;
+  lowlimit[4806] = 5.0;
+  // FIXME see the hack if condition at the Pedestal Fit line
+  //55.0; 55 uA is the low cut for main detector case
+  lowlimit[4872] = 5.0;
   lowlimit[4901] = 5.0;
   lowlimit[5360] = 5.0;
   lowlimit[5396] = 5.0;
@@ -991,6 +1362,26 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
   }
 
   std::map <Int_t,TString> user_bcms; 
+  user_bcms[2965] ="bcm_an_us";
+  user_bcms[3098] ="bcm_an_us";
+  user_bcms[3105] ="bcm_an_us";
+  user_bcms[3106] ="bcm_an_us";
+  user_bcms[3138] ="bcm_an_us";
+  //user_bcms[3138] ="bcm_an_ds3";
+  user_bcms[3395] ="bcm_an_ds";
+  user_bcms[3424] ="bcm_an_ds";
+  user_bcms[3429] ="bcm_an_ds";
+  user_bcms[3430] ="bcm_an_ds";
+  user_bcms[3597] ="bcm_dg_ds";
+  user_bcms[3645] ="bcm_dg_ds";
+  user_bcms[3751] ="bcm_an_ds";
+  user_bcms[4229] ="bcm_dg_ds";
+  user_bcms[4309] ="bcm_dg_ds";
+  user_bcms[4610] ="bcm_dg_ds";
+  user_bcms[4650] ="bcm_dg_ds";
+  user_bcms[4652] ="bcm_dg_ds";
+  user_bcms[4806] ="bcm_dg_ds";
+  user_bcms[4872] ="bcm_an_us";
   user_bcms[5417] ="bcm_an_us";
   user_bcms[5436] ="bcm_an_us";
   user_bcms[5474] ="bcm_an_us";
@@ -1008,6 +1399,26 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
   user_bcms[7282] ="bcm_an_us";
   user_bcms[7406] ="bcm_an_us";
   std::map <Int_t,Double_t> user_peds;
+  user_peds[2965] = -510.43;
+  user_peds[3098] = -510.43;
+  user_peds[3105] = -821.75;//-510.43;
+  user_peds[3106] = -821.75;//-510.43;
+  user_peds[3138] = -821.75;//-510.43;
+  //user_peds[3138] = -1226.03;//-510.43;
+  user_peds[3395] = -387.81;
+  user_peds[3424] = -387.81;
+  user_peds[3429] = -387.81;
+  user_peds[3430] = -387.81;
+  user_peds[3597] = -210.26;
+  user_peds[3645] = -500.22;
+  user_peds[3751] = -537.44;
+  user_peds[4229] = -351.06;
+  user_peds[4309] = -351.06;
+  user_peds[4610] = -351.06;
+  user_peds[4650] = -351.06;
+  user_peds[4652] = -351.06;
+  user_peds[4806] = -351.06;
+  user_peds[4872] = -650.95;
   user_peds[5417] = -597.00;
   user_peds[5436] = -597.00;
   user_peds[5474] = -597.00;
@@ -1024,6 +1435,26 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
   user_peds[7282] = -651.7;
   user_peds[7406] = -621.09;
   std::map <Int_t,Double_t> user_norms;
+  user_norms[2965] = 0.002693;
+  user_norms[3098] = 0.002635;
+  user_norms[3105] = 0.002635;
+  user_norms[3106] = 0.002635;
+  user_norms[3138] = 0.002635;//0.00082918740;
+  //user_norms[3138] = 0.000799;
+  user_norms[3395] = 0.002774;
+  user_norms[3424] = 0.002774;
+  user_norms[3429] = 0.002774;
+  user_norms[3430] = 0.002774;
+  user_norms[3597] = 0.002717;
+  user_norms[3645] = 0.002338;
+  user_norms[3751] = 0.006133;
+  user_norms[4229] = 0.002318;
+  user_norms[4309] = 0.002318;
+  user_norms[4610] = 0.002318;
+  user_norms[4650] = 0.002318;
+  user_norms[4652] = 0.002318;
+  user_norms[4806] = 0.002318;
+  user_norms[4872] = 0.006184;
   user_norms[5417] = 0.008975;
   user_norms[5436] = 0.008975;
   user_norms[5474] = 0.008975;
@@ -1039,6 +1470,23 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
   user_norms[7122] = 0.008923;
   user_norms[7282] = 0.008923;
   user_norms[7406] = 0.008934;
+
+  if (ana == "all") {
+    if (user_bcm != "") {
+      user_bcms[run_num] = user_bcm;
+    }
+    if (user_ped != -1000000) {
+      user_peds[run_num] = user_ped;
+    }
+    if (user_norm != -1000000) {
+      user_norms[run_num] = user_norm;
+    }
+
+    if (user_bcms.count(run_num) == 0 || user_peds.count(run_num) == 0 || user_norms.count(run_num) == 0){
+      Printf("Error, run %d pedestal info not included in macro",run_num);
+      return;
+    }
+  }
 
   // Write out the label
   if (version == "old") {
@@ -1058,23 +1506,6 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
   }
   if (ana == "all") {
     label = label + user_bcms.at(run_num);
-  }
-
-  if (ana == "all") {
-    if (user_bcm != "") {
-      user_bcms[run_num] = user_bcm;
-    }
-    if (user_ped != -1000000) {
-      user_peds[run_num] = user_ped;
-    }
-    if (user_norm != -1000000) {
-      user_norms[run_num] = user_norm;
-    }
-
-    if (user_bcms.count(run_num) == 0 || user_peds.count(run_num) == 0 || user_norms.count(run_num) == 0){
-      Printf("Error, run %d pedestal info not included in macro",run_num);
-      return;
-    }
   }
 
   double bcm_mean[ndata]; 
@@ -1219,7 +1650,8 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
     branch_name = Form("%s.hw_sum_raw/%s.num_samples",
         device_name[ibcm].Data(),device_name[ibcm].Data());
 
-    TString full_beamon_cut = (TString)user_cuts[run_num] + "&& (1==0";
+    TString full_beamon_cut = "(1==0";
+    //TString full_beamon_cut = (TString)user_cuts[run_num] + "&& (1==0";
     for(int i=0;i<ndata;i++){
       my_cut = beam_evtcut[run_num].at(i)+user_cuts[run_num];
       full_beamon_cut = full_beamon_cut + "||" + (TString)beam_evtcut[run_num].at(i);
@@ -1238,6 +1670,9 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
       }
     }
     full_beamon_cut = full_beamon_cut + ")";
+    if (user_cuts[run_num] != "") { 
+     full_beamon_cut = full_beamon_cut + " && " + (TString)user_cuts[run_num];
+    }
     // QA Plots for ALL scans
     if (ana == "all") {
       TVirtualPad* pad_buff;
@@ -1302,12 +1737,30 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
     f_fit->SetParameters(init_par);
     f_fit->SetLineColor(kRed);
     f_fit->SetLineWidth(1);
+
+    // Pedestal Fit
     if(branch_name.Contains("ds10"))
+    {
+      // DS 10x is a mess
       g_fit->Fit("f_fit","QR","",30,100);
-    //  elseif(branch_name.Contains("ds3"))
-    //	 g_fit->Fit("f_fit","QR","",50,75);
+    }
     else
-      g_fit->Fit("f_fit","QR","",lowlimit[run_num],uplimit[run_num]);
+    {
+      if (((run_num < 3583 && branch_name.Contains("dsl")) || (run_num<3733 && branch_name.Contains("dsr"))) && lowlimit[run_num]<35)
+      {
+        // DS main detectors get a limited high current range to fit, due to non-linear thicker quartz
+        g_fit->Fit("f_fit","QR","",35,uplimit[run_num]); 
+      }
+      if (run_num == 4872 && (branch_name.Contains("usl") || branch_name.Contains("usr") || branch_name.Contains("dsl") || branch_name.Contains("dsr") || branch_name.Contains("atl") || branch_name.Contains("atr")) && lowlimit[run_num]<55)  
+      {
+        // Run 4872 has a 55 lower limit
+        g_fit->Fit("f_fit","QR","",55,uplimit[run_num]); 
+      }
+      else
+      {
+        g_fit->Fit("f_fit","QR","",lowlimit[run_num],uplimit[run_num]);
+      }
+    }
 
     ped[ibcm] = f_fit->GetParameter(0);
     slope[ibcm]=f_fit->GetParameter(1);
@@ -1357,7 +1810,11 @@ void GetBCMPedestals_Cameron_anyrun_all_witherr(
     }
     g_res->SetTitle(gres_title.Data());
     //f_zero->Draw("same");
-    g_res->Fit("f_zero","QR","",lowlimit[run_num],uplimit[run_num]);
+    // Residual fit over same range
+    if(branch_name.Contains("ds10"))
+      g_fit->Fit("f_fit","QR","",30,100);
+    else
+      g_res->Fit("f_zero","QR","",lowlimit[run_num],uplimit[run_num]);
 
     plot_title = Form("Run %d: %s with %s", run_num, device_name[ibcm].Data(), label.Data());
     c_bcm->cd();

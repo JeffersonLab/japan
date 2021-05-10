@@ -1,0 +1,7 @@
+# cut out events when RQ1 trips
+205000:218200
+
+# large bpm12X excursion
+87500:90000
+254500:260000
+303000:307000

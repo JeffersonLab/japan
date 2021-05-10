@@ -40,6 +40,7 @@ EVENTCUTS = 3
 
  bcm,	bcm_an_us,	20,	1e6,	g,	1.7
  bcm,	bcm_an_ds,	-10,	1e6,	g
+  combinedbcm, bcm_an_diff,       -10,     +10,    g,      0,   0.15
 
 !****************************************************				
 !for bpmstrpline devices

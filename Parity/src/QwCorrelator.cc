@@ -191,9 +191,7 @@ void QwCorrelator::CalcCorrelations()
     return;
   }
 
-  if (fPrintCorrelations) {
-    QwMessage << "QwCorrelator: name=" << GetName() << QwLog::endl;
-  }
+  QwMessage << "QwCorrelator::CalcCorrelations(): name=" << GetName() << QwLog::endl;
 
   // Print entry summary
   QwVerbose << "QwCorrelator: "

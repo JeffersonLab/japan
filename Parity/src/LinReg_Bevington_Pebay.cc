@@ -475,7 +475,7 @@ void LinRegBevPeb::solve()
   mSY = TMatrixDDiag(mSYY); mSY.Sqrt();
 
   // Warn if correlation matrix determinant close to zero (heuristic)
-  if (mRPP.Determinant() < std::pow(10,-nP)) {
+  if (mRPP.Determinant() < std::pow(10,-(2*nP))) {
     QwWarning << "LRB: correlation matrix nearly singular, "
               << "determinant = " << mRPP.Determinant()
               << " (set includes highly correlated variable pairs)"

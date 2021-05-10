@@ -1,0 +1,23 @@
+!leftover values from before mapfile consolidation
+ vqwk_25_0ch4, 0, 0.000076
+ vqwk_25_0ch5, 0, 0.000076
+ battery1L, 0, 0.000076
+ battery2L, 0, 0.000076
+ vqwk_26_0ch4, 0, 0.000076
+ vqwk_26_0ch5, 0, 0.000076
+ battery1R, 0, 0.000076
+ battery2R, 0, 0.000076
+
+!main detectors use calibrations from cameron's global 
+!pedestal analysis: http://ace.phys.virginia.edu:80/HAPPEX/4081
+! NOTE these DS detectors are unplugged and meaningless
+ dsl, 1389.94, 0.000076
+ dsr, 1212.38, 0.000076
+
+! Beam off pedestal analysis based on HAPLOG http://ace.phys.virginia.edu/HAPPEX/4501
+ usl, 971.785, 0.000076
+ usr, 1150.5 , 0.000076
+ atl1,844.984, 0.000076
+ atl2,1260.73, 0.000076
+ atr1,1034.94, 0.000076
+ atr2,673.083, 0.000076
