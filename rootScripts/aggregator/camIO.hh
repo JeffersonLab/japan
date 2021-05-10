@@ -234,6 +234,7 @@ vector<vector<string>> textFileParse_h(TString fileName, char delim = ',')
     Printf("File not found: %s",(const char*)fileName);
     return filearray;
   }
+}
 
 TChain* getMuls(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t n_runs = -1, TString filenamebase = "NULL"){
 
@@ -258,17 +259,17 @@ TChain* getMuls(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber =
   for(Int_t ana=0;ana<num_analyses;ana++){
     for(Int_t j=0;j<num_daqConfigs;j++){
       for(Int_t suf=0;suf<2;suf++){
-  // FIXME move to nruns==slugn : filenamebase = Form("%s/%s_%d%s%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber+i,(const char*)analyses[ana],(const char*) suffix[suf]);
-  filenamebase = Form("%s/%s_%d%s%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber,(const char*)analyses[ana],(const char*) suffix[suf]);
-  filename     = filenamebase;
-  if (debug>1) Printf("Trying file name: %s",(const char*)filenamebase);
-  if ( !gSystem->AccessPathName(filename.Data()) ) {
-    if (debug>1) Printf("Found file name: %s",(const char*)filenamebase);
-    foundFile = true;
-    j=num_daqConfigs+1; // Exit loop
-    ana=4; // FIXME Turning off the loop continuing thing because we don't store files this way anyway......
-    suf=3;
-  }
+        // FIXME move to nruns==slugn : filenamebase = Form("%s/%s_%d%s%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber+i,(const char*)analyses[ana],(const char*) suffix[suf]);
+        filenamebase = Form("%s/%s_%d%s%s",(const char *)fileNameBase,(const char *)daqConfigs[j],runNumber,(const char*)analyses[ana],(const char*) suffix[suf]);
+        filename     = filenamebase;
+        if (debug>1) Printf("Trying file name: %s",(const char*)filenamebase);
+        if ( !gSystem->AccessPathName(filename.Data()) ) {
+          if (debug>1) Printf("Found file name: %s",(const char*)filenamebase);
+          foundFile = true;
+          j=num_daqConfigs+1; // Exit loop
+          ana=4; // FIXME Turning off the loop continuing thing because we don't store files this way anyway......
+          suf=3;
+        }
       }
     }
   }
@@ -290,7 +291,6 @@ TChain* getMuls(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber =
     return 0;
   }
   return mulsChain;
-}
 }
 
 TChain * getTree_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = -1, Double_t n_runs = -1, TString filenamebase = "NULL"){

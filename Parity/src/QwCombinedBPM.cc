@@ -989,8 +989,8 @@ void  QwCombinedBPM<T>::ConstructHistograms(TDirectory *folder, TString &prefix)
     //we calculate the asym_ for the fEffectiveCharge becasue its an asymmetry and not a difference.
     fEffectiveCharge.ConstructHistograms(folder, prefix);
     TString thisprefix=prefix;
-    if(prefix=="asym_")
-      thisprefix="diff_";
+    if(prefix.Contains("asym_"))
+      thisprefix.ReplaceAll("asym_","diff_");
     this->SetRootSaveStatus(prefix);
 
     for(Short_t axis=kXAxis;axis<kNumAxes;axis++) {
@@ -1031,8 +1031,8 @@ void  QwCombinedBPM<T>::ConstructBranchAndVector(TTree *tree, TString &prefix, s
     {
 
       TString thisprefix=prefix;
-      if(prefix=="asym_")
-	thisprefix="diff_";
+      if(prefix.Contains("asym_"))
+	thisprefix.ReplaceAll("asym_","diff_");
 
       this->SetRootSaveStatus(prefix);
 
@@ -1057,8 +1057,8 @@ void  QwCombinedBPM<T>::ConstructBranch(TTree *tree, TString &prefix)
   } else
     {
       TString thisprefix=prefix;
-      if(prefix=="asym_")
-	thisprefix="diff_";
+      if(prefix.Contains("asym_"))
+	thisprefix.ReplaceAll("asym_","diff_");
 
 
       fEffectiveCharge.ConstructBranch(tree,prefix);
@@ -1087,8 +1087,8 @@ void  QwCombinedBPM<T>::ConstructBranch(TTree *tree, TString &prefix, QwParamete
     {
       if (modulelist.HasValue(devicename)){
 	TString thisprefix=prefix;
-	if(prefix=="asym_")
-	  thisprefix="diff_";
+	if(prefix.Contains("asym_"))
+	  thisprefix.ReplaceAll("asym_","diff_");
 
 
 	fEffectiveCharge.ConstructBranch(tree,prefix);

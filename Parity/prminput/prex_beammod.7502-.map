@@ -1,0 +1,44 @@
+ROC=23
+
+bank=0x2
+
+  SIS3801D32, 0,    3,  bmod_trig
+  SIS3801D32, 0,   16,  bmod_trim1
+  SIS3801D32, 0,   17,  bmod_trim2
+  SIS3801D32, 0,   18,  bmod_trim3
+  SIS3801D32, 0,   19,  bmod_trim4
+  !!! Channel 20 not used
+  SIS3801D32, 0,   21,  bmod_trim5
+  SIS3801D32, 0,   22,  bmod_trim6
+  SIS3801D32, 0,   23,  bmod_trim7
+  SIS3801D32, 0,   31,  bmod_4mhz
+
+
+Bank=0x4
+
+SKIP 8
+WORD, 0,  0,  bmwphase
+WORD, 0,  0,  bmwperiod
+WORD, 0,  0,  bmwobj
+WORD, 0,  0,  bmwfreq
+WORD, 0,  0,  bmwcycnum
+WORD, 0,  0,  bmwcoil1
+WORD, 0,  0,  bmwamp1
+WORD, 0,  0,  bmwcoil2
+WORD, 0,  0,  bmwamp2
+WORD, 0,  0,  bmw_max_period
+WORD, 0,  0,  bmw_ffb_pause
+!!
+WORD, 0,  0,  roc23_cleandata
+WORD, 0,  0,  roc23_scandata1
+WORD, 0,  0,  roc23_scandata2
+!!
+WORD, 0,  0,  roc23_ioctime
+WORD, 0,  0,  roc23_ncnt
+
+Bank=0x5
+vqwk_buffer_offset=1
+
+sample_size=4096
+
+ VQWK, 5, 0, bmod_ramp

@@ -33,13 +33,6 @@
   tree-name  = lrb_std
   tree-comment = Correlations
 
-[QwExtractor]
-  name       = bmw
-  priority   = 50
-  map        = prex_bmw.conf
-  tree-name  = bmw
-  tree-comment = Beam modulation
-
 #[QwCorrelator]
 #  name       = lrb_all
 #  priority   = 50
@@ -59,3 +52,11 @@
   map        = prex_combiner.map
   tree-name  = mulc
   tree-comment = Helicity event data tree (corrected)
+
+[QwExtractor]
+  name       = BMWExtractor
+  priority   = 0
+  scope      = event
+  tree-name  = bmw          # not implemented at this time, currently hardcoded
+  tree-comment = Bmod Data  # not implemented at this time, currently hardcoded
+

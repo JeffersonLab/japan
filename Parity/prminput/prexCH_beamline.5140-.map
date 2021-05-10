@@ -50,7 +50,6 @@ sample_size=4096
     VQWK, 3, 7,  bpmstripline,  BPM11ym
 
 !ADC4
-!Caryn edit BPM8 7/3/2019. XP was 4_5 and XM was 4_4 which is backwards so swapped them to correct mapping
 !Cameron edit 7/16/2019 -> new maps, BPMs 11, 12, 16, see http://ace.phys.virginia.edu/HAPPEX/3820
     VQWK, 4, 0,  bpmstripline,  BPM1xp
     VQWK, 4, 1,  bpmstripline,  BPM1xm
@@ -111,6 +110,12 @@ sample_size=4096
 !!   SCALER, 0,   14, bcm, BCM_scal_DDD 
 !!   SCALER, 1,   0,  clock, ch_tstable_clock_4mhz 
 
+
+begin=combinedbcm
+name=bcm_an_diff
+  bcm_an_us, bcm, +1.0
+  bcm_an_ds, bcm, -1.0
+end=combinedbcm
 
 
 

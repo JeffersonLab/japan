@@ -1,0 +1,9 @@
+!SAM calibration from run 4872 using cameron's analysis http://ace.phys.virginia.edu:80/HAPPEX/4094
+ sam1, 12159.37, 0.000076
+ sam2, 13974.09, 0.000076
+ sam3, 12614.94, 0.000076
+ sam4, 14358.50, 0.000076
+ sam5, 12471.44, 0.000076
+ sam6, 13342.26, 0.000076
+ sam7, 12495.00, 0.000076
+ sam8, 12445.59, 0.000076

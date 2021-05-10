@@ -1,0 +1,10 @@
+! Beam off SAMs pedestal analysis based on HAPLOG http://ace.phys.virginia.edu/HAPPEX/4501
+ sam1,11085.9, 0.000076
+ sam2,13547.8, 0.000076
+ sam3,12707.7, 0.000076
+ sam4,12798.2, 0.000076
+ sam5,11432.0, 0.000076
+ sam6,13376.9, 0.000076
+ sam7,12346.4, 0.000076
+ sam8,12410.6, 0.000076
+

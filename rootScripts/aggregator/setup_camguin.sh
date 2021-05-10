@@ -10,7 +10,9 @@ export CAM_DEBUG=0
 export CAM_ALARM=1
 export CAM_AGGREGATE=1
 export CAM_POSTPAN=1
-export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/
+if [ -z "$CAM_OUTPUTDIR" ]; then
+  export CAM_OUTPUTDIR=/chafs2/work1/apar/aggRootfiles/
+fi
 export POSTPAN_ROOTFILES=/chafs2/work1/apar/postpan-outputs/
 #export DITHERING_ROOTFILES=/chafs2/work1/apar/DitherCorrection/
 #export DITHERING_ROOTFILES_SLOPES=/chafs2/work1/apar/BMODextractor/

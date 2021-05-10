@@ -89,6 +89,16 @@ sample_size=4096
     VQWK, 7, 6,  bcm,  ch_7_6
     VQWK, 7, 7,  bcm,  ch_7_7
 
+!ADC8
+    !VQWK, 8, 0,  bcm,  ch_8_0
+    !VQWK, 8, 1,  bcm,  ch_8_1
+    !VQWK, 8, 2,  bcm,  ch_8_2
+    !VQWK, 8, 3,  bcm,  ch_8_3
+    !VQWK, 8, 4,  bcm,  ch_8_4
+    !VQWK, 8, 5,  bcm,  ch_8_5
+    !VQWK, 8, 6,  bcm,  ch_8_6
+    !VQWK, 8, 7,  bcm,  ch_8_7
+
 [PUBLISH]
 ! new.tree.variable.name, analysis.class, old.tree.variable.name, element.to.store
   q_targ, bcm, ch_5_7, c

@@ -864,7 +864,7 @@ std::pair<int,int> QwParameterFile::ParseIntRange(const std::string& separatorch
     QwError << "The first value must not be negative!" << QwLog::endl;
     return std::pair<int,int>(INT_MAX,INT_MAX);
   } else if (mypair.first > mypair.second){
-    QwError << "The first value must not be larger than the second value"
+    QwError << "The first value ("<< mypair.first<< ") must not be larger than the second value (" << mypair.second <<")"
 	    << QwLog::endl;
     return std::pair<int,int>(INT_MAX,INT_MAX);
   }

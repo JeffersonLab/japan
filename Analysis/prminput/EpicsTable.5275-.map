@@ -349,11 +349,19 @@ FB_C:BPM:N6:pos_asym.VALB	slow_controls_data		float		!
 FB_C:BPM:N7:pos_asym.VALA	slow_controls_data		float		! 
 FB_C:BPM:N7:pos_asym.VALB	slow_controls_data		float		! 
 CTD673				slow_controls_data		float		! 
+!!!
+RTPPITA1CNT	slow_controls_data		float		! 
+RTPPITA2CNT	slow_controls_data		float		! 
+RTPQWP1CNT	slow_controls_data		float		! 
+RTPQWP2CNT	slow_controls_data		float		! 
+RTPAPOSUCNT	slow_controls_data		float		! 
+RTPAPOSVCNT	slow_controls_data		float		! 
+RTPDPOSUCNT	slow_controls_data		float		! 
+RTPDPOSVCNT	slow_controls_data		float		!
+!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  Composite slow control variables
 !    These are variables for which there is not an actual EPICS variable,
 !    but a value is generated internally by the QwEPICSEvent class.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 WienMode        	slow_controls_data	String	 !  This will indicate the spin direction in the hall as defined by the Wien setting + precession
-RTPAPOSUCNT	slow_controls_data		float		! 
-RTPAPOSVCNT	slow_controls_data		float		! 

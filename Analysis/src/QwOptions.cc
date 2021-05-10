@@ -20,7 +20,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
-
+#include <TROOT.h>
 // Qweak headers
 #include "QwLog.h"
 #include "QwParameterFile.h"

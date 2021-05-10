@@ -805,8 +805,8 @@ void  QwBPMStripline<T>::ConstructHistograms(TDirectory *folder, TString &prefix
     fEllipticity.ConstructHistograms(folder, prefix);
     TString thisprefix=prefix;
 
-    if(prefix=="asym_")
-      thisprefix="diff_";
+    if(prefix.Contains("asym_"))
+      thisprefix.ReplaceAll("asym_","diff_");
     this->SetRootSaveStatus(prefix);
     Short_t i = 0;
     if(bFullSave) {
@@ -850,8 +850,8 @@ void  QwBPMStripline<T>::ConstructBranchAndVector(TTree *tree, TString &prefix, 
   }
   else {
     TString thisprefix=prefix;
-    if(prefix=="asym_")
-      thisprefix="diff_";
+    if(prefix.Contains("asym_"))
+      thisprefix.ReplaceAll("asym_","diff_");
 
     this->SetRootSaveStatus(prefix);
 
@@ -879,8 +879,8 @@ void  QwBPMStripline<T>::ConstructBranch(TTree *tree, TString &prefix)
   }
   else {
     TString thisprefix=prefix;
-    if(prefix=="asym_")
-      thisprefix="diff_";
+    if(prefix.Contains("asym_"))
+      thisprefix.ReplaceAll("asym_","diff_");
 
     this->SetRootSaveStatus(prefix);
 
@@ -922,8 +922,8 @@ void  QwBPMStripline<T>::ConstructBranch(TTree *tree, TString &prefix, QwParamet
     {
       if (modulelist.HasValue(devicename)){
 	TString thisprefix=prefix;
-	if(prefix=="asym_")
-	  thisprefix="diff_";
+	if(prefix.Contains("asym_"))
+	  thisprefix.ReplaceAll("asym_","diff_");
 
 	this->SetRootSaveStatus(prefix);
 
