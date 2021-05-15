@@ -24,6 +24,7 @@ void combo_segment_getter(TString averaging,TTree* intree, TTree* outtree, TStri
   std::vector<Double_t> slopeVec_mean_err;
   std::vector<Double_t> slopeVec_rms;
   std::vector<Double_t> comboVec_mean;
+  std::vector<Double_t> comboVec2_norm2;
   std::vector<Double_t> comboVec_mean_err;
   std::vector<Double_t> comboVec_rms;
   // FIXME Technically nDet and nBPM are 0 unless you've executed "calculateSensitivities" at least once...
@@ -58,6 +59,9 @@ void combo_segment_getter(TString averaging,TTree* intree, TTree* outtree, TStri
     comboVec2_mean.push_back(comboVec_mean);
     comboVec2_mean_err.push_back(comboVec_mean_err);
     comboVec2_rms.push_back(comboVec_rms);
+
+    Double_t comboVec1_norm2 = 0.0;
+    comboVec2_norm2.push_back(comboVec1_norm2);
   }
   // Set branch address after the vectors are filled to avoid C++ dynamic memory allocation shenanigans
   for(int idet=0;idet<DVs.size();idet++){
@@ -73,13 +77,14 @@ void combo_segment_getter(TString averaging,TTree* intree, TTree* outtree, TStri
       outtree->Branch(Form("%s_%s_mean_err",Monitors.at(imon).Data(),IVs.at(ibpm).Data()),&comboVec2_mean_err[imon][ibpm]);
       outtree->Branch(Form("%s_%s_rms",Monitors.at(imon).Data(),IVs.at(ibpm).Data()),&comboVec2_rms[imon][ibpm]);
     }
+    outtree->Branch(Form("%s_norm",Monitors.at(imon).Data()),&comboVec2_norm2[imon]);
   }
 
   // Get the number of segments from the tree directly
   Int_t totalEntries = intree->GetEntries();
   Int_t int_avg_time_scale = 0;
   Double_t double_avg_time_scale = 0;
-  if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state") {
+  if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part") {
     intree->SetBranchAddress(averaging,&double_avg_time_scale);
   }
   if (averaging == "dit_segment" || averaging == "run") {
@@ -105,7 +110,7 @@ void combo_segment_getter(TString averaging,TTree* intree, TTree* outtree, TStri
   //for (std::map<Int_t,Int_t>::iterator iter = avg_time_scales.begin() ; iter != avg_time_scales.end(); ++iter){}
   for (Int_t ient = 0 ; ient<totalEntries ; ient++) {
     intree->GetEntry(ient);
-    if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state") {
+    if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part") {
       localAvg_time_scale = (Int_t)double_avg_time_scale;
     }
     if (averaging == "dit_segment" || averaging == "run") {
@@ -153,9 +158,9 @@ void combo_segment_getter(TString averaging,TTree* intree, TTree* outtree, TStri
               if (imon == 0 && idet == 0){
                 //Printf("New mean %s %s = %f, entries = %d",DVs.at(idet).Data(),Monitors.at(imon).Data(),avg_tmp1,nen);
               }
-              comboVec2_mean[idet][imon]     = avg_tmp1;
-              comboVec2_mean_err[idet][imon] = err_tmp1;
-              comboVec2_rms[idet][imon]      = rms_tmp1;
+              slopeVec2_mean[idet][imon]     = avg_tmp1;
+              slopeVec2_mean_err[idet][imon] = err_tmp1;
+              slopeVec2_rms[idet][imon]      = rms_tmp1;
             }
           }
           //else {
@@ -166,6 +171,7 @@ void combo_segment_getter(TString averaging,TTree* intree, TTree* outtree, TStri
       // Combos
       for (Int_t imon = 0 ; imon < Monitors.size() ; imon++) {
         //Printf("test 1 combos");
+        comboVec2_norm2[imon] = 0.0;
         for (Int_t ibpm = 0 ; ibpm < IVs.size() ; ibpm++) {
           //Printf("test 2 combos");
           if (cut == "") {
@@ -190,6 +196,7 @@ void combo_segment_getter(TString averaging,TTree* intree, TTree* outtree, TStri
               rms_tmp1 = (Double_t)(ah1->GetRMS(1));
               //Printf("New mean %s %s = %f, entries = %d",Monitors.at(imon).Data(),IVs.at(ibpm).Data(),avg_tmp1,nen);
               comboVec2_mean[imon][ibpm]     = avg_tmp1;
+              comboVec2_norm2[imon]         += (avg_tmp1*avg_tmp1);
               comboVec2_mean_err[imon][ibpm] = err_tmp1;
               comboVec2_rms[imon][ibpm]      = rms_tmp1;
             }
@@ -199,7 +206,17 @@ void combo_segment_getter(TString averaging,TTree* intree, TTree* outtree, TStri
           //}
         }
       }
+      // Renormalize the averaged eigenvector definition.
+      for (Int_t imon = 0 ; imon < Monitors.size() ; imon++) {
+        for (Int_t ibpm = 0 ; ibpm < IVs.size() ; ibpm++) {
+          comboVec2_mean[imon][ibpm]     = comboVec2_mean[imon][ibpm]/sqrt(comboVec2_norm2[imon]);
+          comboVec2_mean_err[imon][ibpm] = comboVec2_mean_err[imon][ibpm]/sqrt(comboVec2_norm2[imon]);
+          comboVec2_rms[imon][ibpm]      = comboVec2_rms[imon][ibpm]/sqrt(comboVec2_norm2[imon]);
+        }
+        comboVec2_norm2[imon] = sqrt(comboVec2_norm2[imon]);
+      }
       // FIXME FIXME HACK -> Entry 0 is a special case where the dit_flag == 0 and it fills the tree with nothing, so just workaround by not filling here and then filling 2x on the next good entry. Serious HACK for CREX
+      // FIXME this hack needs to be not just for entry 0, but for all dit_segment == 0
       if (cut == "dit_flag==1") {
         if (ient == 0) {
           continue;
@@ -222,7 +239,8 @@ void saveEigenSegmentCombos(TString ana = "avgs", TString suffix = ""){ //TStrin
   TChain* mini_eigen_reg_allbpms_sorted    = new TChain(Form("mini_eigen_reg_allbpms_sorted%s",suffix.Data())); // Unsorted versions have no _sorted in the name
   TChain* mini_eigen_reg_5bpms_sorted      = new TChain(Form("mini_eigen_reg_5bpms_sorted%s",suffix.Data()));
   // Replace 13746 etc. with a smart-replaced command line derived ["","A",..."D"] or [13746, 15746, 13726] set
-  TString infilename = Form("/lustre19/expphy/volatile/halla/parity/crex-respin1/LagrangeOutput/rootfiles//rcdb_segment_eigenvectors_sorted%s.root",suffix.Data());
+  TString infilename = Form("/lustre19/expphy/volatile/halla/parity/crex-respin1/LagrangeOutput/rootfiles//rcdb_segment_parts_eigenvectors_sorted%s.root",suffix.Data());
+  //TString infilename = Form("/lustre19/expphy/volatile/halla/parity/crex-respin1/LagrangeOutput/rootfiles//rcdb_segment_eigenvectors_sorted%s.root",suffix.Data());
   mini->AddFile(infilename);
   //mini_eigen_reg_allbpms_tr->AddFile(infilename);
   mini_eigen_reg_allbpms_sorted->AddFile(infilename);
@@ -292,6 +310,12 @@ void saveEigenSegmentCombos(TString ana = "avgs", TString suffix = ""){ //TStrin
   TString cut = "dit_flag==1";
   TString averaging_timescale = "dit_segment"; // Can also be run, rcdb_slug, rcdb_flip_state, or nothing (simply don't execute this script for nothing);
   if (ana == "avgs") {
+    // Part averages
+    TTree * out_tree_mini_eigen_reg_allbpms_sorted_part_pruned = new TTree("mini_eigen_reg_allbpms_sorted_pruned_part_avg","mini_eigen_reg_allbpms_sorted_pruned_part_avg");
+    TTree * out_tree_mini_eigen_reg_5bpms_sorted_part_pruned   = new TTree("mini_eigen_reg_5bpms_sorted_pruned_part_avg",  "mini_eigen_reg_5bpms_sorted_pruned_part_avg");
+    TTree * out_tree_mini_eigen_reg_allbpms_sorted_part = new TTree("mini_eigen_reg_allbpms_sorted_part_avg","mini_eigen_reg_allbpms_sorted_part_avg");
+    TTree * out_tree_mini_eigen_reg_5bpms_sorted_part   = new TTree("mini_eigen_reg_5bpms_sorted_part_avg",  "mini_eigen_reg_5bpms_sorted_part_avg");
+
     // Segment averages
     TTree * out_tree_mini_eigen_reg_allbpms_sorted_seg_pruned = new TTree("mini_eigen_reg_allbpms_sorted_pruned_seg_avg","mini_eigen_reg_allbpms_sorted_pruned_seg_avg");
     TTree * out_tree_mini_eigen_reg_5bpms_sorted_seg_pruned   = new TTree("mini_eigen_reg_5bpms_sorted_pruned_seg_avg",  "mini_eigen_reg_5bpms_sorted_pruned_seg_avg");
@@ -304,13 +328,34 @@ void saveEigenSegmentCombos(TString ana = "avgs", TString suffix = ""){ //TStrin
     TTree * out_tree_mini_eigen_reg_allbpms_sorted_slug = new TTree("mini_eigen_reg_allbpms_sorted_slug_avg","mini_eigen_reg_allbpms_sorted_slug_avg");
     TTree * out_tree_mini_eigen_reg_5bpms_sorted_slug   = new TTree("mini_eigen_reg_5bpms_sorted_slug_avg",  "mini_eigen_reg_5bpms_sorted_slug_avg");
 
+    // Part averages
+    averaging_timescale = "crex_part";
+    cut = "dit_flag==1";
+    combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_allbpms_sorted_part_pruned,"mini_eigen_reg_allbpms_sorted",cut,detectors,monitors,devices);
+    combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_sorted_part_pruned,"mini_eigen_reg_5bpms_sorted",cut,detectors,monitors5,devices5);
+    cut = "";
+    combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_allbpms_sorted_part,"mini_eigen_reg_allbpms_sorted",cut,detectors,monitors,devices);
+    combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_sorted_part,"mini_eigen_reg_5bpms_sorted",cut,detectors,monitors5,devices5);
+    out_tree_mini_eigen_reg_allbpms_sorted_part_pruned->Write();
+    out_tree_mini_eigen_reg_5bpms_sorted_part_pruned->Write();
+    out_tree_mini_eigen_reg_allbpms_sorted_part->Write();
+    out_tree_mini_eigen_reg_5bpms_sorted_part->Write();
+    delete out_tree_mini_eigen_reg_allbpms_sorted_part_pruned;
+    delete out_tree_mini_eigen_reg_5bpms_sorted_part_pruned;
+    delete out_tree_mini_eigen_reg_allbpms_sorted_part;
+    delete out_tree_mini_eigen_reg_5bpms_sorted_part;
+
+
+    //out_tree_mini_eigen_reg_allbpms_tr->Write();
+    // Segment averages
+    averaging_timescale = "dit_segment";
+    cut = "dit_flag==1";
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_allbpms_sorted_seg_pruned,"mini_eigen_reg_allbpms_sorted",cut,detectors,monitors,devices);
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_sorted_seg_pruned,"mini_eigen_reg_5bpms_sorted",cut,detectors,monitors5,devices5);
     cut = "";
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_allbpms_sorted_seg,"mini_eigen_reg_allbpms_sorted",cut,detectors,monitors,devices);
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_sorted_seg,"mini_eigen_reg_5bpms_sorted",cut,detectors,monitors5,devices5);
 
-    //out_tree_mini_eigen_reg_allbpms_tr->Write();
     out_tree_mini_eigen_reg_allbpms_sorted_seg_pruned->Write();
     out_tree_mini_eigen_reg_5bpms_sorted_seg_pruned->Write();
     out_tree_mini_eigen_reg_allbpms_sorted_seg->Write();

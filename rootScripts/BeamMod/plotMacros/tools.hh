@@ -162,7 +162,7 @@ void ToolBox::dit_slopes_averaging(TString averaging_timescale = "segment") {
   newfile.Close();
 }
 
-void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t draw_plots = 0) {
+void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t draw_plots = 0, TString mod_draw = "") {
   TChain* mini                                  = new TChain("mini");
   TChain* agg_part_avgd_friendable              = new TChain("agg_part_avgd_friendable");
   TChain* agg_plain_friendable                  = new TChain("agg_plain_friendable");
@@ -392,8 +392,13 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   };
 
   // FIXME temporary output rootfile name
-  TString outFileName = Form("processed_respin1_data/TEST_new_weighting.root");
+  //TString outFileName = Form("processed_respin1_data/TEST_new_weighting.root");
   //TString outFileName = Form("processed_respin1_data/CREX_All_Slug_Avg_Outputs.root");
+  //TString outFileName = Form("processed_respin1_data/CREX_All_Slow_Controls_Avg_Outputs.root");
+  //TString outFileName = Form("processed_respin1_data/CREX_All_Slow_Controls_Simple_Avg_Outputs.root");
+  TString outFileName = Form("processed_respin1_data/CREX_All_%s_Avg_Outputs.root",averaging_timescale.Data());
+  //TString outFileName = Form("processed_respin1_data/CREX_All_IHWP_Avg_Outputs.root");
+  //TString outFileName = Form("processed_respin1_data/CREX_All_Wien_Avg_Outputs.root");
   //TString outFileName = Form("TEST_slug_avg_corrections_outputs.root");
   if (draw_plots == 1) {
     outFileName = "TEST_junk.root";
@@ -466,7 +471,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Corrections per monitor
   // Main det weighted
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms.reg_asym_usl.err))";
-  draw            = "-1.0*mini_reference_eigen_reg_5bpms_sorted.#_#.mean*mini_reference_eigen_reg_5bpms_sorted.diff_#.mean";
+  draw            = Form("-1.0*%smini_reference_eigen_reg_5bpms_sorted.#_#.mean*mini_reference_eigen_reg_5bpms_sorted.diff_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted.#_#.mean*mini_reference_eigen_reg_5bpms_sorted.diff_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors5,monitors5,cuts,{},0);
   out_tree_mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted->Write();
@@ -491,7 +496,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Monitor signal weighted (kind of like self, but no small-slope issues appear)
   draw_weighting_error = "abs((0*mini_reference_eigen_reg_5bpms_sorted.#_#.mean)+mini_reference_eigen_reg_5bpms_sorted.diff_#.err)"; // The 0* section here is because I haven't figured out a convenient way to have multiple # # # set up that will let me pick which ones to use... i.e. I'm stuck with having exaclty these 3 #'s and their contents in this order...
-  draw                = "-1.0*mini_reference_eigen_reg_5bpms_sorted.#_#.mean*mini_reference_eigen_reg_5bpms_sorted.diff_#.mean";
+  draw                = Form("-1.0*%smini_reference_eigen_reg_5bpms_sorted.#_#.mean*mini_reference_eigen_reg_5bpms_sorted.diff_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted.#_#.mean*mini_reference_eigen_reg_5bpms_sorted.diff_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_reference_eigen_reg_5bpms_sorted_corrections_mon_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors5,monitors5,cuts,{},0);
   out_tree_mini_reference_eigen_reg_5bpms_sorted_corrections_mon_weighted->Write();
@@ -518,7 +523,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Corrections per monitor
   // Main det weighted
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
-  draw            = "-1.0*mini_eigen_reg_5bpms_part_avg.#_#*agg_part_avgd_friendable.diff_#_mean";
+  draw            = Form("-1.0*%smini_eigen_reg_5bpms_part_avg.#_#*agg_part_avgd_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_eigen_reg_5bpms_part_avg.#_#*agg_part_avgd_friendable.diff_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_part_avg_corrections_det_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors5,monitors5,cuts,{},0);
   out_tree_mini_eigen_reg_5bpms_part_avg_corrections_det_weighted->Write();
@@ -543,7 +548,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Monitor signal weighted (kind of like self, but no small-slope issues appear)
   draw_weighting_error = "abs((0*mini_eigen_reg_5bpms_part_avg.#_#)+agg_part_avgd_friendable.diff_#_mean_error)"; // The 0* section here is because I haven't figured out a convenient way to have multiple # # # set up that will let me pick which ones to use... i.e. I'm stuck with having exaclty these 3 #'s and their contents in this order...
-  draw            = "-1.0*mini_eigen_reg_5bpms_part_avg.#_#*agg_part_avgd_friendable.diff_#_mean";
+  draw            = Form("-1.0*%smini_eigen_reg_5bpms_part_avg.#_#*agg_part_avgd_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_eigen_reg_5bpms_part_avg.#_#*agg_part_avgd_friendable.diff_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_part_avg_corrections_mon_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors5,monitors5,cuts,{},0);
   out_tree_mini_eigen_reg_5bpms_part_avg_corrections_mon_weighted->Write();
@@ -571,7 +576,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Corrections per monitor
   // Main det weighted
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_regression.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_regression.reg_asym_usl.err))";
-  draw            = "-1.0*mini_regression.#_#*agg_plain_friendable.diff_#_mean";
+  draw            = Form("-1.0*%smini_regression.#_#*agg_plain_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_regression.#_#*agg_plain_friendable.diff_#_mean_error)";
   //////////////combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_regression_corrections_det_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,devices5,devices5,cuts,{},0);
   //////////////out_tree_mini_regression_corrections_det_weighted->Write();
@@ -596,7 +601,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Monitor signal weighted (kind of like self, but no small-slope issues appear)
   draw_weighting_error = "abs((0*mini_regression.#_#)+agg_plain_friendable.diff_#_mean_error)"; // The 0* section here is because I haven't figured out a convenient way to have multiple # # # set up that will let me pick which ones to use... i.e. I'm stuck with having exaclty these 3 #'s and their contents in this order...
-  draw            = "-1.0*mini_regression.#_#*agg_plain_friendable.diff_#_mean";
+  draw            = Form("-1.0*%smini_regression.#_#*agg_plain_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_regression.#_#*agg_plain_friendable.diff_#_mean_error)";
   //////////////combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_regression_corrections_mon_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,devices5,devices5,cuts,{},0);
   //////////////out_tree_mini_regression_corrections_mon_weighted->Write();
@@ -624,7 +629,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Corrections per monitor
   // Main det weighted
   draw_weighting_error = "((rcdb_arm_flag==0)*(agg_plain_friendable.dit_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_plain_friendable.dit_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_plain_friendable.dit_asym_usl_mean_error))";
-  draw            = "-1.0*dit_plain_friendable_slopes.#_#_mean*agg_plain_friendable.diff_#_mean";
+  draw            = Form("-1.0*%sdit_plain_friendable_slopes.#_#_mean*agg_plain_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(dit_plain_friendable_slopes.#_#_mean*agg_plain_friendable.diff_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_dit_plain_corrections_det_weighted,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,dit_slope_devices5,devices5,cuts,{},0);
   out_tree_mini_dit_plain_corrections_det_weighted->Write();
@@ -649,7 +654,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Monitor signal weighted (kind of like self, but no small-slope issues appear)
   draw_weighting_error = "abs((0*dit_plain_friendable_slopes.#_#_mean)+agg_plain_friendable.diff_#_mean_error)"; // The 0* section here is because I haven't figured out a convenient way to have multiple # # # set up that will let me pick which ones to use... i.e. I'm stuck with having exaclty these 3 #'s and their contents in this order...
-  draw            = "-1.0*dit_plain_friendable_slopes.#_#_mean*agg_plain_friendable.diff_#_mean";
+  draw            = Form("-1.0*%sdit_plain_friendable_slopes.#_#_mean*agg_plain_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(dit_plain_friendable_slopes.#_#_mean*agg_plain_friendable.diff_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_dit_plain_corrections_mon_weighted,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,dit_slope_devices5,devices5,cuts,{},0);
   out_tree_mini_dit_plain_corrections_mon_weighted->Write();
@@ -676,7 +681,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Corrections per monitor
   // Main det weighted
   draw_weighting_error = "((rcdb_arm_flag==0)*(agg_part_avgd_friendable.dit_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_part_avgd_friendable.dit_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_part_avgd_friendable.dit_asym_usl_mean_error))";
-  draw            = "-1.0*dit_part_avgd_friendable_slopes.#_#_mean*agg_part_avgd_friendable.diff_#_mean";
+  draw            = Form("-1.0*%sdit_part_avgd_friendable_slopes.#_#_mean*agg_part_avgd_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(dit_part_avgd_friendable_slopes.#_#_mean*agg_part_avgd_friendable.diff_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_dit_part_avgd_corrections_det_weighted,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,monitors5,monitors5,cuts,{},0);
   out_tree_mini_dit_part_avgd_corrections_det_weighted->Write();
@@ -701,7 +706,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Monitor signal weighted (kind of like self, but no small-slope issues appear)
   draw_weighting_error = "abs((0*dit_part_avgd_friendable_slopes.#_#_mean)+agg_part_avgd_friendable.diff_#_mean_error)"; // The 0* section here is because I haven't figured out a convenient way to have multiple # # # set up that will let me pick which ones to use... i.e. I'm stuck with having exaclty these 3 #'s and their contents in this order...
-  draw            = "-1.0*dit_part_avgd_friendable_slopes.#_#_mean*agg_part_avgd_friendable.diff_#_mean";
+  draw            = Form("-1.0*%sdit_part_avgd_friendable_slopes.#_#_mean*agg_part_avgd_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(dit_part_avgd_friendable_slopes.#_#_mean*agg_part_avgd_friendable.diff_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_dit_part_avgd_corrections_mon_weighted,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,monitors5,monitors5,cuts,{},0);
   out_tree_mini_dit_part_avgd_corrections_mon_weighted->Write();
@@ -733,7 +738,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Difference between eigen regression and standard regression
   // Part avgd eigen reg weighted
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
-  draw            = "agg_part_avgd_friendable.#_#_mean";
+  draw            = Form("%sagg_part_avgd_friendable.#_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(agg_part_avgd_friendable.#_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_dit_reg_difference,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_differences_detectors,{},{},cuts,0);
   out_tree_mini_eigen_dit_reg_difference->Write();
@@ -759,7 +764,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Difference between eigen regression and standard regression
   // Part avgd eigen reg weighted
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_regression.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_regression.reg_asym_usl.err))";
-  draw            = "agg_plain_friendable.#_#_mean";
+  draw            = Form("%sagg_plain_friendable.#_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(agg_plain_friendable.#_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_plain_dit_reg_difference,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_differences_detectors,{},{},cuts,0);
   out_tree_mini_plain_dit_reg_difference->Write();
@@ -789,7 +794,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Raw asyms
   // Main det signal weighted
   drawn_channels_error = "abs(#_#.err)";
-  draw                 =     "#_#.mean"; // diff_evMon0.mean, etc.
+  draw                 =     Form("%s#_#.mean",mod_draw.Data());
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_raw_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   out_tree_mini_raw_det_asyms_det_weighted->Write();
@@ -815,7 +820,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Reference burstwise, (sorted, but it the corrected asyms etc. don't care about sort and live in non-sorted tree by themselves), eigenvector regression 
   // Main det signal weighted
   drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms.#_#.err)";
-  draw                 =     "mini_reference_eigen_reg_5bpms.#_#.mean"; // diff_evMon0.mean, etc.
+  draw                 =     Form("%smini_reference_eigen_reg_5bpms.#_#.mean",mod_draw.Data());
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms.reg_asym_usl.err))";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   out_tree_mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted->Write();
@@ -842,7 +847,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Main det signal weighted
   // This is the signal with which all other signals are averaged with (except self-weighted signals)
   drawn_channels_error = "abs(mini_eigen_reg_5bpms_part_avg.#_#.err)";
-  draw                 =     "mini_eigen_reg_5bpms_part_avg.#_#.mean"; // diff_evMon0.mean, etc.
+  draw                 =     Form("%smini_eigen_reg_5bpms_part_avg.#_#.mean",mod_draw.Data());
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   out_tree_mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted->Write();
@@ -869,7 +874,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Main det signal weighted
   // This is the signal with which all other signals are averaged with (except self-weighted signals)
   drawn_channels_error = "abs(mini_eigen_reg_5bpms_part_avg.#_#.err)";
-  draw                 =     "mini_eigen_reg_5bpms_part_avg.#_#.mean"; // diff_evMon0.mean, etc.
+  draw                 =     Form("%smini_eigen_reg_5bpms_part_avg.#_#.mean",mod_draw.Data());
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
   //////////combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_burstwise_mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},null_cuts,cuts,1); //null cut vector here means use draws_piece2 loop for cut definition instead
   //////////stwise_mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted->Write();
@@ -897,7 +902,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Correction amounts also exist in the agg tree... just not in a #_# easily parsed format of course
   // Main det signal weighted
   drawn_channels_error = "abs(mini_regression.#_#.err)";
-  draw                 =     "mini_regression.#_#.mean"; // diff_evMon0.mean, etc.
+  draw                 =     Form("%smini_regression.#_#.mean",mod_draw.Data());
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_regression.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_regression.reg_asym_usl.err))";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_regression_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,reg_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   out_tree_mini_regression_det_asyms_det_weighted->Write();
@@ -923,7 +928,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Main standard 5bpm regression - correction amount on the asym, from aggregator
   // Main det signal weighted
   drawn_channels_error = "abs(agg_plain_friendable.#_#_mean_error)";
-  draw                 =     "agg_plain_friendable.#_#_mean"; // diff_evMon0.mean, etc.
+  draw                 =     Form("%sagg_plain_friendable.#_#_mean",mod_draw.Data());
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_regression.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_regression.reg_asym_usl.err))";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_regression_det_asym_cors_det_weighted,draw,draw_weighting_error,drawn_channels_error,asym_vec,agg_cor_special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   out_tree_mini_regression_det_asym_cors_det_weighted->Write();
@@ -951,7 +956,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Correction amounts also exist in the agg tree... just not in a #_# easily parsed format of course
   // Main det signal weighted
   drawn_channels_error = "abs(mini_overload.#_#.err)";
-  draw                 =     "mini_overload.#_#.mean"; // diff_evMon0.mean, etc.
+  draw                 =     Form("%smini_overload.#_#.mean",mod_draw.Data());
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_overload.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_overload.reg_asym_usl.err))";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_overload_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,reg_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   out_tree_mini_overload_det_asyms_det_weighted->Write();
@@ -978,7 +983,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Overload standard regression, asym correction amount from aggregator
   // Main det signal weighted
   drawn_channels_error = "abs(mini_overload.#_#.err)";
-  draw                 =     "mini_overload.#_#.mean"; // diff_evMon0.mean, etc.
+  draw                 =     Form("%smini_overload.#_#.mean",mod_draw.Data());
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_overload.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_overload.reg_asym_usl.err))";
   //////////combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_overload_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,reg_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   //////////out_tree_mini_overload_det_asyms_det_weighted->Write();
@@ -1007,7 +1012,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Correction amounts also exist in the agg tree... just not in a #_# easily parsed format of course
   // Main det signal weighted
   drawn_channels_error = "abs(agg_plain_friendable.#_#_mean_error)";
-  draw                 =     "agg_plain_friendable.#_#_mean"; // diff_evMon0.mean, etc.
+  draw                 =     Form("%sagg_plain_friendable.#_#_mean",mod_draw.Data());
   draw_weighting_error = "((rcdb_arm_flag==0)*(agg_plain_friendable.dit_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_plain_friendable.dit_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_plain_friendable.dit_asym_usl_mean_error))";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_dit_plain_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,dit_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   out_tree_mini_dit_plain_det_asyms_det_weighted->Write();
@@ -1035,7 +1040,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Correction amounts also exist in the agg tree... just not in a #_# easily parsed format of course
   // Main det signal weighted
   drawn_channels_error = "abs(agg_part_avgd_friendable.#_#_mean_error)";
-  draw                 =     "agg_part_avgd_friendable.#_#_mean"; // diff_evMon0.mean, etc.
+  draw                 =     Form("%sagg_part_avgd_friendable.#_#_mean",mod_draw.Data());
   draw_weighting_error = "((rcdb_arm_flag==0)*(agg_part_avgd_friendable.dit_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_part_avgd_friendable.dit_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_part_avgd_friendable.dit_asym_usl_mean_error))";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_dit_part_avgd_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,dit_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   out_tree_mini_dit_part_avgd_det_asyms_det_weighted->Write();
@@ -1061,7 +1066,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Monitor signals directly - regular eigenvector analysis, sorted - reference analysis
   // Main det signal weighted
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
-  draw                 =     "mini_reference_eigen_reg_5bpms_sorted.#_#.mean"; // diff_evMon0.mean, etc.
+  draw                 =     Form("%smini_reference_eigen_reg_5bpms_sorted.#_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted.#_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_reference_eigen_reg_5bpms_sorted_monitors_det_weighted,draw,draw_weighting_error,drawn_channels_error,diff_vec,monitors5,{},cutGoodProduction,{},0);
   out_tree_mini_reference_eigen_reg_5bpms_sorted_monitors_det_weighted->Write();
@@ -1082,7 +1087,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Monitor signals directly - regular eigenvector analysis, sorted - part avg eigenvectors
   // Main det signal weighted
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
-  draw                 =     "agg_part_avgd_friendable.#_#_mean"; // diff_evMon0.mean, etc.
+  draw                 =     Form("%sagg_part_avgd_friendable.#_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(agg_part_avgd_friendable.#_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_part_avg_monitors_det_weighted,draw,draw_weighting_error,drawn_channels_error,diff_vec,monitors5,{},cutGoodProduction,{},0);
   out_tree_mini_eigen_reg_5bpms_part_avg_monitors_det_weighted->Write();
@@ -1103,7 +1108,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Monitor signals directly - regular eigenvector analysis, sorted
   // Main det signal weighted
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
-  draw                 =     "agg_part_avgd_friendable.#_#_mean"; // diff_evMon0.mean, etc.
+  draw                 =     Form("%sagg_part_avgd_friendable.#_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(agg_part_avgd_friendable.#_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_BPMs_det_weighted,draw,draw_weighting_error,drawn_channels_error,diff_yield_vec,yield_diff_BPMs,{},cutGoodProduction,{},0);
   out_tree_mini_BPMs_det_weighted->Write();
@@ -1124,7 +1129,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Monitor signals directly - regular eigenvector analysis, sorted
   // Main det signal weighted
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
-  draw                 =     "agg_part_avgd_friendable.#_#_mean"; // diff_evMon0.mean, etc.
+  draw                 =     Form("%sagg_part_avgd_friendable.#_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(agg_part_avgd_friendable.#_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_BCMs_det_weighted,draw,draw_weighting_error,drawn_channels_error,asym_yield_vec,yield_bcm_devices,{},cutGoodProduction,{},0);
   out_tree_mini_BCMs_det_weighted->Write();
@@ -1156,8 +1161,10 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   }
   newfile.Close();
   if (draw_plots == 1){ // Instead use the multigraph command to make plots
-    TFile data_file_cors("processed_respin1_data/practice/TEST_slug_avg_corrections_outputs.root","read");
-    TFile data_file_asyms("processed_respin1_data/practice/TEST_slug_avg_asyms_outputs.root","read");
+    //TFile data_file_cors(Form("processed_respin1_data/CREX_All_%s_Null_Avg_Outputs.root",averaging_timescale.Data()),"read");
+    //TFile data_file_asyms(Form("processed_respin1_data/CREX_All_%s_Null_Avg_Outputs.root",averaging_timescale.Data()),"read");
+    TFile data_file_cors(Form("processed_respin1_data/CREX_All_%s_Avg_Outputs.root",averaging_timescale.Data()),"read");
+    TFile data_file_asyms(Form("processed_respin1_data/CREX_All_%s_Avg_Outputs.root",averaging_timescale.Data()),"read");
 
     TTree* mini_slugs /* Just use one of the available trees for rcdb etc.*/ = (TTree*)data_file_asyms.Get("mini_raw_det_asyms_det_weighted");
     out_tree_mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted = (TTree*)data_file_cors.Get("mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted");
@@ -1228,7 +1235,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     label->SetNDC();
 
     std::ofstream outfile0;
-    outfile0.open(Form("./processed_respin1_data/Results.csv"),std::ofstream::app);
+    outfile0.open(Form("./processed_respin1_data/Results_%s.csv",averaging_timescale.Data()),std::ofstream::app);
     outfile0 << "Averaged outputs " << std::endl;
     outfile0 << "draw, "
              << "averaging, "
@@ -1266,7 +1273,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       // Utilize the slugwise main-det weighted data
       //p1=multiGraph(c1_1,p1,(TChain*)mini_slugs,k+1,Form("rcdb_slug:rcdb_sign*mini_BPMs_det_weighted.diff_%s_mean/(1.0e-6):mini_BPMs_det_weighted.diff_%s_mean_err/(1.0e-6)",devices.at(k).Data(),devices.at(k).Data()),cutGoodProduction.at(0),1);
     draw_weighting_error = "abs(mini_BPMs_det_weighted.#_#_mean_self_err/1.0e-6)";
-    draw                 =     "rcdb_sign*mini_BPMs_det_weighted.#_#_mean_self/1.0e-6"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_BPMs_det_weighted.#_#_mean_self/1.0e-6",mod_draw.Data());
     drawn_channels_error = "abs(mini_BPMs_det_weighted.#_#_mean_self_err/1.0e-6)";
     p1=manyGraph(c1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,diff_vec,yield_diff_BPMs,{},{},{},1); // empty draws_piece3 and cuts and cuts2 vectors
     //}
@@ -1274,7 +1281,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c1_1->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    corrections_pdfname = "monitors_slug_avg";
+    corrections_pdfname = "monitors_"+ averaging_timescale +"_avg";
     c1_1->SaveAs(Form("processed_respin1_data/%s.pdf(",corrections_pdfname.Data()));
 
     TCanvas* c1_2 = new TCanvas();
@@ -1290,8 +1297,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     // No error-rescaling
     // Utilize the slugwise main-det weighted data
     //p1=multiGraph(c1_2,p1,(TChain*)mini_slugs,k+1,Form("rcdb_slug:rcdb_sign*mini_BPMs_det_weighted.diff_%s_mean/(1.0e-6):mini_BPMs_det_weighted.diff_%s_mean_err/(1.0e-6)",devices.at(k).Data(),devices.at(k).Data()),cutGoodProduction.at(0),1);
+    //draw_weighting_error = "1";
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     "rcdb_sign*mini_BPMs_det_weighted.#_#_mean/1.0e-6"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_BPMs_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
     drawn_channels_error = "abs(mini_BPMs_det_weighted.#_#_mean_err/1.0e-6)";
     p1=manyGraph(c1_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,diff_vec,yield_diff_BPMs,{},{},{},1); // empty draws_piece3 and cuts and cuts2 vectors
     //}
@@ -1315,7 +1323,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       // Utilize the slugwise main-det weighted data
       //p1=multiGraph(c1_3,p1,(TChain*)mini_slugs,k+1,Form("rcdb_slug:rcdb_sign*mini_BPMs_det_weighted.diff_%s_mean/(1.0e-6):mini_BPMs_det_weighted.diff_%s_mean_err/(1.0e-6)",devices.at(k).Data(),devices.at(k).Data()),cutGoodProduction.at(0),1);
     draw_weighting_error = "abs(mini_BCMs_det_weighted.#_#_mean_self_err/1.0e-9)";
-    draw                 =     "rcdb_sign*mini_BCMs_det_weighted.#_#_mean_self/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_BCMs_det_weighted.#_#_mean_self/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_BCMs_det_weighted.#_#_mean_self_err/1.0e-9)";
     p1=manyGraph(c1_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,yield_bcm_devices,{},{},{},1); // empty draws_piece3 and cuts and cuts2 vectors
     //}
@@ -1339,7 +1347,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     // Utilize the slugwise main-det weighted data
     //p1=multiGraph(c1_4,p1,(TChain*)mini_slugs,k+1,Form("rcdb_slug:rcdb_sign*mini_BPMs_det_weighted.diff_%s_mean/(1.0e-6):mini_BPMs_det_weighted.diff_%s_mean_err/(1.0e-6)",devices.at(k).Data(),devices.at(k).Data()),cutGoodProduction.at(0),1);
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     "rcdb_sign*mini_BCMs_det_weighted.#_#_mean/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_BCMs_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_BCMs_det_weighted.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c1_4,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,yield_bcm_devices,{},{},{},1); // empty draws_piece3 and cuts and cuts2 vectors
     //}
@@ -1352,7 +1360,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
 
     // Corrections
-    corrections_pdfname = "corrections_slug_avg";
+    corrections_pdfname = "corrections_"+ averaging_timescale +"_avg";
 
     TCanvas* c2_1 = new TCanvas();
     ana = "main det weighted - part-avg eigenvector regression - corrections per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
@@ -1368,7 +1376,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       // Utilize the slugwise main-det weighted data
       //p1=multiGraph(c2_1,p1,(TChain*)mini_slugs,k+1,Form("rcdb_slug:rcdb_sign*mini_BPMs_det_weighted.diff_%s_mean/(1.0e-6):mini_BPMs_det_weighted.diff_%s_mean_err/(1.0e-6)",devices.at(k).Data(),devices.at(k).Data()),cutGoodProduction.at(0),1);
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     "rcdb_sign*mini_eigen_reg_5bpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_eigen_reg_5bpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_eigen_reg_5bpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c2_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors5,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
     //}
@@ -1392,7 +1400,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       // Utilize the slugwise main-det weighted data
       //p1=multiGraph(c2_2,p1,(TChain*)mini_slugs,k+1,Form("rcdb_slug:rcdb_sign*mini_BPMs_det_weighted.diff_%s_mean/(1.0e-6):mini_BPMs_det_weighted.diff_%s_mean_err/(1.0e-6)",devices.at(k).Data(),devices.at(k).Data()),cutGoodProduction.at(0),1);
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     "rcdb_sign*mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted.#_#_mean/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c2_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors5,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
     //}
@@ -1416,7 +1424,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       // Utilize the slugwise main-det weighted data
       //p1=multiGraph(c2_3,p1,(TChain*)mini_slugs,k+1,Form("rcdb_slug:rcdb_sign*mini_BPMs_det_weighted.diff_%s_mean/(1.0e-6):mini_BPMs_det_weighted.diff_%s_mean_err/(1.0e-6)",devices.at(k).Data(),devices.at(k).Data()),cutGoodProduction.at(0),1);
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-6)";
-    draw                 =     "rcdb_sign*mini_dit_plain_corrections_det_weighted.#_#_mean/1.0e-6"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_dit_plain_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
     drawn_channels_error = "abs(mini_dit_plain_corrections_det_weighted.#_#_mean_err/1.0e-6)";
     p1=manyGraph(c2_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,dit_slope_devices5,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
     //}
@@ -1440,7 +1448,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       // Utilize the slugwise main-det weighted data
       //p1=multiGraph(c2_4,p1,(TChain*)mini_slugs,k+1,Form("rcdb_slug:rcdb_sign*mini_BPMs_det_weighted.diff_%s_mean/(1.0e-6):mini_BPMs_det_weighted.diff_%s_mean_err/(1.0e-6)",devices.at(k).Data(),devices.at(k).Data()),cutGoodProduction.at(0),1);
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-6)";
-    draw                 =     "rcdb_sign*mini_dit_part_avgd_corrections_det_weighted.#_#_mean/1.0e-6"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_dit_part_avgd_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
     drawn_channels_error = "abs(mini_dit_part_avgd_corrections_det_weighted.#_#_mean_err/1.0e-6)";
     p1=manyGraph(c2_4,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,monitors5,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
     //}
@@ -1455,7 +1463,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     // Multipletwise differences between analysis methods
     //                                                     
     
-    corrections_pdfname = "disagreements_slug_avg_det_weighted";
+    corrections_pdfname = "disagreements_"+ averaging_timescale +"_avg_det_weighted";
 
     TCanvas* c2_dis_1 = new TCanvas();
     ana = "difference between asyms, eigen vector based, main det weighted - net disagreement (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
@@ -1464,7 +1472,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c2_dis_1->SetName(ana.Data());
     c2_dis_1->Divide(1,3);
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     "rcdb_sign*mini_eigen_dit_reg_difference.#_#_mean/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_eigen_dit_reg_difference.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_eigen_dit_reg_difference.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c2_dis_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_differences_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
@@ -1480,7 +1488,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c2_dis_2->SetName(ana.Data());
     c2_dis_2->Divide(1,3);
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     "rcdb_sign*mini_plain_dit_reg_difference.#_#_mean/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_plain_dit_reg_difference.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_plain_dit_reg_difference.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c2_dis_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_differences_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
@@ -1496,7 +1504,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c2_dis_3->SetName(ana.Data());
     c2_dis_3->Divide(1,3);
     draw_weighting_error = "abs(mini_eigen_dit_reg_difference.#_#_mean_self_err/1.0e-9)";
-    draw                 =     "rcdb_sign*mini_eigen_dit_reg_difference.#_#_mean_self/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_eigen_dit_reg_difference.#_#_mean_self/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_eigen_dit_reg_difference.#_#_mean_self_err/1.0e-9)";
     p1=manyGraph(c2_dis_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_differences_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
@@ -1512,7 +1520,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c2_dis_4->SetName(ana.Data());
     c2_dis_4->Divide(1,3);
     draw_weighting_error = "abs(mini_plain_dit_reg_difference.#_#_mean_self_err/1.0e-9)";
-    draw                 =     "rcdb_sign*mini_plain_dit_reg_difference.#_#_mean_self/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_plain_dit_reg_difference.#_#_mean_self/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_plain_dit_reg_difference.#_#_mean_self_err/1.0e-9)";
     p1=manyGraph(c2_dis_4,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_differences_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
@@ -1524,7 +1532,26 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
 
     // Corrected Asyms
-    corrections_pdfname = "corrected_asyms_slug_avg";
+    corrections_pdfname = "corrected_asyms_"+ averaging_timescale +"_avg";
+
+    TCanvas* c3_0 = new TCanvas();
+    ana = "full main det signal - part avg eigenvector regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    //ana = "burstwise eigenvector regression - corrections per monitor (usl, r), ppb"; // No more absolute value in this anymore (with the sorted slopes)
+    //TPad* cp1 = new TPad("test","",0,0.35,1,1);
+    c3_0->cd();
+    c3_0->SetTitle(ana.Data());
+    c3_0->SetName(ana.Data());
+    // FIXME FIXME FIXME: When not doing slug timescale averaging... need to figure out how to avoid the "main_det" -> usl+r+avg transformation assuming slug level arm flags inside toolbox.hh # replacements and right here... to all 3 of these here.
+    c3_0->Divide(1,1);
+    draw_weighting_error =           "mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_main_det_mean_err/(1.0e-9)";
+    draw                 = "mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_main_det_mean/1.0e-9"; // diff_evMon0.mean, etc.
+    drawn_channels_error =       "abs(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_main_det_mean_err/1.0e-9)";
+    p1=manyGraph(c3_0,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+
+    c3_0->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c3_0->SaveAs(Form("processed_respin1_data/%s.pdf(",corrections_pdfname.Data()));
 
     TCanvas* c3_1 = new TCanvas();
     ana = "main det weighted asyms - part avg eigenvector regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
@@ -1535,14 +1562,14 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_1->SetName(ana.Data());
     c3_1->Divide(2,special_detectors.size()/2);
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     "rcdb_sign*mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_#_#_mean/1.0e-9"; // diff_evMon0.mean, etc.
-    drawn_channels_error = "abs(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_#_#_mean_err/1.0e-9)";
+    draw                 = Form("%smini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error =       "abs(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
     c3_1->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c3_1->SaveAs(Form("processed_respin1_data/%s.pdf(",corrections_pdfname.Data()));
+    c3_1->SaveAs(Form("processed_respin1_data/%s.pdf",corrections_pdfname.Data()));
 
     TCanvas* c3_2 = new TCanvas();
     ana = "main det weighted asyms - burstwise eigenvector regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
@@ -1553,7 +1580,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_2->SetName(ana.Data());
     c3_2->Divide(2,special_detectors.size()/2);
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     "rcdb_sign*mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_#_#_mean/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
@@ -1571,7 +1598,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_3->SetName(ana.Data());
     c3_3->Divide(2,special_detectors.size()/2);
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_regression_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_regression_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     "rcdb_sign*mini_regression_det_asyms_det_weighted.reg_#_#_mean/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_regression_det_asyms_det_weighted.reg_#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_regression_det_asyms_det_weighted.reg_#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
@@ -1589,7 +1616,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_4->SetName(ana.Data());
     c3_4->Divide(2,special_detectors.size()/2);
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_regression_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_regression_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     "rcdb_sign*mini_regression_det_asym_cors_det_weighted.#_#_mean/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_regression_det_asym_cors_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_regression_det_asym_cors_det_weighted.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_4,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,agg_cor_special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
@@ -1607,7 +1634,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_5->SetName(ana.Data());
     c3_5->Divide(2,special_detectors.size()/2);
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_overload_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_overload_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     "rcdb_sign*mini_overload_det_asyms_det_weighted.reg_#_#_mean/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_overload_det_asyms_det_weighted.reg_#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_overload_det_asyms_det_weighted.reg_#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_5,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
@@ -1625,7 +1652,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_6->SetName(ana.Data());
     c3_6->Divide(2,special_detectors.size()/2);
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     "rcdb_sign*mini_dit_part_avgd_det_asyms_det_weighted.dit_#_#_mean/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_dit_part_avgd_det_asyms_det_weighted.dit_#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_dit_part_avgd_det_asyms_det_weighted.dit_#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_6,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
@@ -1643,7 +1670,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_7->SetName(ana.Data());
     c3_7->Divide(2,special_detectors.size()/2);
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     "rcdb_sign*mini_dit_plain_det_asyms_det_weighted.dit_#_#_mean/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_dit_plain_det_asyms_det_weighted.dit_#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_dit_plain_det_asyms_det_weighted.dit_#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_7,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
@@ -1664,7 +1691,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_8->SetName(ana.Data());
     c3_8->Divide(2,special_detectors.size()/2);
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     "rcdb_sign*mini_raw_det_asyms_det_weighted.#_#_mean/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_raw_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_raw_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_8,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
@@ -1682,7 +1709,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_9->SetName(ana.Data());
     c3_9->Divide(2,special_detectors.size()/2);
     draw_weighting_error = "abs(mini_raw_det_asyms_det_weighted.#_#_mean_self_err/1.0e-9)";
-    draw                 =     "rcdb_sign*mini_raw_det_asyms_det_weighted.#_#_mean_self/1.0e-9"; // diff_evMon0.mean, etc.
+    draw                 =     Form("%smini_raw_det_asyms_det_weighted.#_#_mean_self/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_raw_det_asyms_det_weighted.#_#_mean_self_err/1.0e-9)";
     p1=manyGraph(c3_9,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 

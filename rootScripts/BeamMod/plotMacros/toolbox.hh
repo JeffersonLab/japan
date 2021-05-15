@@ -29,7 +29,7 @@ class ToolBox{
     void dit_slopes_averaging(TString);
 
     // Weighted averaging into rootfiles
-    void tg_err_averaging(TString,Int_t);
+    void tg_err_averaging(TString,Int_t,TString);
     void combo_tg_err_segment_getter(TString, TTree*, TTree*, TString, TString, TString, std::vector<TString>, std::vector<TString>, std::vector<TString>, std::vector<TString>, std::vector<TString>, Int_t);
 
     // Data management
@@ -241,7 +241,7 @@ TVirtualPad* ToolBox::manyGraph(TPad* c1, TVirtualPad* p1, TString averaging, TC
   TGraphErrors* tge;
   Int_t subpad = 1;
   std::ofstream outfile0;
-  outfile0.open(Form("./Results.csv"),std::ofstream::app);
+  outfile0.open(Form("./processed_respin1_data/Results.csv"),std::ofstream::app);
 
   for (Int_t idet = 0 ; idet < draws_piece1.size() ; idet++) {
     //Printf("test 1 slopes");
@@ -2339,18 +2339,18 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
     rcdb_draws = rcdb_draws + "crex_part" + "+";
   }
   if (averaging != "crex_pitt" && intree->GetBranch("crex_pitt")) {
-    intree->SetBranchAddress("crex_pitt",&crex_pitt_save);
-    outtree->Branch("crex_pitt",&crex_pitt_save);
+    intree->SetBranchAddress("crex_pitt",&crex_pitt);
+    outtree->Branch("crex_pitt",&crex_pitt);
     rcdb_draws = rcdb_draws + "crex_pitt" + "+";
   }
   if (averaging != "crex_slow_control" && intree->GetBranch("crex_slow_control")) {
-    intree->SetBranchAddress("crex_slow_control",&crex_slow_control_save);
-    outtree->Branch("crex_slow_control",&crex_slow_control_save);
+    intree->SetBranchAddress("crex_slow_control",&crex_slow_control);
+    outtree->Branch("crex_slow_control",&crex_slow_control);
     rcdb_draws = rcdb_draws + "crex_slow_control" + "+";
   }
   if (averaging != "crex_slow_control_simple" && intree->GetBranch("crex_slow_control_simple")) {
-    intree->SetBranchAddress("crex_slow_control_simple",&crex_slow_control_simple_save);
-    outtree->Branch("crex_slow_control_simple",&crex_slow_control_simple_save);
+    intree->SetBranchAddress("crex_slow_control_simple",&crex_slow_control_simple);
+    outtree->Branch("crex_slow_control_simple",&crex_slow_control_simple);
     rcdb_draws = rcdb_draws + "crex_slow_control_simple" + "+";
   }
   if (averaging != "run_number" && intree->GetBranch("run_number")) {
