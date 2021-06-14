@@ -5,8 +5,8 @@
 * Time-stamp:                                             *
 \**********************************************************/
 
-#ifndef __QwVQWK_IntegrationPMT__
-#define __QwVQWK_IntegrationPMT__
+#ifndef __QwMollerADC_IntegrationPMT__
+#define __QwMollerADC_IntegrationPMT__
 
 // System headers
 #include <vector>
@@ -15,7 +15,7 @@
 #include <TTree.h>
 
 // Qweak headers
-#include "QwVQWK_Channel.h"
+#include "QwMollerADC_Channel.h"
 #include "QwParameterFile.h"
 
 // Forward declarations
@@ -58,11 +58,11 @@ class QwIntegrationPMT : public VQwDataElement{
   void  InitializeChannel(TString name, TString datatosave);
   // new routine added to update necessary information for tree trimming
   void  InitializeChannel(TString subsystem, TString name, TString datatosave); 
-  // same purpose as above but this was needed to accormodate combinedPMT. Unlike Beamline combined devices where they have VQWK channels, Combined PMT has integration PMT 
+  // same purpose as above but this was needed to accormodate combinedPMT. Unlike Beamline combined devices where they have MollerADC channels, Combined PMT has integration PMT 
   void  InitializeChannel(TString subsystem, TString module, TString name, TString datatosave); 
   void SetElementName(const TString &name) { fElementName = name; fTriumf_ADC.SetElementName(name);};
 
-  const QwVQWK_Channel* GetChannel(const TString name) const {
+  const QwMollerADC_Channel* GetChannel(const TString name) const {
     if (fTriumf_ADC.GetElementName() == name) return &fTriumf_ADC;
     else return 0;
   };
@@ -186,9 +186,9 @@ void RandomizeMollerEvent(int helicity, const QwBeamCharge& charge, const QwBeam
 
   Bool_t fGoodEvent;//used to validate sequence number in the IsGoodEvent()
 
-  QwVQWK_Channel fTriumf_ADC;
+  QwMollerADC_Channel fTriumf_ADC;
 
-  Int_t fDeviceErrorCode;//keep the device HW status using a unique code from the QwVQWK_Channel::fDeviceErrorCode
+  Int_t fDeviceErrorCode;//keep the device HW status using a unique code from the QwMollerADC_Channel::fDeviceErrorCode
 
   Bool_t fIsBlindable; //
   Bool_t fIsNormalizable;

@@ -28,7 +28,7 @@ class QwBlindDetectorArray:
     public VQwSubsystemParity,
     public MQwSubsystemCloneable<QwBlindDetectorArray>
 {
-  friend class QwCombinedPMT;
+
   /******************************************************************
    *  Class: QwBlindDetectorArray
    *

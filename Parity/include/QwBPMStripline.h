@@ -77,8 +77,11 @@ class QwBPMStripline : public VQwBPM {
   void    SetMockDataAsDiff();
 
   void LoadChannelParameters(QwParameterFile &paramfile){
-    for(Short_t i=0;i<4;i++)
+    for(Short_t i=0;i<4;i++){
       fWire[i].LoadChannelParameters(paramfile);
+    }
+    fAbsPos[0].LoadChannelParameters(paramfile);
+    fAbsPos[1].LoadChannelParameters(paramfile);
   }
 
   Int_t   ProcessEvBuffer(UInt_t* buffer,

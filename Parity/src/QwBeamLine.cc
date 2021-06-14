@@ -145,69 +145,69 @@ Int_t QwBeamLine::LoadChannelMap(TString mapfile)
 
       if (varname=="begin"){
 	
-	// Start to decode derived beamline devices combined+energy
-	deviceok = kTRUE;
-	combotype = varvalue;
-	combolistdecoded = kFALSE;
+	      // Start to decode derived beamline devices combined+energy
+	      deviceok = kTRUE;
+	      combotype = varvalue;
+	      combolistdecoded = kFALSE;
 
-	TString dettype;
+	      TString dettype;
 	
-	while(mapstr.ReadNextLine()&&!combolistdecoded) {
-	  if (mapstr.HasVariablePair("=",varname,varvalue)) {
-	    varname.ToLower();
-	    if (varname=="end"){
-	      // calculate the total weights of the charge
-	      sumQweights = 0.0;
-	      for(size_t i=0;i<fDeviceName.size();i++)
-		sumQweights+=abs(fQWeight[i]);
-	      combolistdecoded = kTRUE;
-	      break;
-	    }
-	  }
+	      while(mapstr.ReadNextLine()&&!combolistdecoded) {
+	        if (mapstr.HasVariablePair("=",varname,varvalue)) {
+	          varname.ToLower();
+	          if (varname=="end"){
+	          // calculate the total weights of the charge
+	            sumQweights = 0.0;
+	            for(size_t i=0;i<fDeviceName.size();i++)
+		            sumQweights+=abs(fQWeight[i]);
+	            combolistdecoded = kTRUE;
+	            break;
+	          }
+	        }
 
-	  if (mapstr.PopValue("name",varvalue)) {
-	    comboname = varvalue;
-	  }
+	        if (mapstr.PopValue("name",varvalue)) {
+	          comboname = varvalue;
+	        }
 	  
-	  dev_name = mapstr.GetTypedNextToken<TString>();
-	  dev_name.ToLower();
-	  dettype  = mapstr.GetTypedNextToken<TString>();
-	  dettype.ToLower();
+	        dev_name = mapstr.GetTypedNextToken<TString>();
+	        dev_name.ToLower();
+	        dettype  = mapstr.GetTypedNextToken<TString>();
+	        dettype.ToLower();
 
-	  // Check to see if the device being read is a valid physical device.
-	  // If not, discard the combination.
-	  index=GetDetectorIndex(GetQwBeamInstrumentType(dettype),dev_name);
+	        // Check to see if the device being read is a valid physical device.
+	        // If not, discard the combination.
+	        index=GetDetectorIndex(GetQwBeamInstrumentType(dettype),dev_name);
 
-	  if (index == -1) {
-	    QwError << "QwBeamLine::LoadChannelMap:  Unknown device: "
-		    <<  dev_name <<" used in "<< comboname
-		    <<". This combination  will not be decoded!"
-		    <<  QwLog::endl;
-	    deviceok = kFALSE;
-	    combolistdecoded = kTRUE;
-	  }else{
-	    // Found the device
-	    // Add to the array of names
-	    fDeviceName.push_back(dev_name);
+	        if (index == -1) {
+	          QwError << "QwBeamLine::LoadChannelMap:  Unknown device: "
+		          <<  dev_name <<" used in "<< comboname
+		          <<". This combination  will not be decoded!"
+		          <<  QwLog::endl;
+	          deviceok = kFALSE;
+	          combolistdecoded = kTRUE;
+	        }else{
+	          // Found the device
+	          // Add to the array of names
+	          fDeviceName.push_back(dev_name);
 	    
-	    // Read in the weights.
-	    // For combined bpms and combined bcms these are charge weights.
-	    // For the energy calculator these are the ratios of the transport matrix elements.
-	    fQWeight.push_back(mapstr.GetTypedNextToken<Double_t>());
+	          // Read in the weights.
+	          // For combined bpms and combined bcms these are charge weights.
+	          // For the energy calculator these are the ratios of the transport matrix elements.
+	          fQWeight.push_back(mapstr.GetTypedNextToken<Double_t>());
 	    
-	    // For combined BPMs,in addition, there are weights for the X & Y positions.
-	    if(combotype == "combinedbpm"){
-	      fXWeight.push_back(mapstr.GetTypedNextToken<Double_t>());
-	      fYWeight.push_back(mapstr.GetTypedNextToken<Double_t>());
-	    }
+	          // For combined BPMs,in addition, there are weights for the X & Y positions.
+	          if(combotype == "combinedbpm"){
+	            fXWeight.push_back(mapstr.GetTypedNextToken<Double_t>());
+	            fYWeight.push_back(mapstr.GetTypedNextToken<Double_t>());
+	          }
 	    
-	    // For the enrgy calculator there are device type and the specified beam parameters.
-	    if(combotype == "energycalculator"){
-	      fType.push_back(dettype);
-	      fProperty.push_back(mapstr.GetTypedNextToken<TString>());
-	    }
-	  }
-	}
+	          // For the enrgy calculator there are device type and the specified beam parameters.
+	          if(combotype == "energycalculator"){
+	            fType.push_back(dettype);
+	            fProperty.push_back(mapstr.GetTypedNextToken<TString>());
+	          }
+	        }
+	      }
 	
 	// Now create the combined device
 	QwBeamDetectorID localComboID(-1, -1, comboname, combotype,
@@ -1039,11 +1039,11 @@ Int_t QwBeamLine::LoadInputParameters(TString pedestalfile)
 void QwBeamLine::RandomizeEventData(int helicity, double time)
 {
   // Randomize all QwBPMStripline buffers
-  //for (size_t i = 0; i < fStripline.size(); i++)
-  //{
-  //  fStripline[i].get()->RandomizeEventData(helicity, time);
-    //    fStripline[i].get()->PrintInfo();
-  //}
+  for (size_t i = 0; i < fStripline.size(); i++)
+  {
+    fStripline[i].get()->RandomizeEventData(helicity, time);
+     // fStripline[i].get()->PrintInfo();
+  }
 
   for (size_t i = 0; i < fCavity.size(); i++)
     fCavity[i].RandomizeEventData(helicity, time);

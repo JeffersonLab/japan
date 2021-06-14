@@ -1,7 +1,9 @@
 !BPMStripline parameters
 !device_type,     device_name,    asymX,        meanX,        sigmaX,       asymY,        meanY,        sigmaY
 bpmstripline,     qwk_0r06,       1.0e-3,       6.0,          3.0e-3,       1.0e-3,       -1.5,         4.0e-3
+bpmstripline,     qwk_0r06a,       1.0e-3,       6.0,          3.0e-3,       1.0e-3,       -1.5,         4.0e-3
 bpmstripline,     qwk_0l06,       1.0e-3,       6.0,          3.0e-3,       1.0e-3,       -1.5,         4.0e-3
+bpmstripline,     qwk_0l06a,       1.0e-3,       6.0,          3.0e-3,       1.0e-3,       -1.5,         4.0e-3
 bpmstripline,     qwk_1c12,       1.0e-3,       6.0,          3.0e-3,       1.0e-3,       -1.5,         4.0e-3
 bpmstripline,     qwk_1h04,       1.0e-3,       6.0,          3.0e-3,       1.0e-3,       -1.5,         4.0e-3
 bpmstripline,     qwk_1h05,       1.0e-3,       6.0,          3.0e-3        1.0e-3        -1.5,         4.0e-3
@@ -14,6 +16,8 @@ bpmstripline,     qwk_1c12,       resolution    0.0e-4,       0.0e-4
 bpmstripline,     qwk_1h04,       resolution    0.0e-4,       0.0e-4
 bpmstripline,     qwk_1h05,       resolution    0.0e-4,       0.0e-4
 bpmstripline,     qwk_1h06,       resolution    0.0e-4,       0.0e-4
+bpmstripline,     qwk_0r06a,       resolution    0.0e-4,       0.0e-4
+bpmstripline,     qwk_0l06a,       resolution    0.0e-4,       0.0e-4
 
 !CombinedBPM parameters
 !device_type,     device_name,                  asym,         mean,         sigma(jitter)
@@ -23,7 +27,7 @@ combinedbpm,      bpm_target,     xslope        0.0e-6,       0.0,          5.0e
 combinedbpm,      bpm_target,     yslope        0.0e-6,       0.0,          5.0e-7 
 
 !  CombinedBPM drifts              	      amplitude (abs), phase shift (rad), frequency (Hz)
-combinedbpm,      bpm_target,     xpos      drift     1.0e-2,      0.456,        45.0 !1
+combinedbpm,      bpm_target,     xpos      drift     5.0e-2,      0.456,        5.0 !1
 combinedbpm,      bpm_target,     ypos      drift     1.0e-2,      0.456,        47.0 !1
 combinedbpm,      bpm_target,     xslope    drift     0.0e-6,      0.654,        49.0 !3
 combinedbpm,      bpm_target,     yslope    drift     0.0e-6,      0.654,        43.0 !3

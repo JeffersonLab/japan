@@ -19,6 +19,7 @@
 #include "QwVQWK_Channel.h"
 #include "QwADC18_Channel.h"
 #include "QwScaler_Channel.h"
+#include "QwMollerADC_Channel.h"
 
 
 // Randomness generator: Mersenne twister with period 2^19937 - 1
@@ -432,3 +433,4 @@ template class QwCombinedBCM<QwVQWK_Channel>;
 template class QwCombinedBCM<QwADC18_Channel>;
 template class QwCombinedBCM<QwSIS3801_Channel>;
 template class QwCombinedBCM<QwSIS3801D24_Channel>;
+template class QwCombinedBCM<QwMollerADC_Channel>;

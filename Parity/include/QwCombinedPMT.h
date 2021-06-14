@@ -1,6 +1,6 @@
 
-#ifndef __QwVQWK_COMBINEDPMT__
-#define __QwVQWK_COMBINEDPMT__
+#ifndef __QwMollerADC_COMBINEDPMT__
+#define __QwMollerADC_COMBINEDPMT__
 
 // System headers
 #include <vector>
@@ -9,7 +9,7 @@
 #include <TTree.h>
 
 // Qweak headers
-#include "QwVQWK_Channel.h"
+#include "QwMollerADC_Channel.h"
 #include "QwIntegrationPMT.h"
 
 // Forward declarations
@@ -45,7 +45,7 @@ class QwCombinedPMT : public VQwDataElement {
   void  InitializeChannel(TString subsystem, TString name, TString datatosave); 
   void  LinkChannel(TString name);
 
-  const QwVQWK_Channel* GetChannel(const TString name) const {
+  const QwMollerADC_Channel* GetChannel(const TString name) const {
     if (fSumADC.GetElementName() == name) return fSumADC.GetChannel(name);
     else return 0;
   };
@@ -150,7 +150,7 @@ class QwCombinedPMT : public VQwDataElement {
                       /// fDevice_flag=0 HW check, fDevice_flag=-1 no check
 
   Int_t fDeviceErrorCode; /// keep the device HW status using a unique code
-                          /// from the QwVQWK_Channel::fDeviceErrorCode
+                          /// from the QwMollerADC_Channel::fDeviceErrorCode
 
   Bool_t bEVENTCUTMODE; /// If this set to kFALSE then Event cuts do not depend
                         /// on HW ckecks. This is set externally through the

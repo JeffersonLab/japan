@@ -22,7 +22,7 @@
 #include "QwVQWK_Channel.h"
 #include "QwADC18_Channel.h"
 #include "QwScaler_Channel.h"
-
+#include "QwMollerADC_Channel.h"
 
 /**
  * \brief A fast way of creating a BCM of specified type
@@ -43,6 +43,8 @@ VQwBCM* VQwBCM::Create(TString subsystemname, TString name, TString type, TStrin
     return new QwBCM<QwSIS3801_Channel>(subsystemname,name,type,clock);
   } else if ( type == "SCALER" || type == "SIS3801D24" ) {
     return new QwBCM<QwSIS3801D24_Channel>(subsystemname,name,type,clock);
+  } else if ( type == "MOLLERADC" ) {
+    return new QwBCM<QwMollerADC_Channel>(subsystemname,name,type,clock);
   } else { // Unsupported one!
     QwWarning << "BCM of type="<<type<<" is UNSUPPORTED!!\n";
     exit(-1);
@@ -65,6 +67,8 @@ VQwBCM* VQwBCM::Create(const VQwBCM& source)
     return new QwBCM<QwSIS3801_Channel>(dynamic_cast<const QwBCM<QwSIS3801_Channel>&>(source));
   } else if ( type == "SCALER" || type == "SIS3801D24" ) {
     return new QwBCM<QwSIS3801D24_Channel>(dynamic_cast<const QwBCM<QwSIS3801D24_Channel>&>(source));
+  } else if ( type == "MOLLERADC" ) {
+    return new QwBCM<QwMollerADC_Channel>(dynamic_cast<const QwBCM<QwMollerADC_Channel>&>(source));
   } else { // Unsupported one!
     QwWarning << "BCM of type="<<type<<" is UNSUPPORTED!!\n";
     exit(-1);
@@ -90,6 +94,8 @@ VQwBCM* VQwBCM::CreateCombo(TString subsystemname, TString name, TString type)
     return new QwCombinedBCM<QwSIS3801_Channel>(subsystemname,name,type);
   } else if ( type == "SCALER" || type == "SIS3801D24" ) {
     return new QwCombinedBCM<QwSIS3801D24_Channel>(subsystemname,name,type);
+  } else if ( type == "MOLLERADC" ) {
+    return new QwCombinedBCM<QwMollerADC_Channel>(subsystemname,name,type);
   } else { // Unsupported one!
     QwWarning << "BCM of type="<<type<<" is UNSUPPORTED!!\n";
     exit(-1);
@@ -112,6 +118,8 @@ VQwBCM* VQwBCM::CreateCombo(const VQwBCM& source)
     return new QwCombinedBCM<QwSIS3801_Channel>(dynamic_cast<const QwCombinedBCM<QwSIS3801_Channel>&>(source));
   } else if ( type == "SCALER" || type == "SIS3801D24" ) {
     return new QwCombinedBCM<QwSIS3801D24_Channel>(dynamic_cast<const QwCombinedBCM<QwSIS3801D24_Channel>&>(source));
+  } else if ( type == "MOLLERADC" ) {
+    return new QwCombinedBCM<QwMollerADC_Channel>(dynamic_cast<const QwCombinedBCM<QwMollerADC_Channel>&>(source));
   } else { // Unsupported one!
     QwWarning << "BCM of type="<<type<<" is UNSUPPORTED!!\n";
     exit(-1);

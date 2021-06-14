@@ -196,6 +196,8 @@ public:
   void ConstructBranch(TTree *tree, TString &prefix, QwParameterFile& modulelist);
   virtual void FillTreeVector(std::vector<Double_t>& values) const = 0;
 
+  virtual void CopyParameters(const VQwHardwareChannel* valueptr){};
+
  protected:
   /*! \brief Set the number of data words in this data element */
   void SetNumberOfDataWords(const UInt_t &numwords) {fNumberOfDataWords = numwords;}

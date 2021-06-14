@@ -215,82 +215,80 @@ Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
 
 	  modtype = mapstr.GetTypedNextToken<TString>();	// module type
 
-          if (modtype == "VQWK")
-            {
-              modnum    = mapstr.GetTypedNextToken<Int_t>();	//slot number
-              channum   = mapstr.GetTypedNextToken<Int_t>();	//channel number
-              dettype = mapstr.GetTypedNextToken<TString>();	//type-purpose of the detector
-              dettype.ToLower();
-              namech  = mapstr.GetTypedNextToken<TString>();  //name of the detector
-              namech.ToLower();
+    modtype.ToUpper();
 
-	      keyword   = mapstr.GetTypedNextToken<TString>();
-	      keyword.ToLower();
-	      keyword2  = mapstr.GetTypedNextToken<TString>();
-	      keyword2.ToLower();
-            }
-          else if (modtype == "VPMT")
-            {
-              channum       = mapstr.GetTypedNextToken<Int_t>();	//channel number
-              Int_t combinedchans = mapstr.GetTypedNextToken<Int_t>();	//number of combined channels
-              dettype     = mapstr.GetTypedNextToken<TString>();	//type-purpose of the detector
-              dettype.ToLower();
-              namech      = mapstr.GetTypedNextToken<TString>();  //name of the detector
-              namech.ToLower();
-              combinedchannelnames.clear();
-              for (int i=0; i<combinedchans; i++)
-                {
-                  TString nameofcombinedchan = mapstr.GetTypedNextToken<TString>();
-                  nameofcombinedchan.ToLower();
-                  combinedchannelnames.push_back(nameofcombinedchan);
-                }
-              weight.clear();
-              for (int i=0; i<combinedchans; i++)
-                {
-                  weight.push_back( mapstr.GetTypedNextToken<Double_t>());
-                }
-	      keyword  = mapstr.GetTypedNextToken<TString>();
-	      keyword.ToLower();
-	      keyword2 = mapstr.GetTypedNextToken<TString>();
-	      keyword2.ToLower();
-            }
+    if (modtype == "VQWK") {
+      modnum    = mapstr.GetTypedNextToken<Int_t>();	//slot number
+      channum   = mapstr.GetTypedNextToken<Int_t>();	//channel number
+      dettype = mapstr.GetTypedNextToken<TString>();	//type-purpose of the detector
+      dettype.ToLower();
+      namech  = mapstr.GetTypedNextToken<TString>();  //name of the detector
+      namech.ToLower();
+
+	    keyword   = mapstr.GetTypedNextToken<TString>();
+	    keyword.ToLower();
+	    keyword2  = mapstr.GetTypedNextToken<TString>();
+	    keyword2.ToLower();
+    } else if (modtype == "VPMT") {
+      channum = mapstr.GetTypedNextToken<Int_t>();	//channel number
+      Int_t combinedchans = mapstr.GetTypedNextToken<Int_t>();	//number of combined channels
+      dettype = mapstr.GetTypedNextToken<TString>();	//type-purpose of the detector
+      dettype.ToLower();
+      namech = mapstr.GetTypedNextToken<TString>();  //name of the detector
+      namech.ToLower();
+      combinedchannelnames.clear();
+
+      for (int i=0; i<combinedchans; i++) {
+        TString nameofcombinedchan = mapstr.GetTypedNextToken<TString>();
+        nameofcombinedchan.ToLower();
+        combinedchannelnames.push_back(nameofcombinedchan);
+      }
+
+      weight.clear();
+      
+      for (int i=0; i<combinedchans; i++) {
+        weight.push_back( mapstr.GetTypedNextToken<Double_t>());
+      }
+
+	    keyword  = mapstr.GetTypedNextToken<TString>();
+	    keyword.ToLower();
+	    keyword2 = mapstr.GetTypedNextToken<TString>();
+	    keyword2.ToLower();
+    }
 
 
-          if (currentsubbankindex!=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID))
-            {
-              currentsubbankindex=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID);
-              wordsofar=0;
-            }
+    if (currentsubbankindex!=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID)) {
+      currentsubbankindex=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID);
+      wordsofar=0;
+    }
 
-          QwBlindDetectorArrayID localMainDetID;
-          localMainDetID.fdetectorname=namech;
-          localMainDetID.fmoduletype=modtype;
-          localMainDetID.fSubbankIndex=currentsubbankindex;
-          localMainDetID.fdetectortype=dettype;
+    QwBlindDetectorArrayID localMainDetID;
+    localMainDetID.fdetectorname=namech;
+    localMainDetID.fmoduletype=modtype;
+    localMainDetID.fSubbankIndex=currentsubbankindex;
+    localMainDetID.fdetectortype=dettype;
 
-	  //          localMainDetID.fWordInSubbank=wordsofar;
-          if (modtype=="VQWK"){
-	    Int_t offset = QwVQWK_Channel::GetBufferOffset(modnum, channum)+vqwk_buffer_offset;
+	  //localMainDetID.fWordInSubbank=wordsofar;
+    if (modtype=="MOLLERADC"){
+	    Int_t offset = QwMollerADC_Channel::GetBufferOffset(modnum, channum)+vqwk_buffer_offset;
 	    if (offset>=0){
 	      localMainDetID.fWordInSubbank = wordsofar + offset;
 	    }
 	  }
-          else if (modtype=="VPMT")
-            {
-              localMainDetID.fCombinedChannelNames = combinedchannelnames;
-              localMainDetID.fWeight = weight;
-              //std::cout<<"Add in a combined channel"<<std::endl;
-            }
-          else
-            {
-              QwError << "QwBlindDetectorArray::LoadChannelMap:  Unknown module type: "
-		      << modtype <<", the detector "<<namech<<" will not be decoded "
-		      << QwLog::endl;
-              lineok=kFALSE;
-              continue;
-            }
+    else if (modtype=="VPMT"){
+      localMainDetID.fCombinedChannelNames = combinedchannelnames;
+      localMainDetID.fWeight = weight;
+      //std::cout<<"Add in a combined channel"<<std::endl;
+    }
+    else {
+      QwError << "QwBlindDetectorArray::LoadChannelMap:  Unknown module type: "
+		   << modtype <<", the detector "<<namech<<" will not be decoded "
+		   << QwLog::endl;
+      lineok=kFALSE;
+      continue;
+    }
+    localMainDetID.fTypeID=GetDetectorTypeID(dettype);
 
-          localMainDetID.fTypeID=GetDetectorTypeID(dettype);
 	  if (localMainDetID.fTypeID==kQwUnknownPMT) {
 	    QwError << "QwBlindDetectorArray::LoadChannelMap:  Unknown detector type: "
 		    << dettype <<", the detector "<<namech<<" will not be decoded "
@@ -299,8 +297,8 @@ Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
 	    continue;
 	  }
 
-          localMainDetID.fIndex= GetDetectorIndex(localMainDetID.fTypeID,
-                                                  localMainDetID.fdetectorname);
+    localMainDetID.fIndex= GetDetectorIndex(localMainDetID.fTypeID,
+      localMainDetID.fdetectorname);
 
           if (localMainDetID.fIndex==-1)
             {
@@ -393,7 +391,7 @@ Int_t QwBlindDetectorArray::LoadChannelMap(TString mapfile)
               for (size_t l=0; l<fMainDetID[i].fCombinedChannelNames.size(); l++)
                 {
                   Int_t ind_pmt = GetDetectorIndex(GetDetectorTypeID("integrationpmt"),
-                                                   fMainDetID[i].fCombinedChannelNames[l]);
+                   fMainDetID[i].fCombinedChannelNames[l]);
 
                   fCombinedPMT[ind].Add(&fIntegrationPMT[ind_pmt],fMainDetID[i].fWeight[l]);
                 }
@@ -460,6 +458,7 @@ Int_t QwBlindDetectorArray::LoadEventCuts(TString filename)
   // Open the file
   QwParameterFile mapstr(filename.Data());
   fDetectorMaps.insert(mapstr.GetParamFileNameContents());
+
   while (mapstr.ReadNextLine())
     {
       //std::cout<<"********* In the loop  *************"<<std::endl;
@@ -493,7 +492,7 @@ Int_t QwBlindDetectorArray::LoadEventCuts(TString filename)
 	    Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for IntegrationPMT value
 	    varvalue = mapstr.GetTypedNextToken<TString>();//global/local
       Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
-            varvalue.ToLower();
+      varvalue.ToLower();
 	    Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
 	    QwMessage << "QwBlindDetectorArray Error Code passing to QwIntegrationPMT " << GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut) << QwLog::endl;
 
@@ -727,7 +726,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
 
   if(RequestExternalValue("x_targ", &fTargetX)){
     if (bDEBUG){
-      dynamic_cast<QwVQWK_Channel*>(&fTargetX)->PrintInfo();
+      dynamic_cast<QwMollerADC_Channel*>(&fTargetX)->PrintInfo();
       QwWarning << "QwBlindDetectorArray::RandomizeMollerEvent Found "<<fTargetX.GetElementName()<< QwLog::endl;  
     }    
   }else{
@@ -738,7 +737,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
 
   if(RequestExternalValue("y_targ", &fTargetY)){
     if (bDEBUG){
-      dynamic_cast<QwVQWK_Channel*>(&fTargetY)->PrintInfo();
+      dynamic_cast<QwMollerADC_Channel*>(&fTargetY)->PrintInfo();
       QwWarning << "QwBlindDetectorArray::RandomizeMollerEvent Found "<<fTargetY.GetElementName()<< QwLog::endl;
     }
   }else{
@@ -749,7 +748,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
 
   if(RequestExternalValue("xp_targ", &fTargetXprime)){
     if (bDEBUG){
-      dynamic_cast<QwVQWK_Channel*>(&fTargetXprime)->PrintInfo();
+      dynamic_cast<QwMollerADC_Channel*>(&fTargetXprime)->PrintInfo();
       QwWarning << "QwBlindDetectorArray::RandomizeMollerEvent Found "<<fTargetXprime.GetElementName()<< QwLog::endl;
     }
   }else{
@@ -760,7 +759,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
   
   if(RequestExternalValue("yp_targ", &fTargetYprime)){
     if (bDEBUG){
-      dynamic_cast<QwVQWK_Channel*>(&fTargetYprime)->PrintInfo();
+      dynamic_cast<QwMollerADC_Channel*>(&fTargetYprime)->PrintInfo();
       QwWarning << "QwBlindDetectorArray::RandomizeMollerEvent Found "<<fTargetYprime.GetElementName()<< QwLog::endl;
     }
   }else{
@@ -771,7 +770,7 @@ void  QwBlindDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCh
   
   if(RequestExternalValue("e_targ", &fTargetEnergy)){
     if (bDEBUG){
-      dynamic_cast<QwVQWK_Channel*>(&fTargetEnergy)->PrintInfo();
+      dynamic_cast<QwMollerADC_Channel*>(&fTargetEnergy)->PrintInfo();
       QwWarning << "QwBlindDetectorArray::RandomizeMollerEvent Found "<<fTargetEnergy.GetElementName()<< QwLog::endl;
     }
   }else{
@@ -905,7 +904,7 @@ void QwBlindDetectorArray::IncrementErrorCounters()
 void QwBlindDetectorArray::PrintErrorCounters() const
 {
   QwMessage<<"*********QwBlindDetectorArray Error Summary****************"<<QwLog::endl;
-  QwVQWK_Channel::PrintErrorCounterHead();
+  QwMollerADC_Channel::PrintErrorCounterHead();
   for(size_t i=0;i<fIntegrationPMT.size();i++){
     //std::cout<<"  IntegrationPMT ["<<i<<"] "<<std::endl;
     fIntegrationPMT[i].PrintErrorCounters();
@@ -914,7 +913,7 @@ void QwBlindDetectorArray::PrintErrorCounters() const
     //std::cout<<"  CombinedPMT ["<<i<<"] "<<std::endl;
     fCombinedPMT[i].PrintErrorCounters();
   }
-  QwVQWK_Channel::PrintErrorCounterTail();
+  QwMollerADC_Channel::PrintErrorCounterTail();
 }
 
 void QwBlindDetectorArray::UpdateErrorFlag(const VQwSubsystem *ev_error){
@@ -980,7 +979,7 @@ void  QwBlindDetectorArray::ExchangeProcessedData()
 	if (RequestExternalValue(variable->GetElementName(), variable))
 	  {
 	    if (bDEBUG)
-	      dynamic_cast<QwVQWK_Channel*>(variable)->PrintInfo();
+	      dynamic_cast<QwMollerADC_Channel*>(variable)->PrintInfo();
 	    //QwWarning << "QwBlindDetectorArray::ExchangeProcessedData Found "<<variable->GetElementName()<< QwLog::endl;
 	  }
 	else
@@ -997,7 +996,7 @@ void  QwBlindDetectorArray::ExchangeProcessedData()
       if (bDEBUG){
 	QwWarning << "QwBlindDetectorArray::ExchangeProcessedData Found "<<fTargetCharge.GetElementName()<< QwLog::endl;
 	//QwWarning <<"****QwBlindDetectorArray****"<< QwLog::endl;
-	(dynamic_cast<QwVQWK_Channel*>(&fTargetCharge))->PrintInfo();
+	(dynamic_cast<QwMollerADC_Channel*>(&fTargetCharge))->PrintInfo();
       }
     }
     else{
