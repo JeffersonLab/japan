@@ -84,7 +84,7 @@ void combo_segment_getter(TString averaging,TTree* intree, TTree* outtree, TStri
   Int_t totalEntries = intree->GetEntries();
   Int_t int_avg_time_scale = 0;
   Double_t double_avg_time_scale = 0;
-  if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part" || averaging == "crex_part_b") {
+  if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part") {
     intree->SetBranchAddress(averaging,&double_avg_time_scale);
   }
   if (averaging == "dit_segment" || averaging == "run") {
@@ -110,7 +110,7 @@ void combo_segment_getter(TString averaging,TTree* intree, TTree* outtree, TStri
   //for (std::map<Int_t,Int_t>::iterator iter = avg_time_scales.begin() ; iter != avg_time_scales.end(); ++iter){}
   for (Int_t ient = 0 ; ient<totalEntries ; ient++) {
     intree->GetEntry(ient);
-    if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part" || averaging == "crex_part_b") {
+    if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part") {
       localAvg_time_scale = (Int_t)double_avg_time_scale;
     }
     if (averaging == "dit_segment" || averaging == "run") {
@@ -231,28 +231,29 @@ void combo_segment_getter(TString averaging,TTree* intree, TTree* outtree, TStri
   }
 }
 
-void saveEigenSegmentCombos(TString ana = "avgs", TString suffix = "", TString mod_cut = "1==1"){ //TString input = "NULL",TString runNum = "", TString slugNum = "0"){}
+void saveEigenSegmentCombos(TString ana = "avgs", TString suffix = ""){ //TString input = "NULL",TString runNum = "", TString slugNum = "0"){}
   std::map<int,Double_t> runs;
   // Grab all of the relevant combos
   TChain* mini = new TChain("mini");
   //TChain* mini_eigen_reg_allbpms_tr        = new TChain(Form("mini_eigen_reg_allbpms_tr"));     // Truncated one is not sorted... just deal with it I guess (could sort it later if urgently needed)
-  TChain* mini_eigen_reg_allbpms_sorted    = new TChain(Form("mini_eigen_reg_allbpms_sorted")); // Unsorted versions have no _sorted in the name
-  TChain* mini_eigen_reg_5bpms_sorted      = new TChain(Form("mini_eigen_reg_5bpms_sorted"));
+  TChain* mini_eigen_reg_allbpms_sorted    = new TChain(Form("mini_eigen_reg_allbpms_sorted%s",suffix.Data())); // Unsorted versions have no _sorted in the name
+  TChain* mini_eigen_reg_5bpms_sorted      = new TChain(Form("mini_eigen_reg_5bpms_sorted%s",suffix.Data()));
   // Replace 13746 etc. with a smart-replaced command line derived ["","A",..."D"] or [13746, 15746, 13726] set
-  TString infilename = Form("../respin2_data/rcdb_burstwise_eigenvectors_sorted%s.root",suffix.Data());
+  TString infilename = Form("/lustre19/expphy/volatile/halla/parity/crex-respin1/LagrangeOutput/rootfiles//rcdb_segment_parts_eigenvectors_sorted%s.root",suffix.Data());
+  //TString infilename = Form("/lustre19/expphy/volatile/halla/parity/crex-respin1/LagrangeOutput/rootfiles//rcdb_segment_eigenvectors_sorted%s.root",suffix.Data());
   mini->AddFile(infilename);
   //mini_eigen_reg_allbpms_tr->AddFile(infilename);
   mini_eigen_reg_allbpms_sorted->AddFile(infilename);
   mini_eigen_reg_5bpms_sorted->AddFile(infilename);
   // Default outputs, unsorted:
-  //mini->AddFile("/lustre19/expphy/volatile/halla/parity/crex-respin2/LagrangeOutput/rootfiles/respin2_all_eigenvector_basic.root");
+  //mini->AddFile("/lustre19/expphy/volatile/halla/parity/crex-respin1/LagrangeOutput/rootfiles//Full_mini_eigen_reg_allbpms_CREX.root");
   //mini->AddFriend(mini_eigen_reg_allbpms_tr,"mini_eigen_reg_allbpms_tr");
   mini->AddFriend(mini_eigen_reg_allbpms_sorted,"mini_eigen_reg_allbpms_sorted");
   mini->AddFriend(mini_eigen_reg_5bpms_sorted,"mini_eigen_reg_5bpms_sorted");
   mini->BuildIndex("run","mini");
 
   std::vector<TString> detectors = {
-    "usl", "usr", "us_avg" , "us_dd"/*, ATs, SAMs*/
+    "usl", "usr", "us_avg" /*,"us_dd", ATs, SAMs*/
   };
   std::vector<TString> X_BPMs = {
     "bpm4aX",
@@ -310,11 +311,10 @@ void saveEigenSegmentCombos(TString ana = "avgs", TString suffix = "", TString m
   TString averaging_timescale = "dit_segment"; // Can also be run, rcdb_slug, rcdb_flip_state, or nothing (simply don't execute this script for nothing);
   if (ana == "avgs") {
     // Part averages
-    TTree * out_tree_mini_eigen_reg_allbpms_sorted_part = new TTree("mini_eigen_reg_allbpms_sorted_part_avg","mini_eigen_reg_allbpms_sorted_part_avg");
-    TTree * out_tree_mini_eigen_reg_5bpms_sorted_part   = new TTree("mini_eigen_reg_5bpms_sorted_part_avg",  "mini_eigen_reg_5bpms_sorted_part_avg");
-    /*
     TTree * out_tree_mini_eigen_reg_allbpms_sorted_part_pruned = new TTree("mini_eigen_reg_allbpms_sorted_pruned_part_avg","mini_eigen_reg_allbpms_sorted_pruned_part_avg");
     TTree * out_tree_mini_eigen_reg_5bpms_sorted_part_pruned   = new TTree("mini_eigen_reg_5bpms_sorted_pruned_part_avg",  "mini_eigen_reg_5bpms_sorted_pruned_part_avg");
+    TTree * out_tree_mini_eigen_reg_allbpms_sorted_part = new TTree("mini_eigen_reg_allbpms_sorted_part_avg","mini_eigen_reg_allbpms_sorted_part_avg");
+    TTree * out_tree_mini_eigen_reg_5bpms_sorted_part   = new TTree("mini_eigen_reg_5bpms_sorted_part_avg",  "mini_eigen_reg_5bpms_sorted_part_avg");
 
     // Segment averages
     TTree * out_tree_mini_eigen_reg_allbpms_sorted_seg_pruned = new TTree("mini_eigen_reg_allbpms_sorted_pruned_seg_avg","mini_eigen_reg_allbpms_sorted_pruned_seg_avg");
@@ -333,22 +333,19 @@ void saveEigenSegmentCombos(TString ana = "avgs", TString suffix = "", TString m
     cut = "dit_flag==1";
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_allbpms_sorted_part_pruned,"mini_eigen_reg_allbpms_sorted",cut,detectors,monitors,devices);
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_sorted_part_pruned,"mini_eigen_reg_5bpms_sorted",cut,detectors,monitors5,devices5);
-    out_tree_mini_eigen_reg_allbpms_sorted_part_pruned->Write();
-    out_tree_mini_eigen_reg_5bpms_sorted_part_pruned->Write();
-    delete out_tree_mini_eigen_reg_allbpms_sorted_part_pruned;
-    delete out_tree_mini_eigen_reg_5bpms_sorted_part_pruned;
-    */
-    averaging_timescale = "crex_part";
-    cut = "(1==1) && (" + mod_cut + ")";
+    cut = "";
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_allbpms_sorted_part,"mini_eigen_reg_allbpms_sorted",cut,detectors,monitors,devices);
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_sorted_part,"mini_eigen_reg_5bpms_sorted",cut,detectors,monitors5,devices5);
+    out_tree_mini_eigen_reg_allbpms_sorted_part_pruned->Write();
+    out_tree_mini_eigen_reg_5bpms_sorted_part_pruned->Write();
     out_tree_mini_eigen_reg_allbpms_sorted_part->Write();
     out_tree_mini_eigen_reg_5bpms_sorted_part->Write();
+    delete out_tree_mini_eigen_reg_allbpms_sorted_part_pruned;
+    delete out_tree_mini_eigen_reg_5bpms_sorted_part_pruned;
     delete out_tree_mini_eigen_reg_allbpms_sorted_part;
     delete out_tree_mini_eigen_reg_5bpms_sorted_part;
 
 
-    /*
     //out_tree_mini_eigen_reg_allbpms_tr->Write();
     // Segment averages
     averaging_timescale = "dit_segment";
@@ -385,8 +382,8 @@ void saveEigenSegmentCombos(TString ana = "avgs", TString suffix = "", TString m
     delete out_tree_mini_eigen_reg_5bpms_sorted_slug_pruned;
     delete out_tree_mini_eigen_reg_allbpms_sorted_slug;
     delete out_tree_mini_eigen_reg_5bpms_sorted_slug;
-  //}
-  //else if (ana == "runavg") {
+  }
+  else if (ana == "runavg") {
 
     // Run averages
     TTree * out_tree_mini_eigen_reg_allbpms_sorted_run_pruned = new TTree("mini_eigen_reg_allbpms_sorted_pruned_run_avg","mini_eigen_reg_allbpms_sorted_pruned_run_avg");
@@ -410,7 +407,6 @@ void saveEigenSegmentCombos(TString ana = "avgs", TString suffix = "", TString m
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_sorted_run,"mini_eigen_reg_5bpms_sorted",cut,detectors,monitors5,devices5);
     out_tree_mini_eigen_reg_5bpms_sorted_run->Write();
     delete out_tree_mini_eigen_reg_5bpms_sorted_run;
-    */
   }
 
 
