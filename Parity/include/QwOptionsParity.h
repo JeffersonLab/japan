@@ -35,8 +35,8 @@ void DefineOptionsParity(QwOptions& options)
   QwOptions::DefineOptions(options);
 
   /* Define parity options */
-  QwDetectorArray::DefineOptions(options);
-  QwBlindDetectorArray::DefineOptions(options);
+  VQwDetectorArray::DefineOptions(options);
+  //QwBlindDetectorArray::DefineOptions(options);
   QwEventRing::DefineOptions(options);
   QwHelicity::DefineOptions(options);
   QwHelicityPattern::DefineOptions(options);

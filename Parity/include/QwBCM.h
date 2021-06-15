@@ -30,8 +30,7 @@ template<typename T> class QwCombinedBCM;
 ******************************************************************/
 ///
 /// \ingroup QwAnalysis_BL
-template<typename T>
-class QwBCM : public VQwBCM {
+template<typename T> class QwBCM : public VQwBCM {
 /////
   friend class QwCombinedBCM<T>;
  public:

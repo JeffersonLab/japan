@@ -27,6 +27,7 @@
 /**
  * \brief A fast way of creating a BCM of specified type
  */
+
 VQwBCM* VQwBCM::Create(TString subsystemname, TString name, TString type, TString clock)
 {
   Bool_t localDebug = kFALSE;
