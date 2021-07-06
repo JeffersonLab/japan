@@ -268,19 +268,6 @@ QwClock<T>& QwClock<T>::operator-= (const QwClock<T> &value)
   return *this;
 }
 
-
-template<typename T>
-void QwClock<T>::Sum(QwClock<T> &value1, QwClock<T> &value2){
-  *this =  value1;
-  *this += value2;
-}
-
-template<typename T>
-void QwClock<T>::Difference(QwClock<T> &value1, QwClock<T> &value2){
-  *this =  value1;
-  *this -= value2;
-}
-
 template<typename T>
 void QwClock<T>::Ratio(const VQwClock &numer, const VQwClock &denom)
 {

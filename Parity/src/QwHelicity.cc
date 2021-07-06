@@ -2052,27 +2052,6 @@ void QwHelicity::MergeCounters(VQwSubsystem *value)
   }
 }
 
-void QwHelicity::Sum(VQwSubsystem  *value1, VQwSubsystem  *value2)
-{
-  //this routine is most likely to be called during the computatin of assymetry
-  //this call doesn't make too much sense for this class so the followign lines
-  //are only use to put safe gards testing for example if the two instantiation indeed
-  // refers to elements in the same pattern
-  if(Compare(value1)&&Compare(value2)) {
-    *this =  value1;
-    CheckPatternNum(value2);
-    MergeCounters(value2);
-  }
-}
-
-void QwHelicity::Difference(VQwSubsystem  *value1, VQwSubsystem  *value2)
-{
-  // this is stub function defined here out of completion and uniformity between each subsystem
-  *this =  value1;
-  CheckPatternNum(value2);
-  MergeCounters(value2);
-}
-
 void QwHelicity::Ratio(VQwSubsystem  *value1, VQwSubsystem  *value2)
 {
   // this is stub function defined here out of completion and uniformity between each subsystem

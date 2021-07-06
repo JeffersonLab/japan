@@ -295,15 +295,6 @@ QwCombinedPMT& QwCombinedPMT::operator-= (const QwCombinedPMT &value)
   return *this;
 }
 
-void QwCombinedPMT::Sum(QwCombinedPMT &value1, QwCombinedPMT &value2)
-{
-  //std::cout<<"Calling QwCombinedPMT::Sum"<<std::endl;
-  this->fSumADC =  value1.fSumADC;
-//  this->fAvgADC =  value1.fAvgADC;
-  this->fSumADC += value2.fSumADC;
-//  this->fAvgADC += value2.fAvgADC;
-}
-
 void QwCombinedPMT::AccumulateRunningSum(const QwCombinedPMT& value, Int_t count, Int_t ErrorMask)
 {
   fSumADC.AccumulateRunningSum(value.fSumADC, count, ErrorMask);
@@ -312,16 +303,6 @@ void QwCombinedPMT::AccumulateRunningSum(const QwCombinedPMT& value, Int_t count
 void QwCombinedPMT::DeaccumulateRunningSum(QwCombinedPMT& value, Int_t ErrorMask)
 {
   fSumADC.DeaccumulateRunningSum(value.fSumADC, ErrorMask);
-}
-
-
-void QwCombinedPMT::Difference(QwCombinedPMT &value1, QwCombinedPMT &value2)
-{
-  //std::cout<<"Calling QwCombinedPMT::Difference="<<std::endl;
-  this->fSumADC =  value1.fSumADC;
-//  this->fAvgADC =  value1.fAvgADC;
-  this->fSumADC -= value2.fSumADC;
-//  this->fAvgADC -= value2.fAvgADC;
 }
 
 void QwCombinedPMT::Ratio(QwCombinedPMT &numer, QwCombinedPMT &denom)

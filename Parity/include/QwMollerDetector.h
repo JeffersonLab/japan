@@ -101,8 +101,6 @@ class QwMollerDetector:
     VQwSubsystem& operator=  (VQwSubsystem *value);
     VQwSubsystem& operator+= (VQwSubsystem *value);
     VQwSubsystem& operator-= (VQwSubsystem *value);
-    void  Sum(VQwSubsystem  *value1, VQwSubsystem  *value2);
-    void  Difference(VQwSubsystem  *value1, VQwSubsystem  *value2);
     void  Ratio(VQwSubsystem  *value1, VQwSubsystem  *value2);
     void  Scale(Double_t);
     void  AccumulateRunningSum(VQwSubsystem* value, Int_t count=0, Int_t ErrorMask=0xFFFFFFF);

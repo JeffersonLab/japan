@@ -103,8 +103,6 @@ class QwClock : public VQwClock {
   QwClock& operator=  (const QwClock &value);
   QwClock& operator+= (const QwClock &value);
   QwClock& operator-= (const QwClock &value);
-  void Sum(QwClock &value1, QwClock &value2);
-  void Difference(QwClock &value1, QwClock &value2);
   void Ratio(const VQwClock &numer, const VQwClock &denom);
   void Ratio(const QwClock &numer, const QwClock &denom);
   void Scale(Double_t factor);

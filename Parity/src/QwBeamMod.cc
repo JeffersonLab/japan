@@ -277,74 +277,47 @@ QwModChannelID::QwModChannelID(Int_t subbankid,
 
 //*****************************************************************
 
-Int_t QwBeamMod::LoadEventCuts(TString  filename)
-{
-  Int_t eventcut_flag = 1;
-
-  // Open the file
-  QwParameterFile mapstr(filename.Data());
-  fDetectorMaps.insert(mapstr.GetParamFileNameContents());
+void QwBeamMod::LoadEventCuts_Init(){
   fFFB_holdoff=0;//Default holdoff for the FFB pause
-  
-  while (mapstr.ReadNextLine()){
-    //  std::cout<<"********* In the loop of LoadEventCuts  *************"<<std::endl;
-    mapstr.TrimComment('!');   // Remove everything after a '!' character.
-    mapstr.TrimWhitespace();   // Get rid of leading and trailing spaces.
-    if (mapstr.LineIsEmpty())  continue;
+}
 
-    TString varname, varvalue;
-    if (mapstr.HasVariablePair("=",varname,varvalue)){
-      if (varname == "EVENTCUTS"){
-	eventcut_flag = QwParameterFile::GetUInt(varvalue);
-	//std::cout<<"EVENT CUT FLAG "<<eventcut_flag<<std::endl;
-      }
-    }
-    else{
-      TString device_type = mapstr.GetTypedNextToken<TString>();
-      device_type.ToUpper();
-      //std::cout <<"device_type= " << device_type << std::endl;
-      TString device_name = mapstr.GetTypedNextToken<TString>();
-      device_name.ToUpper();
-      //std::cout << "device_name= "<< device_name << std::endl;
+void QwBeamMod::LoadEventCuts_Line(QwParameterFile &mapstr, TString &varvalue, Int_t &eventcut_flag){
+  TString device_type = mapstr.GetTypedNextToken<TString>();
+  device_type.ToUpper();
+  TString device_name = mapstr.GetTypedNextToken<TString>();
+  device_name.ToUpper();
 
-      if (device_type == "VQWK"||device_type=="SCALER" ||device_type=="SIS3801D24" ||device_type=="SIS3801D32"){
-	device_name.ToLower();
-	Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for BCM value
-	Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for BCM value
-	varvalue = mapstr.GetTypedNextToken<TString>();//global/loacal
-  Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
-	varvalue.ToLower();
-	Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
-	QwMessage<<"QwBeamMod Error Code  "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
-	Int_t det_index=GetDetectorIndex(device_name);
-	QwMessage << "*****************************" << QwLog::endl;
-	QwMessage << " Type " << device_type << " Name " << device_name << " Index [" << det_index << "] "
-	          << " device flag " << eventcut_flag << QwLog::endl;
-	fModChannel[det_index]->SetSingleEventCuts((GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)|kBModErrorFlag),LLX,ULX,stabilitycut,burplevel);
-	QwMessage << "*****************************" << QwLog::endl;
+  if (device_type == "VQWK"||device_type=="SCALER" ||device_type=="SIS3801D24" ||device_type=="SIS3801D32"){
+	  device_name.ToLower();
+	  Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for BCM value
+	  Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for BCM value
+	  varvalue = mapstr.GetTypedNextToken<TString>();//global/loacal
+    Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
+	  varvalue.ToLower();
+	  Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
+  	QwMessage<<"QwBeamMod Error Code  "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
+	  Int_t det_index=GetDetectorIndex(device_name);
+	  QwMessage << "*****************************" << QwLog::endl;
+	  QwMessage << " Type " << device_type << " Name " << device_name << " Index [" << det_index << "] "
+	            << " device flag " << eventcut_flag << QwLog::endl;
+	  fModChannel[det_index]->SetSingleEventCuts((GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)|kBModErrorFlag),LLX,ULX,stabilitycut,burplevel);
+	  QwMessage << "*****************************" << QwLog::endl;
 
-      }
-      else if (device_type == "WORD" && device_name== "FFB_STATUS"){
-	fFFB_holdoff=mapstr.GetTypedNextToken<UInt_t>();//Read the FFB OFF interval
-      }
-      else if (device_type == "WORD" && device_name== "BMWOBJ"){
-	fBMWObj_LL=mapstr.GetTypedNextToken<Int_t>();
-	fBMWObj_UL=mapstr.GetTypedNextToken<Int_t>();
-	QwMessage << "bmwobj error cuts"
-		  << "LowerLimit=" << fBMWObj_LL
-		  << "UpperLimit=" << fBMWObj_UL <<QwLog::endl;
-      }
-
-
-    }
-
+  } else if (device_type == "WORD" && device_name== "FFB_STATUS"){
+	  fFFB_holdoff=mapstr.GetTypedNextToken<UInt_t>();//Read the FFB OFF interval
+  } else if (device_type == "WORD" && device_name== "BMWOBJ"){
+	  fBMWObj_LL=mapstr.GetTypedNextToken<Int_t>();
+	  fBMWObj_UL=mapstr.GetTypedNextToken<Int_t>();
+	  QwMessage << "bmwobj error cuts"
+	            << "LowerLimit=" << fBMWObj_LL
+	            << "UpperLimit=" << fBMWObj_UL <<QwLog::endl;
   }
+}
+
+void QwBeamMod::LoadEventCuts_Fin(Int_t &eventcut_flag){
   //update the event cut ON/OFF for all the devices
-  //std::cout<<"EVENT CUT FLAG"<<eventcut_flag<<std::endl;
   for (size_t i=0;i<fModChannel.size();i++)
     fModChannel[i]->SetEventCutMode(eventcut_flag);
-
-  return 0;
 }
 
 //*****************************************************************
@@ -701,24 +674,6 @@ VQwSubsystem&  QwBeamMod::operator-=  (VQwSubsystem *value){
      
     }
   return *this;
-}
-
-void  QwBeamMod::Sum(VQwSubsystem  *value1, VQwSubsystem  *value2)
-{
-  if(Compare(value1)&&Compare(value2))
-    {
-      *this =  value1;
-      *this += value2;
-    }
-}
-
-void  QwBeamMod::Difference(VQwSubsystem  *value1, VQwSubsystem  *value2)
-{
-  if(Compare(value1)&&Compare(value2))
-    {
-      *this =  value1;
-      *this -= value2;
-    }
 }
 
 void QwBeamMod::Ratio(VQwSubsystem  *numer, VQwSubsystem  *denom)

@@ -418,31 +418,6 @@ VQwSubsystem& QwScaler::operator-=(VQwSubsystem *value)
   return *this;
 }
 
-/**
- * Summation
- * @param value1 First value
- * @param value2 Second value
- */
-void QwScaler::Sum(VQwSubsystem  *value1, VQwSubsystem  *value2)
-{
-  if (Compare(value1) && Compare(value2)) {
-    *this  = value1;
-    *this += value2;
-  }
-}
-
-/**
- * Difference
- * @param value1 First value
- * @param value2 Second value
- */
-void QwScaler::Difference(VQwSubsystem  *value1, VQwSubsystem  *value2)
-{
-  if (Compare(value1) && Compare(value2)) {
-    *this  = value1;
-    *this -= value2;
-  }
-}
 
 /**
  * Determine the ratio of two photon detectors

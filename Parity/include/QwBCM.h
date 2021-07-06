@@ -146,8 +146,6 @@ public:
   QwBCM& operator=  (const QwBCM &value);
   QwBCM& operator+= (const QwBCM &value);
   QwBCM& operator-= (const QwBCM &value);
-  void Sum(QwBCM &value1, QwBCM &value2);
-  void Difference(QwBCM &value1, QwBCM &value2);
   void Ratio(const VQwBCM &numer, const VQwBCM &denom);
   void Ratio(const QwBCM &numer, const QwBCM &denom);
   void Scale(Double_t factor);

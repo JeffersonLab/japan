@@ -272,20 +272,6 @@ VQwSubsystem&  QwMollerDetector::operator-=(VQwSubsystem *value){
   return *this;
 }
 
-void QwMollerDetector::Sum(VQwSubsystem  *value1, VQwSubsystem  *value2){
-  if (Compare(value1) && Compare(value2)) {
-    *this  = value1;
-    *this += value2;
-  }
-}
-
-void QwMollerDetector::Difference(VQwSubsystem  *value1, VQwSubsystem  *value2){
-  if (Compare(value1) && Compare(value2)) {
-    *this  = value1;
-    *this -= value2;
-  }
-}
-
 void QwMollerDetector::Ratio(VQwSubsystem  *value1, VQwSubsystem  *value2){
   if (Compare(value1) && Compare(value2)) {
     QwMollerDetector* v1 = dynamic_cast<QwMollerDetector *> (value1);

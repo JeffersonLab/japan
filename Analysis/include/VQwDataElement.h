@@ -121,10 +121,18 @@ class VQwDataElement: public MQwHistograms {
 
   /*! \brief Sum operator */
   virtual void Sum(const VQwDataElement &value1, const VQwDataElement &value2)
-    { std::cerr << "Sum not defined!" << std::endl; }
+    { 
+      //std::cerr << "Sum not defined!" << std::endl; 
+      *this =  value1;
+      *this += value2;
+    }
   /*! \brief Difference operator */
   virtual void Difference(const VQwDataElement &value1, const VQwDataElement &value2)
-    { std::cerr << "Difference not defined!" << std::endl; }
+    { 
+      //std::cerr << "Difference not defined!" << std::endl; 
+      *this =  value1;
+      *this -= value2;
+    }
   /*! \brief Ratio operator */
   virtual void Ratio(const VQwDataElement &numer, const VQwDataElement &denom)
   { std::cerr << "Ratio not defined for element"<< fElementName<< "!" << std::endl; }

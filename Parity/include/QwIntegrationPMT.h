@@ -135,8 +135,6 @@ void RandomizeMollerEvent(int helicity, const QwBeamCharge& charge, const QwBeam
   QwIntegrationPMT& operator=  (const QwIntegrationPMT &value);
   QwIntegrationPMT& operator+= (const QwIntegrationPMT &value);
   QwIntegrationPMT& operator-= (const QwIntegrationPMT &value);
-  void Sum(QwIntegrationPMT &value1, QwIntegrationPMT &value2);
-  void Difference(QwIntegrationPMT &value1, QwIntegrationPMT &value2);
   void Ratio(QwIntegrationPMT &numer, QwIntegrationPMT &denom);
   void Scale(Double_t factor);
   void Normalize(VQwDataElement* denom);

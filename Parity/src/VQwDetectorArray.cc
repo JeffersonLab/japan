@@ -232,22 +232,16 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
 
         RegisterRocBankMarker(mapstr);
         if (mapstr.PopValue("abs_saturation_limit",value)) {
-
 	        abs_saturation_limit=value;
 	        bAssignedLimit = kTRUE;
-
         }
 
         if (mapstr.PopValue("sample_size",value)) {
-
-	        sample_size=value;
-    
+	        sample_size=value;   
         }
     
         if (mapstr.PopValue("vqwk_buffer_offset",value)) {
-	
-            vqwk_buffer_offset=value;
-    
+            vqwk_buffer_offset=value;    
         }
       
         mapstr.TrimComment('!');   // Remove everything after a '!' character.
@@ -282,16 +276,14 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
         
                 TString nameofcombinedchan = mapstr.GetTypedNextToken<TString>();
                 nameofcombinedchan.ToLower();
-                combinedchannelnames.push_back(nameofcombinedchan);
-        
+                combinedchannelnames.push_back(nameofcombinedchan);        
             }
         
             weight.clear();
         
             for (int i=0; i<combinedchans; i++) {
         
-                weight.push_back( mapstr.GetTypedNextToken<Double_t>());
-        
+                weight.push_back( mapstr.GetTypedNextToken<Double_t>());        
             }
 	    
             keyword  = mapstr.GetTypedNextToken<TString>();
@@ -311,8 +303,7 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
 	        keyword   = mapstr.GetTypedNextToken<TString>();
 	        keyword.ToLower();
 	        keyword2  = mapstr.GetTypedNextToken<TString>();
-	        keyword2.ToLower();
-    
+	        keyword2.ToLower();    
         }
 
 
@@ -320,7 +311,6 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
 
             currentsubbankindex=GetSubbankIndex(fCurrentROC_ID,fCurrentBank_ID);
             wordsofar=0;
-
         }
 
         QwDetectorArrayID localMainDetID;
@@ -338,7 +328,6 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
 	        if (offset>=0){
 
 	            localMainDetID.fWordInSubbank = wordsofar + offset;
-
 	        }
 
 	    } else if (modtype=="VPMT") {
@@ -347,7 +336,6 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
             localMainDetID.fWeight = weight;
         
             //std::cout<<"Add in a combined channel"<<std::endl;
-
         } else {
 
             QwError << "VQwDetectorArray::LoadChannelMap:  Unknown module type: "
@@ -355,7 +343,6 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
 		     << QwLog::endl;
             lineok=kFALSE;
             continue;
-
         }
 
         localMainDetID.fTypeID=GetDetectorTypeID(dettype);
@@ -367,7 +354,6 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
 		     << QwLog::endl;
 	        lineok=kFALSE;
 	        continue;
-
 	    }
 
         localMainDetID.fIndex= GetDetectorIndex(localMainDetID.fTypeID,
@@ -418,9 +404,7 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
                 fCombinedPMT.push_back(localcombinedPMT);
                 fCombinedPMT[fCombinedPMT.size()-1].SetDefaultSampleSize(sample_size);
                 localMainDetID.fIndex=fCombinedPMT.size()-1;
-
             }
-
         }
 
         if (ldebug) {
@@ -433,7 +417,6 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
 
             else
              std::cout<<"FALSE"<<std::endl;
-
         }
 
         if (lineok)
@@ -457,7 +440,6 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
                  std::cout<<"  "<<fMainDetID[i].fCombinedChannelNames[n];
 
                 std::cout<<std::endl;
-
             }
 
             Int_t chanmatched=0;
@@ -473,11 +455,8 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
 
                         chanmatched ++;
                         break;
-
                     }
-
                 }
-
             }
 
             if ((Int_t) fMainDetID[i].fCombinedChannelNames.size()==chanmatched) {
@@ -488,24 +467,19 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
                     fMainDetID[i].fCombinedChannelNames[l]);
 
                     fCombinedPMT[ind].Add(&fIntegrationPMT[ind_pmt],fMainDetID[i].fWeight[l]);
-
                 }
 
                 fCombinedPMT[ind].LinkChannel(fMainDetID[i].fdetectorname);
 
                 if (ldebug)
                  std::cout<<"linked a combined channel"<<std::endl;
-
             } else {
 
                 std::cerr<<"cannot combine void channels for "<<fMainDetID[i].fdetectorname<<std::endl;
                 fMainDetID[i].fIndex = -1;
                 continue;
-
             }
-
         }
-
     }
 
 
@@ -530,21 +504,16 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
 
                     if (varvalue.Length()) {
                     
-                        publishinfo.push_back(varvalue);
-                    
+                        publishinfo.push_back(varvalue);                    
                     }
-
                 }
 
                 if (publishinfo.size() == 4)
                  fPublishList.push_back(publishinfo);
 
                 publishinfo.clear();
-
             }
-
         }
-
     }
 
     // Print list of variables to publish
@@ -555,7 +524,6 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
         for (size_t jj = 0; jj < fPublishList.size(); jj++)
          QwMessage << fPublishList.at(jj).at(0) << " " << fPublishList.at(jj).at(1) << " "
 		  << fPublishList.at(jj).at(2) << " " << fPublishList.at(jj).at(3) << QwLog::endl;
-
     }
 
     if (ldebug) {
@@ -565,120 +533,49 @@ Int_t VQwDetectorArray::LoadChannelMap(TString mapfile) {
         for (size_t i=0;i<fMainDetID.size();i++)
          if (fMainDetID[i].fIndex>=0)
           fMainDetID[i].Print();
-
     }
 
     ldebug=kFALSE;
     mapstr.Close(); // Close the file (ifstream)
     return 0;
-
 }
 
+void VQwDetectorArray::LoadEventCuts_Line(QwParameterFile &mapstr, TString &varvalue, Int_t &eventcut_flag) {
+    TString device_type = mapstr.GetTypedNextToken<TString>();
+    device_type.ToLower();
+    TString device_name = mapstr.GetTypedNextToken<TString>();
+     device_name.ToLower();
 
-Int_t VQwDetectorArray::LoadEventCuts(TString filename) {
+    Int_t det_index = GetDetectorIndex(GetDetectorTypeID(device_type),device_name);
+	if (det_index == -1) {
+	    QwWarning << " Device not found " << device_name << " of type " << device_type << QwLog::endl;
+        //continue;
+	}
 
-    Int_t eventcut_flag = 1;
+    Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for IntegrationPMT value
+	Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for IntegrationPMT value
+	varvalue = mapstr.GetTypedNextToken<TString>();//global/local
+    varvalue.ToLower();
 
-    // Open the file
-    QwParameterFile mapstr(filename.Data());
-    fDetectorMaps.insert(mapstr.GetParamFileNameContents());
+    Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
+	Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
 
-    while (mapstr.ReadNextLine()) {
+    if (device_type == GetQwPMTInstrumentTypeName(kQwIntegrationPMT)){
+	    QwMessage << "VQwDetectorArray Error Code passing to QwIntegrationPMT " << GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut) << QwLog::endl;
+	    fIntegrationPMT[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut,burplevel);
+	} else if (device_type == GetQwPMTInstrumentTypeName(kQwCombinedPMT)){
+	    QwMessage << "VQwDetectorArray Error Code passing to QwCombinedPMT " << GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut) << QwLog::endl;
+	    fCombinedPMT[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut,burplevel);
+	}
+}
 
-        //std::cout<<"********* In the loop  *************"<<std::endl;
-
-        mapstr.TrimComment('!');   // Remove everything after a '!' character.
-        mapstr.TrimWhitespace();   // Get rid of leading and trailing spaces.
-
-        if (mapstr.LineIsEmpty())  
-         continue;
-
-        TString varname, varvalue;
-
-        if (mapstr.HasVariablePair("=",varname,varvalue)) {
-
-            if (varname=="EVENTCUTS") {
-
-                //varname="";
-                eventcut_flag = QwParameterFile::GetUInt(varvalue);
-                //std::cout<<"EVENT CUT FLAG "<<eventcut_flag<<std::endl;
-
-            }
-
-        } else {
-
-            TString device_type = mapstr.GetTypedNextToken<TString>();
-            device_type.ToLower();
-
-            TString device_name = mapstr.GetTypedNextToken<TString>();
-            device_name.ToLower();
-
-            Int_t det_index = GetDetectorIndex(GetDetectorTypeID(device_type),device_name);
-
-	        if (det_index == -1) {
-
-	            QwWarning << " Device not found " << device_name << " of type " << device_type << QwLog::endl;
-	            continue;
-
-	        }
-
-	        if (device_type == GetQwPMTInstrumentTypeName(kQwIntegrationPMT)){
-
-	            Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for IntegrationPMT value
-	            Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for IntegrationPMT value
-
-	            varvalue = mapstr.GetTypedNextToken<TString>();//global/local
-
-                Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
-
-                varvalue.ToLower();
-
-	            Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
-	            QwMessage << "VQwDetectorArray Error Code passing to QwIntegrationPMT " << GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut) << QwLog::endl;
-
-	            //std::cout<<"*****************************"<<std::endl;
-	            //std::cout<<" Type "<<device_type<<" Name "<<device_name<<" Index ["<<det_index <<"] "<<" device flag "<<check_flag<<std::endl;
-
-	            fIntegrationPMT[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut,burplevel);
-	            //std::cout<<"*****************************"<<std::endl;
-
-	        } else if (device_type == GetQwPMTInstrumentTypeName(kQwCombinedPMT)){
-
-	            Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for CombinedPMT value
-	            Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for CombinedPMT value
-
-	            varvalue = mapstr.GetTypedNextToken<TString>();//global/local
-
-                Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
-
-                varvalue.ToLower();
-
-	            Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
-
-	            QwMessage << "VQwDetectorArray Error Code passing to QwCombinedPMT " << GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut) << QwLog::endl;
-
-	            //std::cout<<"*****************************"<<std::endl;
-	            //std::cout<<" Type "<<device_type<<" Name "<<device_name<<" Index ["<<det_index <<"] "<<" device flag "<<check_flag<<std::endl;
-
-	            fCombinedPMT[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut,burplevel);
-	            //std::cout<<"*****************************"<<std::endl;
-	    
-	        }
-
-        }   
-
-    }
-
+void VQwDetectorArray::LoadEventCuts_Fin(Int_t &eventcut_flag) {
     for (size_t i = 0; i < fIntegrationPMT.size(); i++)
      fIntegrationPMT[i].SetEventCutMode(eventcut_flag);
-
     for (size_t i = 0; i < fCombinedPMT.size(); i++)
-     fCombinedPMT[i].SetEventCutMode(eventcut_flag);
+     fCombinedPMT[i].SetEventCutMode(eventcut_flag); 
 
-    fMainDetErrorCount = 0; //set the error counter to zero
-    mapstr.Close(); // Close the file (ifstream)
-    return 0;
-
+    fMainDetErrorCount = 0;//set the error counter to zero
 }
 
 
@@ -1049,26 +946,21 @@ Bool_t VQwDetectorArray::ApplySingleEventCuts() {
     for(size_t i=0;i<fIntegrationPMT.size();i++){
         
         status &= fIntegrationPMT[i].ApplySingleEventCuts();
-
-        if(!status && bDEBUG) std::cout<<"******* VQwDetectorArray::SingleEventCuts()->IntegrationPMT[ "<<i<<" , "<<fIntegrationPMT[i].GetElementName()<<" ] ******\n"; 
-    
+        if(!status && bDEBUG) 
+         std::cout<<"******* VQwDetectorArray::SingleEventCuts()->IntegrationPMT[ "<<i<<" , "<<fIntegrationPMT[i].GetElementName()<<" ] ******\n"; 
     }
     
     for(size_t i=0;i<fCombinedPMT.size();i++){
 
         status &= fCombinedPMT[i].ApplySingleEventCuts();
-        
-        if(!status && bDEBUG) std::cout<<"******* VQwDetectorArray::SingleEventCuts()->CombinedPMT[ "<<i<<" , "<<fCombinedPMT[i].GetElementName()<<" ] ******\n"; 
-    
+        if(!status && bDEBUG) 
+         std::cout<<"******* VQwDetectorArray::SingleEventCuts()->CombinedPMT[ "<<i<<" , "<<fCombinedPMT[i].GetElementName()<<" ] ******\n"; 
     }
-
 
     if (!status) 
      fMainDetErrorCount++; //failed  event counter for VQwDetectorArray
 
     return status;
-
-
 }
 
 
@@ -1447,29 +1339,6 @@ VQwSubsystem&  VQwDetectorArray::operator-=  (VQwSubsystem *value) {
 
 }
 
-
-
-void VQwDetectorArray::Sum(VQwSubsystem *value1,VQwSubsystem *value2) {
-
-    if (Compare(value1)&&Compare(value2)) {
-
-        *this =  value1;
-        *this += value2;
-    
-    }
-
-}
-
-void VQwDetectorArray::Difference(VQwSubsystem *value1,VQwSubsystem *value2) {
-
-    if (Compare(value1)&&Compare(value2)) {
-
-        *this =  value1;
-        *this -= value2;
-    
-    }
-
-}
 
 void VQwDetectorArray::Ratio(VQwSubsystem  *numer, VQwSubsystem  *denom) {
 

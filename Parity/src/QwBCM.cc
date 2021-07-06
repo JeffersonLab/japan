@@ -379,19 +379,6 @@ QwBCM<T>& QwBCM<T>::operator-= (const QwBCM<T> &value)
   return *this;
 }
 
-
-template<typename T>
-void QwBCM<T>::Sum(QwBCM<T> &value1, QwBCM<T> &value2){
-  *this =  value1;
-  *this += value2;
-}
-
-template<typename T>
-void QwBCM<T>::Difference(QwBCM<T> &value1, QwBCM<T> &value2){
-  *this =  value1;
-  *this -= value2;
-}
-
 template<typename T>
 void QwBCM<T>::Ratio(const VQwBCM &numer, const VQwBCM &denom)
 {

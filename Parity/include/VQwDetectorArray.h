@@ -74,7 +74,9 @@ class VQwDetectorArray: virtual public VQwSubsystemParity {
     void ProcessOptions(QwOptions &options);//Handle command line options
     Int_t LoadChannelMap(TString mapfile);
     Int_t LoadInputParameters(TString pedestalfile);
-    Int_t LoadEventCuts(TString filename);
+    void LoadEventCuts_Init() {};
+    void LoadEventCuts_Line(QwParameterFile &mapstr, TString &varvalue, Int_t &eventcut_flag);
+    void LoadEventCuts_Fin(Int_t &eventcut_flag);
     Bool_t ApplySingleEventCuts();//Check for good events by stting limits on the devices readings
 
     Bool_t  CheckForBurpFail(const VQwSubsystem *subsys);
@@ -135,8 +137,6 @@ class VQwDetectorArray: virtual public VQwSubsystemParity {
     VQwSubsystem&  operator-= ( VQwSubsystem *value);
 
 
-    void Sum(VQwSubsystem* value1, VQwSubsystem* value2);
-    void Difference(VQwSubsystem* value1, VQwSubsystem* value2);
     void Ratio(VQwSubsystem* numer, VQwSubsystem* denom);
     void Scale(Double_t factor);
     void Normalize(VQwDataElement* denom);
