@@ -39,9 +39,10 @@ QwExtractor::QwExtractor(const TString& name)
 {
   ParseSeparator = ":";
   fKeepRunningSum = kTRUE;
-  fTreeName = "bmw";
-  fTreeComment = "BMOD Extractor";
-  fErrorFlagMask = 0x9000;
+  fTreeName = "";
+  fTreeComment = "Extractor";
+  fCut = 0;
+  fErrorFlagMask = 0x0;
   fErrorFlagPointer = 0;
 
 }
@@ -49,12 +50,25 @@ QwExtractor::QwExtractor(const TString& name)
 QwExtractor::QwExtractor(const QwExtractor &source)
 : VQwDataHandler(source)
 {
+  fCut = 0;
   fErrorFlagMask = 0x9000;
   fErrorFlagPointer = 0;
 }
 
 /// Destructor
 QwExtractor::~QwExtractor() {delete fSourceCopy;}
+
+void QwExtractor::ParseConfigFile(QwParameterFile& file)
+{
+  VQwDataHandler::ParseConfigFile(file);
+  file.PopValue("cut-logic",    fCut);
+  file.PopValue("tree-name",    fTreeName);
+  file.PopValue("branch-prefix",fBranchprefix);
+  file.PopValue("tree-prefix",  fTreeprefix);
+  file.PopValue("tree-comment", fTreeComment);
+  file.PopValue("error-mask",   fErrorFlagMask);
+
+}
 
 Int_t QwExtractor::LoadChannelMap(const std::string& mapfile) {return 0;}
 
@@ -63,6 +77,21 @@ Int_t QwExtractor::LoadChannelMap(const std::string& mapfile) {return 0;}
  * @param even Helicity event structure
  * @return Zero on success
  */
+
+Int_t QwExtractor::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff)
+{
+  // Keep a pointer to the source Detectors/RingOutput
+  //fSourcePointer = &event;
+  SetPointer(&asym);
+  fSourceCopy = new QwSubsystemArrayParity(asym);
+  // Make a copy of RingOutput
+  // Normal ConnectChannels for the test variable/ErrorFlag
+  // Store error flag pointer
+  QwMessage << "Using event error flag" << QwLog::endl;
+  fErrorFlagPointer = asym.GetEventcutErrorFlagPointer();
+  return 0;
+}
+
 Int_t QwExtractor::ConnectChannels(QwSubsystemArrayParity& event)
 {
   // Keep a pointer to the source Detectors/RingOutput
@@ -89,7 +118,8 @@ void QwExtractor::ConstructTreeBranches(
   }
 
   // Construct tree name and create new tree
-  fTreeName = treeprefix + fTreeName;
+  if (treeprefix!="") { fTreeprefix = treeprefix; }
+  fTreeName = fTreeprefix + fTreeName;
   treerootfile->ConstructTreeBranches(fTreeName, fTreeComment.c_str(), *fSourceCopy);
   //fTree = treerootfile->GetTree(fTreeName);
 }
@@ -97,16 +127,25 @@ void QwExtractor::ConstructTreeBranches(
 void QwExtractor::ProcessData()
 {
   fLocalFlag = 0;
-  if (fErrorFlagMask!=0 && fErrorFlagPointer!=NULL) {
-    if ((*fErrorFlagPointer & fErrorFlagMask)!=0) {
-      //QwMessage << "0x" << std::hex << *fErrorFlagPointer << " passed mask " << "0x" << std::hex << fErrorFlagMask << std::dec << QwLog::endl;
+  if (fErrorFlagPointer!=NULL) {
+    if (fCut==1 && (*fErrorFlagPointer & fErrorFlagMask)!=0) {
+      // We are doing a == test, selecting activated bits
+      //QwMessage << "Cut in, 0x" << std::hex << *fErrorFlagPointer << " passed mask " << "0x" << std::hex << fErrorFlagMask << std::dec << QwLog::endl;
       fLocalFlag = 1;
       fSourceCopy->operator=(*fSourcePointer);
-  }// else {
+    }
+    else if (fCut==0 && (*fErrorFlagPointer & fErrorFlagMask)==0) {
+      // We are doing an != test, not selecting activated bits
+      //QwMessage << "Cut out, 0x" << std::hex << *fErrorFlagPointer << " passed mask " << "0x" << std::hex << fErrorFlagMask << std::dec << QwLog::endl;
+      fLocalFlag = 1;
+      fSourceCopy->operator=(*fSourcePointer);
+    }
+  // else {
   //    QwMessage << "0x" << std::hex << *fErrorFlagPointer << " failed mask " << "0x" << std::hex << fErrorFlagMask << std::dec << QwLog::endl;
   //  }
   }
   else{
+    // Trivial case for safety
     fLocalFlag = 1;
     fSourceCopy->operator=(*fSourcePointer);
   }
