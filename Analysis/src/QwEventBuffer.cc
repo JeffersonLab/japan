@@ -34,6 +34,7 @@ void sigusr_handler(int sig)
 std::string QwEventBuffer::fDefaultDataDirectory = "/adaq1/data1/apar";
 std::string QwEventBuffer::fDefaultDataFileStem = "QwRun_";
 std::string QwEventBuffer::fDefaultDataFileExtension = "log";
+Bool_t singlefile = kFALSE;
 
 const Int_t QwEventBuffer::kRunNotSegmented = -20;
 const Int_t QwEventBuffer::kNoNextDataFile  = -30;
@@ -110,6 +111,9 @@ void QwEventBuffer::DefineOptions(QwOptions &options)
   options.AddDefaultOptions()
     ("codafile-ext", po::value<string>()->default_value(fDefaultDataFileExtension),
      "extension of the input CODA filename");
+  options.AddOptions()
+    ("directfile", po::value<string>(), 
+    "Run over single event file");
   //  Special flag to allow sub-bank IDs less than 31
   options.AddDefaultOptions()
     ("allow-low-subbank-ids", po::value<bool>()->default_bool_value(false),
@@ -178,7 +182,10 @@ void QwEventBuffer::ProcessOptions(QwOptions &options)
     }
 #endif
   }
-
+  if(options.HasValue("directfile")){
+      singlefile = kTRUE;
+      fDataFile = options.GetValue<string>("directfile");
+    }
   fDataDirectory = options.GetValue<string>("data");
   if (fDataDirectory.Length() == 0){
     QwError << "ERROR:  Can't get the data directory in the QwEventBuffer creator."
@@ -1024,11 +1031,13 @@ Bool_t QwEventBuffer::DecodeSubbankHeader(UInt_t *buffer){
 
 const TString&  QwEventBuffer::DataFile(const UInt_t run, const Short_t seg = -1)
 {
-  TString basename = fDataFileStem + Form("%u.",run) + fDataFileExtension;
-  if(seg == -1){
-    fDataFile = fDataDirectory + basename;
-  } else {
-    fDataFile = fDataDirectory + basename + Form(".%d",seg);
+  if(!singlefile){
+    TString basename = fDataFileStem + Form("%u.",run) + fDataFileExtension;
+    if(seg == -1){
+      fDataFile = fDataDirectory + basename;
+    } else {
+      fDataFile = fDataDirectory + basename + Form(".%d",seg);
+    }
   }
   return fDataFile;
 }
@@ -1054,7 +1063,11 @@ Bool_t QwEventBuffer::DataFileIsSegmented()
   searchpath = fDataFile;
   glob(searchpath.Data(), GLOB_ERR, NULL, &globbuf);
 
-  if (globbuf.gl_pathc == 1){
+  if(singlefile){
+
+    fRunIsSegmented = kFALSE;
+
+  } else if (globbuf.gl_pathc == 1){
     /* The base file name exists.                               *
      * Do not look for file segments.                           */
     fRunIsSegmented = kFALSE;
