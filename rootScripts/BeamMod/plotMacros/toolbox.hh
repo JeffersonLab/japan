@@ -29,7 +29,7 @@ class ToolBox{
     void dit_slopes_averaging(TString);
 
     // Weighted averaging into rootfiles
-    void tg_err_averaging(TString,Int_t,TString);
+    void tg_err_averaging(TString,Int_t,TString,TString,TString,TString,TString);
     void combo_tg_err_segment_getter(TString, TTree*, TTree*, TString, TString, TString, std::vector<TString>, std::vector<TString>, std::vector<TString>, std::vector<TString>, std::vector<TString>, Int_t);
 
     // Data management
@@ -241,7 +241,7 @@ TVirtualPad* ToolBox::manyGraph(TPad* c1, TVirtualPad* p1, TString averaging, TC
   TGraphErrors* tge;
   Int_t subpad = 1;
   std::ofstream outfile0;
-  outfile0.open(Form("./processed_respin1_data/Results.csv"),std::ofstream::app);
+  outfile0.open(Form("./processed_respin1_data/Results_%s.csv",averaging.Data()),std::ofstream::app);
 
   for (Int_t idet = 0 ; idet < draws_piece1.size() ; idet++) {
     //Printf("test 1 slopes");
@@ -277,14 +277,14 @@ TVirtualPad* ToolBox::manyGraph(TPad* c1, TVirtualPad* p1, TString averaging, TC
           draws_piece2.at(imon) = "";
         }
         draw = draw_1+draws_piece1.at(idet)+draw_2+draws_piece2.at(imon)+draw_3+draws_piece3.at(imon)+draw_4;
-        if (draws_piece1.at(idet).Contains("main_det")) {
+        if (draws_piece1.at(idet).Contains("manual_main_det")) {
           draw = 
             "((rcdb_arm_flag==0)*(" + draw_1+"us_avg"+draw_2+draws_piece2.at(imon)+draw_3+draws_piece3.at(imon)+draw_4 + ")"
             +"+(rcdb_arm_flag==1)*(" + draw_1+"usr"+draw_2+draws_piece2.at(imon)+draw_3+draws_piece3.at(imon)+draw_4 + ")"
             +"+(rcdb_arm_flag==2)*(" + draw_1+"usl"+draw_2+draws_piece2.at(imon)+draw_3+draws_piece3.at(imon)+draw_4 + "))";
         }
-        if (draws_piece2.at(imon).Contains("main_det")) {
-          if (draws_piece3.at(imon).Contains("main_det")) {
+        if (draws_piece2.at(imon).Contains("manual_main_det")) {
+          if (draws_piece3.at(imon).Contains("manual_main_det")) {
             draw = 
               "((rcdb_arm_flag==0)*(" + draw_1+draws_piece1.at(idet)+draw_2+"us_avg"+draw_3+"us_avg"+draw_4 + ")"
               +"+(rcdb_arm_flag==1)*(" + draw_1+draws_piece1.at(idet)+draw_2+"usr"+draw_3+"usr"+draw_4 + ")"
@@ -325,14 +325,14 @@ TVirtualPad* ToolBox::manyGraph(TPad* c1, TVirtualPad* p1, TString averaging, TC
           draws_piece2.at(imon) = "";
         }
         drawn_channels_error = draw_1_err+draws_piece1.at(idet)+draw_2_err+draws_piece2.at(imon)+draw_3_err+draws_piece3.at(imon)+draw_4_err;
-        if (draws_piece1.at(idet).Contains("main_det")) {
+        if (draws_piece1.at(idet).Contains("manual_main_det")) {
           drawn_channels_error = 
              "((rcdb_arm_flag==0)*(" + draw_1_err+"us_avg"+draw_2_err+draws_piece2.at(imon)+draw_3_err+draws_piece3.at(imon)+draw_4_err + ")"
             +"+(rcdb_arm_flag==1)*(" + draw_1_err+"usr"+draw_2_err+draws_piece2.at(imon)+draw_3_err+draws_piece3.at(imon)+draw_4_err + ")"
             +"+(rcdb_arm_flag==2)*(" + draw_1_err+"usl"+draw_2_err+draws_piece2.at(imon)+draw_3_err+draws_piece3.at(imon)+draw_4_err + "))";
         }
-        if (draws_piece2.at(imon).Contains("main_det")) {
-          if (draws_piece3.at(imon).Contains("main_det")) {
+        if (draws_piece2.at(imon).Contains("manual_main_det")) {
+          if (draws_piece3.at(imon).Contains("manual_main_det")) {
             drawn_channels_error = 
                "((rcdb_arm_flag==0)*(" + draw_1_err+draws_piece1.at(idet)+draw_2_err+"us_avg"+draw_3_err+"us_avg"+draw_4_err + ")"
               +"+(rcdb_arm_flag==1)*(" + draw_1_err+draws_piece1.at(idet)+draw_2_err+"usr"+draw_3_err+"usr"+draw_4_err + ")"
@@ -378,15 +378,15 @@ TVirtualPad* ToolBox::manyGraph(TPad* c1, TVirtualPad* p1, TString averaging, TC
             draws_piece2.at(imon) = "";
           }
           draw_weighting_error = draw_1_weight_err+draws_piece1.at(idet)+draw_2_weight_err+draws_piece2.at(imon)+draw_3_weight_err+draws_piece3.at(imon)+draw_4_weight_err;
-          if (draws_piece1.at(idet).Contains("main_det")) {
-            // Add in a part before and after "main_det" to preserve other stuff (like reg_asym_ or _reg_cor_diff...) // FIXME FIXME 
+          if (draws_piece1.at(idet).Contains("manual_main_det")) {
+            // Add in a part before and after "manual_main_det" to preserve other stuff (like reg_asym_ or _reg_cor_diff...) // FIXME FIXME 
             draw_weighting_error = 
               "((rcdb_arm_flag==0)*(" + draw_1_weight_err+"us_avg"+draw_2_weight_err+draws_piece2.at(imon)+draw_3_weight_err+draws_piece3.at(imon)+draw_4_weight_err + ")"
               +"+(rcdb_arm_flag==1)*(" + draw_1_weight_err+"usr"+draw_2_weight_err+draws_piece2.at(imon)+draw_3_weight_err+draws_piece3.at(imon)+draw_4_weight_err + ")"
               +"+(rcdb_arm_flag==2)*(" + draw_1_weight_err+"usl"+draw_2_weight_err+draws_piece2.at(imon)+draw_3_weight_err+draws_piece3.at(imon)+draw_4_weight_err + "))";
           }
-          if (draws_piece2.at(imon).Contains("main_det")) {
-            if (draws_piece3.at(imon).Contains("main_det")) {
+          if (draws_piece2.at(imon).Contains("manual_main_det")) {
+            if (draws_piece3.at(imon).Contains("manual_main_det")) {
               draw_weighting_error = 
                 "((rcdb_arm_flag==0)*(" + draw_1_weight_err+draws_piece1.at(idet)+draw_2_weight_err+"us_avg"+draw_3_weight_err+"us_avg"+draw_4_weight_err + ")"
                 +"+(rcdb_arm_flag==1)*(" + draw_1_weight_err+draws_piece1.at(idet)+draw_2_weight_err+"usr"+draw_3_weight_err+"usr"+draw_4_weight_err + ")"
@@ -424,12 +424,23 @@ TVirtualPad* ToolBox::manyGraph(TPad* c1, TVirtualPad* p1, TString averaging, TC
       // Special test case using self-BPM only weighting as the relative rescaled error bar (instead of maindet asym error).
       //draw_weighting_error = "agg_part_avgd_friendable.diff_evMon0_mean_error";
 
+      TLegend* legend = new TLegend(0.1,0.7,0.30,0.9);
+      //legend->SetHeader("Header");//,"C");// option "C" allows to center the header
+      std::vector<TGraph*> mgs;
+      TMultiGraph *mg = new TMultiGraph();
+
       if (use_mon_cuts == 1) {
         icut = imon;
       }
       else {
         icut = idet;
       }
+
+      TString localCut = "1==1";
+      if (cuts.at(icut) != "") {
+        localCut = cuts.at(icut);
+      }
+      /* // Replace explicit cut!="" check with localCut variable arithmetic
       if (cuts.at(icut) == "") {
         //Printf("Test e) iterLocalAvg_time_scale = %d",iterLocalAvg_time_scale);
         nen = intree->Draw(Form("%s:%s:%s:%s",draw.Data(),averaging.Data(),draw_weighting_error.Data(),drawn_channels_error.Data()),Form(""),"goff");
@@ -443,6 +454,8 @@ TVirtualPad* ToolBox::manyGraph(TPad* c1, TVirtualPad* p1, TString averaging, TC
         nen = intree->Draw(Form("%s:%s:%s:%s",draw.Data(),averaging.Data(),draw_weighting_error.Data(),drawn_channels_error.Data()),Form("%s",cuts.at(icut).Data()),"goff");
         //Printf("nen = %d, Draw run+0.1*mini:(%s.%s_%s), %s==%d && %s",nen,data_tree_name.Data(),draws_piece1.at(idet).Data(),draws_piece2.at(imon).Data(),averaging.Data(),iterLocalAvg_time_scale,cuts.at(icut).Data());
       }
+      */
+      nen = intree->Draw(Form("%s:%s:%s:%s",draw.Data(),averaging.Data(),draw_weighting_error.Data(),drawn_channels_error.Data()),Form("%s",localCut.Data()),"goff");
 
       if (nen != 0) {
         // Special case calculating sum(errs2)
@@ -490,14 +503,14 @@ TVirtualPad* ToolBox::manyGraph(TPad* c1, TVirtualPad* p1, TString averaging, TC
         Printf("The weighted mean error scaling = weighted mean of ratio of error bars (1/sqrt(weights)) is = sqrt(Sum(weights^2*(detector sigma)^2)/Sum(weights)) = %e",weighted_mean_err_scale);
 
         // Use 1/sum(errs^2) directly
-        //nen = intree->Draw(Form("%s:run+0.1*mini:(%e)*%s",draw.Data(),sum_sigs,draw_weighting_error.Data()),Form("%s>=%d-0.1 && %s<=%d+0.1 && %s",averaging.Data(),iterLocalAvg_time_scale,averaging.Data(),iterLocalAvg_time_scale,cuts.at(icut).Data()),"goff");
+        //nen = intree->Draw(Form("%s:run+0.1*mini:(%e)*%s",draw.Data(),sum_sigs,draw_weighting_error.Data()),Form("%s>=%d-0.1 && %s<=%d+0.1 && %s",averaging.Data(),iterLocalAvg_time_scale,averaging.Data(),iterLocalAvg_time_scale,localCut.Data()),"goff");
 
         // Use 1/sqrt(sum(errs^2)) instead
-        //nen = intree->Draw(Form("%s:run+0.1*mini:sqrt(%e)*%s",draw.Data(),sum_sigs,draw_weighting_error.Data()),Form("%s>=%d-0.1 && %s<=%d+0.1 && %s",averaging.Data(),iterLocalAvg_time_scale,averaging.Data(),iterLocalAvg_time_scale,cuts.at(icut).Data()),"goff");
+        //nen = intree->Draw(Form("%s:run+0.1*mini:sqrt(%e)*%s",draw.Data(),sum_sigs,draw_weighting_error.Data()),Form("%s>=%d-0.1 && %s<=%d+0.1 && %s",averaging.Data(),iterLocalAvg_time_scale,averaging.Data(),iterLocalAvg_time_scale,localCut.Data()),"goff");
 
         // Use sigma = sigma*main det slugwise rescale factor
         Printf("Using error bar from %s",draw_weighting_error.Data());
-        nen = intree->Draw(Form("%s:%s:%e*%s",draw.Data(),averaging.Data(),weighted_mean_err_scale,draw_weighting_error.Data()),Form("%s",cuts.at(icut).Data()),"goff");
+        nen = intree->Draw(Form("%s:%s:%e*%s",draw.Data(),averaging.Data(),weighted_mean_err_scale,draw_weighting_error.Data()),Form("%s",localCut.Data()),"goff");
         // Get mean
         tge = 0;
 
@@ -510,11 +523,6 @@ TVirtualPad* ToolBox::manyGraph(TPad* c1, TVirtualPad* p1, TString averaging, TC
         p1=c1->cd(subpad);
         p1->SetGrid();
 
-        TLegend* legend = new TLegend(0.1,0.7,0.30,0.9);
-        //legend->SetHeader("Header");//,"C");// option "C" allows to center the header
-        std::vector<TGraph*> mgs;
-        TMultiGraph *mg = new TMultiGraph();
-        TGraph *tmpG;
 
         //if (cut.Contains("rcdb_sign")) { 
         //nen = intree->Draw(Form("rcdb_sign*(%s.mean)/(ppb):(%s.err)/(ppb):run+0.1*mini",draw.Data(),draw.Data()),cut.Data(),"goff");
@@ -532,6 +540,7 @@ TVirtualPad* ToolBox::manyGraph(TPad* c1, TVirtualPad* p1, TString averaging, TC
         tge->SetMarkerStyle(20);
         tge->SetMarkerSize(0.2);
         if (tge != 0) {
+          /* Remove multigraph
           mg->Add(tge,"p");
 
           if (mg!=0) {
@@ -541,9 +550,16 @@ TVirtualPad* ToolBox::manyGraph(TPad* c1, TVirtualPad* p1, TString averaging, TC
             mg->SetNameTitle(Form("mg %s",draw.Data()),Form("%s ;%s ;%s",draw.Data(),averaging.Data(),draw.Data()));
             (mg->GetHistogram())->SetNameTitle(Form("mg %s",draw.Data()),Form("%s ;%s ;%s",draw.Data(),averaging.Data(),draw.Data()));
             mg->Draw("alp");
+            */
 
-            if (mgs.size() > 1) {
-              legend->AddEntry(tge,cuts.at(icut),"p"); // Figure this one out later... FIXME FIXME
+            tge->Fit("pol0");
+            gStyle->SetOptFit(1);
+            tge->SetNameTitle(Form("tge %s",draw.Data()),Form("%s ;%s ;%s",draw.Data(),averaging.Data(),draw.Data()));
+            (tge->GetHistogram())->SetNameTitle(Form("tge h %s",draw.Data()),Form("%s ;%s ;%s",draw.Data(),averaging.Data(),draw.Data()));
+            tge->Draw("ap");
+
+            if (mgs.size() > 1) { // FIXME
+              legend->AddEntry(tge,localCut,"p"); // Figure this one out later... FIXME FIXME
               legend->Draw();
             }
             //p1->BuildLegend(); // Automated legend builder and placer
@@ -556,7 +572,11 @@ TVirtualPad* ToolBox::manyGraph(TPad* c1, TVirtualPad* p1, TString averaging, TC
             //tge = new TGraph(nen,intree->GetV2(),intree->GetV1());//,0,intree->GetV3());
             //Printf("test 3 slopes means");
             //tge->Fit("pol0");
+
+            /*  Remove multigraph
             TF1* tfe = mg->GetFunction("pol0");
+            */
+            TF1* tfe = tge->GetFunction("pol0");
             Double_t avg_tmp1 = 0.0;
             Double_t mean_err_tmp1 = 0.0;
             Double_t mean_red_chi2_err_tmp1 = 0.0;
@@ -596,10 +616,9 @@ TVirtualPad* ToolBox::manyGraph(TPad* c1, TVirtualPad* p1, TString averaging, TC
               << draw << ", "
               << averaging << ", "
               << draw_weighting_error << ", "
-              << cuts.at(icut) << ", "
+              << localCut << ", "
               << avg_tmp1 << ", "
-              << mean_err_tmp1 << std::endl
-              << "     And bonus quantities: " 
+              << mean_err_tmp1 << ", "
               << weighted_mean_stddev << ", "
               << mean_red_chi2_err_tmp1 << ", "
               << mean_red_chi2_tmp1 << ", "
@@ -612,7 +631,9 @@ TVirtualPad* ToolBox::manyGraph(TPad* c1, TVirtualPad* p1, TString averaging, TC
               << nen << std::endl;
 
           }
+        /* Remove multigraph
         }
+        */
       }
       else {
         //Printf("Using prior segment's value for now...");
@@ -1631,7 +1652,7 @@ void ToolBox::combo_segment_getter(TString averaging,TTree* intree, TTree* outtr
   Int_t totalEntries = intree->GetEntries();
   Int_t int_avg_time_scale = 0;
   Double_t double_avg_time_scale = 0;
-  if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part") {
+  if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part" || averaging == "crex_part_b") {
     intree->SetBranchAddress(averaging,&double_avg_time_scale);
   }
   if (averaging == "dit_segment" || averaging == "run") {
@@ -1657,7 +1678,7 @@ void ToolBox::combo_segment_getter(TString averaging,TTree* intree, TTree* outtr
   //for (std::map<Int_t,Int_t>::iterator iter = avg_time_scales.begin() ; iter != avg_time_scales.end(); ++iter){}
   for (Int_t ient = 0 ; ient<totalEntries ; ient++) {
     intree->GetEntry(ient);
-    if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part") {
+    if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part" || averaging == "crex_part_b") {
       localAvg_time_scale = (Int_t)double_avg_time_scale;
     }
     if (averaging == "dit_segment" || averaging == "run") {
@@ -1905,7 +1926,7 @@ void ToolBox::combo_err_segment_getter(TString averaging,TTree* intree, TTree* o
   Int_t totalEntries = intree->GetEntries();
   Int_t int_avg_time_scale = 0;
   Double_t double_avg_time_scale = 0;
-  if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part") {
+  if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part" || averaging == "crex_part_b") {
     intree->SetBranchAddress(averaging,&double_avg_time_scale);
   }
   if (averaging == "dit_segment" || averaging == "segment" || averaging == "run") {
@@ -1939,7 +1960,7 @@ void ToolBox::combo_err_segment_getter(TString averaging,TTree* intree, TTree* o
     if (print_per_entry == 1) {
       for (Int_t ient = 0 ; ient<totalEntries ; ient++) {
         intree->GetEntry(ient);
-        if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part") {
+        if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part" || averaging == "crex_part_b") {
           localAvg_time_scale = (Int_t)double_avg_time_scale;
         }
         if (averaging == "segment" || averaging == "dit_segment" || averaging == "run") {
@@ -2297,6 +2318,7 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
   Double_t run_number = 0;
   Double_t rcdb_ihwp = 0;
   Double_t crex_part_save = 0;
+  Double_t crex_part_b_save = 0;
   Double_t crex_pitt = 0;
   Double_t crex_slow_control = 0;
   Double_t crex_slow_control_simple = 0;
@@ -2305,7 +2327,7 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
   Int_t totalEntries = intree->GetEntries();
   Int_t int_avg_time_scale = 0;
   Double_t double_avg_time_scale = 0;
-  if (averaging == "rcdb_slug" || averaging == "rcdb_ihwp" || averaging == "rcdb_flip_state" || averaging == "crex_part" || averaging == "crex_pitt" || averaging == "crex_slow_control" || averaging == "crex_slow_control_simple" || averaging == "run_number") {
+  if (averaging == "rcdb_slug" || averaging == "rcdb_ihwp" || averaging == "rcdb_flip_state" || averaging == "crex_part" || averaging == "crex_part_b" || averaging == "crex_pitt" || averaging == "crex_slow_control" || averaging == "crex_slow_control_simple" || averaging == "run_number") {
     intree->SetBranchAddress(averaging,&double_avg_time_scale);
     rcdb_draws = rcdb_draws + averaging + "+";
   }
@@ -2337,6 +2359,11 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
     intree->SetBranchAddress("crex_part",&crex_part_save);
     outtree->Branch("crex_part",&crex_part_save);
     rcdb_draws = rcdb_draws + "crex_part" + "+";
+  }
+  if (averaging != "crex_part_b" && intree->GetBranch("crex_part_b")) {
+    intree->SetBranchAddress("crex_part_b",&crex_part_b_save);
+    outtree->Branch("crex_part_b",&crex_part_b_save);
+    rcdb_draws = rcdb_draws + "crex_part_b" + "+";
   }
   if (averaging != "crex_pitt" && intree->GetBranch("crex_pitt")) {
     intree->SetBranchAddress("crex_pitt",&crex_pitt);
@@ -2421,14 +2448,14 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
               draws_piece2.at(imon) = "";
             }
             draw = draw_1+draws_piece1.at(idet)+draw_2+draws_piece2.at(imon)+draw_3+draws_piece3.at(imon)+draw_4;
-            if (draws_piece1.at(idet).Contains("main_det")) {
+            if (draws_piece1.at(idet).Contains("manual_main_det")) {
               draw = 
                  "((rcdb_arm_flag==0)*(" + draw_1+"us_avg"+draw_2+draws_piece2.at(imon)+draw_3+draws_piece3.at(imon)+draw_4 + ")"
                 +"+(rcdb_arm_flag==1)*(" + draw_1+"usr"+draw_2+draws_piece2.at(imon)+draw_3+draws_piece3.at(imon)+draw_4 + ")"
                 +"+(rcdb_arm_flag==2)*(" + draw_1+"usl"+draw_2+draws_piece2.at(imon)+draw_3+draws_piece3.at(imon)+draw_4 + "))";
             }
-            if (draws_piece2.at(imon).Contains("main_det")) {
-              if (draws_piece3.at(imon).Contains("main_det")) {
+            if (draws_piece2.at(imon).Contains("manual_main_det")) {
+              if (draws_piece3.at(imon).Contains("manual_main_det")) {
                 draw = 
                    "((rcdb_arm_flag==0)*(" + draw_1+draws_piece1.at(idet)+draw_2+"us_avg"+draw_3+"us_avg"+draw_4 + ")"
                   +"+(rcdb_arm_flag==1)*(" + draw_1+draws_piece1.at(idet)+draw_2+"usr"+draw_3+"usr"+draw_4 + ")"
@@ -2469,14 +2496,14 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
               draws_piece2.at(imon) = "";
             }
             drawn_channels_error = draw_1_err+draws_piece1.at(idet)+draw_2_err+draws_piece2.at(imon)+draw_3_err+draws_piece3.at(imon)+draw_4_err;
-            if (draws_piece1.at(idet).Contains("main_det")) {
+            if (draws_piece1.at(idet).Contains("manual_main_det")) {
               drawn_channels_error = 
                  "((rcdb_arm_flag==0)*(" + draw_1_err+"us_avg"+draw_2_err+draws_piece2.at(imon)+draw_3_err+draws_piece3.at(imon)+draw_4_err + ")"
                 +"+(rcdb_arm_flag==1)*(" + draw_1_err+"usr"+draw_2_err+draws_piece2.at(imon)+draw_3_err+draws_piece3.at(imon)+draw_4_err + ")"
                 +"+(rcdb_arm_flag==2)*(" + draw_1_err+"usl"+draw_2_err+draws_piece2.at(imon)+draw_3_err+draws_piece3.at(imon)+draw_4_err + "))";
             }
-            if (draws_piece2.at(imon).Contains("main_det")) {
-              if (draws_piece3.at(imon).Contains("main_det")) {
+            if (draws_piece2.at(imon).Contains("manual_main_det")) {
+              if (draws_piece3.at(imon).Contains("manual_main_det")) {
                 drawn_channels_error = 
                   "((rcdb_arm_flag==0)*(" + draw_1_err+draws_piece1.at(idet)+draw_2_err+"us_avg"+draw_3_err+"us_avg"+draw_4_err + ")"
                   +"+(rcdb_arm_flag==1)*(" + draw_1_err+draws_piece1.at(idet)+draw_2_err+"usr"+draw_3_err+"usr"+draw_4_err + ")"
@@ -2522,14 +2549,14 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
                 draws_piece2.at(imon) = "";
               }
               draw_weighting_error = draw_1_weight_err+draws_piece1.at(idet)+draw_2_weight_err+draws_piece2.at(imon)+draw_3_weight_err+draws_piece3.at(imon)+draw_4_weight_err;
-              if (draws_piece1.at(idet).Contains("main_det")) {
+              if (draws_piece1.at(idet).Contains("manual_main_det")) {
                 draw_weighting_error = 
                    "((rcdb_arm_flag==0)*(" + draw_1_weight_err+"us_avg"+draw_2_weight_err+draws_piece2.at(imon)+draw_3_weight_err+draws_piece3.at(imon)+draw_4_weight_err + ")"
                   +"+(rcdb_arm_flag==1)*(" + draw_1_weight_err+"usr"+draw_2_weight_err+draws_piece2.at(imon)+draw_3_weight_err+draws_piece3.at(imon)+draw_4_weight_err + ")"
                   +"+(rcdb_arm_flag==2)*(" + draw_1_weight_err+"usl"+draw_2_weight_err+draws_piece2.at(imon)+draw_3_weight_err+draws_piece3.at(imon)+draw_4_weight_err + "))";
               }
-              if (draws_piece2.at(imon).Contains("main_det")) {
-                if (draws_piece3.at(imon).Contains("main_det")) {
+              if (draws_piece2.at(imon).Contains("manual_main_det")) {
+                if (draws_piece3.at(imon).Contains("manual_main_det")) {
                   draw_weighting_error = 
                     "((rcdb_arm_flag==0)*(" + draw_1_weight_err+draws_piece1.at(idet)+draw_2_weight_err+"us_avg"+draw_3_weight_err+"us_avg"+draw_4_weight_err + ")"
                     +"+(rcdb_arm_flag==1)*(" + draw_1_weight_err+draws_piece1.at(idet)+draw_2_weight_err+"usr"+draw_3_weight_err+"usr"+draw_4_weight_err + ")"
@@ -2752,7 +2779,7 @@ void ToolBox::combo_tg_err_segment_getter(TString averaging,TTree* intree, TTree
     if (print_per_entry == 1) {
       for (Int_t ient = 0 ; ient<totalEntries ; ient++) {
         intree->GetEntry(ient);
-        if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part" || averaging == "crex_pitt" || averaging == "crex_slow_control" || averaging == "crex_slow_control_simple") {
+        if (averaging == "rcdb_slug" || averaging == "rcdb_flip_state" || averaging == "crex_part" || averaging == "crex_part_b" || averaging == "crex_pitt" || averaging == "crex_slow_control" || averaging == "crex_slow_control_simple") {
           localAvg_time_scale = (Int_t)double_avg_time_scale;
         }
         if (averaging == "segment" || averaging == "dit_segment" || averaging == "run") {

@@ -310,18 +310,20 @@ void saveEigenSegmentCombos(TString ana = "avgs", TString suffix = "", TString m
   TString averaging_timescale = "dit_segment"; // Can also be run, rcdb_slug, rcdb_flip_state, or nothing (simply don't execute this script for nothing);
   if (ana == "avgs") {
     // Part averages
+    /*
     TTree * out_tree_mini_eigen_reg_allbpms_sorted_part = new TTree("mini_eigen_reg_allbpms_sorted_part_avg","mini_eigen_reg_allbpms_sorted_part_avg");
     TTree * out_tree_mini_eigen_reg_5bpms_sorted_part   = new TTree("mini_eigen_reg_5bpms_sorted_part_avg",  "mini_eigen_reg_5bpms_sorted_part_avg");
-    /*
     TTree * out_tree_mini_eigen_reg_allbpms_sorted_part_pruned = new TTree("mini_eigen_reg_allbpms_sorted_pruned_part_avg","mini_eigen_reg_allbpms_sorted_pruned_part_avg");
     TTree * out_tree_mini_eigen_reg_5bpms_sorted_part_pruned   = new TTree("mini_eigen_reg_5bpms_sorted_pruned_part_avg",  "mini_eigen_reg_5bpms_sorted_pruned_part_avg");
 
     // Segment averages
     TTree * out_tree_mini_eigen_reg_allbpms_sorted_seg_pruned = new TTree("mini_eigen_reg_allbpms_sorted_pruned_seg_avg","mini_eigen_reg_allbpms_sorted_pruned_seg_avg");
     TTree * out_tree_mini_eigen_reg_5bpms_sorted_seg_pruned   = new TTree("mini_eigen_reg_5bpms_sorted_pruned_seg_avg",  "mini_eigen_reg_5bpms_sorted_pruned_seg_avg");
+    */
     TTree * out_tree_mini_eigen_reg_allbpms_sorted_seg = new TTree("mini_eigen_reg_allbpms_sorted_seg_avg","mini_eigen_reg_allbpms_sorted_seg_avg");
     TTree * out_tree_mini_eigen_reg_5bpms_sorted_seg   = new TTree("mini_eigen_reg_5bpms_sorted_seg_avg",  "mini_eigen_reg_5bpms_sorted_seg_avg");
 
+    /*
     // Slug averages
     TTree * out_tree_mini_eigen_reg_allbpms_sorted_slug_pruned = new TTree("mini_eigen_reg_allbpms_sorted_pruned_slug_avg","mini_eigen_reg_allbpms_sorted_pruned_slug_avg");
     TTree * out_tree_mini_eigen_reg_5bpms_sorted_slug_pruned   = new TTree("mini_eigen_reg_5bpms_sorted_pruned_slug_avg",  "mini_eigen_reg_5bpms_sorted_pruned_slug_avg");
@@ -338,7 +340,16 @@ void saveEigenSegmentCombos(TString ana = "avgs", TString suffix = "", TString m
     delete out_tree_mini_eigen_reg_allbpms_sorted_part_pruned;
     delete out_tree_mini_eigen_reg_5bpms_sorted_part_pruned;
     */
+
+
+
+
+
+
+    /*
+    ////// Part averaging goes on here     
     averaging_timescale = "crex_part";
+    //averaging_timescale = "crex_part_b";
     cut = "(1==1) && (" + mod_cut + ")";
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_allbpms_sorted_part,"mini_eigen_reg_allbpms_sorted",cut,detectors,monitors,devices);
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_sorted_part,"mini_eigen_reg_5bpms_sorted",cut,detectors,monitors5,devices5);
@@ -346,6 +357,7 @@ void saveEigenSegmentCombos(TString ana = "avgs", TString suffix = "", TString m
     out_tree_mini_eigen_reg_5bpms_sorted_part->Write();
     delete out_tree_mini_eigen_reg_allbpms_sorted_part;
     delete out_tree_mini_eigen_reg_5bpms_sorted_part;
+    */
 
 
     /*
@@ -355,34 +367,38 @@ void saveEigenSegmentCombos(TString ana = "avgs", TString suffix = "", TString m
     cut = "dit_flag==1";
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_allbpms_sorted_seg_pruned,"mini_eigen_reg_allbpms_sorted",cut,detectors,monitors,devices);
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_sorted_seg_pruned,"mini_eigen_reg_5bpms_sorted",cut,detectors,monitors5,devices5);
-    cut = "";
+    out_tree_mini_eigen_reg_allbpms_sorted_seg_pruned->Write();
+    out_tree_mini_eigen_reg_5bpms_sorted_seg_pruned->Write();
+    delete out_tree_mini_eigen_reg_allbpms_sorted_seg_pruned;
+    delete out_tree_mini_eigen_reg_5bpms_sorted_seg_pruned;
+    */
+    cut = "(1==1) && (" + mod_cut + ")";
+    averaging_timescale = "dit_segment";
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_allbpms_sorted_seg,"mini_eigen_reg_allbpms_sorted",cut,detectors,monitors,devices);
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_sorted_seg,"mini_eigen_reg_5bpms_sorted",cut,detectors,monitors5,devices5);
 
-    out_tree_mini_eigen_reg_allbpms_sorted_seg_pruned->Write();
-    out_tree_mini_eigen_reg_5bpms_sorted_seg_pruned->Write();
     out_tree_mini_eigen_reg_allbpms_sorted_seg->Write();
     out_tree_mini_eigen_reg_5bpms_sorted_seg->Write();
-    delete out_tree_mini_eigen_reg_allbpms_sorted_seg_pruned;
-    delete out_tree_mini_eigen_reg_5bpms_sorted_seg_pruned;
     delete out_tree_mini_eigen_reg_allbpms_sorted_seg;
     delete out_tree_mini_eigen_reg_5bpms_sorted_seg;
+    /*
 
     // Slug averages
     cut = "dit_flag==1";
     averaging_timescale = "rcdb_slug";
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_allbpms_sorted_slug_pruned,"mini_eigen_reg_allbpms_sorted",cut,detectors,monitors,devices);
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_sorted_slug_pruned,"mini_eigen_reg_5bpms_sorted",cut,detectors,monitors5,devices5);
-    cut = "";
+    out_tree_mini_eigen_reg_allbpms_sorted_slug_pruned->Write();
+    out_tree_mini_eigen_reg_5bpms_sorted_slug_pruned->Write();
+    delete out_tree_mini_eigen_reg_allbpms_sorted_slug_pruned;
+    delete out_tree_mini_eigen_reg_5bpms_sorted_slug_pruned;
+    cut = "(1==1) && (" + mod_cut + ")";
+    averaging_timescale = "rcdb_slug";
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_allbpms_sorted_slug,"mini_eigen_reg_allbpms_sorted",cut,detectors,monitors,devices);
     combo_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_sorted_slug,"mini_eigen_reg_5bpms_sorted",cut,detectors,monitors5,devices5);
 
-    out_tree_mini_eigen_reg_allbpms_sorted_slug_pruned->Write();
-    out_tree_mini_eigen_reg_5bpms_sorted_slug_pruned->Write();
     out_tree_mini_eigen_reg_allbpms_sorted_slug->Write();
     out_tree_mini_eigen_reg_5bpms_sorted_slug->Write();
-    delete out_tree_mini_eigen_reg_allbpms_sorted_slug_pruned;
-    delete out_tree_mini_eigen_reg_5bpms_sorted_slug_pruned;
     delete out_tree_mini_eigen_reg_allbpms_sorted_slug;
     delete out_tree_mini_eigen_reg_5bpms_sorted_slug;
   //}

@@ -281,29 +281,29 @@ TVirtualPad* optimizeMultiGraph(TPad* c1, TVirtualPad* p1, TChain* dit, int subp
   return p1;
 }
 
-void plotAllPlainCyclewiseResiduals(TString ana = "", TString type = ""){ // If "ana" == "" then does the plain BPMs case
+void plotAllPlainCyclewiseResiduals(TString ana = "", TString type = "_fractional"){ // If "ana" == "" then does the plain BPMs case
   std::map<int,Double_t> runs;
   // Grab all of the relevant combos
-  TChain* dit_cyclewise = new TChain("dit_plain_friendable");
-  TChain* dit_cyclewise_13746 = new TChain("dit_plain_friendable");
-  TChain* dit_runwise_13746 = new TChain("dit_plain_friendable");
+  TChain* dit_cyclewise = new TChain("dit_plain_cyclewise_tagged_friendable");
+  TChain* dit_cyclewise_13746 = new TChain("dit_plain_cyclewise_tagged_friendable");
+  TChain* dit_runwise_13746 = new TChain("dit_plain_run_avg_tagged_friendable");
   TChain* reg_plain_regression = new TChain("agg_plain_friendable");
-  TChain* segment_avgd_dit_slopes = new TChain("dit_plain_friendable");
+  TChain* segment_avgd_dit_slopes = new TChain("dit_plain_cyclewise_friendable");
   
   //TString run_cycle = "run_avg";
   //TString run_cycle_wise = "runwise";
   TString run_cycle = "cyclewise";
   TString run_cycle_wise = "cyclewise";
-  dit_cyclewise->AddFile(Form("/lustre19/expphy/volatile/halla/parity/crex-respin1/bmodOutput/slopes_%s%s_1X/dithering_slopes_13746%s_rcdb_tagged_miniprinted_%s.root",run_cycle.Data(),ana.Data(),ana.Data(),run_cycle_wise.Data()));
+  dit_cyclewise          ->AddFile(Form("/lustre19/expphy/volatile/halla/parity/crex-respin2/bmodOutput/slopes_%s%s_1X/respin2_All_dithering_slopes_%s_rcdb_segmented_pruned_usavg_tag_expanded.root",run_cycle.Data(),ana.Data(),run_cycle.Data()));
   //dit_cyclewise_13746 = (TChain*)dit_cyclewise->CloneTree();//CopyTree();
   //dit_cyclewise_13746->SetName("dit_cyclewise_13746");
   //dit_cyclewise_13746->SetAlias("usl_coil2_residual","(usl_coil2-((usl_1X*1X_coil2)+(usl_4aY*4aY_coil2)+(usl_4eX*4eX_coil2)+(usl_4eY*4eY_coil2)+(usl_12X*12X_coil2)))");
   // Assume run averaged analysis for now
-  dit_cyclewise_13746    ->AddFile(Form("/lustre19/expphy/volatile/halla/parity/crex-respin1/bmodOutput/slopes_%s%s_1X/dithering_slopes_13746%s_rcdb_tagged_miniprinted_%s.root",run_cycle.Data(),ana.Data(),ana.Data(),run_cycle_wise.Data()));
-  dit_runwise_13746      ->AddFile(Form("/lustre19/expphy/volatile/halla/parity/crex-respin1/bmodOutput/slopes_run_avg%s_1X/dithering_slopes_13746%s_rcdb_miniprinted_runwise.root",ana.Data(),ana.Data()));
-  reg_plain_regression   ->AddFile(Form("/u/group/halla/parity/software/japan_offline/prompt/prex-prompt/aggRootfiles_crex_respin1/ErrorFlag_dit_1X_part_avg/slugRootfiles/CREX-All-miniruns_prod-only.root"));
+  dit_cyclewise_13746    ->AddFile(Form("/lustre19/expphy/volatile/halla/parity/crex-respin2/bmodOutput/slopes_%s%s_1X/respin2_All_dithering_slopes_%s_rcdb_segmented_pruned_usavg_tag_expanded.root",run_cycle.Data(),ana.Data(),run_cycle.Data()));
+  dit_runwise_13746      ->AddFile(Form("/lustre19/expphy/volatile/halla/parity/crex-respin2/bmodOutput/slopes_run_avg_1X/respin2_All_dithering_slopes_run_avg_rcdb_segmented_pruned_usavg_tag_expanded.root"));
+  reg_plain_regression   ->AddFile(Form("/u/group/halla/parity/software/japan_offline/bmodAna/rootScripts/BeamMod/plotMacros/processed_respin2_data/mini_friended_agg.root"));
   // Eigenvector BMOD only ever did run-averaged analysis
-  segment_avgd_dit_slopes ->AddFile(Form("/lustre19/expphy/volatile/halla/parity/crex-respin1/bmodOutput/BMODextractor/mini_friended_dit_slopes.root"));
+  segment_avgd_dit_slopes ->AddFile(Form("../processed_respin2_data/All_dit_outputs_doing_segment_averaging_of_slopes_mini_friended.root"));
   // For safety build an index that assigns a run and cyclenum to define the entries (so we can compare different trees even with missing entries)
   //dit_cyclewise_13746->BuildIndex("run","cyclenum");
   //dit_15746->BuildIndex("run","cyclenum");
@@ -353,7 +353,7 @@ void plotAllPlainCyclewiseResiduals(TString ana = "", TString type = ""){ // If 
   }
 
   TString anaz = "USL, R "+modanaz+"Residual sensitivities for coil set 13746, plain BPMs cyclewise bmod slope calculation (only good cyclewise sensitivity data included)";
-  std::string pdfname = Form("may_19_plots/method_comparison_plain_residuals_%s%s.pdf",run_cycle_wise.Data(),type.Data());
+  std::string pdfname = Form("july_14_plots/method_comparison_plain_residuals_%s%s.pdf",run_cycle_wise.Data(),type.Data());
 
   TText *label = new TText(0.0,0.005,anaz.Data());
   label->SetTextFont(23);
