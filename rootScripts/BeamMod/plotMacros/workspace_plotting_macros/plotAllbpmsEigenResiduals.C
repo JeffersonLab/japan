@@ -106,7 +106,7 @@ TVirtualPad* multiGraph(TPad* c1, TVirtualPad* p1, TChain* dit, int subpad = 1, 
     Int_t nen_eq = dit->Draw(Form("%s",draw.Data()),Form("(%s)/pow(%s_err,2)",cut.c_str(),draw.Data()));
     // Get htemp's Mean, RMS
     std::ofstream outfile0;
-    outfile0.open(Form("august_5_plots/residuals.txt"),std::ofstream::out | std::ofstream::app);
+    outfile0.open(Form("august_18_plots/residuals.txt"),std::ofstream::out | std::ofstream::app);
     outfile0 << draw << "," << ((TH1*)gROOT->FindObject("htemp"))->GetMean() << "," << ((TH1*)gROOT->FindObject("htemp"))->GetMeanError() << "," << ((TH1*)gROOT->FindObject("htemp"))->GetRMS() << std::endl; 
     outfile0.close();
     ((TH1*)gROOT->FindObject("htemp"))->SetNameTitle(Form("%s_hist_err",draw.Data()),Form("%s;Error Weighted Counts",draw.Data()));
@@ -536,14 +536,14 @@ void plotAllbpmsEigenResiduals(TString scale = "part", TString ana = "_eigenvect
   }
 
   std::ofstream outfile0;
-  outfile0.open(Form("august_5_plots/residuals.txt"),std::ofstream::out | std::ofstream::app);
+  outfile0.open(Form("august_18_plots/residuals.txt"),std::ofstream::out | std::ofstream::app);
   outfile0 << "Analysis and draw,Residual TH1 weighted mean,Residual TH1 error,Residual RMS" << std::endl; 
   outfile0.close();
 
   TString anaz = "US Avg, DD "+modanaz+"Residual sensitivities for coil set 13746, "+scale+"-avgd eigenvector run_avg bmod slope calculation (only good run_avg sensitivity data included)";
-  std::string pdfname = Form("august_5_plots/method_comparison_%s%s%s_%s%s.pdf",run_cycle_wise.Data(),type.Data(),ana.Data(),nbpms.Data(),do_err.Data());
-  std::string pdfresidualsname = Form("august_5_plots/method_comparison_all_eigen_residuals_%s%s%s_%s%s.pdf",run_cycle_wise.Data(),type.Data(),ana.Data(),nbpms.Data(),do_err.Data());
-  std::string pdfslopesname = Form("august_5_plots/method_comparison_all_eigen_slopes_%s%s%s_%s%s.pdf",run_cycle_wise.Data(),type.Data(),ana.Data(),nbpms.Data(),do_err.Data());
+  std::string pdfname = Form("august_18_plots/method_comparison_%s%s%s_%s%s.pdf",run_cycle_wise.Data(),type.Data(),ana.Data(),nbpms.Data(),do_err.Data());
+  std::string pdfresidualsname = Form("august_18_plots/method_comparison_all_eigen_residuals_%s%s%s_%s%s.pdf",run_cycle_wise.Data(),type.Data(),ana.Data(),nbpms.Data(),do_err.Data());
+  std::string pdfslopesname = Form("august_18_plots/method_comparison_all_eigen_slopes_%s%s%s_%s%s.pdf",run_cycle_wise.Data(),type.Data(),ana.Data(),nbpms.Data(),do_err.Data());
 
   TText *label = new TText(0.0,0.005,anaz.Data());
   label->SetTextFont(23);
@@ -1541,6 +1541,6 @@ void plotAllbpmsEigenResiduals(TString scale = "part", TString ana = "_eigenvect
   segment_avgd_dit_slopes->Write(Form("dit_%s_avgd%s_friendable",scale.Data(),bpms.Data()));
   outfile->Close();
 
-  gSystem->Exec("mv august_5_plots/residuals.txt august_5_plots/residuals_"+scale+"_"+nbpms+do_err+".txt");
+  gSystem->Exec("mv august_18_plots/residuals.txt august_18_plots/residuals_"+scale+"_"+nbpms+do_err+".txt");
 
 }

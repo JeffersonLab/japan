@@ -7,12 +7,8 @@ int plotbox(TString suffix = "", Int_t ana = 0){
   ToolBox * tb = new ToolBox();
 
   // _no_err is only allbpms version available at the moment (should be fixed 8/6/2021)
-  tb->tg_err_averaging("crex_part",ana,"rcdb_sign*","&& (rcdb_flip_state<=2)","part","_no_err",suffix);   // Part avg all correction data
-  //tb->tg_err_averaging("rcdb_slug",ana,"","&& (rcdb_flip_state<=2)","part","_no_err",suffix);   // Slug avg all correction data
-  //tb->tg_err_averaging("rcdb_slug",2,"","&& (rcdb_flip_state<=2)","part","_no_err",suffix);   // Slug avg slopes and slope diffs and sensitivities
-
-  //tb->tg_err_averaging("crex_part",2,"rcdb_sign*"," && (rcdb_flip_state<=2)","part","");   // Test case - residual plots == 2
-
+  //tb->tg_err_averaging("crex_part",ana,"rcdb_sign*","&& rcdb_flip_state<=2","part","_no_err",suffix);   // Part avg all correction data
+  //tb->tg_err_averaging("rcdb_slug",ana,"","&& rcdb_flip_state<=2","part","_no_err",suffix);   // Slug avg all correction data
 
 
   /* Special case for Ryan's AT needs 
@@ -22,7 +18,7 @@ int plotbox(TString suffix = "", Int_t ana = 0){
   tb->tg_err_averaging("rcdb_slug",1,"rcdb_sign*","&& rcdb_flip_state<=2 && rcdb_slug>=107","part","",suffix+"_part3"); // Plot the data
   End special case */
 
-
+  // OLD
   //tb->tg_err_averaging("rcdb_slug",2,"","","part","",suffix); // Generate slug averaged data - NO sign correction applied here
   //tb->tg_err_averaging("dit_segment",0,"rcdb_sign*","","part",""); // Segmentwise avg
   //tb->tg_err_averaging("crex_pitt",0,"rcdb_sign*","","part",""); // Pitt analysis
@@ -34,9 +30,11 @@ int plotbox(TString suffix = "", Int_t ana = 0){
   //tb->tg_err_averaging("rcdb_sign",0,"rcdb_sign*","(rcdb_flip_state<=2)","part",""); 
   //tb->tg_err_averaging("crex_part",0,"rcdb_sign*","(rcdb_flip_state<=2)","part",""); 
 
+  //////////////////////////////////////////////////////////////
   //// Plotting
+  //tb->tg_err_averaging("rcdb_slug",ana,"rcdb_sign*","&& rcdb_flip_state<=2","part","_no_err",suffix); // Generate grand plots from slug averaged data - with sign correction (I left the slug averaging outputs with NO sign correction, all larger time scales do have sign correction in the 1 pass outputs)
+  tb->tg_err_averaging("crex_part",ana,"","&& rcdb_flip_state<=2","part","_no_err",suffix); // Generate grand plots from slug averaged data - with sign correction (I left the slug averaging outputs with NO sign correction, all larger time scales do have sign correction in the 1 pass outputs)
   /*
-  tb->tg_err_averaging("rcdb_slug",1,"rcdb_sign*"); // Generate grand plots from slug averaged data - with sign correction (I left the slug averaging outputs with NO sign correction, all larger time scales do have sign correction in the 1 pass outputs)
   tb->tg_err_averaging("rcdb_slug",1,"rcdb_sign*"," && crex_part == 1");
   tb->tg_err_averaging("rcdb_slug",1,"rcdb_sign*"," && crex_part == 2");
   tb->tg_err_averaging("rcdb_slug",1,"rcdb_sign*"," && crex_part == 3");

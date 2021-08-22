@@ -483,7 +483,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     "bpm11X",
     "bpm12X",
   };
+  std::vector<TString> empty_vec = {""};
   std::vector<TString> diff_vec = {"diff"};
+  std::vector<TString> yield_vec = {"yield"};
   std::vector<TString> diff_yield_vec = {"diff","yield"};
   std::vector<TString> asym_vec = {"asym"};
   std::vector<TString> reg_cor_asym_vec = {"reg_asym","cor_asym"};
@@ -567,7 +569,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //TString outFileName = Form("processed_respin2_data/CREX_All_IHWP_Avg_Outputs.root");
   //TString outFileName = Form("processed_respin2_data/CREX_All_Wien_Avg_Outputs.root");
   //TString outFileName = Form("TEST_slug_avg_corrections_outputs.root");
-  if (draw_plots == 1) {
+  if (draw_plots == 1 || draw_plots == 3) {
     outFileName = "TEST_junk.root";
   }
   // Save the new TTree - make sure necessary and useful branches are also copied, as needed.
@@ -632,7 +634,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   TTree * out_tree_mini_regression_det_asyms_det_weighted = new TTree("mini_regression_det_asyms_det_weighted","mini_regression_det_asyms_det_weighted");
   TTree * out_tree_mini_regression_det_asym_cors_det_weighted = new TTree("mini_regression_det_asym_cors_det_weighted","mini_regression_det_asym_cors_det_weighted");
   TTree * out_tree_mini_overload_det_asyms_det_weighted = new TTree("mini_overload_det_asyms_det_weighted","mini_overload_det_asyms_det_weighted");
-  TTree * out_tree_mini_overload_det_asym_cors_det_weighted = new TTree("mini_overload_det_asym_cors_det_weighted","mini_overload_det_asym_cors_det_weighted");
+  //TTree * out_tree_mini_overload_det_asym_cors_det_weighted = new TTree("mini_overload_det_asym_cors_det_weighted","mini_overload_det_asym_cors_det_weighted");
   TTree * out_tree_mini_dit_plain_det_asyms_det_weighted = new TTree("mini_dit_plain_det_asyms_det_weighted","mini_dit_plain_det_asyms_det_weighted");
   TTree * out_tree_mini_dit_part_avgd_det_asyms_det_weighted = new TTree("mini_dit_part_avgd_det_asyms_det_weighted","mini_dit_part_avgd_det_asyms_det_weighted");
   /* Special AT case for Ryan's needs
@@ -662,10 +664,11 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Main reference burst-wise eigenvector regression
   // Corrections per monitor
   // Main det weighted
+  mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms.reg_asym_usl.err))";
   draw            = Form("-1.0*%smini_reference_eigen_reg_5bpms_sorted.#_#.mean*mini_reference_eigen_reg_5bpms_sorted.diff_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted.#_#.mean*mini_reference_eigen_reg_5bpms_sorted.diff_#.err)";
-  /* 8/5/2021 open end of comment for testing FIXME */
+  /* 8/5/2021 open end of comment for testing FIXME  */
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors5,monitors5,cuts,{},0);
   out_tree_mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted->Write();
   delete out_tree_mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted;
@@ -1393,6 +1396,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   mini = new TChain("mini");
   mini->AddFile(mini_infilename);
   mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
+  mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
@@ -1407,7 +1411,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Raw asyms
   // Main det signal weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
+  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
   draw                 = Form("%s#_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(#_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_raw_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
@@ -1650,9 +1654,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Main standard 5bpm regression - correction amount on the asym, from aggregator
   // Main det signal weighted
-  drawn_channels_error = "abs(agg_plain_friendable.#_#_mean_error)";
-  draw                 =     Form("%sagg_plain_friendable.#_#_mean",mod_draw.Data());
   draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_regression.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_regression.reg_asym_usl.err))";
+  draw                 =     Form("%sagg_plain_friendable.#_#_mean",mod_draw.Data());
+  drawn_channels_error = "abs(agg_plain_friendable.#_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_regression_det_asym_cors_det_weighted,draw,draw_weighting_error,drawn_channels_error,asym_vec,agg_cor_special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   out_tree_mini_regression_det_asym_cors_det_weighted->Write();
   delete out_tree_mini_regression_det_asym_cors_det_weighted;
@@ -2002,7 +2006,6 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   TTree * out_tree_residuals_reg_dit_diff_det_weighted = new TTree("residuals_reg_dit_diff_det_weighted","residuals_reg_dit_diff_det_weighted");
   TTree * out_tree_residuals_lagr_dit_diff_det_weighted = new TTree("residuals_lagr_dit_diff_det_weighted","residuals_lagr_dit_diff_det_weighted");
   TTree * out_tree_residuals_lagr_reg_diff_det_weighted = new TTree("residuals_lagr_reg_diff_det_weighted","residuals_lagr_reg_diff_det_weighted");
-  TTree * out_tree_residuals_dit_res = new TTree("residuals_dit_res","residuals_dit_res");
   TTree * out_tree_residuals_avg_dit_res = new TTree("residuals_avg_dit_res","residuals_avg_dit_res");
   TTree * out_tree_residuals_reg_res = new TTree("residuals_reg_res","residuals_reg_res");
   TTree * out_tree_residuals_lagr_res = new TTree("residuals_lagr_res","residuals_lagr_res");
@@ -2052,7 +2055,6 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   TTree * out_tree_residuals_reg_dit_diff_det_weighted = new TTree("residuals_reg_dit_diff_det_weighted","residuals_reg_dit_diff_det_weighted");
   TTree * out_tree_residuals_lagr_dit_diff_det_weighted = new TTree("residuals_lagr_dit_diff_det_weighted","residuals_lagr_dit_diff_det_weighted");
   TTree * out_tree_residuals_lagr_reg_diff_det_weighted = new TTree("residuals_lagr_reg_diff_det_weighted","residuals_lagr_reg_diff_det_weighted");
-  TTree * out_tree_residuals_dit_res = new TTree("residuals_dit_res","residuals_dit_res");
   TTree * out_tree_residuals_avg_dit_res = new TTree("residuals_avg_dit_res","residuals_avg_dit_res");
   TTree * out_tree_residuals_reg_res = new TTree("residuals_reg_res","residuals_reg_res");
   TTree * out_tree_residuals_lagr_res = new TTree("residuals_lagr_res","residuals_lagr_res");
@@ -2121,9 +2123,11 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   TString tmpErrName = "";
   TString tmpFrac = "";
 
+  TString res_type = "_fractional"; // hardcoded to be fractional residuals
+
   for (Int_t idet = 0 ; idet < tmpDetNames.size() ; idet++) {
     for (Int_t coil = 1 ; coil <=7 ; coil++ ) {
-      if (type == "_fractional") {
+      if (res_type == "_fractional") {
         tmpFrac = Form("/%s_coil%d",tmpDetNames.at(idet).Data(),coil);
         //us_avg_frac = Form("/us_avg_coil%d",coil);
         //us_dd_frac = Form("/us_dd_coil%d",coil);
@@ -2136,16 +2140,16 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       //      and correction itself = (1 - frac residual)/frac_variable     (frac variable = 1/raw)
 
         // Run avg dit data 
-        tmpName = Form("(%s_coil%d-(0",tmpDetNames.at(idet).Data(),coil);
-        tmpErrName = Form("abs(1/%s_coil%d)*sqrt((pow(%s_coil%d_err*(1-dit_13746.%s_coil%d_residual),2))",
+        tmpName = Form("(dit_13746.%s_coil%d-(0",tmpDetNames.at(idet).Data(),coil);
+        tmpErrName = Form("abs(1/dit_13746.%s_coil%d)*sqrt((pow(dit_13746.%s_coil%d_err*(1-dit_13746.%s_coil%d_residual),2))",
             tmpDetNames.at(idet).Data(),coil,tmpDetNames.at(idet).Data(),coil,tmpDetNames.at(idet).Data(),coil);
         for (Int_t imon = 0 ; imon < nmons ; imon++) {
-          tmpName = Form("%s+(dit_13746.%s_evMon%d*evMon%d_coil%d)",tmpName.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
-          tmpErrName = Form("%s+pow(dit_13746.%s_evMon%d*evMon%d_coil%d_err,2)",tmpErrName.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
+          tmpName = Form("%s+(dit_13746.%s_evMon%d*dit_13746.evMon%d_coil%d)",tmpName.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
+          tmpErrName = Form("%s+pow(dit_13746.%s_evMon%d*dit_13746.evMon%d_coil%d_err,2)",tmpErrName.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
         }
         if (nmons == 12) {
-          dit_13746->SetAlias(Form("%s_coil%d_residual",tmpDetNames.at(idet).Data(),coil),Form("%s_coil%d/100",tmpDetNames.at(idet).Data(),coil));
-          dit_13746->SetAlias(Form("%s_coil%d_residual_err",tmpDetNames.at(idet).Data(),coil),Form("%s_coil%d_err/100",tmpDetNames.at(idet).Data(),coil));
+          dit_13746->SetAlias(Form("%s_coil%d_residual",tmpDetNames.at(idet).Data(),coil),Form("dit_13746.%s_coil%d/100",tmpDetNames.at(idet).Data(),coil));
+          dit_13746->SetAlias(Form("%s_coil%d_residual_err",tmpDetNames.at(idet).Data(),coil),Form("dit_13746.%s_coil%d_err/100",tmpDetNames.at(idet).Data(),coil));
         }
         else {
           dit_13746->SetAlias(Form("%s_coil%d_residual",tmpDetNames.at(idet).Data(),coil),Form("%s))%s",tmpName.Data(),tmpFrac.Data()));
@@ -2153,35 +2157,35 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
         }
 
         // Part avg reg data
-        tmpName = Form("(%s_coil%d-((0",tmpDetNames.at(idet).Data(),coil);
-        tmpErrName = Form("abs(1/%s_coil%d)*sqrt((pow(%s_coil%d_err*(1-mini_eigen_reg_%s_%s_avg.%s_coil%d_residual),2))+(0",
+        tmpName = Form("(dit_13746.%s_coil%d-((0",tmpDetNames.at(idet).Data(),coil);
+        tmpErrName = Form("abs(1/dit_13746.%s_coil%d)*sqrt((pow(dit_13746.%s_coil%d_err*(1-mini_eigen_reg_%s_%s_avg.%s_coil%d_residual),2))+(0",
             tmpDetNames.at(idet).Data(),coil,tmpDetNames.at(idet).Data(),coil,nbpms.Data(),scale.Data(),tmpDetNames.at(idet).Data(),coil);
         for (Int_t imon = 0 ; imon < nmons ; imon++) {
-          tmpName = Form("%s+(mini_eigen_reg_%s_%s_avg.%s_evMon%d_new*evMon%d_coil%d)",tmpName.Data(),nbpms.Data(),scale.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
-          tmpErrName = Form("%s+pow(mini_eigen_reg_%s_%s_avg.%s_evMon%d_new*evMon%d_coil%d_err,2)",tmpErrName.Data(),nbpms.Data(),scale.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
+          tmpName = Form("%s+(mini_eigen_reg_%s_%s_avg.%s_evMon%d_new*dit_13746.evMon%d_coil%d)",tmpName.Data(),nbpms.Data(),scale.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
+          tmpErrName = Form("%s+pow(mini_eigen_reg_%s_%s_avg.%s_evMon%d_new*dit_13746.evMon%d_coil%d_err,2)",tmpErrName.Data(),nbpms.Data(),scale.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
         }
         part_avgd_regression->SetAlias(Form("%s_coil%d_residual",tmpDetNames.at(idet).Data(),coil),Form("%s))/1e-3)%s",tmpName.Data(),tmpFrac.Data()));
         part_avgd_regression->SetAlias(Form("%s_coil%d_residual_err",tmpDetNames.at(idet).Data(),coil),Form("%s)/1e-6)",tmpErrName.Data()));
         // FIXME FIXME FIXME FIXME I added a NEW 1/e-6 to the residual error calculation because it didn't match relative UNITS!!!!
 
         // Part avg lagr data
-        tmpName = Form("(%s_coil%d-((0",tmpDetNames.at(idet).Data(),coil);
-        tmpErrName = Form("abs(1/%s_coil%d)*sqrt((pow(%s_coil%d_err*(1-mini_eigen_lagr_%s_%s_avg.%s_coil%d_residual),2))+(0",
+        tmpName = Form("(dit_13746.%s_coil%d-((0",tmpDetNames.at(idet).Data(),coil);
+        tmpErrName = Form("abs(1/dit_13746.%s_coil%d)*sqrt((pow(dit_13746.%s_coil%d_err*(1-mini_eigen_lagr_%s_%s_avg.%s_coil%d_residual),2))+(0",
             tmpDetNames.at(idet).Data(),coil,tmpDetNames.at(idet).Data(),coil,nbpms.Data(),scale.Data(),tmpDetNames.at(idet).Data(),coil);
         for (Int_t imon = 0 ; imon < nmons ; imon++) {
-          tmpName = Form("%s+(mini_eigen_lagr_%s_%s_avg.%s_evMon%d_new*evMon%d_coil%d)",tmpName.Data(),nbpms.Data(),scale.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
-          tmpErrName = Form("%s+pow(mini_eigen_lagr_%s_%s_avg.%s_evMon%d_new*evMon%d_coil%d_err,2)",tmpErrName.Data(),nbpms.Data(),scale.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
+          tmpName = Form("%s+(mini_eigen_lagr_%s_%s_avg.%s_evMon%d_new*dit_13746.evMon%d_coil%d)",tmpName.Data(),nbpms.Data(),scale.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
+          tmpErrName = Form("%s+pow(mini_eigen_lagr_%s_%s_avg.%s_evMon%d_new*dit_13746.evMon%d_coil%d_err,2)",tmpErrName.Data(),nbpms.Data(),scale.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
         }
         part_avgd_lagrange->SetAlias(Form("%s_coil%d_residual",tmpDetNames.at(idet).Data(),coil),Form("%s))/1e-3)%s",tmpName.Data(),tmpFrac.Data()));
         part_avgd_lagrange->SetAlias(Form("%s_coil%d_residual_err",tmpDetNames.at(idet).Data(),coil),Form("%s)/1e-6)",tmpErrName.Data()));
 
         // Part avg segmentwise dit data
-        tmpName = Form("(%s_coil%d-((0",tmpDetNames.at(idet).Data(),coil);
-        tmpErrName = Form("abs(1/%s_coil%d)*sqrt((pow(%s_coil%d_err*(1-dit_%s_avgd%s_friendable.%s_coil%d_residual),2))+(0",
+        tmpName = Form("(dit_13746.%s_coil%d-((0",tmpDetNames.at(idet).Data(),coil);
+        tmpErrName = Form("abs(1/dit_13746.%s_coil%d)*sqrt((pow(dit_13746.%s_coil%d_err*(1-dit_%s_avgd%s_friendable.%s_coil%d_residual),2))+(0",
             tmpDetNames.at(idet).Data(),coil,tmpDetNames.at(idet).Data(),coil,scale.Data(),bpms.Data(),tmpDetNames.at(idet).Data(),coil);
         for (Int_t imon = 0 ; imon < nmons ; imon++) {
-          tmpName = Form("%s+(dit_%s_avgd%s_friendable.%s_evMon%d_mean*evMon%d_coil%d)",tmpName.Data(),scale.Data(),bpms.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
-          tmpErrName = Form("%s+pow(dit_%s_avgd%s_friendable.%s_evMon%d_mean*evMon%d_coil%d_err,2)",tmpErrName.Data(),scale.Data(),bpms.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
+          tmpName = Form("%s+(dit_%s_avgd%s_friendable.%s_evMon%d_mean*dit_13746.evMon%d_coil%d)",tmpName.Data(),scale.Data(),bpms.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
+          tmpErrName = Form("%s+pow(dit_%s_avgd%s_friendable.%s_evMon%d_mean*dit_13746.evMon%d_coil%d_err,2)",tmpErrName.Data(),scale.Data(),bpms.Data(),tmpDetNames.at(idet).Data(),imon,imon,coil);
         }
         if (nmons == 12) {
           segment_avgd_dit_slopes->SetAlias(Form("%s_coil%d_residual",tmpDetNames.at(idet).Data(),coil),Form("%s_coil%d/100",tmpDetNames.at(idet).Data(),coil));
@@ -2277,8 +2281,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   /* Commenting block open out here */
   // Run dit - segment avgd dit slopes differences
   // Main det weighted
-  draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_reg_%s_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_%s_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_%s_part_avg.reg_asym_usl.err))",nbpms.Data(),nbpms.Data(),nbpms.Data());
-  draw                 = Form("%sdit_13746.#_#_run_dit_dit_diff",mod_draw.Data());
+  draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usl.err))",nbpms.Data(),type.Data(),nbpms.Data(),type.Data(),nbpms.Data(),type.Data());
+  draw                 = Form("dit_13746.#_#_run_dit_dit_diff");
+  //draw                 = Form("%sdit_13746.#_#_run_dit_dit_diff",mod_draw.Data());
   drawn_channels_error = "1"; // no assumed error per slope diff? Does this really work?
   Printf("Run dit - segment avgd dit slopes differences");
   combo_tg_err_segment_getter(averaging_timescale,residuals_mini,out_tree_residuals_run_dit_dit_diff_det_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors_choice,monitors_choice,residuals_cuts_runwise,{},0);
@@ -2295,8 +2300,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   residuals_mini->AddFriend(segment_avgd_dit_slopes,Form("dit_%s_avgd%s_friendable",type.Data(),bpms.Data()));
   // Reg - dit slopes differences
   // Main det weighted
-  draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_reg_%s_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_%s_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_%s_part_avg.reg_asym_usl.err))",nbpms.Data(),nbpms.Data(),nbpms.Data());
-  draw                 = Form("%smini_eigen_reg_%s_part_avg.#_#_reg_dit_diff",mod_draw.Data(),nbpms.Data());
+  draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usl.err))",nbpms.Data(),type.Data(),nbpms.Data(),type.Data(),nbpms.Data(),type.Data());
+  //draw                 = Form("%smini_eigen_reg_%s_%s_avg.#_#_reg_dit_diff",mod_draw.Data(),nbpms.Data(),type.Data());
+  draw                 = Form("mini_eigen_reg_%s_%s_avg.#_#_reg_dit_diff",nbpms.Data(),type.Data());
   //////// NO ERROR given for slope differences.... could do some error propagation with assumed 3% errors??? 
   //////// drawn_channels_error = "abs(mini_eigen_reg_%s_part_avg.#_#*_reg_dit_diff_error)";
   drawn_channels_error = "1"; // no assumed error per slope diff? Does this really work?
@@ -2315,8 +2321,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   residuals_mini->AddFriend(segment_avgd_dit_slopes,Form("dit_%s_avgd%s_friendable",type.Data(),bpms.Data()));
   // Lagr - dit slopes differences
   // Main det weighted
-  draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_lagr_%s_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_%s_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_%s_part_avg.lagr_asym_usl.err))",nbpms.Data(),nbpms.Data(),nbpms.Data());
-  draw                 = Form("%smini_eigen_lagr_%s_part_avg.#_#_lagr_dit_diff",mod_draw.Data(),nbpms.Data());
+  draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usl.err))",nbpms.Data(),type.Data(),nbpms.Data(),type.Data(),nbpms.Data(),type.Data());
+  //draw                 = Form("%smini_eigen_lagr_%s_%s_avg.#_#_lagr_dit_diff",mod_draw.Data(),nbpms.Data(),type.Data());
+  draw                 = Form("mini_eigen_lagr_%s_%s_avg.#_#_lagr_dit_diff",nbpms.Data(),type.Data());
   //////// NO ERROR given for slope differences.... could do some error propagation with assumed 3% errors??? 
   //////// drawn_channels_error = "abs(mini_eigen_lagr_%s_part_avg.#_#*_lagr_dit_diff_error)";
   drawn_channels_error = "1"; // no assumed error per slope diff? Does this really work?
@@ -2324,8 +2331,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   combo_tg_err_segment_getter(averaging_timescale,residuals_mini,out_tree_residuals_lagr_dit_diff_det_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors_choice,monitors_choice,residuals_cuts,{},0);
   out_tree_residuals_lagr_dit_diff_det_weighted->Write();
   delete out_tree_residuals_lagr_dit_diff_det_weighted;
-  /* CLose of comment out here */
 
+
+  // Slope differences
   delete residuals_mini;
   residuals_mini           = new TChain("mini");
   residuals_mini          ->Add(Form("/lustre19/expphy/volatile/halla/parity/crex-respin2/LagrangeOutput/rootfiles%s_eigen_%s_avg%s/respin2-rcdb-parts-slowc-segments-%s_avg_sens-eigen_reg_lagr.root",lagr_err.Data(),type.Data(),bpms.Data(),type.Data())); // Make more of this
@@ -2336,8 +2344,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   residuals_mini->AddFriend(segment_avgd_dit_slopes,Form("dit_%s_avgd%s_friendable",type.Data(),bpms.Data()));
   // Lagr - reg slopes differences
   // Main det weighted
-  draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_lagr_%s_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_%s_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_%s_part_avg.lagr_asym_usl.err))",nbpms.Data(),nbpms.Data(),nbpms.Data());
-  draw                 = Form("%smini_eigen_lagr_%s_part_avg.#_#_lagr_reg_diff",mod_draw.Data(),nbpms.Data());
+  draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usl.err))",nbpms.Data(),type.Data(),nbpms.Data(),type.Data(),nbpms.Data(),type.Data());
+  //draw                 = Form("%smini_eigen_lagr_%s_%s_avg.#_#_lagr_reg_diff",mod_draw.Data(),nbpms.Data(),type.Data());
+  draw                 = Form("mini_eigen_lagr_%s_%s_avg.#_#_lagr_reg_diff",nbpms.Data(),type.Data());
   //////// NO ERROR given for slope differences.... could do some error propagation with assumed 3% errors??? 
   //////// drawn_channels_error = "abs(mini_eigen_lagr_%s_part_avg.#_#*_lagr_reg_diff_error)";
   drawn_channels_error = "1"; // no assumed error per slope diff? Does this really work?
@@ -2346,7 +2355,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   out_tree_residuals_lagr_reg_diff_det_weighted->Write();
   delete out_tree_residuals_lagr_reg_diff_det_weighted;
 
-  /* Open comment out here */
+  // Residuals
   delete residuals_mini;
   residuals_mini           = new TChain("mini");
   residuals_mini          ->Add(Form("/lustre19/expphy/volatile/halla/parity/crex-respin2/LagrangeOutput/rootfiles%s_eigen_%s_avg%s/respin2-rcdb-parts-slowc-segments-%s_avg_sens-eigen_reg_lagr.root",lagr_err.Data(),type.Data(),bpms.Data(),type.Data())); // Make more of this
@@ -2358,9 +2367,10 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Residuals
   // Reg residuals 
   // Self err weighted
-  draw_weighting_error = Form("mini_eigen_reg_%s_part_avg.#_#_residual_err",nbpms.Data());
-  draw                 = Form("%smini_eigen_reg_%s_part_avg.#_#_residual",mod_draw.Data(),nbpms.Data());
-  drawn_channels_error = Form("mini_eigen_reg_%s_part_avg.#_#_residual_err",nbpms.Data()); 
+  //draw_weighting_error = Form("mini_eigen_reg_%s_%s_avg.#_#_residual_err",nbpms.Data(),type.Data());
+  draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usl.err))",nbpms.Data(),type.Data(),nbpms.Data(),type.Data(),nbpms.Data(),type.Data());
+  draw                 = Form("mini_eigen_reg_%s_%s_avg.#_#_residual",nbpms.Data(),type.Data());
+  drawn_channels_error = Form("mini_eigen_reg_%s_%s_avg.#_#_residual_err",nbpms.Data(),type.Data()); 
   Printf("Reg self err weighted residuals");
   combo_tg_err_segment_getter(averaging_timescale,residuals_mini,out_tree_residuals_reg_res,draw,draw_weighting_error,drawn_channels_error,special_detectors,coils,coils,residuals_cuts,{},0);
   out_tree_residuals_reg_res->Write();
@@ -2376,9 +2386,10 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   residuals_mini->AddFriend(segment_avgd_dit_slopes,Form("dit_%s_avgd%s_friendable",type.Data(),bpms.Data()));
   // Lagr residuals 
   // Self err weighted
-  draw_weighting_error = Form("mini_eigen_lagr_%s_part_avg.#_#_residual_err",nbpms.Data());
-  draw                 = Form("%smini_eigen_lagr_%s_part_avg.#_#_residual",mod_draw.Data(),nbpms.Data());
-  drawn_channels_error = Form("mini_eigen_lagr_%s_part_avg.#_#_residual_err",nbpms.Data()); 
+  //draw_weighting_error = Form("mini_eigen_lagr_%s_%s_avg.#_#_residual_err",nbpms.Data(),type.Data());
+  draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usl.err))",nbpms.Data(),type.Data(),nbpms.Data(),type.Data(),nbpms.Data(),type.Data());
+  draw                 = Form("mini_eigen_lagr_%s_%s_avg.#_#_residual",nbpms.Data(),type.Data());
+  drawn_channels_error = Form("mini_eigen_lagr_%s_%s_avg.#_#_residual_err",nbpms.Data(),type.Data()); 
   Printf("Lagr self err weighted residuals");
   combo_tg_err_segment_getter(averaging_timescale,residuals_mini,out_tree_residuals_lagr_res,draw,draw_weighting_error,drawn_channels_error,special_detectors,coils,coils,residuals_cuts,{},0);
   out_tree_residuals_lagr_res->Write();
@@ -2394,21 +2405,17 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   residuals_mini->AddFriend(segment_avgd_dit_slopes,Form("dit_%s_avgd%s_friendable",type.Data(),bpms.Data()));
   // Dit residuals 
   // Self err weighted
-  draw_weighting_error = Form("dit_part_avgd%s_friendable.#_#_residual_err",bpms.Data());
-  draw                 = Form("%sdit_part_avgd%s_friendable.#_#_residual",mod_draw.Data(),bpms.Data());
-  //////// NO ERROR given for slope differences.... could do some error propagation with assumed 3% errors??? 
-  //////// drawn_channels_error = "abs(mini_eigen_lagr_%s_part_avg.#_#*_lagr_dit_diff_error)";
   Printf("Dit self err weighted residuals");
-  drawn_channels_error = Form("dit_part_avgd%s_friendable.#_#_residual_err",bpms.Data()); 
+  //draw_weighting_error = Form("dit_%s_avgd%s_friendable.#_#_residual_err",type.Data(),bpms.Data());
+  draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usl.err))",nbpms.Data(),type.Data(),nbpms.Data(),type.Data(),nbpms.Data(),type.Data());
+  draw                 = Form("dit_%s_avgd%s_friendable.#_#_residual",type.Data(),bpms.Data());
+  drawn_channels_error = Form("dit_%s_avgd%s_friendable.#_#_residual_err",type.Data(),bpms.Data()); 
   combo_tg_err_segment_getter(averaging_timescale,residuals_mini,out_tree_residuals_avg_dit_res,draw,draw_weighting_error,drawn_channels_error,special_detectors,coils,coils,residuals_cuts,{},0);
   out_tree_residuals_avg_dit_res->Write();
   delete out_tree_residuals_avg_dit_res;
-  /* Close comment out here */
 
-  /*
-  TTree * out_tree_slopes_part_avg_reg  = new TTree("slopes_part_avg_reg","slopes_part_avg_reg");
-  TTree * out_tree_slopes_part_avg_lagr = new TTree("slopes_part_avg_lagr","slopes_part_avg_lagr");
-  */
+
+  // Slopes
   if (!bpms.Contains("allbpms")){
     delete residuals_mini;
   residuals_mini           = new TChain("mini");
@@ -2420,7 +2427,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     residuals_mini->AddFriend(segment_avgd_dit_slopes,Form("dit_%s_avgd%s_friendable",type.Data(),bpms.Data()));
     // Dit slopes
     // Maindet err weighted
-    draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_reg_%s_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_%s_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_%s_part_avg.reg_asym_usl.err))",nbpms.Data(),nbpms.Data(),nbpms.Data());
+    draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usl.err))",nbpms.Data(),type.Data(),nbpms.Data(),type.Data(),nbpms.Data(),type.Data());
     draw                 = Form("dit_13746.#_#");
     drawn_channels_error = Form("1");
   Printf("Run dit slopes maindet err weighted");
@@ -2438,8 +2445,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     residuals_mini->AddFriend(segment_avgd_dit_slopes,Form("dit_%s_avgd%s_friendable",type.Data(),bpms.Data()));
     // Part avg dit slopes 
     // Self err weighted
-    draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_reg_%s_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_%s_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_%s_part_avg.reg_asym_usl.err))",nbpms.Data(),nbpms.Data(),nbpms.Data());
-    draw                 = Form("dit_part_avgd%s_friendable.#_#_mean",bpms.Data());
+    draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usl.err))",nbpms.Data(),type.Data(),nbpms.Data(),type.Data(),nbpms.Data(),type.Data());
+    draw                 = Form("dit_%s_avgd%s_friendable.#_#_mean",type.Data(),bpms.Data());
     drawn_channels_error = Form("1");
   Printf("Part avgd dit slopes maindet err weighted");
     combo_tg_err_segment_getter(averaging_timescale,residuals_mini,out_tree_slopes_part_avg_dit,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors_choice,monitors_choice,cuts,{},0);
@@ -2447,7 +2454,6 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     delete out_tree_slopes_part_avg_dit;
   }
 
-  /* Open comment out here */
   delete residuals_mini;
   residuals_mini           = new TChain("mini");
   residuals_mini          ->Add(Form("/lustre19/expphy/volatile/halla/parity/crex-respin2/LagrangeOutput/rootfiles%s_eigen_%s_avg%s/respin2-rcdb-parts-slowc-segments-%s_avg_sens-eigen_reg_lagr.root",lagr_err.Data(),type.Data(),bpms.Data(),type.Data())); // Make more of this
@@ -2458,14 +2464,13 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   residuals_mini->AddFriend(segment_avgd_dit_slopes,Form("dit_%s_avgd%s_friendable",type.Data(),bpms.Data()));
   // Reg slopes
   // Maindet err weighted
-  draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_reg_%s_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_%s_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_%s_part_avg.reg_asym_usl.err))",nbpms.Data(),nbpms.Data(),nbpms.Data());
-  draw                 = Form("mini_eigen_reg_%s_part_avg.#_#_new",nbpms.Data());
+  draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usl.err))",nbpms.Data(),type.Data(),nbpms.Data(),type.Data(),nbpms.Data(),type.Data());
+  draw                 = Form("mini_eigen_reg_%s_%s_avg.#_#_new",nbpms.Data(),type.Data());
   drawn_channels_error = Form("1");
   Printf("Reg slopes maindet err weighted");
   combo_tg_err_segment_getter(averaging_timescale,residuals_mini,out_tree_slopes_part_avg_reg,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors_choice,monitors_choice,cuts,{},0);
   out_tree_slopes_part_avg_reg->Write();
   delete out_tree_slopes_part_avg_reg;
-  /* CLose of comment out here */
 
   delete residuals_mini;
   residuals_mini           = new TChain("mini");
@@ -2477,13 +2482,14 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   residuals_mini->AddFriend(segment_avgd_dit_slopes,Form("dit_%s_avgd%s_friendable",type.Data(),bpms.Data()));
   // Lagr slopes
   // Maindet err weighted
-  draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_reg_%s_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_%s_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_%s_part_avg.reg_asym_usl.err))",nbpms.Data(),nbpms.Data(),nbpms.Data());
-  draw                 = Form("mini_eigen_reg_%s_part_avg.#_#_new",nbpms.Data());
+  draw_weighting_error = Form("((rcdb_arm_flag==0)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_%s_%s_avg.lagr_asym_usl.err))",nbpms.Data(),type.Data(),nbpms.Data(),type.Data(),nbpms.Data(),type.Data());
+  draw                 = Form("mini_eigen_lagr_%s_%s_avg.#_#_new",nbpms.Data(),type.Data());
   drawn_channels_error = Form("1");
   Printf("Lagr slopes maindet err weighted");
   combo_tg_err_segment_getter(averaging_timescale,residuals_mini,out_tree_slopes_part_avg_lagr,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors_choice,monitors_choice,cuts,{},0);
   out_tree_slopes_part_avg_lagr->Write();
   delete out_tree_slopes_part_avg_lagr;
+  /* Open comment out here */
 
   // Loop over the prior file's existing TTrees and print all of those as well, uneditted.
   /*
@@ -2530,10 +2536,10 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     out_tree_mini_eigen_lagr_5bpms_part_avg_corrections_mon_weighted = (TTree*)data_file_cors.Get("mini_eigen_lagr_5bpms_part_avg_corrections_mon_weighted");
     out_tree_mini_eigen_lagr_allbpms_part_avg_corrections_det_weighted = (TTree*)data_file_cors.Get("mini_eigen_lagr_allbpms_part_avg_corrections_det_weighted");
     out_tree_mini_eigen_lagr_allbpms_part_avg_corrections_mon_weighted = (TTree*)data_file_cors.Get("mini_eigen_lagr_allbpms_part_avg_corrections_mon_weighted");
-    out_tree_mini_regression_corrections_det_weighted     = (TTree*)data_file_cors.Get("mini_regression_corrections_det_weighted","mini_regression_corrections_det_weighted");
-    out_tree_mini_regression_corrections_mon_weighted     = (TTree*)data_file_cors.Get("mini_regression_corrections_mon_weighted","mini_regression_corrections_mon_weighted");
-    out_tree_mini_overload_corrections_det_weighted     = (TTree*)data_file_cors.Get("mini_overload_corrections_det_weighted","mini_overload_corrections_det_weighted");
-    out_tree_mini_overload_corrections_mon_weighted     = (TTree*)data_file_cors.Get("mini_overload_corrections_mon_weighted","mini_overload_corrections_mon_weighted");
+    out_tree_mini_regression_corrections_det_weighted     = (TTree*)data_file_cors.Get("mini_regression_corrections_det_weighted");
+    out_tree_mini_regression_corrections_mon_weighted     = (TTree*)data_file_cors.Get("mini_regression_corrections_mon_weighted");
+    out_tree_mini_overload_corrections_det_weighted     = (TTree*)data_file_cors.Get("mini_overload_corrections_det_weighted");
+    out_tree_mini_overload_corrections_mon_weighted     = (TTree*)data_file_cors.Get("mini_overload_corrections_mon_weighted");
     out_tree_mini_dit_plain_corrections_det_weighted     = (TTree*)data_file_cors.Get("mini_dit_plain_corrections_det_weighted");
     out_tree_mini_dit_plain_corrections_mon_weighted     = (TTree*)data_file_cors.Get("mini_dit_plain_corrections_mon_weighted");
     out_tree_mini_dit_part_avgd_corrections_det_weighted = (TTree*)data_file_cors.Get("mini_dit_part_avgd_corrections_det_weighted");
@@ -2559,7 +2565,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     out_tree_mini_regression_det_asyms_det_weighted                       = (TTree*)data_file_asyms.Get("mini_regression_det_asyms_det_weighted");
     out_tree_mini_regression_det_asym_cors_det_weighted                   = (TTree*)data_file_asyms.Get("mini_regression_det_asym_cors_det_weighted");
     out_tree_mini_overload_det_asyms_det_weighted                         = (TTree*)data_file_asyms.Get("mini_overload_det_asyms_det_weighted");
-    out_tree_mini_overload_det_asym_cors_det_weighted                     = (TTree*)data_file_asyms.Get("mini_overload_det_asym_cors_det_weighted");
+    //out_tree_mini_overload_det_asym_cors_det_weighted                     = (TTree*)data_file_asyms.Get("mini_overload_det_asym_cors_det_weighted");
     out_tree_mini_dit_plain_det_asyms_det_weighted                        = (TTree*)data_file_asyms.Get("mini_dit_plain_det_asyms_det_weighted");
     out_tree_mini_dit_part_avgd_det_asyms_det_weighted                    = (TTree*)data_file_asyms.Get("mini_dit_part_avgd_det_asyms_det_weighted");
     /* Special case for Ryan's AT needs
@@ -2619,7 +2625,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     mini_slugs->AddFriend(out_tree_mini_regression_det_asyms_det_weighted);
     mini_slugs->AddFriend(out_tree_mini_regression_det_asym_cors_det_weighted);
     mini_slugs->AddFriend(out_tree_mini_overload_det_asyms_det_weighted);
-    mini_slugs->AddFriend(out_tree_mini_overload_det_asym_cors_det_weighted);
+    //mini_slugs->AddFriend(out_tree_mini_overload_det_asym_cors_det_weighted);
     mini_slugs->AddFriend(out_tree_mini_dit_plain_det_asyms_det_weighted);
     mini_slugs->AddFriend(out_tree_mini_dit_part_avgd_det_asyms_det_weighted);
 
@@ -2676,165 +2682,555 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     // Corrections
     corrections_pdfname = type+"_avg_evMons_accumulated_corrections_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
 
-    TCanvas* c2_1_1 = new TCanvas();
+    corrections_pdfname = type+"_avg_5bpms_reg_corrections_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
+    for (Int_t jmon = 0 ; jmon < monitors5_new.size() ; jmon++) {
+      std::vector<TString> tmpVec = {monitors5_new.at(jmon)};
+      TCanvas* c2_1_1_1 = new TCanvas();
+      ana = "main det weighted - part-avg eigenvector regression - 5bpms - cor from " + monitors5_new.at(jmon) + " , ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_1_1_1->cd();
+      c2_1_1_1->SetTitle(ana.Data());
+      c2_1_1_1->SetName(ana.Data());
+      c2_1_1_1->Divide(1,special_detectors.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+      draw                 =     Form("%smini_eigen_reg_5bpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+      drawn_channels_error = "abs(mini_eigen_reg_5bpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      p1=manyGraph(c2_1_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+
+      c2_1_1_1->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      if (jmon == 0) {
+        c2_1_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      }
+      //else if (jmon == monitors5_new.size()-1) {
+        //c2_1_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      //}
+      else {
+        c2_1_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
+    for (Int_t jmon = 0 ; jmon < monitors5_new.size() ; jmon++) {
+      std::vector<TString> tmpVec = {monitors5_new.at(jmon)};
+      TCanvas* c2_1_1_2 = new TCanvas();
+      ana = "local err weighted - part-avg eigenvector regression - 5bpms - cor from " + monitors5_new.at(jmon) + " , ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_1_1_2->cd();
+      c2_1_1_2->SetTitle(ana.Data());
+      c2_1_1_2->SetName(ana.Data());
+      c2_1_1_2->Divide(1,special_detectors.size());
+      draw_weighting_error = "abs(mini_eigen_reg_5bpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      draw                 =     Form("%smini_eigen_reg_5bpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+      drawn_channels_error = "abs(mini_eigen_reg_5bpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      p1=manyGraph(c2_1_1_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+
+      c2_1_1_2->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      //if (jmon == 0) {
+        //c2_1_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      //}
+      if (jmon == monitors5_new.size()-1) {
+        c2_1_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      }
+      else {
+        c2_1_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
+    /*TCanvas* c2_1_1_1 = new TCanvas();
     ana = "main det weighted - part-avg eigenvector regression - 5bpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
-    c2_1_1->cd();
-    c2_1_1->SetTitle(ana.Data());
-    c2_1_1->SetName(ana.Data());
-    c2_1_1->Divide(monitors5_new.size(),special_detectors.size());
+    c2_1_1_1->cd();
+    c2_1_1_1->SetTitle(ana.Data());
+    c2_1_1_1->SetName(ana.Data());
+    c2_1_1_1->Divide(monitors5_new.size(),special_detectors.size());
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_eigen_reg_5bpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_eigen_reg_5bpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c2_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors5_new,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+    p1=manyGraph(c2_1_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors5_new,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
-    c2_1_1->cd();
+    c2_1_1_1->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c2_1_1->SaveAs(Form("processed_respin2_data/%s.pdf(",corrections_pdfname.Data()));
+    c2_1_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+    */
 
-    TCanvas* c2_1_2 = new TCanvas();
-    ana = "main det weighted - part-avg eigenvector regression - allbpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
-    c2_1_2->cd();
-    c2_1_2->SetTitle(ana.Data());
-    c2_1_2->SetName(ana.Data());
-    c2_1_2->Divide(monitors12_new.size(),special_detectors.size());
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     Form("%smini_eigen_reg_allbpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
-    drawn_channels_error = "abs(mini_eigen_reg_allbpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c2_1_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors12_new,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+    corrections_pdfname = type+"_avg_allbpms_reg_corrections_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
+    for (Int_t jmon = 0 ; jmon < monitors12_new.size() ; jmon++) {
+      std::vector<TString> tmpVec = {monitors12_new.at(jmon)};
+      TCanvas* c2_1_2_1 = new TCanvas();
+      ana = "main det weighted - part-avg eigenvector regression - allbpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_1_2_1->cd();
+      c2_1_2_1->SetTitle(ana.Data());
+      c2_1_2_1->SetName(ana.Data());
+      c2_1_2_1->Divide(1,special_detectors.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+      draw                 =     Form("%smini_eigen_reg_allbpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+      drawn_channels_error = "abs(mini_eigen_reg_allbpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      p1=manyGraph(c2_1_2_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+      c2_1_2_1->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      if (jmon == 0) {
+        c2_1_2_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      }
+      //else if (jmon == monitors12_new.size()-1) {
+        //c2_1_2_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      //}
+      else {
+        c2_1_2_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
+    for (Int_t jmon = 0 ; jmon < monitors12_new.size() ; jmon++) {
+      std::vector<TString> tmpVec = {monitors12_new.at(jmon)};
+      TCanvas* c2_1_2_2 = new TCanvas();
+      ana = "local err weighted - part-avg eigenvector regression - allbpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_1_2_2->cd();
+      c2_1_2_2->SetTitle(ana.Data());
+      c2_1_2_2->SetName(ana.Data());
+      c2_1_2_2->Divide(1,special_detectors.size());
+      draw_weighting_error = "abs(mini_eigen_reg_allbpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      draw                 =     Form("%smini_eigen_reg_allbpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+      drawn_channels_error = "abs(mini_eigen_reg_allbpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      p1=manyGraph(c2_1_2_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+      c2_1_2_2->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      //if (jmon == 0) {
+        //c2_1_2_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      //}
+      if (jmon == monitors12_new.size()-1) {
+        c2_1_2_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      }
+      else {
+        c2_1_2_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
 
-    c2_1_2->cd();
-    label->SetText(0.0,0.005,ana.Data());
-    label->Draw("same");
-    c2_1_2->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    corrections_pdfname = type+"_avg_5bpms_reference_reg_corrections_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
+    for (Int_t jmon = 0 ; jmon < monitors5.size() ; jmon++) {
+      std::vector<TString> tmpVec = {monitors5.at(jmon)};
+      TCanvas* c2_2_1_1 = new TCanvas();
+      ana = "main det weighted - burstwise reference eigenvector regression - 5bpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_2_1_1->cd();
+      c2_2_1_1->SetTitle(ana.Data());
+      c2_2_1_1->SetName(ana.Data());
+      c2_2_1_1->Divide(1,special_detectors.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+      draw                 =     Form("%smini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
+      drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      p1=manyGraph(c2_2_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+      c2_2_1_1->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      if (jmon == 0) {
+        c2_2_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      }
+      //else if (jmon == monitors5.size()-1) {
+        //c2_2_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      //}
+      else {
+        c2_2_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
+    for (Int_t jmon = 0 ; jmon < monitors5.size() ; jmon++) {
+      std::vector<TString> tmpVec = {monitors5.at(jmon)};
+      TCanvas* c2_2_1_2 = new TCanvas();
+      ana = "local err weighted - burstwise reference eigenvector regression - 5bpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_2_1_2->cd();
+      c2_2_1_2->SetTitle(ana.Data());
+      c2_2_1_2->SetName(ana.Data());
+      c2_2_1_2->Divide(1,special_detectors.size());
+      draw_weighting_error = "abs(mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      draw                 =     Form("%smini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
+      drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      p1=manyGraph(c2_2_1_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+      c2_2_1_2->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      //if (jmon == 0) {
+        //c2_2_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      //}
+      if (jmon == monitors5.size()-1) {
+        c2_2_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      }
+      else {
+        c2_2_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
 
-    TCanvas* c2_2_1 = new TCanvas();
-    ana = "main det weighted - burstwise reference eigenvector regression - 5bpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
-    c2_2_1->cd();
-    c2_2_1->SetTitle(ana.Data());
-    c2_2_1->SetName(ana.Data());
-    c2_2_1->Divide(monitors5.size(),special_detectors.size());
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     Form("%smini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
-    drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted.#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c2_2_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors5,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+    corrections_pdfname = type+"_avg_allbpms_reference_reg_corrections_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
+    for (Int_t jmon = 0 ; jmon < monitors12.size() ; jmon++) {
+      std::vector<TString> tmpVec = {monitors12.at(jmon)};
+      TCanvas* c2_2_2_1 = new TCanvas();
+      ana = "main det weighted - burstwise reference eigenvector regression - allbpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_2_2_1->cd();
+      c2_2_2_1->SetTitle(ana.Data());
+      c2_2_2_1->SetName(ana.Data());
+      c2_2_2_1->Divide(1,special_detectors.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+      draw                 =     Form("%smini_reference_eigen_reg_allbpms_sorted_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
+      drawn_channels_error = "abs(mini_reference_eigen_reg_allbpms_sorted_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      p1=manyGraph(c2_2_2_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+      c2_2_2_1->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      if (jmon == 0) {
+        c2_2_2_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      }
+      //else if (jmon == monitors12.size()-1) {
+        //c2_2_2_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      //}
+      else {
+        c2_2_2_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
+    for (Int_t jmon = 0 ; jmon < monitors12.size() ; jmon++) {
+      std::vector<TString> tmpVec = {monitors12.at(jmon)};
+      TCanvas* c2_2_2_2 = new TCanvas();
+      ana = "local err weighted - burstwise reference eigenvector regression - allbpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_2_2_2->cd();
+      c2_2_2_2->SetTitle(ana.Data());
+      c2_2_2_2->SetName(ana.Data());
+      c2_2_2_2->Divide(1,special_detectors.size());
+      draw_weighting_error = "abs(mini_reference_eigen_reg_allbpms_sorted_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      draw                 =     Form("%smini_reference_eigen_reg_allbpms_sorted_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
+      drawn_channels_error = "abs(mini_reference_eigen_reg_allbpms_sorted_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      p1=manyGraph(c2_2_2_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+      c2_2_2_2->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      //if (jmon == 0) {
+        //c2_2_2_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      //}
+      if (jmon == monitors12.size()-1) {
+        c2_2_2_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      }
+      else {
+        c2_2_2_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
 
-    c2_2_1->cd();
-    label->SetText(0.0,0.005,ana.Data());
-    label->Draw("same");
-    c2_2_1->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    corrections_pdfname = type+"_avg_5bpms_lagr_corrections_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
+    for (Int_t jmon = 0 ; jmon < monitors5_new.size() ; jmon++) {
+      std::vector<TString> tmpVec = {monitors5_new.at(jmon)};
+      TCanvas* c2_2_3_1 = new TCanvas();
+      ana = "main det weighted - part-avg eigenvector lagrange - 5bpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_2_3_1->cd();
+      c2_2_3_1->SetTitle(ana.Data());
+      c2_2_3_1->SetName(ana.Data());
+      c2_2_3_1->Divide(1,special_detectors.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+      draw                 =     Form("%smini_eigen_lagr_5bpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
+      drawn_channels_error = "abs(mini_eigen_lagr_5bpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      p1=manyGraph(c2_2_3_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
-    TCanvas* c2_2_2 = new TCanvas();
-    ana = "main det weighted - burstwise reference eigenvector regression - allbpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
-    c2_2_2->cd();
-    c2_2_2->SetTitle(ana.Data());
-    c2_2_2->SetName(ana.Data());
-    c2_2_2->Divide(monitors12.size(),special_detectors.size());
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     Form("%smini_reference_eigen_reg_allbpms_sorted_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
-    drawn_channels_error = "abs(mini_reference_eigen_reg_allbpms_sorted_corrections_det_weighted.#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c2_2_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors12,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+      c2_2_3_1->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      if (jmon == 0) {
+        c2_2_3_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      }
+      //else if (jmon == monitors5_new.size()-1) {
+        //c2_2_3_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      //}
+      else {
+        c2_2_3_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
+    for (Int_t jmon = 0 ; jmon < monitors5_new.size() ; jmon++) {
+      std::vector<TString> tmpVec = {monitors5_new.at(jmon)};
+      TCanvas* c2_2_3_2 = new TCanvas();
+      ana = "local err weighted - part-avg eigenvector lagrange - 5bpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_2_3_2->cd();
+      c2_2_3_2->SetTitle(ana.Data());
+      c2_2_3_2->SetName(ana.Data());
+      c2_2_3_2->Divide(1,special_detectors.size());
+      draw_weighting_error = "abs(mini_eigen_lagr_5bpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      draw                 =     Form("%smini_eigen_lagr_5bpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
+      drawn_channels_error = "abs(mini_eigen_lagr_5bpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      p1=manyGraph(c2_2_3_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
-    c2_2_2->cd();
-    label->SetText(0.0,0.005,ana.Data());
-    label->Draw("same");
-    c2_2_2->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+      c2_2_3_2->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      //if (jmon == 0) {
+        //c2_2_3_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      //}
+      if (jmon == monitors5_new.size()-1) {
+        c2_2_3_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      }
+      else {
+        c2_2_3_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
 
-    TCanvas* c2_2_3 = new TCanvas();
-    ana = "main det weighted - part-avg eigenvector lagrange - 5bpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
-    c2_2_3->cd();
-    c2_2_3->SetTitle(ana.Data());
-    c2_2_3->SetName(ana.Data());
-    c2_2_3->Divide(monitors5.size(),special_detectors.size());
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     Form("%smini_eigen_lagr_5bpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
-    drawn_channels_error = "abs(mini_eigen_lagr_5bpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c2_2_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors5_new,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+    corrections_pdfname = type+"_avg_allbpms_lagr_corrections_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
+    for (Int_t jmon = 0 ; jmon < monitors12_new.size() ; jmon++) {
+      std::vector<TString> tmpVec = {monitors12_new.at(jmon)};
+      TCanvas* c2_2_4_1 = new TCanvas();
+      ana = "main det weighted - part-avg eigenvector lagrange - allbpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_2_4_1->cd();
+      c2_2_4_1->SetTitle(ana.Data());
+      c2_2_4_1->SetName(ana.Data());
+      c2_2_4_1->Divide(1,special_detectors.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+      draw                 =     Form("%smini_eigen_lagr_allbpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
+      drawn_channels_error = "abs(mini_eigen_lagr_allbpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      p1=manyGraph(c2_2_4_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
-    c2_2_3->cd();
-    label->SetText(0.0,0.005,ana.Data());
-    label->Draw("same");
-    c2_2_3->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+      c2_2_4_1->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      if (jmon == 0) {
+        c2_2_4_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      }
+      //else if (jmon == monitors12_new.size()-1) {
+        //c2_2_4_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      //}
+      else {
+        c2_2_4_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
+    for (Int_t jmon = 0 ; jmon < monitors12_new.size() ; jmon++) {
+      std::vector<TString> tmpVec = {monitors12_new.at(jmon)};
+      TCanvas* c2_2_4_2 = new TCanvas();
+      ana = "local err weighted - part-avg eigenvector lagrange - allbpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_2_4_2->cd();
+      c2_2_4_2->SetTitle(ana.Data());
+      c2_2_4_2->SetName(ana.Data());
+      c2_2_4_2->Divide(1,special_detectors.size());
+      draw_weighting_error = "abs(mini_eigen_lagr_allbpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      draw                 =     Form("%smini_eigen_lagr_allbpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
+      drawn_channels_error = "abs(mini_eigen_lagr_allbpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
+      p1=manyGraph(c2_2_4_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
-    TCanvas* c2_2_4 = new TCanvas();
-    ana = "main det weighted - part-avg eigenvector lagrange - allbpms - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
-    c2_2_4->cd();
-    c2_2_4->SetTitle(ana.Data());
-    c2_2_4->SetName(ana.Data());
-    c2_2_4->Divide(monitors12.size(),special_detectors.size());
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighteded.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighteded.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighteded.lagr_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     Form("%smini_eigen_lagr_allbpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
-    drawn_channels_error = "abs(mini_eigen_lagr_allbpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c2_2_4,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors12_new,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+      c2_2_4_2->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      //if (jmon == 0) {
+        //c2_2_4_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      //}
+      if (jmon == monitors12_new.size()-1) {
+        c2_2_4_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      }
+      else {
+        c2_2_4_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
 
-    c2_2_4->cd();
-    label->SetText(0.0,0.005,ana.Data());
-    label->Draw("same");
-    c2_2_4->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    corrections_pdfname = type+"_5bpms_plain_dit_corrections_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
+    for (Int_t jmon = 0 ; jmon < dit_slope_devices5.size() ; jmon++) {
+      std::vector<TString> tmpVec = {dit_slope_devices5.at(jmon)};
+      TCanvas* c2_3_1_1 = new TCanvas();
+      ana = "main det weighted - standard bmod - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_3_1_1->cd();
+      c2_3_1_1->SetTitle(ana.Data());
+      c2_3_1_1->SetName(ana.Data());
+      c2_3_1_1->Divide(1,dit_special_detectors.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-6)";
+      draw                 =     Form("%smini_dit_plain_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());                         // ppm/um * mm = 1e-3 -> ppb = 1e-3/1e-9 = 1/1e-6
+      drawn_channels_error = "abs(mini_dit_plain_corrections_det_weighted.#_#_mean_err/1.0e-6)";
+      p1=manyGraph(c2_3_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
-    TCanvas* c2_3_1 = new TCanvas();
-    ana = "main det weighted - standard bmod - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
-    c2_3_1->cd();
-    c2_3_1->SetTitle(ana.Data());
-    c2_3_1->SetName(ana.Data());
-    c2_3_1->Divide(dit_slope_devices5.size(),dit_special_detectors.size());
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-6)";
-    draw                 =     Form("%smini_dit_plain_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());                         // ppm/um * mm = 1e-3 -> ppb = 1e-3/1e-9 = 1/1e-6
-    drawn_channels_error = "abs(mini_dit_plain_corrections_det_weighted.#_#_mean_err/1.0e-6)";
-    p1=manyGraph(c2_3_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,dit_slope_devices5,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+      c2_3_1_1->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      if (jmon == 0) {
+        c2_3_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      }
+      //else if (jmon == dit_slope_devices5.size()-1) {
+        //c2_3_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      //}
+      else {
+        c2_3_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
+    for (Int_t jmon = 0 ; jmon < dit_slope_devices5.size() ; jmon++) {
+      std::vector<TString> tmpVec = {dit_slope_devices5.at(jmon)};
+      TCanvas* c2_3_1_2 = new TCanvas();
+      ana = "local err weighted - standard bmod - cor per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_3_1_2->cd();
+      c2_3_1_2->SetTitle(ana.Data());
+      c2_3_1_2->SetName(ana.Data());
+      c2_3_1_2->Divide(1,dit_special_detectors.size());
+      draw_weighting_error = "abs(mini_dit_plain_corrections_det_weighted.#_#_mean_err/1.0e-6)";
+      draw                 =     Form("%smini_dit_plain_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());                         // ppm/um * mm = 1e-3 -> ppb = 1e-3/1e-9 = 1/1e-6
+      drawn_channels_error = "abs(mini_dit_plain_corrections_det_weighted.#_#_mean_err/1.0e-6)";
+      p1=manyGraph(c2_3_1_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
-    c2_3_1->cd();
-    label->SetText(0.0,0.005,ana.Data());
-    label->Draw("same");
-    c2_3_1->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+      c2_3_1_2->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      //if (jmon == 0) {
+        //c2_3_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      //}
+      if (jmon == dit_slope_devices5.size()-1) {
+        c2_3_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      }
+      else {
+        c2_3_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
 
-    TCanvas* c2_3_2 = new TCanvas();
-    ana = "main det weighted - eigenvector bmod - corrections per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
-    c2_3_2->cd();
-    c2_3_2->SetTitle(ana.Data());
-    c2_3_2->SetName(ana.Data());
-    c2_3_2->Divide(monitors5.size(),dit_special_detectors.size());
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-6)";
-    draw                 =     Form("%smini_dit_part_avgd_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
-    drawn_channels_error = "abs(mini_dit_part_avgd_corrections_det_weighted.#_#_mean_err/1.0e-6)";
-    p1=manyGraph(c2_3_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,monitors5,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+    corrections_pdfname = type+"_avg_5bpms_eigen_dit_corrections_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
+    for (Int_t jmon = 0 ; jmon < monitors5.size() ; jmon++) {
+      std::vector<TString> tmpVec = {monitors5.at(jmon)};
+      TCanvas* c2_3_2_1 = new TCanvas();
+      ana = "main det weighted - eigenvector bmod - corrections per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_3_2_1->cd();
+      c2_3_2_1->SetTitle(ana.Data());
+      c2_3_2_1->SetName(ana.Data());
+      c2_3_2_1->Divide(1,dit_special_detectors.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-6)";
+      draw                 =     Form("%smini_dit_part_avgd_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
+      drawn_channels_error = "abs(mini_dit_part_avgd_corrections_det_weighted.#_#_mean_err/1.0e-6)";
+      p1=manyGraph(c2_3_2_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
-    c2_3_2->cd();
-    label->SetText(0.0,0.005,ana.Data());
-    label->Draw("same");
-    c2_3_2->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+      c2_3_2_1->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      if (jmon == 0) {
+        c2_3_2_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      }
+      //else if (jmon == monitors5.size()-1) {
+        //c2_3_2_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      //}
+      else {
+        c2_3_2_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
+    for (Int_t jmon = 0 ; jmon < monitors5.size() ; jmon++) {
+      std::vector<TString> tmpVec = {monitors5.at(jmon)};
+      TCanvas* c2_3_2_2 = new TCanvas();
+      ana = "local err weighted - eigenvector bmod - corrections per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_3_2_2->cd();
+      c2_3_2_2->SetTitle(ana.Data());
+      c2_3_2_2->SetName(ana.Data());
+      c2_3_2_2->Divide(1,dit_special_detectors.size());
+      draw_weighting_error = "abs(mini_dit_part_avgd_corrections_det_weighted.#_#_mean_err/1.0e-6)";
+      draw                 =     Form("%smini_dit_part_avgd_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
+      drawn_channels_error = "abs(mini_dit_part_avgd_corrections_det_weighted.#_#_mean_err/1.0e-6)";
+      p1=manyGraph(c2_3_2_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
-    TCanvas* c2_3_3 = new TCanvas();
-    ana = "main det weighted - plain regression - corrections per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
-    c2_3_3->cd();
-    c2_3_3->SetTitle(ana.Data());
-    c2_3_3->SetName(ana.Data());
-    c2_3_3->Divide(devices5.size(),special_detectors.size());
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_regression_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_regression_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-6)";
-    draw                 =     Form("%smini_regression_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
-    drawn_channels_error = "abs(mini_regression_corrections_det_weighted.#_#_mean_err/1.0e-6)";
-    p1=manyGraph(c2_3_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,devices5,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+      c2_3_2_2->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      //if (jmon == 0) {
+        //c2_3_2_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      //}
+      if (jmon == monitors5.size()-1) {
+        c2_3_2_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      }
+      else {
+        c2_3_2_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
 
-    c2_3_3->cd();
-    label->SetText(0.0,0.005,ana.Data());
-    label->Draw("same");
-    c2_3_3->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    corrections_pdfname = type+"_5bpms_plain_reg_corrections_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
+    for (Int_t jmon = 0 ; jmon < devices5.size() ; jmon++) {
+      std::vector<TString> tmpVec = {devices5.at(jmon)};
+      TCanvas* c2_3_3_1 = new TCanvas();
+      ana = "main det weighted - plain regression - corrections per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_3_3_1->cd();
+      c2_3_3_1->SetTitle(ana.Data());
+      c2_3_3_1->SetName(ana.Data());
+      c2_3_3_1->Divide(1,special_detectors.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_regression_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_regression_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-6)";
+      draw                 =     Form("%smini_regression_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
+      drawn_channels_error = "abs(mini_regression_corrections_det_weighted.#_#_mean_err/1.0e-6)";
+      p1=manyGraph(c2_3_3_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
-    TCanvas* c2_3_4 = new TCanvas();
-    ana = "main det weighted - overload regression - corrections per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
-    c2_3_4->cd();
-    c2_3_4->SetTitle(ana.Data());
-    c2_3_4->SetName(ana.Data());
-    c2_3_4->Divide(devices12.size(),special_detectors.size());
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_overload_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_overload_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-6)";
-    draw                 =     Form("%smini_overload_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
-    drawn_channels_error = "abs(mini_overload_corrections_det_weighted.#_#_mean_err/1.0e-6)";
-    p1=manyGraph(c2_3_4,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,devices12,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+      c2_3_3_1->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      if (jmon == 0) {
+        c2_3_3_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      }
+      //else if (jmon == devices5.size()-1) {
+        //c2_3_3_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      //}
+      else {
+        c2_3_3_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
+    for (Int_t jmon = 0 ; jmon < devices5.size() ; jmon++) {
+      std::vector<TString> tmpVec = {devices5.at(jmon)};
+      TCanvas* c2_3_3_2 = new TCanvas();
+      ana = "local err weighted - plain regression - corrections per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_3_3_2->cd();
+      c2_3_3_2->SetTitle(ana.Data());
+      c2_3_3_2->SetName(ana.Data());
+      c2_3_3_2->Divide(1,special_detectors.size());
+      draw_weighting_error = "abs(mini_regression_corrections_det_weighted.#_#_mean_err/1.0e-6)";
+      draw                 =     Form("%smini_regression_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
+      drawn_channels_error = "abs(mini_regression_corrections_det_weighted.#_#_mean_err/1.0e-6)";
+      p1=manyGraph(c2_3_3_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
-    c2_3_4->cd();
-    label->SetText(0.0,0.005,ana.Data());
-    label->Draw("same");
-    c2_3_4->SaveAs(Form("processed_respin2_data/%s.pdf)",corrections_pdfname.Data()));
+      c2_3_3_2->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      //if (jmon == 0) {
+        //c2_3_3_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      //}
+      if (jmon == devices5.size()-1) {
+        c2_3_3_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      }
+      else {
+        c2_3_3_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
+
+    corrections_pdfname = type+"_allbpms_plain_reg_corrections_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
+    for (Int_t jmon = 0 ; jmon < devices12.size() ; jmon++) {
+      std::vector<TString> tmpVec = {devices12.at(jmon)};
+      TCanvas* c2_3_4_1 = new TCanvas();
+      ana = "main det weighted - overload regression - corrections per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_3_4_1->cd();
+      c2_3_4_1->SetTitle(ana.Data());
+      c2_3_4_1->SetName(ana.Data());
+      c2_3_4_1->Divide(1,special_detectors.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_overload_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_overload_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-6)";
+      draw                 =     Form("%smini_overload_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
+      drawn_channels_error = "abs(mini_overload_corrections_det_weighted.#_#_mean_err/1.0e-6)";
+      p1=manyGraph(c2_3_4_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+
+      c2_3_4_1->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      if (jmon == 0) {
+        c2_3_4_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      }
+      //else if (jmon == devices12.size()-1) {
+        //c2_3_4_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      //}
+      else {
+        c2_3_4_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
+    for (Int_t jmon = 0 ; jmon < devices12.size() ; jmon++) {
+      std::vector<TString> tmpVec = {devices12.at(jmon)};
+      TCanvas* c2_3_4_2 = new TCanvas();
+      ana = "local err weighted - overload regression - corrections per monitor, ppb"; // No more absolute value in this anymore (with the sorted slopes)
+      c2_3_4_2->cd();
+      c2_3_4_2->SetTitle(ana.Data());
+      c2_3_4_2->SetName(ana.Data());
+      c2_3_4_2->Divide(1,special_detectors.size());
+      draw_weighting_error = "abs(mini_overload_corrections_det_weighted.#_#_mean_err/1.0e-6)";
+      draw                 =     Form("%smini_overload_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
+      drawn_channels_error = "abs(mini_overload_corrections_det_weighted.#_#_mean_err/1.0e-6)";
+      p1=manyGraph(c2_3_4_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+
+      c2_3_4_2->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      //if (jmon == 0) {
+        //c2_3_4_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      //}
+      if (jmon == devices12.size()-1) {
+        c2_3_4_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      }
+      else {
+        c2_3_4_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
 
 
 
@@ -2844,102 +3240,297 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     corrections_pdfname = type+"_avg_evMons_accumulated_disagreements_"+ averaging_timescale +"_wise_det_weighted" +corrections_pdfname_mod_cut_suffix;
 
     TCanvas* c2_dis_1 = new TCanvas();
-    ana = "difference between 5bpm eigen dit vs. 5bpm reg asyms, main det weighted - net disagreement (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    ana = "difference between allbpm lagr vs. 5bpm dit asyms, main det weighted - net disagreement (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     c2_dis_1->cd();
     c2_dis_1->SetTitle(ana.Data());
     c2_dis_1->SetName(ana.Data());
-    c2_dis_1->Divide(1,special_eigen_dit_differences_detectors.size());
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     Form("%smini_eigen_5bpms_dit_5bpms_reg_difference.#_#_mean/1.0e-9",mod_draw.Data());
-    drawn_channels_error = "abs(mini_eigen_5bpms_dit_5bpms_reg_difference.#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c2_dis_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_eigen_dit_differences_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
-
+    c2_dis_1->Divide(1,special_detectors_hardcoded.size());
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_eigen_allbpms_lagr_5bpms_dit_difference.##_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_eigen_allbpms_lagr_5bpms_dit_difference.##_#_mean_err/1.0e-9)";
+    p1=manyGraph(c2_dis_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,empty_vec,special_detectors_hardcoded,special_detectors_hardcoded,{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
     c2_dis_1->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c2_dis_1->SaveAs(Form("processed_respin2_data/%s.pdf(",corrections_pdfname.Data()));
+    c2_dis_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
 
     TCanvas* c2_dis_2 = new TCanvas();
-    ana = "difference between plain 5bpm dit vs. 5bpm reg asyms, main det weighted - net disagreement (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    ana = "difference between allbpm lagr vs. 5bpm dit asyms, local err weighted - net disagreement (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     c2_dis_2->cd();
     c2_dis_2->SetTitle(ana.Data());
     c2_dis_2->SetName(ana.Data());
-    c2_dis_2->Divide(1,special_differences_detectors.size());
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     Form("%smini_plain_5bpms_dit_5bpms_reg_difference.#_#_mean/1.0e-9",mod_draw.Data());
-    drawn_channels_error = "abs(mini_plain_5bpms_dit_5bpms_reg_difference.#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c2_dis_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_differences_detectors,{},{},arm_cuts_plain,1); // empty draws_piece3 and cuts and cuts2 vectors
-
+    c2_dis_2->Divide(1,special_detectors_hardcoded.size());
+    draw_weighting_error = "abs(mini_eigen_allbpms_lagr_5bpms_dit_difference.##_#_mean_err/1.0e-9)";
+    draw                 =     Form("%smini_eigen_allbpms_lagr_5bpms_dit_difference.##_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_eigen_allbpms_lagr_5bpms_dit_difference.##_#_mean_err/1.0e-9)";
+    p1=manyGraph(c2_dis_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,empty_vec,special_detectors_hardcoded,special_detectors_hardcoded,{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
     c2_dis_2->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c2_dis_2->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    c2_dis_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     TCanvas* c2_dis_3 = new TCanvas();
-    ana = "difference between 5bpm eigen dit vs. 5bpm reg asyms, self weighted - distributional differences (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    ana = "difference between allbpm reg vs. 5bpm reg asyms, main det weighted - net disagreement (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     c2_dis_3->cd();
     c2_dis_3->SetTitle(ana.Data());
     c2_dis_3->SetName(ana.Data());
-    c2_dis_3->Divide(1,special_eigen_dit_differences_detectors.size());
-    draw_weighting_error = "abs(mini_eigen_5bpms_dit_5bpms_reg_difference.#_#_mean_self_err/1.0e-9)";
-    draw                 =     Form("%smini_eigen_5bpms_dit_5bpms_reg_difference.#_#_mean_self/1.0e-9",mod_draw.Data());
-    drawn_channels_error = "abs(mini_eigen_5bpms_dit_5bpms_reg_difference.#_#_mean_self_err/1.0e-9)";
-    p1=manyGraph(c2_dis_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_eigen_dit_differences_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
-
+    c2_dis_3->Divide(1,special_detectors_hardcoded.size());
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_eigen_allbpms_reg_5bpms_reg_difference.##_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_eigen_allbpms_reg_5bpms_reg_difference.##_#_mean_err/1.0e-9)";
+    p1=manyGraph(c2_dis_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,empty_vec,special_detectors_hardcoded,special_detectors_hardcoded,{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
     c2_dis_3->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c2_dis_3->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    c2_dis_3->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     TCanvas* c2_dis_4 = new TCanvas();
-    ana = "difference between plain 5bpm dit vs 5bpm reg asyms, self weighted - distributional differences (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    ana = "difference between allbpm reg vs. 5bpm reg asyms, local err weighted - net disagreement (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     c2_dis_4->cd();
     c2_dis_4->SetTitle(ana.Data());
     c2_dis_4->SetName(ana.Data());
-    c2_dis_4->Divide(1,special_differences_detectors.size());
-    draw_weighting_error = "abs(mini_plain_5bpms_dit_5bpms_reg_difference.#_#_mean_self_err/1.0e-9)";
-    draw                 =     Form("%smini_plain_5bpms_dit_5bpms_reg_difference.#_#_mean_self/1.0e-9",mod_draw.Data());
-    drawn_channels_error = "abs(mini_plain_5bpms_dit_5bpms_reg_difference.#_#_mean_self_err/1.0e-9)";
-    p1=manyGraph(c2_dis_4,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_differences_detectors,{},{},arm_cuts_plain,1); // empty draws_piece3 and cuts and cuts2 vectors
-
+    c2_dis_4->Divide(1,special_detectors_hardcoded.size());
+    draw_weighting_error = "abs(mini_eigen_allbpms_reg_5bpms_reg_difference.##_#_mean_err/1.0e-9)";
+    draw                 =     Form("%smini_eigen_allbpms_reg_5bpms_reg_difference.##_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_eigen_allbpms_reg_5bpms_reg_difference.##_#_mean_err/1.0e-9)";
+    p1=manyGraph(c2_dis_4,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,empty_vec,special_detectors_hardcoded,special_detectors_hardcoded,{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
     c2_dis_4->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c2_dis_4->SaveAs(Form("processed_respin2_data/%s.pdf)",corrections_pdfname.Data()));
+    c2_dis_4->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c2_dis_5 = new TCanvas();
+    ana = "difference between allbpm lagr vs. allbpm reg asyms, main det weighted - net disagreement (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c2_dis_5->cd();
+    c2_dis_5->SetTitle(ana.Data());
+    c2_dis_5->SetName(ana.Data());
+    c2_dis_5->Divide(1,special_eigen_lagr_differences_detectors.size());
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_eigen_allbpms_lagr_allbpms_reg_difference.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_eigen_allbpms_lagr_allbpms_reg_difference.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c2_dis_5,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_eigen_lagr_differences_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c2_dis_5->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c2_dis_5->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c2_dis_6 = new TCanvas();
+    ana = "difference between allbpm lagr vs. allbpm reg asyms, local err weighted - distributional differences (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c2_dis_6->cd();
+    c2_dis_6->SetTitle(ana.Data());
+    c2_dis_6->SetName(ana.Data());
+    c2_dis_6->Divide(1,special_eigen_lagr_differences_detectors.size());
+    draw_weighting_error = "abs(mini_eigen_allbpms_lagr_allbpms_reg_difference.#_#_mean_err/1.0e-9)";
+    draw                 =     Form("%smini_eigen_allbpms_lagr_allbpms_reg_difference.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_eigen_allbpms_lagr_allbpms_reg_difference.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c2_dis_6,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_eigen_lagr_differences_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c2_dis_6->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c2_dis_6->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c2_dis_7 = new TCanvas();
+    ana = "difference between allbpm lagr vs. 5bpm reg asyms, main det weighted - net disagreement (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c2_dis_7->cd();
+    c2_dis_7->SetTitle(ana.Data());
+    c2_dis_7->SetName(ana.Data());
+    c2_dis_7->Divide(1,special_detectors_hardcoded.size());
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_eigen_allbpms_lagr_5bpms_reg_difference.##_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_eigen_allbpms_lagr_5bpms_reg_difference.##_#_mean_err/1.0e-9)";
+    p1=manyGraph(c2_dis_7,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,empty_vec,special_detectors_hardcoded,special_detectors_hardcoded,{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c2_dis_7->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c2_dis_7->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c2_dis_8 = new TCanvas();
+    ana = "difference between allbpm lagr vs. 5bpm reg asyms, local err weighted - distributional differences (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c2_dis_8->cd();
+    c2_dis_8->SetTitle(ana.Data());
+    c2_dis_8->SetName(ana.Data());
+    c2_dis_8->Divide(1,special_detectors_hardcoded.size());
+    draw_weighting_error = "abs(mini_eigen_allbpms_lagr_5bpms_reg_difference.##_#_mean_err/1.0e-9)";
+    draw                 =     Form("%smini_eigen_allbpms_lagr_5bpms_reg_difference.##_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_eigen_allbpms_lagr_5bpms_reg_difference.##_#_mean_err/1.0e-9)";
+    p1=manyGraph(c2_dis_8,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,empty_vec,special_detectors_hardcoded,special_detectors_hardcoded,{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c2_dis_8->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c2_dis_8->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c2_dit_9 = new TCanvas();
+    ana = "difference between allbpm reg vs. 5bpm dit asyms, main det weighted - net disagreement (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c2_dit_9->cd();
+    c2_dit_9->SetTitle(ana.Data());
+    c2_dit_9->SetName(ana.Data());
+    c2_dit_9->Divide(1,special_detectors_hardcoded.size());
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_eigen_allbpms_reg_5bpms_dit_difference.##_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_eigen_allbpms_reg_5bpms_dit_difference.##_#_mean_err/1.0e-9)";
+    p1=manyGraph(c2_dit_9,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,empty_vec,special_detectors_hardcoded,special_detectors_hardcoded,{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c2_dit_9->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c2_dit_9->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c2_dis_10 = new TCanvas();
+    ana = "difference between allbpm reg vs. 5bpm dit asyms, local err weighted - distributional differences (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c2_dis_10->cd();
+    c2_dis_10->SetTitle(ana.Data());
+    c2_dis_10->SetName(ana.Data());
+    c2_dis_10->Divide(1,special_detectors_hardcoded.size());
+    draw_weighting_error = "abs(mini_eigen_allbpms_reg_5bpms_dit_difference.##_#_mean_err/1.0e-9)";
+    draw                 =     Form("%smini_eigen_allbpms_reg_5bpms_dit_difference.##_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_eigen_allbpms_reg_5bpms_dit_difference.##_#_mean_err/1.0e-9)";
+    p1=manyGraph(c2_dis_10,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,empty_vec,special_detectors_hardcoded,special_detectors_hardcoded,{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c2_dis_10->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c2_dis_10->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c2_dis_11 = new TCanvas();
+    ana = "difference between 5bpm eigen dit vs. 5bpm reg asyms, main det weighted - net disagreement (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c2_dis_11->cd();
+    c2_dis_11->SetTitle(ana.Data());
+    c2_dis_11->SetName(ana.Data());
+    c2_dis_11->Divide(1,special_eigen_dit_differences_detectors.size());
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_eigen_5bpms_dit_5bpms_reg_difference.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_eigen_5bpms_dit_5bpms_reg_difference.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c2_dis_11,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_eigen_dit_differences_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c2_dis_11->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c2_dis_11->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c2_dis_12 = new TCanvas();
+    ana = "difference between 5bpm eigen dit vs. 5bpm reg asyms, local err weighted - distributional differences (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c2_dis_12->cd();
+    c2_dis_12->SetTitle(ana.Data());
+    c2_dis_12->SetName(ana.Data());
+    c2_dis_12->Divide(1,special_eigen_dit_differences_detectors.size());
+    draw_weighting_error = "abs(mini_eigen_5bpms_dit_5bpms_reg_difference.#_#_mean_err/1.0e-9)";
+    draw                 =     Form("%smini_eigen_5bpms_dit_5bpms_reg_difference.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_eigen_5bpms_dit_5bpms_reg_difference.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c2_dis_12,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_eigen_dit_differences_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c2_dis_12->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c2_dis_12->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c2_dis_13 = new TCanvas();
+    ana = "difference between plain 5bpm dit vs. 5bpm reg asyms, main det weighted - net disagreement (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c2_dis_13->cd();
+    c2_dis_13->SetTitle(ana.Data());
+    c2_dis_13->SetName(ana.Data());
+    c2_dis_13->Divide(1,special_differences_detectors.size());
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_plain_5bpms_dit_5bpms_reg_difference.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_plain_5bpms_dit_5bpms_reg_difference.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c2_dis_13,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_differences_detectors,{},{},arm_cuts_plain,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c2_dis_13->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c2_dis_13->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c2_dis_14 = new TCanvas();
+    ana = "difference between plain 5bpm dit vs 5bpm reg asyms, local err weighted - distributional differences (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c2_dis_14->cd();
+    c2_dis_14->SetTitle(ana.Data());
+    c2_dis_14->SetName(ana.Data());
+    c2_dis_14->Divide(1,special_differences_detectors.size());
+    draw_weighting_error = "abs(mini_plain_5bpms_dit_5bpms_reg_difference.#_#_mean_err/1.0e-9)";
+    draw                 =     Form("%smini_plain_5bpms_dit_5bpms_reg_difference.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_plain_5bpms_dit_5bpms_reg_difference.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c2_dis_14,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_differences_detectors,{},{},arm_cuts_plain,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c2_dis_14->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c2_dis_14->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
 
 
 
     // Corrected Asyms
     corrections_pdfname = type+"_avg_evMons_accumulated_corrected_asyms_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
 
-    TCanvas* c3_0 = new TCanvas();
-    ana = "full main det signal - part avg eigenvector regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    TCanvas* c3_0_main = new TCanvas();
+    ana = "full main det signal - part avg eigenvector allbpm lagr (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     //ana = "burstwise eigenvector regression - corrections per monitor (usl, r), ppb"; // No more absolute value in this anymore (with the sorted slopes)
-    c3_0->cd();
-    c3_0->SetTitle(ana.Data());
-    c3_0->SetName(ana.Data());
+    c3_0_main->cd();
+    c3_0_main->SetTitle(ana.Data());
+    c3_0_main->SetName(ana.Data());
     // FIXME FIXME FIXME: When not doing slug timescale averaging... need to figure out how to avoid the "main_det" -> usl+r+avg transformation assuming slug level arm flags inside toolbox.hh # replacements and right here... to all 3 of these here.
-    c3_0->Divide(1,1);
-    draw_weighting_error =           "mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_main_det_mean_err/(1.0e-9)";
-    draw                 =    Form("%smini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_main_det_mean/1.0e-9",mod_draw.Data()); // diff_evMon0.mean, etc.
-    drawn_channels_error =       "abs(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_main_det_mean_err/1.0e-9)";
-    p1=manyGraph(c3_0,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c3_0_main->Divide(1,1);
+    draw_weighting_error =           "mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_manual_main_det_mean_err/(1.0e-9)";
+    draw                 =    Form("%smini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_manual_main_det_mean/1.0e-9",mod_draw.Data()); // diff_evMon0.mean, etc.
+    drawn_channels_error =       "abs(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_manual_main_det_mean_err/1.0e-9)";
+    p1=manyGraph(c3_0_main,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
-    c3_0->cd();
+    c3_0_main->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c3_0->SaveAs(Form("processed_respin2_data/%s.pdf(",corrections_pdfname.Data()));
+    c3_0_main->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
 
-    TCanvas* c3_1 = new TCanvas();
-    ana = "main det weighted asyms - standard regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
-    c3_1->cd();
-    c3_1->SetTitle(ana.Data());
-    c3_1->SetName(ana.Data());
-    c3_1->Divide(2,special_detectors.size()/2);
+    TCanvas* c3_0_1 = new TCanvas();
+    ana = "main det weighted asyms - part avg eigenvector allbpm lagr (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c3_0_1->cd();
+    c3_0_1->SetTitle(ana.Data());
+    c3_0_1->SetName(ana.Data());
+    c3_0_1->Divide(lagr_cor_asym_vec.size(),(Int_t)ceil(special_detectors.size()/lagr_cor_asym_vec.size()));
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 = Form("%smini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error =       "abs(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c3_0_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,lagr_cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c3_0_1->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c3_0_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c3_0_2 = new TCanvas();
+    ana = "main det weighted asyms - part avg eigenvecvtor 5bpm lagr (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c3_0_2->cd();
+    c3_0_2->SetTitle(ana.Data());
+    c3_0_2->SetName(ana.Data());
+    c3_0_2->Divide(lagr_cor_asym_vec.size(),(Int_t)ceil(special_detectors.size()/lagr_cor_asym_vec.size()));
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 = Form("%smini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error =       "abs(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c3_0_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,lagr_cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c3_0_2->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c3_0_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c3_1_1 = new TCanvas();
+    ana = "main det weighted asyms - part avg eigenvector allbpm reg (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c3_1_1->cd();
+    c3_1_1->SetTitle(ana.Data());
+    c3_1_1->SetName(ana.Data());
+    c3_1_1->Divide(reg_cor_asym_vec.size(),(Int_t)ceil(special_detectors.size()/reg_cor_asym_vec.size()));
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw                 = Form("%smini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error =       "abs(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c3_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c3_1_1->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c3_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c3_1_2 = new TCanvas();
+    ana = "main det weighted asyms - part avg eigenvector 5bpm reg (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c3_1_2->cd();
+    c3_1_2->SetTitle(ana.Data());
+    c3_1_2->SetName(ana.Data());
+    c3_1_2->Divide(reg_cor_asym_vec.size(),(Int_t)ceil(special_detectors.size()/reg_cor_asym_vec.size()));
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 = Form("%smini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_#_#_mean/1.0e-9",mod_draw.Data());
-    drawn_channels_error =       "abs(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c3_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    draw                 = Form("%smini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error =       "abs(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c3_1_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c3_1_2->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c3_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     /* Begin special case for Ryan's AT needs
     TCanvas* c3_1 = new TCanvas();
@@ -2962,9 +3553,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_1->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c3_1->SaveAs(Form("processed_respin2_data/%s.pdf(",corrections_pdfname.Data()));
+    c3_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
     //FIXME add ( above for AT case
-    //c3_1->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    //c3_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     TCanvas* c3_1_self = new TCanvas();
     ana = "self weighted asyms - part avg eigenvector regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
@@ -2986,50 +3577,67 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_1_self->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c3_1_self->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    c3_1_self->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
     End special case */
 
-    TCanvas* c3_2 = new TCanvas();
-    ana = "main det weighted asyms - burstwise eigenvector regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    TCanvas* c3_2_1 = new TCanvas();
+    ana = "main det weighted asyms - burstwise reference eigenvector allbpms regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     //ana = "burstwise eigenvector regression - corrections per monitor (usl, r), ppb"; // No more absolute value in this anymore (with the sorted slopes)
-    c3_2->cd();
-    c3_2->SetTitle(ana.Data());
-    c3_2->SetName(ana.Data());
-    c3_2->Divide(2,special_detectors.size()/2);
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     Form("%smini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_#_#_mean/1.0e-9",mod_draw.Data());
-    drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c3_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c3_2_1->cd();
+    c3_2_1->SetTitle(ana.Data());
+    c3_2_1->SetName(ana.Data());
+    c3_2_1->Divide(reg_cor_asym_vec.size(),(Int_t)ceil(special_detectors.size()/reg_cor_asym_vec.size()));
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c3_2_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
-    c3_2->cd();
+    c3_2_1->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c3_2->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    c3_2_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c3_2_2 = new TCanvas();
+    ana = "main det weighted asyms - burstwise reference eigenvector 5bpms regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    //ana = "burstwise eigenvector regression - corrections per monitor (usl, r), ppb"; // No more absolute value in this anymore (with the sorted slopes)
+    c3_2_2->cd();
+    c3_2_2->SetTitle(ana.Data());
+    c3_2_2->SetName(ana.Data());
+    c3_2_2->Divide(reg_cor_asym_vec.size(),(Int_t)ceil(special_detectors.size()/reg_cor_asym_vec.size()));
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c3_2_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+
+    c3_2_2->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c3_2_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     TCanvas* c3_3 = new TCanvas();
-    ana = "main det weighted asyms - burstwise standard regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    ana = "main det weighted asyms - plain standard regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     //ana = "burstwise eigenvector regression - corrections per monitor (usl, r), ppb"; // No more absolute value in this anymore (with the sorted slopes)
     c3_3->cd();
     c3_3->SetTitle(ana.Data());
     c3_3->SetName(ana.Data());
-    c3_3->Divide(2,special_detectors.size()/2);
+    c3_3->Divide(2,(Int_t)ceil(special_detectors.size()/2));
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_regression_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_regression_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     Form("%smini_regression_det_asyms_det_weighted.reg_#_#_mean/1.0e-9",mod_draw.Data());
-    drawn_channels_error = "abs(mini_regression_det_asyms_det_weighted.reg_#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c3_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    draw                 =     Form("%smini_regression_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_regression_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c3_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
     c3_3->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c3_3->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    c3_3->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     TCanvas* c3_4 = new TCanvas();
-    ana = "main det weighted asyms - burstwise standard regression net corrections (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    ana = "main det weighted asyms - plain standard regression net corrections (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     //ana = "burstwise eigenvector regression - corrections per monitor (usl, r), ppb"; // No more absolute value in this anymore (with the sorted slopes)
     c3_4->cd();
     c3_4->SetTitle(ana.Data());
     c3_4->SetName(ana.Data());
-    c3_4->Divide(2,agg_cor_special_detectors.size()/2);
+    c3_4->Divide(2,(Int_t)ceil(agg_cor_special_detectors.size()/2));
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_regression_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_regression_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_regression_det_asym_cors_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_regression_det_asym_cors_det_weighted.#_#_mean_err/1.0e-9)";
@@ -3038,40 +3646,40 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_4->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c3_4->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    c3_4->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     TCanvas* c3_5 = new TCanvas();
-    ana = "main det weighted asyms - burstwise overloaded standard regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    ana = "main det weighted asyms - plain overloaded standard regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     //ana = "burstwise eigenvector regression - corrections per monitor (usl, r), ppb"; // No more absolute value in this anymore (with the sorted slopes)
     c3_5->cd();
     c3_5->SetTitle(ana.Data());
     c3_5->SetName(ana.Data());
-    c3_5->Divide(2,special_detectors.size()/2);
+    c3_5->Divide(2,(Int_t)ceil(special_detectors.size()/2));
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_overload_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_overload_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     Form("%smini_overload_det_asyms_det_weighted.reg_#_#_mean/1.0e-9",mod_draw.Data());
-    drawn_channels_error = "abs(mini_overload_det_asyms_det_weighted.reg_#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c3_5,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    draw                 =     Form("%smini_overload_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_overload_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c3_5,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
     c3_5->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c3_5->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    c3_5->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     TCanvas* c3_6 = new TCanvas();
-    ana = "main det weighted asyms - burstwise part avgd eigenvector dithering (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    ana = "main det weighted asyms - part avgd eigenvector dithering (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     c3_6->cd();
     c3_6->SetTitle(ana.Data());
     c3_6->SetName(ana.Data());
-    c3_6->Divide(2,special_detectors.size()/2);
+    c3_6->Divide(2,(Int_t)ceil(special_detectors.size()/2));
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     Form("%smini_dit_part_avgd_det_asyms_det_weighted.dit_#_#_mean/1.0e-9",mod_draw.Data());
-    drawn_channels_error = "abs(mini_dit_part_avgd_det_asyms_det_weighted.dit_#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c3_6,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    draw                 =     Form("%smini_dit_part_avgd_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_dit_part_avgd_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c3_6,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,dit_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
     c3_6->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c3_6->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    c3_6->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     /* Begin special AT case for Ryan's needs
     TCanvas* c3_6 = new TCanvas();
@@ -3091,7 +3699,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_6->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c3_6->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    c3_6->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     TCanvas* c3_6_self = new TCanvas();
     ana = "self weighted asyms - burstwise part avgd eigenvector dithering (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
@@ -3110,28 +3718,25 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_6_self->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c3_6_self->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    c3_6_self->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
     End special case */
 
     TCanvas* c3_7 = new TCanvas();
-    ana = "main det weighted asyms - burstwise plain dithering (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    ana = "main det weighted asyms - plain dithering (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     //ana = "burstwise eigenvector regression - corrections per monitor (usl, r), ppb"; // No more absolute value in this anymore (with the sorted slopes)
     c3_7->cd();
     c3_7->SetTitle(ana.Data());
     c3_7->SetName(ana.Data());
-    c3_7->Divide(2,special_detectors.size()/2);
+    c3_7->Divide(2,(Int_t)ceil(special_detectors.size()/2));
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-9)";
-    draw                 =     Form("%smini_dit_plain_det_asyms_det_weighted.dit_#_#_mean/1.0e-9",mod_draw.Data());
-    drawn_channels_error = "abs(mini_dit_plain_det_asyms_det_weighted.dit_#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c3_7,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    draw                 =     Form("%smini_dit_plain_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_dit_plain_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c3_7,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,dit_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
     c3_7->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c3_7->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
-
-//mini_dit_part_avgd_det_asyms_det_weighted
-//mini_dit_plain_det_asyms_det_weighted
+    c3_7->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     TCanvas* c3_8 = new TCanvas();
     ana = "Raw main det weighted asyms - using part avgd eigenvector regression corrected asyms as weights (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
@@ -3139,8 +3744,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_8->cd();
     c3_8->SetTitle(ana.Data());
     c3_8->SetName(ana.Data());
-    c3_8->Divide(2,special_detectors.size()/2);
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    c3_8->Divide(2,(Int_t)ceil(special_detectors.size()/2));
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_raw_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_raw_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_8,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -3148,7 +3753,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_8->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c3_8->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    c3_8->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     TCanvas* c3_9 = new TCanvas();
     ana = "Raw self weighted asyms - self weighted (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
@@ -3156,7 +3761,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_9->cd();
     c3_9->SetTitle(ana.Data());
     c3_9->SetName(ana.Data());
-    c3_9->Divide(2,special_detectors.size()/2);
+    c3_9->Divide(2,(Int_t)ceil(special_detectors.size()/2));
     draw_weighting_error = "abs(mini_raw_det_asyms_det_weighted.#_#_mean_self_err/1.0e-9)";
     draw                 =     Form("%smini_raw_det_asyms_det_weighted.#_#_mean_self/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_raw_det_asyms_det_weighted.#_#_mean_self_err/1.0e-9)";
@@ -3165,57 +3770,125 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_9->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c3_9->SaveAs(Form("processed_respin2_data/%s.pdf)",corrections_pdfname.Data()));
+    c3_9->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
 
 
     // Monitors
     corrections_pdfname = type + "_avgd_evMons_accumulated_monitors_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
-    TCanvas* c1_1 = new TCanvas();
-    ana = "self-weighted BPM means (nano meters)"; // No more absolute value in this anymore (with the sorted slopes)
+    TCanvas* c1_1_1 = new TCanvas();
+    ana = "self-weighted BPM means diffs (nano meters)"; // No more absolute value in this anymore (with the sorted slopes)
     //TPad* cp1 = new TPad("test","",0,0.35,1,1);
-    c1_1->cd();
-    c1_1->SetTitle(ana.Data());
-    c1_1->SetName(ana.Data());
-    c1_1->Divide(4,ceil(yield_diff_BPMs.size()/4));
-    //c1_1->Divide(4,yield_diff_BPMs.size()/4);  // Ignore the Cavities
-    //for (Int_t k = 0 ; k < devices12.size() ; k++) {
+    c1_1_1->cd();
+    c1_1_1->SetTitle(ana.Data());
+    c1_1_1->SetName(ana.Data());
+    c1_1_1->Divide(4,(Int_t)ceil(yield_diff_BPMs.size()/4));
       // Sign corrected
       // No error-rescaling
       // Utilize the slugwise main-det weighted data
-      //p1=multiGraph(c1_1,p1,(TChain*)mini_slugs,k+1,Form("rcdb_slug:rcdb_sign*mini_BPMs_det_weighted.diff_%s_mean/(1.0e-6):mini_BPMs_det_weighted.diff_%s_mean_err/(1.0e-6)",devices12.at(k).Data(),devices12.at(k).Data()),cutGoodProduction.at(0),1);
+      //p1=multiGraph(c1_1_1,p1,(TChain*)mini_slugs,k+1,Form("rcdb_slug:rcdb_sign*mini_BPMs_det_weighted.diff_%s_mean/(1.0e-6):mini_BPMs_det_weighted.diff_%s_mean_err/(1.0e-6)",devices12.at(k).Data(),devices12.at(k).Data()),cutGoodProduction.at(0),1);
     draw_weighting_error = "abs(mini_BPMs_det_weighted.#_#_mean_self_err/1.0e-6)";
     draw          =     Form("%smini_BPMs_det_weighted.#_#_mean_self/1.0e-6",mod_draw.Data());
     drawn_channels_error = "abs(mini_BPMs_det_weighted.#_#_mean_self_err/1.0e-6)";
-    p1=manyGraph(c1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,diff_vec,yield_diff_BPMs,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
-    //}
+    p1=manyGraph(c1_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,diff_vec,yield_diff_BPMs,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
-    c1_1->cd();
+    c1_1_1->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c1_1->SaveAs(Form("processed_respin2_data/%s.pdf(",corrections_pdfname.Data()));
+    c1_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
 
-    TCanvas* c1_2 = new TCanvas();
-    ana = "main det weighted BPM means (nano meters)"; // No more absolute value in this anymore (with the sorted slopes)
-    c1_2->cd();
-    c1_2->SetTitle(ana.Data());
-    c1_2->SetName(ana.Data());
-    c1_2->Divide(4,ceil(yield_diff_BPMs.size()/4));
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    TCanvas* c1_1_2 = new TCanvas();
+    ana = "self-weighted BPM means yields (mm)"; // No more absolute value in this anymore (with the sorted slopes)
+    //TPad* cp1 = new TPad("test","",0,0.35,1,1);
+    c1_1_2->cd();
+    c1_1_2->SetTitle(ana.Data());
+    c1_1_2->SetName(ana.Data());
+    c1_1_2->Divide(4,(Int_t)ceil(yield_diff_BPMs.size()/4));
+      // Sign corrected
+      // No error-rescaling
+      // Utilize the slugwise main-det weighted data
+      //p1=multiGraph(c1_1_2,p1,(TChain*)mini_slugs,k+1,Form("rcdb_slug:rcdb_sign*mini_BPMs_det_weighted.diff_%s_mean/(1.0e-6):mini_BPMs_det_weighted.diff_%s_mean_err/(1.0e-6)",devices12.at(k).Data(),devices12.at(k).Data()),cutGoodProduction.at(0),1);
+    draw_weighting_error = "abs(mini_BPMs_det_weighted.#_#_mean_self_err)";
+    draw          =     Form("mini_BPMs_det_weighted.#_#_mean_self");
+    // no mod_draw... no need for sign correction...
+    //draw          =     Form("%smini_BPMs_det_weighted.#_#_mean_self",mod_draw.Data());
+    drawn_channels_error = "abs(mini_BPMs_det_weighted.#_#_mean_self_err)";
+    p1=manyGraph(c1_1_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,yield_vec,yield_diff_BPMs,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+
+    c1_1_2->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c1_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c1_2_1 = new TCanvas();
+    ana = "main det weighted BPM means - diffs (nano meters)"; // No more absolute value in this anymore (with the sorted slopes)
+    c1_2_1->cd();
+    c1_2_1->SetTitle(ana.Data());
+    c1_2_1->SetName(ana.Data());
+    c1_2_1->Divide(4,(Int_t)ceil(yield_diff_BPMs.size()/4));
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_BPMs_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
     drawn_channels_error = "abs(mini_BPMs_det_weighted.#_#_mean_err/1.0e-6)";
-    p1=manyGraph(c1_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,diff_vec,yield_diff_BPMs,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+    p1=manyGraph(c1_2_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,diff_vec,yield_diff_BPMs,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
-    c1_2->cd();
+    c1_2_1->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c1_2->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    c1_2_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c1_2_2 = new TCanvas();
+    ana = "main det weighted BPM means - yields (mm)"; // No more absolute value in this anymore (with the sorted slopes)
+    c1_2_2->cd();
+    c1_2_2->SetTitle(ana.Data());
+    c1_2_2->SetName(ana.Data());
+    c1_2_2->Divide(4,(Int_t)ceil(yield_diff_BPMs.size()/4));
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
+    draw                 =     Form("mini_BPMs_det_weighted.#_#_mean");
+    // no mod_draw... no need for sign correction...
+    //draw                 =     Form("%smini_BPMs_det_weighted.#_#_mean",mod_draw.Data());
+    drawn_channels_error = "abs(mini_BPMs_det_weighted.#_#_mean_err)";
+    p1=manyGraph(c1_2_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,yield_vec,yield_diff_BPMs,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+    c1_2_2->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c1_2_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c1_2_3 = new TCanvas();
+    ana = "main det weighted 5bpm evMon means - diffs (nano meters)"; // No more absolute value in this anymore (with the sorted slopes)
+    c1_2_3->cd();
+    c1_2_3->SetTitle(ana.Data());
+    c1_2_3->SetName(ana.Data());
+    c1_2_3->Divide(1,monitors5.size());
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_eigen_reg_5bpms_part_avg_monitors_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
+    drawn_channels_error = "abs(mini_eigen_reg_5bpms_part_avg_monitors_det_weighted.#_#_mean_err/1.0e-6)";
+    p1=manyGraph(c1_2_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,diff_vec,monitors5,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+    c1_2_3->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c1_2_3->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c1_2_4 = new TCanvas();
+    ana = "main det weighted allbpm evMon means - diffs (nano meters)"; // No more absolute value in this anymore (with the sorted slopes)
+    c1_2_4->cd();
+    c1_2_4->SetTitle(ana.Data());
+    c1_2_4->SetName(ana.Data());
+    c1_2_4->Divide(3,(Int_t)ceil(monitors12.size()/3));
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_eigen_reg_allbpms_part_avg_monitors_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
+    drawn_channels_error = "abs(mini_eigen_reg_allbpms_part_avg_monitors_det_weighted.#_#_mean_err/1.0e-6)";
+    p1=manyGraph(c1_2_4,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,diff_vec,monitors12,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+    c1_2_4->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c1_2_4->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
 
     TCanvas* c1_3 = new TCanvas();
     ana = "self weighted BCM means (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     c1_3->cd();
     c1_3->SetTitle(ana.Data());
     c1_3->SetName(ana.Data());
-    c1_3->Divide(4,ceil(yield_bcm_devices.size()/4));
+    c1_3->Divide(4,(Int_t)ceil(yield_bcm_devices.size()/4));
     draw_weighting_error = "abs(mini_BCMs_det_weighted.#_#_mean_self_err/1.0e-9)";
     draw                 =     Form("%smini_BCMs_det_weighted.#_#_mean_self/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_BCMs_det_weighted.#_#_mean_self_err/1.0e-9)";
@@ -3224,21 +3897,21 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c1_3->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c1_3->SaveAs(Form("processed_respin2_data/%s.pdf",corrections_pdfname.Data()));
+    c1_3->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     TCanvas* c1_4 = new TCanvas();
     ana = "main det weighted BCM means (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     c1_4->cd();
     c1_4->SetTitle(ana.Data());
     c1_4->SetName(ana.Data());
-    c1_4->Divide(4,ceil(yield_bcm_devices.size()/4));
+    c1_4->Divide(4,(Int_t)ceil(yield_bcm_devices.size()/4));
     //c1_4->Divide(4,yield_bcm_devices.size()/4);  // Ignore the Cavities
     //for (Int_t k = 0 ; k < devices12.size() ; k++) {
     // Sign corrected
     // No error-rescaling
     // Utilize the slugwise main-det weighted data
     //p1=multiGraph(c1_4,p1,(TChain*)mini_slugs,k+1,Form("rcdb_slug:rcdb_sign*mini_BPMs_det_weighted.diff_%s_mean/(1.0e-6):mini_BPMs_det_weighted.diff_%s_mean_err/(1.0e-6)",devices12.at(k).Data(),devices12.at(k).Data()),cutGoodProduction.at(0),1);
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_BCMs_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_BCMs_det_weighted.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c1_4,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,yield_bcm_devices,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -3247,17 +3920,376 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c1_4->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
-    c1_4->SaveAs(Form("processed_respin2_data/%s.pdf)",corrections_pdfname.Data()));
-
-
-
-
-
-
-
+    c1_4->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
 
     data_file_cors.Close();
     data_file_asyms.Close();
+  }
+  if (draw_plots == 3){
+    // Reproduced from section 2
+    TFile data_file_slopes(Form("processed_respin2_data/CREX_All_%s_Avg_Outputs%s.root",averaging_timescale.Data(),suffix.Data()),"read");
+    TFile data_file_corrections(Form("processed_respin2_data/CREX_All_%s_Avg_Outputs_main_det_corrections.root",averaging_timescale.Data()),"read"); // FIXME hardcoded here...
+
+    TString run_cycle = "run_avg";
+    TString run_cycle_wise = "runwise";
+    //TString run_cycle = "cyclewise";//"run_avg";
+    //TString run_cycle_wise = "cyclewise";//"runwise";
+    TString scale = type;
+    TString bpms = "_allbpms";
+    TString nbpms = "5bpms";
+    if (bpms == "_allbpms") { // default case is "" for 5bpm suffix
+      nbpms = "allbpms";
+    }
+    TString part_ana = "_eigenvectors_double_sorted_part_avg"+bpms; // FIXME hardcoded the analysis here!!
+
+    // Just use one of the available trees for rcdb etc.
+    TTree* mini_slugs = (TTree*)data_file_corrections.Get("mini_raw_det_asyms_det_weighted");
+
+    // Baseline asyms to use as weightings
+    out_tree_mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted = (TTree*)data_file_corrections.Get("mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted");
+    mini_slugs->AddFriend(out_tree_mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted);
+
+    TTree * out_tree_residuals_run_dit_dit_diff_det_weighted = (TTree*)data_file_slopes.Get("residuals_run_dit_dit_diff_det_weighted");
+    TTree * out_tree_residuals_reg_dit_diff_det_weighted     = (TTree*)data_file_slopes.Get("residuals_reg_dit_diff_det_weighted");
+    TTree * out_tree_residuals_lagr_dit_diff_det_weighted    = (TTree*)data_file_slopes.Get("residuals_lagr_dit_diff_det_weighted");
+    TTree * out_tree_residuals_lagr_reg_diff_det_weighted    = (TTree*)data_file_slopes.Get("residuals_lagr_reg_diff_det_weighted");
+    TTree * out_tree_residuals_avg_dit_res = (TTree*)data_file_slopes.Get("residuals_avg_dit_res");
+    TTree * out_tree_residuals_reg_res     = (TTree*)data_file_slopes.Get("residuals_reg_res");
+    TTree * out_tree_residuals_lagr_res    = (TTree*)data_file_slopes.Get("residuals_lagr_res");
+
+    TTree * out_tree_slopes_run_dit        = (TTree*)data_file_slopes.Get("slopes_run_dit");
+    TTree * out_tree_slopes_part_avg_dit   = (TTree*)data_file_slopes.Get("slopes_part_avg_dit");
+    TTree * out_tree_slopes_part_avg_reg   = (TTree*)data_file_slopes.Get("slopes_part_avg_reg");
+    TTree * out_tree_slopes_part_avg_lagr  = (TTree*)data_file_slopes.Get("slopes_part_avg_lagr");
+
+    mini_slugs->AddFriend(out_tree_residuals_run_dit_dit_diff_det_weighted );
+    mini_slugs->AddFriend(out_tree_residuals_reg_dit_diff_det_weighted     );
+    mini_slugs->AddFriend(out_tree_residuals_lagr_dit_diff_det_weighted    );
+    mini_slugs->AddFriend(out_tree_residuals_lagr_reg_diff_det_weighted    );
+    mini_slugs->AddFriend(out_tree_residuals_avg_dit_res );
+    mini_slugs->AddFriend(out_tree_residuals_reg_res     );
+    mini_slugs->AddFriend(out_tree_residuals_lagr_res    );
+
+    mini_slugs->AddFriend(out_tree_slopes_run_dit        );
+    mini_slugs->AddFriend(out_tree_slopes_part_avg_dit   );
+    mini_slugs->AddFriend(out_tree_slopes_part_avg_reg   );
+    mini_slugs->AddFriend(out_tree_slopes_part_avg_lagr  );
+
+
+    // Residuals
+    // Reproduced from section 2
+    std::vector <TString> monitors_choice;
+    std::vector <TString> monitors_choice_new;
+
+    Int_t nmons = 5;
+    if ( bpms.Contains("allbpms") ) {
+      nmons = 12;
+      monitors_choice_new = {"evMon0_new","evMon1_new","evMon2_new","evMon3_new","evMon4_new","evMon5_new","evMon6_new","evMon7_new","evMon8_new","evMon9_new","evMon10_new","evMon11_new"};
+      monitors_choice = {"evMon0","evMon1","evMon2","evMon3","evMon4","evMon5","evMon6","evMon7","evMon8","evMon9","evMon10","evMon11"};
+    }
+    else {
+      monitors_choice_new = {"evMon0_new","evMon1_new","evMon2_new","evMon3_new","evMon4_new"};
+      monitors_choice = {"evMon0","evMon1","evMon2","evMon3","evMon4"};
+    }
+
+    TString corrections_pdfname = Form("processed_respin2_data/CREX_All_%s_Avg_Outputs%s",averaging_timescale.Data(),suffix.Data());
+    TString corrections_pdfname_mod_cut_suffix = "_"+mod_cut;
+    corrections_pdfname_mod_cut_suffix.ReplaceAll("&","").ReplaceAll("=","").ReplaceAll("|","").ReplaceAll(">","").ReplaceAll("<","").ReplaceAll(".","").ReplaceAll("!","").ReplaceAll(" ","");
+    if (mod_cut == ""){
+      corrections_pdfname_mod_cut_suffix = "";
+    }
+
+    TString ana = "Residuals";
+    TText *label = new TText(0.0,0.005,ana.Data());
+    label->SetTextFont(23);
+    label->SetTextSize(12);
+    label->SetNDC();
+
+    std::ofstream outfile0;
+    outfile0.open(Form("./processed_respin2_data/Results_%s.csv",averaging_timescale.Data()),std::ofstream::app);
+    outfile0 << "Averaged outputs " << std::endl;
+    outfile0 << "draw, "
+             << "averaging, "
+             << "draw_weighting_error, "
+             << "cuts.at(icut), "
+             << "avg_tmp1, "
+             << "mean_err_tmp1,"
+             << "weighted_mean_stddev, "
+             << "mean_red_chi2_err_tmp1, "
+             << "mean_red_chi2_tmp1, "
+             << "chi2_tmp1, "
+             << "self_weighted_mean, "
+             << "self_weighted_mean_err, "
+             << "self_weighted_mean_stddev, "
+             << "mean_self_red_chi2_tmp1, "
+             << "sum_deviation_signal_self_sig2, "
+             << "nen" << std::endl;
+    outfile0.close();
+
+    TVirtualPad* p1;
+
+    // Slope differences (also want slopes by themselves and slope diffs / slope mean fraction, but doing a fraction is not possible with the current #_# looping technique.... would need 4 #'s at least or only zoom in to focus on 1 main_det...)
+    corrections_pdfname = type + "_avgd_slope_diffs_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
+    TCanvas* c4_1_1 = new TCanvas();
+    ana = "Run dit vs segment avgd dit slopes differences (local no weight, global maindet weight)";
+    c4_1_1->cd();
+    c4_1_1->SetTitle(ana.Data());
+    c4_1_1->SetName(ana.Data());
+    c4_1_1->Divide(special_detectors.size(),monitors_choice.size());
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
+    draw                 =     Form("residuals_run_dit_dit_diff_det_weighted.#_#_mean");
+    drawn_channels_error = "abs(residuals_run_dit_dit_diff_det_weighted.#_#_mean_err)";
+    p1=manyGraph(c4_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors_choice,{},arm_cuts,{},1);
+    c4_1_1->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c4_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+
+    TCanvas* c4_1_2 = new TCanvas();
+    ana = "Eigen reg vs segment avgd dit slopes differences (local no weight, global maindet weight)";
+    c4_1_2->cd();
+    c4_1_2->SetTitle(ana.Data());
+    c4_1_2->SetName(ana.Data());
+    c4_1_2->Divide(special_detectors.size(),monitors_choice.size());
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
+    draw                 =     Form("residuals_reg_dit_diff_det_weighted.#_#_mean");
+    drawn_channels_error = "abs(residuals_reg_dit_diff_det_weighted.#_#_mean_err)";
+    p1=manyGraph(c4_1_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors_choice,{},arm_cuts,{},1);
+    c4_1_2->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c4_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c4_1_3 = new TCanvas();
+    ana = "Eigen lagr vs segment avgd dit slopes differences (local no weight, global maindet weight)";
+    c4_1_3->cd();
+    c4_1_3->SetTitle(ana.Data());
+    c4_1_3->SetName(ana.Data());
+    c4_1_3->Divide(special_detectors.size(),monitors_choice.size());
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
+    draw                 =     Form("residuals_lagr_dit_diff_det_weighted.#_#_mean");
+    drawn_channels_error = "abs(residuals_lagr_dit_diff_det_weighted.#_#_mean_err)";
+    p1=manyGraph(c4_1_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors_choice,{},arm_cuts,{},1);
+    c4_1_3->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c4_1_3->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c4_1_4 = new TCanvas();
+    ana = "Eigen lagr vs eigen reg slopes differences (local no weight, global maindet weight)";
+    c4_1_4->cd();
+    c4_1_4->SetTitle(ana.Data());
+    c4_1_4->SetName(ana.Data());
+    c4_1_4->Divide(special_detectors.size(),monitors_choice.size());
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
+    draw                 =     Form("residuals_lagr_reg_diff_det_weighted.#_#_mean");
+    drawn_channels_error = "abs(residuals_lagr_reg_diff_det_weighted.#_#_mean_err)";
+    p1=manyGraph(c4_1_4,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors_choice,{},arm_cuts,{},1);
+    c4_1_4->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c4_1_4->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+
+    // Slopes themselves
+    corrections_pdfname = type + "_avgd_slopes_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
+    TCanvas* c5_1_1 = new TCanvas();
+    ana = "Eigen regression slopes (maindet weighted)";
+    c5_1_1->cd();
+    c5_1_1->SetTitle(ana.Data());
+    c5_1_1->SetName(ana.Data());
+    c5_1_1->Divide(special_detectors.size(),monitors_choice.size());
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
+    draw             =  Form("slopes_part_avg_reg.#_#_mean");
+    drawn_channels_error = "abs(slopes_part_avg_reg.#_#_mean_err)";
+    p1=manyGraph(c5_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors_choice,{},arm_cuts,{},1);
+    c5_1_1->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c5_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+
+    TCanvas* c5_1_2 = new TCanvas();
+    ana = "Eigen lagrange slopes (maindet weighted)";
+    c5_1_2->cd();
+    c5_1_2->SetTitle(ana.Data());
+    c5_1_2->SetName(ana.Data());
+    c5_1_2->Divide(special_detectors.size(),monitors_choice.size());
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
+    draw             =  Form("slopes_part_avg_lagr.#_#_mean");
+    drawn_channels_error = "abs(slopes_part_avg_lagr.#_#_mean_err)";
+    p1=manyGraph(c5_1_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors_choice,{},arm_cuts,{},1);
+    c5_1_2->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+
+    if (!bpms.Contains("allbpms")){
+      c5_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+
+      TCanvas* c5_1_3 = new TCanvas();
+      ana = "Runwise dithering slopes (maindet weighted)";
+      c5_1_3->cd();
+      c5_1_3->SetTitle(ana.Data());
+      c5_1_3->SetName(ana.Data());
+      c5_1_3->Divide(special_detectors.size(),monitors_choice.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
+      draw             =  Form("slopes_run_dit.#_#_mean");
+      drawn_channels_error = "abs(slopes_run_dit.#_#_mean_err)";
+      p1=manyGraph(c5_1_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors_choice,{},arm_cuts,{},1);
+      c5_1_3->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      c5_1_3->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+      TCanvas* c5_1_4 = new TCanvas();
+      ana = "Part avg dithering slopes (maindet weighted)";
+      c5_1_4->cd();
+      c5_1_4->SetTitle(ana.Data());
+      c5_1_4->SetName(ana.Data());
+      c5_1_4->Divide(special_detectors.size(),monitors_choice.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
+      draw             =  Form("slopes_part_avg_dit.#_#_mean");
+      drawn_channels_error = "abs(slopes_part_avg_dit.#_#_mean_err)";
+      p1=manyGraph(c5_1_4,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors_choice,{},arm_cuts,{},1);
+      c5_1_4->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      c5_1_4->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+    }
+    else {
+      c5_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+    }
+
+
+    // Residuals 
+    corrections_pdfname = type + "_avgd_residuals_"+ averaging_timescale +"_wise" +corrections_pdfname_mod_cut_suffix;
+    for (Int_t jcoil = 0 ; jcoil < coils.size() ; jcoil++) {
+      std::vector<TString> tmpVec = {coils.at(jcoil)};
+      TCanvas* c7_1_1 = new TCanvas();
+      ana = "Eigen Segment avgd dit mean residuals for coil " + (TString)(jcoil+1) + " (local self weight, global maindet weight)";
+      c7_1_1->cd();
+      c7_1_1->SetTitle(ana.Data());
+      c7_1_1->SetName(ana.Data());
+      c7_1_1->Divide(1,special_detectors.size());
+      //c7_1_1->Divide(special_detectors.size(),coils.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
+      //draw_weighting_error = "abs(residuals_avg_dit_res.#_#_mean_err)";
+      draw                 =Form("residuals_avg_dit_res.#_#_mean_self");
+      drawn_channels_error = "abs(residuals_avg_dit_res.#_#_mean_self_err)";
+      p1=manyGraph(c7_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1);
+      c7_1_1->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      if (jcoil == 0) {
+        c7_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
+      }
+      else {
+        c7_1_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
+
+    for (Int_t jcoil = 0 ; jcoil < coils.size() ; jcoil++) {
+      std::vector<TString> tmpVec = {coils.at(jcoil)};
+      TCanvas* c7_2_1 = new TCanvas();
+      ana = "Eigen Segment avgd dit residuals stddev for coil " + (TString)(jcoil+1) + " (local self weight, global maindet weight)";
+      c7_2_1->cd();
+      c7_2_1->SetTitle(ana.Data());
+      c7_2_1->SetName(ana.Data());
+      c7_2_1->Divide(1,special_detectors.size());
+      //c7_2_1->Divide(special_detectors.size(),coils.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
+      //draw_weighting_error = "abs(residuals_avg_dit_res.#_#_mean_err)";
+      draw                 =Form("residuals_avg_dit_res.#_#_stddev_self");
+      drawn_channels_error = "abs(residuals_avg_dit_res.#_#_mean_self_err)";
+      p1=manyGraph(c7_2_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1);
+      c7_2_1->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      c7_2_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+    }
+
+    for (Int_t jcoil = 0 ; jcoil < coils.size() ; jcoil++) {
+      std::vector<TString> tmpVec = {coils.at(jcoil)};
+      TCanvas* c7_1_2 = new TCanvas();
+      ana = "Eigen Lagr mean residuals for coil " + (TString)(jcoil+1) + " (local self weight, global maindet weight)";
+      c7_1_2->cd();
+      c7_1_2->SetTitle(ana.Data());
+      c7_1_2->SetName(ana.Data());
+      c7_1_2->Divide(1,special_detectors.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
+      //draw_weighting_error = "abs(residuals_lagr_res.#_#_mean_err)";
+      draw                 =Form("residuals_lagr_res.#_#_mean_self");
+      drawn_channels_error = "abs(residuals_lagr_res.#_#_mean_self_err)";
+      p1=manyGraph(c7_1_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1);
+      c7_1_2->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      c7_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+    }
+
+    for (Int_t jcoil = 0 ; jcoil < coils.size() ; jcoil++) {
+      std::vector<TString> tmpVec = {coils.at(jcoil)};
+      TCanvas* c7_2_2 = new TCanvas();
+      ana = "Eigen Lagr residuals stddev for coil " + (TString)(jcoil+1) + " (local self weight, global maindet weight)";
+      c7_2_2->cd();
+      c7_2_2->SetTitle(ana.Data());
+      c7_2_2->SetName(ana.Data());
+      c7_2_2->Divide(1,special_detectors.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
+      //draw_weighting_error = "abs(residuals_lagr_res.#_#_mean_err)";
+      draw                 =Form("residuals_lagr_res.#_#_stddev_self");
+      drawn_channels_error = "abs(residuals_lagr_res.#_#_mean_self_err)";
+      p1=manyGraph(c7_2_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1);
+      c7_2_2->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      c7_2_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+    }
+
+    for (Int_t jcoil = 0 ; jcoil < coils.size() ; jcoil++) {
+      std::vector<TString> tmpVec = {coils.at(jcoil)};
+      TCanvas* c7_1_3 = new TCanvas();
+      ana = "Eigen reg mean residuals for coil " + (TString)(jcoil+1) + " (local self weight, global maindet weight)";
+      c7_1_3->cd();
+      c7_1_3->SetTitle(ana.Data());
+      c7_1_3->SetName(ana.Data());
+      c7_1_3->Divide(1,special_detectors.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
+      //draw_weighting_error = "abs(residuals_reg_res.#_#_mean_err)";
+      draw                 =Form("residuals_reg_res.#_#_mean_self");
+      drawn_channels_error = "abs(residuals_reg_res.#_#_mean_self_err)";
+      p1=manyGraph(c7_1_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1);
+      c7_1_3->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      c7_1_3->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+    }
+
+    for (Int_t jcoil = 0 ; jcoil < coils.size() ; jcoil++) {
+      std::vector<TString> tmpVec = {coils.at(jcoil)};
+      TCanvas* c7_2_3 = new TCanvas();
+      ana = "Eigen reg residuals stddev for coil " + (TString)(jcoil+1) + " (local self weight, global maindet weight)";
+      c7_2_3->cd();
+      c7_2_3->SetTitle(ana.Data());
+      c7_2_3->SetName(ana.Data());
+      c7_2_3->Divide(1,special_detectors.size());
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
+      //draw_weighting_error = "abs(residuals_reg_res.#_#_mean_err)";
+      draw                 =Form("residuals_reg_res.#_#_stddev_self");
+      drawn_channels_error = "abs(residuals_reg_res.#_#_mean_self_err)";
+      p1=manyGraph(c7_2_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1);
+      c7_2_3->cd();
+      label->SetText(0.0,0.005,ana.Data());
+      label->Draw("same");
+      if (jcoil == coils.size() -1 ) {
+        c7_2_3->SaveAs(Form("processed_respin2_data/plots/%s.pdf)",corrections_pdfname.Data()));
+      }
+      else {
+        c7_2_3->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+      }
+    }
+
+    data_file_slopes.Close();
+    data_file_corrections.Close();
   }
 }
 
