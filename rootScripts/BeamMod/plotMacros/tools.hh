@@ -664,8 +664,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Main reference burst-wise eigenvector regression
   // Corrections per monitor
   // Main det weighted
-  mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms.reg_asym_usl.err))";
   draw            = Form("-1.0*%smini_reference_eigen_reg_5bpms_sorted.#_#.mean*mini_reference_eigen_reg_5bpms_sorted.diff_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted.#_#.mean*mini_reference_eigen_reg_5bpms_sorted.diff_#.err)";
   /* 8/5/2021 open end of comment for testing FIXME  */
@@ -702,9 +702,10 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   delete mini;
   mini = new TChain("mini");
   mini->AddFile(mini_infilename);
-  mini->AddFriend(mini_eigen_reg_allbpms_part_avg,"mini_eigen_reg_allbpms_part_avg");
-  mini->AddFriend(mini_reference_eigen_reg_allbpms,"mini_reference_eigen_reg_allbpms");
+  //mini->AddFriend(mini_eigen_reg_allbpms_part_avg,"mini_eigen_reg_allbpms_part_avg");
+  //mini->AddFriend(mini_reference_eigen_reg_allbpms,"mini_reference_eigen_reg_allbpms");
   mini->AddFriend(mini_reference_eigen_reg_allbpms_sorted,"mini_reference_eigen_reg_allbpms_sorted");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
@@ -718,7 +719,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Main reference burst-wise eigenvector regression allbpms
   // Corrections per monitor
   // Main det weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_allbpms.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_allbpms.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_allbpms.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_allbpms.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_allbpms.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_allbpms.reg_asym_usl.err))";
   draw            = Form("-1.0*%smini_reference_eigen_reg_allbpms_sorted.#_#.mean*mini_reference_eigen_reg_allbpms_sorted.diff_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_reference_eigen_reg_allbpms_sorted.#_#.mean*mini_reference_eigen_reg_allbpms_sorted.diff_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_reference_eigen_reg_allbpms_sorted_corrections_det_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors12,monitors12,cuts,{},0);
@@ -758,6 +760,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -770,7 +773,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Main part-avgd eigenvector regression
   // Corrections per monitor
   // Main det weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
   draw            = Form("-1.0*%smini_eigen_reg_5bpms_part_avg.#_#*agg_part_avgd_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_eigen_reg_5bpms_part_avg.#_#*agg_part_avgd_friendable.diff_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_part_avg_corrections_det_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors5_new,monitors5,cuts,{},0);
@@ -809,7 +813,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   mini->AddFriend(mini_eigen_reg_allbpms_part_avg,"mini_eigen_reg_allbpms_part_avg");
   //mini->AddFriend(mini_reference_eigen_reg_allbpms,"mini_reference_eigen_reg_allbpms");
   //mini->AddFriend(mini_reference_eigen_reg_allbpms_sorted,"mini_reference_eigen_reg_allbpms_sorted");
-  mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
   mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
@@ -823,7 +827,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Main part-avgd eigenvector regression allbpms
   // Corrections per monitor
   // Main det weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usl.err))";
   draw            = Form("-1.0*%smini_eigen_reg_allbpms_part_avg.#_#*agg_part_avgd_allbpms_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_eigen_reg_allbpms_part_avg.#_#*agg_part_avgd_allbpms_friendable.diff_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_allbpms_part_avg_corrections_det_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors12_new,monitors12,cuts,{},0);
@@ -837,7 +842,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   mini->AddFriend(mini_eigen_reg_allbpms_part_avg,"mini_eigen_reg_allbpms_part_avg");
   //mini->AddFriend(mini_reference_eigen_reg_allbpms,"mini_reference_eigen_reg_allbpms");
   //mini->AddFriend(mini_reference_eigen_reg_allbpms_sorted,"mini_reference_eigen_reg_allbpms_sorted");
-  mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
   mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
@@ -865,6 +870,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -877,7 +883,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Main part-avgd eigenvector lagrangian regression
   // Corrections per monitor
   // Main det weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_5bpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_5bpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_5bpms_part_avg.lagr_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_5bpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_5bpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_5bpms_part_avg.lagr_asym_usl.err))";
   draw            = Form("-1.0*%smini_eigen_lagr_5bpms_part_avg.#_#*agg_part_avgd_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_eigen_lagr_5bpms_part_avg.#_#*agg_part_avgd_friendable.diff_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_lagr_5bpms_part_avg_corrections_det_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors5_new,monitors5,cuts,{},0);
@@ -918,7 +925,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
   //mini->AddFriend(mini_reference_eigen_reg_allbpms,"mini_reference_eigen_reg_allbpms");
   //mini->AddFriend(mini_reference_eigen_reg_allbpms_sorted,"mini_reference_eigen_reg_allbpms_sorted");
-  mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
   mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
@@ -932,7 +939,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Main part-avgd eigenvector allbpms lagrangian regression
   // Corrections per monitor
   // Main det weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
   draw            = Form("-1.0*%smini_eigen_lagr_allbpms_part_avg.#_#*agg_part_avgd_allbpms_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_eigen_lagr_allbpms_part_avg.#_#*agg_part_avgd_allbpms_friendable.diff_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_lagr_allbpms_part_avg_corrections_det_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors12_new,monitors12,cuts,{},0);
@@ -947,7 +955,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
   //mini->AddFriend(mini_reference_eigen_reg_allbpms,"mini_reference_eigen_reg_allbpms");
   //mini->AddFriend(mini_reference_eigen_reg_allbpms_sorted,"mini_reference_eigen_reg_allbpms_sorted");
-  mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
   mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
@@ -978,8 +986,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
-  mini->AddFriend(mini_regression,"mini_regression");
+  //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
   //mini->AddFriend(dit_part_avgd_friendable_slopes,"dit_part_avgd_friendable_slopes");
   //mini->AddFriend(dit_plain_friendable_slopes,"dit_plain_friendable_slopes");
@@ -990,7 +999,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Standard regression corrections
   // Corrections per monitor
   // Main det weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_regression.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_regression.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_regression.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_regression.reg_asym_usl.err))";
   draw            = Form("-1.0*%sagg_part_avgd_friendable.reg_asym_#_diff_#_slope*agg_part_avgd_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(agg_part_avgd_friendable.reg_asym_#_diff_#_slope*agg_part_avgd_friendable.diff_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_regression_corrections_det_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,devices5,devices5,cuts,{},0);
@@ -1006,7 +1016,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
-  mini->AddFriend(mini_regression,"mini_regression");
+  //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
   //mini->AddFriend(dit_part_avgd_friendable_slopes,"dit_part_avgd_friendable_slopes");
   //mini->AddFriend(dit_plain_friendable_slopes,"dit_plain_friendable_slopes");
@@ -1032,9 +1042,10 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
-  mini->AddFriend(mini_overload,"mini_overload");
+  //mini->AddFriend(mini_overload,"mini_overload");
   //mini->AddFriend(dit_part_avgd_friendable_slopes,"dit_part_avgd_friendable_slopes");
   //mini->AddFriend(dit_plain_friendable_slopes,"dit_plain_friendable_slopes");
   //mini->AddFriend(dit_part_avgd_friendable_sens,"dit_part_avgd_friendable_sens");
@@ -1044,7 +1055,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Overload regression corrections
   // Corrections per monitor
   // Main det weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_overload.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_overload.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_overload.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_overload.reg_asym_usl.err))";
   draw            = Form("-1.0*%sagg_part_avgd_friendable.overload_reg_asym_#_diff_#_slope*agg_part_avgd_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(agg_part_avgd_friendable.overload_reg_asym_#_diff_#_slope*agg_part_avgd_friendable.diff_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_overload_corrections_det_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,devices12,devices12,cuts,{},0);
@@ -1061,7 +1073,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
-  mini->AddFriend(mini_overload,"mini_overload");
+  //mini->AddFriend(mini_overload,"mini_overload");
   //mini->AddFriend(dit_part_avgd_friendable_slopes,"dit_part_avgd_friendable_slopes");
   //mini->AddFriend(dit_plain_friendable_slopes,"dit_plain_friendable_slopes");
   //mini->AddFriend(dit_part_avgd_friendable_sens,"dit_part_avgd_friendable_sens");
@@ -1085,6 +1097,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -1097,7 +1110,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Standard BMOD corrections
   // Corrections per monitor
   // Main det weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(agg_plain_friendable.dit_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_plain_friendable.dit_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_plain_friendable.dit_asym_usl_mean_error))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(agg_plain_friendable.dit_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_plain_friendable.dit_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_plain_friendable.dit_asym_usl_mean_error))";
   draw            = Form("-1.0*%sdit_plain_friendable_slopes.#_#_mean*agg_plain_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(dit_plain_friendable_slopes.#_#_mean*agg_plain_friendable.diff_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_dit_plain_corrections_det_weighted,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,dit_slope_devices5,devices5,cuts,{},0);
@@ -1108,7 +1122,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   delete mini;
   mini = new TChain("mini");
   mini->AddFile(mini_infilename);
-  mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
+  //mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
@@ -1137,6 +1151,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -1149,7 +1164,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Part avgd eigenvector BMOD corrections
   // Corrections per monitor
   // Main det weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(agg_part_avgd_friendable.eigen_dit_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_part_avgd_friendable.eigen_dit_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_part_avgd_friendable.eigen_dit_asym_usl_mean_error))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(agg_part_avgd_friendable.eigen_dit_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_part_avgd_friendable.eigen_dit_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_part_avgd_friendable.eigen_dit_asym_usl_mean_error))";
   draw            = Form("-1.0*%sdit_part_avgd_friendable_slopes.#_#_mean*agg_part_avgd_friendable.diff_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(dit_part_avgd_friendable_slopes.#_#_mean*agg_part_avgd_friendable.diff_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_dit_part_avgd_corrections_det_weighted,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,monitors5,monitors5,cuts,{},0);
@@ -1160,7 +1176,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   delete mini;
   mini = new TChain("mini");
   mini->AddFile(mini_infilename);
-  mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
+  //mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
@@ -1192,7 +1208,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   mini = new TChain("mini");
   mini->AddFile(mini_infilename);
   //mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
-  mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
+  //mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
@@ -1208,7 +1224,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Difference between allbpm lagr and 5bpm dit, all minirunwise differences (not multipletwise)
   // Part avgd allbpm lagr weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
   draw            = Form("%sagg_part_avgd_allbpms_friendable.eigen_lagr_asym_#_mean-%sagg_part_avgd_friendable.eigen_dit_asym_#_mean",mod_draw.Data(),mod_draw.Data());
   drawn_channels_error = "sqrt(abs(pow(agg_part_avgd_allbpms_friendable.eigen_lagr_asym_#_mean_error,2)-pow(agg_part_avgd_friendable.eigen_dit_asym_#_mean_error,2)))";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_allbpms_lagr_5bpms_dit_difference,draw,draw_weighting_error,drawn_channels_error,special_detectors_hardcoded,special_detectors_hardcoded,{},{},cuts,0);
@@ -1221,7 +1238,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     mini->AddFile(mini_infilename);
     //mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
     //mini->AddFriend(mini_eigen_reg_allbpms_part_avg,"mini_eigen_reg_allbpms_part_avg");
-    mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
+    //mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
     //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
     //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
     mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
@@ -1237,7 +1254,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
     // Difference between eigen allbpm reg vs 5bpm reg
     // Part avgd eigen lagr weighted
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
+    draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
     draw            = Form("%sagg_part_avgd_allbpms_friendable.eigen_reg_asym_#_mean-%sagg_part_avgd_friendable.eigen_reg_asym_#_mean",mod_draw.Data(),mod_draw.Data());
     drawn_channels_error = "sqrt(abs(pow(agg_part_avgd_allbpms_friendable.eigen_reg_asym_#_mean_error,2)-pow(agg_part_avgd_friendable.eigen_reg_asym_#_mean_error,2)))";
     combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_allbpms_reg_5bpms_reg_difference,draw,draw_weighting_error,drawn_channels_error,special_detectors_hardcoded,special_detectors_hardcoded,{},{},cuts,0);
@@ -1250,10 +1268,11 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     mini->AddFile(mini_infilename);
     //mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
     //mini->AddFriend(mini_eigen_reg_allbpms_part_avg,"mini_eigen_reg_allbpms_part_avg");
-    mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
+    //mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
     //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
     //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
     mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+    mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
     //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
     //mini->AddFriend(mini_regression,"mini_regression");
     //mini->AddFriend(mini_overload,"mini_overload");
@@ -1265,7 +1284,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
     // Difference between eigen regression and eigen dithering - 5bpms
     // Part avgd eigen lagr weighted
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
+    draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
     draw            = Form("%sagg_part_avgd_friendable.#_#_mean",mod_draw.Data());
     drawn_channels_error = "abs(agg_part_avgd_friendable.#_#_mean_error)";
     combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_5bpms_dit_5bpms_reg_difference,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_eigen_dit_differences_detectors,{},{},cuts_plain,0);
@@ -1279,7 +1299,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   mini->AddFile(mini_infilename);
   //mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
   //mini->AddFriend(mini_eigen_reg_allbpms_part_avg,"mini_eigen_reg_allbpms_part_avg");
-  mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
+  //mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
@@ -1294,7 +1314,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Difference between eigen lagrange and eigen regression - allbpms
   // Part avgd eigen lagr weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
   draw            = Form("%sagg_part_avgd_allbpms_friendable.#_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(agg_part_avgd_allbpms_friendable.#_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_allbpms_lagr_allbpms_reg_difference,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_eigen_lagr_differences_detectors,{},{},cuts,0);
@@ -1306,7 +1327,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   mini = new TChain("mini");
   mini->AddFile(mini_infilename);
   //mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
-  mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
+  //mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
@@ -1322,7 +1343,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Difference between allbpm lagr and 5bpm reg, all minirunwise differences (not multipletwise)
   // Part avgd allbpm lagr weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
   draw            = Form("%sagg_part_avgd_allbpms_friendable.eigen_lagr_asym_#_mean-%sagg_part_avgd_friendable.eigen_reg_asym_#_mean",mod_draw.Data(),mod_draw.Data());
   drawn_channels_error = "sqrt(abs(pow(agg_part_avgd_allbpms_friendable.eigen_lagr_asym_#_mean_error,2)-pow(agg_part_avgd_friendable.eigen_reg_asym_#_mean_error,2)))";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_allbpms_lagr_5bpms_reg_difference,draw,draw_weighting_error,drawn_channels_error,special_detectors_hardcoded,special_detectors_hardcoded,{},{},cuts,0);
@@ -1334,7 +1356,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   mini = new TChain("mini");
   mini->AddFile(mini_infilename);
   //mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
-  mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
+  //mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
@@ -1350,7 +1372,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Difference between allbpm reg and 5bpm dit, all minirunwise differences (not multipletwise)
   // Part avgd eigen lagr weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
   draw            = Form("%sagg_part_avgd_allbpms_friendable.eigen_reg_asym_#_mean-%sagg_part_avgd_friendable.eigen_dit_asym_#_mean",mod_draw.Data(),mod_draw.Data());
   drawn_channels_error = "sqrt(abs(pow(agg_part_avgd_allbpms_friendable.eigen_reg_asym_#_mean_error,2)-pow(agg_part_avgd_friendable.eigen_dit_asym_#_mean_error,2)))";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_allbpms_reg_5bpms_dit_difference,draw,draw_weighting_error,drawn_channels_error,special_detectors_hardcoded,special_detectors_hardcoded,{},{},cuts,0);
@@ -1364,9 +1387,10 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   mini->AddFile(mini_infilename);
   //mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
-  mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
+  //mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -1378,7 +1402,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Difference between plain dit and standard regression - 5bpms - and it is OLD cut data...
   // Part avgd eigen lagr weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
   draw            = Form("%sagg_plain_friendable.#_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(agg_plain_friendable.#_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_plain_5bpms_dit_5bpms_reg_difference,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_differences_detectors,{},{},cuts_plain,0);
@@ -1395,11 +1420,12 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   delete mini;
   mini = new TChain("mini");
   mini->AddFile(mini_infilename);
-  mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
-  mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
+  //mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
+  //mini->AddFriend(mini_eigen_lagr_allbpms_part_avg,"mini_eigen_lagr_allbpms_part_avg");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -1411,7 +1437,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Raw asyms
   // Main det signal weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
   draw                 = Form("%s#_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(#_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_raw_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
@@ -1426,6 +1453,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -1437,7 +1465,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Reference burstwise, (sorted, but it the corrected asyms etc. don't care about sort and live in non-sorted tree by themselves), eigenvector regression 
   // Main det signal weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms.reg_asym_usl.err))";
   draw                 = Form("%smini_reference_eigen_reg_5bpms.#_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms.#_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
@@ -1452,6 +1481,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   mini->AddFriend(mini_reference_eigen_reg_allbpms,"mini_reference_eigen_reg_allbpms");
   //mini->AddFriend(mini_reference_eigen_reg_allbpms_sorted,"mini_reference_eigen_reg_allbpms_sorted");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -1463,7 +1493,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Reference burstwise - allbpms, (sorted, but it the corrected asyms etc. don't care about sort and live in non-sorted tree by themselves), eigenvector regression 
   // Main det signal weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_allbpms.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_allbpms.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_allbpms.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_allbpms.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_allbpms.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_allbpms.reg_asym_usl.err))";
   draw                 =     Form("%smini_reference_eigen_reg_allbpms.#_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_reference_eigen_reg_allbpms.#_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
@@ -1478,6 +1509,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -1490,7 +1522,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Part avgd eigenvector regression (5bpms)
   // Main det signal weighted
   // This is the signal with which all other signals are averaged with (except self-weighted signals)
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
   draw                 =     Form("%smini_eigen_reg_5bpms_part_avg.#_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_eigen_reg_5bpms_part_avg.#_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
@@ -1505,6 +1538,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_allbpms,"mini_reference_eigen_reg_allbpms");
   //mini->AddFriend(mini_reference_eigen_reg_allbpms_sorted,"mini_reference_eigen_reg_allbpms_sorted");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -1517,7 +1551,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Part avgd eigenvector regression (allbpms)
   // Main det signal weighted
   // This is the signal with which all other signals are averaged with (except self-weighted signals)
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usl.err))";
   draw                 =     Form("%smini_eigen_reg_allbpms_part_avg.#_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_eigen_reg_allbpms_part_avg.#_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
@@ -1533,6 +1568,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -1545,7 +1581,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Part avgd eigenvector lagrange regression (5bpms)
   // Main det signal weighted
   // This is the signal with which all other signals are averaged with (except self-weighted signals)
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_5bpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_5bpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_5bpms_part_avg.lagr_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_5bpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_5bpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_5bpms_part_avg.lagr_asym_usl.err))";
   draw                 =     Form("%smini_eigen_lagr_5bpms_part_avg.#_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_eigen_lagr_5bpms_part_avg.#_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,lagr_cor_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
@@ -1561,6 +1598,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_allbpms,"mini_reference_eigen_reg_allbpms");
   //mini->AddFriend(mini_reference_eigen_reg_allbpms_sorted,"mini_reference_eigen_reg_allbpms_sorted");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -1573,7 +1611,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Part avgd eigenvector lagrange regression (allbpms)
   // Main det signal weighted
   // This is the signal with which all other signals are averaged with (except self-weighted signals)
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg.lagr_asym_usl.err))";
   draw                 =     Form("%smini_eigen_lagr_allbpms_part_avg.#_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_eigen_lagr_allbpms_part_avg.#_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,lagr_cor_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
@@ -1588,6 +1627,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   ////////////mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   ////////////mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   ////////////mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  //////////mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   ////////////mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   ////////////mini->AddFriend(mini_regression,"mini_regression");
   ////////////mini->AddFriend(mini_overload,"mini_overload");
@@ -1602,7 +1642,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //////////// This is the signal with which all other signals are averaged with (except self-weighted signals)
   //////////drawn_channels_error = "abs(mini_eigen_reg_5bpms_part_avg.#_#.err)";
   //////////draw                 =     Form("%smini_eigen_reg_5bpms_part_avg.#_#.mean",mod_draw.Data());
-  //////////draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
+  //////////draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  ////////////draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
   //////////combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_burstwise_mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},null_cuts,cuts,1); //null cut vector here means use draws_piece2 loop for cut definition instead
   //////////stwise_mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted->Write();
   //////////delete out_tree_burstwise_mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted;
@@ -1615,6 +1656,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -1628,7 +1670,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // For some reason the postpan analyzed data do not have the "correction value" included in their outputs (unlike Dance, which does...)
   // Correction amounts also exist in the agg tree... just not in a #_# easily parsed format of course
   // Main det signal weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_regression.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_regression.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_regression.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_regression.reg_asym_usl.err))";
   draw                 =     Form("%smini_regression.#_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_regression.#_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_regression_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,reg_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
@@ -1643,8 +1686,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
-  mini->AddFriend(mini_regression,"mini_regression");
+  //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
   //mini->AddFriend(dit_part_avgd_friendable_slopes,"dit_part_avgd_friendable_slopes");
   //mini->AddFriend(dit_plain_friendable_slopes,"dit_plain_friendable_slopes");
@@ -1654,7 +1698,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
 
   // Main standard 5bpm regression - correction amount on the asym, from aggregator
   // Main det signal weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_regression.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_regression.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_regression.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_regression.reg_asym_usl.err))";
   draw                 =     Form("%sagg_plain_friendable.#_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(agg_plain_friendable.#_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_regression_det_asym_cors_det_weighted,draw,draw_weighting_error,drawn_channels_error,asym_vec,agg_cor_special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
@@ -1669,6 +1714,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   mini->AddFriend(mini_overload,"mini_overload");
@@ -1682,7 +1728,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // For some reason the postpan analyzed data do not have the "correction value" included in their outputs (unlike Dance, which does...)
   // Correction amounts also exist in the agg tree... just not in a #_# easily parsed format of course
   // Main det signal weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_overload.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_overload.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_overload.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_overload.reg_asym_usl.err))";
   draw                 =     Form("%smini_overload.#_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_overload.#_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_overload_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,reg_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
@@ -1699,6 +1746,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //////////////////////////mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //////////////////////////mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   //////////////////////////mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  ////////////////////////mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //////////////////////////mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //////////////////////////mini->AddFriend(mini_regression,"mini_regression");
   ////////////////////////mini->AddFriend(mini_overload,"mini_overload");
@@ -1712,7 +1760,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   ////////////////////////// Main det signal weighted
   ////////////////////////drawn_channels_error = "abs(mini_overload.reg_asym_#.err)";
   ////////////////////////draw                 =     Form("%s(mini_overload.reg_asym_#.mean-mini_overload.asym_#.mean)",mod_draw.Data());
-  ////////////////////////draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_overload.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_overload.reg_asym_usl.err))";
+  ////////////////////////draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //////////////////////////draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_overload.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_overload.reg_asym_usl.err))";
   ////////////////////////combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_overload_det_asym_cors_det_weighted,draw,draw_weighting_error,drawn_channels_error,special_detectors,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   ////////////////////////out_tree_mini_overload_det_asym_cors_det_weighted->Write();
   ////////////////////////delete out_tree_mini_overload_det_asym_cors_det_weighted;
@@ -1725,6 +1774,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -1738,7 +1788,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Asyms come from the standard "plain" Agg outputs
   // Correction amounts also exist in the agg tree... just not in a #_# easily parsed format of course
   // Main det signal weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(agg_plain_friendable.reg_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_plain_friendable.reg_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_plain_friendable.reg_asym_usl_mean_error))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(agg_plain_friendable.reg_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_plain_friendable.reg_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_plain_friendable.reg_asym_usl_mean_error))";
   draw                 =     Form("%sagg_plain_friendable.#_#_mean",mod_draw.Data());
   // Because of issues with the dit dataset error bars just use regression errors here...
   drawn_channels_error = "abs(agg_plain_friendable.#_#_mean_error)";
@@ -1755,6 +1806,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -1768,7 +1820,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Asyms come from the "part avgd" Agg outputs
   // Correction amounts also exist in the agg tree... just not in a #_# easily parsed format of course
   // Main det signal weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(agg_part_avgd_friendable.eigen_dit_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_part_avgd_friendable.eigen_dit_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_part_avgd_friendable.eigen_dit_asym_usl_mean_error))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(agg_part_avgd_friendable.eigen_dit_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_part_avgd_friendable.eigen_dit_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_part_avgd_friendable.eigen_dit_asym_usl_mean_error))";
   draw                 =     Form("%sagg_part_avgd_friendable.eigen_#_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(agg_part_avgd_friendable.eigen_#_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_dit_part_avgd_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,dit_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
@@ -1788,6 +1841,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -1803,7 +1857,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Main det signal weighted
   drawn_channels_error = "abs(agg_part_avgd_friendable.eigen_#_#_mean_error)";
   draw                 =     Form("%sagg_part_avgd_friendable.eigen_#_#_mean",mod_draw.Data());
-  draw_weighting_error = "((rcdb_arm_flag==0)*(agg_part_avgd_friendable.eigen_dit_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_part_avgd_friendable.eigen_dit_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_part_avgd_friendable.eigen_dit_asym_usl_mean_error))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(agg_part_avgd_friendable.eigen_dit_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_part_avgd_friendable.eigen_dit_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_part_avgd_friendable.eigen_dit_asym_usl_mean_error))";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_dit_part_avgd_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,dit_asym_vec,AT_special_detectors,{},null_cuts,AT_cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   ///////////////combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_dit_part_avgd_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,dit_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   out_tree_mini_dit_part_avgd_det_asyms_det_weighted->Write();
@@ -1817,6 +1872,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
   //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   //mini->AddFriend(mini_regression,"mini_regression");
   //mini->AddFriend(mini_overload,"mini_overload");
@@ -1832,7 +1888,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Main det signal weighted
   drawn_channels_error = "abs(agg_part_avgd_friendable.#_#_mean_error)";
   draw                 =     Form("%sagg_part_avgd_friendable.#_#_mean",mod_draw.Data());
-  draw_weighting_error = "((rcdb_arm_flag==0)*(agg_part_avgd_friendable.reg_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_part_avgd_friendable.reg_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_part_avgd_friendable.reg_asym_usl_mean_error))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(agg_part_avgd_friendable.reg_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_part_avgd_friendable.reg_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_part_avgd_friendable.reg_asym_usl_mean_error))";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_reg_part_avgd_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,reg_asym_vec,AT_special_detectors,{},null_cuts,AT_cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   ///////////////combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_reg_part_avgd_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,reg_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   out_tree_mini_reg_part_avgd_det_asyms_det_weighted->Write();
@@ -1849,17 +1906,19 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   delete mini;
   mini = new TChain("mini");
   mini->AddFile(mini_infilename);
-  mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
-  mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
+  //mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
+  //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
   mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
-  mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
-  mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
+  //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
+  //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   mini->BuildIndex("run","mini");
 
   // Main burst-wise eigenvector regression
   // Monitor signals directly - regular eigenvector analysis, sorted - reference analysis
   // Main det signal weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
   draw                 =     Form("%smini_reference_eigen_reg_5bpms_sorted.#_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted.#_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_reference_eigen_reg_5bpms_sorted_monitors_det_weighted,draw,draw_weighting_error,drawn_channels_error,diff_vec,monitors5,{},cutGoodProduction,{},0);
@@ -1870,17 +1929,19 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   delete mini;
   mini = new TChain("mini");
   mini->AddFile(mini_infilename);
-  mini->AddFriend(mini_eigen_reg_allbpms_part_avg,"mini_eigen_reg_allbpms_part_avg");
-  mini->AddFriend(mini_reference_eigen_reg_allbpms,"mini_reference_eigen_reg_allbpms");
+  //mini->AddFriend(mini_eigen_reg_allbpms_part_avg,"mini_eigen_reg_allbpms_part_avg");
+  //mini->AddFriend(mini_reference_eigen_reg_allbpms,"mini_reference_eigen_reg_allbpms");
   mini->AddFriend(mini_reference_eigen_reg_allbpms_sorted,"mini_reference_eigen_reg_allbpms_sorted");
-  mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
-  mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
+  //mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
+  //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   mini->BuildIndex("run","mini");
 
   // Main burst-wise eigenvector regression
   // Monitor signals directly - regular eigenvector analysis, sorted - reference analysis
   // Main det signal weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usl.err))";
   draw                 =     Form("%smini_reference_eigen_reg_allbpms_sorted.#_#.mean",mod_draw.Data());
   drawn_channels_error = "abs(mini_reference_eigen_reg_allbpms_sorted.#_#.err)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_reference_eigen_reg_allbpms_sorted_monitors_det_weighted,draw,draw_weighting_error,drawn_channels_error,diff_vec,monitors12,{},cutGoodProduction,{},0);
@@ -1891,17 +1952,19 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   delete mini;
   mini = new TChain("mini");
   mini->AddFile(mini_infilename);
-  mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
-  mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
-  mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
+  //mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
+  //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
+  //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
-  mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
+  //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   mini->BuildIndex("run","mini");
 
   // Main burst-wise eigenvector regression
   // Monitor signals directly - 5bpms - regular eigenvector analysis, sorted - part avg eigenvectors
   // Main det signal weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
   draw                 =     Form("%sagg_part_avgd_friendable.#_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(agg_part_avgd_friendable.#_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_5bpms_part_avg_monitors_det_weighted,draw,draw_weighting_error,drawn_channels_error,diff_vec,monitors5,{},cutGoodProduction,{},0);
@@ -1912,17 +1975,18 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   delete mini;
   mini = new TChain("mini");
   mini->AddFile(mini_infilename);
-  mini->AddFriend(mini_eigen_reg_allbpms_part_avg,"mini_eigen_reg_allbpms_part_avg");
-  mini->AddFriend(mini_reference_eigen_reg_allbpms,"mini_reference_eigen_reg_allbpms");
-  mini->AddFriend(mini_reference_eigen_reg_allbpms_sorted,"mini_reference_eigen_reg_allbpms_sorted");
+  //mini->AddFriend(mini_eigen_reg_allbpms_part_avg,"mini_eigen_reg_allbpms_part_avg");
+  //mini->AddFriend(mini_reference_eigen_reg_allbpms,"mini_reference_eigen_reg_allbpms");
+  //mini->AddFriend(mini_reference_eigen_reg_allbpms_sorted,"mini_reference_eigen_reg_allbpms_sorted");
   mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
-  mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
+  //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   mini->BuildIndex("run","mini");
 
   // Main burst-wise eigenvector regression
   // Monitor signals directly - allbpms - regular eigenvector analysis, sorted - part avg eigenvectors
   // Main det signal weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg.reg_asym_usl.err))";
   draw                 =     Form("%sagg_part_avgd_allbpms_friendable.#_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(agg_part_avgd_allbpms_friendable.#_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_eigen_reg_allbpms_part_avg_monitors_det_weighted,draw,draw_weighting_error,drawn_channels_error,diff_vec,monitors12,{},cutGoodProduction,{},0);
@@ -1933,17 +1997,19 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   delete mini;
   mini = new TChain("mini");
   mini->AddFile(mini_infilename);
-  mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
-  mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
-  mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
+  //mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
+  //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
+  //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
-  mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
+  //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   mini->BuildIndex("run","mini");
 
   // Main burst-wise eigenvector regression
   // Monitor signals directly - regular eigenvector analysis, sorted
   // Main det signal weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
   draw                 =     Form("%sagg_part_avgd_friendable.#_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(agg_part_avgd_friendable.#_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_BPMs_det_weighted,draw,draw_weighting_error,drawn_channels_error,diff_yield_vec,yield_diff_BPMs,{},cutGoodProduction,{},0);
@@ -1954,17 +2020,19 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   delete mini;
   mini = new TChain("mini");
   mini->AddFile(mini_infilename);
-  mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
-  mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
-  mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
+  //mini->AddFriend(mini_eigen_reg_5bpms_part_avg,"mini_eigen_reg_5bpms_part_avg");
+  //mini->AddFriend(mini_reference_eigen_reg_5bpms,"mini_reference_eigen_reg_5bpms");
+  //mini->AddFriend(mini_reference_eigen_reg_5bpms_sorted,"mini_reference_eigen_reg_5bpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
-  mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
+  mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
+  //mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   mini->BuildIndex("run","mini");
 
   // Main burst-wise eigenvector regression
   // Monitor signals directly - regular eigenvector analysis, sorted
   // Main det signal weighted
-  draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg.reg_asym_us_avg.err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usr.err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg.reg_asym_usl.err))";
   draw                 =     Form("%sagg_part_avgd_friendable.#_#_mean",mod_draw.Data());
   drawn_channels_error = "abs(agg_part_avgd_friendable.#_#_mean_error)";
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_BCMs_det_weighted,draw,draw_weighting_error,drawn_channels_error,asym_yield_vec,yield_bcm_devices,{},cutGoodProduction,{},0);

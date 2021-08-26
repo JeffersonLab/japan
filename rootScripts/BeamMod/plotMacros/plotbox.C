@@ -32,8 +32,8 @@ int plotbox(TString suffix = "", Int_t ana = 0){
 
   //////////////////////////////////////////////////////////////
   //// Plotting
-  //tb->tg_err_averaging("rcdb_slug",ana,"rcdb_sign*","&& rcdb_flip_state<=2","part","_no_err",suffix); // Generate grand plots from slug averaged data - with sign correction (I left the slug averaging outputs with NO sign correction, all larger time scales do have sign correction in the 1 pass outputs)
-  tb->tg_err_averaging("crex_part",ana,"","&& rcdb_flip_state<=2","part","_no_err",suffix); // Generate grand plots from slug averaged data - with sign correction (I left the slug averaging outputs with NO sign correction, all larger time scales do have sign correction in the 1 pass outputs)
+  tb->tg_err_averaging("rcdb_slug",ana,"rcdb_sign*","&& rcdb_flip_state<=2","part","_no_err",suffix); // Generate grand plots from slug averaged data - with sign correction (I left the slug averaging outputs with NO sign correction, all larger time scales do have sign correction in the 1 pass outputs)
+  //tb->tg_err_averaging("crex_part",ana,"","&& rcdb_flip_state<=2","part","_no_err",suffix); // Generate grand plots from slug averaged data - with sign correction (I left the slug averaging outputs with NO sign correction, all larger time scales do have sign correction in the 1 pass outputs)
   /*
   tb->tg_err_averaging("rcdb_slug",1,"rcdb_sign*"," && crex_part == 1");
   tb->tg_err_averaging("rcdb_slug",1,"rcdb_sign*"," && crex_part == 2");

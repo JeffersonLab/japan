@@ -9,6 +9,7 @@ void extract_corrections() {
   TChain * mini_overload_corrections_det_weighted                           = new TChain("mini_overload_corrections_det_weighted");
   TChain * mini_dit_plain_corrections_det_weighted                          = new TChain("mini_dit_plain_corrections_det_weighted");
   TChain * mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted          = new TChain("mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted");
+  TChain * mini_BCMs_det_weighted                                           = new TChain("mini_BCMs_det_weighted");
 
   mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted    -> Add("processed_respin2_data/CREX_All_crex_part_Avg_Outputs_main_det_corrections.root");
   mini_reference_eigen_reg_allbpms_sorted_corrections_det_weighted  -> Add("processed_respin2_data/CREX_All_crex_part_Avg_Outputs_main_det_corrections.root");
@@ -20,6 +21,7 @@ void extract_corrections() {
   mini_overload_corrections_det_weighted                            -> Add("processed_respin2_data/CREX_All_crex_part_Avg_Outputs_main_det_corrections.root");
   mini_dit_plain_corrections_det_weighted                           -> Add("processed_respin2_data/CREX_All_crex_part_Avg_Outputs_main_det_corrections.root");
   mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted           -> Add("processed_respin2_data/CREX_All_crex_part_Avg_Outputs_main_det_corrections.root");
+  mini_BCMs_det_weighted                                            -> Add("processed_respin2_data/CREX_All_crex_part_Avg_Outputs_main_det_corrections.root");
 
   Printf("mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted,  manual_main_det_evMon0_mean/1e-9:manual_main_det_evMon1_mean/1e-9:manual_main_det_evMon2_mean/1e-9:manual_main_det_evMon3_mean/1e-9:manual_main_det_evMon4_mean/1e-9:manual_main_det_evMon5_mean/1e-9:manual_main_det_evMon6_mean/1e-9:manual_main_det_evMon7_mean/1e-9:manual_main_det_evMon8_mean/1e-9:manual_main_det_evMon9_mean/1e-9:manual_main_det_evMon10_mean/1e-9:manual_main_det_evMon11_mean/1e-9");
   mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted->Scan("manual_main_det_evMon0_mean/1e-9:manual_main_det_evMon1_mean/1e-9:manual_main_det_evMon2_mean/1e-9:manual_main_det_evMon3_mean/1e-9:manual_main_det_evMon4_mean/1e-9:manual_main_det_evMon5_mean/1e-9:manual_main_det_evMon6_mean/1e-9:manual_main_det_evMon7_mean/1e-9:manual_main_det_evMon8_mean/1e-9:manual_main_det_evMon9_mean/1e-9:manual_main_det_evMon10_mean/1e-9:manual_main_det_evMon11_mean/1e-9");
@@ -47,6 +49,12 @@ void extract_corrections() {
 
   Printf("mini_dit_plain_corrections_det_weighted,  manual_main_det_12X_mean/1e-6:manual_main_det_4eX_mean/1e-6:manual_main_det_1X_mean/1e-6:manual_main_det_4aY_mean/1e-6:manual_main_det_4eY_mean/1e-6:manual_main_det_11X_mean/1e-6:manual_main_det_4aX_mean/1e-6:manual_main_det_11Y_mean/1e-6:manual_main_det_16X_mean/1e-6:manual_main_det_16Y_mean/1e-6:manual_main_det_12Y_mean/1e-6:manual_main_det_1Y_mean/1e-6");
   mini_dit_plain_corrections_det_weighted->Scan("manual_main_det_12X_mean/1e-6:manual_main_det_4eX_mean/1e-6:manual_main_det_1X_mean/1e-6:manual_main_det_4aY_mean/1e-6:manual_main_det_4eY_mean/1e-6:manual_main_det_11X_mean/1e-6:manual_main_det_4aX_mean/1e-6:manual_main_det_11Y_mean/1e-6:manual_main_det_16X_mean/1e-6:manual_main_det_16Y_mean/1e-6:manual_main_det_12Y_mean/1e-6:manual_main_det_1Y_mean/1e-6");
+
+  Printf("mini_BCMs_det_weighted,  asym_bcm_an_diff_mean/1e-9:asym_bcm_an_diff_mean_err/1e-9");
+  mini_BCMs_det_weighted->Scan("asym_bcm_an_diff_nentries:asym_bcm_an_diff_mean/1e-9:asym_bcm_an_diff_mean_err/1e-9");
+
+  Printf("mini_BCMs_det_weighted,  asym_bcm_target_mean/1e-9:asym_bcm_target_mean_err/1e-9");
+  mini_BCMs_det_weighted->Scan("asym_bcm_target_nentries:asym_bcm_target_mean/1e-9:asym_bcm_target_mean_err/1e-9");
 
   Printf("mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted,  lagr_asym_manual_main_det_mean/1e-9:lagr_asym_manual_main_det_mean_err/1e-9");
   mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted->Scan("lagr_asym_manual_main_det_mean_nentries:lagr_asym_manual_main_det_mean/1e-9:lagr_asym_manual_main_det_mean_err/1e-9");
