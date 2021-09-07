@@ -48,7 +48,7 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
 
   gStyle->SetOptFit(1);
   std::ofstream outfile0;
-  outfile0.open(Form("workspace_plotting_macros/august_5_plots/drl_diff_plots/dit_reg_diffs_outputs_%s_avgd%s%s.txt",type.Data(),bpms.Data(),do_err.Data()),std::ofstream::app);
+  outfile0.open(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_diffs_outputs_%s_avgd%s%s.txt",type.Data(),bpms.Data(),do_err.Data()),std::ofstream::app);
 
   c_eigreg_eigdit->cd(1);
   gPad->SetLeftMargin(0.125);
@@ -105,8 +105,8 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
   TF1* tg_eigreg_eigdit_minirunwise_maindet_fit = (TF1*)gROOT->GetFunction("pol0");
   Printf("tg_eigreg_eigdit_minirunwise_maindet = %e +- %e",tg_eigreg_eigdit_minirunwise_maindet_fit->GetParameter(0),tg_eigreg_eigdit_minirunwise_maindet_fit->GetParError(0));
   outfile0 << "eigreg_eigdit_minirunwise_maindet = " << tg_eigreg_eigdit_minirunwise_maindet_fit->GetParameter(0) << " +- " << tg_eigreg_eigdit_minirunwise_maindet_fit->GetParError(0) << std::endl;
-  c_eigreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_5_plots/drl_diff_plots/eigen_reg_eigen_dit_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
-  c_eigreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_5_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf(",type.Data(),bpms.Data(),do_err.Data()));
+  c_eigreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/eigen_reg_eigen_dit_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
+  c_eigreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf(",type.Data(),bpms.Data(),do_err.Data()));
 
 
   c_eiglagr_eigreg->cd(1);
@@ -164,8 +164,8 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
   TF1* tg_eiglagr_eigreg_minirunwise_maindet_fit = (TF1*)gROOT->GetFunction("pol0");
   Printf("tg_eiglagr_eigreg_minirunwise_maindet = %e +- %e",tg_eiglagr_eigreg_minirunwise_maindet_fit->GetParameter(0),tg_eiglagr_eigreg_minirunwise_maindet_fit->GetParError(0));
   outfile0 << "eiglagr_eigreg_minirunwise_maindet = " << tg_eiglagr_eigreg_minirunwise_maindet_fit->GetParameter(0) << " +- " << tg_eiglagr_eigreg_minirunwise_maindet_fit->GetParError(0) << std::endl;
-  c_eiglagr_eigreg->SaveAs(Form("workspace_plotting_macros/august_5_plots/drl_diff_plots/eigen_lagr_eigen_reg_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
-  c_eiglagr_eigreg->SaveAs(Form("workspace_plotting_macros/august_5_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
+  c_eiglagr_eigreg->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/eigen_lagr_eigen_reg_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
+  c_eiglagr_eigreg->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
 
 
   c_eiglagr_eigdit->cd(1);
@@ -223,8 +223,8 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
   TF1* tg_eiglagr_eigdit_minirunwise_maindet_fit = (TF1*)gROOT->GetFunction("pol0");
   Printf("tg_eiglagr_eigdit_minirunwise_maindet = %e +- %e",tg_eiglagr_eigdit_minirunwise_maindet_fit->GetParameter(0),tg_eiglagr_eigdit_minirunwise_maindet_fit->GetParError(0));
   outfile0 << "eiglagr_eigdit_minirunwise_maindet = " << tg_eiglagr_eigdit_minirunwise_maindet_fit->GetParameter(0) << " +- " << tg_eiglagr_eigdit_minirunwise_maindet_fit->GetParError(0) << std::endl;
-  c_eiglagr_eigdit->SaveAs(Form("workspace_plotting_macros/august_5_plots/drl_diff_plots/eigen_lagr_eigen_dit_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
-  c_eiglagr_eigdit->SaveAs(Form("workspace_plotting_macros/august_5_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
+  c_eiglagr_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/eigen_lagr_eigen_dit_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
+  c_eiglagr_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
 
 
   // Now do minirunwise regular regression vs. segment avg eigen dit
@@ -284,8 +284,8 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
   TF1* tg_regreg_eigdit_minirunwise_maindet_fit = (TF1*)gROOT->GetFunction("pol0");
   Printf("tg_regreg_eigdit_minirunwise_maindet = %e +- %e",tg_regreg_eigdit_minirunwise_maindet_fit->GetParameter(0),tg_regreg_eigdit_minirunwise_maindet_fit->GetParError(0));
   outfile0 << "regreg_eigdit_minirunwise_maindet = " << tg_regreg_eigdit_minirunwise_maindet_fit->GetParameter(0) << " +- " << tg_regreg_eigdit_minirunwise_maindet_fit->GetParError(0) << std::endl;
-  c_regreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_5_plots/drl_diff_plots/regular_reg_eigen_dit_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
-  c_regreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_5_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
+  c_regreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/regular_reg_eigen_dit_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
+  c_regreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
 
 
   // Now do dit vs. eigen dit comparison, maindet weighted and self weighted, both using quadrature error bar differences only
@@ -375,8 +375,8 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
   Printf("tg_small_regreg_eigreg_minirunwise_maindet = %e +- %e",tg_small_regreg_eigreg_minirunwise_maindet_fit->GetParameter(0),tg_small_regreg_eigreg_minirunwise_maindet_fit->GetParError(0));
   outfile0 << "small_regreg_eigreg_minirunwise_maindet = " << tg_small_regreg_eigreg_minirunwise_maindet_fit->GetParameter(0) << " +- " << tg_small_regreg_eigreg_minirunwise_maindet_fit->GetParError(0) << std::endl;
 
-  c_regreg_eigreg->SaveAs(Form("workspace_plotting_macros/august_5_plots/drl_diff_plots/regular_vs_eigen_same_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
-  c_regreg_eigreg->SaveAs(Form("workspace_plotting_macros/august_5_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf)",type.Data(),bpms.Data(),do_err.Data()));
+  c_regreg_eigreg->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/regular_vs_eigen_same_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
+  c_regreg_eigreg->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf)",type.Data(),bpms.Data(),do_err.Data()));
   outfile0.close();
 
   c_eigdit_RMS_1->cd(1);
@@ -391,7 +391,7 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
   c_eigdit_RMS_1->cd(4);
   gPad->SetLogy();
   agg_part_avgd_friendable->Draw("asym_main_det_eigen_dit_reg_diff_rms:yield_bpm12X_mean",cut,"");
-  c_eigdit_RMS_1->SaveAs(Form("workspace_plotting_macros/august_5_plots/drl_diff_plots/eigen_dit_reg_diff_RMSs_%s_avgd%s%s.pdf(",type.Data(),bpms.Data(),do_err.Data()));
+  c_eigdit_RMS_1->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/eigen_dit_reg_diff_RMSs_%s_avgd%s%s.pdf(",type.Data(),bpms.Data(),do_err.Data()));
 
   c_eigdit_RMS_2->cd(1);
   gPad->SetLogy();
@@ -405,6 +405,6 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
   c_eigdit_RMS_2->cd(4);
   gPad->SetLogy();
   agg_part_avgd_friendable->Draw("asym_main_det_eigen_dit_reg_diff_rms:yield_bpm12X_rms",cut,"");
-  c_eigdit_RMS_2->SaveAs(Form("workspace_plotting_macros/august_5_plots/drl_diff_plots/dit_reg_diff_RMSs_%s_avgd%s%s.pdf)",type.Data(),bpms.Data(),do_err.Data()));
+  c_eigdit_RMS_2->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_diff_RMSs_%s_avgd%s%s.pdf)",type.Data(),bpms.Data(),do_err.Data()));
 
 }

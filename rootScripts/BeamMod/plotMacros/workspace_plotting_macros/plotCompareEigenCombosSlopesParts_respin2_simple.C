@@ -44,7 +44,7 @@ TVirtualPad* multiGraph(TPad* c1, TVirtualPad* p1, TChain* mini, int subpad = 1,
   return p1;
 }
 
-TVirtualPad* combo_multiGraph(TPad* c1, TVirtualPad* p1, TChain* mini, int subpad = 1, std::string draw = "cyclenum", TString cut = "", std::vector<TString> vs = {""}, Int_t startcolor=30){
+TVirtualPad* combo_multiGraph(TPad* c1, TVirtualPad* p1, TChain* mini, int subpad = 1, std::string draw = "cyclenum", TString cut = "", std::vector<TString> vs = {""}, Int_t startcolor=30, Int_t do_leg = 0){
   p1=c1->cd(subpad);
   p1->SetGrid();
 
@@ -101,14 +101,17 @@ TVirtualPad* combo_multiGraph(TPad* c1, TVirtualPad* p1, TChain* mini, int subpa
   }
   mg->Draw("alp");
 
-  if (subpad%3==0 || cut=="rcdb_arm_flag==0") {
+  if (do_leg == 1) {
     legend->Draw();
   }
-  //p1->BuildLegend(); // Automated legend builder and placer
-
-  //if (p1->FindObject("htemp")) {
-  //  ((TH1*)p1->FindObject("htemp"))->SetTitle(Form("%s",draw.c_str()));
+  //if (do_leg==1 || subpad%3==0 || cut=="rcdb_arm_flag==0") {
+  //  legend->Draw();
   //}
+  ////////p1->BuildLegend(); // Automated legend builder and placer
+  //////
+  ////////if (p1->FindObject("htemp")) {
+  ////////  ((TH1*)p1->FindObject("htemp"))->SetTitle(Form("%s",draw.c_str()));
+  ////////}
   return p1;
 }
 
@@ -586,7 +589,12 @@ mini->Scan("run:mini:mini_eigen_reg_5bpms_sorted.evMon0_bpm1X:mini_eigen_reg_5bp
 mini->Scan("run:mini:mini_eigen_reg_5bpms_sorted.evMon1_bpm1X:mini_eigen_reg_5bpms_sorted.evMon1_bpm4aY:mini_eigen_reg_5bpms_sorted.evMon1_bpm4eX:mini_eigen_reg_5bpms_sorted.evMon1_bpm4eY:mini_eigen_reg_5bpms_sorted.evMon1_bpm12X")
 */
 
-void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TString input = "NULL",TString runNum = "", TString slugNum = "0"){}
+void plotCompareEigenCombosSlopesParts_respin2_simple(TString bpms = "", TString suffix = ""){ //TString input = "NULL",TString runNum = "", TString slugNum = "0"){}
+  TString nbpms = "5bpms";
+  if (bpms == "_allbpms") { // default case is "" for 5bpm suffix
+    nbpms = "allbpms";
+  }
+
   std::map<int,Double_t> runs;
   TString old_suffix = "";
   // Grab all of the relevant combos
@@ -663,6 +671,7 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
   mini->AddFriend(mini_eigen_reg_allbpms_sorted_sorted_part_b_avg,  "mini_eigen_reg_allbpms_sorted_sorted_part_b_avg");
   mini->BuildIndex("run","mini");
 
+  /*
   std::vector<TString> X_BPMs = {
     "bpm4aX",
     "bpm4eX",
@@ -678,6 +687,42 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
   std::vector<TString> E_BPMs = {
     "bpm11X",
     "bpm12X",
+  }; */
+  std::vector<TString> devicesX = {
+    "bpm4aX",
+    "bpm4eX",
+    "bpm1X",
+    "bpm16X",
+  };
+  std::vector<TString> devicesY = {
+    "bpm4aY",
+    "bpm4eY",
+    "bpm1Y",
+    "bpm16Y",
+    "bpm11Y",
+    "bpm12Y",
+  };
+  std::vector<TString> devicesE = {
+    "bpm11X",
+    "bpm12X",
+  };
+  std::vector<TString> devicesX_mean = {
+    "bpm4aX_mean",
+    "bpm4eX_mean",
+    "bpm1X_mean",
+    "bpm16X_mean",
+  };
+  std::vector<TString> devicesY_mean = {
+    "bpm4aY_mean",
+    "bpm4eY_mean",
+    "bpm1Y_mean",
+    "bpm16Y_mean",
+    "bpm11Y_mean",
+    "bpm12Y_mean",
+  };
+  std::vector<TString> devicesE_mean = {
+    "bpm11X_mean",
+    "bpm12X_mean",
   };
   std::vector<TString> devices = {
     "bpm4aX",
@@ -692,6 +737,20 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
     "bpm12Y",
     "bpm16X",
     "bpm16Y"
+  };
+  std::vector<TString> devices_mean = {
+    "bpm4aX_mean",
+    "bpm4aY_mean",
+    "bpm4eX_mean",
+    "bpm4eY_mean",
+    "bpm1X_mean",
+    "bpm1Y_mean",
+    "bpm11X_mean",
+    "bpm11Y_mean",
+    "bpm12X_mean",
+    "bpm12Y_mean",
+    "bpm16X_mean",
+    "bpm16Y_mean"
   };
   std::vector<TString> monitors = {"evMon0","evMon1","evMon2","evMon3","evMon4","evMon5","evMon6","evMon7","evMon8","evMon9","evMon10","evMon11"};
   std::vector<TString> devices5 = {
@@ -715,7 +774,7 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
   TString cut = "rcdb_run_type==1 && rcdb_run_flag==1";
   // Do some Tree->SetAlias() around everywhere
 
-  TString pdffile = "june_2_plots";
+  TString pdffile = "august_30_plots";
   TString pdfname = Form("outputs_Part_Avg_EigenCombos%s.pdf",suffix.Data());
 
   TString ana = "Eigen BPMs combos";
@@ -736,7 +795,7 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
   cut = "rcdb_run_type==1 && rcdb_run_flag==1";
   //cut = "run>6332 && run<7500 && rcdb_run_type==1 && rcdb_run_flag==1";
   for (Int_t j = 0 ; j < monitors5.size() ; j++) {
-    p1=combo_multiGraph(c3_sorted_sorted,p1,mini,6*j+1,Form("mini_eigen_reg_5bpms_sorted_sorted_part_b_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
+    p1=combo_multiGraph(c3_sorted_sorted,p1,mini,6*j+1,Form("mini_eigen_reg_5bpms_sorted_sorted_part_b_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36,1);
     p1=combo_multiGraph(c3_sorted_sorted,p1,mini,6*j+2,Form("mini_eigen_reg_5bpms_sorted_sorted_part_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
     p1=combo_multiGraph(c3_sorted_sorted,p1,mini,6*j+3,Form("mini_eigen_reg_5bpms_sorted_sorted_slug_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
     p1=combo_multiGraph(c3_sorted_sorted,p1,mini,6*j+4,Form("mini_eigen_reg_5bpms_sorted_sorted_seg_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
@@ -751,6 +810,171 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
   c3_sorted_sorted->SaveAs(Form("%s/%s(",pdffile.Data(),pdfname.Data()));
   c3_sorted_sorted->SaveAs(Form("%s/5BPM_evMon_crex_parts_compositions%s.pdf(",pdffile.Data(),suffix.Data()));
 
+
+
+  Double_t splitting = 2.0;
+  if (!bpms.Contains("all")) {
+    splitting = 1.0;
+  }
+
+
+  if (splitting == 2.0) {
+    // FIXME FIXME DO ALLBPMS This One
+    
+    TCanvas* c3_X_1_allbpms_sorted_sorted = new TCanvas();
+    //TPad* cp1 = new TPad("test","",0,0.35,1,1);
+    c3_X_1_allbpms_sorted_sorted->cd();
+    c3_X_1_allbpms_sorted_sorted->SetTitle(ana);
+    c3_X_1_allbpms_sorted_sorted->SetName(ana);
+    c3_X_1_allbpms_sorted_sorted->Divide(6,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    //cut = "run>6332 && run<7500 && rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      p1=combo_multiGraph(c3_X_1_allbpms_sorted_sorted,p1,mini,6*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted_part_b_avg.%s",monitors.at(j).Data()),cut,devicesX_mean,36,1);
+      p1=combo_multiGraph(c3_X_1_allbpms_sorted_sorted,p1,mini,6*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j).Data()),cut,devicesX_mean,36);
+      p1=combo_multiGraph(c3_X_1_allbpms_sorted_sorted,p1,mini,6*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted_slug_avg.%s",monitors.at(j).Data()),cut,devicesX_mean,36);
+      p1=combo_multiGraph(c3_X_1_allbpms_sorted_sorted,p1,mini,6*j+4,Form("mini_eigen_reg_allbpms_sorted_sorted_seg_avg.%s",monitors.at(j).Data()),cut,devicesX_mean,36);
+      p1=combo_multiGraph(c3_X_1_allbpms_sorted_sorted,p1,mini,6*j+5,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j).Data()),cut,devicesX,36);
+      p1=combo_multiGraph(c3_X_1_allbpms_sorted_sorted,p1,mini,6*j+6,Form("mini_eigen_reg_allbpms.%s",monitors.at(j).Data()),cut,devicesX,36);
+    }
+
+    c3_X_1_allbpms_sorted_sorted->cd();
+    ana = "CREX Eigen Vector Monitor BPMs (first 6) X compositions - double sorted, all averaging time scales"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_X_1_allbpms_sorted_sorted->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_X_1_allbpms_sorted_sorted->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf(",pdffile.Data(),suffix.Data()));
+
+
+    // Last 6
+    TCanvas* c3_X_2_allbpms_sorted_sorted = new TCanvas();
+    //TPad* cp1 = new TPad("test","",0,0.35,1,1);
+    c3_X_2_allbpms_sorted_sorted->cd();
+    c3_X_2_allbpms_sorted_sorted->SetTitle(ana);
+    c3_X_2_allbpms_sorted_sorted->SetName(ana);
+    c3_X_2_allbpms_sorted_sorted->Divide(6,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    //cut = "run>6332 && run<7500 && rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      p1=combo_multiGraph(c3_X_2_allbpms_sorted_sorted,p1,mini,6*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted_part_b_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesX_mean,36,1);
+      p1=combo_multiGraph(c3_X_2_allbpms_sorted_sorted,p1,mini,6*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesX_mean,36);
+      p1=combo_multiGraph(c3_X_2_allbpms_sorted_sorted,p1,mini,6*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted_slug_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesX_mean,36);
+      p1=combo_multiGraph(c3_X_2_allbpms_sorted_sorted,p1,mini,6*j+4,Form("mini_eigen_reg_allbpms_sorted_sorted_seg_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesX_mean,36);
+      p1=combo_multiGraph(c3_X_2_allbpms_sorted_sorted,p1,mini,6*j+5,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesX,36);
+      p1=combo_multiGraph(c3_X_2_allbpms_sorted_sorted,p1,mini,6*j+6,Form("mini_eigen_reg_allbpms.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesX,36);
+    }
+
+    c3_X_2_allbpms_sorted_sorted->cd();
+    ana = "CREX Eigen Vector Monitor BPMs (last 6) X compositions - double sorted, all averaging time scales"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_X_2_allbpms_sorted_sorted->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_X_2_allbpms_sorted_sorted->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+
+    TCanvas* c3_Y_1_allbpms_sorted_sorted = new TCanvas();
+    //TPad* cp1 = new TPad("test","",0,0.35,1,1);
+    c3_Y_1_allbpms_sorted_sorted->cd();
+    c3_Y_1_allbpms_sorted_sorted->SetTitle(ana);
+    c3_Y_1_allbpms_sorted_sorted->SetName(ana);
+    c3_Y_1_allbpms_sorted_sorted->Divide(6,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    //cut = "run>6332 && run<7500 && rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      p1=combo_multiGraph(c3_Y_1_allbpms_sorted_sorted,p1,mini,6*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted_part_b_avg.%s",monitors.at(j).Data()),cut,devicesY_mean,36,1);
+      p1=combo_multiGraph(c3_Y_1_allbpms_sorted_sorted,p1,mini,6*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j).Data()),cut,devicesY_mean,36);
+      p1=combo_multiGraph(c3_Y_1_allbpms_sorted_sorted,p1,mini,6*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted_slug_avg.%s",monitors.at(j).Data()),cut,devicesY_mean,36);
+      p1=combo_multiGraph(c3_Y_1_allbpms_sorted_sorted,p1,mini,6*j+4,Form("mini_eigen_reg_allbpms_sorted_sorted_seg_avg.%s",monitors.at(j).Data()),cut,devicesY_mean,36);
+      p1=combo_multiGraph(c3_Y_1_allbpms_sorted_sorted,p1,mini,6*j+5,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j).Data()),cut,devicesY,36);
+      p1=combo_multiGraph(c3_Y_1_allbpms_sorted_sorted,p1,mini,6*j+6,Form("mini_eigen_reg_allbpms.%s",monitors.at(j).Data()),cut,devicesY,36);
+    }
+
+    c3_Y_1_allbpms_sorted_sorted->cd();
+    ana = "CREX Eigen Vector Monitor BPMs (first 6) Y compositions - double sorted, all averaging time scales"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_Y_1_allbpms_sorted_sorted->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_Y_1_allbpms_sorted_sorted->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+    // Last 6
+    TCanvas* c3_Y_2_allbpms_sorted_sorted = new TCanvas();
+    //TPad* cp1 = new TPad("test","",0,0.35,1,1);
+    c3_Y_2_allbpms_sorted_sorted->cd();
+    c3_Y_2_allbpms_sorted_sorted->SetTitle(ana);
+    c3_Y_2_allbpms_sorted_sorted->SetName(ana);
+    c3_Y_2_allbpms_sorted_sorted->Divide(6,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    //cut = "run>6332 && run<7500 && rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      p1=combo_multiGraph(c3_Y_2_allbpms_sorted_sorted,p1,mini,6*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted_part_b_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesY_mean,36,1);
+      p1=combo_multiGraph(c3_Y_2_allbpms_sorted_sorted,p1,mini,6*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesY_mean,36);
+      p1=combo_multiGraph(c3_Y_2_allbpms_sorted_sorted,p1,mini,6*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted_slug_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesY_mean,36);
+      p1=combo_multiGraph(c3_Y_2_allbpms_sorted_sorted,p1,mini,6*j+4,Form("mini_eigen_reg_allbpms_sorted_sorted_seg_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesY_mean,36);
+      p1=combo_multiGraph(c3_Y_2_allbpms_sorted_sorted,p1,mini,6*j+5,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesY,36);
+      p1=combo_multiGraph(c3_Y_2_allbpms_sorted_sorted,p1,mini,6*j+6,Form("mini_eigen_reg_allbpms.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesY,36);
+    }
+
+    c3_Y_2_allbpms_sorted_sorted->cd();
+    ana = "CREX Eigen Vector Monitor BPMs (last 6) Y compositions - double sorted, all averaging time scales"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_Y_2_allbpms_sorted_sorted->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_Y_2_allbpms_sorted_sorted->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+    TCanvas* c3_E_1_allbpms_sorted_sorted = new TCanvas();
+    //TPad* cp1 = new TPad("test","",0,0.35,1,1);
+    c3_E_1_allbpms_sorted_sorted->cd();
+    c3_E_1_allbpms_sorted_sorted->SetTitle(ana);
+    c3_E_1_allbpms_sorted_sorted->SetName(ana);
+    c3_E_1_allbpms_sorted_sorted->Divide(6,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    //cut = "run>6332 && run<7500 && rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      p1=combo_multiGraph(c3_E_1_allbpms_sorted_sorted,p1,mini,6*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted_part_b_avg.%s",monitors.at(j).Data()),cut,devicesE_mean,36,1);
+      p1=combo_multiGraph(c3_E_1_allbpms_sorted_sorted,p1,mini,6*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j).Data()),cut,devicesE_mean,36);
+      p1=combo_multiGraph(c3_E_1_allbpms_sorted_sorted,p1,mini,6*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted_slug_avg.%s",monitors.at(j).Data()),cut,devicesE_mean,36);
+      p1=combo_multiGraph(c3_E_1_allbpms_sorted_sorted,p1,mini,6*j+4,Form("mini_eigen_reg_allbpms_sorted_sorted_seg_avg.%s",monitors.at(j).Data()),cut,devicesE_mean,36);
+      p1=combo_multiGraph(c3_E_1_allbpms_sorted_sorted,p1,mini,6*j+5,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j).Data()),cut,devicesE,36);
+      p1=combo_multiGraph(c3_E_1_allbpms_sorted_sorted,p1,mini,6*j+6,Form("mini_eigen_reg_allbpms.%s",monitors.at(j).Data()),cut,devicesE,36);
+    }
+
+    c3_E_1_allbpms_sorted_sorted->cd();
+    ana = "CREX Eigen Vector Monitor BPMs (first 6) energy compositions - double sorted, all averaging time scales"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_E_1_allbpms_sorted_sorted->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_E_1_allbpms_sorted_sorted->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+    // Last 6
+    TCanvas* c3_E_2_allbpms_sorted_sorted = new TCanvas();
+    //TPad* cp1 = new TPad("test","",0,0.35,1,1);
+    c3_E_2_allbpms_sorted_sorted->cd();
+    c3_E_2_allbpms_sorted_sorted->SetTitle(ana);
+    c3_E_2_allbpms_sorted_sorted->SetName(ana);
+    c3_E_2_allbpms_sorted_sorted->Divide(6,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    //cut = "run>6332 && run<7500 && rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      p1=combo_multiGraph(c3_E_2_allbpms_sorted_sorted,p1,mini,6*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted_part_b_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesE_mean,36,1);
+      p1=combo_multiGraph(c3_E_2_allbpms_sorted_sorted,p1,mini,6*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesE_mean,36);
+      p1=combo_multiGraph(c3_E_2_allbpms_sorted_sorted,p1,mini,6*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted_slug_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesE_mean,36);
+      p1=combo_multiGraph(c3_E_2_allbpms_sorted_sorted,p1,mini,6*j+4,Form("mini_eigen_reg_allbpms_sorted_sorted_seg_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesE_mean,36);
+      p1=combo_multiGraph(c3_E_2_allbpms_sorted_sorted,p1,mini,6*j+5,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesE,36);
+      p1=combo_multiGraph(c3_E_2_allbpms_sorted_sorted,p1,mini,6*j+6,Form("mini_eigen_reg_allbpms.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesE,36);
+    }
+
+    c3_E_2_allbpms_sorted_sorted->cd();
+    ana = "CREX Eigen Vector Monitor BPMs (last 6) energy compositions - double sorted, all averaging time scales"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_E_2_allbpms_sorted_sorted->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_E_2_allbpms_sorted_sorted->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+  }
+
   TCanvas* c3_sorted = new TCanvas();
   //TPad* cp1 = new TPad("test","",0,0.35,1,1);
   c3_sorted->cd();
@@ -760,7 +984,7 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
   cut = "rcdb_run_type==1 && rcdb_run_flag==1";
   //cut = "run>6332 && run<7500 && rcdb_run_type==1 && rcdb_run_flag==1";
   for (Int_t j = 0 ; j < monitors5.size() ; j++) {
-    p1=combo_multiGraph(c3_sorted,p1,mini,6*j+1,Form("mini_eigen_reg_5bpms_sorted_part_b_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
+    p1=combo_multiGraph(c3_sorted,p1,mini,6*j+1,Form("mini_eigen_reg_5bpms_sorted_part_b_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36,1);
     p1=combo_multiGraph(c3_sorted,p1,mini,6*j+2,Form("mini_eigen_reg_5bpms_sorted_part_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
     p1=combo_multiGraph(c3_sorted,p1,mini,6*j+3,Form("mini_eigen_reg_5bpms_sorted_slug_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
     p1=combo_multiGraph(c3_sorted,p1,mini,6*j+4,Form("mini_eigen_reg_5bpms_sorted_seg_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
@@ -791,7 +1015,7 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
     cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part_b==2";
     p1=combo_multiGraph(c3_slug,p1,mini,4*j+3,Form("mini_eigen_reg_5bpms_sorted_sorted_slug_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
     cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part_b==3";
-    p1=combo_multiGraph(c3_slug,p1,mini,4*j+4,Form("mini_eigen_reg_5bpms_sorted_sorted_slug_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
+    p1=combo_multiGraph(c3_slug,p1,mini,4*j+4,Form("mini_eigen_reg_5bpms_sorted_sorted_slug_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36,1);
   }
 
   c3_slug->cd();
@@ -817,7 +1041,7 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
     cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part_b==2";
     p1=combo_multiGraph(c3_seg,p1,mini,4*j+3,Form("mini_eigen_reg_5bpms_sorted_sorted_seg_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
     cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part_b==3";
-    p1=combo_multiGraph(c3_seg,p1,mini,4*j+4,Form("mini_eigen_reg_5bpms_sorted_sorted_seg_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
+    p1=combo_multiGraph(c3_seg,p1,mini,4*j+4,Form("mini_eigen_reg_5bpms_sorted_sorted_seg_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36,1);
   }
 
   c3_seg->cd();
@@ -843,7 +1067,7 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
     cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part_b==2";
     p1=combo_multiGraph(c3_part_b,p1,mini,4*j+3,Form("mini_eigen_reg_5bpms_sorted_sorted_part_b_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
     cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part_b==3";
-    p1=combo_multiGraph(c3_part_b,p1,mini,4*j+4,Form("mini_eigen_reg_5bpms_sorted_sorted_part_b_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
+    p1=combo_multiGraph(c3_part_b,p1,mini,4*j+4,Form("mini_eigen_reg_5bpms_sorted_sorted_part_b_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36,1);
   }
 
   c3_part_b->cd();
@@ -852,6 +1076,143 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
   label->Draw("same");
   c3_part_b->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
   c3_part_b->SaveAs(Form("%s/5BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+  if (splitting == 2.0) {
+    // FIXME FIXME DO ALLBPMS This One
+    TCanvas* c3_1_X_allbpms_part = new TCanvas();
+    c3_1_X_allbpms_part->cd();
+    c3_1_X_allbpms_part->SetTitle(ana);
+    c3_1_X_allbpms_part->SetName(ana);
+    c3_1_X_allbpms_part->Divide(3,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==1";
+      p1=combo_multiGraph(c3_1_X_allbpms_part,p1,mini,3*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j).Data()),cut,devicesX_mean,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==2";
+      p1=combo_multiGraph(c3_1_X_allbpms_part,p1,mini,3*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j).Data()),cut,devicesX_mean,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==3";
+      p1=combo_multiGraph(c3_1_X_allbpms_part,p1,mini,3*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j).Data()),cut,devicesX_mean,36,1);
+    }
+
+    c3_1_X_allbpms_part->cd();
+    ana = "CREX Eigen Vector Monitor BPMs X compositions (first 6), 3 parts double sorted - averaging over the part, renorm the combos"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_1_X_allbpms_part->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_1_X_allbpms_part->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+    TCanvas* c3_2_X_allbpms_part = new TCanvas();
+    c3_2_X_allbpms_part->cd();
+    c3_2_X_allbpms_part->SetTitle(ana);
+    c3_2_X_allbpms_part->SetName(ana);
+    c3_2_X_allbpms_part->Divide(3,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==1";
+      p1=combo_multiGraph(c3_2_X_allbpms_part,p1,mini,3*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesX_mean,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==2";
+      p1=combo_multiGraph(c3_2_X_allbpms_part,p1,mini,3*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesX_mean,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==3";
+      p1=combo_multiGraph(c3_2_X_allbpms_part,p1,mini,3*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesX_mean,36,1);
+    }
+
+    c3_2_X_allbpms_part->cd();
+    ana = "CREX Eigen Vector Monitor BPMs X compositions (last 6), 3 parts double sorted - averaging over the part, renorm the combos"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_2_X_allbpms_part->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_2_X_allbpms_part->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+    TCanvas* c3_1_Y_allbpms_part = new TCanvas();
+    c3_1_Y_allbpms_part->cd();
+    c3_1_Y_allbpms_part->SetTitle(ana);
+    c3_1_Y_allbpms_part->SetName(ana);
+    c3_1_Y_allbpms_part->Divide(3,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==1";
+      p1=combo_multiGraph(c3_1_Y_allbpms_part,p1,mini,3*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j).Data()),cut,devicesY_mean,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==2";
+      p1=combo_multiGraph(c3_1_Y_allbpms_part,p1,mini,3*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j).Data()),cut,devicesY_mean,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==3";
+      p1=combo_multiGraph(c3_1_Y_allbpms_part,p1,mini,3*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j).Data()),cut,devicesY_mean,36,1);
+    }
+
+    c3_1_Y_allbpms_part->cd();
+    ana = "CREX Eigen Vector Monitor BPMs Y compositions (first 6), 3 parts double sorted - averaging over the part, renorm the combos"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_1_Y_allbpms_part->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_1_Y_allbpms_part->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+    TCanvas* c3_2_Y_allbpms_part = new TCanvas();
+    c3_2_Y_allbpms_part->cd();
+    c3_2_Y_allbpms_part->SetTitle(ana);
+    c3_2_Y_allbpms_part->SetName(ana);
+    c3_2_Y_allbpms_part->Divide(3,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==1";
+      p1=combo_multiGraph(c3_2_Y_allbpms_part,p1,mini,3*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesY_mean,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==2";
+      p1=combo_multiGraph(c3_2_Y_allbpms_part,p1,mini,3*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesY_mean,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==3";
+      p1=combo_multiGraph(c3_2_Y_allbpms_part,p1,mini,3*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesY_mean,36,1);
+    }
+
+    c3_2_Y_allbpms_part->cd();
+    ana = "CREX Eigen Vector Monitor BPMs Y compositions (last 6), 3 parts double sorted - averaging over the part, renorm the combos"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_2_Y_allbpms_part->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_2_Y_allbpms_part->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+    TCanvas* c3_1_E_allbpms_part = new TCanvas();
+    c3_1_E_allbpms_part->cd();
+    c3_1_E_allbpms_part->SetTitle(ana);
+    c3_1_E_allbpms_part->SetName(ana);
+    c3_1_E_allbpms_part->Divide(3,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==1";
+      p1=combo_multiGraph(c3_1_E_allbpms_part,p1,mini,3*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j).Data()),cut,devicesE_mean,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==2";
+      p1=combo_multiGraph(c3_1_E_allbpms_part,p1,mini,3*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j).Data()),cut,devicesE_mean,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==3";
+      p1=combo_multiGraph(c3_1_E_allbpms_part,p1,mini,3*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j).Data()),cut,devicesE_mean,36,1);
+    }
+
+    c3_1_E_allbpms_part->cd();
+    ana = "CREX Eigen Vector Monitor BPMs E compositions (first 6), 3 parts double sorted - averaging over the part, renorm the combos"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_1_E_allbpms_part->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_1_E_allbpms_part->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+    TCanvas* c3_2_E_allbpms_part = new TCanvas();
+    c3_2_E_allbpms_part->cd();
+    c3_2_E_allbpms_part->SetTitle(ana);
+    c3_2_E_allbpms_part->SetName(ana);
+    c3_2_E_allbpms_part->Divide(3,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==1";
+      p1=combo_multiGraph(c3_2_E_allbpms_part,p1,mini,3*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesE_mean,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==2";
+      p1=combo_multiGraph(c3_2_E_allbpms_part,p1,mini,3*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesE_mean,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==3";
+      p1=combo_multiGraph(c3_2_E_allbpms_part,p1,mini,3*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesE_mean,36,1);
+    }
+
+    c3_2_E_allbpms_part->cd();
+    ana = "CREX Eigen Vector Monitor BPMs E compositions (last 6), 3 parts double sorted - averaging over the part, renorm the combos"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_2_E_allbpms_part->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_2_E_allbpms_part->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+  }
 
   TCanvas* c3_part = new TCanvas();
   //TPad* cp1 = new TPad("test","",0,0.35,1,1);
@@ -867,7 +1228,7 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
     cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==2";
     p1=combo_multiGraph(c3_part,p1,mini,3*j+2,Form("mini_eigen_reg_5bpms_sorted_sorted_part_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
     cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==3";
-    p1=combo_multiGraph(c3_part,p1,mini,3*j+3,Form("mini_eigen_reg_5bpms_sorted_sorted_part_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36);
+    p1=combo_multiGraph(c3_part,p1,mini,3*j+3,Form("mini_eigen_reg_5bpms_sorted_sorted_part_avg.%s",monitors5.at(j).Data()),cut,devices5_mean,36,1);
   }
 
   c3_part->cd();
@@ -876,6 +1237,146 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
   label->Draw("same");
   c3_part->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
   c3_part->SaveAs(Form("%s/5BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+  if (splitting == 2.0) {
+    // FIXME FIXME DO ALLBPMS This One
+    TCanvas* c3_1_X_allbpms_burst_dsort = new TCanvas();
+    c3_1_X_allbpms_burst_dsort->cd();
+    c3_1_X_allbpms_burst_dsort->SetTitle(ana);
+    c3_1_X_allbpms_burst_dsort->SetName(ana);
+    c3_1_X_allbpms_burst_dsort->Divide(3,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==1";
+      p1=combo_multiGraph(c3_1_X_allbpms_burst_dsort,p1,mini,3*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j).Data()),cut,devicesX,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==2";
+      p1=combo_multiGraph(c3_1_X_allbpms_burst_dsort,p1,mini,3*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j).Data()),cut,devicesX,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==3";
+      p1=combo_multiGraph(c3_1_X_allbpms_burst_dsort,p1,mini,3*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j).Data()),cut,devicesX,36,1);
+    }
+
+    c3_1_X_allbpms_burst_dsort->cd();
+    ana = "CREX Eigen Vector Monitor BPMs X compositions (first 6), 3 parts double (more effort) sorted - burstwise, renorm the combos"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_1_X_allbpms_burst_dsort->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_1_X_allbpms_burst_dsort->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+    TCanvas* c3_2_X_allbpms_burst_dsort = new TCanvas();
+    c3_2_X_allbpms_burst_dsort->cd();
+    c3_2_X_allbpms_burst_dsort->SetTitle(ana);
+    c3_2_X_allbpms_burst_dsort->SetName(ana);
+    c3_2_X_allbpms_burst_dsort->Divide(3,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==1";
+      p1=combo_multiGraph(c3_2_X_allbpms_burst_dsort,p1,mini,3*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesX,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==2";
+      p1=combo_multiGraph(c3_2_X_allbpms_burst_dsort,p1,mini,3*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesX,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==3";
+      p1=combo_multiGraph(c3_2_X_allbpms_burst_dsort,p1,mini,3*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesX,36,1);
+    }
+
+    c3_2_X_allbpms_burst_dsort->cd();
+    ana = "CREX Eigen Vector Monitor BPMs X compositions (last 6), 3 parts double (more effort) sorted - burstwise, renorm the combos"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_2_X_allbpms_burst_dsort->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_2_X_allbpms_burst_dsort->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+    TCanvas* c3_1_Y_allbpms_burst_dsort = new TCanvas();
+    c3_1_Y_allbpms_burst_dsort->cd();
+    c3_1_Y_allbpms_burst_dsort->SetTitle(ana);
+    c3_1_Y_allbpms_burst_dsort->SetName(ana);
+    c3_1_Y_allbpms_burst_dsort->Divide(3,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==1";
+      p1=combo_multiGraph(c3_1_Y_allbpms_burst_dsort,p1,mini,3*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j).Data()),cut,devicesY,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==2";
+      p1=combo_multiGraph(c3_1_Y_allbpms_burst_dsort,p1,mini,3*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j).Data()),cut,devicesY,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==3";
+      p1=combo_multiGraph(c3_1_Y_allbpms_burst_dsort,p1,mini,3*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j).Data()),cut,devicesY,36,1);
+    }
+
+    c3_1_Y_allbpms_burst_dsort->cd();
+    ana = "CREX Eigen Vector Monitor BPMs X compositions (first 6), 3 parts double (more effort) sorted - burstwise, renorm the combos"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_1_Y_allbpms_burst_dsort->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_1_Y_allbpms_burst_dsort->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+    TCanvas* c3_2_Y_allbpms_burst_dsort = new TCanvas();
+    c3_2_Y_allbpms_burst_dsort->cd();
+    c3_2_Y_allbpms_burst_dsort->SetTitle(ana);
+    c3_2_Y_allbpms_burst_dsort->SetName(ana);
+    c3_2_Y_allbpms_burst_dsort->Divide(3,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==1";
+      p1=combo_multiGraph(c3_2_Y_allbpms_burst_dsort,p1,mini,3*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesY,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==2";
+      p1=combo_multiGraph(c3_2_Y_allbpms_burst_dsort,p1,mini,3*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesY,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==3";
+      p1=combo_multiGraph(c3_2_Y_allbpms_burst_dsort,p1,mini,3*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesY,36,1);
+    }
+
+    c3_2_Y_allbpms_burst_dsort->cd();
+    ana = "CREX Eigen Vector Monitor BPMs X compositions (last 6), 3 parts double (more effort) sorted - burstwise, renorm the combos"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_2_Y_allbpms_burst_dsort->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_2_Y_allbpms_burst_dsort->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+    TCanvas* c3_1_E_allbpms_burst_dsort = new TCanvas();
+    c3_1_E_allbpms_burst_dsort->cd();
+    c3_1_E_allbpms_burst_dsort->SetTitle(ana);
+    c3_1_E_allbpms_burst_dsort->SetName(ana);
+    c3_1_E_allbpms_burst_dsort->Divide(3,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==1";
+      p1=combo_multiGraph(c3_1_E_allbpms_burst_dsort,p1,mini,3*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j).Data()),cut,devicesE,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==2";
+      p1=combo_multiGraph(c3_1_E_allbpms_burst_dsort,p1,mini,3*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j).Data()),cut,devicesE,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==3";
+      p1=combo_multiGraph(c3_1_E_allbpms_burst_dsort,p1,mini,3*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j).Data()),cut,devicesE,36,1);
+    }
+
+    c3_1_E_allbpms_burst_dsort->cd();
+    ana = "CREX Eigen Vector Monitor BPMs X compositions (first 6), 3 parts double (more effort) sorted - burstwise, renorm the combos"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_1_E_allbpms_burst_dsort->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_1_E_allbpms_burst_dsort->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+    TCanvas* c3_2_E_allbpms_burst_dsort = new TCanvas();
+    c3_2_E_allbpms_burst_dsort->cd();
+    c3_2_E_allbpms_burst_dsort->SetTitle(ana);
+    c3_2_E_allbpms_burst_dsort->SetName(ana);
+    c3_2_E_allbpms_burst_dsort->Divide(3,(Int_t)ceil(monitors.size()/splitting));
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < (Int_t)ceil(monitors.size()/splitting) ; j++) {
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==1";
+      p1=combo_multiGraph(c3_2_E_allbpms_burst_dsort,p1,mini,3*j+1,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesE,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==2";
+      p1=combo_multiGraph(c3_2_E_allbpms_burst_dsort,p1,mini,3*j+2,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesE,36);
+      cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part==3";
+      p1=combo_multiGraph(c3_2_E_allbpms_burst_dsort,p1,mini,3*j+3,Form("mini_eigen_reg_allbpms_sorted_sorted.%s",monitors.at(j+(Int_t)ceil(monitors.size()/splitting)).Data()),cut,devicesE,36,1);
+    }
+
+    c3_2_E_allbpms_burst_dsort->cd();
+    ana = "CREX Eigen Vector Monitor BPMs X compositions (last 6), 3 parts double (more effort) sorted - burstwise, renorm the combos"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c3_2_E_allbpms_burst_dsort->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c3_2_E_allbpms_burst_dsort->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+  }
 
   TCanvas* c3_burst_dsort = new TCanvas();
   //TPad* cp1 = new TPad("test","",0,0.35,1,1);
@@ -893,7 +1394,7 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
     cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part_b==2";
     p1=combo_multiGraph(c3_burst_dsort,p1,mini,4*j+3,Form("mini_eigen_reg_5bpms_sorted_sorted.%s",monitors5.at(j).Data()),cut,devices5,36);
     cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part_b==3";
-    p1=combo_multiGraph(c3_burst_dsort,p1,mini,4*j+4,Form("mini_eigen_reg_5bpms_sorted_sorted.%s",monitors5.at(j).Data()),cut,devices5,36);
+    p1=combo_multiGraph(c3_burst_dsort,p1,mini,4*j+4,Form("mini_eigen_reg_5bpms_sorted_sorted.%s",monitors5.at(j).Data()),cut,devices5,36,1);
   }
 
   c3_burst_dsort->cd();
@@ -919,7 +1420,7 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
     cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part_b==2";
     p1=combo_multiGraph(c3_burst,p1,mini,4*j+3,Form("mini_eigen_reg_5bpms_sorted.%s",monitors5.at(j).Data()),cut,devices5,36);
     cut = "rcdb_run_type==1 && rcdb_run_flag==1 && crex_part_b==3";
-    p1=combo_multiGraph(c3_burst,p1,mini,4*j+4,Form("mini_eigen_reg_5bpms_sorted.%s",monitors5.at(j).Data()),cut,devices5,36);
+    p1=combo_multiGraph(c3_burst,p1,mini,4*j+4,Form("mini_eigen_reg_5bpms_sorted.%s",monitors5.at(j).Data()),cut,devices5,36,1);
   }
 
   c3_burst->cd();
@@ -928,6 +1429,171 @@ void plotCompareEigenCombosSlopesParts_respin2_simple(TString suffix = ""){ //TS
   label->Draw("same");
   c3_burst->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
   c3_burst->SaveAs(Form("%s/5BPM_evMon_crex_parts_compositions%s.pdf)",pdffile.Data(),suffix.Data()));
+
+  if (splitting == 2.0) {
+    // FIXME FIXME DO ALLBPMS This One
+    TCanvas* c6_1_X_allbpms = new TCanvas();
+    //TPad* cp1 = new TPad("test","",0,0.35,1,1);
+    c6_1_X_allbpms->cd();
+    c6_1_X_allbpms->SetTitle(ana);
+    c6_1_X_allbpms->SetName(ana);
+    c6_1_X_allbpms->Divide((Int_t)ceil(monitors.size()/splitting),devicesX_mean.size());
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    //cut = "run>6332 && run<7500 && rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < devicesX_mean.size() ; j++) {
+      for (Int_t i = 0 ; i < (Int_t)ceil(monitors.size()/splitting); i++) {
+        p1=c6_1_X_allbpms->cd(devicesX_mean.size()*i+j+1);
+        gStyle->SetOptStat(1000001000);
+        Int_t nen = mini->Draw(Form("mini_eigen_reg_allbpms_sorted_sorted.%s_%s-mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s_%s:run+0.1*mini>>htemp_X_1_a_%d_%d(3500,5100,8600,200,-2.0,2.0)",monitors.at(i).Data(),devicesX.at(j).Data(),monitors.at(i).Data(),devicesX_mean.at(j).Data(),i,j),cut,"");
+        TH2D * tmpH2 = ((TH2D*)gROOT->FindObject(Form("htemp_X_1_a_%d_%d",i,j)));
+        std::cout << Form("mini_eigen_reg_allbpms_sorted_sorted.%s_%s-mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s_%s",monitors.at(i).Data(),devicesX.at(j).Data(),monitors.at(i).Data(),devicesX_mean.at(j).Data()) << "," << cut << "," << tmpH2->GetRMS(2) << std::endl;
+        tmpH2->SetStats(1);
+        tmpH2->Draw();
+      }
+    }
+    c6_1_X_allbpms->cd();
+    ana = "CREX Eigen Vector Monitor BPMs X compositions (first 6 BPMs) - double sorted, differences of part_avg vs. minirunwise"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c6_1_X_allbpms->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c6_1_X_allbpms->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+    TCanvas* c6_2_X_allbpms = new TCanvas();
+    //TPad* cp1 = new TPad("test","",0,0.35,1,1);
+    c6_2_X_allbpms->cd();
+    c6_2_X_allbpms->SetTitle(ana);
+    c6_2_X_allbpms->SetName(ana);
+    c6_2_X_allbpms->Divide((Int_t)ceil(monitors.size()/splitting),devicesX_mean.size());
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    //cut = "run>6332 && run<7500 && rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < devicesX_mean.size() ; j++) {
+      for (Int_t i = 0 ; i < (Int_t)ceil(monitors.size()/splitting); i++) {
+        p1=c6_2_X_allbpms->cd(devicesX_mean.size()*i+j+1);
+        gStyle->SetOptStat(1000001000);
+        Int_t nen = mini->Draw(Form("mini_eigen_reg_allbpms_sorted_sorted.%s_%s-mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s_%s:run+0.1*mini>>htemp_X_2_a_%d_%d(3500,5100,8600,200,-2.0,2.0)",monitors.at(i+(Int_t)ceil(monitors.size()/splitting)).Data(),devicesX.at(j).Data(),monitors.at(i+(Int_t)ceil(monitors.size()/splitting)).Data(),devicesX_mean.at(j).Data(),i,j),cut,"");
+        TH2D * tmpH2 = ((TH2D*)gROOT->FindObject(Form("htemp_X_2_a_%d_%d",i,j)));
+        std::cout << Form("mini_eigen_reg_allbpms_sorted_sorted.%s_%s-mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s_%s",monitors.at(i+(Int_t)ceil(monitors.size()/splitting)).Data(),devicesX.at(j).Data(),monitors.at(i+(Int_t)ceil(monitors.size()/splitting)).Data(),devicesX_mean.at(j).Data()) << "," << cut << "," << tmpH2->GetRMS(2) << std::endl;
+        tmpH2->SetStats(1);
+        tmpH2->Draw();
+      }
+    }
+    c6_2_X_allbpms->cd();
+    ana = "CREX Eigen Vector Monitor BPMs X compositions (last 6 BPMs) - double sorted, differences of part_avg vs. minirunwise"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c6_2_X_allbpms->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c6_2_X_allbpms->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+    TCanvas* c6_1_Y_allbpms = new TCanvas();
+    //TPad* cp1 = new TPad("test","",0,0.35,1,1);
+    c6_1_Y_allbpms->cd();
+    c6_1_Y_allbpms->SetTitle(ana);
+    c6_1_Y_allbpms->SetName(ana);
+    c6_1_Y_allbpms->Divide((Int_t)ceil(monitors.size()/splitting),devicesY_mean.size());
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    //cut = "run>6332 && run<7500 && rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < devicesY_mean.size() ; j++) {
+      for (Int_t i = 0 ; i < (Int_t)ceil(monitors.size()/splitting); i++) {
+        p1=c6_1_Y_allbpms->cd(devicesY_mean.size()*i+j+1);
+        gStyle->SetOptStat(1000001000);
+        Int_t nen = mini->Draw(Form("mini_eigen_reg_allbpms_sorted_sorted.%s_%s-mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s_%s:run+0.1*mini>>htemp_Y_1_a_%d_%d(3500,5100,8600,200,-2.0,2.0)",monitors.at(i).Data(),devicesY.at(j).Data(),monitors.at(i).Data(),devicesY_mean.at(j).Data(),i,j),cut,"");
+        TH2D * tmpH2 = ((TH2D*)gROOT->FindObject(Form("htemp_Y_1_a_%d_%d",i,j)));
+        std::cout << Form("mini_eigen_reg_allbpms_sorted_sorted.%s_%s-mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s_%s",monitors.at(i).Data(),devicesY.at(j).Data(),monitors.at(i).Data(),devicesY_mean.at(j).Data()) << "," << cut << "," << tmpH2->GetRMS(2) << std::endl;
+        tmpH2->SetStats(1);
+        tmpH2->Draw();
+      }
+    }
+    c6_1_Y_allbpms->cd();
+    ana = "CREX Eigen Vector Monitor BPMs Y compositions (first 6 BPMs) - double sorted, differences of part_avg vs. minirunwise"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c6_1_Y_allbpms->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c6_1_Y_allbpms->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+    TCanvas* c6_2_Y_allbpms = new TCanvas();
+    //TPad* cp1 = new TPad("test","",0,0.35,1,1);
+    c6_2_Y_allbpms->cd();
+    c6_2_Y_allbpms->SetTitle(ana);
+    c6_2_Y_allbpms->SetName(ana);
+    c6_2_Y_allbpms->Divide((Int_t)ceil(monitors.size()/splitting),devicesY_mean.size());
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    //cut = "run>6332 && run<7500 && rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < devicesY_mean.size() ; j++) {
+      for (Int_t i = 0 ; i < (Int_t)ceil(monitors.size()/splitting); i++) {
+        p1=c6_2_Y_allbpms->cd(devicesY_mean.size()*i+j+1);
+        gStyle->SetOptStat(1000001000);
+        Int_t nen = mini->Draw(Form("mini_eigen_reg_allbpms_sorted_sorted.%s_%s-mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s_%s:run+0.1*mini>>htemp_Y_2_a_%d_%d(3500,5100,8600,200,-2.0,2.0)",monitors.at(i+(Int_t)ceil(monitors.size()/splitting)).Data(),devicesY.at(j).Data(),monitors.at(i+(Int_t)ceil(monitors.size()/splitting)).Data(),devicesY_mean.at(j).Data(),i,j),cut,"");
+        TH2D * tmpH2 = ((TH2D*)gROOT->FindObject(Form("htemp_Y_2_a_%d_%d",i,j)));
+        std::cout << Form("mini_eigen_reg_allbpms_sorted_sorted.%s_%s-mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s_%s",monitors.at(i+(Int_t)ceil(monitors.size()/splitting)).Data(),devicesY.at(j).Data(),monitors.at(i+(Int_t)ceil(monitors.size()/splitting)).Data(),devicesY_mean.at(j).Data()) << "," << cut << "," << tmpH2->GetRMS(2) << std::endl;
+        tmpH2->SetStats(1);
+        tmpH2->Draw();
+      }
+    }
+    c6_2_Y_allbpms->cd();
+    ana = "CREX Eigen Vector Monitor BPMs Y compositions (last 6 BPMs) - double sorted, differences of part_avg vs. minirunwise"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c6_2_Y_allbpms->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c6_2_Y_allbpms->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+    TCanvas* c6_1_E_allbpms = new TCanvas();
+    //TPad* cp1 = new TPad("test","",0,0.35,1,1);
+    c6_1_E_allbpms->cd();
+    c6_1_E_allbpms->SetTitle(ana);
+    c6_1_E_allbpms->SetName(ana);
+    c6_1_E_allbpms->Divide((Int_t)ceil(monitors.size()/splitting),devicesE_mean.size());
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    //cut = "run>6332 && run<7500 && rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < devicesE_mean.size() ; j++) {
+      for (Int_t i = 0 ; i < (Int_t)ceil(monitors.size()/splitting); i++) {
+        p1=c6_1_E_allbpms->cd(devicesE_mean.size()*i+j+1);
+        gStyle->SetOptStat(1000001000);
+        Int_t nen = mini->Draw(Form("mini_eigen_reg_allbpms_sorted_sorted.%s_%s-mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s_%s:run+0.1*mini>>htemp_E_1_a_%d_%d(3500,5100,8600,200,-2.0,2.0)",monitors.at(i).Data(),devicesE.at(j).Data(),monitors.at(i).Data(),devicesE_mean.at(j).Data(),i,j),cut,"");
+        TH2D * tmpH2 = ((TH2D*)gROOT->FindObject(Form("htemp_E_1_a_%d_%d",i,j)));
+        std::cout << Form("mini_eigen_reg_allbpms_sorted_sorted.%s_%s-mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s_%s",monitors.at(i).Data(),devicesE.at(j).Data(),monitors.at(i).Data(),devicesE_mean.at(j).Data()) << "," << cut << "," << tmpH2->GetRMS(2) << std::endl;
+        tmpH2->SetStats(1);
+        tmpH2->Draw();
+      }
+    }
+    c6_1_E_allbpms->cd();
+    ana = "CREX Eigen Vector Monitor BPMs E compositions (first 6 BPMs) - double sorted, differences of part_avg vs. minirunwise"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c6_1_E_allbpms->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c6_1_E_allbpms->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf",pdffile.Data(),suffix.Data()));
+
+
+    TCanvas* c6_2_E_allbpms = new TCanvas();
+    //TPad* cp1 = new TPad("test","",0,0.35,1,1);
+    c6_2_E_allbpms->cd();
+    c6_2_E_allbpms->SetTitle(ana);
+    c6_2_E_allbpms->SetName(ana);
+    c6_2_E_allbpms->Divide((Int_t)ceil(monitors.size()/splitting),devicesE_mean.size());
+    cut = "rcdb_run_type==1 && rcdb_run_flag==1";
+    //cut = "run>6332 && run<7500 && rcdb_run_type==1 && rcdb_run_flag==1";
+    for (Int_t j = 0 ; j < devicesE_mean.size() ; j++) {
+      for (Int_t i = 0 ; i < (Int_t)ceil(monitors.size()/splitting); i++) {
+        p1=c6_2_E_allbpms->cd(devicesE_mean.size()*i+j+1);
+        gStyle->SetOptStat(1000001000);
+        Int_t nen = mini->Draw(Form("mini_eigen_reg_allbpms_sorted_sorted.%s_%s-mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s_%s:run+0.1*mini>>htemp_E_2_a_%d_%d(3500,5100,8600,200,-2.0,2.0)",monitors.at(i+(Int_t)ceil(monitors.size()/splitting)).Data(),devicesE.at(j).Data(),monitors.at(i+(Int_t)ceil(monitors.size()/splitting)).Data(),devicesE_mean.at(j).Data(),i,j),cut,"");
+        TH2D * tmpH2 = ((TH2D*)gROOT->FindObject(Form("htemp_E_2_a_%d_%d",i,j)));
+        std::cout << Form("mini_eigen_reg_allbpms_sorted_sorted.%s_%s-mini_eigen_reg_allbpms_sorted_sorted_part_avg.%s_%s",monitors.at(i+(Int_t)ceil(monitors.size()/splitting)).Data(),devicesE.at(j).Data(),monitors.at(i+(Int_t)ceil(monitors.size()/splitting)).Data(),devicesE_mean.at(j).Data()) << "," << cut << "," << tmpH2->GetRMS(2) << std::endl;
+        tmpH2->SetStats(1);
+        tmpH2->Draw();
+      }
+    }
+    c6_2_E_allbpms->cd();
+    ana = "CREX Eigen Vector Monitor BPMs E compositions (last 6 BPMs) - double sorted, differences of part_avg vs. minirunwise"; // No more absolute value in this anymore (with the sorted slopes)
+    label->SetText(0.0,0.005,ana);
+    label->Draw("same");
+    c6_2_E_allbpms->SaveAs(Form("%s/%s",pdffile.Data(),pdfname.Data()));
+    c6_2_E_allbpms->SaveAs(Form("%s/12BPM_evMon_crex_parts_compositions%s.pdf)",pdffile.Data(),suffix.Data()));
+
+  }
 
   TCanvas* c6_1 = new TCanvas();
   //TPad* cp1 = new TPad("test","",0,0.35,1,1);

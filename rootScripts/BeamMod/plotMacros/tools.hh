@@ -490,6 +490,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   std::vector<TString> asym_vec = {"asym"};
   std::vector<TString> reg_cor_asym_vec = {"reg_asym","cor_asym"};
   std::vector<TString> lagr_cor_asym_vec = {"lagr_asym","cor_asym"};
+  std::vector<TString> lagr_asym_vec = {"lagr_asym"};
   std::vector<TString> reg_asym_vec = {"reg_asym"};
   std::vector<TString> cor_asym_vec = {"cor_asym"};
   std::vector<TString> dit_asym_vec = {"dit_asym"};
@@ -512,6 +513,20 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     "cav4dQ",
   };
   std::vector<TString> devices12 = {
+    "bpm4aX",
+    "bpm4aY",
+    "bpm4eX",
+    "bpm4eY",
+    "bpm1X",
+    "bpm1Y",
+    "bpm11X",
+    "bpm11Y",
+    "bpm12X",
+    "bpm12Y",
+    "bpm16X",
+    "bpm16Y",
+  };
+  std::vector<TString> plot_yield_diff_BPMs = {
     "bpm4aX",
     "bpm4aY",
     "bpm4eX",
@@ -2759,7 +2774,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       c2_1_1_1->SetTitle(ana.Data());
       c2_1_1_1->SetName(ana.Data());
       c2_1_1_1->Divide(1,special_detectors.size());
-      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+      //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
       draw                 =     Form("%smini_eigen_reg_5bpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
       drawn_channels_error = "abs(mini_eigen_reg_5bpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
       p1=manyGraph(c2_1_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -2809,7 +2825,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c2_1_1_1->SetTitle(ana.Data());
     c2_1_1_1->SetName(ana.Data());
     c2_1_1_1->Divide(monitors5_new.size(),special_detectors.size());
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_eigen_reg_5bpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_eigen_reg_5bpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c2_1_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,monitors5_new,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -2829,7 +2846,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       c2_1_2_1->SetTitle(ana.Data());
       c2_1_2_1->SetName(ana.Data());
       c2_1_2_1->Divide(1,special_detectors.size());
-      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+      //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
       draw                 =     Form("%smini_eigen_reg_allbpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
       drawn_channels_error = "abs(mini_eigen_reg_allbpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
       p1=manyGraph(c2_1_2_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -2881,7 +2899,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       c2_2_1_1->SetTitle(ana.Data());
       c2_2_1_1->SetName(ana.Data());
       c2_2_1_1->Divide(1,special_detectors.size());
-      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+      //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
       draw                 =     Form("%smini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
       drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted.#_#_mean_err/1.0e-9)";
       p1=manyGraph(c2_2_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -2933,7 +2952,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       c2_2_2_1->SetTitle(ana.Data());
       c2_2_2_1->SetName(ana.Data());
       c2_2_2_1->Divide(1,special_detectors.size());
-      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+      //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
       draw                 =     Form("%smini_reference_eigen_reg_allbpms_sorted_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
       drawn_channels_error = "abs(mini_reference_eigen_reg_allbpms_sorted_corrections_det_weighted.#_#_mean_err/1.0e-9)";
       p1=manyGraph(c2_2_2_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -2985,7 +3005,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       c2_2_3_1->SetTitle(ana.Data());
       c2_2_3_1->SetName(ana.Data());
       c2_2_3_1->Divide(1,special_detectors.size());
-      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+      //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
       draw                 =     Form("%smini_eigen_lagr_5bpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
       drawn_channels_error = "abs(mini_eigen_lagr_5bpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
       p1=manyGraph(c2_2_3_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -3039,6 +3060,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       c2_2_4_1->SetTitle(ana.Data());
       c2_2_4_1->SetName(ana.Data());
       c2_2_4_1->Divide(1,special_detectors.size());
+      //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
       draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
       draw                 =     Form("%smini_eigen_lagr_allbpms_part_avg_corrections_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());  // 1/mm * mm = 1 -> ppb = 1/ppb
       drawn_channels_error = "abs(mini_eigen_lagr_allbpms_part_avg_corrections_det_weighted.#_#_mean_err/1.0e-9)";
@@ -3093,7 +3115,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       c2_3_1_1->SetTitle(ana.Data());
       c2_3_1_1->SetName(ana.Data());
       c2_3_1_1->Divide(1,dit_special_detectors.size());
-      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-6)";
+      //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-6)";
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-6)";
       draw                 =     Form("%smini_dit_plain_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());                         // ppm/um * mm = 1e-3 -> ppb = 1e-3/1e-9 = 1/1e-6
       drawn_channels_error = "abs(mini_dit_plain_corrections_det_weighted.#_#_mean_err/1.0e-6)";
       p1=manyGraph(c2_3_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -3147,7 +3170,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       c2_3_2_1->SetTitle(ana.Data());
       c2_3_2_1->SetName(ana.Data());
       c2_3_2_1->Divide(1,dit_special_detectors.size());
-      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-6)";
+      //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-6)";
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-6)";
       draw                 =     Form("%smini_dit_part_avgd_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
       drawn_channels_error = "abs(mini_dit_part_avgd_corrections_det_weighted.#_#_mean_err/1.0e-6)";
       p1=manyGraph(c2_3_2_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,dit_special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -3201,7 +3225,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       c2_3_3_1->SetTitle(ana.Data());
       c2_3_3_1->SetName(ana.Data());
       c2_3_3_1->Divide(1,special_detectors.size());
-      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_regression_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_regression_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-6)";
+      //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_regression_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_regression_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-6)";
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-6)";
       draw                 =     Form("%smini_regression_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
       drawn_channels_error = "abs(mini_regression_corrections_det_weighted.#_#_mean_err/1.0e-6)";
       p1=manyGraph(c2_3_3_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -3255,7 +3280,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       c2_3_4_1->SetTitle(ana.Data());
       c2_3_4_1->SetName(ana.Data());
       c2_3_4_1->Divide(1,special_detectors.size());
-      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_overload_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_overload_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-6)";
+      //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_overload_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_overload_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-6)";
+      draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-6)";
       draw                 =     Form("%smini_overload_corrections_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
       drawn_channels_error = "abs(mini_overload_corrections_det_weighted.#_#_mean_err/1.0e-6)";
       p1=manyGraph(c2_3_4_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,special_detectors,tmpVec,{},arm_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -3540,31 +3566,65 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     label->Draw("same");
     c3_0_main->SaveAs(Form("processed_respin2_data/plots/%s.pdf(",corrections_pdfname.Data()));
 
+    TCanvas* c3_0_cor_main = new TCanvas();
+    ana = "full main det signal - total correction - maindet weighted - part avg eigenvector allbpm lagr (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    //ana = "burstwise eigenvector regression - corrections per monitor (usl, r), ppb"; // No more absolute value in this anymore (with the sorted slopes)
+    c3_0_cor_main->cd();
+    c3_0_cor_main->SetTitle(ana.Data());
+    c3_0_cor_main->SetName(ana.Data());
+    // FIXME FIXME FIXME: When not doing slug timescale averaging... need to figure out how to avoid the "main_det" -> usl+r+avg transformation assuming slug level arm flags inside toolbox.hh # replacements and right here... to all 3 of these here.
+    c3_0_cor_main->Divide(1,1);
+    draw_weighting_error =           "mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_manual_main_det_mean_err/(1.0e-9)";
+    draw                 =    Form("%smini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.cor_asym_manual_main_det_mean/1.0e-9",mod_draw.Data()); // diff_evMon0.mean, etc.
+    drawn_channels_error =       "abs(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.cor_asym_manual_main_det_mean_err/1.0e-9)";
+    p1=manyGraph(c3_0_cor_main,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+
+    c3_0_cor_main->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c3_0_cor_main->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
     TCanvas* c3_0_1 = new TCanvas();
     ana = "main det weighted asyms - part avg eigenvector allbpm lagr (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     c3_0_1->cd();
     c3_0_1->SetTitle(ana.Data());
     c3_0_1->SetName(ana.Data());
-    c3_0_1->Divide(lagr_cor_asym_vec.size(),(Int_t)ceil(special_detectors.size()/lagr_cor_asym_vec.size()));
+    c3_0_1->Divide(2,(Int_t)ceil(special_detectors.size()/2.0));
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 = Form("%smini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error =       "abs(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c3_0_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,lagr_cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    p1=manyGraph(c3_0_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,lagr_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
     c3_0_1->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
     c3_0_1->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c3_0_1_cor = new TCanvas();
+    ana = "main det weighted asym total corrections - part avg eigenvector allbpm lagr (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c3_0_1_cor->cd();
+    c3_0_1_cor->SetTitle(ana.Data());
+    c3_0_1_cor->SetName(ana.Data());
+    c3_0_1_cor->Divide(2,(Int_t)ceil(special_detectors.size()/2.0));
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 = Form("%smini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error =       "abs(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c3_0_1_cor,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c3_0_1_cor->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c3_0_1_cor->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     TCanvas* c3_0_2 = new TCanvas();
     ana = "main det weighted asyms - part avg eigenvecvtor 5bpm lagr (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     c3_0_2->cd();
     c3_0_2->SetTitle(ana.Data());
     c3_0_2->SetName(ana.Data());
-    c3_0_2->Divide(lagr_cor_asym_vec.size(),(Int_t)ceil(special_detectors.size()/lagr_cor_asym_vec.size()));
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    c3_0_2->Divide(2,(Int_t)ceil(special_detectors.size()/2.0));
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 = Form("%smini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error =       "abs(mini_eigen_lagr_5bpms_part_avg_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c3_0_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,lagr_cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    p1=manyGraph(c3_0_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,lagr_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
     c3_0_2->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
@@ -3575,11 +3635,12 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_1_1->cd();
     c3_1_1->SetTitle(ana.Data());
     c3_1_1->SetName(ana.Data());
-    c3_1_1->Divide(reg_cor_asym_vec.size(),(Int_t)ceil(special_detectors.size()/reg_cor_asym_vec.size()));
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    c3_1_1->Divide(reg_asym_vec.size(),(Int_t)ceil(1.0*special_detectors.size()/reg_asym_vec.size()));
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 = Form("%smini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error =       "abs(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c3_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    p1=manyGraph(c3_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
     c3_1_1->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
@@ -3590,15 +3651,48 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_1_2->cd();
     c3_1_2->SetTitle(ana.Data());
     c3_1_2->SetName(ana.Data());
-    c3_1_2->Divide(reg_cor_asym_vec.size(),(Int_t)ceil(special_detectors.size()/reg_cor_asym_vec.size()));
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    c3_1_2->Divide(reg_asym_vec.size(),(Int_t)ceil(1.0*special_detectors.size()/reg_asym_vec.size()));
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 = Form("%smini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error =       "abs(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c3_1_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    p1=manyGraph(c3_1_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
     c3_1_2->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
     c3_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c3_1_1_cor = new TCanvas();
+    ana = "main det weighted asym total corrections - part avg eigenvector allbpm reg (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c3_1_1_cor->cd();
+    c3_1_1_cor->SetTitle(ana.Data());
+    c3_1_1_cor->SetName(ana.Data());
+    c3_1_1_cor->Divide(cor_asym_vec.size(),(Int_t)ceil(1.0*special_detectors.size()/cor_asym_vec.size()));
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 = Form("%smini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error =       "abs(mini_eigen_reg_allbpms_part_avg_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c3_1_1_cor,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c3_1_1_cor->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c3_1_1_cor->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c3_1_2_cor = new TCanvas();
+    ana = "main det weighted asym total corrections - part avg eigenvector 5bpm reg (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c3_1_2_cor->cd();
+    c3_1_2_cor->SetTitle(ana.Data());
+    c3_1_2_cor->SetName(ana.Data());
+    c3_1_2_cor->Divide(cor_asym_vec.size(),(Int_t)ceil(1.0*special_detectors.size()/cor_asym_vec.size()));
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 = Form("%smini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error =       "abs(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c3_1_2_cor,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    c3_1_2_cor->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c3_1_2_cor->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     /* Begin special case for Ryan's AT needs
     TCanvas* c3_1 = new TCanvas();
@@ -3612,7 +3706,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
     //draw                 = Form("%smini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_#_#_mean/1.0e-9",mod_draw.Data());
     //drawn_channels_error =       "abs(mini_eigen_reg_5bpms_part_avg_det_asyms_det_weighted.reg_#_#_mean_err/1.0e-9)";
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reg_part_avgd_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reg_part_avgd_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reg_part_avgd_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reg_part_avgd_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reg_part_avgd_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reg_part_avgd_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 = Form("%smini_reg_part_avgd_det_asyms_det_weighted.reg_#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error =       "abs(mini_reg_part_avgd_det_asyms_det_weighted.reg_#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,AT_special_detectors,{},{},AT_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -3648,17 +3743,19 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_1_self->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
     End special case */
 
+
     TCanvas* c3_2_1 = new TCanvas();
     ana = "main det weighted asyms - burstwise reference eigenvector allbpms regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     //ana = "burstwise eigenvector regression - corrections per monitor (usl, r), ppb"; // No more absolute value in this anymore (with the sorted slopes)
     c3_2_1->cd();
     c3_2_1->SetTitle(ana.Data());
     c3_2_1->SetName(ana.Data());
-    c3_2_1->Divide(reg_cor_asym_vec.size(),(Int_t)ceil(special_detectors.size()/reg_cor_asym_vec.size()));
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    c3_2_1->Divide(reg_asym_vec.size(),(Int_t)ceil(1.0*special_detectors.size()/reg_asym_vec.size()));
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c3_2_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    p1=manyGraph(c3_2_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
     c3_2_1->cd();
     label->SetText(0.0,0.005,ana.Data());
@@ -3671,16 +3768,53 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_2_2->cd();
     c3_2_2->SetTitle(ana.Data());
     c3_2_2->SetName(ana.Data());
-    c3_2_2->Divide(reg_cor_asym_vec.size(),(Int_t)ceil(special_detectors.size()/reg_cor_asym_vec.size()));
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    c3_2_2->Divide(reg_asym_vec.size(),(Int_t)ceil(1.0*special_detectors.size()/reg_asym_vec.size()));
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
-    p1=manyGraph(c3_2_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+    p1=manyGraph(c3_2_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
 
     c3_2_2->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
     c3_2_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c3_2_1_cor = new TCanvas();
+    ana = "main det weighted asym net corrections - burstwise reference eigenvector allbpms regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    //ana = "burstwise eigenvector regression - corrections per monitor (usl, r), ppb"; // No more absolute value in this anymore (with the sorted slopes)
+    c3_2_1_cor->cd();
+    c3_2_1_cor->SetTitle(ana.Data());
+    c3_2_1_cor->SetName(ana.Data());
+    c3_2_1_cor->Divide(cor_asym_vec.size(),(Int_t)ceil(1.0*special_detectors.size()/cor_asym_vec.size()));
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_reference_eigen_reg_allbpms_sorted_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c3_2_1_cor,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+
+    c3_2_1_cor->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c3_2_1_cor->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c3_2_2_cor = new TCanvas();
+    ana = "main det weighted asym net corrections - burstwise reference eigenvector 5bpms regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    //ana = "burstwise eigenvector regression - corrections per monitor (usl, r), ppb"; // No more absolute value in this anymore (with the sorted slopes)
+    c3_2_2_cor->cd();
+    c3_2_2_cor->SetTitle(ana.Data());
+    c3_2_2_cor->SetName(ana.Data());
+    c3_2_2_cor->Divide(cor_asym_vec.size(),(Int_t)ceil(1.0*special_detectors.size()/cor_asym_vec.size()));
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_reference_eigen_reg_5bpms_sorted_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
+    p1=manyGraph(c3_2_2_cor,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,cor_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+
+    c3_2_2_cor->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c3_2_2_cor->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     TCanvas* c3_3 = new TCanvas();
     ana = "main det weighted asyms - plain standard regression (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
@@ -3688,8 +3822,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_3->cd();
     c3_3->SetTitle(ana.Data());
     c3_3->SetName(ana.Data());
-    c3_3->Divide(2,(Int_t)ceil(special_detectors.size()/2));
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_regression_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_regression_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    c3_3->Divide(2,(Int_t)ceil(special_detectors.size()/2.0));
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_regression_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_regression_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_regression_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_regression_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_3,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -3705,8 +3840,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_4->cd();
     c3_4->SetTitle(ana.Data());
     c3_4->SetName(ana.Data());
-    c3_4->Divide(2,(Int_t)ceil(agg_cor_special_detectors.size()/2));
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_regression_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_regression_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    c3_4->Divide(2,(Int_t)ceil(agg_cor_special_detectors.size()/2.0));
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_regression_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_regression_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_regression_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_regression_det_asym_cors_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_regression_det_asym_cors_det_weighted.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_4,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,agg_cor_special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -3722,8 +3858,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_5->cd();
     c3_5->SetTitle(ana.Data());
     c3_5->SetName(ana.Data());
-    c3_5->Divide(2,(Int_t)ceil(special_detectors.size()/2));
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_overload_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_overload_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    c3_5->Divide(2,(Int_t)ceil(special_detectors.size()/2.0));
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_overload_det_asyms_det_weighted.reg_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_overload_det_asyms_det_weighted.reg_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_overload_det_asyms_det_weighted.reg_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_overload_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_overload_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_5,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,reg_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -3738,8 +3875,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_6->cd();
     c3_6->SetTitle(ana.Data());
     c3_6->SetName(ana.Data());
-    c3_6->Divide(2,(Int_t)ceil(special_detectors.size()/2));
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-9)";
+    c3_6->Divide(2,(Int_t)ceil(special_detectors.size()/2.0));
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_dit_part_avgd_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_dit_part_avgd_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_6,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,dit_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -3757,8 +3895,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_6->SetTitle(ana.Data());
     c3_6->SetName(ana.Data());
     c3_6->Divide(3,3);
-    //c3_6->Divide(2,special_detectors.size()/2);
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-9)";
+    //c3_6->Divide(2,special_detectors.size()/2.0);
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_part_avgd_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_dit_part_avgd_det_asyms_det_weighted.dit_#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_dit_part_avgd_det_asyms_det_weighted.dit_#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_6,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,AT_special_detectors,{},{},AT_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -3776,8 +3915,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_6_self->SetTitle(ana.Data());
     c3_6_self->SetName(ana.Data());
     c3_6_self->Divide(3,3);
-    //c3_6_self->Divide(2,special_detectors.size()/2);
-    draw_weighting_error = "abs(mini_dit_part_avgd_det_asyms_det_weighted.dit_#_#_mean_self_err/1.0e-9)";
+    //c3_6_self->Divide(2,special_detectors.size()/2.0);
+    //draw_weighting_error = "abs(mini_dit_part_avgd_det_asyms_det_weighted.dit_#_#_mean_self_err/1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_dit_part_avgd_det_asyms_det_weighted.dit_#_#_mean_self/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_dit_part_avgd_det_asyms_det_weighted.dit_#_#_mean_self_err/1.0e-9)";
     p1=manyGraph(c3_6_self,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,AT_special_detectors,{},{},AT_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -3795,8 +3935,9 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_7->cd();
     c3_7->SetTitle(ana.Data());
     c3_7->SetName(ana.Data());
-    c3_7->Divide(2,(Int_t)ceil(special_detectors.size()/2));
-    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-9)";
+    c3_7->Divide(2,(Int_t)ceil(special_detectors.size()/2.0));
+    //draw_weighting_error = "((rcdb_arm_flag==0)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_dit_plain_det_asyms_det_weighted.dit_asym_usl_mean_err))/(1.0e-9)";
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_dit_plain_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_dit_plain_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c3_7,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,dit_asym_vec,special_detectors,{},{},arm_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
@@ -3812,7 +3953,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_8->cd();
     c3_8->SetTitle(ana.Data());
     c3_8->SetName(ana.Data());
-    c3_8->Divide(2,(Int_t)ceil(special_detectors.size()/2));
+    c3_8->Divide(2,(Int_t)ceil(special_detectors.size()/2.0));
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_raw_det_asyms_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_raw_det_asyms_det_weighted.#_#_mean_err/1.0e-9)";
@@ -3829,7 +3970,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c3_9->cd();
     c3_9->SetTitle(ana.Data());
     c3_9->SetName(ana.Data());
-    c3_9->Divide(2,(Int_t)ceil(special_detectors.size()/2));
+    c3_9->Divide(2,(Int_t)ceil(special_detectors.size()/2.0));
     draw_weighting_error = "abs(mini_raw_det_asyms_det_weighted.#_#_mean_self_err/1.0e-9)";
     draw                 =     Form("%smini_raw_det_asyms_det_weighted.#_#_mean_self/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_raw_det_asyms_det_weighted.#_#_mean_self_err/1.0e-9)";
@@ -3849,7 +3990,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c1_1_1->cd();
     c1_1_1->SetTitle(ana.Data());
     c1_1_1->SetName(ana.Data());
-    c1_1_1->Divide(4,(Int_t)ceil(yield_diff_BPMs.size()/4));
+    c1_1_1->Divide(4,(Int_t)ceil(plot_yield_diff_BPMs.size()/4.0));
       // Sign corrected
       // No error-rescaling
       // Utilize the slugwise main-det weighted data
@@ -3857,7 +3998,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     draw_weighting_error = "abs(mini_BPMs_det_weighted.#_#_mean_self_err/1.0e-6)";
     draw          =     Form("%smini_BPMs_det_weighted.#_#_mean_self/1.0e-6",mod_draw.Data());
     drawn_channels_error = "abs(mini_BPMs_det_weighted.#_#_mean_self_err/1.0e-6)";
-    p1=manyGraph(c1_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,diff_vec,yield_diff_BPMs,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+    p1=manyGraph(c1_1_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,diff_vec,plot_yield_diff_BPMs,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
     c1_1_1->cd();
     label->SetText(0.0,0.005,ana.Data());
@@ -3870,7 +4011,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c1_1_2->cd();
     c1_1_2->SetTitle(ana.Data());
     c1_1_2->SetName(ana.Data());
-    c1_1_2->Divide(4,(Int_t)ceil(yield_diff_BPMs.size()/4));
+    c1_1_2->Divide(4,(Int_t)ceil(plot_yield_diff_BPMs.size()/4.0));
       // Sign corrected
       // No error-rescaling
       // Utilize the slugwise main-det weighted data
@@ -3880,23 +4021,55 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     // no mod_draw... no need for sign correction...
     //draw          =     Form("%smini_BPMs_det_weighted.#_#_mean_self",mod_draw.Data());
     drawn_channels_error = "abs(mini_BPMs_det_weighted.#_#_mean_self_err)";
-    p1=manyGraph(c1_1_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,yield_vec,yield_diff_BPMs,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+    p1=manyGraph(c1_1_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,yield_vec,plot_yield_diff_BPMs,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
     c1_1_2->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
     c1_1_2->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
+    TCanvas* c1_2_1_12X = new TCanvas();
+    ana = "main det weighted BPM means - diffs (nano meters)"; // No more absolute value in this anymore (with the sorted slopes)
+    c1_2_1_12X->cd();
+    c1_2_1_12X->SetTitle(ana.Data());
+    c1_2_1_12X->SetName(ana.Data());
+    c1_2_1_12X->Divide(1,1);
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_BPMs_det_weighted.diff_bpm12X_mean/1.0e-6",mod_draw.Data());
+    drawn_channels_error = "abs(mini_BPMs_det_weighted.diff_bpm12X_mean_err/1.0e-6)";
+    p1=manyGraph(c1_2_1_12X,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,diff_vec,diff_vec,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+
+    c1_2_1_12X->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c1_2_1_12X->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
+    TCanvas* c1_2_1_4eX = new TCanvas();
+    ana = "main det weighted BPM means - diffs (nano meters)"; // No more absolute value in this anymore (with the sorted slopes)
+    c1_2_1_4eX->cd();
+    c1_2_1_4eX->SetTitle(ana.Data());
+    c1_2_1_4eX->SetName(ana.Data());
+    c1_2_1_4eX->Divide(1,1);
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_BPMs_det_weighted.diff_bpm4eX_mean/1.0e-6",mod_draw.Data());
+    drawn_channels_error = "abs(mini_BPMs_det_weighted.diff_bpm4eX_mean_err/1.0e-6)";
+    p1=manyGraph(c1_2_1_4eX,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,diff_vec,diff_vec,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+
+    c1_2_1_4eX->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c1_2_1_4eX->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
     TCanvas* c1_2_1 = new TCanvas();
     ana = "main det weighted BPM means - diffs (nano meters)"; // No more absolute value in this anymore (with the sorted slopes)
     c1_2_1->cd();
     c1_2_1->SetTitle(ana.Data());
     c1_2_1->SetName(ana.Data());
-    c1_2_1->Divide(4,(Int_t)ceil(yield_diff_BPMs.size()/4));
+    c1_2_1->Divide(4,(Int_t)ceil(plot_yield_diff_BPMs.size()/4.0));
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_BPMs_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
     drawn_channels_error = "abs(mini_BPMs_det_weighted.#_#_mean_err/1.0e-6)";
-    p1=manyGraph(c1_2_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,diff_vec,yield_diff_BPMs,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+    p1=manyGraph(c1_2_1,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,diff_vec,plot_yield_diff_BPMs,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
 
     c1_2_1->cd();
     label->SetText(0.0,0.005,ana.Data());
@@ -3908,13 +4081,13 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c1_2_2->cd();
     c1_2_2->SetTitle(ana.Data());
     c1_2_2->SetName(ana.Data());
-    c1_2_2->Divide(4,(Int_t)ceil(yield_diff_BPMs.size()/4));
+    c1_2_2->Divide(4,(Int_t)ceil(plot_yield_diff_BPMs.size()/4.0));
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))";
     draw                 =     Form("mini_BPMs_det_weighted.#_#_mean");
     // no mod_draw... no need for sign correction...
     //draw                 =     Form("%smini_BPMs_det_weighted.#_#_mean",mod_draw.Data());
     drawn_channels_error = "abs(mini_BPMs_det_weighted.#_#_mean_err)";
-    p1=manyGraph(c1_2_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,yield_vec,yield_diff_BPMs,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+    p1=manyGraph(c1_2_2,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,yield_vec,plot_yield_diff_BPMs,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
     c1_2_2->cd();
     label->SetText(0.0,0.005,ana.Data());
     label->Draw("same");
@@ -3940,7 +4113,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c1_2_4->cd();
     c1_2_4->SetTitle(ana.Data());
     c1_2_4->SetName(ana.Data());
-    c1_2_4->Divide(3,(Int_t)ceil(monitors12.size()/3));
+    c1_2_4->Divide(3,(Int_t)ceil(monitors12.size()/3.0));
     draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
     draw                 =     Form("%smini_eigen_reg_allbpms_part_avg_monitors_det_weighted.#_#_mean/1.0e-6",mod_draw.Data());
     drawn_channels_error = "abs(mini_eigen_reg_allbpms_part_avg_monitors_det_weighted.#_#_mean_err/1.0e-6)";
@@ -3956,7 +4129,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     c1_3->cd();
     c1_3->SetTitle(ana.Data());
     c1_3->SetName(ana.Data());
-    c1_3->Divide(4,(Int_t)ceil(yield_bcm_devices.size()/4));
+    c1_3->Divide(4,(Int_t)ceil(yield_bcm_devices.size()/4.0));
     draw_weighting_error = "abs(mini_BCMs_det_weighted.#_#_mean_self_err/1.0e-9)";
     draw                 =     Form("%smini_BCMs_det_weighted.#_#_mean_self/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_BCMs_det_weighted.#_#_mean_self_err/1.0e-9)";
@@ -3967,14 +4140,32 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     label->Draw("same");
     c1_3->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
+    TCanvas* c1_4_targ = new TCanvas();
+    ana = "main det weighted BCM means (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
+    c1_4_targ->cd();
+    c1_4_targ->SetTitle(ana.Data());
+    c1_4_targ->SetName(ana.Data());
+    c1_4_targ->Divide(1,1);
+    // Sign corrected
+    // No error-rescaling
+    // Utilize the slugwise main-det weighted data
+    //p1=multiGraph(c1_4_targ,p1,(TChain*)mini_slugs,k+1,Form("rcdb_slug:rcdb_sign*mini_BPMs_det_weighted.diff_%s_mean/(1.0e-6):mini_BPMs_det_weighted.diff_%s_mean_err/(1.0e-6)",devices12.at(k).Data(),devices12.at(k).Data()),cutGoodProduction.at(0),1);
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 =     Form("%smini_BCMs_det_weighted.asym_bcm_target_mean/1.0e-9",mod_draw.Data());
+    drawn_channels_error = "abs(mini_BCMs_det_weighted.asym_bcm_target_mean_err/1.0e-9)";
+    p1=manyGraph(c1_4_targ,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,asym_vec,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
+
+    c1_4_targ->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c1_4_targ->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
+
     TCanvas* c1_4 = new TCanvas();
     ana = "main det weighted BCM means (ppb)"; // No more absolute value in this anymore (with the sorted slopes)
     c1_4->cd();
     c1_4->SetTitle(ana.Data());
     c1_4->SetName(ana.Data());
-    c1_4->Divide(4,(Int_t)ceil(yield_bcm_devices.size()/4));
-    //c1_4->Divide(4,yield_bcm_devices.size()/4);  // Ignore the Cavities
-    //for (Int_t k = 0 ; k < devices12.size() ; k++) {
+    c1_4->Divide(4,(Int_t)ceil(yield_bcm_devices.size()/4.0));
     // Sign corrected
     // No error-rescaling
     // Utilize the slugwise main-det weighted data
@@ -3983,7 +4174,6 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     draw                 =     Form("%smini_BCMs_det_weighted.#_#_mean/1.0e-9",mod_draw.Data());
     drawn_channels_error = "abs(mini_BCMs_det_weighted.#_#_mean_err/1.0e-9)";
     p1=manyGraph(c1_4,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,asym_vec,yield_bcm_devices,{},only_mod_cuts,{},1); // empty draws_piece3 and cuts and cuts2 vectors
-    //}
 
     c1_4->cd();
     label->SetText(0.0,0.005,ana.Data());
@@ -4761,18 +4951,24 @@ void ToolBox::manage_aggregator_friend_to_mini() {
   TTree* agg_in_ErrorFlag_seg_avgd   ;
   TTree* agg_in_IncludeBMOD_part_avgd;
   TTree* agg_in_OnlyBMOD_part_avgd   ;
+  //TTree* agg_in_IncludeBMOD_part_avgd_allbpms;
+  //TTree* agg_in_OnlyBMOD_part_avgd_allbpms   ;
   TTree* agg_in_ErrorFlag_part_avgd_no_err  ;
   TTree* agg_in_ErrorFlag_part_avgd_allbpms_no_err;
   TTree* agg_in_ErrorFlag_part_b_avgd_no_err;
   TTree* agg_in_ErrorFlag_seg_avgd_no_err   ;
   TTree* agg_in_IncludeBMOD_part_avgd_no_err;
   TTree* agg_in_OnlyBMOD_part_avgd_no_err   ;
+  TTree* agg_in_IncludeBMOD_part_avgd_allbpms_no_err;
+  TTree* agg_in_OnlyBMOD_part_avgd_allbpms_no_err   ;
   TString agg_ErrorFlag_part_avgd_infilename = Form("respin2_data/aggregator_from_ErrorFlag_part_avgd_drl_correction.root");
   TString agg_ErrorFlag_part_avgd_allbpms_infilename = Form("respin2_data/aggregator_from_ErrorFlag_part_avgd_allbpms_drl_correction.root");
   TString agg_ErrorFlag_part_b_avgd_infilename = Form("respin2_data/aggregator_from_ErrorFlag_part_b_avgd_drl_correction.root");
   TString agg_ErrorFlag_seg_avgd_infilename = Form("respin2_data/aggregator_from_ErrorFlag_seg_avgd_drl_correction.root");
   TString agg_IncludeBMOD_part_avgd_infilename = Form("respin2_data/aggregator_from_IncludeBMOD_part_avgd_drl_correction.root");
   TString agg_OnlyBMOD_part_avgd_infilename = Form("respin2_data/aggregator_from_OnlyBMOD_part_avgd_drl_correction.root");
+  //TString agg_IncludeBMOD_part_avgd_allbpms_infilename = Form("respin2_data/aggregator_from_IncludeBMOD_part_avgd_allbpms_drl_correction.root");
+  //TString agg_OnlyBMOD_part_avgd_allbpms_infilename = Form("respin2_data/aggregator_from_OnlyBMOD_part_avgd_allbpms_drl_correction.root");
 
   TString agg_ErrorFlag_part_avgd_no_err_infilename = Form("respin2_data/aggregator_from_ErrorFlag_part_avgd_drl_no_err_correction.root");
   TString agg_ErrorFlag_part_avgd_allbpms_no_err_infilename = Form("respin2_data/aggregator_from_ErrorFlag_part_avgd_allbpms_drl_no_err_correction.root");
@@ -4780,6 +4976,8 @@ void ToolBox::manage_aggregator_friend_to_mini() {
   TString agg_ErrorFlag_seg_avgd_no_err_infilename = Form("respin2_data/aggregator_from_ErrorFlag_seg_avgd_drl_no_err_correction.root");
   TString agg_IncludeBMOD_part_avgd_no_err_infilename = Form("respin2_data/aggregator_from_IncludeBMOD_part_avgd_drl_no_err_correction.root");
   TString agg_OnlyBMOD_part_avgd_no_err_infilename = Form("respin2_data/aggregator_from_OnlyBMOD_part_avgd_drl_no_err_correction.root");
+  TString agg_IncludeBMOD_part_avgd_allbpms_no_err_infilename = Form("respin2_data/aggregator_from_IncludeBMOD_part_avgd_allbpms_drl_no_err_correction.root");
+  TString agg_OnlyBMOD_part_avgd_allbpms_no_err_infilename = Form("respin2_data/aggregator_from_OnlyBMOD_part_avgd_allbpms_drl_no_err_correction.root");
 
   TFile agg_ErrorFlag_part_avgd_in_file(agg_ErrorFlag_part_avgd_infilename);
   TFile agg_ErrorFlag_part_avgd_allbpms_in_file(agg_ErrorFlag_part_avgd_allbpms_infilename);
@@ -4787,6 +4985,8 @@ void ToolBox::manage_aggregator_friend_to_mini() {
   TFile agg_ErrorFlag_seg_avgd_in_file(agg_ErrorFlag_seg_avgd_infilename);
   TFile agg_IncludeBMOD_part_avgd_in_file(agg_IncludeBMOD_part_avgd_infilename);
   TFile agg_OnlyBMOD_part_avgd_in_file(agg_OnlyBMOD_part_avgd_infilename);
+  //TFile agg_IncludeBMOD_part_avgd_allbpms_in_file(agg_IncludeBMOD_part_avgd_allbpms_infilename);
+  //TFile agg_OnlyBMOD_part_avgd_allbpms_in_file(agg_OnlyBMOD_part_avgd_allbpms_infilename);
 
   TFile agg_ErrorFlag_part_avgd_no_err_in_file(agg_ErrorFlag_part_avgd_no_err_infilename);
   TFile agg_ErrorFlag_part_avgd_allbpms_no_err_in_file(agg_ErrorFlag_part_avgd_allbpms_no_err_infilename);
@@ -4794,6 +4994,8 @@ void ToolBox::manage_aggregator_friend_to_mini() {
   TFile agg_ErrorFlag_seg_avgd_no_err_in_file(agg_ErrorFlag_seg_avgd_no_err_infilename);
   TFile agg_IncludeBMOD_part_avgd_no_err_in_file(agg_IncludeBMOD_part_avgd_no_err_infilename);
   TFile agg_OnlyBMOD_part_avgd_no_err_in_file(agg_OnlyBMOD_part_avgd_no_err_infilename);
+  TFile agg_IncludeBMOD_part_avgd_allbpms_no_err_in_file(agg_IncludeBMOD_part_avgd_allbpms_no_err_infilename);
+  TFile agg_OnlyBMOD_part_avgd_allbpms_no_err_in_file(agg_OnlyBMOD_part_avgd_allbpms_no_err_infilename);
 
   agg_ErrorFlag_part_avgd_in_file.GetObject("agg",agg_in_ErrorFlag_part_avgd);
   agg_ErrorFlag_part_avgd_allbpms_in_file.GetObject("agg",agg_in_ErrorFlag_part_avgd_allbpms);
@@ -4801,6 +5003,8 @@ void ToolBox::manage_aggregator_friend_to_mini() {
   agg_ErrorFlag_seg_avgd_in_file.GetObject("agg",agg_in_ErrorFlag_seg_avgd);
   agg_IncludeBMOD_part_avgd_in_file.GetObject("agg",agg_in_IncludeBMOD_part_avgd);
   agg_OnlyBMOD_part_avgd_in_file.GetObject("agg",agg_in_OnlyBMOD_part_avgd);
+  //agg_IncludeBMOD_part_avgd_allbpms_in_file.GetObject("agg",agg_in_IncludeBMOD_part_avgd_allbpms);
+  //agg_OnlyBMOD_part_avgd_allbpms_in_file.GetObject("agg",agg_in_OnlyBMOD_part_avgd_allbpms);
 
   agg_ErrorFlag_part_avgd_no_err_in_file.GetObject("agg",agg_in_ErrorFlag_part_avgd_no_err);
   agg_ErrorFlag_part_avgd_allbpms_no_err_in_file.GetObject("agg",agg_in_ErrorFlag_part_avgd_allbpms_no_err);
@@ -4808,6 +5012,8 @@ void ToolBox::manage_aggregator_friend_to_mini() {
   agg_ErrorFlag_seg_avgd_no_err_in_file.GetObject("agg",agg_in_ErrorFlag_seg_avgd_no_err);
   agg_IncludeBMOD_part_avgd_no_err_in_file.GetObject("agg",agg_in_IncludeBMOD_part_avgd_no_err);
   agg_OnlyBMOD_part_avgd_no_err_in_file.GetObject("agg",agg_in_OnlyBMOD_part_avgd_no_err);
+  agg_IncludeBMOD_part_avgd_allbpms_no_err_in_file.GetObject("agg",agg_in_IncludeBMOD_part_avgd_allbpms_no_err);
+  agg_OnlyBMOD_part_avgd_allbpms_no_err_in_file.GetObject("agg",agg_in_OnlyBMOD_part_avgd_allbpms_no_err);
 
   TTree* agg_in_plain;
   TString agg_plain_infilename = Form("respin2_data/aggregator_from_japan.root");
@@ -4825,48 +5031,64 @@ void ToolBox::manage_aggregator_friend_to_mini() {
   TTree* agg_out_ErrorFlag_seg_avgd    = agg_in_ErrorFlag_seg_avgd   ->CloneTree(0);
   TTree* agg_out_IncludeBMOD_part_avgd = agg_in_IncludeBMOD_part_avgd->CloneTree(0);
   TTree* agg_out_OnlyBMOD_part_avgd    = agg_in_OnlyBMOD_part_avgd   ->CloneTree(0);
+  //TTree* agg_out_IncludeBMOD_part_avgd_allbpms = agg_in_IncludeBMOD_part_avgd_allbpms->CloneTree(0);
+  //TTree* agg_out_OnlyBMOD_part_avgd_allbpms    = agg_in_OnlyBMOD_part_avgd_allbpms   ->CloneTree(0);
   TTree* agg_out_ErrorFlag_part_avgd_no_err   = agg_in_ErrorFlag_part_avgd_no_err  ->CloneTree(0);
   TTree* agg_out_ErrorFlag_part_avgd_allbpms_no_err   = agg_in_ErrorFlag_part_avgd_allbpms_no_err  ->CloneTree(0);
   TTree* agg_out_ErrorFlag_part_b_avgd_no_err = agg_in_ErrorFlag_part_b_avgd_no_err->CloneTree(0);
   TTree* agg_out_ErrorFlag_seg_avgd_no_err    = agg_in_ErrorFlag_seg_avgd_no_err   ->CloneTree(0);
   TTree* agg_out_IncludeBMOD_part_avgd_no_err = agg_in_IncludeBMOD_part_avgd_no_err->CloneTree(0);
   TTree* agg_out_OnlyBMOD_part_avgd_no_err    = agg_in_OnlyBMOD_part_avgd_no_err   ->CloneTree(0);
+  TTree* agg_out_IncludeBMOD_part_avgd_allbpms_no_err = agg_in_IncludeBMOD_part_avgd_allbpms_no_err->CloneTree(0);
+  TTree* agg_out_OnlyBMOD_part_avgd_allbpms_no_err    = agg_in_OnlyBMOD_part_avgd_allbpms_no_err   ->CloneTree(0);
   agg_out_ErrorFlag_part_avgd  ->SetName("agg_ErrorFlag_part_avgd_friendable");
   agg_out_ErrorFlag_part_avgd_allbpms  ->SetName("agg_ErrorFlag_part_avgd_allbpms_friendable");
   agg_out_ErrorFlag_part_b_avgd->SetName("agg_ErrorFlag_part_b_avgd_friendable");
   agg_out_ErrorFlag_seg_avgd   ->SetName("agg_ErrorFlag_seg_avgd_friendable");
   agg_out_IncludeBMOD_part_avgd->SetName("agg_IncludeBMOD_part_avgd_friendable");
   agg_out_OnlyBMOD_part_avgd   ->SetName("agg_OnlyBMOD_part_avgd_friendable");
+  //agg_out_IncludeBMOD_part_avgd_allbpms->SetName("agg_IncludeBMOD_part_avgd_allbpms_friendable");
+  //agg_out_OnlyBMOD_part_avgd_allbpms   ->SetName("agg_OnlyBMOD_part_avgd_allbpms_friendable");
   agg_out_ErrorFlag_part_avgd_no_err  ->SetName("agg_ErrorFlag_part_avgd_no_err_friendable");
   agg_out_ErrorFlag_part_avgd_allbpms_no_err  ->SetName("agg_ErrorFlag_part_avgd_allbpms_no_err_friendable");
   agg_out_ErrorFlag_part_b_avgd_no_err->SetName("agg_ErrorFlag_part_b_avgd_no_err_friendable");
   agg_out_ErrorFlag_seg_avgd_no_err   ->SetName("agg_ErrorFlag_seg_avgd_no_err_friendable");
   agg_out_IncludeBMOD_part_avgd_no_err->SetName("agg_IncludeBMOD_part_avgd_no_err_friendable");
   agg_out_OnlyBMOD_part_avgd_no_err   ->SetName("agg_OnlyBMOD_part_avgd_no_err_friendable");
+  agg_out_IncludeBMOD_part_avgd_allbpms_no_err->SetName("agg_IncludeBMOD_part_avgd_allbpms_no_err_friendable");
+  agg_out_OnlyBMOD_part_avgd_allbpms_no_err   ->SetName("agg_OnlyBMOD_part_avgd_allbpms_no_err_friendable");
   TTree* agg_unfriended_ErrorFlag_part_avgd   = (TTree*)agg_in_ErrorFlag_part_avgd  ->CloneTree(0);
   TTree* agg_unfriended_ErrorFlag_part_avgd_allbpms   = (TTree*)agg_in_ErrorFlag_part_avgd_allbpms  ->CloneTree(0);
   TTree* agg_unfriended_ErrorFlag_part_b_avgd = (TTree*)agg_in_ErrorFlag_part_b_avgd->CloneTree(0);
   TTree* agg_unfriended_ErrorFlag_seg_avgd    = (TTree*)agg_in_ErrorFlag_seg_avgd   ->CloneTree(0);
   TTree* agg_unfriended_IncludeBMOD_part_avgd = (TTree*)agg_in_IncludeBMOD_part_avgd->CloneTree(0);
   TTree* agg_unfriended_OnlyBMOD_part_avgd    = (TTree*)agg_in_OnlyBMOD_part_avgd   ->CloneTree(0);
+  //TTree* agg_unfriended_IncludeBMOD_part_avgd_allbpms = (TTree*)agg_in_IncludeBMOD_part_avgd_allbpms->CloneTree(0);
+  //TTree* agg_unfriended_OnlyBMOD_part_avgd_allbpms    = (TTree*)agg_in_OnlyBMOD_part_avgd_allbpms   ->CloneTree(0);
   TTree* agg_unfriended_ErrorFlag_part_avgd_no_err   = (TTree*)agg_in_ErrorFlag_part_avgd_no_err  ->CloneTree(0);
   TTree* agg_unfriended_ErrorFlag_part_avgd_allbpms_no_err   = (TTree*)agg_in_ErrorFlag_part_avgd_allbpms_no_err  ->CloneTree(0);
   TTree* agg_unfriended_ErrorFlag_part_b_avgd_no_err = (TTree*)agg_in_ErrorFlag_part_b_avgd_no_err->CloneTree(0);
   TTree* agg_unfriended_ErrorFlag_seg_avgd_no_err    = (TTree*)agg_in_ErrorFlag_seg_avgd_no_err   ->CloneTree(0);
   TTree* agg_unfriended_IncludeBMOD_part_avgd_no_err = (TTree*)agg_in_IncludeBMOD_part_avgd_no_err->CloneTree(0);
   TTree* agg_unfriended_OnlyBMOD_part_avgd_no_err    = (TTree*)agg_in_OnlyBMOD_part_avgd_no_err   ->CloneTree(0);
+  TTree* agg_unfriended_IncludeBMOD_part_avgd_allbpms_no_err = (TTree*)agg_in_IncludeBMOD_part_avgd_allbpms_no_err->CloneTree(0);
+  TTree* agg_unfriended_OnlyBMOD_part_avgd_allbpms_no_err    = (TTree*)agg_in_OnlyBMOD_part_avgd_allbpms_no_err   ->CloneTree(0);
   agg_unfriended_ErrorFlag_part_avgd  ->SetName("agg_ErrorFlag_part_avgd_unfriended");
   agg_unfriended_ErrorFlag_part_avgd_allbpms  ->SetName("agg_ErrorFlag_part_avgd_allbpms_unfriended");
   agg_unfriended_ErrorFlag_part_b_avgd->SetName("agg_ErrorFlag_part_b_avgd_unfriended");
   agg_unfriended_ErrorFlag_seg_avgd   ->SetName("agg_ErrorFlag_seg_avgd_unfriended");
   agg_unfriended_IncludeBMOD_part_avgd->SetName("agg_IncludeBMOD_part_avgd_unfriended");
   agg_unfriended_OnlyBMOD_part_avgd   ->SetName("agg_OnlyBMOD_part_avgd_unfriended");
+  //agg_unfriended_IncludeBMOD_part_avgd_allbpms->SetName("agg_IncludeBMOD_part_avgd_allbpms_unfriended");
+  //agg_unfriended_OnlyBMOD_part_avgd_allbpms   ->SetName("agg_OnlyBMOD_part_avgd_allbpms_unfriended");
   agg_unfriended_ErrorFlag_part_avgd_no_err  ->SetName("agg_ErrorFlag_part_avgd_no_err_unfriended");
   agg_unfriended_ErrorFlag_part_avgd_allbpms_no_err  ->SetName("agg_ErrorFlag_part_avgd_allbpms_no_err_unfriended");
   agg_unfriended_ErrorFlag_part_b_avgd_no_err->SetName("agg_ErrorFlag_part_b_avgd_no_err_unfriended");
   agg_unfriended_ErrorFlag_seg_avgd_no_err   ->SetName("agg_ErrorFlag_seg_avgd_no_err_unfriended");
   agg_unfriended_IncludeBMOD_part_avgd_no_err->SetName("agg_IncludeBMOD_part_avgd_no_err_unfriended");
   agg_unfriended_OnlyBMOD_part_avgd_no_err   ->SetName("agg_OnlyBMOD_part_avgd_no_err_unfriended");
+  agg_unfriended_IncludeBMOD_part_avgd_allbpms_no_err->SetName("agg_IncludeBMOD_part_avgd_allbpms_no_err_unfriended");
+  agg_unfriended_OnlyBMOD_part_avgd_allbpms_no_err   ->SetName("agg_OnlyBMOD_part_avgd_allbpms_no_err_unfriended");
 
   TTree* agg_out_plain = agg_in_plain->CloneTree(0);
   agg_out_plain->SetName("agg_plain_friendable");
@@ -4879,12 +5101,16 @@ void ToolBox::manage_aggregator_friend_to_mini() {
   aggregator_friend_to_mini(mini,agg_in_ErrorFlag_seg_avgd   ,agg_out_ErrorFlag_seg_avgd   ,agg_unfriended_ErrorFlag_seg_avgd   );
   aggregator_friend_to_mini(mini,agg_in_IncludeBMOD_part_avgd,agg_out_IncludeBMOD_part_avgd,agg_unfriended_IncludeBMOD_part_avgd);
   aggregator_friend_to_mini(mini,agg_in_OnlyBMOD_part_avgd   ,agg_out_OnlyBMOD_part_avgd   ,agg_unfriended_OnlyBMOD_part_avgd   );
+  //aggregator_friend_to_mini(mini,agg_in_IncludeBMOD_part_avgd_allbpms,agg_out_IncludeBMOD_part_avgd_allbpms,agg_unfriended_IncludeBMOD_part_avgd_allbpms);
+  //aggregator_friend_to_mini(mini,agg_in_OnlyBMOD_part_avgd_allbpms   ,agg_out_OnlyBMOD_part_avgd_allbpms   ,agg_unfriended_OnlyBMOD_part_avgd_allbpms   );
   aggregator_friend_to_mini(mini,agg_in_ErrorFlag_part_avgd_no_err  ,agg_out_ErrorFlag_part_avgd_no_err  ,agg_unfriended_ErrorFlag_part_avgd_no_err  );
   aggregator_friend_to_mini(mini,agg_in_ErrorFlag_part_avgd_allbpms_no_err  ,agg_out_ErrorFlag_part_avgd_allbpms_no_err  ,agg_unfriended_ErrorFlag_part_avgd_allbpms_no_err  );
   aggregator_friend_to_mini(mini,agg_in_ErrorFlag_part_b_avgd_no_err,agg_out_ErrorFlag_part_b_avgd_no_err,agg_unfriended_ErrorFlag_part_b_avgd_no_err);
   aggregator_friend_to_mini(mini,agg_in_ErrorFlag_seg_avgd_no_err   ,agg_out_ErrorFlag_seg_avgd_no_err   ,agg_unfriended_ErrorFlag_seg_avgd_no_err   );
   aggregator_friend_to_mini(mini,agg_in_IncludeBMOD_part_avgd_no_err,agg_out_IncludeBMOD_part_avgd_no_err,agg_unfriended_IncludeBMOD_part_avgd_no_err);
   aggregator_friend_to_mini(mini,agg_in_OnlyBMOD_part_avgd_no_err   ,agg_out_OnlyBMOD_part_avgd_no_err   ,agg_unfriended_OnlyBMOD_part_avgd_no_err   );
+  aggregator_friend_to_mini(mini,agg_in_IncludeBMOD_part_avgd_allbpms_no_err,agg_out_IncludeBMOD_part_avgd_allbpms_no_err,agg_unfriended_IncludeBMOD_part_avgd_allbpms_no_err);
+  aggregator_friend_to_mini(mini,agg_in_OnlyBMOD_part_avgd_allbpms_no_err   ,agg_out_OnlyBMOD_part_avgd_allbpms_no_err   ,agg_unfriended_OnlyBMOD_part_avgd_allbpms_no_err   );
   aggregator_friend_to_mini(mini,agg_in_plain,agg_out_plain,agg_unfriended_plain);
 
   agg_out_ErrorFlag_part_avgd  ->Write("",TObject::kOverwrite);
@@ -4893,48 +5119,64 @@ void ToolBox::manage_aggregator_friend_to_mini() {
   agg_out_ErrorFlag_seg_avgd   ->Write("",TObject::kOverwrite);
   agg_out_IncludeBMOD_part_avgd->Write("",TObject::kOverwrite);
   agg_out_OnlyBMOD_part_avgd   ->Write("",TObject::kOverwrite);
+  //agg_out_IncludeBMOD_part_avgd_allbpms->Write("",TObject::kOverwrite);
+  //agg_out_OnlyBMOD_part_avgd_allbpms   ->Write("",TObject::kOverwrite);
   agg_out_ErrorFlag_part_avgd_no_err  ->Write("",TObject::kOverwrite);
   agg_out_ErrorFlag_part_avgd_allbpms_no_err  ->Write("",TObject::kOverwrite);
   agg_out_ErrorFlag_part_b_avgd_no_err->Write("",TObject::kOverwrite);
   agg_out_ErrorFlag_seg_avgd_no_err   ->Write("",TObject::kOverwrite);
   agg_out_IncludeBMOD_part_avgd_no_err->Write("",TObject::kOverwrite);
   agg_out_OnlyBMOD_part_avgd_no_err   ->Write("",TObject::kOverwrite);
+  agg_out_IncludeBMOD_part_avgd_allbpms_no_err->Write("",TObject::kOverwrite);
+  agg_out_OnlyBMOD_part_avgd_allbpms_no_err   ->Write("",TObject::kOverwrite);
   delete agg_out_ErrorFlag_part_avgd  ;
   delete agg_out_ErrorFlag_part_avgd_allbpms  ;
   delete agg_out_ErrorFlag_part_b_avgd;
   delete agg_out_ErrorFlag_seg_avgd   ;
   delete agg_out_IncludeBMOD_part_avgd;
   delete agg_out_OnlyBMOD_part_avgd   ;
+  //delete agg_out_IncludeBMOD_part_avgd_allbpms;
+  //delete agg_out_OnlyBMOD_part_avgd_allbpms   ;
   delete agg_out_ErrorFlag_part_avgd_no_err  ;
   delete agg_out_ErrorFlag_part_avgd_allbpms_no_err  ;
   delete agg_out_ErrorFlag_part_b_avgd_no_err;
   delete agg_out_ErrorFlag_seg_avgd_no_err   ;
   delete agg_out_IncludeBMOD_part_avgd_no_err;
   delete agg_out_OnlyBMOD_part_avgd_no_err   ;
+  delete agg_out_IncludeBMOD_part_avgd_allbpms_no_err;
+  delete agg_out_OnlyBMOD_part_avgd_allbpms_no_err   ;
   agg_unfriended_ErrorFlag_part_avgd  ->Write("",TObject::kOverwrite);
   agg_unfriended_ErrorFlag_part_avgd_allbpms  ->Write("",TObject::kOverwrite);
   agg_unfriended_ErrorFlag_part_b_avgd->Write("",TObject::kOverwrite);
   agg_unfriended_ErrorFlag_seg_avgd   ->Write("",TObject::kOverwrite);
   agg_unfriended_IncludeBMOD_part_avgd->Write("",TObject::kOverwrite);
   agg_unfriended_OnlyBMOD_part_avgd   ->Write("",TObject::kOverwrite);
+  //agg_unfriended_IncludeBMOD_part_avgd_allbpms->Write("",TObject::kOverwrite);
+  //agg_unfriended_OnlyBMOD_part_avgd_allbpms   ->Write("",TObject::kOverwrite);
   agg_unfriended_ErrorFlag_part_avgd_no_err  ->Write("",TObject::kOverwrite);
   agg_unfriended_ErrorFlag_part_avgd_allbpms_no_err  ->Write("",TObject::kOverwrite);
   agg_unfriended_ErrorFlag_part_b_avgd_no_err->Write("",TObject::kOverwrite);
   agg_unfriended_ErrorFlag_seg_avgd_no_err   ->Write("",TObject::kOverwrite);
   agg_unfriended_IncludeBMOD_part_avgd_no_err->Write("",TObject::kOverwrite);
   agg_unfriended_OnlyBMOD_part_avgd_no_err   ->Write("",TObject::kOverwrite);
+  agg_unfriended_IncludeBMOD_part_avgd_allbpms_no_err->Write("",TObject::kOverwrite);
+  agg_unfriended_OnlyBMOD_part_avgd_allbpms_no_err   ->Write("",TObject::kOverwrite);
   delete agg_unfriended_ErrorFlag_part_avgd  ;
   delete agg_unfriended_ErrorFlag_part_avgd_allbpms  ;
   delete agg_unfriended_ErrorFlag_part_b_avgd;
   delete agg_unfriended_ErrorFlag_seg_avgd   ;
   delete agg_unfriended_IncludeBMOD_part_avgd;
   delete agg_unfriended_OnlyBMOD_part_avgd   ;
+  //delete agg_unfriended_IncludeBMOD_part_avgd_allbpms;
+  //delete agg_unfriended_OnlyBMOD_part_avgd_allbpms   ;
   delete agg_unfriended_ErrorFlag_part_avgd_no_err  ;
   delete agg_unfriended_ErrorFlag_part_avgd_allbpms_no_err  ;
   delete agg_unfriended_ErrorFlag_part_b_avgd_no_err;
   delete agg_unfriended_ErrorFlag_seg_avgd_no_err   ;
   delete agg_unfriended_IncludeBMOD_part_avgd_no_err;
   delete agg_unfriended_OnlyBMOD_part_avgd_no_err   ;
+  delete agg_unfriended_IncludeBMOD_part_avgd_allbpms_no_err;
+  delete agg_unfriended_OnlyBMOD_part_avgd_allbpms_no_err   ;
 
   agg_out_plain->Write("",TObject::kOverwrite);
   delete agg_out_plain;

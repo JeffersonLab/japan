@@ -27,12 +27,12 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
 
   //TCut cut = "rcdb_run_flag==1 && rcdb_run_type==1 && rcdb_flip_state>2";  // AT data only
   TCut cut = "rcdb_run_flag==1 && rcdb_run_type==1 && rcdb_flip_state<=2";
-  TString fname = Form("workspace_plotting_macros/august_25_plots/drl_diff_plots/dit_reg_diffs_outputs_%s_avgd%s%s.txt",type.Data(),bpms.Data(),do_err.Data());
+  TString fname = Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_diffs_outputs_%s_avgd%s%s.txt",type.Data(),bpms.Data(),do_err.Data());
   TString suffix = do_err;
   if (slugnum != 0) {
     cut = (TCut)(Form("rcdb_run_flag==1 && rcdb_run_type==1 && rcdb_flip_state<=2 && rcdb_slug == %d",slugnum));
     suffix = do_err + (TString)Form("_slug%d",slugnum);
-    fname = Form("workspace_plotting_macros/august_25_plots/drl_diff_plots/dit_reg_diffs_outputs_%s_avgd%s%s_slug%d.txt",type.Data(),bpms.Data(),suffix.Data(),slugnum);
+    fname = Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_diffs_outputs_%s_avgd%s%s_slug%d.txt",type.Data(),bpms.Data(),suffix.Data(),slugnum);
   }
   //TCut cut = "rcdb_run_flag==1 && rcdb_run_type==1 && rcdb_arm_flag==0 && rcdb_flip_state<=2"; // FIXME this explicitly assumes we are only looking a US_AVG
   //TCut cut = "rcdb_run_flag==1 && rcdb_run_type==1 && rcdb_arm_flag==0 && ((rcdb_slug != 142 && rcdb_slug != 188 && rcdb_slug != 189 && rcdb_slug != 190 && rcdb_slug != 192))";
@@ -74,6 +74,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   outfile0 << "eigreg_eigdit_multipletwise_self = " << tg_eigreg_eigdit_multipletwise_self_fit->GetParameter(0) << " +- " << tg_eigreg_eigdit_multipletwise_self_fit->GetParError(0) << std::endl;
 
   c_eigreg_eigdit->cd(2);
+  gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
   agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(asym_main_det_eigen_dit_eigen_reg_diff_mean)/asym_main_det_eigen_dit_eigen_reg_diff_mean_error",cut+((TCut)("abs(rcdb_sign*(asym_main_det_eigen_dit_eigen_reg_diff_mean)/asym_main_det_eigen_dit_eigen_reg_diff_mean_error)>2.0")));
   gPad->SetLogy(1);
@@ -104,6 +105,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   outfile0 << "eigreg_eigdit_multipletwise_maindet = " << tg_eigreg_eigdit_multipletwise_maindet_fit->GetParameter(0) << " +- " << tg_eigreg_eigdit_multipletwise_maindet_fit->GetParError(0) << std::endl;
 
   c_eigreg_eigdit->cd(4);
+  gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
   nen = agg_part_avgd_friendable->Draw(Form("rcdb_sign*(asym_main_det_eigen_dit_eigen_reg_diff_mean)/(%f*reg_asym_main_det_mean_error)",eigreg_eigdit_multipletwise_scalefactor),cut,"");
   TH1F* tg_eigreg_eigdit_pull_maindet = (TH1F*) gPad->FindObject("htemp");
@@ -113,8 +115,8 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   outfile0 << "eigreg_eigdit_pull_maindet = " << tg_eigreg_eigdit_pull_maindet->GetMean() << " +- " << tg_eigreg_eigdit_pull_maindet->GetRMS() << std::endl;
   }
 
-  //c_eigreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_25_plots/drl_diff_plots/eigen_reg_eigen_dit_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
-  c_eigreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_25_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf(",type.Data(),bpms.Data(),suffix.Data()));
+  //c_eigreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/eigen_reg_eigen_dit_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
+  c_eigreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf(",type.Data(),bpms.Data(),suffix.Data()));
   }
 
 
@@ -130,6 +132,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   outfile0 << "eiglagr_eigreg_multipletwise_self = " << tg_eiglagr_eigreg_multipletwise_self_fit->GetParameter(0) << " +- " << tg_eiglagr_eigreg_multipletwise_self_fit->GetParError(0) << std::endl;
 
   c_eiglagr_eigreg->cd(2);
+  gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
   agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(asym_main_det_eigen_lagr_eigen_reg_diff_mean)/asym_main_det_eigen_lagr_eigen_reg_diff_mean_error",cut+((TCut)("abs(rcdb_sign*(asym_main_det_eigen_lagr_eigen_reg_diff_mean)/asym_main_det_eigen_lagr_eigen_reg_diff_mean_error)>2")));
   gPad->SetLogy(1);
@@ -160,6 +163,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   outfile0 << "eiglagr_eigreg_multipletwise_maindet = " << tg_eiglagr_eigreg_multipletwise_maindet_fit->GetParameter(0) << " +- " << tg_eiglagr_eigreg_multipletwise_maindet_fit->GetParError(0) << std::endl;
 
   c_eiglagr_eigreg->cd(4);
+  gStyle->SetOptStat(122221);
   gPad->SetLogy(1);
   gPad->SetLeftMargin(0.125);
   nen = agg_part_avgd_friendable->Draw(Form("rcdb_sign*(asym_main_det_eigen_lagr_eigen_reg_diff_mean)/(%f*reg_asym_main_det_mean_error)",eiglagr_eigreg_multipletwise_scalefactor),cut,"");
@@ -169,8 +173,8 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   Printf("tg_eiglagr_eigreg_pull_maindet = %e +- %e",tg_eiglagr_eigreg_pull_maindet->GetMean(),tg_eiglagr_eigreg_pull_maindet->GetRMS());
   outfile0 << "eiglagr_eigreg_pull_maindet = " << tg_eiglagr_eigreg_pull_maindet->GetMean() << " +- " << tg_eiglagr_eigreg_pull_maindet->GetRMS() << std::endl;
   }
-  //c_eiglagr_eigreg->SaveAs(Form("workspace_plotting_macros/august_25_plots/drl_diff_plots/eigen_lagr_eigen_reg_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
-  c_eiglagr_eigreg->SaveAs(Form("workspace_plotting_macros/august_25_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
+  //c_eiglagr_eigreg->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/eigen_lagr_eigen_reg_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
+  c_eiglagr_eigreg->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
 
 
   if (!bpms.Contains("all")) { 
@@ -186,6 +190,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   outfile0 << "eiglagr_eigdit_multipletwise_self = " << tg_eiglagr_eigdit_multipletwise_self_fit->GetParameter(0) << " +- " << tg_eiglagr_eigdit_multipletwise_self_fit->GetParError(0) << std::endl;
 
   c_eiglagr_eigdit->cd(2);
+  gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
   agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(asym_main_det_eigen_lagr_eigen_dit_diff_mean)/asym_main_det_eigen_lagr_eigen_dit_diff_mean_error",cut+((TCut)("abs(rcdb_sign*(asym_main_det_eigen_lagr_eigen_dit_diff_mean)/asym_main_det_eigen_lagr_eigen_dit_diff_mean_error)>2")));
   gPad->SetLogy(1);
@@ -216,6 +221,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   outfile0 << "eiglagr_eigdit_multipletwise_maindet = " << tg_eiglagr_eigdit_multipletwise_maindet_fit->GetParameter(0) << " +- " << tg_eiglagr_eigdit_multipletwise_maindet_fit->GetParError(0) << std::endl;
 
   c_eiglagr_eigdit->cd(4);
+  gStyle->SetOptStat(122221);
   gPad->SetLogy(1);
   gPad->SetLeftMargin(0.125);
   nen = agg_part_avgd_friendable->Draw(Form("rcdb_sign*(asym_main_det_eigen_lagr_eigen_dit_diff_mean)/(%f*reg_asym_main_det_mean_error)",eiglagr_eigdit_multipletwise_scalefactor),cut,"");
@@ -225,8 +231,8 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   Printf("tg_eiglagr_eigdit_pull_maindet = %e +- %e",tg_eiglagr_eigdit_pull_maindet->GetMean(),tg_eiglagr_eigdit_pull_maindet->GetRMS());
   outfile0 << "eiglagr_eigdit_pull_maindet = " << tg_eiglagr_eigdit_pull_maindet->GetMean() << " +- " << tg_eiglagr_eigdit_pull_maindet->GetRMS() << std::endl;
   }
-  //c_eiglagr_eigdit->SaveAs(Form("workspace_plotting_macros/august_25_plots/drl_diff_plots/eigen_lagr_eigen_dit_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
-  c_eiglagr_eigdit->SaveAs(Form("workspace_plotting_macros/august_25_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
+  //c_eiglagr_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/eigen_lagr_eigen_dit_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
+  c_eiglagr_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
 
 
   // Now do minirunwise regular regression vs. segment avg eigen dit
@@ -243,6 +249,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   outfile0 << "regreg_eigdit_multipletwise_self = " << tg_regreg_eigdit_multipletwise_self_fit->GetParameter(0) << " +- " << tg_regreg_eigdit_multipletwise_self_fit->GetParError(0) << std::endl;
 
   c_regreg_eigdit->cd(2);
+  gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
   agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(asym_main_det_eigen_dit_reg_diff_mean)/asym_main_det_eigen_dit_reg_diff_mean_error",cut+((TCut)("abs(rcdb_sign*(asym_main_det_eigen_dit_reg_diff_mean)/asym_main_det_eigen_dit_reg_diff_mean_error)>2")));
   gPad->SetLogy(1);
@@ -274,6 +281,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   outfile0 << "regreg_eigdit_multipletwise_maindet = " << tg_regreg_eigdit_multipletwise_maindet_fit->GetParameter(0) << " +- " << tg_regreg_eigdit_multipletwise_maindet_fit->GetParError(0) << std::endl;
 
   c_regreg_eigdit->cd(4);
+  gStyle->SetOptStat(122221);
   gPad->SetLogy(1);
   gPad->SetLeftMargin(0.125);
   nen = agg_part_avgd_friendable->Draw(Form("rcdb_sign*(asym_main_det_eigen_dit_reg_diff_mean)/(%f*reg_asym_main_det_mean_error)",regreg_eigdit_multipletwise_scalefactor),cut,"");
@@ -283,8 +291,8 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   Printf("tg_regreg_eigdit_pull_maindet = %e +- %e",tg_regreg_eigdit_pull_maindet->GetMean(),tg_regreg_eigdit_pull_maindet->GetRMS());
   outfile0 << "regreg_eigdit_pull_maindet = " << tg_regreg_eigdit_pull_maindet->GetMean() << " +- " << tg_regreg_eigdit_pull_maindet->GetRMS() << std::endl;
   }
-  //c_regreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_25_plots/drl_diff_plots/regular_reg_eigen_dit_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
-  c_regreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_25_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
+  //c_regreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/regular_reg_eigen_dit_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
+  c_regreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
 
 
   // Now do dit vs. eigen dit comparison, maindet weighted and self weighted, both using quadrature error bar differences only
@@ -302,6 +310,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   outfile0 << "regdit_eigdit_minirunwise_self = " << tg_regdit_eigdit_minirunwise_self_fit->GetParameter(0) << " +- " << tg_regdit_eigdit_minirunwise_self_fit->GetParError(0) << std::endl;
 
   c_regreg_eigreg->cd(2);
+  gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
   agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))",cut+((TCut)("abs(rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2))))>2")));
   gPad->SetLogy(1);
@@ -326,6 +335,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   outfile0 << "small_regdit_eigdit_minirunwise_self = " << tg_small_regdit_eigdit_minirunwise_self_fit->GetParameter(0) << " +- " << tg_small_regdit_eigdit_minirunwise_self_fit->GetParError(0) << std::endl;
 
   c_regreg_eigreg->cd(4);
+  gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
   agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))",cut+((TCut)("rcdb_arm_flag==0 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) < 1e-9 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) > 1e-26 && abs(rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2))))>2")));
   gPad->SetLogy(1);
@@ -352,6 +362,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   outfile0 << "small_regreg_eigreg_minirunwise_self = " << tg_small_regreg_eigreg_minirunwise_self_fit->GetParameter(0) << " +- " << tg_small_regreg_eigreg_minirunwise_self_fit->GetParError(0) << std::endl;
 
   c_regreg_eigreg->cd(6);
+  gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
   agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/sqrt(abs(pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)))",cut+((TCut)("abs(rcdb_sign*(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/sqrt(abs(pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2))))>2")));
   gPad->SetLogy(1);
@@ -363,8 +374,8 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   outfile0 << "small_regreg_eigreg_pull_self = " << tg_small_regreg_eigreg_pull_self->GetMean() << " +- " << tg_small_regreg_eigreg_pull_self->GetRMS() << std::endl;
   }
 
-  //c_small_regreg_eigreg->SaveAs(Form("workspace_plotting_macros/august_25_plots/drl_diff_plots/regular_vs_eigen_same_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
-  c_regreg_eigreg->SaveAs(Form("workspace_plotting_macros/august_25_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf)",type.Data(),bpms.Data(),suffix.Data()));
+  //c_small_regreg_eigreg->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/regular_vs_eigen_same_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
+  c_regreg_eigreg->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf)",type.Data(),bpms.Data(),suffix.Data()));
   gPad->SetLogy(0);
   outfile0.close();
   }
@@ -381,7 +392,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   c_eigdit_RMS_1->cd(4);
   gPad->SetLogy();
   agg_part_avgd_friendable->Draw("asym_main_det_eigen_dit_reg_diff_rms:yield_bpm12X_mean",cut,"");
-  c_eigdit_RMS_1->SaveAs(Form("workspace_plotting_macros/august_25_plots/drl_diff_plots/eigen_dit_reg_diff_RMSs_%s_avgd%s%s.pdf(",type.Data(),bpms.Data(),suffix.Data()));
+  c_eigdit_RMS_1->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/eigen_dit_reg_diff_RMSs_%s_avgd%s%s.pdf(",type.Data(),bpms.Data(),suffix.Data()));
 
   c_eigdit_RMS_2->cd(1);
   gPad->SetLogy();
@@ -395,7 +406,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString bpms
   c_eigdit_RMS_2->cd(4);
   gPad->SetLogy();
   agg_part_avgd_friendable->Draw("asym_main_det_eigen_dit_reg_diff_rms:yield_bpm12X_rms",cut,"");
-  c_eigdit_RMS_2->SaveAs(Form("workspace_plotting_macros/august_25_plots/drl_diff_plots/dit_reg_diff_RMSs_%s_avgd%s%s.pdf)",type.Data(),bpms.Data(),suffix.Data()));
+  c_eigdit_RMS_2->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_diff_RMSs_%s_avgd%s%s.pdf)",type.Data(),bpms.Data(),suffix.Data()));
   */
 
 }

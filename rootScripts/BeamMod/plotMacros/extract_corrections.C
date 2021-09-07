@@ -9,6 +9,7 @@ void extract_corrections() {
   TChain * mini_overload_corrections_det_weighted                           = new TChain("mini_overload_corrections_det_weighted");
   TChain * mini_dit_plain_corrections_det_weighted                          = new TChain("mini_dit_plain_corrections_det_weighted");
   TChain * mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted          = new TChain("mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted");
+  TChain * mini_raw_det_asyms_det_weighted                                  = new TChain("mini_raw_det_asyms_det_weighted");
   TChain * mini_BCMs_det_weighted                                           = new TChain("mini_BCMs_det_weighted");
 
   mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted    -> Add("processed_respin2_data/CREX_All_crex_part_Avg_Outputs_main_det_corrections.root");
@@ -21,6 +22,7 @@ void extract_corrections() {
   mini_overload_corrections_det_weighted                            -> Add("processed_respin2_data/CREX_All_crex_part_Avg_Outputs_main_det_corrections.root");
   mini_dit_plain_corrections_det_weighted                           -> Add("processed_respin2_data/CREX_All_crex_part_Avg_Outputs_main_det_corrections.root");
   mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted           -> Add("processed_respin2_data/CREX_All_crex_part_Avg_Outputs_main_det_corrections.root");
+  mini_raw_det_asyms_det_weighted                                   -> Add("processed_respin2_data/CREX_All_crex_part_Avg_Outputs_main_det_corrections.root");
   mini_BCMs_det_weighted                                            -> Add("processed_respin2_data/CREX_All_crex_part_Avg_Outputs_main_det_corrections.root");
 
   Printf("mini_reference_eigen_reg_5bpms_sorted_corrections_det_weighted,  manual_main_det_evMon0_mean/1e-9:manual_main_det_evMon1_mean/1e-9:manual_main_det_evMon2_mean/1e-9:manual_main_det_evMon3_mean/1e-9:manual_main_det_evMon4_mean/1e-9:manual_main_det_evMon5_mean/1e-9:manual_main_det_evMon6_mean/1e-9:manual_main_det_evMon7_mean/1e-9:manual_main_det_evMon8_mean/1e-9:manual_main_det_evMon9_mean/1e-9:manual_main_det_evMon10_mean/1e-9:manual_main_det_evMon11_mean/1e-9");
@@ -55,6 +57,12 @@ void extract_corrections() {
 
   Printf("mini_BCMs_det_weighted,  asym_bcm_target_mean/1e-9:asym_bcm_target_mean_err/1e-9");
   mini_BCMs_det_weighted->Scan("asym_bcm_target_nentries:asym_bcm_target_mean/1e-9:asym_bcm_target_mean_err/1e-9");
+
+  Printf("mini_raw_det_asyms_det_weighted,  asym_manual_main_det_mean/1e-9:asym_manual_main_det_mean_err/1e-9:asym_manual_main_det_mean_err_global/1e-9");
+  mini_raw_det_asyms_det_weighted->Scan("asym_manual_main_det_mean_nentries:asym_manual_main_det_mean/1e-9:asym_manual_main_det_mean_err/1e-9:asym_manual_main_det_mean_err_global/1e-9");
+
+  Printf("mini_raw_det_asyms_det_weighted,  asym_manual_main_det_mean/1e-9:asym_manual_main_det_mean_err/1e-9:asym_manual_main_det_mean_self/1e-9:asym_manual_main_det_mean_err_global/1e-9:asym_manual_main_det_mean_self_err/1e-9");
+  mini_raw_det_asyms_det_weighted->Scan("asym_manual_main_det_mean_nentries:asym_manual_main_det_mean/1e-9:asym_manual_main_det_mean_err/1e-9:asym_manual_main_det_mean_self/1e-9:asym_manual_main_det_mean_err_global/1e-9:asym_manual_main_det_mean_self_err/1e-9");
 
   Printf("mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted,  lagr_asym_manual_main_det_mean/1e-9:lagr_asym_manual_main_det_mean_err/1e-9");
   mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted->Scan("lagr_asym_manual_main_det_mean_nentries:lagr_asym_manual_main_det_mean/1e-9:lagr_asym_manual_main_det_mean_err/1e-9");
