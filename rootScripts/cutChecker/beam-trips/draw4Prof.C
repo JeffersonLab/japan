@@ -1,7 +1,16 @@
-void draw4Prof() {
-  TFile *_file0 = TFile::Open("respin1_rootfiles/test.root");
+void draw4Prof(TString ana = "respin2") {
+  TString treename = "mul_trip";
+  TChain *mul_trip = new TChain(treename);
+  mul_trip->SetCacheSize(20*1024*1024);
+  mul_trip->Add(Form("%s_rootfiles/test.root",ana.Data()));
+  mul_trip->Add(Form("%s_rootfiles/test_1.root",ana.Data()));
+  mul_trip->Add(Form("%s_rootfiles/test_2.root",ana.Data()));
+  mul_trip->LoadTree(-1);
+  /*
+  TFile *_file0 = TFile::Open(Form("%s_rootfiles/test.root",ana.Data()));
   TTree *mul_trip;
   _file0->GetObject("mul_trip", mul_trip);
+  */
   TCanvas* c5 = new TCanvas();
   c5->Divide(2,2);
   c5->cd(1);
@@ -10,26 +19,26 @@ void draw4Prof() {
   TProfile* ht1 = (TProfile*)gROOT->FindObject("ht1");
   ht1->SetMaximum(7000.0);
   ht1->SetMinimum(-7000.0);
-  ht1->SetNameTitle("Wien Right, IHWP In","Wien Right, IHWP In, Sign Corrected first 1000 multiplets (Respin1);SinceLastTripEnd (multiplets);Aq (ppb)");
+  ht1->SetNameTitle("Wien Right, IHWP In",Form("Wien Right, IHWP In, Sign Corrected first 1000 multiplets (%s);SinceLastTripEnd (multiplets);Aq (ppb)",ana.Data()));
   c5->cd(2);
   mul_trip->Draw("rcdb_sign*asym_bcm_an_us.hw_sum/1e-9:SinceLastTripEnd>>ht2(45,-0.5,1000.5,100,-7000,7000)","ErrorFlag==0 && SinceLastTripEnd<=1000 && rcdb_flip_state==1 && rcdb_ihwp==2","prof");
   TProfile* ht2 = (TProfile*)gROOT->FindObject("ht2");
   ht2->SetMaximum(7000.0);
   ht2->SetMinimum(-7000.0);
-  ht2->SetNameTitle("Wien Right, IHWP Out","Wien Right, IHWP Out, Sign Corrected first 1000 multiplets (Respin1);SinceLastTripEnd (multiplets);Aq (ppb)");
+  ht2->SetNameTitle("Wien Right, IHWP Out",Form("Wien Right, IHWP Out, Sign Corrected first 1000 multiplets (%s);SinceLastTripEnd (multiplets);Aq (ppb)",ana.Data()));
   c5->cd(3);
   mul_trip->Draw("rcdb_sign*asym_bcm_an_us.hw_sum/1e-9:SinceLastTripEnd>>ht3(45,-0.5,1000.5,100,-7000,7000)","ErrorFlag==0 && SinceLastTripEnd<=1000 && rcdb_flip_state==2 && rcdb_ihwp==1","prof");
   TProfile* ht3 = (TProfile*)gROOT->FindObject("ht3");
   ht3->SetMaximum(7000.0);
   ht3->SetMinimum(-7000.0);
-  ht3->SetNameTitle("Wien Left, IHWP In","Wien Left, IHWP In, Sign Corrected first 1000 multiplets (Respin1);SinceLastTripEnd (multiplets);Aq (ppb)");
+  ht3->SetNameTitle("Wien Left, IHWP In",Form("Wien Left, IHWP In, Sign Corrected first 1000 multiplets (%s);SinceLastTripEnd (multiplets);Aq (ppb)",ana.Data()));
   c5->cd(4);
   mul_trip->Draw("rcdb_sign*asym_bcm_an_us.hw_sum/1e-9:SinceLastTripEnd>>ht4(45,-0.5,1000.5,100,-7000,7000)","ErrorFlag==0 && SinceLastTripEnd<=1000 && rcdb_flip_state==2 && rcdb_ihwp==2","prof");
   TProfile* ht4 = (TProfile*)gROOT->FindObject("ht4");
   ht4->SetMaximum(7000.0);
   ht4->SetMinimum(-7000.0);
-  ht4->SetNameTitle("Wien Left, IHWP Out","Wien Left, IHWP Out, Sign Corrected first 1000 multiplets (Respin1);SinceLastTripEnd (multiplets);Aq (ppb)");
-  c5->SaveAs("wien_ihwp_standard_separated_profPlot_Aq_postTrip.pdf");
+  ht4->SetNameTitle("Wien Left, IHWP Out",Form("Wien Left, IHWP Out, Sign Corrected first 1000 multiplets (%s);SinceLastTripEnd (multiplets);Aq (ppb)",ana.Data()));
+  c5->SaveAs(Form("plots/%s_wien_ihwp_standard_separated_profPlot_Aq_postTrip.pdf",ana.Data()));
 
 
   TCanvas* c6 = new TCanvas();
@@ -40,36 +49,36 @@ void draw4Prof() {
   TProfile* hp1 = (TProfile*)gROOT->FindObject("hp1");
   hp1->SetMaximum(7000.0);
   hp1->SetMinimum(-7000.0);
-  hp1->SetNameTitle("Wien Right, IHWP In part 1","Wien Right, IHWP In part 1, Sign Corrected first 1000 multiplets (Respin1);SinceLastTripEnd (multiplets);Aq (ppb)");
+  hp1->SetNameTitle("Wien Right, IHWP In part 1",Form("Wien Right, IHWP In part 1, Sign Corrected first 1000 multiplets (%s);SinceLastTripEnd (multiplets);Aq (ppb)",ana.Data()));
   c6->cd(2);
   mul_trip->Draw("rcdb_sign*asym_bcm_an_us.hw_sum/1e-9:SinceLastTripEnd>>hp2(45,-0.5,1000.5,100,-7000,7000)","ErrorFlag==0 && SinceLastTripEnd<=1000 && rcdb_flip_state==1 && rcdb_ihwp==2 && rcdb_slug<186","prof");
   TProfile* hp2 = (TProfile*)gROOT->FindObject("hp2");
   hp2->SetMaximum(7000.0);
   hp2->SetMinimum(-7000.0);
-  hp2->SetNameTitle("Wien Right, IHWP Out part 1","Wien Right, IHWP Out part 1, Sign Corrected first 1000 multiplets (Respin1);SinceLastTripEnd (multiplets);Aq (ppb)");
+  hp2->SetNameTitle("Wien Right, IHWP Out part 1",Form("Wien Right, IHWP Out part 1, Sign Corrected first 1000 multiplets (%s);SinceLastTripEnd (multiplets);Aq (ppb)",ana.Data()));
   c6->cd(3);
   mul_trip->Draw("rcdb_sign*asym_bcm_an_us.hw_sum/1e-9:SinceLastTripEnd>>hp3(45,-0.5,1000.5,100,-7000,7000)","ErrorFlag==0 && SinceLastTripEnd<=1000 && rcdb_flip_state==1 && rcdb_ihwp==1 && rcdb_slug>=186","prof");
   TProfile* hp3 = (TProfile*)gROOT->FindObject("hp3");
   hp3->SetMaximum(7000.0);
   hp3->SetMinimum(-7000.0);
-  hp3->SetNameTitle("Wien Right, IHWP In part 2","Wien Right, IHWP In part 2, Sign Corrected first 1000 multiplets (Respin1);SinceLastTripEnd (multiplets);Aq (ppb)");
+  hp3->SetNameTitle("Wien Right, IHWP In part 2",Form("Wien Right, IHWP In part 2, Sign Corrected first 1000 multiplets (%s);SinceLastTripEnd (multiplets);Aq (ppb)",ana.Data()));
   c6->cd(4);
   mul_trip->Draw("rcdb_sign*asym_bcm_an_us.hw_sum/1e-9:SinceLastTripEnd>>hp4(45,-0.5,1000.5,100,-7000,7000)","ErrorFlag==0 && SinceLastTripEnd<=1000 && rcdb_flip_state==1 && rcdb_ihwp==2 && rcdb_slug>=186","prof");
   TProfile* hp4 = (TProfile*)gROOT->FindObject("hp4");
   hp4->SetMaximum(7000.0);
   hp4->SetMinimum(-7000.0);
-  hp4->SetNameTitle("Wien Right, IHWP Out part 2","Wien Right, IHWP Out part 2, Sign Corrected first 1000 multiplets (Respin1);SinceLastTripEnd (multiplets);Aq (ppb)");
+  hp4->SetNameTitle("Wien Right, IHWP Out part 2",Form("Wien Right, IHWP Out part 2, Sign Corrected first 1000 multiplets (%s);SinceLastTripEnd (multiplets);Aq (ppb)",ana.Data()));
   c6->cd(5);
   mul_trip->Draw("rcdb_sign*asym_bcm_an_us.hw_sum/1e-9:SinceLastTripEnd>>hp5(45,-0.5,1000.5,100,-7000,7000)","ErrorFlag==0 && SinceLastTripEnd<=1000 && rcdb_flip_state==2 && rcdb_ihwp==1","prof");
   TProfile* hp5 = (TProfile*)gROOT->FindObject("hp5");
   hp5->SetMaximum(7000.0);
   hp5->SetMinimum(-7000.0);
-  hp5->SetNameTitle("Wien Left, IHWP In","Wien Left, IHWP In, Sign Corrected first 1000 multiplets (Respin1);SinceLastTripEnd (multiplets);Aq (ppb)");
+  hp5->SetNameTitle("Wien Left, IHWP In",Form("Wien Left, IHWP In, Sign Corrected first 1000 multiplets (%s);SinceLastTripEnd (multiplets);Aq (ppb)",ana.Data()));
   c6->cd(6);
   mul_trip->Draw("rcdb_sign*asym_bcm_an_us.hw_sum/1e-9:SinceLastTripEnd>>hp6(45,-0.5,1000.5,100,-7000,7000)","ErrorFlag==0 && SinceLastTripEnd<=1000 && rcdb_flip_state==2 && rcdb_ihwp==2","prof");
   TProfile* hp6 = (TProfile*)gROOT->FindObject("hp6");
   hp6->SetMaximum(7000.0);
   hp6->SetMinimum(-7000.0);
-  hp6->SetNameTitle("Wien Left, IHWP Out","Wien Left, IHWP Out, Sign Corrected first 1000 multiplets (Respin1);SinceLastTripEnd (multiplets);Aq (ppb)");
-  c6->SaveAs("wien_ihwp_standard_split_separated_profPlot_Aq_postTrip.pdf");
+  hp6->SetNameTitle("Wien Left, IHWP Out",Form("Wien Left, IHWP Out, Sign Corrected first 1000 multiplets (%s);SinceLastTripEnd (multiplets);Aq (ppb)",ana.Data()));
+  c6->SaveAs(Form("plots/%s_wien_ihwp_standard_split_separated_profPlot_Aq_postTrip.pdf",ana.Data()));
 }

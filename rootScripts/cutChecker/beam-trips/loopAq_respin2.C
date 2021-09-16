@@ -1,33 +1,33 @@
-void loopAq() {
+void loopAq_respin2() {
   /*
-  //TFile *_file0 = TFile::Open("respin1_rootfiles/trip_6344.root");
-  //TFile *_file1 = TFile::Open("prompt_rootfiles/trip_6344.root");
-  TFile *_file0 = TFile::Open("respin1_rootfiles/test.root");
-  TFile *_file1 = TFile::Open("prompt_rootfiles/test.root");
-  TString outplotname = "plots/Aq_direct_compare_respin1_prompt.pdf";
-  //TFile *_file0 = TFile::Open("respin1_rootfiles/test_AT.root");
-  //TFile *_file1 = TFile::Open("prompt_rootfiles/test_AT.root");
-  //TString outplotname = "plots/AT_respin1_prompt.pdf";
+  //TFile *_file0 = TFile::Open("respin2_rootfiles/trip_6344.root");
+  //TFile *_file1 = TFile::Open("respin1_rootfiles/trip_6344.root");
+  TFile *_file0 = TFile::Open("respin2_rootfiles/test.root");
+  TFile *_file1 = TFile::Open("respin1_rootfiles/test.root");
+  TString outplotname = "plots/Aq_direct_compare_respin2_respin1.pdf";
+  //TFile *_file0 = TFile::Open("respin2_rootfiles/test_AT.root");
+  //TFile *_file1 = TFile::Open("respin1_rootfiles/test_AT.root");
+  //TString outplotname = "plots/AT_respin2_respin1.pdf";
+  TTree *mul_trip_respin2;
   TTree *mul_trip_respin1;
-  TTree *mul_trip_prompt;
-  _file0->GetObject("mul_trip", mul_trip_respin1);
-  _file1->GetObject("mul_trip", mul_trip_prompt);
+  _file0->GetObject("mul_trip", mul_trip_respin2);
+  _file1->GetObject("mul_trip", mul_trip_respin1);
   */
 
-  TString outplotname = "plots/Aq_direct_compare_prompt_respin1.pdf";
+  TString outplotname = "plots/Aq_direct_compare_respin1_respin2.pdf";
   TString treename = "mul_trip";
-  TChain *mul_trip_prompt = new TChain(treename);
-  mul_trip_prompt->SetCacheSize(20*1024*1024);
-  mul_trip_prompt->Add("prompt_rootfiles/test.root");
-  mul_trip_prompt->Add("prompt_rootfiles/test_1.root");
-  mul_trip_prompt->Add("prompt_rootfiles/test_2.root");
-  mul_trip_prompt->LoadTree(-1);
   TChain *mul_trip_respin1 = new TChain(treename);
   mul_trip_respin1->SetCacheSize(20*1024*1024);
   mul_trip_respin1->Add("respin1_rootfiles/test.root");
   mul_trip_respin1->Add("respin1_rootfiles/test_1.root");
   mul_trip_respin1->Add("respin1_rootfiles/test_2.root");
   mul_trip_respin1->LoadTree(-1);
+  TChain *mul_trip_respin2 = new TChain(treename);
+  mul_trip_respin2->SetCacheSize(20*1024*1024);
+  mul_trip_respin2->Add("respin2_rootfiles/test.root");
+  mul_trip_respin2->Add("respin2_rootfiles/test_1.root");
+  mul_trip_respin2->Add("respin2_rootfiles/test_2.root");
+  mul_trip_respin2->LoadTree(-1);
 
 
   typedef struct {
@@ -55,55 +55,55 @@ void loopAq() {
   Double_t pr_wien = 0.0;
   Double_t pr_ihwp = 0.0;
 
-  mul_trip_respin1->BuildIndex("run_number","CodaEventNumber");
-  mul_trip_prompt ->BuildIndex("run_number","CodaEventNumber");
+  mul_trip_respin2->BuildIndex("run_number","CodaEventNumber");
+  mul_trip_respin1 ->BuildIndex("run_number","CodaEventNumber");
 
-  mul_trip_respin1->SetBranchAddress("run_number",&r1_run_number);
-  mul_trip_respin1->SetBranchAddress("CodaEventNumber",&r1_CEN);
-  mul_trip_respin1->SetBranchAddress("ErrorFlag",&r1_ErrorFlag);
-  mul_trip_respin1->SetBranchAddress("rcdb_flip_state",&r1_wien);
-  mul_trip_respin1->SetBranchAddress("rcdb_ihwp",&r1_ihwp);
-  mul_trip_respin1->SetBranchAddress("asym_bcm_an_us",&r1_bcm_an_us);
+  mul_trip_respin2->SetBranchAddress("run_number",&r1_run_number);
+  mul_trip_respin2->SetBranchAddress("CodaEventNumber",&r1_CEN);
+  mul_trip_respin2->SetBranchAddress("ErrorFlag",&r1_ErrorFlag);
+  mul_trip_respin2->SetBranchAddress("rcdb_flip_state",&r1_wien);
+  mul_trip_respin2->SetBranchAddress("rcdb_ihwp",&r1_ihwp);
+  mul_trip_respin2->SetBranchAddress("asym_bcm_an_us",&r1_bcm_an_us);
 
-  mul_trip_prompt ->SetBranchAddress("run_number",&pr_run_number);
-  mul_trip_prompt ->SetBranchAddress("CodaEventNumber",&pr_CEN);
-  mul_trip_prompt ->SetBranchAddress("ErrorFlag",&pr_ErrorFlag);
-  mul_trip_prompt ->SetBranchAddress("rcdb_flip_state",&pr_wien);
-  mul_trip_prompt ->SetBranchAddress("rcdb_ihwp",&pr_ihwp);
-  mul_trip_prompt ->SetBranchAddress("asym_bcm_an_us",&pr_bcm_an_us);
+  mul_trip_respin1 ->SetBranchAddress("run_number",&pr_run_number);
+  mul_trip_respin1 ->SetBranchAddress("CodaEventNumber",&pr_CEN);
+  mul_trip_respin1 ->SetBranchAddress("ErrorFlag",&pr_ErrorFlag);
+  mul_trip_respin1 ->SetBranchAddress("rcdb_flip_state",&pr_wien);
+  mul_trip_respin1 ->SetBranchAddress("rcdb_ihwp",&pr_ihwp);
+  mul_trip_respin1 ->SetBranchAddress("asym_bcm_an_us",&pr_bcm_an_us);
 
-  Int_t respin1_entries = mul_trip_respin1->GetEntries("run_number != 6784 && run_number != 6684");
-  Int_t prompt_entries  = mul_trip_prompt->GetEntries("run_number != 6784 && run_number != 6684");
+  Int_t respin2_entries = mul_trip_respin2->GetEntries("run_number != 6784 && run_number != 6684");
+  Int_t respin1_entries  = mul_trip_respin1->GetEntries("run_number != 6784 && run_number != 6684");
 
-  TH1F * hr1 = new TH1F("respin1 missing from prompt","respin1 missing from prompt",3200,5400,8600);
-  TH1F * hr1_EF = new TH1F("respin1 ErrorFlag - prompt ErrorFlag","respin1 ErrorFlag - prompt ErrorFlag counts, Intersect ROOT files (+ = more respin1 data)",3200,5400,8600);
-  TH1F * hr1_Aq_r1EF = new TH1F("Sign corrected, Respin 1 Aq, respin 1 ErrorFlag","respin1 Aq, respin 1 ErrorFlag",200,-15.0e6,15.0e6);
-  TH1F * hr1_Aq_prEF = new TH1F("Sign corrected, Respin 1 Aq, prompt ErrorFlag","respin1 Aq, prompt ErrorFlag",200,-15.0e6,15.0e6);
-  TH1F * h_DD_prEF = new TH1F("Sign corrected, Respin 1 - prompt, prompt ErrorFlag","respin1 - prompt Aq DD, prompt ErrorFlag",200,-.5e6,.5e6);
-  TH1F * h_DD_r1EF = new TH1F("Sign corrected, Respin 1 - prompt, respin1 ErrorFlag","respin1 - prompt Aq DD, respin 1 ErrorFlag",200,-.5e6,.5e6);
-  TH1F * hr1_Aq_r1EF_w1_in  = new TH1F("respin1 Aq, respin 1 ErrorFlag, in right" ,"Sign corrected, Respin 1 Aq, wien right, IHWP IN, respin 1 ErrorFlag",200,-15.0e6,15.0e6);
-  TH1F * hr1_Aq_prEF_w1_in  = new TH1F("respin1 Aq, prompt ErrorFlag, in right"   ,"Sign corrected, Respin 1 Aq, wien right, IHWP IN, prompt ErrorFlag",   200,-15.0e6,15.0e6);
-  TH1F * hr1_Aq_r1EF_w1_out = new TH1F("respin1 Aq, respin 1 ErrorFlag, out right","Sign corrected, Respin 1 Aq, wien right, IHWP OUT, respin 1 ErrorFlag",200,-15.0e6,15.0e6);
-  TH1F * hr1_Aq_prEF_w1_out = new TH1F("respin1 Aq, prompt ErrorFlag, out right"  ,"Sign corrected, Respin 1 Aq, wien right, IHWP OUT, prompt ErrorFlag",  200,-15.0e6,15.0e6);
-  TH1F * hr1_Aq_r1EF_w2_in  = new TH1F("respin1 Aq, respin 1 ErrorFlag, in left"  ,"Sign corrected, Respin 1 Aq, wien left, IHWP IN, respin 1 ErrorFlag",  200,-15.0e6,15.0e6);
-  TH1F * hr1_Aq_prEF_w2_in  = new TH1F("respin1 Aq, prompt ErrorFlag, in left"    ,"Sign corrected, Respin 1 Aq, wien left, IHWP IN, prompt ErrorFlag",    200,-15.0e6,15.0e6);
-  TH1F * hr1_Aq_r1EF_w2_out = new TH1F("respin1 Aq, respin 1 ErrorFlag, out left" ,"Sign corrected, Respin 1 Aq, wien left, IHWP OUT, respin 1 ErrorFlag", 200,-15.0e6,15.0e6);
-  TH1F * hr1_Aq_prEF_w2_out = new TH1F("respin1 Aq, prompt ErrorFlag, out left"   ,"Sign corrected, Respin 1 Aq, wien left, IHWP OUT, prompt ErrorFlag",   200,-15.0e6,15.0e6);
-  TH1F * hpr = new TH1F("prompt missing from respin1","prompt missing from respin1",3200,5400,8600);
-  TH1F * hpr_Aq_r1EF = new TH1F("Sign corrected, Prompt Aq, respin 1 ErrorFlag","prompt Aq, respin 1 ErrorFlag",200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_prEF = new TH1F("Sign corrected, Prompt Aq, prompt ErrorFlag","prompt Aq, prompt ErrorFlag",200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_r1EF_w1_in  = new TH1F("prompt Aq, respin 1 ErrorFlag, in right" ,"Sign corrected, Prompt Aq, wien right, IHWP IN, respin 1 ErrorFlag" ,200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_prEF_w1_in  = new TH1F("prompt Aq, prompt ErrorFlag, in right"   ,"Sign corrected, Prompt Aq, wien right, IHWP IN, prompt ErrorFlag"   ,200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_r1EF_w1_out = new TH1F("prompt Aq, respin 1 ErrorFlag, out right","Sign corrected, Prompt Aq, wien right, IHWP OUT, respin 1 ErrorFlag",200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_prEF_w1_out = new TH1F("prompt Aq, prompt ErrorFlag, out right"  ,"Sign corrected, Prompt Aq, wien right, IHWP OUT, prompt ErrorFlag"  ,200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_r1EF_w2_in  = new TH1F("prompt Aq, respin 1 ErrorFlag, in left"  ,"Sign corrected, Prompt Aq, wien left, IHWP IN, respin 1 ErrorFlag"  ,200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_prEF_w2_in  = new TH1F("prompt Aq, prompt ErrorFlag, in left"    ,"Sign corrected, Prompt Aq, wien left, IHWP IN, prompt ErrorFlag"    ,200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_r1EF_w2_out = new TH1F("prompt Aq, respin 1 ErrorFlag, out left" ,"Sign corrected, Prompt Aq, wien left, IHWP OUT, respin 1 ErrorFlag" ,200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_prEF_w2_out = new TH1F("prompt Aq, prompt ErrorFlag, out left"   ,"Sign corrected, Prompt Aq, wien left, IHWP OUT, prompt ErrorFlag"   ,200,-15.0e6,15.0e6);
+  TH1F * hr1 = new TH1F("respin2 missing from respin1","respin2 missing from respin1",3200,5400,8600);
+  TH1F * hr1_EF = new TH1F("respin2 ErrorFlag - respin1 ErrorFlag","respin2 ErrorFlag - respin1 ErrorFlag counts, Intersect ROOT files (+ = more respin2 data)",3200,5400,8600);
+  TH1F * hr1_Aq_r1EF = new TH1F("Sign corrected, Respin 2 Aq, respin2 ErrorFlag","respin2 Aq, respin2 ErrorFlag",200,-15.0e6,15.0e6);
+  TH1F * hr1_Aq_prEF = new TH1F("Sign corrected, Respin 2 Aq, respin1 ErrorFlag","respin2 Aq, respin1 ErrorFlag",200,-15.0e6,15.0e6);
+  TH1F * h_DD_prEF = new TH1F("Sign corrected, Respin 2 - respin1, respin1 ErrorFlag","respin2 - respin1 Aq DD, respin1 ErrorFlag",200,-.5e6,.5e6);
+  TH1F * h_DD_r1EF = new TH1F("Sign corrected, Respin 2 - respin1, respin2 ErrorFlag","respin2 - respin1 Aq DD, respin2 ErrorFlag",200,-.5e6,.5e6);
+  TH1F * hr1_Aq_r1EF_w1_in  = new TH1F("respin2 Aq, respin2 ErrorFlag, in right" ,"Sign corrected, Respin 2 Aq, wien right, IHWP IN, respin2 ErrorFlag",200,-15.0e6,15.0e6);
+  TH1F * hr1_Aq_prEF_w1_in  = new TH1F("respin2 Aq, respin1 ErrorFlag, in right"   ,"Sign corrected, Respin 2 Aq, wien right, IHWP IN, respin1 ErrorFlag",   200,-15.0e6,15.0e6);
+  TH1F * hr1_Aq_r1EF_w1_out = new TH1F("respin2 Aq, respin2 ErrorFlag, out right","Sign corrected, Respin 2 Aq, wien right, IHWP OUT, respin2 ErrorFlag",200,-15.0e6,15.0e6);
+  TH1F * hr1_Aq_prEF_w1_out = new TH1F("respin2 Aq, respin1 ErrorFlag, out right"  ,"Sign corrected, Respin 2 Aq, wien right, IHWP OUT, respin1 ErrorFlag",  200,-15.0e6,15.0e6);
+  TH1F * hr1_Aq_r1EF_w2_in  = new TH1F("respin2 Aq, respin2 ErrorFlag, in left"  ,"Sign corrected, Respin 2 Aq, wien left, IHWP IN, respin2 ErrorFlag",  200,-15.0e6,15.0e6);
+  TH1F * hr1_Aq_prEF_w2_in  = new TH1F("respin2 Aq, respin1 ErrorFlag, in left"    ,"Sign corrected, Respin 2 Aq, wien left, IHWP IN, respin1 ErrorFlag",    200,-15.0e6,15.0e6);
+  TH1F * hr1_Aq_r1EF_w2_out = new TH1F("respin2 Aq, respin2 ErrorFlag, out left" ,"Sign corrected, Respin 2 Aq, wien left, IHWP OUT, respin2 ErrorFlag", 200,-15.0e6,15.0e6);
+  TH1F * hr1_Aq_prEF_w2_out = new TH1F("respin2 Aq, respin1 ErrorFlag, out left"   ,"Sign corrected, Respin 2 Aq, wien left, IHWP OUT, respin1 ErrorFlag",   200,-15.0e6,15.0e6);
+  TH1F * hpr = new TH1F("respin1 missing from respin2","respin1 missing from respin2",3200,5400,8600);
+  TH1F * hpr_Aq_r1EF = new TH1F("Sign corrected, respin1 Aq, respin2 ErrorFlag","respin1 Aq, respin2 ErrorFlag",200,-15.0e6,15.0e6);
+  TH1F * hpr_Aq_prEF = new TH1F("Sign corrected, respin1 Aq, respin1 ErrorFlag","respin1 Aq, respin1 ErrorFlag",200,-15.0e6,15.0e6);
+  TH1F * hpr_Aq_r1EF_w1_in  = new TH1F("respin1 Aq, respin2 ErrorFlag, in right" ,"Sign corrected, respin1 Aq, wien right, IHWP IN, respin2 ErrorFlag" ,200,-15.0e6,15.0e6);
+  TH1F * hpr_Aq_prEF_w1_in  = new TH1F("respin1 Aq, respin1 ErrorFlag, in right"   ,"Sign corrected, respin1 Aq, wien right, IHWP IN, respin1 ErrorFlag"   ,200,-15.0e6,15.0e6);
+  TH1F * hpr_Aq_r1EF_w1_out = new TH1F("respin1 Aq, respin2 ErrorFlag, out right","Sign corrected, respin1 Aq, wien right, IHWP OUT, respin2 ErrorFlag",200,-15.0e6,15.0e6);
+  TH1F * hpr_Aq_prEF_w1_out = new TH1F("respin1 Aq, respin1 ErrorFlag, out right"  ,"Sign corrected, respin1 Aq, wien right, IHWP OUT, respin1 ErrorFlag"  ,200,-15.0e6,15.0e6);
+  TH1F * hpr_Aq_r1EF_w2_in  = new TH1F("respin1 Aq, respin2 ErrorFlag, in left"  ,"Sign corrected, respin1 Aq, wien left, IHWP IN, respin2 ErrorFlag"  ,200,-15.0e6,15.0e6);
+  TH1F * hpr_Aq_prEF_w2_in  = new TH1F("respin1 Aq, respin1 ErrorFlag, in left"    ,"Sign corrected, respin1 Aq, wien left, IHWP IN, respin1 ErrorFlag"    ,200,-15.0e6,15.0e6);
+  TH1F * hpr_Aq_r1EF_w2_out = new TH1F("respin1 Aq, respin2 ErrorFlag, out left" ,"Sign corrected, respin1 Aq, wien left, IHWP OUT, respin2 ErrorFlag" ,200,-15.0e6,15.0e6);
+  TH1F * hpr_Aq_prEF_w2_out = new TH1F("respin1 Aq, respinrespin1rFlag, out left"   ,"Sign corrected, respin1 Aq, wien left, IHWP OUT, respin1 ErrorFlag"   ,200,-15.0e6,15.0e6);
 
-  Printf("Respin1 has %d entries, prompt has %d",respin1_entries,prompt_entries);
+  Printf("respin2 has %d entries, respin1 has %d",respin2_entries,respin1_entries);
 
-  //Int_t nruns = mul_trip_respin1->Draw("run_number","CodaEventNumber>=4000 && CodaEventNumber<=4003","goff");
+  //Int_t nruns = mul_trip_respin2->Draw("run_number","CodaEventNumber>=4000 && CodaEventNumber<=4003","goff");
   Int_t nruns = 0;
   Int_t ndiff_plus  = 0;
   Int_t ndiff_minus = 0;
@@ -117,13 +117,13 @@ void loopAq() {
   std::vector<Double_t> counts_plus;
   std::vector<Double_t> counts_minus;
 
-  for (Int_t i = 0 ; i < respin1_entries ; i++){
-    mul_trip_respin1->GetEntry(i);
-    Int_t succeed = mul_trip_prompt->GetEntryWithIndex(r1_run_number,r1_CEN);
+  for (Int_t i = 0 ; i < respin2_entries ; i++){
+    mul_trip_respin2->GetEntry(i);
+    Int_t succeed = mul_trip_respin1->GetEntryWithIndex(r1_run_number,r1_CEN);
     if (r1_run_number == 6784.0 || pr_run_number == 6784.0) {continue;}
     if (r1_run_number == 6684.0 || pr_run_number == 6684.0) {continue;}
     if ((r1_run_number != pr_run_number) || (r1_CEN != pr_CEN)) {
-   //   Printf("Respin1 event %f, %f, Prompt fails with stale %f, %f",r1_run_number,r1_CEN, pr_run_number, pr_CEN);
+   //   Printf("respin2 event %f, %f, respin1 fails with stale %f, %f",r1_run_number,r1_CEN, pr_run_number, pr_CEN);
       hr1->Fill(r1_run_number,1);
       continue;
     }
@@ -188,13 +188,13 @@ void loopAq() {
 
   previousRun = 0;
 
-  for (Int_t i = 0 ; i < prompt_entries ; i++){
-    mul_trip_prompt->GetEntry(i);
-    Int_t succeed = mul_trip_respin1->GetEntryWithIndex(pr_run_number,pr_CEN);
+  for (Int_t i = 0 ; i < respin1_entries ; i++){
+    mul_trip_respin1->GetEntry(i);
+    Int_t succeed = mul_trip_respin2->GetEntryWithIndex(pr_run_number,pr_CEN);
     if (r1_run_number == 6684.0 || pr_run_number == 6684.0) {continue;}
     if (r1_run_number == 6784.0 || pr_run_number == 6784.0) {continue;}
     if ((r1_run_number != pr_run_number) || (r1_CEN != pr_CEN)) {
-  //    Printf("Prompt event %f, %f, Respin1 fails with stale %f, %f",pr_run_number,pr_CEN, r1_run_number, r1_CEN);
+  //    Printf("respin1 event %f, %f, respin2 fails with stale %f, %f",pr_run_number,pr_CEN, r1_run_number, r1_CEN);
       hpr->Fill(r1_run_number,1);
       continue;
     }
@@ -256,11 +256,11 @@ void loopAq() {
   counts_minus.push_back((Double_t)counter_minus_local);
   counter_minus = 0;
   nruns++;
-  Printf("Number of added multiplets to respin1 cut = %d",ndiff_plus);
-  Printf("Number of lost multiplets to respin1 cut = %d",ndiff_minus);
-  Printf("Total change to respin1 cut = %d",ndiff_plus+ndiff_minus);
-  Printf("Number of new multiplets to respin1 cut, per run = %f, %d runs",1.0*(ndiff_plus+ndiff_minus)/nruns,nruns);
-  //Printf("Number of new multiplets to respin1 cut, per run = %f",1.0*(ndiff_plus-ndiff_minus)/nruns);
+  Printf("Number of added multiplets to respin2 cut = %d",ndiff_plus);
+  Printf("Number of lost multiplets to respin2 cut = %d",ndiff_minus);
+  Printf("Total change to respin2 cut = %d",ndiff_plus+ndiff_minus);
+  Printf("Number of new multiplets to respin2 cut, per run = %f, %d runs",1.0*(ndiff_plus+ndiff_minus)/nruns,nruns);
+  //Printf("Number of new multiplets to respin2 cut, per run = %f",1.0*(ndiff_plus-ndiff_minus)/nruns);
 
   gStyle->SetOptStat(112211);
   TCanvas* c1 = new TCanvas();
@@ -285,10 +285,10 @@ void loopAq() {
   }
   TGraph tgraph_r1_sum = TGraph(runs_sum.size(),&runs_sum[0],&counts_sum[0]);
   TMultiGraph mg;
-  tgraph_r1_plus.SetNameTitle("tgraph plus","TGraph of difference in ErrorFlag from Intersect rootfiles (respin1 - prompt) new in respin 1");
-  tgraph_r1_minus.SetNameTitle("tgraph minus","TGraph of difference in ErrorFlag from Intersect rootfiles (respin1 - prompt) missing in respin 1");
-  tgraph_r1_sum.SetNameTitle("tgraph sum","TGraph of summed difference in ErrorFlag from Intersect rootfiles (respin1 - prompt) net gain in respin 1");
-  mg.SetNameTitle("tgraph diff","TGraph of Respin 1 ErrorFlag change. Respin gain (left, blue), lost (middle, red), net (right)");
+  tgraph_r1_plus.SetNameTitle("tgraph plus","TGraph of difference in ErrorFlag from Intersect rootfiles (respin2 - respin1) new in respin2");
+  tgraph_r1_minus.SetNameTitle("tgraph minus","TGraph of difference in ErrorFlag from Intersect rootfiles (respin2 - respin1) missing in respin2");
+  tgraph_r1_sum.SetNameTitle("tgraph sum","TGraph of summed difference in ErrorFlag from Intersect rootfiles (respin2 - respin1) net gain in respin2");
+  mg.SetNameTitle("tgraph diff","TGraph of Respin 2 ErrorFlag change. Respin gain (left, blue), lost (middle, red), net (right)");
   TF1* fp =new TF1("fp","pol0");
   TF1* fm =new TF1("fm","pol0");
   TF1* fa =new TF1("fa","pol0");
@@ -324,7 +324,7 @@ void loopAq() {
   ps->SetX1NDC(0.05);
   ps->SetX2NDC(0.35);
   //TList * plol = ps->GetListOfLines();
-  TLatex *pmyt = new TLatex(0,0,"Respin 1 add in");
+  TLatex *pmyt = new TLatex(0,0,"Respin 2 add in");
   pmyt ->SetTextFont(42);
   pmyt ->SetTextSize(0.04);
   pmyt ->SetTextColor(kBlue);
@@ -351,7 +351,7 @@ void loopAq() {
   ms->SetX1NDC(0.35);
   ms->SetX2NDC(0.65);
   //TList * mlol = ms->GetListOfLines();
-  TLatex *mmyt = new TLatex(0,0,"Respin 1 take out");
+  TLatex *mmyt = new TLatex(0,0,"Respin 2 take out");
   mmyt ->SetTextFont(42);
   mmyt ->SetTextSize(0.04);
   mmyt ->SetTextColor(kRed);
@@ -378,7 +378,7 @@ void loopAq() {
   as->SetX1NDC(0.65);
   as->SetX2NDC(0.95);
   //TList * alol = as->GetListOfLines();
-  TLatex *amyt = new TLatex(0,0,"Respin 1 net gain");
+  TLatex *amyt = new TLatex(0,0,"Respin 2 net gain");
   amyt ->SetTextFont(42);
   amyt ->SetTextSize(0.04);
   amyt ->SetTextColor(kBlack);
@@ -408,7 +408,7 @@ void loopAq() {
   //tgraph_r1->Fit("pol0");
   c1->cd(4);
   //gStyle->SetOptStat(0);
-  TProfile* tprof_r1 = new TProfile("hprof","Profile of difference in ErrorFlag from Intersect rootfiles (respin1 - prompt)",190,5407.5,9300.5);
+  TProfile* tprof_r1 = new TProfile("hprof","Profile of difference in ErrorFlag from Intersect rootfiles (respin2 - respin1)",190,5407.5,9300.5);
 
   for (Int_t i = 0 ; i<hr1_EF->GetNbinsX() ; i++){
     if (hr1_EF->GetBinContent(i)!=0){

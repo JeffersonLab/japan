@@ -1,35 +1,39 @@
-void loopAq() {
-  /*
+void loopAqAt() {
   //TFile *_file0 = TFile::Open("respin1_rootfiles/trip_6344.root");
   //TFile *_file1 = TFile::Open("prompt_rootfiles/trip_6344.root");
-  TFile *_file0 = TFile::Open("respin1_rootfiles/test.root");
-  TFile *_file1 = TFile::Open("prompt_rootfiles/test.root");
-  TString outplotname = "plots/Aq_direct_compare_respin1_prompt.pdf";
-  //TFile *_file0 = TFile::Open("respin1_rootfiles/test_AT.root");
-  //TFile *_file1 = TFile::Open("prompt_rootfiles/test_AT.root");
-  //TString outplotname = "plots/AT_respin1_prompt.pdf";
+  //TFile *_file0 = TFile::Open("respin1_rootfiles/test.root");
+  //TFile *_file1 = TFile::Open("prompt_rootfiles/test.root");
+  //TString outplotname = "plots/Aq_direct_compare_respin1_prompt.pdf";
+  //TFile *_file0 = TFile::Open("respin1_rootfiles/trip_PB_new.root");
+  //TFile *_file1 = TFile::Open("prompt_rootfiles/trip_PB_new.root");
+  //TString outplotname = "plots/AT_Pb_new_respin1_prompt.pdf";
+  TFile *_file0 = TFile::Open("respin1_rootfiles/test_AT.root");
+  TFile *_file1 = TFile::Open("prompt_rootfiles/test_AT.root");
+  TString outplotname = "plots/AT_all_respin1_prompt.pdf";
+  //TFile *_file0 = TFile::Open("respin1_rootfiles/trip_6377.root");
+  //TFile *_file1 = TFile::Open("prompt_rootfiles/trip_6377.root");
+  //TString outplotname = "plots/AT_6377_respin1_prompt.pdf";
   TTree *mul_trip_respin1;
   TTree *mul_trip_prompt;
   _file0->GetObject("mul_trip", mul_trip_respin1);
   _file1->GetObject("mul_trip", mul_trip_prompt);
-  */
-
-  TString outplotname = "plots/Aq_direct_compare_prompt_respin1.pdf";
-  TString treename = "mul_trip";
-  TChain *mul_trip_prompt = new TChain(treename);
-  mul_trip_prompt->SetCacheSize(20*1024*1024);
-  mul_trip_prompt->Add("prompt_rootfiles/test.root");
-  mul_trip_prompt->Add("prompt_rootfiles/test_1.root");
-  mul_trip_prompt->Add("prompt_rootfiles/test_2.root");
-  mul_trip_prompt->LoadTree(-1);
-  TChain *mul_trip_respin1 = new TChain(treename);
-  mul_trip_respin1->SetCacheSize(20*1024*1024);
-  mul_trip_respin1->Add("respin1_rootfiles/test.root");
-  mul_trip_respin1->Add("respin1_rootfiles/test_1.root");
-  mul_trip_respin1->Add("respin1_rootfiles/test_2.root");
-  mul_trip_respin1->LoadTree(-1);
 
 
+  typedef struct {
+    Double_t hw_sum;
+    Double_t block0;
+    Double_t block1;
+    Double_t block2;
+    Double_t block3;
+    Double_t num_samples;
+    Double_t Device_Error_Code;
+    Double_t hw_sum_raw;
+    Double_t block0_raw;
+    Double_t block1_raw;
+    Double_t block2_raw;
+    Double_t block3_raw;
+    Double_t sequence_number;
+  } japan_device_mulc ;
   typedef struct {
     Double_t hw_sum;
     Double_t block0;
@@ -41,6 +45,22 @@ void loopAq() {
   } japan_device ;
   japan_device r1_bcm_an_us;
   japan_device pr_bcm_an_us;
+  //japan_device_mulc r1_asym_us_avg;
+  //japan_device_mulc pr_asym_us_avg;
+  //japan_device_mulc r1_asym_us_dd;
+  //japan_device_mulc pr_asym_us_dd;
+  japan_device r1_asym_usl;
+  japan_device pr_asym_usl;
+  japan_device r1_asym_usr;
+  japan_device pr_asym_usr;
+  japan_device r1_cor_asym_us_avg;
+  japan_device pr_cor_asym_us_avg;
+  japan_device r1_cor_asym_us_dd;
+  japan_device pr_cor_asym_us_dd;
+  japan_device r1_cor_asym_usl;
+  japan_device pr_cor_asym_usl;
+  japan_device r1_cor_asym_usr;
+  japan_device pr_cor_asym_usr;
 
 
   Double_t r1_run_number = 0.0;
@@ -64,6 +84,14 @@ void loopAq() {
   mul_trip_respin1->SetBranchAddress("rcdb_flip_state",&r1_wien);
   mul_trip_respin1->SetBranchAddress("rcdb_ihwp",&r1_ihwp);
   mul_trip_respin1->SetBranchAddress("asym_bcm_an_us",&r1_bcm_an_us);
+  //mul_trip_respin1->SetBranchAddress("asym_us_avg",&r1_asym_us_avg);
+  //mul_trip_respin1->SetBranchAddress("asym_us_dd",&r1_asym_us_dd);
+  mul_trip_respin1->SetBranchAddress("asym_usl",&r1_asym_usl);
+  mul_trip_respin1->SetBranchAddress("asym_usr",&r1_asym_usr);
+  mul_trip_respin1->SetBranchAddress("cor_asym_us_avg",&r1_cor_asym_us_avg);
+  mul_trip_respin1->SetBranchAddress("cor_asym_us_dd",&r1_cor_asym_us_dd);
+  mul_trip_respin1->SetBranchAddress("cor_asym_usl",&r1_cor_asym_usl);
+  mul_trip_respin1->SetBranchAddress("cor_asym_usr",&r1_cor_asym_usr);
 
   mul_trip_prompt ->SetBranchAddress("run_number",&pr_run_number);
   mul_trip_prompt ->SetBranchAddress("CodaEventNumber",&pr_CEN);
@@ -71,35 +99,51 @@ void loopAq() {
   mul_trip_prompt ->SetBranchAddress("rcdb_flip_state",&pr_wien);
   mul_trip_prompt ->SetBranchAddress("rcdb_ihwp",&pr_ihwp);
   mul_trip_prompt ->SetBranchAddress("asym_bcm_an_us",&pr_bcm_an_us);
+  //mul_trip_prompt ->SetBranchAddress("asym_us_avg",&pr_asym_us_avg);
+  //mul_trip_prompt ->SetBranchAddress("asym_us_dd",&pr_asym_us_dd);
+  mul_trip_prompt ->SetBranchAddress("asym_usl",&pr_asym_usl);
+  mul_trip_prompt ->SetBranchAddress("asym_usr",&pr_asym_usr);
+  mul_trip_prompt ->SetBranchAddress("cor_asym_us_avg",&pr_cor_asym_us_avg);
+  mul_trip_prompt ->SetBranchAddress("cor_asym_us_dd",&pr_cor_asym_us_dd);
+  mul_trip_prompt ->SetBranchAddress("cor_asym_usl",&pr_cor_asym_usl);
+  mul_trip_prompt ->SetBranchAddress("cor_asym_usr",&pr_cor_asym_usr);
 
   Int_t respin1_entries = mul_trip_respin1->GetEntries("run_number != 6784 && run_number != 6684");
   Int_t prompt_entries  = mul_trip_prompt->GetEntries("run_number != 6784 && run_number != 6684");
 
-  TH1F * hr1 = new TH1F("respin1 missing from prompt","respin1 missing from prompt",3200,5400,8600);
-  TH1F * hr1_EF = new TH1F("respin1 ErrorFlag - prompt ErrorFlag","respin1 ErrorFlag - prompt ErrorFlag counts, Intersect ROOT files (+ = more respin1 data)",3200,5400,8600);
+  TH1F * hr1 = new TH1F("respin1 missing from prompt","respin1 missing from prompt",100,6330,6429);
+  TH1F * hr1_EF = new TH1F("respin1 ErrorFlag - prompt ErrorFlag","respin1 ErrorFlag - prompt ErrorFlag counts, Intersect ROOT files (+ = more respin1 data)",100,6330,6429);
   TH1F * hr1_Aq_r1EF = new TH1F("Sign corrected, Respin 1 Aq, respin 1 ErrorFlag","respin1 Aq, respin 1 ErrorFlag",200,-15.0e6,15.0e6);
   TH1F * hr1_Aq_prEF = new TH1F("Sign corrected, Respin 1 Aq, prompt ErrorFlag","respin1 Aq, prompt ErrorFlag",200,-15.0e6,15.0e6);
   TH1F * h_DD_prEF = new TH1F("Sign corrected, Respin 1 - prompt, prompt ErrorFlag","respin1 - prompt Aq DD, prompt ErrorFlag",200,-.5e6,.5e6);
   TH1F * h_DD_r1EF = new TH1F("Sign corrected, Respin 1 - prompt, respin1 ErrorFlag","respin1 - prompt Aq DD, respin 1 ErrorFlag",200,-.5e6,.5e6);
-  TH1F * hr1_Aq_r1EF_w1_in  = new TH1F("respin1 Aq, respin 1 ErrorFlag, in right" ,"Sign corrected, Respin 1 Aq, wien right, IHWP IN, respin 1 ErrorFlag",200,-15.0e6,15.0e6);
-  TH1F * hr1_Aq_prEF_w1_in  = new TH1F("respin1 Aq, prompt ErrorFlag, in right"   ,"Sign corrected, Respin 1 Aq, wien right, IHWP IN, prompt ErrorFlag",   200,-15.0e6,15.0e6);
-  TH1F * hr1_Aq_r1EF_w1_out = new TH1F("respin1 Aq, respin 1 ErrorFlag, out right","Sign corrected, Respin 1 Aq, wien right, IHWP OUT, respin 1 ErrorFlag",200,-15.0e6,15.0e6);
-  TH1F * hr1_Aq_prEF_w1_out = new TH1F("respin1 Aq, prompt ErrorFlag, out right"  ,"Sign corrected, Respin 1 Aq, wien right, IHWP OUT, prompt ErrorFlag",  200,-15.0e6,15.0e6);
-  TH1F * hr1_Aq_r1EF_w2_in  = new TH1F("respin1 Aq, respin 1 ErrorFlag, in left"  ,"Sign corrected, Respin 1 Aq, wien left, IHWP IN, respin 1 ErrorFlag",  200,-15.0e6,15.0e6);
-  TH1F * hr1_Aq_prEF_w2_in  = new TH1F("respin1 Aq, prompt ErrorFlag, in left"    ,"Sign corrected, Respin 1 Aq, wien left, IHWP IN, prompt ErrorFlag",    200,-15.0e6,15.0e6);
-  TH1F * hr1_Aq_r1EF_w2_out = new TH1F("respin1 Aq, respin 1 ErrorFlag, out left" ,"Sign corrected, Respin 1 Aq, wien left, IHWP OUT, respin 1 ErrorFlag", 200,-15.0e6,15.0e6);
-  TH1F * hr1_Aq_prEF_w2_out = new TH1F("respin1 Aq, prompt ErrorFlag, out left"   ,"Sign corrected, Respin 1 Aq, wien left, IHWP OUT, prompt ErrorFlag",   200,-15.0e6,15.0e6);
+  TH1F * hr1_Aq_r1EF_w3_in  = new TH1F("respin1 Aq, respin 1 ErrorFlag, in right" ,"Sign corrected, Respin 1 Aq, wien right, IHWP IN, respin 1 ErrorFlag",200,-15.0e6,15.0e6);
+  TH1F * hr1_Aq_prEF_w3_in  = new TH1F("respin1 Aq, prompt ErrorFlag, in right"   ,"Sign corrected, Respin 1 Aq, wien right, IHWP IN, prompt ErrorFlag",   200,-15.0e6,15.0e6);
+  TH1F * hr1_Aq_r1EF_w3_out = new TH1F("respin1 Aq, respin 1 ErrorFlag, out right","Sign corrected, Respin 1 Aq, wien right, IHWP OUT, respin 1 ErrorFlag",200,-15.0e6,15.0e6);
+  TH1F * hr1_Aq_prEF_w3_out = new TH1F("respin1 Aq, prompt ErrorFlag, out right"  ,"Sign corrected, Respin 1 Aq, wien right, IHWP OUT, prompt ErrorFlag",  200,-15.0e6,15.0e6);
+  TH1F * hr1_rAT_r1EF_w3_in  = new TH1F("respin1 raw AT, respin 1 ErrorFlag, in left"  ,"Sign corrected, Respin 1 raw AT, wien left, IHWP IN, respin 1 ErrorFlag",  200,-15.0e6,15.0e6);
+  TH1F * hr1_rAT_prEF_w3_in  = new TH1F("respin1 raw AT, prompt ErrorFlag, in left"    ,"Sign corrected, Respin 1 raw AT, wien left, IHWP IN, prompt ErrorFlag",    200,-15.0e6,15.0e6);
+  TH1F * hr1_rAT_r1EF_w3_out = new TH1F("respin1 raw AT, respin 1 ErrorFlag, out left" ,"Sign corrected, Respin 1 raw AT, wien left, IHWP OUT, respin 1 ErrorFlag", 200,-15.0e6,15.0e6);
+  TH1F * hr1_rAT_prEF_w3_out = new TH1F("respin1 raw AT, prompt ErrorFlag, out left"   ,"Sign corrected, Respin 1 raw AT, wien left, IHWP OUT, prompt ErrorFlag",   200,-15.0e6,15.0e6);
+  TH1F * hr1_AT_r1EF_w3_in  = new TH1F("respin1 AT, respin 1 ErrorFlag, in left"  ,"Sign corrected, Respin 1 AT, wien left, IHWP IN, respin 1 ErrorFlag",  200,-15.0e6,15.0e6);
+  TH1F * hr1_AT_prEF_w3_in  = new TH1F("respin1 AT, prompt ErrorFlag, in left"    ,"Sign corrected, Respin 1 AT, wien left, IHWP IN, prompt ErrorFlag",    200,-15.0e6,15.0e6);
+  TH1F * hr1_AT_r1EF_w3_out = new TH1F("respin1 AT, respin 1 ErrorFlag, out left" ,"Sign corrected, Respin 1 AT, wien left, IHWP OUT, respin 1 ErrorFlag", 200,-15.0e6,15.0e6);
+  TH1F * hr1_AT_prEF_w3_out = new TH1F("respin1 AT, prompt ErrorFlag, out left"   ,"Sign corrected, Respin 1 AT, wien left, IHWP OUT, prompt ErrorFlag",   200,-15.0e6,15.0e6);
   TH1F * hpr = new TH1F("prompt missing from respin1","prompt missing from respin1",3200,5400,8600);
   TH1F * hpr_Aq_r1EF = new TH1F("Sign corrected, Prompt Aq, respin 1 ErrorFlag","prompt Aq, respin 1 ErrorFlag",200,-15.0e6,15.0e6);
   TH1F * hpr_Aq_prEF = new TH1F("Sign corrected, Prompt Aq, prompt ErrorFlag","prompt Aq, prompt ErrorFlag",200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_r1EF_w1_in  = new TH1F("prompt Aq, respin 1 ErrorFlag, in right" ,"Sign corrected, Prompt Aq, wien right, IHWP IN, respin 1 ErrorFlag" ,200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_prEF_w1_in  = new TH1F("prompt Aq, prompt ErrorFlag, in right"   ,"Sign corrected, Prompt Aq, wien right, IHWP IN, prompt ErrorFlag"   ,200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_r1EF_w1_out = new TH1F("prompt Aq, respin 1 ErrorFlag, out right","Sign corrected, Prompt Aq, wien right, IHWP OUT, respin 1 ErrorFlag",200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_prEF_w1_out = new TH1F("prompt Aq, prompt ErrorFlag, out right"  ,"Sign corrected, Prompt Aq, wien right, IHWP OUT, prompt ErrorFlag"  ,200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_r1EF_w2_in  = new TH1F("prompt Aq, respin 1 ErrorFlag, in left"  ,"Sign corrected, Prompt Aq, wien left, IHWP IN, respin 1 ErrorFlag"  ,200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_prEF_w2_in  = new TH1F("prompt Aq, prompt ErrorFlag, in left"    ,"Sign corrected, Prompt Aq, wien left, IHWP IN, prompt ErrorFlag"    ,200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_r1EF_w2_out = new TH1F("prompt Aq, respin 1 ErrorFlag, out left" ,"Sign corrected, Prompt Aq, wien left, IHWP OUT, respin 1 ErrorFlag" ,200,-15.0e6,15.0e6);
-  TH1F * hpr_Aq_prEF_w2_out = new TH1F("prompt Aq, prompt ErrorFlag, out left"   ,"Sign corrected, Prompt Aq, wien left, IHWP OUT, prompt ErrorFlag"   ,200,-15.0e6,15.0e6);
+  TH1F * hpr_Aq_r1EF_w3_in  = new TH1F("prompt Aq, respin 1 ErrorFlag, in right" ,"Sign corrected, Prompt Aq, wien right, IHWP IN, respin 1 ErrorFlag" ,200,-15.0e6,15.0e6);
+  TH1F * hpr_Aq_prEF_w3_in  = new TH1F("prompt Aq, prompt ErrorFlag, in right"   ,"Sign corrected, Prompt Aq, wien right, IHWP IN, prompt ErrorFlag"   ,200,-15.0e6,15.0e6);
+  TH1F * hpr_Aq_r1EF_w3_out = new TH1F("prompt Aq, respin 1 ErrorFlag, out right","Sign corrected, Prompt Aq, wien right, IHWP OUT, respin 1 ErrorFlag",200,-15.0e6,15.0e6);
+  TH1F * hpr_Aq_prEF_w3_out = new TH1F("prompt Aq, prompt ErrorFlag, out right"  ,"Sign corrected, Prompt Aq, wien right, IHWP OUT, prompt ErrorFlag"  ,200,-15.0e6,15.0e6);
+  TH1F * hpr_rAT_r1EF_w3_in  = new TH1F("prompt raw AT, respin 1 ErrorFlag, in left"  ,"Sign corrected, Prompt raw AT, wien left, IHWP IN, respin 1 ErrorFlag"  ,200,-15.0e6,15.0e6);
+  TH1F * hpr_rAT_prEF_w3_in  = new TH1F("prompt raw AT, prompt ErrorFlag, in left"    ,"Sign corrected, Prompt raw AT, wien left, IHWP IN, prompt ErrorFlag"    ,200,-15.0e6,15.0e6);
+  TH1F * hpr_rAT_r1EF_w3_out = new TH1F("prompt raw AT, respin 1 ErrorFlag, out left" ,"Sign corrected, Prompt raw AT, wien left, IHWP OUT, respin 1 ErrorFlag" ,200,-15.0e6,15.0e6);
+  TH1F * hpr_rAT_prEF_w3_out = new TH1F("prompt raw AT, prompt ErrorFlag, out left"   ,"Sign corrected, Prompt raw AT, wien left, IHWP OUT, prompt ErrorFlag"   ,200,-15.0e6,15.0e6);
+  TH1F * hpr_AT_r1EF_w3_in  = new TH1F("prompt AT, respin 1 ErrorFlag, in left"  ,"Sign corrected, Prompt AT, wien left, IHWP IN, respin 1 ErrorFlag"  ,200,-15.0e6,15.0e6);
+  TH1F * hpr_AT_prEF_w3_in  = new TH1F("prompt AT, prompt ErrorFlag, in left"    ,"Sign corrected, Prompt AT, wien left, IHWP IN, prompt ErrorFlag"    ,200,-15.0e6,15.0e6);
+  TH1F * hpr_AT_r1EF_w3_out = new TH1F("prompt AT, respin 1 ErrorFlag, out left" ,"Sign corrected, Prompt AT, wien left, IHWP OUT, respin 1 ErrorFlag" ,200,-15.0e6,15.0e6);
+  TH1F * hpr_AT_prEF_w3_out = new TH1F("prompt AT, prompt ErrorFlag, out left"   ,"Sign corrected, Prompt AT, wien left, IHWP OUT, prompt ErrorFlag"   ,200,-15.0e6,15.0e6);
 
   Printf("Respin1 has %d entries, prompt has %d",respin1_entries,prompt_entries);
 
@@ -145,21 +189,25 @@ void loopAq() {
       hr1_Aq_r1EF->Fill(r1_bcm_an_us.hw_sum/1.0e-9);
       hpr_Aq_r1EF->Fill(pr_bcm_an_us.hw_sum/1.0e-9);
 
-      if (r1_wien == 1.0 && r1_ihwp == 1.0) {
-        hr1_Aq_r1EF_w1_in->Fill(r1_bcm_an_us.hw_sum/1.0e-9);
-        hpr_Aq_r1EF_w1_in->Fill(pr_bcm_an_us.hw_sum/1.0e-9);
+      if (r1_wien == 3.0 && r1_ihwp == 1.0) {
+        hr1_Aq_r1EF_w3_in->Fill(r1_bcm_an_us.hw_sum/1.0e-9);
+        hpr_Aq_r1EF_w3_in->Fill(pr_bcm_an_us.hw_sum/1.0e-9);
       }
-      if (r1_wien == 1.0 && r1_ihwp == 2.0) {
-        hr1_Aq_r1EF_w1_out->Fill(r1_bcm_an_us.hw_sum/1.0e-9);
-        hpr_Aq_r1EF_w1_out->Fill(pr_bcm_an_us.hw_sum/1.0e-9);
+      if (r1_wien == 3.0 && r1_ihwp == 2.0) {
+        hr1_Aq_r1EF_w3_out->Fill(r1_bcm_an_us.hw_sum/1.0e-9);
+        hpr_Aq_r1EF_w3_out->Fill(pr_bcm_an_us.hw_sum/1.0e-9);
       }
-      if (r1_wien == 2.0 && r1_ihwp == 1.0) {
-        hr1_Aq_r1EF_w2_in->Fill(r1_bcm_an_us.hw_sum/1.0e-9);
-        hpr_Aq_r1EF_w2_in->Fill(pr_bcm_an_us.hw_sum/1.0e-9);
+      if (r1_wien == 3.0 && r1_ihwp == 1.0) {
+        hr1_rAT_r1EF_w3_in->Fill((r1_asym_usl.hw_sum-r1_asym_usr.hw_sum)/1.0e-9);
+        hpr_rAT_r1EF_w3_in->Fill((pr_asym_usl.hw_sum-pr_asym_usr.hw_sum)/1.0e-9);
+        hr1_AT_r1EF_w3_in->Fill(r1_cor_asym_us_dd.hw_sum/1.0e-9);
+        hpr_AT_r1EF_w3_in->Fill(pr_cor_asym_us_dd.hw_sum/1.0e-9);
       }
-      if (r1_wien == 2.0 && r1_ihwp == 2.0) {
-        hr1_Aq_r1EF_w2_out->Fill(r1_bcm_an_us.hw_sum/1.0e-9);
-        hpr_Aq_r1EF_w2_out->Fill(pr_bcm_an_us.hw_sum/1.0e-9);
+      if (r1_wien == 3.0 && r1_ihwp == 2.0) {
+        hr1_rAT_r1EF_w3_out->Fill((r1_asym_usl.hw_sum-r1_asym_usr.hw_sum)/1.0e-9);
+        hpr_rAT_r1EF_w3_out->Fill((pr_asym_usl.hw_sum-pr_asym_usr.hw_sum)/1.0e-9);
+        hr1_AT_r1EF_w3_out->Fill(r1_cor_asym_us_dd.hw_sum/1.0e-9);
+        hpr_AT_r1EF_w3_out->Fill(pr_cor_asym_us_dd.hw_sum/1.0e-9);
       }
     }
     if (previousRun == 0) {
@@ -215,21 +263,25 @@ void loopAq() {
       hr1_Aq_prEF->Fill(r1_bcm_an_us.hw_sum/1.0e-9);
       hpr_Aq_prEF->Fill(pr_bcm_an_us.hw_sum/1.0e-9);
 
-      if (r1_wien == 1.0 && r1_ihwp == 1.0) {
-        hr1_Aq_prEF_w1_in->Fill(r1_bcm_an_us.hw_sum/1.0e-9);
-        hpr_Aq_prEF_w1_in->Fill(pr_bcm_an_us.hw_sum/1.0e-9);
+      if (r1_wien == 3.0 && r1_ihwp == 1.0) {
+        hr1_Aq_prEF_w3_in->Fill(r1_bcm_an_us.hw_sum/1.0e-9);
+        hpr_Aq_prEF_w3_in->Fill(pr_bcm_an_us.hw_sum/1.0e-9);
       }
-      if (r1_wien == 1.0 && r1_ihwp == 2.0) {
-        hr1_Aq_prEF_w1_out->Fill(r1_bcm_an_us.hw_sum/1.0e-9);
-        hpr_Aq_prEF_w1_out->Fill(pr_bcm_an_us.hw_sum/1.0e-9);
+      if (r1_wien == 3.0 && r1_ihwp == 2.0) {
+        hr1_Aq_prEF_w3_out->Fill(r1_bcm_an_us.hw_sum/1.0e-9);
+        hpr_Aq_prEF_w3_out->Fill(pr_bcm_an_us.hw_sum/1.0e-9);
       }
-      if (r1_wien == 2.0 && r1_ihwp == 1.0) {
-        hr1_Aq_prEF_w2_in->Fill(r1_bcm_an_us.hw_sum/1.0e-9);
-        hpr_Aq_prEF_w2_in->Fill(pr_bcm_an_us.hw_sum/1.0e-9);
+      if (r1_wien == 3.0 && r1_ihwp == 1.0) {
+        hr1_rAT_prEF_w3_in->Fill((r1_asym_usl.hw_sum-r1_asym_usr.hw_sum)/1.0e-9);
+        hpr_rAT_prEF_w3_in->Fill((pr_asym_usl.hw_sum-pr_asym_usr.hw_sum)/1.0e-9);
+        hr1_AT_prEF_w3_in->Fill(r1_cor_asym_us_dd.hw_sum/1.0e-9);
+        hpr_AT_prEF_w3_in->Fill(pr_cor_asym_us_dd.hw_sum/1.0e-9);
       }
-      if (r1_wien == 2.0 && r1_ihwp == 2.0) {
-        hr1_Aq_prEF_w2_out->Fill(r1_bcm_an_us.hw_sum/1.0e-9);
-        hpr_Aq_prEF_w2_out->Fill(pr_bcm_an_us.hw_sum/1.0e-9);
+      if (r1_wien == 3.0 && r1_ihwp == 2.0) {
+        hr1_rAT_prEF_w3_out->Fill((r1_asym_usl.hw_sum-r1_asym_usr.hw_sum)/1.0e-9);
+        hpr_rAT_prEF_w3_out->Fill((pr_asym_usl.hw_sum-pr_asym_usr.hw_sum)/1.0e-9);
+        hr1_AT_prEF_w3_out->Fill(r1_cor_asym_us_dd.hw_sum/1.0e-9);
+        hpr_AT_prEF_w3_out->Fill(pr_cor_asym_us_dd.hw_sum/1.0e-9);
       }
     }
     if (previousRun == 0) {
@@ -451,64 +503,98 @@ void loopAq() {
   c3->Divide(2,2);
   c3->cd(1);
   gPad->SetLogy();
-  hr1_Aq_r1EF_w1_in->Draw();
+  hr1_Aq_r1EF_w3_in->Draw();
   c3->cd(2);
   gPad->SetLogy();
-  hr1_Aq_prEF_w1_in->Draw();
+  hr1_Aq_prEF_w3_in->Draw();
   c3->cd(3);
   gPad->SetLogy();
-  hpr_Aq_r1EF_w1_in->Draw();
+  hpr_Aq_r1EF_w3_in->Draw();
   c3->cd(4);
   gPad->SetLogy();
-  hpr_Aq_prEF_w1_in->Draw();
+  hpr_Aq_prEF_w3_in->Draw();
   c3->SaveAs(Form("%s",outplotname.Data()));
+  //c3->SaveAs(Form("test.pdf"));
+  //delete c3;
 
   TCanvas* c4 = new TCanvas();
   c4->Divide(2,2);
   c4->cd(1);
   gPad->SetLogy();
-  hr1_Aq_r1EF_w1_out->Draw();
+  hr1_Aq_r1EF_w3_out->Draw();
   c4->cd(2);
   gPad->SetLogy();
-  hr1_Aq_prEF_w1_out->Draw();
+  hr1_Aq_prEF_w3_out->Draw();
   c4->cd(3);
   gPad->SetLogy();
-  hpr_Aq_r1EF_w1_out->Draw();
+  hpr_Aq_r1EF_w3_out->Draw();
   c4->cd(4);
   gPad->SetLogy();
-  hpr_Aq_prEF_w1_out->Draw();
+  hpr_Aq_prEF_w3_out->Draw();
   c4->SaveAs(Form("%s",outplotname.Data()));
 
   TCanvas* c5 = new TCanvas();
   c5->Divide(2,2);
   c5->cd(1);
   gPad->SetLogy();
-  hr1_Aq_r1EF_w2_in->Draw();
+  hr1_rAT_r1EF_w3_in->Draw();
   c5->cd(2);
   gPad->SetLogy();
-  hr1_Aq_prEF_w2_in->Draw();
+  hr1_rAT_prEF_w3_in->Draw();
   c5->cd(3);
   gPad->SetLogy();
-  hpr_Aq_r1EF_w2_in->Draw();
+  hpr_rAT_r1EF_w3_in->Draw();
   c5->cd(4);
   gPad->SetLogy();
-  hpr_Aq_prEF_w2_in->Draw();
+  hpr_rAT_prEF_w3_in->Draw();
   c5->SaveAs(Form("%s",outplotname.Data()));
 
   TCanvas* c6 = new TCanvas();
   c6->Divide(2,2);
   c6->cd(1);
   gPad->SetLogy();
-  hr1_Aq_r1EF_w2_out->Draw();
+  hr1_rAT_r1EF_w3_out->Draw();
   c6->cd(2);
   gPad->SetLogy();
-  hr1_Aq_prEF_w2_out->Draw();
+  hr1_rAT_prEF_w3_out->Draw();
   c6->cd(3);
   gPad->SetLogy();
-  hpr_Aq_r1EF_w2_out->Draw();
+  hpr_rAT_r1EF_w3_out->Draw();
   c6->cd(4);
   gPad->SetLogy();
-  hpr_Aq_prEF_w2_out->Draw();
-  c6->SaveAs(Form("%s)",outplotname.Data()));
+  hpr_rAT_prEF_w3_out->Draw();
+  c6->SaveAs(Form("%s",outplotname.Data()));
+
+  TCanvas* c7 = new TCanvas();
+  c7->Divide(2,2);
+  c7->cd(1);
+  gPad->SetLogy();
+  hr1_AT_r1EF_w3_in->Draw();
+  c7->cd(2);
+  gPad->SetLogy();
+  hr1_AT_prEF_w3_in->Draw();
+  c7->cd(3);
+  gPad->SetLogy();
+  hpr_AT_r1EF_w3_in->Draw();
+  c7->cd(4);
+  gPad->SetLogy();
+  hpr_AT_prEF_w3_in->Draw();
+  c7->SaveAs(Form("%s",outplotname.Data()));
+
+  TCanvas* c8 = new TCanvas();
+  c8->Divide(2,2);
+  c8->cd(1);
+  gPad->SetLogy();
+  hr1_AT_r1EF_w3_out->Draw();
+  c8->cd(2);
+  gPad->SetLogy();
+  hr1_AT_prEF_w3_out->Draw();
+  c8->cd(3);
+  gPad->SetLogy();
+  hpr_AT_r1EF_w3_out->Draw();
+  c8->cd(4);
+  gPad->SetLogy();
+  hpr_AT_prEF_w3_out->Draw();
+  c8->SaveAs(Form("%s)",outplotname.Data()));
 
 }
