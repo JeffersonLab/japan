@@ -11,6 +11,8 @@
 #include <assert.h>
 #include <math.h>
 
+#include "TString.h"
+
 #include "LinReg_Bevington_Pebay.h"
 
 #include "QwLog.h"
