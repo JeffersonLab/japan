@@ -191,10 +191,10 @@ void ToolBox::dit_slopes_averaging(TString averaging_timescale = "segment") {
   newfile.Close();
 }
 
-void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t draw_plots = 0, TString mod_draw = "", TString mod_cut = "", TString type = "part", TString do_err = "", TString suffix = "") {
+void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t draw_plots = 0, TString mod_draw = "", TString mod_cut = "", TString DataSetCut = "ErrorFlag", TString type = "part", TString do_err = "", TString suffix = "") {
   TChain* mini                                  = new TChain("mini");
-  TChain* agg_part_avgd_friendable              = new TChain(Form("agg_ErrorFlag_%s_avgd%s_friendable",type.Data(),do_err.Data()));
-  TChain* agg_part_avgd_allbpms_friendable      = new TChain(Form("agg_ErrorFlag_%s_avgd_allbpms%s_friendable",type.Data(),do_err.Data()));
+  TChain* agg_part_avgd_friendable              = new TChain(Form("agg_%s_%s_avgd%s_friendable",DataSetCut.Data(),type.Data(),do_err.Data()));
+  TChain* agg_part_avgd_allbpms_friendable      = new TChain(Form("agg_%s_%s_avgd_allbpms%s_friendable",DataSetCut.Data(),type.Data(),do_err.Data()));
   TChain* agg_plain_friendable                  = new TChain("agg_plain_friendable");
   //TChain* mini_eigen_reg_allbpms_tr           = new TChain(Form("mini_eigen_reg_allbpms_tr"));     // Truncated one is not sorted... just deal with it I guess (could sort it later if urgently needed)
   // evMons stuff mostly unused it seems.... those plots should just be made separately in the obvious places
@@ -500,6 +500,15 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   std::vector<TString> monitors12_new = {"evMon0_new","evMon1_new","evMon2_new","evMon3_new","evMon4_new","evMon5_new","evMon6_new","evMon7_new","evMon8_new","evMon9_new","evMon10_new","evMon11_new"};
   std::vector<TString> monitors5 = {"evMon0","evMon1","evMon2","evMon3","evMon4"};
   std::vector<TString> monitors12 = {"evMon0","evMon1","evMon2","evMon3","evMon4","evMon5","evMon6","evMon7","evMon8","evMon9","evMon10","evMon11"};
+
+  std::vector<TString> diff_kinematics = {
+    "ErrorFlag_diff_targ_positionX_mean/1e-6",
+    "ErrorFlag_diff_targ_positionY_mean/1e-6",
+    "ErrorFlag_diff_targ_thetaX_mean/1e-6",
+    "ErrorFlag_diff_targ_thetaY_mean/1e-6",
+    "ErrorFlag_diff_dispE_bpm12X_mean/1e-6"
+  };
+
   std::vector<TString> yield_bcm_devices = {
     "bcm_an_diff",
     "bcm_target",
@@ -580,7 +589,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   //TString outFileName = Form("processed_respin2_data/CREX_All_Slug_Avg_Outputs.root");
   //TString outFileName = Form("processed_respin2_data/CREX_All_Slow_Controls_Avg_Outputs.root");
   //TString outFileName = Form("processed_respin2_data/CREX_All_Slow_Controls_Simple_Avg_Outputs.root");
-  TString outFileName = Form("processed_respin2_data/CREX_All_%s_Avg_Outputs%s.root",averaging_timescale.Data(),suffix.Data()); /// FIXME no residuals generally...
+  TString outFileName = Form("processed_respin2_data/CREX_All_%s_%s_Avg_Outputs%s.root",DataSetCut.Data(),averaging_timescale.Data(),suffix.Data()); /// FIXME no residuals generally...
   //TString outFileName = Form("processed_respin2_data/CREX_All_IHWP_Avg_Outputs.root");
   //TString outFileName = Form("processed_respin2_data/CREX_All_Wien_Avg_Outputs.root");
   //TString outFileName = Form("TEST_slug_avg_corrections_outputs.root");
@@ -2602,8 +2611,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   if (draw_plots == 1){ // Instead use the multigraph command to make plots
     //TFile data_file_cors(Form("processed_respin2_data/CREX_All_%s_Null_Avg_Outputs.root",averaging_timescale.Data()),"read");
     //TFile data_file_asyms(Form("processed_respin2_data/CREX_All_%s_Null_Avg_Outputs.root",averaging_timescale.Data()),"read");
-    TFile data_file_cors(Form("processed_respin2_data/CREX_All_%s_Avg_Outputs%s.root",averaging_timescale.Data(),suffix.Data()),"read");
-    TFile data_file_asyms(Form("processed_respin2_data/CREX_All_%s_Avg_Outputs%s.root",averaging_timescale.Data(),suffix.Data()),"read");
+    TFile data_file_cors(Form("processed_respin2_data/CREX_All_%s_%s_Avg_Outputs%s.root",DataSetCut.Data(),averaging_timescale.Data(),suffix.Data()),"read");
+    TFile data_file_asyms(Form("processed_respin2_data/CREX_All_%s_%s_Avg_Outputs%s.root",DataSetCut.Data(),averaging_timescale.Data(),suffix.Data()),"read");
     // Just use one of the available trees for rcdb etc.
     TTree* mini_slugs = (TTree*)data_file_asyms.Get("mini_raw_det_asyms_det_weighted");
     // FIXME BELOW FIXME Temporarily use the det .... tree as the Mini rcdb holding tree.... for now only
@@ -2725,8 +2734,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     mini_slugs->AddFriend(out_tree_mini_BCMs_det_weighted);
 
 
-    TString corrections_pdfname = Form("processed_respin2_data/CREX_All_%s_Avg_Outputs%s",averaging_timescale.Data(),suffix.Data());
-    TString corrections_pdfname_mod_cut_suffix = "_"+mod_cut;
+    TString corrections_pdfname = Form("processed_respin2_data/CREX_All_%s_%s_Avg_Outputs%s",DataSetCut.Data(),averaging_timescale.Data(),suffix.Data());
+    TString corrections_pdfname_mod_cut_suffix = "_"+mod_cut+"_"+DataSetCut;
     corrections_pdfname_mod_cut_suffix.ReplaceAll("&","").ReplaceAll("=","").ReplaceAll("|","").ReplaceAll(">","").ReplaceAll("<","").ReplaceAll(".","").ReplaceAll("!","").ReplaceAll(" ","");
     if (mod_cut == ""){
       corrections_pdfname_mod_cut_suffix = "";
@@ -2739,7 +2748,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     label->SetNDC();
 
     std::ofstream outfile0;
-    outfile0.open(Form("./processed_respin2_data/Results_%s.csv",averaging_timescale.Data()),std::ofstream::app);
+    outfile0.open(Form("./processed_respin2_data/Results_%s_%s.csv",DataSetCut.Data(),averaging_timescale.Data()),std::ofstream::app);
     outfile0 << "Averaged outputs " << std::endl;
     outfile0 << "draw, "
              << "averaging, "
@@ -4185,8 +4194,8 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   }
   if (draw_plots == 3){
     // Reproduced from section 2
-    TFile data_file_slopes(Form("processed_respin2_data/CREX_All_%s_Avg_Outputs%s.root",averaging_timescale.Data(),suffix.Data()),"read");
-    TFile data_file_corrections(Form("processed_respin2_data/CREX_All_%s_Avg_Outputs_main_det_corrections.root",averaging_timescale.Data()),"read"); // FIXME hardcoded here...
+    TFile data_file_slopes(Form("processed_respin2_data/CREX_All_%s_%s_Avg_Outputs%s.root",DataSetCut.Data(),averaging_timescale.Data(),suffix.Data()),"read");
+    TFile data_file_corrections(Form("processed_respin2_data/CREX_All_%s_%s_Avg_Outputs_main_det_corrections.root",DataSetCut.Data(),averaging_timescale.Data()),"read"); // FIXME hardcoded here...
 
     TString run_cycle = "run_avg";
     TString run_cycle_wise = "runwise";
@@ -4250,7 +4259,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
       monitors_choice = {"evMon0","evMon1","evMon2","evMon3","evMon4"};
     }
 
-    TString corrections_pdfname = Form("processed_respin2_data/CREX_All_%s_Avg_Outputs%s",averaging_timescale.Data(),suffix.Data());
+    TString corrections_pdfname = Form("processed_respin2_data/CREX_All_%s_%s_Avg_Outputs%s",DataSetCut.Data(),averaging_timescale.Data(),suffix.Data());
     TString corrections_pdfname_mod_cut_suffix = "_"+mod_cut;
     corrections_pdfname_mod_cut_suffix.ReplaceAll("&","").ReplaceAll("=","").ReplaceAll("|","").ReplaceAll(">","").ReplaceAll("<","").ReplaceAll(".","").ReplaceAll("!","").ReplaceAll(" ","");
     if (mod_cut == ""){
@@ -4264,7 +4273,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     label->SetNDC();
 
     std::ofstream outfile0;
-    outfile0.open(Form("./processed_respin2_data/Results_%s.csv",averaging_timescale.Data()),std::ofstream::app);
+    outfile0.open(Form("./processed_respin2_data/Results_%s_%s.csv",DataSetCut.Data(),averaging_timescale.Data()),std::ofstream::app);
     outfile0 << "Averaged outputs " << std::endl;
     outfile0 << "draw, "
              << "averaging, "

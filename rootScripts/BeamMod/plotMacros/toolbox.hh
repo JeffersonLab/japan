@@ -29,7 +29,7 @@ class ToolBox{
     void dit_slopes_averaging(TString);
 
     // Weighted averaging into rootfiles
-    void tg_err_averaging(TString,Int_t,TString,TString,TString,TString,TString);
+    void tg_err_averaging(TString,Int_t,TString,TString,TString,TString,TString,TString);
     void combo_tg_err_segment_getter(TString, TTree*, TTree*, TString, TString, TString, std::vector<TString>, std::vector<TString>, std::vector<TString>, std::vector<TString>, std::vector<TString>, Int_t);
 
     // Data management
