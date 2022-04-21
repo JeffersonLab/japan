@@ -3,6 +3,8 @@
 # Blessed runlist with Production only, Good, Suspicious, and NeedCut runs
 # Comes from /u/group/halla/parity/software/japan_offline/prompt/prex-prompt/WAC/auto_respin_slug_list.sh
 # /u/group/halla/parity/software/japan_offline/prompt/prex-prompt/crex-runlist/simple_list/blessed-prompt-crex-all.list
+# /u/group/halla/parity/software/japan_offline/prompt/prex-prompt/WAC/auto_run_list/crex-respin2/Production/Blessed-CREX-Good-run-list.list
+# /u/group/halla/parity/software/japan_offline/prompt/prex-prompt/WAC/auto_run_list/crex-respin2/Production/Blessed-CREX-run-list.list
 if [[ $# -lt 1 ]] ; then
   echo "Must pass in runlist"
   exit
@@ -25,8 +27,8 @@ while read line; do
   #echo "Run $run and test against $next10run"
   if [[ $run > $next10run ]] ; then
     echo "10 step: Run $run vs. prior run $previous10run"
-    #root -l -b -q plotAD_13746.C'("slopes_run_avg_1X/dithering-slopes-runwise.root","'${run}'","10")'
-    root -l -b -q plotAD_13746.C'("slopes_run_avg_1X/AT-dithering-slopes-runwise.root","'${run}'","10")'
+    root -l -b -q plotAD_FullExpt.C'("slopes_run_avg_1X/respin2_CREX_dithering_slopes_run_avg_basic.root","'${run}'","10")'
+    root -l -b -q plotAD_FullExpt.C'("slopes_run_avg_1X/respin2_AT_dithering_slopes_run_avg_basic.root","'${run}'","10")'
     previous10run=$run
   #else
     #echo "Skip $run 10"
@@ -34,8 +36,10 @@ while read line; do
   next3run=$(printf "%.1f" "$(bc -l <<< \(1.0*$previous3run\)+2.0)")
   if [[ $run > $next3run ]] ; then
     echo "3 step: Run $run vs. prior run $previous3run"
-    #root -l -b -q plotAD_13746.C'("slopes_cyclewise_1X/dithering-slopes-cyclewise.root","'${run}'","5")'
-    root -l -b -q plotAD_13746.C'("slopes_cyclewise_1X/AT-dithering-slopes-cyclewise.root","'${run}'","5")'
+    root -l -b -q plotAD_FullExpt.C'("slopes_cyclewise_1X/respin2_CREX_dithering_slopes_cyclewise_basic.root","'${run}'","5")'
+    root -l -b -q plotAD_FullExpt.C'("slopes_cyclewise_1X/respin2_AT_dithering_slopes_cyclewise_basic.root","'${run}'","5")'
+    ###root -l -b -q plotAD_FullExpt.C'("slopes_cyclewise_1X/dithering-slopes-cyclewise.root","'${run}'","5")'
+    ####root -l -b -q plotAD_FullExpt.C'("slopes_cyclewise_1X/AT-dithering-slopes-cyclewise.root","'${run}'","5")'
     previous3run=$run
   #else
     #echo "Skip $run 3"

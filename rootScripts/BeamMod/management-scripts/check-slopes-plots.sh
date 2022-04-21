@@ -22,8 +22,10 @@ cd $cwd
 
 shopt -s extglob
 # find split file
-slopePlots_runwise_list=$(ls -1 /lustre19/expphy/volatile/halla/parity/crex-respin1/bmodOutput/slopes_run_avg_1X/dithering-slopes-runwise10_*alphas-deltas.pdf);
-slopePlots_cyclewise_list=$(ls -1 /lustre19/expphy/volatile/halla/parity/crex-respin1/bmodOutput/slopes_cyclewise_1X/dithering-slopes-cyclewise5_*alphas-deltas.pdf);
+slopePlots_runwise_list=$(ls -1 /lustre19/expphy/volatile/halla/parity/crex-respin2/bmodOutput/plots_run_avg_1X/*CREX*10_*alphas-deltas*.pdf);
+slopePlots_cyclewise_list=$(ls -1 /lustre19/expphy/volatile/halla/parity/crex-respin2/bmodOutput/plots_cyclewise_1X/*CREX*5_*alphas-deltas*.pdf);
+#slopePlots_runwise_list=$(ls -1 /lustre19/expphy/volatile/halla/parity/crex-respin2/bmodOutput/plots_run_avg_1X/*AT*10_*alphas-deltas*.pdf);
+#slopePlots_cyclewise_list=$(ls -1 /lustre19/expphy/volatile/halla/parity/crex-respin2/bmodOutput/plots_cyclewise_1X/*AT*5_*alphas-deltas*.pdf);
 shopt -u extglob
 
 for slopefile in $slopePlots_runwise_list

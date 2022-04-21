@@ -36,8 +36,10 @@ fi
 
 while IFS= read -r line; do
   echo "Pruning run $line, auto < > WAC"
-  echo "root -l -b -q CopyTree_runnum.C'(\"../bmodOutput/slopes_cyclewise${postfix}_1X/${prefix}dithering_slopes${coils}${postfix}_cyclewise.root\",'${line}')'"
-  root -l -b -q CopyTree_runnum.C'("../bmodOutput/slopes_cyclewise'${postfix}'_1X/'${prefix}'dithering_slopes'${coils}${postfix}'_cyclewise.root",'${line}')'
-  echo "root -l -b -q CopyTree_runnum.C'(\"../bmodOutput/slopes_run_avg${postfix}_1X/${prefix}dithering_slopes${coils}${postfix}_runwise.root\",'${line}')'"
-  root -l -b -q CopyTree_runnum.C'("../bmodOutput/slopes_run_avg'${postfix}'_1X/'${prefix}'dithering_slopes'${coils}${postfix}'_runwise.root",'${line}')'
+  #echo "root -l -b -q CopyTree_runnum.C'(\"../bmodOutput/slopes_cyclewise${postfix}_1X/${prefix}dithering_slopes${coils}${postfix}_cyclewise.root\",'${line}')'"
+  #root -l -b -q CopyTree_runnum.C'("../bmodOutput/slopes_cyclewise'${postfix}'_1X/'${prefix}'dithering_slopes'${coils}${postfix}'_cyclewise.root",'${line}')'
+  #echo "root -l -b -q CopyTree_runnum.C'(\"../bmodOutput/slopes_run_avg${postfix}_1X/${prefix}dithering_slopes${coils}${postfix}_run_avg.root\",'${line}')'"
+  #root -l -b -q CopyTree_runnum.C'("../bmodOutput/slopes_run_avg'${postfix}'_1X/'${prefix}'dithering_slopes'${coils}${postfix}'_run_avg.root",'${line}')'
+  echo "root -l -b -q CopyTree_runnum.C'(\"../bmodOutput/slopes_run_avg${postfix}_1X/${prefix}dithering_slopes${coils}_run_avg.root\",'${line}')'"
+  root -l -b -q CopyTree_runnum.C'("../bmodOutput/slopes_run_avg'${postfix}'_1X/'${prefix}'dithering_slopes'${coils}'_run_avg.root",'${line}')'
 done < $1

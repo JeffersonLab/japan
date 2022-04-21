@@ -262,6 +262,6 @@ void japan_plot_beammod_BPMS_amplitudecheck_crex(int runNo=0, int segNo=0) {
     else {
       gSystem->Exec(Form("pdfunite %s/*coil*_cyc%d.pdf %s/run%d_nodata_cyc%d.pdf", prefix, supercyc[t], prefix, runNo, supercyc[t]));
     }
-    gSystem->Exec(Form("rm -rf %s/*coil*_cyc%d.pdf", prefix,runNo,supercyc[t]));
+    gSystem->Exec(Form("rm -rf %s/*coil*_cyc%d.pdf", prefix,/*runNo,*/supercyc[t]));
   }
 }

@@ -18,8 +18,8 @@ Important Detectors:2
 Flag Sigma Cut:10.5
 ROOT input path:/lustre/expphy/volatile/halla/parity/crex-respin1/japanOutput/prexPrompt_pass2_#.000.root
 ADAQ ROOT input path:~/PREX/prompt/japanOutput/prexPrompt_pass1_#.000.root
-Output path:./bmodOutput/eigenvector_slopes/slopes_run_avg_1X_eigenvectors_sorted_seg_avg/
-Rootfile Output Path:./bmodOutput/eigenvector_slopes/slopes_run_avg_1X_eigenvectors_sorted_seg_avg/
+Output path:./bmodOutput/slopes_run_avg_eigenvectors_sorted_seg_avg_1X/
+Rootfile Output Path:./bmodOutput/slopes_run_avg_eigenvectors_sorted_seg_avg_1X/
 Rootfile Output Runwise:True
 current Cut:bcm_an_us>5
 Cut:(ErrorFlag & 0xda7e6bff)==0

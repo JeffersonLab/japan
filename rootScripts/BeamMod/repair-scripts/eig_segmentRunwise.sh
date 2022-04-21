@@ -66,11 +66,11 @@ while IFS= read -r line; do
     #root -l -b -q SegmentTree_runnum.C'("../bmodOutput/slopes_cyclewise'${postfix}'_1X/'${prefix}'dithering_slopes'${coils}${postfix}'_cyclewise.root",'${itemsarray[1]}','${itemsarray[0]}','${itemsarray[2]}')'
     #echo "root -l -b -q SegmentTree_runnum.C'(\"../bmodOutput/slopes_run_avg${postfix}_1X/${prefix}dithering_slopes${coils}${postfix}_run_avg.root\",'${itemsarray[1]}','${itemsarray[0]}','${itemsarray[2]}')'"
     #root -l -b -q SegmentTree_runnum.C'("../bmodOutput/slopes_run_avg'${postfix}'_1X/'${prefix}'dithering_slopes'${coils}${postfix}'_run_avg.root",'${itemsarray[1]}','${itemsarray[0]}','${itemsarray[2]}')'
-    echo "root -l -b -q SegmentTree_runnum.C'(\"../bmodOutput/slopes_run_avg${postfix}_1X/${prefix}dithering_slopes${coils}_run_avg.root\",'${itemsarray[1]}','${itemsarray[0]}','${itemsarray[2]}')'"
-    root -l -b -q SegmentTree_runnum.C'("../bmodOutput/slopes_run_avg'${postfix}'_1X/'${prefix}'dithering_slopes'${coils}'_run_avg.root",'${itemsarray[1]}','${itemsarray[0]}','${itemsarray[2]}')'
+    echo "root -l -b -q SegmentTree_runnum_eig.C'(\"$2\",'${itemsarray[1]}','${itemsarray[0]}','${itemsarray[2]}')'"
+    root -l -b -q SegmentTree_runnum_eig.C'("'$2'",'${itemsarray[1]}','${itemsarray[0]}','${itemsarray[2]}')'
   elif [[ $ana == "plots" ]] ; then
-    root -l -b -q plotAD_highlightedFlag.C'("../bmodOutput/slopes_run_avg'${postfix}'_1X/'${prefix}'dithering_slopes'${coils}${postfix}'_run_avg_basic.root","'${itemsarray[0]}'","0")'
-    root -l -b -q plotAD_highlightedFlag.C'("../bmodOutput/slopes_cyclewise'${postfix}'_1X/'${prefix}'dithering_slopes'${coils}${postfix}'_cyclewise_basic.root","'${itemsarray[0]}'","0")'
+    root -l -b -q plotAD_highlightedFlag.C'("'$2'","'${itemsarray[0]}'","0")'
+    root -l -b -q plotAD_highlightedFlag.C'("'$2'","'${itemsarray[0]}'","0")'
   elif [[ $ana == "evince" ]] ; then
     evince ../bmodOutput/slopes_cyclewise${postfix}_1X/${prefix}dithering_slopes${coils}${postfix}_cyclewise0_${itemsarray[0]}alphas-deltas.pdf &
     evince ../bmodOutput/slopes_run_avg${postfix}_1X/${prefix}dithering_slopes${coils}${postfix}_runwise0_${itemsarray[0]}alphas-deltas.pdf

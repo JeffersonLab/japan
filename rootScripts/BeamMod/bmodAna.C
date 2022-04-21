@@ -297,8 +297,7 @@ TString BMOD::getEigenVector(Int_t index = 0){
       if ((nbytes == 0) || (runNumber != test_run)) {
         Printf("Issue with finding a entry with run number = %d in tree %s in rootfile %s",runNumber,parameterVectors["Eigenvector Data Tree"].at(0).c_str(),parameterVectors["Eigenvector Data Rootfile"].at(0).c_str());
         Int_t distance = 0;
-        Int_t nbytes2 = 0;
-        while (nbytes == 0 && nbytes2 == 0) {
+        while (nbytes == 0) {
           //nbytes = miniTree->GetEntryWithIndex((Int_t)runNumber - distance,0);
           nbytes = miniTree->GetEntry(miniTree->GetEntryNumberWithIndex(runNumber - distance,0));
           if (nbytes == 0){
@@ -745,7 +744,7 @@ void BMOD::saveSensitivityData() {
 void BMOD::invertMatrix() {
   //  Loop over cycles
   for(Int_t i=0;i<cycles.size();i++){
-    if(cycles[i].BPMvalid==1 && cycles[i].Detvalid==1){
+    if(cycles[i].BPMvalid==1 && cycles[i].Detvalid==1 && (parameterVectors.count("Just Sensitivities") == 0 || parameterVectors["Just Sensitivities"].at(0) == "False")) {
       TMatrixD tmpBPMmat(nImportantCoils,nBPM); // FIXME nImportantCoils
       for(int icoil=0;icoil<nImportantCoils;icoil++){
         for(int ibpm=0;ibpm<nBPM;ibpm++){
@@ -1185,7 +1184,7 @@ void BMOD::saveSlopeData() {
         for(int ibpm=0;ibpm<nBPM;ibpm++){
           // We found a null slope
           // FIXME FIXME FIXME NOTE: it is hypothetically possible for any given slope to be == 0.0000, but it is unlikely
-          if(cycles.at(i).detSlopes.at(idet)[ibpm][0]==0){
+          if(cycles.at(i).detSlopes.at(idet)[ibpm][0]==0 && (parameterVectors.count("Just Sensitivities") == 0 || parameterVectors["Just Sensitivities"].at(0) == "False")) {
             if (idet < nCheckedDets) {
               cycles.at(i).slopesValid = 0;
             }
@@ -1267,7 +1266,7 @@ void BMOD::saveSlopeData() {
     }
   }
   if(dit_tree->GetEntries()==1) {
-    dit_tree->Write();
+    dit_tree->Write("dit",TObject::kOverwrite);
   }
   else {
     dit_tree->Write(0,TObject::kOverwrite);
@@ -1292,13 +1291,13 @@ int bmodAna(Int_t runNo = 4199, std::string inputFile = "input.txt", TString slu
         }
         bmod->calculateSensitivities();
         bmod->saveSensitivityData();
-        if (bmod->parameterVectors.count("Just Sensitivies") == 0 || bmod->parameterVectors["Just Sensitivies"].at(0) == "False") {
+        //if (bmod->parameterVectors.count("Just Sensitivities") == 0 || bmod->parameterVectors["Just Sensitivities"].at(0) == "False") {
           bmod->invertMatrix();
           bmod->saveSlopeData();
           if (bmod->parameterVectors.count("Rootfile Output Runwise") == 0 || bmod->parameterVectors["Rootfile Output Runwise"].at(0) != "True") {
             bmod->edittree(bmod->slopeFilename);
           }
-        }
+        //}
         // FIXME also append this run's data into the combo/slugwise input file if possible
       }
     }
@@ -1311,13 +1310,13 @@ int bmodAna(Int_t runNo = 4199, std::string inputFile = "input.txt", TString slu
     }
     bmod->calculateSensitivities();
     bmod->saveSensitivityData();
-    if (bmod->parameterVectors.count("Just Sensitivies") == 0 || bmod->parameterVectors["Just Sensitivies"].at(0) == "False") {
+    //if (bmod->parameterVectors.count("Just Sensitivities") == 0 || bmod->parameterVectors["Just Sensitivities"].at(0) == "False") {
       bmod->invertMatrix();
       bmod->saveSlopeData();
       if (bmod->parameterVectors.count("Rootfile Output Runwise") == 0 || bmod->parameterVectors["Rootfile Output Runwise"].at(0) != "True") {
         bmod->edittree(bmod->slopeFilename);
       }
-    }
+    //}
   }
   cout << "-- BMOD Analysis done in "; tsw.Print(); cout << endl;
   return 0;

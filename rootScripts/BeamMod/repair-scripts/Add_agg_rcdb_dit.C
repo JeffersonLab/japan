@@ -4,25 +4,19 @@ last update: February 2021
 
 */
 
-void Add_agg_rcdb_dit(TString scale = "run_avg"){ //(int start, int end)
+void Add_agg_rcdb_dit(TString fname_input, TString fname_output, TString aggInput){ // so far seg and part
   // FIXME replace with read-from-agg tree
   //TFile eig_input(Form("dataRootfiles/Full_mini_eigen_reg_allbpms_AT.root"));
   TFile * dit_input;
   TFile * output;
-  if (scale == "run_avg") {
-    dit_input = new TFile(Form("/lustre19/expphy/volatile/halla/parity/crex-respin1/bmodOutput/slopes_run_avg_1X/dithering_slopes_13746_runwise.root"));
-    output = new TFile(Form("/lustre19/expphy/volatile/halla/parity/crex-respin1/bmodOutput/slopes_run_avg_1X/dithering_slopes_13746_rcdb_runwise.root"),"recreate");
-  }
-  else {
-    dit_input = new TFile(Form("/lustre19/expphy/volatile/halla/parity/crex-respin1/bmodOutput/slopes_cyclewise_1X/dithering_slopes_13746_cyclewise.root"));
-    output = new TFile(Form("/lustre19/expphy/volatile/halla/parity/crex-respin1/bmodOutput/slopes_cyclewise_1X/dithering_slopes_13746_rcdb_cyclewise.root"),"recreate");
-  }
+  dit_input = new TFile(fname_input,"READ");
+  output    = new TFile(fname_output,"RECREATE");
   //Double_t mini_index = -1.0; // for runwise aggregator Not commonly used
   Double_t mini_index = 0.0; // for minirun aggregator
 
   TTree *dit_tree;
   TChain* agg_tree = new TChain("agg");
-  agg_tree->Add("/lustre19/expphy/volatile/halla/parity/crex-respin1/aggRootfiles/ErrorFlag_dit_1X/slugRootfiles/CREX-All-miniruns.root");
+  agg_tree->Add(aggInput);
   dit_input->GetObject("dit", dit_tree);
 
   TChain* out_dit_tree = (TChain*)dit_tree -> CloneTree(0);
