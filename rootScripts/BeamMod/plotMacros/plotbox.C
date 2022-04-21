@@ -17,16 +17,16 @@ int plotbox(TString suffix = "", Int_t ana = 0){
   //tb->tg_err_averaging("crex_pitt",2,"rcdb_sign*","&& rcdb_flip_state<=2","ErrorFlag", "part","_no_err","_main_det_slopes_residuals");   // Part avg all correction data
   //tb->tg_err_averaging("crex_pitt",0,"","&& rcdb_flip_state<=2 && rcdb_ihwp == 1","ErrorFlag", "part","_no_err","_NULL_IN_main_det_corrections");   // Part avg all correction data
   //tb->tg_err_averaging("crex_pitt",0,"","&& rcdb_flip_state<=2 && rcdb_ihwp == 2","ErrorFlag", "part","_no_err","_NULL_OUT_main_det_corrections");   // Part avg all correction data
-//  tb->tg_err_averaging("crex_pitt",2,"","&& rcdb_flip_state<=2 && rcdb_ihwp == 1","ErrorFlag", "part","_no_err","_NULL_IN_main_det_slopes_residuals");   // Part avg all correction data
-//  tb->tg_err_averaging("crex_pitt",2,"","&& rcdb_flip_state<=2 && rcdb_ihwp == 2","ErrorFlag", "part","_no_err","_NULL_OUT_main_det_slopes_residuals");   // Part avg all correction data
+  tb->tg_err_averaging("crex_pitt",2,"","&& rcdb_flip_state<=2 && rcdb_ihwp == 1","ErrorFlag", "part","_no_err","_NULL_IN_main_det_slopes_residuals");   // Part avg all correction data
+  tb->tg_err_averaging("crex_pitt",2,"","&& rcdb_flip_state<=2 && rcdb_ihwp == 2","ErrorFlag", "part","_no_err","_NULL_OUT_main_det_slopes_residuals");   // Part avg all correction data
   //tb->tg_err_averaging("rcdb_ihwp",0,"rcdb_sign*","&& rcdb_flip_state<=2","ErrorFlag", "part","_no_err","_main_det_corrections");   // Part avg all correction data
   //tb->tg_err_averaging("rcdb_ihwp",2,"rcdb_sign*","&& rcdb_flip_state<=2","ErrorFlag", "part","_no_err","_main_det_slopes_residuals");   // Part avg all correction data
-  tb->tg_err_averaging("rcdb_flip_state",0,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part<3","ErrorFlag", "part","_no_err","_main_det_corrections_wien1");   // Part avg all correction data
-  tb->tg_err_averaging("rcdb_flip_state",2,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part<3","ErrorFlag", "part","_no_err","_main_det_slopes_residuals_wien1");   // Part avg all correction data
-  tb->tg_err_averaging("rcdb_flip_state",0,"rcdb_sign*","&& rcdb_flip_state==2 && crex_part<3","ErrorFlag", "part","_no_err","_main_det_corrections_wien2");   // Part avg all correction data
-  tb->tg_err_averaging("rcdb_flip_state",2,"rcdb_sign*","&& rcdb_flip_state==2 && crex_part<3","ErrorFlag", "part","_no_err","_main_det_slopes_residuals_wien2");   // Part avg all correction data
-  tb->tg_err_averaging("rcdb_flip_state",0,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part==3","ErrorFlag", "part","_no_err","_main_det_corrections_wien3");   // Part avg all correction data
-  tb->tg_err_averaging("rcdb_flip_state",2,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part==3","ErrorFlag", "part","_no_err","_main_det_slopes_residuals_wien3");   // Part avg all correction data
+  //tb->tg_err_averaging("rcdb_flip_state",0,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part<3","ErrorFlag", "part","_no_err","_main_det_corrections_wien1");   // Part avg all correction data
+  //tb->tg_err_averaging("rcdb_flip_state",2,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part<3","ErrorFlag", "part","_no_err","_main_det_slopes_residuals_wien1");   // Part avg all correction data
+  //tb->tg_err_averaging("rcdb_flip_state",0,"rcdb_sign*","&& rcdb_flip_state==2 && crex_part<3","ErrorFlag", "part","_no_err","_main_det_corrections_wien2");   // Part avg all correction data
+  //tb->tg_err_averaging("rcdb_flip_state",2,"rcdb_sign*","&& rcdb_flip_state==2 && crex_part<3","ErrorFlag", "part","_no_err","_main_det_slopes_residuals_wien2");   // Part avg all correction data
+  //tb->tg_err_averaging("rcdb_flip_state",0,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part==3","ErrorFlag", "part","_no_err","_main_det_corrections_wien3");   // Part avg all correction data
+  //tb->tg_err_averaging("rcdb_flip_state",2,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part==3","ErrorFlag", "part","_no_err","_main_det_slopes_residuals_wien3");   // Part avg all correction data
   //tb->tg_err_averaging("rcdb_flip_state",0,"rcdb_sign*","&& rcdb_flip_state<=2","ErrorFlag", "part","_no_err","_main_det_corrections");   // Part avg all correction data
   //tb->tg_err_averaging("rcdb_flip_state",2,"rcdb_sign*","&& rcdb_flip_state<=2","ErrorFlag", "part","_no_err","_main_det_slopes_residuals");   // Part avg all correction data
   //tb->tg_err_averaging("rcdb_sign",0,"rcdb_sign*","&& rcdb_flip_state<=2","ErrorFlag", "part","_no_err","_main_det_corrections");   // Part avg all correction data
@@ -46,16 +46,16 @@ int plotbox(TString suffix = "", Int_t ana = 0){
   //tb->tg_err_averaging("crex_pitt",2,"rcdb_sign*","&& rcdb_flip_state<=2","IncludeBMOD", "part","_no_err","_main_det_slopes_residuals");   // Part avg all correction data
   //tb->tg_err_averaging("crex_pitt",0,"","&& rcdb_flip_state<=2 && rcdb_ihwp == 1","IncludeBMOD", "part","_no_err","_NULL_IN_main_det_corrections");   // Part avg all correction data
   //tb->tg_err_averaging("crex_pitt",0,"","&& rcdb_flip_state<=2 && rcdb_ihwp == 2","IncludeBMOD", "part","_no_err","_NULL_OUT_main_det_corrections");   // Part avg all correction data
-//  tb->tg_err_averaging("crex_pitt",2,"","&& rcdb_flip_state<=2 && rcdb_ihwp == 1","IncludeBMOD", "part","_no_err","_NULL_IN_main_det_slopes_residuals");   // Part avg all correction data
-//  tb->tg_err_averaging("crex_pitt",2,"","&& rcdb_flip_state<=2 && rcdb_ihwp == 2","IncludeBMOD", "part","_no_err","_NULL_OUT_main_det_slopes_residuals");   // Part avg all correction data
+  tb->tg_err_averaging("crex_pitt",2,"","&& rcdb_flip_state<=2 && rcdb_ihwp == 1","IncludeBMOD", "part","_no_err","_NULL_IN_main_det_slopes_residuals");   // Part avg all correction data
+  tb->tg_err_averaging("crex_pitt",2,"","&& rcdb_flip_state<=2 && rcdb_ihwp == 2","IncludeBMOD", "part","_no_err","_NULL_OUT_main_det_slopes_residuals");   // Part avg all correction data
   //tb->tg_err_averaging("rcdb_ihwp",0,"rcdb_sign*","&& rcdb_flip_state<=2","IncludeBMOD", "part","_no_err","_main_det_corrections");   // Part avg all correction data
   //tb->tg_err_averaging("rcdb_ihwp",2,"rcdb_sign*","&& rcdb_flip_state<=2","IncludeBMOD", "part","_no_err","_main_det_slopes_residuals");   // Part avg all correction data
-  tb->tg_err_averaging("rcdb_flip_state",0,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part<3","IncludeBMOD", "part","_no_err","_main_det_corrections_wien1");   // Part avg all correction data
-  tb->tg_err_averaging("rcdb_flip_state",2,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part<3","IncludeBMOD", "part","_no_err","_main_det_slopes_residuals_wien1");   // Part avg all correction data
-  tb->tg_err_averaging("rcdb_flip_state",0,"rcdb_sign*","&& rcdb_flip_state==2 && crex_part<3","IncludeBMOD", "part","_no_err","_main_det_corrections_wien2");   // Part avg all correction data
-  tb->tg_err_averaging("rcdb_flip_state",2,"rcdb_sign*","&& rcdb_flip_state==2 && crex_part<3","IncludeBMOD", "part","_no_err","_main_det_slopes_residuals_wien2");   // Part avg all correction data
-  tb->tg_err_averaging("rcdb_flip_state",0,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part==3","IncludeBMOD", "part","_no_err","_main_det_corrections_wien3");   // Part avg all correction data
-  tb->tg_err_averaging("rcdb_flip_state",2,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part==3","IncludeBMOD", "part","_no_err","_main_det_slopes_residuals_wien3");   // Part avg all correction data
+  //tb->tg_err_averaging("rcdb_flip_state",0,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part<3","IncludeBMOD", "part","_no_err","_main_det_corrections_wien1");   // Part avg all correction data
+  //tb->tg_err_averaging("rcdb_flip_state",2,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part<3","IncludeBMOD", "part","_no_err","_main_det_slopes_residuals_wien1");   // Part avg all correction data
+  //tb->tg_err_averaging("rcdb_flip_state",0,"rcdb_sign*","&& rcdb_flip_state==2 && crex_part<3","IncludeBMOD", "part","_no_err","_main_det_corrections_wien2");   // Part avg all correction data
+  //tb->tg_err_averaging("rcdb_flip_state",2,"rcdb_sign*","&& rcdb_flip_state==2 && crex_part<3","IncludeBMOD", "part","_no_err","_main_det_slopes_residuals_wien2");   // Part avg all correction data
+  //tb->tg_err_averaging("rcdb_flip_state",0,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part==3","IncludeBMOD", "part","_no_err","_main_det_corrections_wien3");   // Part avg all correction data
+  //tb->tg_err_averaging("rcdb_flip_state",2,"rcdb_sign*","&& rcdb_flip_state==1 && crex_part==3","IncludeBMOD", "part","_no_err","_main_det_slopes_residuals_wien3");   // Part avg all correction data
   //tb->tg_err_averaging("rcdb_flip_state",0,"rcdb_sign*","&& rcdb_flip_state<=2","IncludeBMOD", "part","_no_err","_main_det_corrections");   // Part avg all correction data
   //tb->tg_err_averaging("rcdb_flip_state",2,"rcdb_sign*","&& rcdb_flip_state<=2","IncludeBMOD", "part","_no_err","_main_det_slopes_residuals");   // Part avg all correction data
   //tb->tg_err_averaging("rcdb_sign",0,"rcdb_sign*","&& rcdb_flip_state<=2","IncludeBMOD", "part","_no_err","_main_det_corrections");   // Part avg all correction data

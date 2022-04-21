@@ -1,11 +1,14 @@
-void avgNULL() {
+void avgNULL(TString cutAna = "ErrorFlag") {
 
+  //TCut cut = "1==1";//"rcdb_flip_state <= 2 && rcdb_run_type == 1 && rcdb_run_flag == 1";
   TCut cut = "rcdb_flip_state <= 2 && rcdb_run_type == 1 && rcdb_run_flag == 1";
 
+  gSystem->Exec(Form("hadd -f9 ../processed_respin2_data/results/CREX_All_%s_crex_pitt_Avg_Outputs_PartlyNULL_both_main_det_corrections.root  ../processed_respin2_data/results/CREX_All_%s_crex_pitt_Avg_Outputs_NULL_IN_main_det_corrections.root  ../processed_respin2_data/results/CREX_All_%s_crex_pitt_Avg_Outputs_NULL_OUT_main_det_corrections.root",cutAna.Data(),cutAna.Data(),cutAna.Data()));
+
   // Open input file
-  TFile infile(Form("../processed_respin2_data/CREX_All_ErrorFlag_crex_pitt_Avg_Outputs_PartlyNULL_both_main_det_corrections.root"),"read");
+  TFile infile(Form("../processed_respin2_data/results/CREX_All_%s_crex_pitt_Avg_Outputs_PartlyNULL_both_main_det_corrections.root",cutAna.Data()),"read");
   // Open output file
-  TFile newfile(Form("../processed_respin2_data/CREX_All_ErrorFlag_crex_pitt_Avg_Outputs_NULL_both_main_det_corrections.root"), "recreate");
+  TFile newfile(Form("../processed_respin2_data/results/CREX_All_%s_crex_pitt_Avg_Outputs_NULL_both_main_det_corrections.root",cutAna.Data()), "recreate");
   TKey *key;
   TIter nextkey(infile.GetListOfKeys());//,kIterBackward);
   // Loop over input file's trees
@@ -16,6 +19,7 @@ void avgNULL() {
     if (cl->InheritsFrom(TTree::Class())) {
       TTree *intree = (TTree*)infile.Get(key->GetName());
       if (!newfile.FindObject(key->GetName())) {
+        Printf("Trying tree %s",(((TString)key->GetName()).Data()));
         newfile.cd();
         //TTree *outtree = intree->CloneTree(-1,"fast");
         TTree *outtree = new TTree(intree->GetName(),intree->GetName());
@@ -60,10 +64,11 @@ void avgNULL() {
         Int_t segment_run;
         Int_t int_segment;
         intree->SetBranchAddress(Form("crex_pitt"),&int_segment);
-        intree->Draw(Form(">>elist_1"), cut, "entrylist");
+        Int_t nentries = intree->Draw(Form(">>elist_1"), cut, "entrylist");
         TEntryList *elist = (TEntryList*)gDirectory->Get(Form("elist_1"));
         intree->SetEntryList(elist);
-        for (Int_t nent = 0 ; nent<elist->GetN()/*nent<intree->GetEntries()*/ ; nent++) {
+        Printf("Tree has %d entries",nentries);
+        for (Int_t nent = 0 ; nent<nentries ; nent++) {
           intree->GetEntry(intree->GetEntryNumber(nent));
           if (crex_pitts.count(int_segment) == 0) {
             crex_pitts[int_segment] = 1;

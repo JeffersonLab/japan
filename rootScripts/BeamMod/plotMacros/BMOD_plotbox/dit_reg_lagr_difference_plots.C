@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", TString bpms = "") {
+void dit_reg_lagr_difference_plots(TString cutana = "ErrorFlag", TString type = "part", TString do_err = "_no_err", TString bpms = "_allbpms") {
   TString nbpms = "5bpms";
   if (bpms == "_allbpms"){
     nbpms = "allbpms";
@@ -8,14 +8,14 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
 
   // New way
   TChain * agg_part_avgd_friendable = new TChain(Form("agg"));
-  agg_part_avgd_friendable->Add("/lustre19/expphy/volatile/halla/parity/crex-respin2/aggRootfiles/ErrorFlag_drl"+do_err+"_"+type+"_avg"+bpms+"/slugRootfiles/CREX-All-miniruns_units_maindet.root");
+  agg_part_avgd_friendable->Add("/lustre19/expphy/volatile/halla/parity/crex-respin2/aggRootfiles/"+cutana+"_drl"+do_err+"_"+type+"_avg"+bpms+"/slugRootfiles/CREX-All-miniruns_units_maindet.root");
         // Force add friend with old name
   TChain * agg_part_avgd_friendable_2 = new TChain(Form("agg"));
-  agg_part_avgd_friendable_2->Add("/lustre19/expphy/volatile/halla/parity/crex-respin2/aggRootfiles/ErrorFlag_drl"+do_err+"_"+type+"_avg"+bpms+"/slugRootfiles/CREX-All-miniruns_units_maindet.root");
-  agg_part_avgd_friendable->AddFriend(agg_part_avgd_friendable_2,Form("agg_ErrorFlag_%s_avgd%s%s_friendable",type.Data(),bpms.Data(),do_err.Data()));
+  agg_part_avgd_friendable_2->Add("/lustre19/expphy/volatile/halla/parity/crex-respin2/aggRootfiles/"+cutana+"_drl"+do_err+"_"+type+"_avg"+bpms+"/slugRootfiles/CREX-All-miniruns_units_maindet.root");
+  agg_part_avgd_friendable->AddFriend(agg_part_avgd_friendable_2,Form("agg_%s_%s_avgd%s%s_friendable",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
 
   // Old way - Minifriended procedure version
-  //TChain * agg_part_avgd_friendable = new TChain(Form("agg_ErrorFlag_%s_avgd%s%s_friendable",type.Data(),bpms.Data(),do_err.Data()));
+  //TChain * agg_part_avgd_friendable = new TChain(Form("agg_%s_%s_avgd%s%s_friendable",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
   //agg_part_avgd_friendable->Add("processed_respin2_data/mini_friended_agg.root");
   
   TChain * agg_plain_friendable = new TChain("agg_plain_friendable");
@@ -48,7 +48,65 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
 
   gStyle->SetOptFit(1);
   std::ofstream outfile0;
-  outfile0.open(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_diffs_outputs_%s_avgd%s%s.txt",type.Data(),bpms.Data(),do_err.Data()),std::ofstream::app);
+  outfile0.open(Form("plots/batch_drl_diff_plots/dit_reg_%s_diffs_outputs_%s_avgd%s%s.txt",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()),std::ofstream::app);
+
+  if (cutana!="ErrorFlag") {
+    TCut cut_compare = cut+"eigen_lagr_asym_main_det_nentries>4 && (eigen_lagr_asym_main_det_mean != agg_ErrorFlag.eigen_lagr_asym_main_det_mean)";
+    TCanvas* c_cut_compare = new TCanvas();
+    c_cut_compare->SaveAs(Form("plots/batch_drl_diff_plots/eigen_lagr_%s_ErrorFlag_diffs_%s_avgd%s%s.pdf[",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
+    TChain * ErrorFlag_agg_part_avgd_friendable = new TChain(Form("agg"));
+    ErrorFlag_agg_part_avgd_friendable->Add("/lustre19/expphy/volatile/halla/parity/crex-respin2/aggRootfiles/ErrorFlag_drl"+do_err+"_"+type+"_avg"+bpms+"/slugRootfiles/CREX-All-miniruns_units_maindet.root");
+    agg_part_avgd_friendable->AddFriend(ErrorFlag_agg_part_avgd_friendable,"agg_ErrorFlag");
+    c_cut_compare->Clear();
+    gPad->SetLeftMargin(0.125);
+    nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_ErrorFlag.eigen_lagr_asym_main_det_mean-eigen_lagr_asym_main_det_mean)/1e-9:sqrt(abs(pow(0.0*agg_ErrorFlag.eigen_lagr_asym_main_det_mean_error,2)-pow(eigen_lagr_asym_main_det_mean_error,2)))/1e-9:run_number+0.1*minirun_n",cut_compare,"goff");
+    TGraphErrors* tg_cut_compare_minirunwise_self = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
+    tg_cut_compare_minirunwise_self->SetNameTitle("Minirunwise diff Eigen lagr vs. Eigen lagr self","Minirunwise difference of eigen lagr vs. eigen lagr, self weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
+    tg_cut_compare_minirunwise_self->Fit("pol0");
+    tg_cut_compare_minirunwise_self->Draw("ap");
+    TF1* tg_cut_compare_minirunwise_self_fit = (TF1*)gROOT->GetFunction("pol0");
+    Printf("tg_cut_compare_minirunwise_self = %e +- %e",tg_cut_compare_minirunwise_self_fit->GetParameter(0),tg_cut_compare_minirunwise_self_fit->GetParError(0));
+    outfile0 << "cut_compare_minirunwise_self = " << tg_cut_compare_minirunwise_self_fit->GetParameter(0) << " +- " << tg_cut_compare_minirunwise_self_fit->GetParError(0) << std::endl;
+    c_cut_compare->SaveAs(Form("plots/batch_drl_diff_plots/eigen_lagr_%s_ErrorFlag_diffs_%s_avgd%s%s.pdf",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
+
+    c_cut_compare->Clear();
+    gPad->SetLeftMargin(0.125);
+    nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_ErrorFlag.eigen_lagr_asym_main_det_mean-eigen_lagr_asym_main_det_mean)/sqrt(abs(pow(0.0*agg_ErrorFlag.eigen_lagr_asym_main_det_mean_error,2)-pow(eigen_lagr_asym_main_det_mean_error,2)))",cut_compare,"");
+    TH1F* h_cut_compare_minirunwise_self = (TH1F*) gROOT->FindObject("htemp");
+    h_cut_compare_minirunwise_self->SetNameTitle("Minirunwise diff Eigen lagr vs. Eigen lagr self pull","Minirunwise difference of eigen lagr vs. eigen lagr, self weighted pull;Pull");
+    //Printf("tg_cut_compare_minirunwise_self = %e +- %e",tg_cut_compare_minirunwise_self_fit->GetParameter(0),tg_cut_compare_minirunwise_self_fit->GetParError(0));
+    //outfile0 << "cut_compare_minirunwise_self = " << tg_cut_compare_minirunwise_self_fit->GetParameter(0) << " +- " << tg_cut_compare_minirunwise_self_fit->GetParError(0) << std::endl;
+    c_cut_compare->SaveAs(Form("plots/batch_drl_diff_plots/eigen_lagr_%s_ErrorFlag_diffs_%s_avgd%s%s.pdf",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
+
+    c_cut_compare->Clear();
+    gPad->SetLeftMargin(0.125);
+    nen = agg_part_avgd_friendable->Draw("pow(sqrt(abs(pow(agg_ErrorFlag.eigen_lagr_asym_main_det_mean_error,2)-pow(eigen_lagr_asym_main_det_mean_error,2)))/eigen_lagr_asym_main_det_mean_error,2):agg_ErrorFlag.eigen_lagr_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",cut_compare,"goff");
+    TGraphErrors* tg_cut_compare_minirunwise_scalefactor = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
+    tg_cut_compare_minirunwise_scalefactor->Fit("pol0");
+    TF1* tg_cut_compare_minirunwise_scalefactor_fit = (TF1*)gROOT->GetFunction("pol0");
+    Double_t cut_compare_minirunwise_scalefactor = sqrt(tg_cut_compare_minirunwise_scalefactor_fit->GetParameter(0));
+
+    nen = agg_part_avgd_friendable->Draw(Form("rcdb_sign*(agg_ErrorFlag.eigen_lagr_asym_main_det_mean-eigen_lagr_asym_main_det_mean)/1e-9:%f*eigen_lagr_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",cut_compare_minirunwise_scalefactor),cut_compare,"goff");
+    TGraphErrors* tg_cut_compare_minirunwise_maindet = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
+    tg_cut_compare_minirunwise_maindet->SetNameTitle("Minirunwise diff Eigen lagr vs. Eigen lagr maindet","Minirunwise difference of eigen lagr vs. eigen lagr, maindet weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
+    tg_cut_compare_minirunwise_maindet->Fit("pol0");
+    tg_cut_compare_minirunwise_maindet->Draw("ap");
+    TF1* tg_cut_compare_minirunwise_maindet_fit = (TF1*)gROOT->GetFunction("pol0");
+    Printf("tg_cut_compare_minirunwise_maindet = %e +- %e",tg_cut_compare_minirunwise_maindet_fit->GetParameter(0),tg_cut_compare_minirunwise_maindet_fit->GetParError(0));
+    outfile0 << "cut_compare_minirunwise_maindet = " << tg_cut_compare_minirunwise_maindet_fit->GetParameter(0) << " +- " << tg_cut_compare_minirunwise_maindet_fit->GetParError(0) << std::endl;
+    c_cut_compare->SaveAs(Form("plots/batch_drl_diff_plots/eigen_lagr_%s_ErrorFlag_diffs_%s_avgd%s%s.pdf",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
+
+    c_cut_compare->Clear();
+    gPad->SetLeftMargin(0.125);
+    agg_part_avgd_friendable->Draw(Form("rcdb_sign*(agg_ErrorFlag.eigen_lagr_asym_main_det_mean-eigen_lagr_asym_main_det_mean)/(%f*eigen_lagr_asym_main_det_mean_error)",cut_compare_minirunwise_scalefactor),cut_compare,"");
+    TH1F* h_cut_compare_minirunwise_maindet = (TH1F*) gROOT->FindObject("htemp");
+    h_cut_compare_minirunwise_maindet->SetNameTitle("Minirunwise diff Eigen lagr vs. Eigen lagr maindet_pull","Minirunwise difference of eigen lagr vs. eigen lagr, maindet weighted pull;Pull");
+    //Printf("tg_cut_compare_minirunwise_maindet = %e +- %e",tg_cut_compare_minirunwise_maindet_fit->GetParameter(0),tg_cut_compare_minirunwise_maindet_fit->GetParError(0));
+    //outfile0 << "cut_compare_minirunwise_maindet = " << tg_cut_compare_minirunwise_maindet_fit->GetParameter(0) << " +- " << tg_cut_compare_minirunwise_maindet_fit->GetParError(0) << std::endl;
+    c_cut_compare->SaveAs(Form("plots/batch_drl_diff_plots/eigen_lagr_%s_ErrorFlag_diffs_%s_avgd%s%s.pdf",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
+    c_cut_compare->SaveAs(Form("plots/batch_drl_diff_plots/eigen_lagr_%s_ErrorFlag_diffs_%s_avgd%s%s.pdf]",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
+
+  }
 
   c_eigreg_eigdit->cd(1);
   gPad->SetLeftMargin(0.125);
@@ -105,8 +163,8 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
   TF1* tg_eigreg_eigdit_minirunwise_maindet_fit = (TF1*)gROOT->GetFunction("pol0");
   Printf("tg_eigreg_eigdit_minirunwise_maindet = %e +- %e",tg_eigreg_eigdit_minirunwise_maindet_fit->GetParameter(0),tg_eigreg_eigdit_minirunwise_maindet_fit->GetParError(0));
   outfile0 << "eigreg_eigdit_minirunwise_maindet = " << tg_eigreg_eigdit_minirunwise_maindet_fit->GetParameter(0) << " +- " << tg_eigreg_eigdit_minirunwise_maindet_fit->GetParError(0) << std::endl;
-  c_eigreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/eigen_reg_eigen_dit_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
-  c_eigreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf(",type.Data(),bpms.Data(),do_err.Data()));
+  c_eigreg_eigdit->SaveAs(Form("plots/batch_drl_diff_plots/%s_eigen_reg_eigen_dit_diffs_%s_avgd%s%s.pdf",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
+  c_eigreg_eigdit->SaveAs(Form("plots/batch_drl_diff_plots/%s_dit_reg_lagr_compare_%s_avgd%s%s.pdf(",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
 
 
   c_eiglagr_eigreg->cd(1);
@@ -164,8 +222,8 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
   TF1* tg_eiglagr_eigreg_minirunwise_maindet_fit = (TF1*)gROOT->GetFunction("pol0");
   Printf("tg_eiglagr_eigreg_minirunwise_maindet = %e +- %e",tg_eiglagr_eigreg_minirunwise_maindet_fit->GetParameter(0),tg_eiglagr_eigreg_minirunwise_maindet_fit->GetParError(0));
   outfile0 << "eiglagr_eigreg_minirunwise_maindet = " << tg_eiglagr_eigreg_minirunwise_maindet_fit->GetParameter(0) << " +- " << tg_eiglagr_eigreg_minirunwise_maindet_fit->GetParError(0) << std::endl;
-  c_eiglagr_eigreg->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/eigen_lagr_eigen_reg_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
-  c_eiglagr_eigreg->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
+  c_eiglagr_eigreg->SaveAs(Form("plots/batch_drl_diff_plots/%s_eigen_lagr_eigen_reg_diffs_%s_avgd%s%s.pdf",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
+  c_eiglagr_eigreg->SaveAs(Form("plots/batch_drl_diff_plots/%s_dit_reg_lagr_compare_%s_avgd%s%s.pdf",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
 
 
   c_eiglagr_eigdit->cd(1);
@@ -223,8 +281,8 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
   TF1* tg_eiglagr_eigdit_minirunwise_maindet_fit = (TF1*)gROOT->GetFunction("pol0");
   Printf("tg_eiglagr_eigdit_minirunwise_maindet = %e +- %e",tg_eiglagr_eigdit_minirunwise_maindet_fit->GetParameter(0),tg_eiglagr_eigdit_minirunwise_maindet_fit->GetParError(0));
   outfile0 << "eiglagr_eigdit_minirunwise_maindet = " << tg_eiglagr_eigdit_minirunwise_maindet_fit->GetParameter(0) << " +- " << tg_eiglagr_eigdit_minirunwise_maindet_fit->GetParError(0) << std::endl;
-  c_eiglagr_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/eigen_lagr_eigen_dit_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
-  c_eiglagr_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
+  c_eiglagr_eigdit->SaveAs(Form("plots/batch_drl_diff_plots/%s_eigen_lagr_eigen_dit_diffs_%s_avgd%s%s.pdf",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
+  c_eiglagr_eigdit->SaveAs(Form("plots/batch_drl_diff_plots/%s_dit_reg_lagr_compare_%s_avgd%s%s.pdf",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
 
 
   // Now do minirunwise regular regression vs. segment avg eigen dit
@@ -284,8 +342,8 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
   TF1* tg_regreg_eigdit_minirunwise_maindet_fit = (TF1*)gROOT->GetFunction("pol0");
   Printf("tg_regreg_eigdit_minirunwise_maindet = %e +- %e",tg_regreg_eigdit_minirunwise_maindet_fit->GetParameter(0),tg_regreg_eigdit_minirunwise_maindet_fit->GetParError(0));
   outfile0 << "regreg_eigdit_minirunwise_maindet = " << tg_regreg_eigdit_minirunwise_maindet_fit->GetParameter(0) << " +- " << tg_regreg_eigdit_minirunwise_maindet_fit->GetParError(0) << std::endl;
-  c_regreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/regular_reg_eigen_dit_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
-  c_regreg_eigdit->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
+  c_regreg_eigdit->SaveAs(Form("plots/batch_drl_diff_plots/%s_regular_reg_eigen_dit_diffs_%s_avgd%s%s.pdf",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
+  c_regreg_eigdit->SaveAs(Form("plots/batch_drl_diff_plots/%s_dit_reg_lagr_compare_%s_avgd%s%s.pdf",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
 
 
   // Now do dit vs. eigen dit comparison, maindet weighted and self weighted, both using quadrature error bar differences only
@@ -293,7 +351,7 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
   
   c_regreg_eigreg->cd(1);
   gPad->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/1e-9:sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))/1e-9:run_number+0.1*minirun_n",cut+"rcdb_arm_flag==0","goff");
+  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/1e-9:sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))/1e-9:run_number+0.1*minirun_n",cut+"rcdb_arm_flag==0","goff");
   TGraphErrors* tg_regdit_eigdit_minirunwise_self = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
   tg_regdit_eigdit_minirunwise_self->SetNameTitle("Minirunwise diff Regular dit vs. Eigen dit self","Minirunwise difference of regular dit vs. eigen dit, self weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
   tg_regdit_eigdit_minirunwise_self->Fit("pol0");
@@ -304,13 +362,13 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
 
   c_regreg_eigreg->cd(2);
   gPad->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("pow(sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))/reg_asym_us_avg_mean_error,2):reg_asym_us_avg_mean_error/1e-9:run_number+0.1*minirun_n",cut+"rcdb_arm_flag==0","goff");
+  nen = agg_part_avgd_friendable->Draw("pow(sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))/reg_asym_us_avg_mean_error,2):reg_asym_us_avg_mean_error/1e-9:run_number+0.1*minirun_n",cut+"rcdb_arm_flag==0","goff");
   TGraphErrors* tg_regdit_eigdit_minirunwise_scalefactor = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
   tg_regdit_eigdit_minirunwise_scalefactor->Fit("pol0");
   TF1* tg_regdit_eigdit_minirunwise_scalefactor_fit = (TF1*)gROOT->GetFunction("pol0");
   Double_t regdit_eigdit_minirunwise_scalefactor = sqrt(tg_regdit_eigdit_minirunwise_scalefactor_fit->GetParameter(0));
 
-  nen = agg_part_avgd_friendable->Draw(Form("rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/1e-9:%f*reg_asym_us_avg_mean_error/1e-9:run_number+0.1*minirun_n",regdit_eigdit_minirunwise_scalefactor),cut+"rcdb_arm_flag==0","goff");
+  nen = agg_part_avgd_friendable->Draw(Form("rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/1e-9:%f*reg_asym_us_avg_mean_error/1e-9:run_number+0.1*minirun_n",regdit_eigdit_minirunwise_scalefactor),cut+"rcdb_arm_flag==0","goff");
   TGraphErrors* tg_regdit_eigdit_minirunwise_maindet = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
   tg_regdit_eigdit_minirunwise_maindet->SetNameTitle("Minirunwise diff Regular dit vs. Eigen dit maindet","Minirunwise difference of regular dit vs. eigen dit, maindet weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
   tg_regdit_eigdit_minirunwise_maindet->Fit("pol0");
@@ -321,7 +379,7 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
 
   c_regreg_eigreg->cd(3);
   gPad->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/1e-9:sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))/1e-9:run_number+0.1*minirun_n",cut+((TCut)("rcdb_arm_flag==0 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) < 1e-9 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) > 1e-26")),"goff");
+  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/1e-9:sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))/1e-9:run_number+0.1*minirun_n",cut+((TCut)("rcdb_arm_flag==0 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) < 1e-9 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) > 1e-26")),"goff");
   TGraphErrors* tg_small_regdit_eigdit_minirunwise_self = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
   tg_small_regdit_eigdit_minirunwise_self->SetNameTitle("Small Minirunwise diff Regular dit vs. Eigen dit self","Tight cut - Minirunwise difference of regular dit vs. eigen dit, self weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
   tg_small_regdit_eigdit_minirunwise_self->Fit("pol0");
@@ -332,13 +390,13 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
 
   c_regreg_eigreg->cd(4);
   gPad->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("pow(sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))/reg_asym_us_avg_mean_error,2):reg_asym_us_avg_mean_error/1e-9:run_number+0.1*minirun_n",cut+((TCut)("rcdb_arm_flag==0 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) < 1e-9 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) > 1e-26")),"goff");
+  nen = agg_part_avgd_friendable->Draw("pow(sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))/reg_asym_us_avg_mean_error,2):reg_asym_us_avg_mean_error/1e-9:run_number+0.1*minirun_n",cut+((TCut)("rcdb_arm_flag==0 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) < 1e-9 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) > 1e-26")),"goff");
   TGraphErrors* tg_small_regdit_eigdit_minirunwise_scalefactor = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
   tg_small_regdit_eigdit_minirunwise_scalefactor->Fit("pol0");
   TF1* tg_small_regdit_eigdit_minirunwise_scalefactor_fit = (TF1*)gROOT->GetFunction("pol0");
   Double_t small_regdit_eigdit_minirunwise_scalefactor = sqrt(tg_small_regdit_eigdit_minirunwise_scalefactor_fit->GetParameter(0));
 
-  nen = agg_part_avgd_friendable->Draw(Form("rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/1e-9:%f*reg_asym_us_avg_mean_error/1e-9:run_number+0.1*minirun_n",small_regdit_eigdit_minirunwise_scalefactor),cut+((TCut)("rcdb_arm_flag==0 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) < 1e-9 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) > 1e-26")),"goff");
+  nen = agg_part_avgd_friendable->Draw(Form("rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/1e-9:%f*reg_asym_us_avg_mean_error/1e-9:run_number+0.1*minirun_n",small_regdit_eigdit_minirunwise_scalefactor),cut+((TCut)("rcdb_arm_flag==0 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) < 1e-9 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) > 1e-26")),"goff");
   TGraphErrors* tg_small_regdit_eigdit_minirunwise_maindet = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
   tg_small_regdit_eigdit_minirunwise_maindet->SetNameTitle("Small Minirunwise diff Regular dit vs. Eigen dit maindet","Tight cut - Minirunwise difference of regular dit vs. eigen dit, maindet weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
   tg_small_regdit_eigdit_minirunwise_maindet->Fit("pol0");
@@ -349,7 +407,7 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
 
   c_regreg_eigreg->cd(5);
   gPad->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/1e-9:sqrt(abs(pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)))/1e-9:run_number+0.1*minirun_n",cut,"goff");
+  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/1e-9:sqrt(abs(pow(agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean_error,2)-pow(agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)))/1e-9:run_number+0.1*minirun_n",cut,"goff");
   TGraphErrors* tg_small_regreg_eigreg_minirunwise_self = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
   tg_small_regreg_eigreg_minirunwise_self->SetNameTitle("Minirunwise diff Regular reg vs. Eigen reg self","Minirunwise difference of regular reg vs. eigen reg, self weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
   tg_small_regreg_eigreg_minirunwise_self->Fit("pol0");
@@ -360,13 +418,13 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
 
   c_regreg_eigreg->cd(6);
   gPad->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("pow(sqrt(abs(pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean_error,2)))/reg_asym_main_det_mean_error,2):reg_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",cut,"goff"); // +"abs(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean) < 1e-29 && abs(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean) > -1e-26"
+  nen = agg_part_avgd_friendable->Draw("pow(sqrt(abs(pow(agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)-pow(agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean_error,2)))/reg_asym_main_det_mean_error,2):reg_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",cut,"goff"); // +"abs(agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean) < 1e-29 && abs(agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean) > -1e-26"
   TGraphErrors* tg_small_regreg_eigreg_minirunwise_scalefactor = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
   tg_small_regreg_eigreg_minirunwise_scalefactor->Fit("pol0");
   TF1* tg_small_regreg_eigreg_minirunwise_scalefactor_fit = (TF1*)gROOT->GetFunction("pol0");
   Double_t small_regreg_eigreg_minirunwise_scalefactor = sqrt(tg_small_regreg_eigreg_minirunwise_scalefactor_fit->GetParameter(0));
 
-  nen = agg_part_avgd_friendable->Draw(Form("rcdb_sign*(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean)/1e-9:%f*reg_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",small_regreg_eigreg_minirunwise_scalefactor),cut,"goff"); // +"abs(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean) < 1e-29 && abs(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean) > -1e-26"
+  nen = agg_part_avgd_friendable->Draw(Form("rcdb_sign*(agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean)/1e-9:%f*reg_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",small_regreg_eigreg_minirunwise_scalefactor),cut,"goff"); // +"abs(agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean) < 1e-29 && abs(agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_"+cutana+"_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean) > -1e-26"
   TGraphErrors* tg_small_regreg_eigreg_minirunwise_maindet = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
   tg_small_regreg_eigreg_minirunwise_maindet->SetNameTitle("Minirunwise diff Regular reg vs. Eigen reg maindet","Minirunwise difference of regular reg vs. eigen reg, maindet weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
   tg_small_regreg_eigreg_minirunwise_maindet->Fit("pol0");
@@ -375,8 +433,8 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
   Printf("tg_small_regreg_eigreg_minirunwise_maindet = %e +- %e",tg_small_regreg_eigreg_minirunwise_maindet_fit->GetParameter(0),tg_small_regreg_eigreg_minirunwise_maindet_fit->GetParError(0));
   outfile0 << "small_regreg_eigreg_minirunwise_maindet = " << tg_small_regreg_eigreg_minirunwise_maindet_fit->GetParameter(0) << " +- " << tg_small_regreg_eigreg_minirunwise_maindet_fit->GetParError(0) << std::endl;
 
-  c_regreg_eigreg->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/regular_vs_eigen_same_diffs_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),do_err.Data()));
-  c_regreg_eigreg->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf)",type.Data(),bpms.Data(),do_err.Data()));
+  c_regreg_eigreg->SaveAs(Form("plots/batch_drl_diff_plots/%s_regular_vs_eigen_same_diffs_%s_avgd%s%s.pdf",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
+  c_regreg_eigreg->SaveAs(Form("plots/batch_drl_diff_plots/%s_dit_reg_lagr_compare_%s_avgd%s%s.pdf)",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
   outfile0.close();
 
   c_eigdit_RMS_1->cd(1);
@@ -391,7 +449,7 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
   c_eigdit_RMS_1->cd(4);
   gPad->SetLogy();
   agg_part_avgd_friendable->Draw("asym_main_det_eigen_dit_reg_diff_rms:yield_bpm12X_mean",cut,"");
-  c_eigdit_RMS_1->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/eigen_dit_reg_diff_RMSs_%s_avgd%s%s.pdf(",type.Data(),bpms.Data(),do_err.Data()));
+  c_eigdit_RMS_1->SaveAs(Form("plots/batch_drl_diff_plots/%s_eigen_dit_reg_diff_RMSs_%s_avgd%s%s.pdf(",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
 
   c_eigdit_RMS_2->cd(1);
   gPad->SetLogy();
@@ -405,6 +463,6 @@ void dit_reg_lagr_difference_plots(TString type = "part", TString do_err = "", T
   c_eigdit_RMS_2->cd(4);
   gPad->SetLogy();
   agg_part_avgd_friendable->Draw("asym_main_det_eigen_dit_reg_diff_rms:yield_bpm12X_rms",cut,"");
-  c_eigdit_RMS_2->SaveAs(Form("workspace_plotting_macros/august_30_plots/drl_diff_plots/dit_reg_diff_RMSs_%s_avgd%s%s.pdf)",type.Data(),bpms.Data(),do_err.Data()));
+  c_eigdit_RMS_2->SaveAs(Form("plots/batch_drl_diff_plots/%s_dit_reg_diff_RMSs_%s_avgd%s%s.pdf)",cutana.Data(),type.Data(),bpms.Data(),do_err.Data()));
 
 }

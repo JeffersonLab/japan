@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_ana = "OnlyBMOD", Int_t slugnum = 0) {
+void slugwise_drl_diffs(TString cut_ana = "OnlyBMOD", TString type = "part", TString do_err = "_no_err", Int_t slugnum = 0) {
   Printf("\n\nAnalysis %s avgd, %s, %s data set comparison to ErrorFlag\n\n\n",type.Data(),do_err.Data(),cut_ana.Data());
   TString bpms = "_allbpms";
   TString fivebpms = "_5bpms";
@@ -38,15 +38,19 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   agg_part_avgd_other_friendable->SetScanField(0);
   agg_plain_friendable->SetScanField(0);
 
+  TCut miniruns_cut = "(!(run_number==6564 && minirun_n==4) && !(run_number==6567 && (minirun_n==2 || minirun_n==4)) && !(run_number==6571 && (minirun_n==3 || minirun_n==4)) && !(run_number==6593 && minirun_n==2) && !(run_number==6983 && minirun_n==8) && !(run_number==7149 && minirun_n==6) && !(run_number==7211 && minirun_n==4) && !(run_number==7889 && minirun_n==0) && !(run_number==7942 && minirun_n==5) && !(run_number==8036 && minirun_n==2) && !(run_number==8240 && minirun_n==1) && !(run_number==8549 && (minirun_n==0 || minirun_n==1 || minirun_n==4)))";
+
   //TCut cut = "rcdb_run_flag==1 && rcdb_run_type==1 && rcdb_flip_state>2";  // AT data only
-  TCut cut = (TCut)Form("rcdb_run_flag==1 && rcdb_run_type==1 && rcdb_flip_state<=2 && agg_%s_%s_avgd%s%s_friendable.eigen_lagr_asym_main_det_nentries>1",cut_ana.Data(),type.Data(),bpms.Data(),do_err.Data());
-  //TCut cut = (TCut)Form("rcdb_run_flag==1 && rcdb_run_type==1 && rcdb_flip_state<=2 && agg_%s_%s_avgd%s%s_friendable.eigen_lagr_asym_main_det_nentries>1 && (run_number!=6564 && minirun_n!=4)",cut_ana.Data(),type.Data(),bpms.Data(),do_err.Data());
-  TString fname = Form("plots/drl_diff_plots/dit_reg_diffs_outputs_%s_avgd%s%s.txt",type.Data(),bpms.Data(),do_err.Data());
-  TString suffix = do_err+"_"+cut_ana;// + "_Cleaned";
+  TCut cut = miniruns_cut + (TCut)Form("rcdb_run_flag==1 && rcdb_run_type==1 && rcdb_flip_state<=2 && agg_%s_%s_avgd%s%s_friendable.eigen_lagr_asym_main_det_nentries>=5",cut_ana.Data(),type.Data(),bpms.Data(),do_err.Data());
+  TCut comparable_cut = miniruns_cut + (TCut)Form("rcdb_run_flag==1 && rcdb_run_type==1 && rcdb_flip_state<=2 && agg_%s_%s_avgd%s%s_friendable.eigen_lagr_asym_main_det_nentries>=5 && (agg_%s_%s_avgd%s%s_friendable.eigen_lagr_asym_main_det_nentries != agg_ErrorFlag_%s_avgd%s%s_friendable.eigen_lagr_asym_main_det_nentries) && (run_number!=6564 && minirun_n!=4)",cut_ana.Data(),type.Data(),bpms.Data(),do_err.Data(),cut_ana.Data(),type.Data(),bpms.Data(),do_err.Data(),type.Data(),bpms.Data(),do_err.Data());
+  //TString suffix = do_err+"_"+cut_ana;
+  TString suffix = do_err+"_"+cut_ana + "_Cleaned";
+  TString fname = Form("plots/drl_diff_plots/drl_diffs_outputs_%s_avgd%s%s.txt",type.Data(),bpms.Data(),suffix.Data());
   if (slugnum != 0) {
     cut = (TCut)(Form("rcdb_run_flag==1 && rcdb_run_type==1 && rcdb_flip_state<=2 && rcdb_slug == %d",slugnum));
-    suffix = do_err + "_" + cut_ana + (TString)Form("_slug%d",slugnum);// + "_Cleaned";
-    fname = Form("plots/drl_diff_plots/dit_reg_diffs_outputs_%s_avgd%s%s_slug%d.txt",type.Data(),bpms.Data(),suffix.Data(),slugnum);
+    //suffix = do_err + "_" + cut_ana + (TString)Form("_slug%d",slugnum);
+    suffix = do_err + "_" + cut_ana + (TString)Form("_slug%d",slugnum) + "_Cleaned";
+    fname = Form("plots/drl_diff_plots/drl_diffs_outputs_%s_avgd%s%s_slug%d.txt",type.Data(),bpms.Data(),suffix.Data(),slugnum);
   }
   //TCut cut = "rcdb_run_flag==1 && rcdb_run_type==1 && rcdb_arm_flag==0 && rcdb_flip_state<=2"; // FIXME this explicitly assumes we are only looking a US_AVG
   //TCut cut = "rcdb_run_flag==1 && rcdb_run_type==1 && rcdb_arm_flag==0 && ((rcdb_slug != 142 && rcdb_slug != 188 && rcdb_slug != 189 && rcdb_slug != 190 && rcdb_slug != 192))";
@@ -107,7 +111,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
      c_eigreg_eigdit->cd(2);
      gStyle->SetOptStat(122221);
      gPad->SetLeftMargin(0.125);
-     agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(asym_main_det_eigen_dit_eigen_reg_diff_mean)/asym_main_det_eigen_dit_eigen_reg_diff_mean_error",cut+((TCut)("abs(rcdb_sign*(asym_main_det_eigen_dit_eigen_reg_diff_mean)/asym_main_det_eigen_dit_eigen_reg_diff_mean_error)>2.0")));
+     agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(asym_main_det_eigen_dit_eigen_reg_diff_mean)/asym_main_det_eigen_dit_eigen_reg_diff_mean_error",cut+((TCut)("abs(rcdb_sign*(asym_main_det_eigen_dit_eigen_reg_diff_mean)/asym_main_det_eigen_dit_eigen_reg_diff_mean_error)>4.0")));
      gPad->SetLogy(1);
      nen = agg_part_avgd_friendable->Draw("rcdb_sign*(asym_main_det_eigen_dit_eigen_reg_diff_mean)/asym_main_det_eigen_dit_eigen_reg_diff_mean_error",cut,"");
      TH1F* tg_eigreg_eigdit_pull_self = (TH1F*)gPad->FindObject("htemp");
@@ -240,7 +244,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   p1 = c_eig_cut_eig_rms_diff->cd(1);
   gStyle->SetOptStat(1221);
   p1->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms)/1e-6:run_number+0.1*minirun_n",cut,"");
+  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms)/1e-6:run_number+0.1*minirun_n",comparable_cut,"");
   TGraph * tg7 = new TGraph(nen,agg_part_avgd_friendable->GetV2(),agg_part_avgd_friendable->GetV1());
   tg7->SetNameTitle("agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms diff","agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms diff;Run+0.1*Minirun;RMS difference (ppm)");
   tg7->Draw("ap");
@@ -248,12 +252,12 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   p1 = c_eig_cut_eig_rms_diff->cd(2);                                                                                                 
   gStyle->SetOptStat(1221);                                                                                                 
   p1->SetLeftMargin(0.125);                                                                                               
-  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms)/1e-6",cut,"");
+  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms)/1e-6",comparable_cut,"");
 
   p1 = c_eig_cut_eig_rms_diff->cd(3);
   gStyle->SetOptStat(1221);
   p1->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms)/1e-6:run_number+0.1*minirun_n",cut,"");
+  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms)/1e-6:run_number+0.1*minirun_n",comparable_cut,"");
   TGraph * tg9 = new TGraph(nen,agg_part_avgd_friendable->GetV2(),agg_part_avgd_friendable->GetV1());
   tg9->SetNameTitle("agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms diff","agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms diff;Run+0.1*Minirun;RMS difference (ppm)");
   tg9->Draw("ap");
@@ -261,12 +265,12 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   p1 = c_eig_cut_eig_rms_diff->cd(4);                                                                                                    
   gStyle->SetOptStat(1221);                                                                                                    
   p1->SetLeftMargin(0.125);                                                                                                  
-  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms)/1e-6",cut,"");
+  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms)/1e-6",comparable_cut,"");
 
   p1 = c_eig_cut_eig_rms_diff->cd(5);
   gStyle->SetOptStat(1221);
   p1->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms)/1e-6:run_number+0.1*minirun_n",cut,"");
+  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms)/1e-6:run_number+0.1*minirun_n",comparable_cut,"");
   TGraph * tg11 = new TGraph(nen,agg_part_avgd_friendable->GetV2(),agg_part_avgd_friendable->GetV1());
   tg11->SetNameTitle("agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms diff","agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms diff;Run+0.1*Minirun;RMS difference (ppm)");
   tg11->Draw("ap");
@@ -274,9 +278,9 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   p1 = c_eig_cut_eig_rms_diff->cd(6);                                                                                                
   gStyle->SetOptStat(1221);                                                                                                
   p1->SetLeftMargin(0.125);                                                                                              
-  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms)/1e-6",cut,"");
+  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms)/1e-6",comparable_cut,"");
   Printf("Difference in main det RMS between BMOD data set and standard ErrorFlag dataset, ppm, > 350 ppm difference");
-  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms)/1e-6",cut+((TCut)("abs(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms)/1e-6>350")),"");
+  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms)/1e-6",comparable_cut+((TCut)("abs(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms)/1e-6>350")),"");
 
 
   c_eig_cut_eig_rms_diff->SaveAs(Form("plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
@@ -285,7 +289,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   p1 = c_eig_cut_eig_rms_diff->cd(1);
   gStyle->SetOptStat(1221);
   p1->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms/agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms):run_number+0.1*minirun_n",cut,"");
+  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms/agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms):run_number+0.1*minirun_n",comparable_cut,"");
   TGraph * tg8 = new TGraph(nen,agg_part_avgd_friendable->GetV2(),agg_part_avgd_friendable->GetV1());
   tg8->SetNameTitle("agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms ratio","agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms ratio;Run+0.1*Minirun;RMS ratio");
   tg8->Draw("ap");
@@ -293,12 +297,12 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   p1 = c_eig_cut_eig_rms_diff->cd(2);                                                                                                 
   gStyle->SetOptStat(1221);                                                                                                 
   p1->SetLeftMargin(0.125);                                                                                               
-  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms/agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms)",cut,"");
+  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms/agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_rms)",comparable_cut,"");
 
   p1 = c_eig_cut_eig_rms_diff->cd(3);
   gStyle->SetOptStat(1221);
   p1->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms/agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms):run_number+0.1*minirun_n",cut,"");
+  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms/agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms):run_number+0.1*minirun_n",comparable_cut,"");
   TGraph * tg10 = new TGraph(nen,agg_part_avgd_friendable->GetV2(),agg_part_avgd_friendable->GetV1());
   tg10->SetNameTitle("agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms ratio","agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms ratio;Run+0.1*Minirun;RMS ratio");
   tg10->Draw("ap");
@@ -306,12 +310,12 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   p1 = c_eig_cut_eig_rms_diff->cd(4);                                                                                                    
   gStyle->SetOptStat(1221);                                                                                                    
   p1->SetLeftMargin(0.125);                                                                                                  
-  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms/agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms)",cut,"");
+  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms/agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_rms)",comparable_cut,"");
 
   p1 = c_eig_cut_eig_rms_diff->cd(5);
   gStyle->SetOptStat(1221);
   p1->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms/agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms):run_number+0.1*minirun_n",cut,"");
+  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms/agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms):run_number+0.1*minirun_n",comparable_cut,"");
   TGraph * tg12 = new TGraph(nen,agg_part_avgd_friendable->GetV2(),agg_part_avgd_friendable->GetV1());
   tg12->SetNameTitle("agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms ratio","agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms ratio;Run+0.1*Minirun;RMS ratio");
   tg12->Draw("ap");
@@ -319,7 +323,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   p1 = c_eig_cut_eig_rms_diff->cd(6);                                                                                                
   gStyle->SetOptStat(1221);                                                                                                
   p1->SetLeftMargin(0.125);                                                                                              
-  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms/agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms)",cut,"");
+  nen = agg_part_avgd_friendable->Draw("(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms/agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_rms)",comparable_cut,"");
 
 
   c_eig_cut_eig_rms_diff->SaveAs(Form("plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
@@ -327,9 +331,9 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
 
   c_eig_cut_eig->cd(1);
   gPad->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/1e-9:sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)))/1e-9:run_number+0.1*minirun_n",cut,"goff");
+  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/1e-9:sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)))/1e-9:run_number+0.1*minirun_n",comparable_cut,"goff");
   TGraphErrors* tg_eiglagr_cut_eiglagr_minirunwise_self = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
-  tg_eiglagr_cut_eiglagr_minirunwise_self->SetNameTitle("Minirunwise diff "+cut_ana+" cut eigen lagr vs. ErrorFlag eigen lagr self","Minirunwise difference of "+cut_ana+" cut eigen lagr vs. ErrorFlag eigen lagr, self weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
+  tg_eiglagr_cut_eiglagr_minirunwise_self->SetNameTitle("Minirunwise diff "+cut_ana+" comparable_cut eigen lagr vs. ErrorFlag eigen lagr self","Minirunwise difference of "+cut_ana+" comparable_cut eigen lagr vs. ErrorFlag eigen lagr, self weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
   tg_eiglagr_cut_eiglagr_minirunwise_self->Fit("pol0");
   tg_eiglagr_cut_eiglagr_minirunwise_self->Draw("ap");
   TF1* tg_eiglagr_cut_eiglagr_minirunwise_self_fit = (TF1*)gROOT->GetFunction("pol0");
@@ -340,22 +344,22 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
   Printf("\n\n");
-  Printf("Difference in main det mean value PULL (quadrature error difference) between BMOD data set and standard ErrorFlag dataset lagrange 12bpm data, pull > 2");
-  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2))) ",cut+((TCut)("abs(rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2))))>2")));
+  Printf("Difference in main det mean value PULL (quadrature error difference) between BMOD data set and standard ErrorFlag dataset lagrange 12bpm data, pull > 4");
+  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2))) ",comparable_cut+((TCut)("abs(rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2))))>4")));
   gPad->SetLogy(1);
-  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)))",cut,"");
+  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)))",comparable_cut,"");
   TH1F* tg_eiglagr_cut_eiglagr_pull_self = (TH1F*)gPad->FindObject("htemp");
   if (tg_eiglagr_cut_eiglagr_pull_self) {
-    tg_eiglagr_cut_eiglagr_pull_self->SetNameTitle("Diff Multipletwise "+cut_ana+" cut eigen lagr vs. ErrorFlag eigen lagr self Pull","Difference multipletwise pull of "+cut_ana+" cut eigen lagr vs. ErrorFlag eigen lagr, self weighted;multipletwise difference pull");
+    tg_eiglagr_cut_eiglagr_pull_self->SetNameTitle("Diff Multipletwise "+cut_ana+" comparable_cut eigen lagr vs. ErrorFlag eigen lagr self Pull","Difference multipletwise pull of "+cut_ana+" comparable_cut eigen lagr vs. ErrorFlag eigen lagr, self weighted;multipletwise difference pull");
     Printf("tg_eiglagr_cut_eiglagr_pull_self = %e +- %e",tg_eiglagr_cut_eiglagr_pull_self->GetMean(),tg_eiglagr_cut_eiglagr_pull_self->GetRMS());
     outfile0 << "eiglagr_cut_eiglagr_pull_self = " << tg_eiglagr_cut_eiglagr_pull_self->GetMean() << " +- " << tg_eiglagr_cut_eiglagr_pull_self->GetRMS() << std::endl;
   }
 
   c_eig_cut_eig->cd(3);
   gPad->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/1e-9:sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)))/1e-9:run_number+0.1*minirun_n",cut+(TCut)("rcdb_arm_flag>=0"),"goff");
+  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/1e-9:sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)))/1e-9:run_number+0.1*minirun_n",comparable_cut+(TCut)("rcdb_arm_flag>=0"),"goff");
   TGraphErrors* tg_eigdit_cut_eigdit_minirunwise_self = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
-  tg_eigdit_cut_eigdit_minirunwise_self->SetNameTitle("Minirunwise diff "+cut_ana+" cut eigen dit vs. ErrorFlag eigen dit self","Minirunwise difference of "+cut_ana+" cut eigen dit vs. ErrorFlag eigen dit, self weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
+  tg_eigdit_cut_eigdit_minirunwise_self->SetNameTitle("Minirunwise diff "+cut_ana+" comparable_cut eigen dit vs. ErrorFlag eigen dit self","Minirunwise difference of "+cut_ana+" comparable_cut eigen dit vs. ErrorFlag eigen dit, self weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
   tg_eigdit_cut_eigdit_minirunwise_self->Fit("pol0");
   tg_eigdit_cut_eigdit_minirunwise_self->Draw("ap");
   TF1* tg_eigdit_cut_eigdit_minirunwise_self_fit = (TF1*)gROOT->GetFunction("pol0");
@@ -366,13 +370,13 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
   Printf("\n\n");
-  Printf("Difference in main det mean value PULL (quadrature error difference) between BMOD data set and standard ErrorFlag dataset 5bpm dithering, pull > 2");
-  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)))",cut+((TCut)("abs(rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2))))>2 && rcdb_arm_flag>=0")));
+  Printf("Difference in main det mean value PULL (quadrature error difference) between BMOD data set and standard ErrorFlag dataset 5bpm dithering, pull > 4");
+  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)))",comparable_cut+((TCut)("abs(rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2))))>4 && rcdb_arm_flag>=0")));
   gPad->SetLogy(1);
-  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)))",cut+(TCut)("rcdb_arm_flag>=0"),"");
+  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)))",comparable_cut+(TCut)("rcdb_arm_flag>=0"),"");
   TH1F* tg_eigdit_cut_eigdit_pull_self = (TH1F*)gPad->FindObject("htemp");
   if (tg_eigdit_cut_eigdit_pull_self) {
-    tg_eigdit_cut_eigdit_pull_self->SetNameTitle("Diff Multipletwise "+cut_ana+" cut eigen dit vs. ErrorFlag eigen dit self Pull","Difference multipletwise pull of "+cut_ana+" cut eigen dit vs. ErrorFlag eigen dit, self weighted;multipletwise difference pull");
+    tg_eigdit_cut_eigdit_pull_self->SetNameTitle("Diff Multipletwise "+cut_ana+" comparable_cut eigen dit vs. ErrorFlag eigen dit self Pull","Difference multipletwise pull of "+cut_ana+" comparable_cut eigen dit vs. ErrorFlag eigen dit, self weighted;multipletwise difference pull");
     Printf("tg_eigdit_cut_eigdit_pull_self = %e +- %e",tg_eigdit_cut_eigdit_pull_self->GetMean(),tg_eigdit_cut_eigdit_pull_self->GetRMS());
     outfile0 << "eigdit_cut_eigdit_pull_self = " << tg_eigdit_cut_eigdit_pull_self->GetMean() << " +- " << tg_eigdit_cut_eigdit_pull_self->GetRMS() << std::endl;
   }
@@ -380,9 +384,9 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   c_eig_cut_eig->cd(5);
   gPad->SetLogy(0);
   gPad->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/1e-9:sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)))/1e-9:run_number+0.1*minirun_n",cut,"goff");
+  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/1e-9:sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)))/1e-9:run_number+0.1*minirun_n",comparable_cut,"goff");
   TGraphErrors* tg_eigreg_cut_eigreg_minirunwise_self = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
-  tg_eigreg_cut_eigreg_minirunwise_self->SetNameTitle("Minirunwise diff "+cut_ana+" cut eigen reg vs. ErrorFlag eigen reg self","Minirunwise difference of "+cut_ana+" cut eigen reg vs. ErrorFlag eigen reg, self weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
+  tg_eigreg_cut_eigreg_minirunwise_self->SetNameTitle("Minirunwise diff "+cut_ana+" comparable_cut eigen reg vs. ErrorFlag eigen reg self","Minirunwise difference of "+cut_ana+" comparable_cut eigen reg vs. ErrorFlag eigen reg, self weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
   tg_eigreg_cut_eigreg_minirunwise_self->Fit("pol0");
   tg_eigreg_cut_eigreg_minirunwise_self->Draw("ap");
   TF1* tg_eigreg_cut_eigreg_minirunwise_self_fit = (TF1*)gROOT->GetFunction("pol0");
@@ -393,18 +397,18 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
   Printf("\n\n");
-  Printf("Difference in main det mean value PULL (quadrature error difference) between BMOD data set and standard ErrorFlag dataset 12bpm regression, pull > 2");
-  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)))",cut+((TCut)("abs(rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2))))>2")));
+  Printf("Difference in main det mean value PULL (quadrature error difference) between BMOD data set and standard ErrorFlag dataset 12bpm regression, pull > 4");
+  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)))",comparable_cut+((TCut)("abs(rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2))))>4")));
   gPad->SetLogy(1);
-  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)))",cut,"");
+  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)))",comparable_cut,"");
   TH1F* tg_eigreg_cut_eigreg_pull_self = (TH1F*) gPad->FindObject("htemp");
   if (tg_eigreg_cut_eigreg_pull_self) {
-    tg_eigreg_cut_eigreg_pull_self->SetNameTitle("Diff Multipletwise "+cut_ana+" cut eigen reg vs. ErrorFlag eigen reg self Pull","Difference multipletwise pull of "+cut_ana+" cut eigen reg vs. ErrorFlag eigen reg, self weighted;multipletwise difference pull");
+    tg_eigreg_cut_eigreg_pull_self->SetNameTitle("Diff Multipletwise "+cut_ana+" comparable_cut eigen reg vs. ErrorFlag eigen reg self Pull","Difference multipletwise pull of "+cut_ana+" comparable_cut eigen reg vs. ErrorFlag eigen reg, self weighted;multipletwise difference pull");
     Printf("tg_eigreg_cut_eigreg_pull_self = %e +- %e",tg_eigreg_cut_eigreg_pull_self->GetMean(),tg_eigreg_cut_eigreg_pull_self->GetRMS());
     outfile0 << "eigreg_cut_eigreg_pull_self = " << tg_eigreg_cut_eigreg_pull_self->GetMean() << " +- " << tg_eigreg_cut_eigreg_pull_self->GetRMS() << std::endl;
   }
   else {
-    Printf("Failed reg v reg cut check pull plot");
+    Printf("Failed reg v reg comparable_cut check pull plot");
   }
 
   c_eig_cut_eig->SaveAs(Form("plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
@@ -417,14 +421,14 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
 
   c_eig_cut_eig_maindet->cd(1);
   gPad->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("pow(sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)))/agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2):agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",cut,"goff");
+  nen = agg_part_avgd_friendable->Draw("pow(sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)))/agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2):agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",comparable_cut,"goff");
   TGraphErrors* tg_eiglagr_cut_eiglagr_multipletwise_scalefactor = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
   tg_eiglagr_cut_eiglagr_multipletwise_scalefactor->Fit("pol0");
   TF1* tg_eiglagr_cut_eiglagr_multipletwise_scalefactor_fit = (TF1*)gROOT->GetFunction("pol0");
   Double_t eiglagr_cut_eiglagr_multipletwise_scalefactor = sqrt(tg_eiglagr_cut_eiglagr_multipletwise_scalefactor_fit->GetParameter(0));
-  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/1e-9:"+((TString)Form("%e",eiglagr_cut_eiglagr_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",cut,"goff");
+  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/1e-9:"+((TString)Form("%e",eiglagr_cut_eiglagr_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",comparable_cut,"goff");
   TGraphErrors* tg_eiglagr_cut_eiglagr_minirunwise_maindet = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
-  tg_eiglagr_cut_eiglagr_minirunwise_maindet->SetNameTitle("Minirunwise diff "+cut_ana+" cut eigen lagr vs. ErrorFlag eigen lagr maindet","Minirunwise difference of "+cut_ana+" cut eigen lagr vs. ErrorFlag eigen lagr, maindet weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
+  tg_eiglagr_cut_eiglagr_minirunwise_maindet->SetNameTitle("Minirunwise diff "+cut_ana+" comparable_cut eigen lagr vs. ErrorFlag eigen lagr maindet","Minirunwise difference of "+cut_ana+" comparable_cut eigen lagr vs. ErrorFlag eigen lagr, maindet weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
   tg_eiglagr_cut_eiglagr_minirunwise_maindet->Fit("pol0");
   tg_eiglagr_cut_eiglagr_minirunwise_maindet->Draw("ap");
   TF1* tg_eiglagr_cut_eiglagr_minirunwise_maindet_fit = (TF1*)gROOT->GetFunction("pol0");
@@ -435,27 +439,27 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
   Printf("\n\n");
-  Printf("Difference in main det mean value PULL (quadrature error difference) between BMOD data set and standard ErrorFlag dataset 12bpm lagrange, MAINDET weighted, pull > 2");
-  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/("+((TString)Form("%e",eiglagr_cut_eiglagr_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error)",cut+((TCut)("abs(rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2))))>2")));
+  Printf("Difference in main det mean value PULL (quadrature error difference) between BMOD data set and standard ErrorFlag dataset 12bpm lagrange, MAINDET weighted, pull > 4");
+  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/("+((TString)Form("%e",eiglagr_cut_eiglagr_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error)",comparable_cut+((TCut)("abs(rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error,2))))>4")));
   gPad->SetLogy(1);
-  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/("+((TString)Form("%e",eiglagr_cut_eiglagr_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error)",cut,"");
+  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean)/("+((TString)Form("%e",eiglagr_cut_eiglagr_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_lagr_asym_main_det_mean_error)",comparable_cut,"");
   TH1F* tg_eiglagr_cut_eiglagr_pull_maindet = (TH1F*)gPad->FindObject("htemp");
   if (tg_eiglagr_cut_eiglagr_pull_maindet) {
-    tg_eiglagr_cut_eiglagr_pull_maindet->SetNameTitle("Diff Multipletwise "+cut_ana+" cut eigen lagr vs. ErrorFlag eigen lagr maindet Pull","Difference multipletwise pull of "+cut_ana+" cut eigen lagr vs. ErrorFlag eigen lagr, maindet weighted;multipletwise difference pull");
+    tg_eiglagr_cut_eiglagr_pull_maindet->SetNameTitle("Diff Multipletwise "+cut_ana+" comparable_cut eigen lagr vs. ErrorFlag eigen lagr maindet Pull","Difference multipletwise pull of "+cut_ana+" comparable_cut eigen lagr vs. ErrorFlag eigen lagr, maindet weighted;multipletwise difference pull");
     Printf("tg_eiglagr_cut_eiglagr_pull_maindet = %e +- %e",tg_eiglagr_cut_eiglagr_pull_maindet->GetMean(),tg_eiglagr_cut_eiglagr_pull_maindet->GetRMS());
     outfile0 << "eiglagr_cut_eiglagr_pull_maindet = " << tg_eiglagr_cut_eiglagr_pull_maindet->GetMean() << " +- " << tg_eiglagr_cut_eiglagr_pull_maindet->GetRMS() << std::endl;
   }
 
   c_eig_cut_eig_maindet->cd(3);
   gPad->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("pow(sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)))/agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2):agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",cut,"goff");
+  nen = agg_part_avgd_friendable->Draw("pow(sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)))/agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2):agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",comparable_cut,"goff");
   TGraphErrors* tg_eigdit_cut_eigdit_multipletwise_scalefactor = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
   tg_eigdit_cut_eigdit_multipletwise_scalefactor->Fit("pol0");
   TF1* tg_eigdit_cut_eigdit_multipletwise_scalefactor_fit = (TF1*)gROOT->GetFunction("pol0");
   Double_t eigdit_cut_eigdit_multipletwise_scalefactor = sqrt(tg_eigdit_cut_eigdit_multipletwise_scalefactor_fit->GetParameter(0));
-  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/1e-9:"+((TString)Form("%e",eigdit_cut_eigdit_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",cut,"goff");
+  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/1e-9:"+((TString)Form("%e",eigdit_cut_eigdit_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",comparable_cut,"goff");
   TGraphErrors* tg_eigdit_cut_eigdit_minirunwise_maindet = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
-  tg_eigdit_cut_eigdit_minirunwise_maindet->SetNameTitle("Minirunwise diff "+cut_ana+" cut eigen dit vs. ErrorFlag eigen dit maindet","Minirunwise difference of "+cut_ana+" cut eigen dit vs. ErrorFlag eigen dit, maindet weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
+  tg_eigdit_cut_eigdit_minirunwise_maindet->SetNameTitle("Minirunwise diff "+cut_ana+" comparable_cut eigen dit vs. ErrorFlag eigen dit maindet","Minirunwise difference of "+cut_ana+" comparable_cut eigen dit vs. ErrorFlag eigen dit, maindet weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
   tg_eigdit_cut_eigdit_minirunwise_maindet->Fit("pol0");
   tg_eigdit_cut_eigdit_minirunwise_maindet->Draw("ap");
   TF1* tg_eigdit_cut_eigdit_minirunwise_maindet_fit = (TF1*)gROOT->GetFunction("pol0");
@@ -466,14 +470,14 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
   Printf("\n\n");
-  Printf("Difference in main det mean value PULL (quadrature error difference) between BMOD data set and standard ErrorFlag dataset 5bpm dithering, MAINDET weighted, pull > 2");
-  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/("+((TString)Form("%e",eigdit_cut_eigdit_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error)",cut+((TCut)("abs(rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2))))>2")));
+  Printf("Difference in main det mean value PULL (quadrature error difference) between BMOD data set and standard ErrorFlag dataset 5bpm dithering, MAINDET weighted, pull > 4");
+  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/("+((TString)Form("%e",eigdit_cut_eigdit_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error)",comparable_cut+((TCut)("abs(rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error,2))))>4")));
   gPad->SetLogy(1);
-  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/("+((TString)Form("%e",eigdit_cut_eigdit_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error)",cut,"");
+  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean)/("+((TString)Form("%e",eigdit_cut_eigdit_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+fivebpms+do_err+"_friendable.eigen_dit_asym_main_det_mean_error)",comparable_cut,"");
 
   TH1F* tg_eigdit_cut_eigdit_pull_maindet = (TH1F*)gPad->FindObject("htemp");
   if (tg_eigdit_cut_eigdit_pull_maindet) {
-    tg_eigdit_cut_eigdit_pull_maindet->SetNameTitle("Diff Multipletwise "+cut_ana+" cut eigen dit vs. ErrorFlag eigen dit maindet Pull","Difference multipletwise pull of "+cut_ana+" cut eigen dit vs. ErrorFlag eigen dit, maindet weighted;multipletwise difference pull");
+    tg_eigdit_cut_eigdit_pull_maindet->SetNameTitle("Diff Multipletwise "+cut_ana+" comparable_cut eigen dit vs. ErrorFlag eigen dit maindet Pull","Difference multipletwise pull of "+cut_ana+" comparable_cut eigen dit vs. ErrorFlag eigen dit, maindet weighted;multipletwise difference pull");
     Printf("tg_eigdit_cut_eigdit_pull_maindet = %e +- %e",tg_eigdit_cut_eigdit_pull_maindet->GetMean(),tg_eigdit_cut_eigdit_pull_maindet->GetRMS());
     outfile0 << "eigdit_cut_eigdit_pull_maindet = " << tg_eigdit_cut_eigdit_pull_maindet->GetMean() << " +- " << tg_eigdit_cut_eigdit_pull_maindet->GetRMS() << std::endl;
   }
@@ -481,14 +485,14 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   c_eig_cut_eig_maindet->cd(5);
   gPad->SetLogy(0);
   gPad->SetLeftMargin(0.125);
-  nen = agg_part_avgd_friendable->Draw("pow(sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)))/agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2):agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",cut,"goff");
+  nen = agg_part_avgd_friendable->Draw("pow(sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)))/agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2):agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",comparable_cut,"goff");
   TGraphErrors* tg_eigreg_cut_eigreg_multipletwise_scalefactor = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
   tg_eigreg_cut_eigreg_multipletwise_scalefactor->Fit("pol0");
   TF1* tg_eigreg_cut_eigreg_multipletwise_scalefactor_fit = (TF1*)gROOT->GetFunction("pol0");
   Double_t eigreg_cut_eigreg_multipletwise_scalefactor = sqrt(tg_eigreg_cut_eigreg_multipletwise_scalefactor_fit->GetParameter(0));
-  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/1e-9:"+((TString)Form("%e",eigreg_cut_eigreg_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",cut,"goff");
+  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/1e-9:"+((TString)Form("%e",eigreg_cut_eigreg_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error/1e-9:run_number+0.1*minirun_n",comparable_cut,"goff");
   TGraphErrors* tg_eigreg_cut_eigreg_minirunwise_maindet = new TGraphErrors(nen,agg_part_avgd_friendable->GetV3(),agg_part_avgd_friendable->GetV1(),0,agg_part_avgd_friendable->GetV2());
-  tg_eigreg_cut_eigreg_minirunwise_maindet->SetNameTitle("Minirunwise diff "+cut_ana+" cut eigen reg vs. ErrorFlag eigen reg maindet","Minirunwise difference of "+cut_ana+" cut eigen reg vs. ErrorFlag eigen reg, maindet weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
+  tg_eigreg_cut_eigreg_minirunwise_maindet->SetNameTitle("Minirunwise diff "+cut_ana+" comparable_cut eigen reg vs. ErrorFlag eigen reg maindet","Minirunwise difference of "+cut_ana+" comparable_cut eigen reg vs. ErrorFlag eigen reg, maindet weighted;Run+0.1*Minirun;Minirunwise difference (ppb)");
   tg_eigreg_cut_eigreg_minirunwise_maindet->Fit("pol0");
   tg_eigreg_cut_eigreg_minirunwise_maindet->Draw("ap");
   TF1* tg_eigreg_cut_eigreg_minirunwise_maindet_fit = (TF1*)gROOT->GetFunction("pol0");
@@ -499,18 +503,18 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
   Printf("\n\n");
-  Printf("Difference in main det mean value PULL (quadrature error difference) between BMOD data set and standard ErrorFlag dataset 12bpm regression, MAINDET weighted, pull > 2");
-  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/("+((TString)Form("%e",eigreg_cut_eigreg_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error)",cut+((TCut)("abs(rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2))))>2")));
+  Printf("Difference in main det mean value PULL (quadrature error difference) between BMOD data set and standard ErrorFlag dataset 12bpm regression, MAINDET weighted, pull > 4");
+  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/("+((TString)Form("%e",eigreg_cut_eigreg_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error)",comparable_cut+((TCut)("abs(rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/sqrt(abs(pow(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2))))>4")));
   gPad->SetLogy(1);
-  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/("+((TString)Form("%e",eigreg_cut_eigreg_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error)",cut,"");
+  nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_"+cut_ana+"_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/("+((TString)Form("%e",eigreg_cut_eigreg_multipletwise_scalefactor))+"*agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error)",comparable_cut,"");
   TH1F* tg_eigreg_cut_eigreg_pull_maindet = (TH1F*) gPad->FindObject("htemp");
   if (tg_eigreg_cut_eigreg_pull_maindet) {
-    tg_eigreg_cut_eigreg_pull_maindet->SetNameTitle("Diff Multipletwise "+cut_ana+" cut eigen reg vs. ErrorFlag eigen reg maindet Pull","Difference multipletwise pull of "+cut_ana+" cut eigen reg vs. ErrorFlag eigen reg, maindet weighted;multipletwise difference pull");
+    tg_eigreg_cut_eigreg_pull_maindet->SetNameTitle("Diff Multipletwise "+cut_ana+" comparable_cut eigen reg vs. ErrorFlag eigen reg maindet Pull","Difference multipletwise pull of "+cut_ana+" comparable_cut eigen reg vs. ErrorFlag eigen reg, maindet weighted;multipletwise difference pull");
     Printf("tg_eigreg_cut_eigreg_pull_maindet = %e +- %e",tg_eigreg_cut_eigreg_pull_maindet->GetMean(),tg_eigreg_cut_eigreg_pull_maindet->GetRMS());
     outfile0 << "eigreg_cut_eigreg_pull_maindet = " << tg_eigreg_cut_eigreg_pull_maindet->GetMean() << " +- " << tg_eigreg_cut_eigreg_pull_maindet->GetRMS() << std::endl;
   }
   else {
-    Printf("Failed reg v reg cut check pull plot");
+    Printf("Failed reg v reg comparable_cut check pull plot");
   }
 
   c_eig_cut_eig_maindet->SaveAs(Form("plots/drl_diff_plots/dit_reg_lagr_compare_%s_avgd%s%s.pdf",type.Data(),bpms.Data(),suffix.Data()));
@@ -535,8 +539,8 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
   Printf("\n\n");
-  Printf("Difference in main det mean value PULL (quadrature error difference) of regression vs. lagrange datasets (same cut), pull > 2");
-  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(asym_main_det_eigen_lagr_eigen_reg_diff_mean)/asym_main_det_eigen_lagr_eigen_reg_diff_mean_error",cut+((TCut)("abs(rcdb_sign*(asym_main_det_eigen_lagr_eigen_reg_diff_mean)/asym_main_det_eigen_lagr_eigen_reg_diff_mean_error)>2")));
+  Printf("Difference in main det mean value PULL (quadrature error difference) of regression vs. lagrange datasets (same cut), pull > 4");
+  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(asym_main_det_eigen_lagr_eigen_reg_diff_mean)/asym_main_det_eigen_lagr_eigen_reg_diff_mean_error",cut+((TCut)("abs(rcdb_sign*(asym_main_det_eigen_lagr_eigen_reg_diff_mean)/asym_main_det_eigen_lagr_eigen_reg_diff_mean_error)>4")));
   gPad->SetLogy(1);
   nen = agg_part_avgd_friendable->Draw("rcdb_sign*(asym_main_det_eigen_lagr_eigen_reg_diff_mean)/asym_main_det_eigen_lagr_eigen_reg_diff_mean_error",cut,"");
   TH1F* tg_eiglagr_eigreg_pull_self = (TH1F*)gPad->FindObject("htemp");
@@ -595,7 +599,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
      c_eiglagr_eigdit->cd(2);
      gStyle->SetOptStat(122221);
      gPad->SetLeftMargin(0.125);
-     agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(asym_main_det_eigen_lagr_eigen_dit_diff_mean)/asym_main_det_eigen_lagr_eigen_dit_diff_mean_error",cut+((TCut)("abs(rcdb_sign*(asym_main_det_eigen_lagr_eigen_dit_diff_mean)/asym_main_det_eigen_lagr_eigen_dit_diff_mean_error)>2")));
+     agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(asym_main_det_eigen_lagr_eigen_dit_diff_mean)/asym_main_det_eigen_lagr_eigen_dit_diff_mean_error",cut+((TCut)("abs(rcdb_sign*(asym_main_det_eigen_lagr_eigen_dit_diff_mean)/asym_main_det_eigen_lagr_eigen_dit_diff_mean_error)>4")));
      gPad->SetLogy(1);
      nen = agg_part_avgd_friendable->Draw("rcdb_sign*(asym_main_det_eigen_lagr_eigen_dit_diff_mean)/asym_main_det_eigen_lagr_eigen_dit_diff_mean_error",cut,"");
      TH1F* tg_eiglagr_eigdit_pull_self = (TH1F*)gPad->FindObject("htemp");
@@ -654,7 +658,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   c_regreg_eigdit->cd(2);
   gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
-  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(asym_main_det_eigen_dit_reg_diff_mean)/asym_main_det_eigen_dit_reg_diff_mean_error",cut+((TCut)("abs(rcdb_sign*(asym_main_det_eigen_dit_reg_diff_mean)/asym_main_det_eigen_dit_reg_diff_mean_error)>2")));
+  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(asym_main_det_eigen_dit_reg_diff_mean)/asym_main_det_eigen_dit_reg_diff_mean_error",cut+((TCut)("abs(rcdb_sign*(asym_main_det_eigen_dit_reg_diff_mean)/asym_main_det_eigen_dit_reg_diff_mean_error)>4")));
   gPad->SetLogy(1);
   nen = agg_part_avgd_friendable->Draw("rcdb_sign*(asym_main_det_eigen_dit_reg_diff_mean)/asym_main_det_eigen_dit_reg_diff_mean_error",cut,"");
   TH1F* tg_regreg_eigdit_pull_self = (TH1F*)gPad->FindObject("htemp");
@@ -715,7 +719,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   c_regreg_eigreg->cd(2);
   gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
-  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))",cut+((TCut)("abs(rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2))))>2")));
+  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))",cut+((TCut)("abs(rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2))))>4")));
   gPad->SetLogy(1);
   nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))",cut,"");
   TH1F* tg_regdit_eigdit_pull_self = (TH1F*)gPad->FindObject("htemp");
@@ -740,7 +744,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   c_regreg_eigreg->cd(4);
   gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
-  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))",cut+((TCut)("rcdb_arm_flag==0 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) < 1e-9 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) > 1e-26 && abs(rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2))))>2")));
+  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))",cut+((TCut)("rcdb_arm_flag==0 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) < 1e-9 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) > 1e-26 && abs(rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2))))>4")));
   gPad->SetLogy(1);
   nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean)/sqrt(abs(pow(agg_plain_friendable.dit_asym_us_avg_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean_error,2)))",cut+((TCut)("rcdb_arm_flag==0 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) < 1e-9 && abs(agg_plain_friendable.dit_asym_us_avg_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_dit_asym_us_avg_mean) > 1e-26")),"goff");
   if (nen != 0) {
@@ -767,7 +771,7 @@ void slugwise_drl_diffs(TString type = "part", TString do_err = "", TString cut_
   c_regreg_eigreg->cd(6);
   gStyle->SetOptStat(122221);
   gPad->SetLeftMargin(0.125);
-  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/sqrt(abs(pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)))",cut+((TCut)("abs(rcdb_sign*(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/sqrt(abs(pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2))))>2")));
+  agg_part_avgd_friendable->Scan("rcdb_slug:rcdb_flip_state:rcdb_ihwp:rcdb_sign:run_number:minirun_n:asym_main_det_nentries:rcdb_sign*(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/sqrt(abs(pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)))",cut+((TCut)("abs(rcdb_sign*(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/sqrt(abs(pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2))))>4")));
   gPad->SetLogy(1);
   nen = agg_part_avgd_friendable->Draw("rcdb_sign*(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean-agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean)/sqrt(abs(pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.reg_asym_main_det_mean_error,2)-pow(agg_ErrorFlag_"+type+"_avgd"+bpms+do_err+"_friendable.eigen_reg_asym_main_det_mean_error,2)))",cut,"goff");
   TH1F* tg_small_regreg_eigreg_pull_self = (TH1F*) gPad->FindObject("htemp");

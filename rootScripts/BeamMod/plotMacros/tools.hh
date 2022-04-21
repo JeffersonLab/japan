@@ -196,6 +196,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   TChain* agg_part_avgd_friendable              = new TChain(Form("agg_%s_%s_avgd%s_friendable",DataSetCut.Data(),type.Data(),do_err.Data()));
   TChain* agg_part_avgd_allbpms_friendable      = new TChain(Form("agg_%s_%s_avgd_allbpms%s_friendable",DataSetCut.Data(),type.Data(),do_err.Data()));
   TChain* agg_plain_friendable                  = new TChain("agg_plain_friendable");
+  TChain* agg_part_avgd_friendable_Coils_IncludeBMOD = new TChain(Form("agg"));
   //TChain* mini_eigen_reg_allbpms_tr           = new TChain(Form("mini_eigen_reg_allbpms_tr"));     // Truncated one is not sorted... just deal with it I guess (could sort it later if urgently needed)
   // evMons stuff mostly unused it seems.... those plots should just be made separately in the obvious places
   TChain* mini_evMons_5bpms_part_avg            = new TChain(Form("mini_eigen_reg_5bpms_sorted_%s_avg",type.Data())); // Unsorted versions have no _sorted in the name
@@ -236,6 +237,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   }
   TString mini_reference_evmon_infilename = Form("processed_respin2_data/%s_Avg_EigenCombos_double_sorted.root",bigType.Data()); //eigen_noerr_.... other options ; do_err="_noerr" for no err version lagrange sens calculated data
   TString agg_infilename = Form("processed_respin2_data/mini_friended_agg.root");
+  TString coil_agg_infilename = Form("../respin2_data/aggregator_from_Coils_IncludeBMOD_part_avgd_allbpms_drl_no_err_correction.root");
   TString regress_postpan_infilename = Form("respin2_data/regress_postpan_full_CREX.root");
   TString overload_postpan_infilename = Form("respin2_data/regress_overload_full_CREX.root");
   TString bmod_slopes_infilename = Form("processed_respin2_data/All_dit_outputs_doing_segment_averaging_of_slopes_mini_friended.root");
@@ -245,6 +247,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   mini->AddFile(mini_infilename);
   agg_part_avgd_friendable->AddFile(agg_infilename);
   agg_part_avgd_allbpms_friendable->AddFile(agg_infilename);
+  agg_part_avgd_friendable_Coils_IncludeBMOD ->AddFile(coil_agg_infilename);
   agg_plain_friendable->AddFile(agg_infilename);
   //mini_eigen_reg_allbpms_tr->AddFile(infilename);
   //mini_eigen_reg_allbpms_sorted->AddFile(infilename);
@@ -280,6 +283,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   mini->AddFriend(mini_reference_eigen_reg_allbpms_sorted,"mini_reference_eigen_reg_allbpms_sorted");
   mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
   mini->AddFriend(agg_part_avgd_allbpms_friendable,"agg_part_avgd_allbpms_friendable");
+  mini->AddFriend(agg_part_avgd_friendable_Coils_IncludeBMOD,"agg_part_avgd_friendable_Coils_IncludeBMOD");
   mini->AddFriend(agg_plain_friendable,"agg_plain_friendable");
   mini->AddFriend(mini_regression,"mini_regression");
   mini->AddFriend(mini_overload,"mini_overload");
@@ -449,6 +453,33 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     "(rcdb_run_type == 1 && rcdb_run_flag == 1)"+mod_cut, // Include 1 extra as the global 
     "(rcdb_run_type == 1 && rcdb_run_flag == 1)"+mod_cut, // Include 1 extra as the global 
   };
+  std::vector<TString> kinematics_cuts = {
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+    "(rcdb_run_type == 1 && rcdb_run_flag == 1 && rcdb_slug!=103 && rcdb_slug!=186)"+mod_cut, // Include 1 extra as the global 
+  };
   std::vector<TString> residuals_cuts = {
     "(rcdb_run_type == 1 && rcdb_run_flag == 1 && flag==1 && dit_true_data==1 && rcdb_arm_flag != 1)"+mod_cut,
     "(rcdb_run_type == 1 && rcdb_run_flag == 1 && flag==1 && dit_true_data==1 && rcdb_arm_flag != 2)"+mod_cut,
@@ -502,11 +533,11 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   std::vector<TString> monitors12 = {"evMon0","evMon1","evMon2","evMon3","evMon4","evMon5","evMon6","evMon7","evMon8","evMon9","evMon10","evMon11"};
 
   std::vector<TString> diff_kinematics = {
-    "ErrorFlag_diff_targ_positionX_mean/1e-6",
-    "ErrorFlag_diff_targ_positionY_mean/1e-6",
-    "ErrorFlag_diff_targ_thetaX_mean/1e-6",
-    "ErrorFlag_diff_targ_thetaY_mean/1e-6",
-    "ErrorFlag_diff_dispE_bpm12X_mean/1e-6"
+    "ErrorFlag_diff_targ_positionX_mean",
+    "ErrorFlag_diff_targ_positionY_mean",
+    "ErrorFlag_diff_targ_thetaX_mean",
+    "ErrorFlag_diff_targ_thetaY_mean",
+    "ErrorFlag_diff_dispE_bpm12X_mean"
   };
 
   std::vector<TString> yield_bcm_devices = {
@@ -671,6 +702,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   TTree * out_tree_mini_reference_eigen_reg_allbpms_sorted_monitors_det_weighted = new TTree("mini_reference_eigen_reg_allbpms_sorted_monitors_det_weighted","mini_reference_eigen_reg_allbpms_sorted_monitors_det_weighted");
   TTree * out_tree_mini_eigen_reg_5bpms_part_avg_monitors_det_weighted = new TTree("mini_eigen_reg_5bpms_part_avg_monitors_det_weighted","mini_eigen_reg_5bpms_part_avg_monitors_det_weighted");
   TTree * out_tree_mini_eigen_reg_allbpms_part_avg_monitors_det_weighted = new TTree("mini_eigen_reg_allbpms_part_avg_monitors_det_weighted","mini_eigen_reg_allbpms_part_avg_monitors_det_weighted");
+  TTree * out_tree_mini_kinematics_det_weighted = new TTree("mini_kinematics_det_weighted","mini_kinematics_det_weighted");
   TTree * out_tree_mini_BPMs_det_weighted = new TTree("mini_BPMs_det_weighted","mini_BPMs_det_weighted");
   TTree * out_tree_mini_BCMs_det_weighted = new TTree("mini_BCMs_det_weighted","mini_BCMs_det_weighted");
 
@@ -1846,10 +1878,10 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   // Main det signal weighted
   draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
   //draw_weighting_error = "((rcdb_arm_flag==0)*(agg_part_avgd_friendable.eigen_dit_asym_us_avg_mean_error)+(rcdb_arm_flag==1)*(agg_part_avgd_friendable.eigen_dit_asym_usr_mean_error)+(rcdb_arm_flag==2)*(agg_part_avgd_friendable.eigen_dit_asym_usl_mean_error))";
-  draw                 =     Form("%sagg_part_avgd_friendable.eigen_#_#_mean",mod_draw.Data());
-  drawn_channels_error = "abs(agg_part_avgd_friendable.eigen_#_#_mean_error)";
-  combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_dit_part_avgd_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,dit_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
-  ///////////////combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_dit_part_avgd_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,dit_asym_vec,special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
+  draw                 =     Form("%sagg_part_avgd_friendable.#_#_mean",mod_draw.Data());
+  drawn_channels_error = "abs(agg_part_avgd_friendable.#_#_mean_error)";
+  combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_dit_part_avgd_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,agg_eigen_dit_asym_vec,agg_special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
+  ///////////////combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_dit_part_avgd_det_asyms_det_weighted,draw,draw_weighting_error,drawn_channels_error,agg_eigen_dit_asym_vec,agg_special_detectors,{},null_cuts,cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
   out_tree_mini_dit_part_avgd_det_asyms_det_weighted->Write();
   delete out_tree_mini_dit_part_avgd_det_asyms_det_weighted;
 
@@ -2062,6 +2094,28 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
   combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_BCMs_det_weighted,draw,draw_weighting_error,drawn_channels_error,asym_yield_vec,yield_bcm_devices,{},cutGoodProduction,{},0);
   out_tree_mini_BCMs_det_weighted->Write();
   delete out_tree_mini_BCMs_det_weighted;
+
+
+  // The setbranchaddresses onto the mini tree apparently don't like being redone.... so just wipe mini and reset it...
+  delete mini;
+  mini = new TChain("mini");
+  mini->AddFile(mini_infilename);
+  mini->AddFriend(agg_part_avgd_friendable,"agg_part_avgd_friendable");
+  mini->AddFriend(agg_part_avgd_friendable_Coils_IncludeBMOD,"agg_part_avgd_friendable_Coils_IncludeBMOD");
+  mini->BuildIndex("run","mini");
+
+  // Part avgd eigen vector regression analysis (segment averaged slopes)
+  // Asyms come from the "part avgd" Agg outputs
+  // Correction amounts also exist in the agg tree... just not in a #_# easily parsed format of course
+  // Main det signal weighted
+  drawn_channels_error = "abs(agg_part_avgd_friendable_Coils_IncludeBMOD.##_mean_error)";
+  draw                 =     Form("%sagg_part_avgd_friendable_Coils_IncludeBMOD.##_mean",mod_draw.Data());
+  draw_weighting_error = "agg_part_avgd_allbpms_friendable.eigen_lagr_asym_main_det_mean_error"; // Just use the aggregator's main_det error, no tricks
+  combo_tg_err_segment_getter(averaging_timescale,mini,out_tree_mini_kinematics_det_weighted,draw,draw_weighting_error,drawn_channels_error,nullvec,diff_kinematics,{},null_cuts,kinematics_cuts,0); //null cut vector here means use draws_piece2 loop for cut definition instead
+  out_tree_mini_kinematics_det_weighted->Write();
+  delete out_tree_mini_kinematics_det_weighted;
+
+
    /* Open front of comment for testing */
   }
   if  (draw_plots==2) {
@@ -2672,6 +2726,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     out_tree_mini_reference_eigen_reg_allbpms_sorted_monitors_det_weighted = (TTree*)data_file_asyms.Get("mini_reference_eigen_reg_allbpms_sorted_monitors_det_weighted");
     out_tree_mini_eigen_reg_5bpms_part_avg_monitors_det_weighted         = (TTree*)data_file_asyms.Get("mini_eigen_reg_5bpms_part_avg_monitors_det_weighted");
     out_tree_mini_eigen_reg_allbpms_part_avg_monitors_det_weighted         = (TTree*)data_file_asyms.Get("mini_eigen_reg_allbpms_part_avg_monitors_det_weighted");
+    out_tree_mini_kinematics_det_weighted                                 = (TTree*)data_file_asyms.Get("mini_kinematics_det_weighted");
     out_tree_mini_BPMs_det_weighted = (TTree*)data_file_asyms.Get("mini_BPMs_det_weighted");
     out_tree_mini_BCMs_det_weighted = (TTree*)data_file_asyms.Get("mini_BCMs_det_weighted");
     //////////out_tree_mini_eigen_reg_5bpms_part_avg_combos         = (TTree*)data_file.Get("mini_eigen_reg_5bpms_part_avg_combos");
@@ -2730,6 +2785,7 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     mini_slugs->AddFriend(out_tree_mini_reference_eigen_reg_allbpms_sorted_monitors_det_weighted);
     mini_slugs->AddFriend(out_tree_mini_eigen_reg_5bpms_part_avg_monitors_det_weighted);
     mini_slugs->AddFriend(out_tree_mini_eigen_reg_allbpms_part_avg_monitors_det_weighted);
+    mini_slugs->AddFriend(out_tree_mini_kinematics_det_weighted);
     mini_slugs->AddFriend(out_tree_mini_BPMs_det_weighted);
     mini_slugs->AddFriend(out_tree_mini_BCMs_det_weighted);
 
@@ -4132,6 +4188,22 @@ void ToolBox::tg_err_averaging(TString averaging_timescale = "crex_part", Int_t 
     label->Draw("same");
     c1_2_4->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
+    TCanvas* c1_2_5 = new TCanvas();
+    ana = "Kinematics, det weighted"; // No more absolute value in this anymore (with the sorted slopes)
+    //ana = "burstwise eigenvector regression - corrections per monitor (usl, r), ppb"; // No more absolute value in this anymore (with the sorted slopes)
+    c1_2_5->cd();
+    c1_2_5->SetTitle(ana.Data());
+    c1_2_5->SetName(ana.Data());
+    c1_2_5->Divide(1,diff_kinematics.size());
+    draw_weighting_error = "((rcdb_arm_flag==0)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_us_avg_mean_err)+(rcdb_arm_flag==1)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usr_mean_err)+(rcdb_arm_flag==2)*(mini_eigen_lagr_allbpms_part_avg_det_asyms_det_weighted.lagr_asym_usl_mean_err))/(1.0e-9)";
+    draw                 = Form("%smini_kinematics_det_weighted.#_#_mean",mod_draw.Data());
+    drawn_channels_error =       "abs(mini_kinematics_det_weighted.#_#_mean_err)";
+    p1=manyGraph(c1_2_5,p1,averaging_timescale,(TChain*)mini_slugs,draw,draw_weighting_error,drawn_channels_error,nullvec,diff_kinematics,{},{},kinematics_cuts,1); // empty draws_piece3 and cuts and cuts2 vectors
+
+    c1_2_5->cd();
+    label->SetText(0.0,0.005,ana.Data());
+    label->Draw("same");
+    c1_2_5->SaveAs(Form("processed_respin2_data/plots/%s.pdf",corrections_pdfname.Data()));
 
     TCanvas* c1_3 = new TCanvas();
     ana = "self weighted BCM means (ppb)"; // No more absolute value in this anymore (with the sorted slopes)

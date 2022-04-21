@@ -1,0 +1,28 @@
+Just Sensitivities:True
+1 Coils:5,3,7,4,6
+2 Coils:1,3,7,4,2
+3 Coils:1,5,7,6,2
+REAL Coils:1,3,7,4,6
+Coils:1,3,7,4,6,2,5
+Important Coils:5
+BPMs Slope Names:evMon0,evMon1,evMon2,evMon3,evMon4,evMon5,evMon6,evMon7,evMon8,evMon9,evMon10,evMon11
+BPMs:evMon0,evMon1,evMon2,evMon3,evMon4,evMon5,evMon6,evMon7,evMon8,evMon9,evMon10,evMon11
+Use Eigenvector Combinations:True
+Eigenvector Data Rootfile:/lustre19/expphy/volatile/halla/parity/crex-respin2/LagrangeOutput/rootfiles/Part_Avg_EigenCombos_double_sorted.root
+ALTERNATE Runwise other Eigenvector Data Rootfile:/lustre19/expphy/volatile/halla/parity/crex-respin2/LagrangeOutput/rootfiles/rcdb_segment_eigenvectors_sorted_run_avg.root
+Eigenvector Data Tree:mini_eigen_reg_allbpms_sorted_part_avg
+ALTERNATE Pruned or allbpm/allbpm_tr other Eigenvector Data Tree:mini_eigen_reg_allbpms_sorted_pruned_part_avg
+Main Detectors:usl,usr,atl1,atl2,atr1,atr2
+Detectors:usl,usr,atl1,atl2,atr1,atr2,sam1,sam2,sam3,sam4,sam5,sam6,sam7,sam8
+Important Detectors:2
+Flag Sigma Cut:10.5
+ROOT input path:/lustre/expphy/volatile/halla/parity/crex-respin2/japanOutput/prexPrompt_pass2_#.000.root
+ADAQ ROOT input path:~/PREX/prompt/japanOutput/prexPrompt_pass1_#.000.root
+Output path:./bmodOutput/slopes_run_avg_eigenvectors_double_sorted_part_avg_allbpms_1X/
+Rootfile Output Path:./bmodOutput/slopes_run_avg_eigenvectors_double_sorted_part_avg_allbpms_1X/
+Rootfile Output Runwise:True
+current Cut:bcm_an_us>5
+Cut:(ErrorFlag & 0xda7e6bff)==0
+Tree:evt_bmw
+Save Bad Data:True
+Run Average:True

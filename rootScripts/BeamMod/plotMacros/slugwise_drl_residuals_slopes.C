@@ -1093,7 +1093,7 @@ void slugwise_drl_residuals_slopes(TString scale = "part", TString ana = "_eigen
   for (Int_t imon = 0 ; imon < (Int_t)ceil(nmons/splitting); imon++) {
 
     if ( !bpms.Contains("allbpms") ) {
-      Printf("Scanning the runwise dithering slopes vs. segment avgd dithering slopes difference in correction -> Comparing to 0.03* the evMon0 main energy sensitive correction-minirunwise-stddev (difference in correction for evMon%d > 0.03* evMon_0 stddev is printed)",imon);
+      Printf("Scanning the runwise dithering slopes vs. segment avgd dithering slopes difference in correction -> Comparing to 0.1* the evMon0 main energy sensitive correction-minirunwise-stddev (difference in correction for evMon%d > 0.1* evMon_0 stddev is printed)",imon);
       dit->Scan(Form("run:minirun_n:cyclenum:segment:flag:rcdb_slug:dit_13746.us_avg_evMon"+TString::Itoa(imon,10)+"_run_dit_dit_diff:data_mini.diff_evMon"+TString::Itoa(imon,10)+"_new:data_mini.diff_evMon"+TString::Itoa(imon,10)+"_new*dit_13746.us_avg_evMon"+TString::Itoa(imon,10)+"_run_dit_dit_diff"),(TString)cut+" && rcdb_arm_flag==0 && minirun_n == 0 && (1==0 || abs(data_mini.diff_evMon"+TString::Itoa(imon,10)+"_new*dit_13746.us_avg_evMon"+TString::Itoa(imon,10)+"_run_dit_dit_diff) > ( 0.1*0.015 ) )"); // 0.015 = 15,000 ppb which is stddev of corrections for evMon0 in all 3 parts of CREX
     }
     Form("mini_eigen_reg_%s_%s_avg",nbpms.Data(),scale.Data());
@@ -1178,7 +1178,7 @@ void slugwise_drl_residuals_slopes(TString scale = "part", TString ana = "_eigen
   for (Int_t imon = 0 ; imon < (Int_t)ceil(nmons/splitting); imon++) {
 
     if ( !bpms.Contains("allbpms") ) {
-      Printf("Scanning the lagr slopes vs. segment avgd dithering slopes difference in correction -> Comparing to 0.03* the evMon0 main energy sensitive correction-minirunwise-stddev (difference in correction for evMon%d > 0.03* evMon_0 stddev is printed)",imon);
+      Printf("Scanning the lagr slopes vs. segment avgd dithering slopes difference in correction -> Comparing to 0.1* the evMon0 main energy sensitive correction-minirunwise-stddev (difference in correction for evMon%d > 0.1* evMon_0 stddev is printed)",imon);
       dit->Scan(Form("run:minirun_n:cyclenum:segment:flag:rcdb_slug:mini_eigen_lagr_"+nbpms+"_"+scale+"_avg.us_avg_evMon"+TString::Itoa(imon,10)+"_lagr_dit_diff:data_mini.diff_evMon"+TString::Itoa(imon,10)+"_new:data_mini.diff_evMon"+TString::Itoa(imon,10)+"_new*mini_eigen_lagr_"+nbpms+"_"+scale+"_avg.us_avg_evMon"+TString::Itoa(imon,10)+"_lagr_dit_diff"),(TString)cut+" && rcdb_arm_flag==0 && (1==0 || abs(data_mini.diff_evMon"+TString::Itoa(imon,10)+"_new*mini_eigen_lagr_"+nbpms+"_"+scale+"_avg.us_avg_evMon"+TString::Itoa(imon,10)+"_lagr_dit_diff) > ( 0.1*0.015 ) )"); // 0.015 = 15,000 ppb which is stddev of corrections for evMon0 in all 3 parts of CREX
     }
     p1=multiGraph(c_diffslopes_lagr,p1,dit,4*imon+1, "mini_eigen_lagr_"+nbpms+"_"+scale+"_avg.us_avg_evMon"+TString::Itoa(imon,10)+"_lagr_dit_diff",cut + " && rcdb_arm_flag==0","g");
@@ -1259,7 +1259,7 @@ void slugwise_drl_residuals_slopes(TString scale = "part", TString ana = "_eigen
   c_diffslopes_lagr_reg->SetName(anaz.Data());
   c_diffslopes_lagr_reg->Divide(4,(Int_t)ceil(nmons/splitting));
   for (Int_t imon = 0 ; imon < (Int_t)ceil(nmons/splitting); imon++) {
-    Printf("Scanning the lagr slopes vs. reg slopes difference in correction -> Comparing to 0.03* the evMon0 main energy sensitive correction-minirunwise-stddev (difference in correction for evMon%d > 0.03* evMon_0 stddev is printed)",imon);
+    Printf("Scanning the lagr slopes vs. reg slopes difference in correction -> Comparing to 0.1* the evMon0 main energy sensitive correction-minirunwise-stddev (difference in correction for evMon%d > 0.1* evMon_0 stddev is printed)",imon);
     dit->Scan(Form("run:minirun_n:cyclenum:segment:flag:rcdb_slug:mini_eigen_lagr_"+nbpms+"_"+scale+"_avg.us_avg_evMon"+TString::Itoa(imon,10)+"_lagr_reg_diff:data_mini.diff_evMon"+TString::Itoa(imon,10)+"_new:data_mini.diff_evMon"+TString::Itoa(imon,10)+"_new*mini_eigen_lagr_"+nbpms+"_"+scale+"_avg.us_avg_evMon"+TString::Itoa(imon,10)+"_lagr_reg_diff"),(TString)cut+" && rcdb_arm_flag==0 && (1==0 || abs(data_mini.diff_evMon"+TString::Itoa(imon,10)+"_new*mini_eigen_lagr_"+nbpms+"_"+scale+"_avg.us_avg_evMon"+TString::Itoa(imon,10)+"_lagr_reg_diff) > ( 0.1*0.015 ) )"); // 0.015 = 15,000 ppb which is stddev of corrections for evMon0 in all 3 parts of CREX
     p1=multiGraph(c_diffslopes_lagr_reg,p1,dit,4*imon+1, "mini_eigen_lagr_"+nbpms+"_"+scale+"_avg.us_avg_evMon"+TString::Itoa(imon,10)+"_lagr_reg_diff",cut + " && rcdb_arm_flag==0","g");
     p1=multiGraph(c_diffslopes_lagr_reg,p1,dit,4*imon+2, "mini_eigen_lagr_"+nbpms+"_"+scale+"_avg.us_avg_evMon"+TString::Itoa(imon,10)+"_lagr_reg_diff",cut + " && rcdb_arm_flag==0","h");
@@ -1280,7 +1280,7 @@ void slugwise_drl_residuals_slopes(TString scale = "part", TString ana = "_eigen
     c_diffslopes_lagr_reg_2->SetName(anaz.Data());
     c_diffslopes_lagr_reg_2->Divide(4,(Int_t)ceil(nmons/splitting));
     for (Int_t imon = 0 ; imon < (Int_t)ceil(nmons/splitting); imon++) {
-      Printf("Scanning the lagr slopes vs. reg slopes difference in correction -> Comparing to 0.03* the evMon0 main energy sensitive correction-minirunwise-stddev (difference in correction for evMon%d > 0.03* evMon_0 stddev is printed)",imon+(Int_t)ceil(nmons/splitting));
+      Printf("Scanning the lagr slopes vs. reg slopes difference in correction -> Comparing to 0.1* the evMon0 main energy sensitive correction-minirunwise-stddev (difference in correction for evMon%d > 0.1* evMon_0 stddev is printed)",imon+(Int_t)ceil(nmons/splitting));
       dit->Scan(Form("run:minirun_n:cyclenum:segment:flag:rcdb_slug:mini_eigen_lagr_"+nbpms+"_"+scale+"_avg.us_avg_evMon"+TString::Itoa(imon+(Int_t)ceil(nmons/splitting),10)+"_lagr_reg_diff:data_mini.diff_evMon"+TString::Itoa(imon+(Int_t)ceil(nmons/splitting),10)+"_new:data_mini.diff_evMon"+TString::Itoa(imon+(Int_t)ceil(nmons/splitting),10)+"_new*mini_eigen_lagr_"+nbpms+"_"+scale+"_avg.us_avg_evMon"+TString::Itoa(imon+(Int_t)ceil(nmons/splitting),10)+"_lagr_reg_diff"),(TString)cut+" && rcdb_arm_flag==0 && (1==0 || abs(data_mini.diff_evMon"+TString::Itoa(imon+(Int_t)ceil(nmons/splitting),10)+"_new*mini_eigen_lagr_"+nbpms+"_"+scale+"_avg.us_avg_evMon"+TString::Itoa(imon+(Int_t)ceil(nmons/splitting),10)+"_lagr_reg_diff) > ( 0.1*0.015 ) )"); // 0.015 = 15,000 ppb which is stddev of corrections for evMon0 in all 3 parts of CREX
       p1=multiGraph(c_diffslopes_lagr_reg_2,p1,dit,4*imon+1, "mini_eigen_lagr_"+nbpms+"_"+scale+"_avg.us_avg_evMon"+TString::Itoa((imon+(Int_t)ceil(nmons/splitting)),10)+"_lagr_reg_diff",cut + " && rcdb_arm_flag==0","g");
       p1=multiGraph(c_diffslopes_lagr_reg_2,p1,dit,4*imon+2, "mini_eigen_lagr_"+nbpms+"_"+scale+"_avg.us_avg_evMon"+TString::Itoa((imon+(Int_t)ceil(nmons/splitting)),10)+"_lagr_reg_diff",cut + " && rcdb_arm_flag==0","h");
