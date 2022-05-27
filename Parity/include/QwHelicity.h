@@ -115,12 +115,10 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
 
   VQwSubsystem&  operator=  (VQwSubsystem *value);
   VQwSubsystem&  operator+=  (VQwSubsystem *value);
-  void  Sum(VQwSubsystem  *value1, VQwSubsystem  *value2);
 
   //the following functions do nothing really : adding and subtracting helicity doesn't mean anything
   VQwSubsystem& operator-= (VQwSubsystem *value) {return *this;};
   void  Scale(Double_t factor) {return;};
-  void  Difference(VQwSubsystem  *value1, VQwSubsystem  *value2);
   void  Ratio(VQwSubsystem *numer, VQwSubsystem *denom);
   // end of "empty" functions
 
