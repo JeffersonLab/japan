@@ -282,6 +282,8 @@ class QwEventBuffer: public MQwCodaControlEvent{
   UInt_t     fNumPhysicsEvents;
   UInt_t     fStartingPhysicsEvent;
 
+  Bool_t     fSingleFile;
+
 };
 
 template < class T > Bool_t QwEventBuffer::FillObjectWithEventData(T &object){

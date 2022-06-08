@@ -34,7 +34,6 @@ void sigusr_handler(int sig)
 std::string QwEventBuffer::fDefaultDataDirectory = "/adaq1/data1/apar";
 std::string QwEventBuffer::fDefaultDataFileStem = "QwRun_";
 std::string QwEventBuffer::fDefaultDataFileExtension = "log";
-Bool_t singlefile = kFALSE;
 
 const Int_t QwEventBuffer::kRunNotSegmented = -20;
 const Int_t QwEventBuffer::kNoNextDataFile  = -30;
@@ -57,7 +56,8 @@ QwEventBuffer::QwEventBuffer()
        fRunIsSegmented(kFALSE),
        fPhysicsEventFlag(kFALSE),
        fEvtNumber(0),
-       fNumPhysicsEvents(0)
+       fNumPhysicsEvents(0),
+       fSingleFile(kFALSE)
 {
   //  Set up the signal handler.
   globalEXIT=0;
@@ -183,7 +183,7 @@ void QwEventBuffer::ProcessOptions(QwOptions &options)
 #endif
   }
   if(options.HasValue("directfile")){
-      singlefile = kTRUE;
+      fSingleFile = kTRUE;
       fDataFile = options.GetValue<string>("directfile");
     }
   fDataDirectory = options.GetValue<string>("data");
@@ -1031,7 +1031,7 @@ Bool_t QwEventBuffer::DecodeSubbankHeader(UInt_t *buffer){
 
 const TString&  QwEventBuffer::DataFile(const UInt_t run, const Short_t seg = -1)
 {
-  if(!singlefile){
+  if(!fSingleFile){
     TString basename = fDataFileStem + Form("%u.",run) + fDataFileExtension;
     if(seg == -1){
       fDataFile = fDataDirectory + basename;
@@ -1063,7 +1063,7 @@ Bool_t QwEventBuffer::DataFileIsSegmented()
   searchpath = fDataFile;
   glob(searchpath.Data(), GLOB_ERR, NULL, &globbuf);
 
-  if(singlefile){
+  if(fSingleFile){
 
     fRunIsSegmented = kFALSE;
 
