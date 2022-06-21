@@ -5,4 +5,8 @@ bpmstripline, qwk_1H04, -0.2, 0.1, 35000.0,  1.0, 1.0, 1.0
 bpmstripline, qwk_1H05, 0.1, -0.2,  36000.0,   1.0, 1.0, 1.0
 bpmstripline, qwk_1H06, 0.2, -0.3,  37000.0,   1.0, 1.0, 1.0
 
+!additions
+bpmstripline, qwk_1H11, 0.0, -0.0,  14128.2,   1.0, 1.0, 1.0
+bpmstripline, qwk_1H14, 0.0, -0.0,  14393.2,   1.0, 1.0, 1.0
+
 combinedbpm, bpm_target, 0.0, 0.0,  38000.0,  1.0, 1.0, 1.0
