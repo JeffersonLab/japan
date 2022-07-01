@@ -89,6 +89,8 @@ name=bpm_target
 qwk_1h04, bpmstripline, 1.0, 1.0, 1.0
 qwk_1h05, bpmstripline, 1.0, 1.0, 1.0
 qwk_1h06, bpmstripline, 1.0, 1.0, 1.0
+qwk_1h11, bpmstripline, 1.0, 1.0, 1.0
+qwk_1H14, bpmstripline, 1.0, 1.0, 1.0
 end=combinedbpm
 
 begin=combinedbcm

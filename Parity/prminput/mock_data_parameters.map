@@ -25,16 +25,16 @@ bpmstripline,     qwk_1h14,       resolution    0.0e-6,       0.0e-4
 
 !CombinedBPM parameters
 !device_type,     device_name,                  asym,         mean,         sigma(jitter)
-combinedbpm,      bpm_target,     xpos          0.0e-2,       0.0,          5.0e-3
-combinedbpm,      bpm_target,     ypos          0.0e-2,       0.0,          5.0e-3
-combinedbpm,      bpm_target,     xslope        0.0e-6,       0.0,          0.0e-7
-combinedbpm,      bpm_target,     yslope        0.0e-6,       0.0,          0.0e-7 
+combinedbpm,      bpm_target,     xpos          0.0e-2,       0.0,          0.0e-3
+combinedbpm,      bpm_target,     ypos          0.0e-2,       0.0,          0.0e-3
+combinedbpm,      bpm_target,     xslope        0.0e-6,       0.0,          1.0e-7
+combinedbpm,      bpm_target,     yslope        0.0e-6,       0.0,          1.0e-7 
 
 !  CombinedBPM drifts              	      amplitude (abs), phase shift (rad), frequency (Hz)
-combinedbpm,      bpm_target,     xpos      drift     5.0e-3,      0.456,        5.0 !1
-combinedbpm,      bpm_target,     ypos      drift     5.0e-3,      0.456,        47.0 !1
-!combinedbpm,      bpm_target,     xslope    drift     0.0e-6,      0.654,        49.0 !3
-!combinedbpm,      bpm_target,     yslope    drift     0.0e-6,      0.654,        43.0 !3
+combinedbpm,      bpm_target,     xpos      drift     0.0e-2,      0.456,        5.0 !1
+combinedbpm,      bpm_target,     ypos      drift     0.0e-2,      0.456,        47.0 !1
+combinedbpm,      bpm_target,     xslope    drift     0.0e-6,      0.654,        49.0 !3
+combinedbpm,      bpm_target,     yslope    drift     0.0e-6,      0.654,        43.0 !3
 
 !BCM parameters
 !device_type,     device_name,    asym,         mean,         sigma(jitter)
