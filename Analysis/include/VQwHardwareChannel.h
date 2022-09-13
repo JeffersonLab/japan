@@ -112,6 +112,8 @@ public:
     
     return foundburp;
   }
+
+  virtual void SetSaturationLimit(Double_t saturation_volt){};
   
   /*! \brief Set the upper and lower limits (fULimit and fLLimit) 
    *         for this channel */

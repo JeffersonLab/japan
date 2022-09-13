@@ -224,7 +224,7 @@ void QwIntegrationPMT::SetDefaultSampleSize(Int_t sample_size){
 
 /********************************************************/
 void QwIntegrationPMT::SetSaturationLimit(Double_t saturation_volt){
-  fTriumf_ADC.SetVQWKSaturationLimt(saturation_volt);
+  fTriumf_ADC.SetSaturationLimit(saturation_volt);
 }
 //*/
 

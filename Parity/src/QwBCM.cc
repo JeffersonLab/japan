@@ -40,6 +40,7 @@ void QwBCM<T>::InitializeChannel(TString name, TString datatosave)
   SetCalibrationFactor(1.);
   SetResolution(0.0);
   fBeamCurrent.InitializeChannel(name,datatosave);
+  fBeamCurrent.SetSaturationLimit(9.5);
   this->SetElementName(name);
 }
 /********************************************************/
@@ -49,6 +50,7 @@ void QwBCM<T>::InitializeChannel(TString subsystem, TString name, TString datato
   SetCalibrationFactor(1.);
   SetResolution(0.0);
   fBeamCurrent.InitializeChannel(subsystem, "QwBCM", name, datatosave);
+  fBeamCurrent.SetSaturationLimit(9.5);
   SetElementName(name);
 }
 /********************************************************/
@@ -59,6 +61,7 @@ void QwBCM<T>::InitializeChannel(TString subsystem, TString name, TString type, 
   SetResolution(0.0);
   SetModuleType(type);
   fBeamCurrent.InitializeChannel(subsystem, "QwBCM", name, datatosave);
+  fBeamCurrent.SetSaturationLimit(9.5);
   SetElementName(name);
 }
 /********************************************************/

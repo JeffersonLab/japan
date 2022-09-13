@@ -55,11 +55,11 @@ class QwADC18_Channel: public VQwHardwareChannel, public MQwMockable {
  public:
   QwADC18_Channel(): MQwMockable() {
     InitializeChannel("","");
-    SetADC18SaturationLimt(8.5);//FIXME set the default saturation limit
+    SetSaturationLimit(8.5);//FIXME set the default saturation limit
   };
   QwADC18_Channel(TString name, TString datatosave = "raw"): MQwMockable() {
     InitializeChannel(name, datatosave);
-    SetADC18SaturationLimt(8.5);//FIXME set the default saturation limit
+    SetSaturationLimit(8.5);//FIXME set the default saturation limit
   };
   QwADC18_Channel(const QwADC18_Channel& value):
     VQwHardwareChannel(value), MQwMockable(value),
@@ -183,12 +183,12 @@ class QwADC18_Channel: public VQwHardwareChannel, public MQwMockable {
   void PrintErrorCounters() const;
 
   // FIXME Set the absolute staturation limit in volts
-  void SetADC18SaturationLimt(Double_t sat_volts = 8.5){
+  void SetSaturationLimit(Double_t sat_volts = 8.5){
     fSaturationABSLimit = sat_volts;
   }
 
   // Get the absolute staturation limit in volts
-  Double_t GetADC18SaturationLimt(){
+  Double_t GetSaturationLimit(){
     return fSaturationABSLimit;
   }
 

@@ -59,11 +59,11 @@ class QwVQWK_Channel: public VQwHardwareChannel, public MQwMockable {
  public:
   QwVQWK_Channel(): MQwMockable() {
     InitializeChannel("","");
-    SetVQWKSaturationLimt(8.5);//set the default saturation limit
+    SetSaturationLimit(8.5);//set the default saturation limit
   };
   QwVQWK_Channel(TString name, TString datatosave = "raw"): MQwMockable() {
     InitializeChannel(name, datatosave);
-    SetVQWKSaturationLimt(8.5);//set the default saturation limit
+    SetSaturationLimit(8.5);//set the default saturation limit
   };
   QwVQWK_Channel(const QwVQWK_Channel& value): 
     VQwHardwareChannel(value), MQwMockable(value),
@@ -188,11 +188,11 @@ class QwVQWK_Channel: public VQwHardwareChannel, public MQwMockable {
   Bool_t ApplySingleEventCuts();//check values read from modules are at desired level by comparing upper and lower limits (fULimit and fLLimit) set on this channel
   void PrintErrorCounters() const;// report number of events failed due to HW and event cut faliure
 
-  void SetVQWKSaturationLimt(Double_t sat_volts=8.5){//Set the absolute staturation limit in volts.
+  void SetSaturationLimit(Double_t sat_volts=8.5){//Set the absolute staturation limit in volts.
     fSaturationABSLimit=sat_volts;
   }
 
-  Double_t GetVQWKSaturationLimt(){//Get the absolute staturation limit in volts.
+  Double_t GetSaturationLimit(){//Get the absolute staturation limit in volts.
     return fSaturationABSLimit;
   }
 

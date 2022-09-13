@@ -114,9 +114,9 @@ Int_t QwVQWK_Channel::ApplyHWChecks()
     if (!fEventIsGood)    
       fSequenceNo_Counter=0;//resetting the counter after ApplyHWChecks() a failure
 
-    if ((TMath::Abs(GetRawHardwareSum())*kVQWK_VoltsPerBit/fNumberOfSamples) > GetVQWKSaturationLimt()){
+    if ((TMath::Abs(GetRawHardwareSum())*kVQWK_VoltsPerBit/fNumberOfSamples) > GetSaturationLimit()){
       if (bDEBUG) 
-        QwWarning << this->GetElementName()<<" "<<GetRawHardwareSum() << "Saturating VQWK invoked! " <<TMath::Abs(GetRawHardwareSum())*kVQWK_VoltsPerBit/fNumberOfSamples<<" Limit "<<GetVQWKSaturationLimt() << QwLog::endl;
+        QwWarning << this->GetElementName()<<" "<<GetRawHardwareSum() << "Saturating VQWK invoked! " <<TMath::Abs(GetRawHardwareSum())*kVQWK_VoltsPerBit/fNumberOfSamples<<" Limit "<<GetSaturationLimit() << QwLog::endl;
       fErrorFlag|=kErrorFlag_VQWK_Sat; 
     }
 
