@@ -215,8 +215,10 @@ foreach(file ${exefiles})
 endforeach()
 
 #----------------------------------------------------------------------------
+if (BUILD_FEEDBACK)
  # Build feedback library and executable
  add_subdirectory(Feedback)
+endif()
 
 #----------------------------------------------------------------------------
 # uninstall
