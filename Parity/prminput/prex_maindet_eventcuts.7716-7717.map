@@ -1,0 +1,12 @@
+! RQ1 tripped full run
+
+EVENTCUTS = 3
+IntegrationPMT, usl,		-100000,	100000,	g,	0
+IntegrationPMT, dsl,		-100000,	100000,	l,	0
+IntegrationPMT, usr,		-100000,	100000,	l,	0
+IntegrationPMT, dsr,		-100000,	100000,	l,	0
+
+IntegrationPMT, atl1,		-100000,	120000,	g,	0
+IntegrationPMT, atl2,		-100000,	120000,	g,	0
+IntegrationPMT, atr1,		-100000,	120000,	l,	0
+IntegrationPMT, atr2,		-100000,	120000,	l,	0

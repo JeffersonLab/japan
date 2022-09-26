@@ -1,0 +1,160 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!  input file for decoding the helicity subsystem
+!!  Of note in this file:
+!!  HelicityDecodingMode : will tell which mode of decoding is in use
+!!  			 : for now it can be  InputRegisterMode, UserbitMode
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!Injector data during happex data taking: run 12331, 12354, 12356
+!HelicityDecodingMode=InputRegisterMode
+!PatternPhase=4
+!ROC=23
+!
+! Header=0xfdacf000
+! HAPPEX BMW words
+!SKIP 148
+!WORD, 0,  0, helicitydata,  ha_cleandata
+!WORD, 0,  0, helicitydata,  ha_scandata1
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!INPUT REGISTER MODE
+HelicityDecodingMode=InputRegisterMode
+
+InputRegMask_FakeMPS=0   !!!  Do not use a input register bit to indicate a "fake" set of helicity bits
+
+! Set the patternPhase (number of windows in a pattern) for each run range.
+! If patternPhase!=4, then also set the NumberPatternsDelayed
+! so the reported helicity is delayed by 8 windows (default 2).
+!NumberPatternsDelayed=4
+PatternPhase=4
+!PatternPhase=8
+NumberPatternsDelayed=2
+
+
+
+!Need to set PATTERNPHASEOFFSET = 1 (when pattern phase starts with 1) or 0 (when pattern phase starts with 0)
+!default value for PATTERNPHASEOFFSET = 1 is set within the code itself which works fine with regular injector/beamline/parity mock data
+!uncomment below line only if phase number start from 0
+PATTERNPHASEOFFSET=0
+
+
+!seed size is either 24 bit or 30 bit. default is 30 bit
+!RandSeedBits=24
+
+ROC=24
+Bank=0x3
+
+!
+! module.type, module.num  chan.num, det.type, det.name
+!
+SKIP 1 !  This is the marker word for PAN
+WORD, 0,  0, helicitydata,  input_register
+WORD, 0,  0, helicitydata,  output_register
+WORD, 0,  0, helicitydata,  MPS_counter
+WORD, 0,  0, helicitydata,  PAT_counter
+WORD, 0,  0, helicitydata,  PAT_phase
+SKIP 3
+WORD, 0,  0, helicitydata,  cleandata
+WORD, 0,  0, helicitydata,  scandata1
+WORD, 0,  0, helicitydata,  scandata2
+SKIP 1
+
+Bank=0x4
+SKIP 1
+WORD, 0,  0, helicitydata,  inj_timebrd_data
+WORD, 0,  0, helicitydata,  inj_timebrd_rampdelay
+WORD, 0,  0, helicitydata,  inj_timebrd_integrationtime
+WORD, 0,  0, helicitydata,  inj_timebrd_oversampleword
+WORD, 0,  0, helicitydata,  inj_timebrd_dac16
+WORD, 0,  0, helicitydata,  inj_timebrd_dac12
+SKIP 2
+!!!!!!!! TS Tagger board, not included in inj.crl 
+WORD, 0,  0, helicitydata,  inj_tstagger
+
+
+!!!  Add the CH timing board words too
+ROC=23
+Bank=0x1
+SKIP 2
+WORD, 0,  0, helicitydata,  ch_flexio_input
+WORD, 0,  0, helicitydata,  ch_tstagger
+
+Bank=0x4
+SKIP 1
+WORD, 0,  0, helicitydata,  ch_timebrd_data
+WORD, 0,  0, helicitydata,  ch_timebrd_rampdelay
+WORD, 0,  0, helicitydata,  ch_timebrd_integrationtime
+WORD, 0,  0, helicitydata,  ch_timebrd_oversampleword
+WORD, 0,  0, helicitydata,  ch_timebrd_dac16
+WORD, 0,  0, helicitydata,  ch_timebrd_dac12
+SKIP 16
+WORD, 0,  0, helicitydata,  ch_ncnt
+WORD, 0,  0, helicitydata,  ch_nevent
+
+
+!!!  Add the HRS timing board words too
+ROC=25
+Bank=0x1
+SKIP 2
+WORD, 0,  0, helicitydata,  lhrs_flexio_input
+WORD, 0,  0, helicitydata,  lhrs_tstagger
+
+Bank=0x4
+SKIP 1
+WORD, 0,  0, helicitydata,  lhrs_timebrd_data
+WORD, 0,  0, helicitydata,  lhrs_timebrd_rampdelay
+WORD, 0,  0, helicitydata,  lhrs_timebrd_integrationtime
+WORD, 0,  0, helicitydata,  lhrs_timebrd_oversampleword
+WORD, 0,  0, helicitydata,  lhrs_timebrd_dac16
+WORD, 0,  0, helicitydata,  lhrs_timebrd_dac12
+SKIP 16
+WORD, 0,  0, helicitydata,  lhrs_ncnt
+WORD, 0,  0, helicitydata,  lhrs_nevent
+
+ROC=26
+Bank=0x1
+SKIP 2
+WORD, 0,  0, helicitydata,  rhrs_flexio_input
+WORD, 0,  0, helicitydata,  rhrs_tstagger
+
+Bank=0x4
+SKIP 1
+WORD, 0,  0, helicitydata,  rhrs_timebrd_data
+WORD, 0,  0, helicitydata,  rhrs_timebrd_rampdelay
+WORD, 0,  0, helicitydata,  rhrs_timebrd_integrationtime
+WORD, 0,  0, helicitydata,  rhrs_timebrd_oversampleword
+WORD, 0,  0, helicitydata,  rhrs_timebrd_dac16
+WORD, 0,  0, helicitydata,  rhrs_timebrd_dac12
+SKIP 16
+WORD, 0,  0, helicitydata,  rhrs_ncnt
+WORD, 0,  0, helicitydata,  rhrs_nevent
+
+
+!END
+! 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!USER BIT MODE
+
+!HelicityDecodingMode= UserbitMode    
+!PatternPhase=4
+!seed size is either 24 bit or 30 bit. default is 24 bit
+!RandSeedBits=24
+!RandSeedBits=30
+!ROC=31
+!Bank=0x3101
+!
+! module.type, module.num  chan.num, det.type, det.name
+! 
+!WORD, 0,  0, helicitydata,  cleandata
+!WORD, 0,  0, helicitydata,  scandata1
+!WORD, 0,  0, helicitydata,  scandata2
+!WORD, 0,  0, helicitydata,  scalerheader
+!WORD, 0,  0, helicitydata,  scalercounter
+!WORD, 0,  0, helicitydata,  userbit 
+!END

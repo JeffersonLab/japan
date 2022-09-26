@@ -162,7 +162,7 @@ Bool_t QwDetectorArray::PublishByRequest(TString device_name)
     break;
   }
   if (!status)  
-    QwError << "QwDetectorArray::PublishByRequest:  Failed to publish channel name:  " << device_name << QwLog::endl;
+    QwDebug << "QwDetectorArray::PublishByRequest:  Failed to publish channel name:  " << device_name << QwLog::endl;
   return status;
 }
 
@@ -311,7 +311,7 @@ Int_t QwDetectorArray::LoadChannelMap(TString mapfile)
             {
               if (localMainDetID.fTypeID==kQwIntegrationPMT)
                 {
-                  QwIntegrationPMT localIntegrationPMT(GetSubsystemName(),localMainDetID.fdetectorname);
+                  QwIntegrationPMT localIntegrationPMT(GetName(),localMainDetID.fdetectorname);
 		  if (keyword=="not_blindable"
 		      || keyword2=="not_blindable")
 		    localIntegrationPMT.SetBlindability(kFALSE);
@@ -331,7 +331,7 @@ Int_t QwDetectorArray::LoadChannelMap(TString mapfile)
 
               else if (localMainDetID.fTypeID==kQwCombinedPMT)
                 {
-		  QwCombinedPMT localcombinedPMT(GetSubsystemName(),localMainDetID.fdetectorname);
+		  QwCombinedPMT localcombinedPMT(GetName(),localMainDetID.fdetectorname);
 		  if (keyword=="not_normalizable" 
 		      || keyword2=="not_normalizable")
 		    localcombinedPMT.SetNormalizability(kFALSE);
@@ -441,11 +441,12 @@ Int_t QwDetectorArray::LoadChannelMap(TString mapfile)
     }
   }
   // Print list of variables to publish
-  QwMessage << "Variables to publish:" << QwLog::endl;
-  for (size_t jj = 0; jj < fPublishList.size(); jj++)
-    QwMessage << fPublishList.at(jj).at(0) << " " << fPublishList.at(jj).at(1) << " "
-              << fPublishList.at(jj).at(2) << " " << fPublishList.at(jj).at(3) << QwLog::endl;
-
+  if (fPublishList.size()>0){
+    QwMessage << "Variables to publish:" << QwLog::endl;
+    for (size_t jj = 0; jj < fPublishList.size(); jj++)
+      QwMessage << fPublishList.at(jj).at(0) << " " << fPublishList.at(jj).at(1) << " "
+		<< fPublishList.at(jj).at(2) << " " << fPublishList.at(jj).at(3) << QwLog::endl;
+  }
   if (ldebug)
     {
       std::cout<<"Done with Load channel map\n";
@@ -738,7 +739,7 @@ void  QwDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCharge&
     }    
   }else{
     bIsExchangedDataValid = kFALSE;
-    QwError << GetSubsystemName() << " could not get external value for "
+    QwError << GetName() << " could not get external value for "
 	    << fTargetX.GetElementName() << QwLog::endl;
   }
   
@@ -749,7 +750,7 @@ void  QwDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCharge&
     }
   }else{
     bIsExchangedDataValid = kFALSE;
-    QwError << GetSubsystemName() << " could not get external value for "
+    QwError << GetName() << " could not get external value for "
 	    << fTargetY.GetElementName() << QwLog::endl;
   }
   
@@ -760,7 +761,7 @@ void  QwDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCharge&
     }
   }else{
     bIsExchangedDataValid = kFALSE;
-    QwError << GetSubsystemName() << " could not get external value for "
+    QwError << GetName() << " could not get external value for "
 	    << fTargetXprime.GetElementName() << QwLog::endl;
   }
 
@@ -771,7 +772,7 @@ void  QwDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCharge&
     }
   }else{
     bIsExchangedDataValid = kFALSE;
-    QwError << GetSubsystemName() << " could not get external value for "
+    QwError << GetName() << " could not get external value for "
 	    << fTargetYprime.GetElementName() << QwLog::endl;
   }
 
@@ -782,7 +783,7 @@ void  QwDetectorArray::RandomizeMollerEvent(int helicity /*, const QwBeamCharge&
     }
   }else{
     bIsExchangedDataValid = kFALSE;
-    QwError << GetSubsystemName() << " could not get external value for "
+    QwError << GetName() << " could not get external value for "
 	    << fTargetEnergy.GetElementName() << QwLog::endl;
   }
     
@@ -971,7 +972,7 @@ void  QwDetectorArray::ExchangeProcessedData()
     }
     else{
       bIsExchangedDataValid = kFALSE;
-      QwError << GetSubsystemName() << " could not get external value for "
+      QwError << GetName() << " could not get external value for "
 	      << fTargetCharge.GetElementName() << QwLog::endl;
     }
     
@@ -1422,7 +1423,7 @@ void  QwDetectorArray::FillDB(QwParityDB *db, TString datatype)
 
 void  QwDetectorArray::PrintValue() const
 {
-  QwMessage << "=== QwDetectorArray: " << GetSubsystemName() << " ===" << QwLog::endl;
+  QwMessage << "=== QwDetectorArray: " << GetName() << " ===" << QwLog::endl;
   for (size_t i = 0; i < fIntegrationPMT.size(); i++)
     fIntegrationPMT[i].PrintValue();
   for (size_t i = 0; i < fCombinedPMT.size(); i++)

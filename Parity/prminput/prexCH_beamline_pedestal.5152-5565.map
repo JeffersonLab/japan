@@ -1,0 +1,74 @@
+!Unser calibration based on Run 1214 , HAPLOG 3609, also consistent with dave mack 3.7mV/uA halog entry 3689440 
+ UNSER, -174.1, 2.066e-2	    
+
+!From run 5382 https://logbooks.jlab.org/entry/3755873
+ hallc_bcm_4c, -524.0, 0.0041998972
+
+!!BCMs part 1, 5000-7499 map:
+! Pedestals for CREX respin2 using unser based bcm_an_us as reference
+! Fit each device against bcm_an_us and split the experiment at run 7500
+! Plots and reference in http://ace.phys.virginia.edu/HAPPEX/4417
+ bcm_an_us, -583.20, 0.008956
+ bcm_an_ds, -421.03, 0.008853
+ bcm_an_ds3, -788.91, 0.002590
+ bcm_an_ds10, -1022.49, 0.000858
+ bcm_dg_us, -119.61, 0.004444
+ bcm_dg_ds, -346.12, 0.003522
+ bcm_dg_usc, -288.53, 0.004163
+ bcm_dg_dsc, -197.54, 0.003279
+ 
+!BPM Pedestals from run 5433 https://logbooks.jlab.org/entry/3810512
+! Fit vs. bcm_an_us pedestal given above
+! Compton are unplugged
+ bpm4aXP, -165.43, 1.000000
+ bpm4aXM, 1334.09, 1.000000
+ bpm4aYP, 1440.35, 1.000000
+ bpm4aYM, -180.18, 1.000000
+ bpm4eXP, 513.79, 1.000000
+ bpm4eXM, 1613.91, 1.000000
+ bpm4eYP, 1379.91, 1.000000
+ bpm4eYM, 168.10, 1.000000
+ bpm4acXP, -1726.88, 1.000000
+ bpm4acXM, -476.36, 1.000000
+ bpm4acYP, 1084.41, 1.000000
+ bpm4acYM, -33.00, 1.000000
+ bpm4ecXP, 155.47, 1.000000
+ bpm4ecXM, 1764.38, 1.000000
+ bpm4ecYP, 1741.79, 1.000000
+ bpm4ecYM, 507.41, 1.000000
+ bpm11XP, 1353.90, 1.000000
+ bpm11XM, 1596.30, 1.000000
+ bpm11YP, 1173.36, 1.000000
+ bpm11YM, 829.81, 1.000000
+ bpm12XP, 3619.52, 1.000000
+ bpm12XM, 4305.61, 1.000000
+ bpm12YP, 4006.36, 1.000000
+ bpm12YM, 3459.06, 1.000000
+ bpm16XP, 2659.02, 1.000000
+ bpm16XM, 438.02, 1.000000
+ bpm16YP, -1075.44, 1.000000
+ bpm16YM, 1931.77, 1.000000
+ bpm1p02bXP, -26001.16, 1.000000
+ bpm1p02bXM, -26075.44, 1.000000
+ bpm1p02bYP, -29651.64, 1.000000
+ bpm1p02bYM, -29705.11, 1.000000
+ bpm1p03aXP, -22304.11, 1.000000
+ bpm1p03aXM, -21927.35, 1.000000
+ bpm1p03aYP, -23288.27, 1.000000
+ bpm1p03aYM, -23296.05, 1.000000
+ bpm1XP, -2096.74, 1.000000
+ bpm1XM, -4173.83, 1.000000
+ bpm1YP, -4830.71, 1.000000
+ bpm1YM, -2571.33, 1.000000
+
+! Cavity pedestals
+ cav4bQ, -204.37 ,0.007170
+ cav4cQ, -628.93 ,0.011281
+ cav4dQ, -327.93 ,0.016313
+ cav4bXI, -376.55 ,1.0
+ cav4bYI, -1218.78 ,1.0
+ cav4cXI, -481.44 ,1.0
+ cav4cYI, -287.63 ,1.0
+ cav4dXI, -287.60 ,1.0
+ cav4dYI, -40.37 ,1.0
+

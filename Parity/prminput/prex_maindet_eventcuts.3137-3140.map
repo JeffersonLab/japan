@@ -1,0 +1,7 @@
+! Previously recorded as left-arm running of slug 0. But nothing in strip charts or halog indicate a problem with right arm. So, reverting the arm flag to be both arms. There is a communication error reported with LQ1 but it didn't seem to effect the field according to halog. 
+
+EVENTCUTS = 3
+IntegrationPMT, usl,		-100000,	100000,	g,	0
+IntegrationPMT, dsl,		-100000,	100000,	g,	0
+IntegrationPMT, usr,		-100000,	100000,	g,	0
+IntegrationPMT, dsr,		-100000,	100000,	g,	0

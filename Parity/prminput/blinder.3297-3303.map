@@ -1,0 +1,18 @@
+# Blinder parameter
+
+# strategy = Disabled | Additive | Multiplicative | AdditiveMultiplicative (case insensitive)
+strategy = additive
+
+# seed = unquoted string without starting or ending spaces
+seed = Roadkill stew sounds mighty good right NOW. --- Unspecified collaborator
+
+# max_asymmetry = positive float in ppm such that additive blinding asymmetry is between 0 +/- (this value)
+max_asymmetry = 0.150
+
+# max_factor = positive float fraction such that multiplicative blinding asymmetry is between 1 +/- (this value)
+max_factor = 0.0
+
+######  Super dangerous options... to be ONLY used when no other solution can work. 
+######  Do not just copy these elsewhere
+force-target-type    = target-out
+force-spin-direction = spin-forward

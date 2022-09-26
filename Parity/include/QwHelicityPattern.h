@@ -9,6 +9,8 @@
 
 // System headers
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 // ROOT headers
 #include <TTree.h>
@@ -61,9 +63,29 @@ class QwHelicityPattern {
 
   Bool_t IsCompletePattern() const;
 
+  void PrintIndexMapFile(Int_t runNum){
+    if ( fPrintIndexFile && (fGoodPatterns < fBurstMinGoodPatterns) ) {
+      // Print a text map file to max_burst_index.####.conf
+      Int_t maxBurst = 0;
+      if (fBurstCounter==0) {
+        // It's a single burst run anyway
+        maxBurst = 0;
+      }
+      else {
+        // It's a multi burst run and we want to merge the final two bursts
+        maxBurst = fBurstCounter-1;
+      }
+      QwWarning << "Printing max_burst_index." << runNum << ".conf file with " << maxBurst << " max burst number" << QwLog::endl;
+      std::ofstream output;
+      output.open(Form("max_burst_index.%d.conf",runNum));
+      output<< "max-burst-index=" << maxBurst << std::endl; // Print the current index before incrementing further, this will be the max index and the next pass will overflow this one instead of having another
+      output.close();
+    }
+  }
+
   Bool_t IsEndOfBurst(){
-    //  Is this the end of a burst?
-    return (fBurstLength > 0 && fCurrentPatternNumber % fBurstLength == 0);
+    //  Is this the end of a burst? And is this not the final burst?
+    return (( fBurstLength > 0 && fGoodPatterns >= fBurstLength ) && ( fBurstCounter<fMaxBurstIndex ));
   }
 
   void  CalculateAsymmetry();
@@ -167,6 +189,14 @@ class QwHelicityPattern {
     return fAsymmetry.GetEventcutErrorFlagPointer();
   };
 
+  Bool_t HasBurstData(){return fGoodPatterns>0;};
+  void  IncrementBurstCounter(){
+    if (fBurstCounter < fMaxBurstIndex) {
+      fBurstCounter++;
+    }
+    // Else we just park here and don't try to increment any more. This is a parameter from command line or map file
+  }
+  Short_t GetBurstCounter() const {return fBurstCounter;}
   void  ClearEventData();
 
   void  Print() const;
@@ -208,6 +238,11 @@ class QwHelicityPattern {
 
   // Burst sum/difference of the yield and asymmetry
   Int_t fBurstLength;
+  Int_t fMaxBurstIndex;
+  Bool_t fPrintIndexFile;
+  Int_t fBurstMinGoodPatterns;
+  Int_t fGoodPatterns;
+  Short_t fBurstCounter;
   Bool_t fEnableBurstSum;
   Bool_t fPrintBurstSum;
 

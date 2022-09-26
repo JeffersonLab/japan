@@ -17,6 +17,7 @@
 #include "QwBlinder.h"
 #include "VQwDataElement.h"
 
+#include "QwPromptSummary.h"
 
 /*****************************************************************/
 /**
@@ -52,6 +53,18 @@ void QwHelicityPattern::DefineOptions(QwOptions &options)
     ("burstlength", po::value<int>()->default_value(9000),
      "number of patterns per burst");
 
+  options.AddOptions("Helicity pattern")
+    ("max-burst-index", po::value<int>()->default_value(0x7fffffff), // Default to max signed int
+     "max number of bursts for a run");
+
+  options.AddOptions("Helicity pattern")
+    ("print-burst-index-map", po::value<bool>()->default_value(kFALSE),
+     "whether to print the shorter max burst index if the final is shorter than min-burstlength");
+
+  options.AddOptions("Helicity pattern")
+    ("min-burstlength", po::value<int>()->default_value(2333), // Default 1/4 of 9000
+     "minimum acceptable burst length");
+
   QwBlinder::DefineOptions(options);
 }
 
@@ -68,6 +81,10 @@ void QwHelicityPattern::ProcessOptions(QwOptions &options)
 
   fBurstLength = options.GetValue<int>("burstlength");
   if (fBurstLength == 0) DisableBurstSum();
+
+  fMaxBurstIndex        = options.GetValue<int>("max-burst-index");
+  fPrintIndexFile       = options.GetValue<bool>("print-burst-index-map");
+  fBurstMinGoodPatterns = options.GetValue<int>("min-burstlength");
 
   if (fEnableAlternateAsym && fPatternSize <= 2){
     QwWarning << "QwHelicityPattern::ProcessOptions: "
@@ -95,6 +112,11 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
     fPairDifference(event), 
     fPairAsymmetry(event),
     fBurstLength(0),
+    fMaxBurstIndex(0x7fffffff),
+    fPrintIndexFile(kFALSE),
+    fBurstMinGoodPatterns(0),
+    fGoodPatterns(0),
+    fBurstCounter(0),
     fEnableBurstSum(kFALSE),
     fPrintBurstSum(kFALSE),
     fEnableRunningSum(kTRUE),     
@@ -125,7 +147,7 @@ QwHelicityPattern::QwHelicityPattern(QwSubsystemArrayParity &event, const TStrin
     // Warn if more than one helicity subsystem defined
     if (subsys_helicity.size() > 1)
       QwWarning << "Multiple helicity subsystems defined! "
-                << "Using " << helicity->GetSubsystemName() << "."
+                << "Using " << helicity->GetName() << "."
                 << QwLog::endl;
 
   } else {
@@ -178,6 +200,12 @@ QwHelicityPattern::QwHelicityPattern(const QwHelicityPattern &source)
   fPairDifference(source.fYield),
   fPairAsymmetry(source.fYield),
   fBurstLength(source.fBurstLength),
+  fMaxBurstIndex(source.fMaxBurstIndex),
+  fPrintIndexFile(source.fPrintIndexFile),
+  fBurstMinGoodPatterns(source.fBurstMinGoodPatterns),
+  fGoodPatterns(source.fGoodPatterns),
+  fPatternSize(source.fPatternSize),
+  fBurstCounter(source.fBurstCounter),
   fEnableBurstSum(source.fEnableBurstSum),
   fPrintBurstSum(source.fPrintBurstSum),
   fEnableRunningSum(source.fEnableRunningSum),
@@ -392,6 +420,10 @@ void  QwHelicityPattern::CalculatePairAsymmetry()
       //  can propagate to the global error.
       fPairDifference.UpdateErrorFlag();
       fPairYield.UpdateErrorFlag(fPairDifference);
+      if (! fBlinder.IsBlinderOkay()){
+	fPairYield.UpdateErrorFlag(QwBlinder::kErrorFlag_BlinderFail);
+	fPairDifference.UpdateErrorFlag(QwBlinder::kErrorFlag_BlinderFail);
+      }
     }
     fPairAsymmetry.Ratio(fPairDifference,fPairYield);
     fPairAsymmetry.IncrementErrorCounters();
@@ -551,6 +583,10 @@ void  QwHelicityPattern::CalculateAsymmetry()
       //  can propagate to the global error.
       fDifference.UpdateErrorFlag();
       fYield.UpdateErrorFlag(fDifference);
+      if (! fBlinder.IsBlinderOkay()){
+	fYield.UpdateErrorFlag(QwBlinder::kErrorFlag_BlinderFail);
+	fDifference.UpdateErrorFlag(QwBlinder::kErrorFlag_BlinderFail);
+      }
     }
     fAsymmetry.Ratio(fDifference,fYield);
     fAsymmetry.IncrementErrorCounters();
@@ -640,6 +676,8 @@ void QwHelicityPattern::ClearEventData()
   fPairIsGood = kFALSE;
   fNextPair   = 0;
 
+
+  fGoodPatterns = 0;
   fPatternIsGood = kFALSE;
   SetDataLoaded(kFALSE);
 }
@@ -653,6 +691,11 @@ void QwHelicityPattern::ClearEventData()
 void  QwHelicityPattern::AccumulateRunningSum(QwHelicityPattern &entry, Int_t count, Int_t ErrorMask)
 {
   if (entry.fPatternIsGood){
+    //    if ( (*(entry.fAsymmetry.GetEventcutErrorFlagPointer()) & ErrorMask) == 0 )  {
+    if (entry.fAsymmetry.GetEventcutErrorFlag()==0){
+      fGoodPatterns++;
+    }
+    fBurstCounter = entry.fBurstCounter;
     fYield.AccumulateRunningSum(entry.fYield, count, ErrorMask);
     fAsymmetry.AccumulateRunningSum(entry.fAsymmetry, count, ErrorMask);
     if (fEnableDifference){
@@ -808,6 +851,8 @@ void  QwHelicityPattern::FillHistograms()
 
 void QwHelicityPattern::ConstructBranchAndVector(TTree *tree, TString & prefix, std::vector <Double_t> &values)
 {
+TString basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix.Length())+"BurstCounter";
+  tree->Branch(basename,&fBurstCounter,basename+"/S");
   TString newprefix = "yield_" + prefix;
   fYield.ConstructBranchAndVector(tree, newprefix, values);
   newprefix = "asym_" + prefix;
@@ -827,6 +872,9 @@ void QwHelicityPattern::ConstructBranchAndVector(TTree *tree, TString & prefix, 
 
 void QwHelicityPattern::ConstructBranch(TTree *tree, TString & prefix)
 {
+  TString basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix.Length())+"BurstCounter";
+  tree->Branch(basename,&fBurstCounter,basename+"/S");
+
   TString newprefix = "yield_" + prefix;
   fYield.ConstructBranch(tree, newprefix);
   newprefix = "asym_" + prefix;
@@ -846,6 +894,8 @@ void QwHelicityPattern::ConstructBranch(TTree *tree, TString & prefix)
 
 void QwHelicityPattern::ConstructBranch(TTree *tree, TString & prefix, QwParameterFile &trim_tree)
 {
+  TString basename = prefix(0, (prefix.First("|") >= 0)? prefix.First("|"): prefix.Length())+"BurstCounter";
+  tree->Branch(basename,&fBurstCounter,basename+"/S");
   TString newprefix = "yield_" + prefix;
   fYield.ConstructBranch(tree, newprefix, trim_tree);
   newprefix = "asym_" + prefix;
@@ -905,9 +955,9 @@ void QwHelicityPattern::FillErrDB(QwParityDB *db)
 
 void QwHelicityPattern::WritePromptSummary(QwPromptSummary *ps)
 {
+  ps->SetPatternSize(fPatternSize);
   fYield.WritePromptSummary(ps, "yield");
   fAsymmetry.WritePromptSummary(ps, "asymmetry");
-  
   return;
 };
 

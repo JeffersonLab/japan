@@ -1,0 +1,11 @@
+JAPAN Trees=evts,burst,muls
+Trees=agg
+ROOT base input path=./test/aggregator.root
+FIXME ROOT input path=$QW_ROOTFILES/prexPrompt_pass1_#.000.root
+FIXME 2 ROOT input path=/chafs2/work1/apar/aggRootfiles/run_aggregator_#.root
+ROOT input path=/chafs2/work1/apar/aggRootfiles/minirun_aggregator_#_#.root
+Rootfile Output Path=./test/
+Index 1=run_number
+Index 2=minirun_n
+Merge=True
+FIXME Strip=True

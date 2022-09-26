@@ -41,8 +41,10 @@ IBC3H00CRCUR4			slow_controls_data		float		! Beam Current (Hall C), Hall C Curre
 IGL1I00OD16_16			slow_controls_data		string		! another HWP, INSERTABLE waveplate
 IGL1I00DIOFLRD			slow_controls_data		float		! Fake Half-Wave Plate (8960=OUT)
 APEXPOS				slow_controls_data		float		! Target encoder position
-pcrex90BDSPOS.VAL  slow_controls_data		float		! Target encoder position
-pcrex90BDS_PullString.VAL  slow_controls_data		float		! Target encoder position
+pcrex90BDSPOS.VAL               slow_controls_data		float		! PREX/CREX Production Target encoder position
+pcrex90_PullString.VAL          slow_controls_data		float		! PREX/CREX Production Target encoder position
+pcrex45BDSPOS.VAL               slow_controls_data		float		! PREX/CREX Optics Target encoder position
+pcrex45_PullString.VAL          slow_controls_data		float		! PREX/CREX Optics Target encoder position
 HALLA:dpp			slow_controls_data		float		! Tiefenbach 6GeV orbit correction (dpp), Hall A momentum orbit correction (dpp)
 INJ:p				slow_controls_data		float		! Injector Measured Energy
 ARC1:p				slow_controls_data		float		! 
@@ -67,6 +69,7 @@ EHAR_B_IXPEAK			slow_controls_data		float		! Fast Raster-B Ix
 EHAR_B_IYPEAK			slow_controls_data		float		! Fast Raster-B Iy
 halla_MeV			slow_controls_data		float		! Hall A energy  (halla_MeV), Tiefenbach energy
 hallc_MeV			slow_controls_data		float		! Hall C energy  (hallc_MeV) 
+MQ171LM                         slow_controls_data              float           ! Left Arm Q1 readback current
 HacL_Q1_P0rb			slow_controls_data		float		! Left Arm Q1 momentum  
 HacL_Q1_LS450:FLD_DATA		slow_controls_data		float		! Left Arm Q1 gauss meter
 HacL_Q2_HP3458A:IOUT		slow_controls_data		float		! Left Arm Q2 power supply current
@@ -92,6 +95,8 @@ HacR_Q3_P0rb			slow_controls_data		float		! Right Arm Q3 momentum
 HacR_Q3_LS450:FLD_DATA		slow_controls_data		float		! Right Arm Q3 gauss meter 
 HacR_VMIC1182:0_Ch26		slow_controls_data		string		! Right Arm Q3 power supply polarity 
 HacR_D_LS450:FLD_DATA		slow_controls_data		float		! Right Arm B Field Hall Probe (D-G)
+MSUPERBIGBITEreadcalc           slow_controls_data              float           ! Septum current 1
+hesDipole_current               slow_controls_data              float           ! Septum current 2
 HrsH_VDC_rCURTop		slow_controls_data		float		! Left Arm Top VDC Current 
 HrsH_VDC_rCURBot		slow_controls_data		float		! Left Arm Bottom VDC Current 
 HrsH_VDC_rHVTop			slow_controls_data		float		! Left Arm Top VDC voltage
@@ -349,10 +354,19 @@ FB_C:BPM:N6:pos_asym.VALB	slow_controls_data		float		!
 FB_C:BPM:N7:pos_asym.VALA	slow_controls_data		float		! 
 FB_C:BPM:N7:pos_asym.VALB	slow_controls_data		float		! 
 CTD673				slow_controls_data		float		! 
+!!!
+RTPPITA1CNT	slow_controls_data		float		! 
+RTPPITA2CNT	slow_controls_data		float		! 
+RTPQWP1CNT	slow_controls_data		float		! 
+RTPQWP2CNT	slow_controls_data		float		! 
+RTPAPOSUCNT	slow_controls_data		float		! 
+RTPAPOSVCNT	slow_controls_data		float		! 
+RTPDPOSUCNT	slow_controls_data		float		! 
+RTPDPOSVCNT	slow_controls_data		float		!
+!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  Composite slow control variables
 !    These are variables for which there is not an actual EPICS variable,
 !    but a value is generated internally by the QwEPICSEvent class.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 WienMode        	slow_controls_data	String	 !  This will indicate the spin direction in the hall as defined by the Wien setting + precession
-

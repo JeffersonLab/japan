@@ -30,8 +30,8 @@ Last Modified: August 1, 2018 1:41 PM
 
 #include <TFile.h>
 #include <TH2.h>
+#include <TKey.h>
 #include <TTree.h> 
-
 #include <TChain.h>
 #include <TObjArray.h>
 #include <TEventList.h> 
@@ -42,7 +42,8 @@ Last Modified: August 1, 2018 1:41 PM
 RegisterHandlerFactory(LRBCorrector);
 
 /// \brief Constructor with name
-LRBCorrector::LRBCorrector(const TString& name):VQwDataHandler(name)
+LRBCorrector::LRBCorrector(const TString& name):VQwDataHandler(name),
+						fLastCycle(0)
 {
   ParseSeparator = "_";
   fKeepRunningSum = kTRUE;
@@ -79,10 +80,12 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
     if (primary_token == "iv") {
       fIndependentType.push_back(type_name.first);
       fIndependentName.push_back(type_name.second);
+      fIndependentFull.push_back(current_token);
     }
     else if (primary_token == "dv") {
       fDependentType.push_back(type_name.first);
       fDependentName.push_back(type_name.second);
+      fDependentFull.push_back(current_token);
     }
     else if (primary_token == "treetype") {
       QwMessage << "Tree Type read, ignoring." << QwLog::endl;
@@ -91,11 +94,6 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
       QwError << "Function LoadChannelMap in LRBCorrector.cc read in invalid primary_token." << QwLog::endl;
     }
   }
-
-  // Resize sensitivity with all zeros
-  fSensitivity.resize(fDependentType.size());
-  for (size_t i = 0; i != fDependentType.size(); i++)
-    fSensitivity.at(i).resize(fIndependentType.size());
 
   // Construct slope file name
   std::string SlopeFileName = fAlphaFileBase + run_label.Data() + fAlphaFileSuff;
@@ -107,28 +105,6 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
   TFile* corFile = new TFile(corFileName);
   if (! corFile->IsOpen()) {
     QwWarning << "Failed to open " << corFileName << ", slopes NOT found" << QwLog::endl;
-    return 0;
-  }
-
-  // Slope matrix
-  TMatrixD *alphasM = (TMatrixD *) corFile->Get("slopes");
-  if (alphasM == 0) {
-    QwWarning << "Slope matrix is null" << QwLog::endl;
-    corFile->Close();
-    return 0;
-  }
-  if (alphasM->GetNrows() != Int_t(fIndependentType.size())) {
-    QwWarning << "Slope matrix has wrong number of rows: "
-              << alphasM->GetNrows() << " != " << fIndependentType.size()
-              << QwLog::endl;
-    corFile->Close();
-    return 0;
-  }
-  if (alphasM->GetNcols() != Int_t(fDependentType.size())) {
-    QwWarning << "Slope matrix has wrong number of cols: "
-              << alphasM->GetNcols() << " != " << fDependentType.size()
-              << QwLog::endl;
-    corFile->Close();
     return 0;
   }
 
@@ -170,10 +146,45 @@ Int_t LRBCorrector::LoadChannelMap(const std::string& mapfile)
     }
   }
 
-  // Assign sensitivities
-  for (Int_t i = 0; i < ivnames->GetXaxis()->GetNbins(); ++i) {
-    for (Int_t j = 0; j < dvnames->GetXaxis()->GetNbins(); ++j) {
-      fSensitivity[j].push_back(-1.0*(*alphasM)(i,j));
+  // Slope matrix
+  TKey* key = corFile->GetKey("slopes");
+  if (key == 0) {
+    QwWarning << "No slope matrix found" << QwLog::endl;
+    corFile->Close();
+    return 0;
+  }
+  QwMessage << "Slope matrix has " << key->GetCycle() << " cycle(s)." << QwLog::endl;
+  fLastCycle = key->GetCycle(); // last cycle
+  for (Short_t cycle=1; cycle<=fLastCycle; cycle++){
+    TKey* key_cycle = corFile->GetKey("slopes", cycle);
+    TMatrixD *alphasM = (TMatrixD *) key_cycle->ReadObj();
+    if (alphasM == 0) {
+      QwWarning << "Slope matrix is null" << QwLog::endl;
+      corFile->Close();
+      return 0;
+    }
+    if (alphasM->GetNrows() != Int_t(fIndependentType.size())) {
+      QwWarning << "Slope matrix has wrong number of rows: "
+		<< alphasM->GetNrows() << " != " << fIndependentType.size()
+		<< QwLog::endl;
+      corFile->Close();
+      return 0;
+    }
+    if (alphasM->GetNcols() != Int_t(fDependentType.size())) {
+      QwWarning << "Slope matrix has wrong number of cols: "
+		<< alphasM->GetNcols() << " != " << fDependentType.size()
+		<< QwLog::endl;
+      corFile->Close();
+      return 0;
+    }
+
+    // Assign sensitivities
+    fSensitivity[cycle].resize(fDependentType.size());
+    for (size_t i = 0; i != fDependentType.size(); ++i) {
+      fSensitivity[cycle].at(i).resize(fIndependentType.size());
+      for (size_t j = 0; j != fIndependentType.size(); ++j) {
+	fSensitivity[cycle].at(i).at(j) = -1.0*(*alphasM)(j,i);
+      }
     }
   }
 
@@ -192,17 +203,20 @@ Int_t LRBCorrector::ConnectChannels(
   for (size_t iv = 0; iv < fIndependentName.size(); iv++) {
     // Get the independent variables
     const VQwHardwareChannel* iv_ptr = 0;
-    switch (fIndependentType.at(iv)) {
+    iv_ptr = this->RequestExternalPointer(fIndependentFull.at(iv));
+    if (iv_ptr==NULL){
+      switch (fIndependentType.at(iv)) {
       case kHandleTypeAsym:
-        iv_ptr = asym.ReturnInternalValue(fIndependentName.at(iv));
+        iv_ptr = asym.RequestExternalPointer(fIndependentName.at(iv));
         break;
       case kHandleTypeDiff:
-        iv_ptr = diff.ReturnInternalValue(fIndependentName.at(iv));
+        iv_ptr = diff.RequestExternalPointer(fIndependentName.at(iv));
         break;
       default:
         QwWarning << "Independent variable for corrector has unknown type."
                   << QwLog::endl;
         break;
+      }
     }
     if (iv_ptr) {
       //QwMessage << " iv: " << fIndependentName.at(iv) /*<< " (sens = " << fSensitivity.at(dv).at(iv) << ")"*/ << QwLog::endl;
@@ -220,7 +234,9 @@ Int_t LRBCorrector::ConnectChannels(
 
 
 void LRBCorrector::ProcessData() {
+  Short_t cycle = fBurstCounter+1;
+  if (fSensitivity.count(cycle) == 0) return;
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
-    CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar, fSensitivity[i]);
+    CalcOneOutput(fDependentVar[i], fOutputVar[i], fIndependentVar, fSensitivity[cycle][i]);
   }
 }

@@ -1,0 +1,21 @@
+!Main detector and AT calibrations from run 4651, nominal HV https://logbooks.jlab.org/entry/3725945
+ usr, 1319.72, 0.000076
+ dsr, 1068.2, 0.000076
+ atr1, 1117.38, 0.000076
+ atr2, 764.446, 0.000076
+
+ usl, 966.543, 0.000076
+ dsl, 1002.94, 0.000076
+ atl1, 724.964, 0.000076
+ atl2, 1200.73, 0.000076
+
+!These devices are holdovers from before the mapfiles were recreated. 
+ vqwk_25_0ch4, 0, 0.000076
+ vqwk_25_0ch5, 0, 0.000076
+ battery1L, 0, 0.000076
+ battery2L, 0, 0.000076 
+
+ vqwk_26_0ch4, 0, 0.000076
+ vqwk_26_0ch5, 0, 0.000076
+ battery1R, 0, 0.000076
+ battery2R, 0, 0.000076

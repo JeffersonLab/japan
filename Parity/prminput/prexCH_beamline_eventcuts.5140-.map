@@ -1,0 +1,30 @@
+
+!This file contains beamline event cut properties
+!*********************************************************************************************
+!Global switch to turn ON and OFF eventcut check
+!Available settings
+!***************************************************
+!To turn OFF all checks
+!EVENTCUTS = 0 
+
+!***************************************************
+!To turn OFF event cuts and perform only HW checks
+!EVENTCUTS = 1
+
+!***************************************************
+!To turn ON both event cuts and HW checks
+! EVENTCUTS = 2
+
+!***************************************************
+!To turn do both event cuts and HW checks and only flag event cut failed events
+EVENTCUTS = 3
+
+!IMPORTANT
+!---------
+!Make sure when puting tabs in the map file entries, always put ", " before inserting a tab. 
+!Otherwise the routine QwParameterFile::GetNextToken(", ") will get confuse.
+
+!***************************************************
+!for bcm devices
+!device_type, device_name,      lower limit, upper limit, local(l)/global(g), stability RMS, burplevel
+

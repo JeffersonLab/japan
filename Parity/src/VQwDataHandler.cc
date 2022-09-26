@@ -34,6 +34,7 @@ using namespace std;
 
 VQwDataHandler::VQwDataHandler(const TString& name)
 : fPriority(0),
+  fBurstCounter(0),
   fName(name),
   fMapFile(""),
   fTreeName(""),
@@ -47,6 +48,7 @@ VQwDataHandler::VQwDataHandler(const TString& name)
 
 VQwDataHandler::VQwDataHandler(const VQwDataHandler &source)
 : fPriority(source.fPriority),
+  fBurstCounter(source.fBurstCounter),
   fName(source.fName),
   fMapFile(source.fMapFile),
   fTreeName(source.fTreeName),
@@ -54,6 +56,7 @@ VQwDataHandler::VQwDataHandler(const VQwDataHandler &source)
   fPrefix(source.fPrefix),
   fSubsystemArray(source.fSubsystemArray),
   fHelicityPattern(source.fHelicityPattern),
+  ParseSeparator(source.ParseSeparator),
   fKeepRunningSum(source.fKeepRunningSum)
 {
   fErrorFlagPtr  = source.fErrorFlagPtr;
@@ -141,10 +144,8 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
   /// Fill vector of pointers to the relevant data elements
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
     // Get the dependent variables
-
-    VQwHardwareChannel* dv_ptr = 0;
-    QwVQWK_Channel* new_vqwk = NULL;
-    QwVQWK_Channel* vqwk = NULL;
+    const VQwHardwareChannel* dv_ptr = 0;
+    VQwHardwareChannel* new_ptr = NULL;
     string name = "";
     string cor = "cor_";
     
@@ -154,34 +155,43 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
     } else if(fDependentName.at(dv).at(0) == '@' ) {
       name = fDependentName.at(dv).substr(1,fDependentName.at(dv).length());
     }else{
-      switch (fDependentType.at(dv)) {
+      dv_ptr = this->RequestExternalPointer(fDependentFull.at(dv));
+      if (dv_ptr == NULL){
+	switch (fDependentType.at(dv)) {
         case kHandleTypeAsym:
-          dv_ptr = asym.ReturnInternalValueForFriends(fDependentName.at(dv));
+          dv_ptr = asym.RequestExternalPointer(fDependentName.at(dv));
           break;
         case kHandleTypeDiff:
-          dv_ptr = diff.ReturnInternalValueForFriends(fDependentName.at(dv));
+          dv_ptr = diff.RequestExternalPointer(fDependentName.at(dv));
           break;
         default:
           QwWarning << "QwCombiner::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
-		                << fDependentName.at(dv)
-		                << ", for asym/diff processing does not have proper type, type=="
-		                << fDependentType.at(dv) << "."<< QwLog::endl;
+		    << fDependentName.at(dv)
+		    << ", for asym/diff processing does not have proper type, type=="
+		    << fDependentType.at(dv) << "."<< QwLog::endl;
           break;
+	}
+      }
+      if (dv_ptr == NULL){
+	QwWarning << "VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
+		  << fDependentName.at(dv)
+		  << ", was not found (fullname=="
+		  << fDependentFull.at(dv)<< ")." << QwLog::endl;
+	 continue;
       }
 
-      vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
-      name = vqwk->GetElementName().Data();
+      name = dv_ptr->GetElementName().Data();
       name.insert(0, cor);
-      new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
-      new_vqwk->SetElementName(name);
-      new_vqwk->SetSubsystemName(fName);
+      new_ptr = dv_ptr->Clone(VQwDataElement::kDerived);
+      new_ptr->SetElementName(name);
+      new_ptr->SetSubsystemName(fName);
     }
 
     // alias
     if(fDependentName.at(dv).at(0) == '@') {
       //QwMessage << "dv: " << name << QwLog::endl;
-      new_vqwk = new QwVQWK_Channel(name, VQwDataElement::kDerived);
-      new_vqwk->SetSubsystemName(fName);
+      new_ptr = new QwVQWK_Channel(name, VQwDataElement::kDerived);
+      new_ptr->SetSubsystemName(fName);
     }
     // defined type
     else if(dv_ptr!=NULL) {
@@ -193,9 +203,9 @@ Int_t VQwDataHandler::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemA
     }
 
     // pair creation
-    if(new_vqwk != NULL) {
-      fDependentVar.push_back(vqwk);
-      fOutputVar.push_back(new_vqwk);
+    if(new_ptr != NULL) {
+      fDependentVar.push_back(dv_ptr);
+      fOutputVar.push_back(new_ptr);
     }
   }
   return 0;
@@ -235,8 +245,26 @@ void VQwDataHandler::ConstructTreeBranches(
     const std::string& treeprefix,
     const std::string& branchprefix)
 {
-  if (fTreeName.size()>0){
-    treerootfile->ConstructTreeBranches(treeprefix + fTreeName, fTreeComment, *this, branchprefix + fPrefix);
+  if (fTreeName.size() > 0) {
+    if (fOutputVar.size() == 0) {
+      QwWarning << "No data handler output; not creating tree "
+                << treeprefix + fTreeName
+                << QwLog::endl;
+    } else {
+      TString tmp_branchprefix(branchprefix.c_str());
+      if (tmp_branchprefix.Contains("stat") && fKeepRunningSum 
+	  && fRunningsum!=NULL){
+	fRunningsumFillsTree = kTRUE;
+      } else {
+	fRunningsumFillsTree = kFALSE;
+      }
+      fTreeName = treeprefix+fTreeName;
+      if (fRunningsumFillsTree) {
+	treerootfile->ConstructTreeBranches(fTreeName, fTreeComment, *fRunningsum, fPrefix+branchprefix);
+      }else {
+	treerootfile->ConstructTreeBranches(fTreeName, fTreeComment, *this, fPrefix+branchprefix);
+      }
+    }
   }
 }
 
@@ -253,7 +281,11 @@ void VQwDataHandler::ConstructBranchAndVector(
 void VQwDataHandler::FillTreeBranches(QwRootFile *treerootfile)
 {
   if (fTreeName.size()>0){
-    treerootfile->FillTreeBranches(*this);
+    if (fRunningsumFillsTree) {
+      treerootfile->FillTreeBranches(*fRunningsum);
+    } else {
+      treerootfile->FillTreeBranches(*this);
+    }
     treerootfile->FillTree(fTreeName);
   }
 }
@@ -272,6 +304,21 @@ void VQwDataHandler::FillTreeVector(std::vector<Double_t>& values) const
   }
 }
 
+void VQwDataHandler::InitRunningSum()
+{
+  if (fKeepRunningSum && fRunningsum == NULL){
+    fRunningsum = this->Clone();
+    fRunningsum->fKeepRunningSum = kFALSE;
+    fRunningsum->ClearEventData();
+  }
+}
+
+void VQwDataHandler::AccumulateRunningSum()
+{
+  if (fKeepRunningSum && fErrorFlagPtr!=NULL && (*fErrorFlagPtr)==0){
+    fRunningsum->AccumulateRunningSum(*this);
+  }
+}
 
 void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value, Int_t count, Int_t ErrorMask)
 {
@@ -283,8 +330,11 @@ void VQwDataHandler::AccumulateRunningSum(VQwDataHandler &value, Int_t count, In
 
 void VQwDataHandler::CalculateRunningAverage()
 {
-  for(size_t i = 0; i < fOutputVar.size(); i++) {
-    this->fOutputVar[i]->CalculateRunningAverage();
+  if (fKeepRunningSum && (fRunningsum != NULL)){
+    for(size_t i = 0; i < fRunningsum->fOutputVar.size(); i++) {
+      // calling CalculateRunningAverage in scope of VQwHardwareChannel
+      fRunningsum->fOutputVar[i]->CalculateRunningAverage();
+    }
   }
 }
 
@@ -302,6 +352,62 @@ void VQwDataHandler::ClearEventData()
   for(size_t i = 0; i < fOutputVar.size(); i++) {
     fOutputVar[i]->ClearEventData();
   }
+  if (fKeepRunningSum && fRunningsum!=NULL){
+    fRunningsum->ClearEventData();
+  }
+}
+
+
+//*****************************************************************//
+Bool_t VQwDataHandler::PublishInternalValues() const
+{
+  // Publish variables
+  Bool_t status = kTRUE;
+  VQwHardwareChannel* tmp_channel;
+  
+  // Publish variables through map file
+  for (size_t pp = 0; pp < fPublishList.size(); pp++) {
+    TString publish_name = fPublishList.at(pp).at(0);
+    TString device_type = fPublishList.at(pp).at(1);
+    TString device_name = fPublishList.at(pp).at(2);
+    TString device_prop = fPublishList.at(pp).at(3);
+    device_type.ToLower();
+    device_prop.ToLower();
+
+    tmp_channel = NULL;
+
+    for(size_t i=0;i<fOutputVar.size(); ++i) {
+      if(device_name.CompareTo(fOutputVar.at(i)->GetElementName())==0){
+	tmp_channel = fOutputVar.at(i);
+	break;
+      }
+    }
+    if (tmp_channel == NULL) {
+      QwError << "VQwDataHandler::PublishInternalValues(): " << publish_name 
+	      << " not found" << QwLog::endl;
+      status &= kFALSE;
+    } else {
+      QwDebug << "VQwDataHandler::PublishInternalValues(): " << publish_name 
+	      << " found" << QwLog::endl;
+      status &= PublishInternalValue(publish_name, "published-value", tmp_channel);
+    }
+  }
+  return status;
+}    
+
+Bool_t VQwDataHandler::PublishByRequest(TString device_name)
+{
+  Bool_t status = kFALSE;
+  for(size_t i=0;i<fOutputVar.size(); ++i) {
+    if(device_name.CompareTo(fOutputVar.at(i)->GetElementName())==0){
+      status = PublishInternalValue(device_name, "published-by-request",
+				    fOutputVar.at(i));
+      break;
+    }
+  }
+  if (!status && fOutputVar.size()>0)
+    QwDebug << "VQwDataHandler::PublishByRequest:  Failed to publish channel name:  " << device_name << QwLog::endl;
+  return status;
 }
 
 void VQwDataHandler::WritePromptSummary(QwPromptSummary *ps, TString type)
@@ -435,59 +541,4 @@ void VQwDataHandler::FillDB(QwParityDB *db, TString datatype)
   return;
 }
 #endif // __USE_DATABASE__
-
-/*
-
-Bool_t VQwDataHandler::PublishInternalValue(const TString &name, const TString &desc, const VQwHardwareChannel *value) const {
-  
-  Bool_t status = kTRUE;
-
-  if (desc == "integrationpmt") {
-    value = GetIntegrationPMT(name)->GetChannel(name);
-  } else if (desc == "combinedpmt") {
-    value = GetCombinedPMT(name)->GetChannel(name);
-  } else {
-    QwError << "VQwDataHandler::PublishInternalValues() error "<< QwLog::endl;
-  }
-
-  if (desc == NULL) {
-    QwError << "VQwDataHandler::PublishInternalValues(): " << name << " not found" << QwLog::endl;
-    status |= kFALSE;
-  } else {
-    QwDebug << "VQwDataHandler::PublishInternalValues(): " << name << " found" << QwLog::endl;
-  }
-
-  return status;
-
-}
-
-Bool_t VQwDataHandler::PublishByRequest(TString device_name) {
-  
-  Bool_t status = kFALSE;
-  
-  for(size_t i=0;i<fDependentVar.size();i++) {
-
-    if(device_name.CompareTo(fDependentName.at(i)!=0) continue;
-    
-    if (fDependentType.at(i) == kQwCombinedPMT){
-      status = PublishInternalValue(device_name, "published-by-request", fDependentVar.at(i));
-    } else if (fDependentType.at(i) == kQwIntegrationPMT) {
-      status = PublishInternalValue(device_name, "published-by-request", fDependentVar.at(i));
-    } else {
-      QwError << "Unknown channel name:  " << device_name << QwLog::endl;
-    }
-
-    break;
-
-  }
-
-  if (!status) {
-    QwError << "VQwDataHandler::PublishByRequest:  Failed to publish channel name:  " << device_name << QwLog::endl;
-  }
-
-  return status;
-  
-}
-
-*/
 

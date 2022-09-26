@@ -15,17 +15,19 @@ Last Modified: August 1, 2018 1:43 PM
 #include "QwCorrelator.h"
 
 // System includes
-#include <iostream>
+#include <utility>
 
 // ROOT headers
 #include "TFile.h"
 #include "TH2D.h"
 
 // Qweak headers
+#include "QwOptions.h"
 #include "QwHelicityPattern.h"
 #include "VQwDataElement.h"
 #include "QwVQWK_Channel.h"
 #include "QwParameterFile.h"
+#include "QwRootFile.h"
 #define MYSQLPP_SSQLS_NO_STATICS
 #ifdef __USE_DATABASE__
 #include "QwParitySSQLS.h"
@@ -35,6 +37,9 @@ Last Modified: August 1, 2018 1:43 PM
 // Register this handler with the factory
 RegisterHandlerFactory(QwCorrelator);
 
+// Static members
+bool QwCorrelator::fPrintCorrelations = false;
+
 QwCorrelator::QwCorrelator(const TString& name)
 : VQwDataHandler(name),
   fBlock(-1),
@@ -43,38 +48,62 @@ QwCorrelator::QwCorrelator(const TString& name)
   fAlphaOutputFileSuff("new.slope.root"),
   fAlphaOutputPath("."),
   fAlphaOutputFile(0),
-  fAlphaOutputTree(0),
+  fTree(0),
   fAliasOutputFileBase("regalias_"),
   fAliasOutputFileSuff(""),
   fAliasOutputPath("."),
   fNameNoSpaces(name),
   nP(0),nY(0),
-  fH1iv(0),fH1dv(0),
-  fH2iv(0),fH2dv(0)
+  fCycleCounter(0)
 {
   fNameNoSpaces.ReplaceAll(" ","_");
+  // Set default tree name and descriptions (in VQwDataHandler)
+  fTreeName = "lrb";
+  fTreeComment = "Correlations";
+  // Parsing separator
   ParseSeparator = "_";
-  fTotalCount = 0;
-  fGoodCount  = 0;
-  fErrCounts_EF = 0;
+
+  // Clear all data
+  ClearEventData();
+}
+
+QwCorrelator::QwCorrelator(const QwCorrelator& source)
+: VQwDataHandler(source),
+  fBlock(source.fBlock),
+  fDisableHistos(source.fDisableHistos),
+  fAlphaOutputFileBase(source.fAlphaOutputFileBase),
+  fAlphaOutputFileSuff(source.fAlphaOutputFileSuff),
+  fAlphaOutputPath(source.fAlphaOutputPath),
+  fAlphaOutputFile(0),
+  fTree(0),
+  fAliasOutputFileBase(source.fAliasOutputFileBase),
+  fAliasOutputFileSuff(source.fAliasOutputFileSuff),
+  fAliasOutputPath(source.fAliasOutputPath),
+  nP(source.nP),nY(source.nY),
+  fCycleCounter(source.fCycleCounter)
+{
+  QwWarning << "QwCorrelator copy constructor required but untested" << QwLog::endl;
+
+  // Clear all data
+  ClearEventData();
 }
 
 QwCorrelator::~QwCorrelator()
 {
-  // Close output file
-  if (fAlphaOutputFile) {
-    fAlphaOutputFile->Write();
-    fAlphaOutputFile->Close();
-  } else
-    QwWarning << "Cannot close slopes ROOT file for "
-              << GetDataHandlerName() << QwLog::endl;
+  // Close alpha and alias file
+  CloseAlphaFile();
+  CloseAliasFile();
+}
 
-  if (fH1iv) { // only if previously allocated
-    delete[] fH1iv;
-    delete[] fH2iv;
-    delete[] fH1dv;
-    delete[] fH2dv;
-  }
+void QwCorrelator::DefineOptions(QwOptions &options)
+{
+  options.AddOptions()("print-correlations",
+      po::value<bool>(&fPrintCorrelations)->default_bool_value(false),
+      "print correlations after determining them");
+}
+
+void QwCorrelator::ProcessOptions(QwOptions &options)
+{
 }
 
 void QwCorrelator::ParseConfigFile(QwParameterFile& file)
@@ -95,67 +124,131 @@ void QwCorrelator::ParseConfigFile(QwParameterFile& file)
 
 void QwCorrelator::ProcessData()
 {
-  UInt_t error = 0;
-
+  // Add to total count
   fTotalCount++;
 
-  error |= GetEventcutErrorFlag();
+  // Start as good event
+  fGoodEvent = 0;
+
+  // Event error flag
+  fGoodEvent |= GetEventcutErrorFlag();
   if ( GetEventcutErrorFlag() != 0) fErrCounts_EF++;
-
+  // Dependent variable error codes
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
-    error |= fDependentVar.at(i)->GetErrorCode();
+    fGoodEvent |= fDependentVar.at(i)->GetErrorCode();
     fDependentValues.at(i) = (fDependentVar[i]->GetValue(fBlock+1));
-    if ( fDependentVar.at(i)->GetErrorCode() !=0)  (fErrCounts_DV.at(i))++;
+    if (fDependentVar.at(i)->GetErrorCode() !=0)  (fErrCounts_DV.at(i))++;
   }
+  // Independent variable error codes
   for (size_t i = 0; i < fIndependentVar.size(); ++i) {
-    error |= fIndependentVar.at(i)->GetErrorCode();
+    fGoodEvent |= fIndependentVar.at(i)->GetErrorCode();
     fIndependentValues.at(i) = (fIndependentVar[i]->GetValue(fBlock+1));
-    if ( fIndependentVar.at(i)->GetErrorCode() !=0)  (fErrCounts_IV.at(i))++;
+    if (fIndependentVar.at(i)->GetErrorCode() !=0)  (fErrCounts_IV.at(i))++;
   }
 
-  if (error == 0) {
+  // If good, process event
+  if (fGoodEvent == 0) {
     fGoodCount++;
-    addEvent(&fIndependentValues[0],&fDependentValues[0]);
+
+    TVectorD P(fIndependentValues.size(), fIndependentValues.data());
+    TVectorD Y(fDependentValues.size(),   fDependentValues.data());
+    linReg += std::make_pair(P, Y);
   }
-  
 }
 
+void QwCorrelator::ClearEventData()
+{
+  // Clear error counters
+  fErrCounts_EF = 0;
+  std::fill(fErrCounts_DV.begin(), fErrCounts_DV.end(), 0);
+  std::fill(fErrCounts_IV.begin(), fErrCounts_IV.end(), 0);
+
+  // Clear event counts
+  fTotalCount = 0;
+  fGoodCount = 0;
+  fGoodEvent = -1;
+
+  // Clear regression
+  linReg.clear();
+}
+
+void QwCorrelator::AccumulateRunningSum(VQwDataHandler &value, Int_t count, Int_t ErrorMask)
+{
+  QwCorrelator* correlator = dynamic_cast<QwCorrelator*>(&value);
+  if (correlator) {
+    linReg += correlator->linReg;
+  } else {
+    QwWarning << "QwCorrelator::AccumulateRunningSum "
+              << "can only accept other QwCorrelator objects."
+              << QwLog::endl;
+  }
+}
 
 void QwCorrelator::CalcCorrelations()
 {
-  QwMessage << "QwCorrelator:  Total entries: " << fTotalCount <<", good entries: "<< fGoodCount << QwLog::endl;
-  if (fErrCounts_EF > 0)
-    QwMessage << "   Entries failed due to error flag: "
+  // Check if any channels are active
+  if (nP == 0 || nY == 0) {
+    return;
+  }
+
+  QwMessage << "QwCorrelator::CalcCorrelations(): name=" << GetName() << QwLog::endl;
+
+  // Print entry summary
+  QwVerbose << "QwCorrelator: "
+            << "total entries: " << fTotalCount << ", "
+            << "good entries: " << fGoodCount
+            << QwLog::endl;
+  // and warn if zero
+  if (fTotalCount > 100 && fGoodCount == 0) {
+    QwWarning << "QwCorrelator: "
+              << "< 1% good events, "
+              << fGoodCount << " of " << fTotalCount
+              << QwLog::endl;
+  }
+
+  // Event error flag
+  if (fErrCounts_EF > 0) {
+    QwVerbose << "   Entries failed due to error flag: "
               << fErrCounts_EF << QwLog::endl;
+  }
+  // Dependent variable error codes
   for (size_t i = 0; i < fDependentVar.size(); ++i) {
-    if (fErrCounts_DV.at(i) >0) QwMessage << "   Entries failed due to " << fDependentVar.at(i)->GetElementName()
-					  << ": " <<  fErrCounts_DV.at(i) << QwLog::endl;
+    if (fErrCounts_DV.at(i) > 0) {
+      QwVerbose << "   Entries failed due to " << fDependentVar.at(i)->GetElementName()
+                << ": " <<  fErrCounts_DV.at(i) << QwLog::endl;
+    }
   }
+  // Independent variable error codes
   for (size_t i = 0; i < fIndependentVar.size(); ++i) {
-    if (fErrCounts_IV.at(i) >0) QwMessage << "   Entries failed due to " << fIndependentVar.at(i)->GetElementName()
-					  << ": " <<  fErrCounts_IV.at(i) << QwLog::endl;
+    if (fErrCounts_IV.at(i) > 0) {
+      QwVerbose << "   Entries failed due to " << fIndependentVar.at(i)->GetElementName()
+                << ": " <<  fErrCounts_IV.at(i) << QwLog::endl;
+    }
   }
 
-  if (linReg.failed()) {
-    QwWarning << "QwCorrelator: abnormal finish of linReg" << QwLog::endl;
-  } else {
-    linReg.printSummaryP();
-    linReg.printSummaryY();
+  if (! linReg.failed()) {
+
+    if (fPrintCorrelations) {
+      linReg.printSummaryP();
+      linReg.printSummaryY();
+    }
+
     linReg.solve();
-    linReg.printSummaryAlphas();
+
+    if (fPrintCorrelations) {
+      linReg.printSummaryAlphas();
+      linReg.printSummaryMeansWithUnc();
+      linReg.printSummaryMeansWithUncCorrected();
+    }
   }
-
-  std::string SlopeFileName = fAlphaOutputFileBase + run_label.Data() + fAlphaOutputFileSuff;
-  std::string SlopeFilePath = fAlphaOutputPath + "/";
-  std::string SlopeFile = SlopeFilePath + SlopeFileName;
-  exportAlphas(fIndependentFull, fDependentFull);
-
-  std::string MacroFileName = fAliasOutputFileBase + run_label.Data() + fAliasOutputFileSuff;
-  std::string MacroFilePath = fAliasOutputPath + "/";
-  exportAlias(TString(MacroFilePath), TString(MacroFileName), fIndependentFull, fDependentFull);
 
   // Fill tree
-  fAlphaOutputTree->Fill();
+  if (fTree) fTree->Fill();
+  else QwWarning << "No tree" << QwLog::endl;
+
+  // Write alpha and alias file
+  WriteAlphaFile();
+  WriteAliasFile();
 }
 
 
@@ -216,58 +309,42 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
   for (size_t dv = 0; dv < fDependentName.size(); dv++) {
     // Get the dependent variables
 
-    VQwHardwareChannel* dv_ptr = 0;
-    QwVQWK_Channel* new_vqwk = NULL;
-    QwVQWK_Channel* vqwk = NULL;
-    string name = "";
-    string reg = "reg_";
+    const VQwHardwareChannel* dv_ptr = 0;
     
     if (fDependentType.at(dv)==kHandleTypeMps){
       //  Quietly ignore the MPS type when we're connecting the asym & diff
       continue;
-    } else if(fDependentName.at(dv).at(0) == '@' ){
-      name = fDependentName.at(dv).substr(1,fDependentName.at(dv).length());
     }else{
-      switch (fDependentType.at(dv)) {
+      dv_ptr = this->RequestExternalPointer(fDependentFull.at(dv));
+      if (dv_ptr==NULL){
+	switch (fDependentType.at(dv)) {
         case kHandleTypeAsym:
-          dv_ptr = asym.ReturnInternalValueForFriends(fDependentName.at(dv));
+          dv_ptr = asym.RequestExternalPointer(fDependentName.at(dv));
           break;
         case kHandleTypeDiff:
-          dv_ptr = diff.ReturnInternalValueForFriends(fDependentName.at(dv));
+          dv_ptr = diff.RequestExternalPointer(fDependentName.at(dv));
           break;
         default:
-          QwWarning << "QwCombiner::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
-	          	      << fDependentName.at(dv)
-		                << ", for asym/diff correlator does not have proper type, type=="
-		                << fDependentType.at(dv) << "."<< QwLog::endl;
+          QwWarning << "QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff): "
+                    << "Dependent variable, " << fDependentName.at(dv)
+                    << ", for asym/diff correlator does not have proper type, type=="
+                    << fDependentType.at(dv) << "." << QwLog::endl;
           break;
         }
-
-      vqwk = dynamic_cast<QwVQWK_Channel*>(dv_ptr);
-      name = vqwk->GetElementName().Data();
-      name.insert(0, reg);
-      new_vqwk = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
-      new_vqwk->SetElementName(name);
-    }
-
-    // alias
-    if(fDependentName.at(dv).at(0) == '@'){
-      //QwMessage << "dv: " << name << QwLog::endl;
-      new_vqwk = new QwVQWK_Channel(name, VQwDataElement::kDerived);
-    }
-    // defined type
-    else if(dv_ptr!=NULL){
-      //QwMessage << "dv: " << fDependentName.at(dv) << QwLog::endl;
-    }else {
-      QwWarning << "Dependent variable " << fDependentName.at(dv) << " could not be found, "
-                << "or is not a VQWK channel." << QwLog::endl;
-      continue; 
+      }
+      if (dv_ptr == NULL){
+	QwWarning << "QwCombiner::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff):  Dependent variable, "
+		  << fDependentName.at(dv)
+		  << ", was not found (fullname=="
+		  << fDependentFull.at(dv)<< ")." << QwLog::endl;
+	 continue;
+      }
     }
 
     // pair creation
-    if(vqwk != NULL){
+    if(dv_ptr != NULL){
       // fDependentVarType.push_back(fDependentType.at(dv));
-      fDependentVar.push_back(vqwk);
+      fDependentVar.push_back(dv_ptr);
     }
 
   }
@@ -276,17 +353,20 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
   for (size_t iv = 0; iv < fIndependentName.size(); iv++) {
     // Get the independent variables
     const VQwHardwareChannel* iv_ptr = 0;
-    switch (fIndependentType.at(iv)) {
+    iv_ptr = this->RequestExternalPointer(fIndependentFull.at(iv));
+    if (iv_ptr==NULL){
+      switch (fIndependentType.at(iv)) {
       case kHandleTypeAsym:
-        iv_ptr = asym.ReturnInternalValue(fIndependentName.at(iv));
+        iv_ptr = asym.RequestExternalPointer(fIndependentName.at(iv));
         break;
       case kHandleTypeDiff:
-        iv_ptr = diff.ReturnInternalValue(fIndependentName.at(iv));
+        iv_ptr = diff.RequestExternalPointer(fIndependentName.at(iv));
         break;
       default:
         QwWarning << "Independent variable for correlator has unknown type."
                   << QwLog::endl;
         break;
+      }
     }
     if (iv_ptr) {
       fIndependentVar.push_back(iv_ptr);
@@ -299,7 +379,11 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
   fIndependentValues.resize(fIndependentVar.size());
   fDependentValues.resize(fDependentVar.size());
  
-  init(fIndependentName, fDependentName);
+  nP = fIndependentName.size();
+  nY = fDependentName.size();
+
+  linReg.setDims(nP, nY);
+  linReg.init();
 
   fErrCounts_IV.resize(fIndependentVar.size(),0);
   fErrCounts_DV.resize(fDependentVar.size(),0);
@@ -308,148 +392,221 @@ Int_t QwCorrelator::ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArr
 }
 
 
-void QwCorrelator::init(std::vector<std::string> ivName, std::vector<std::string> dvName)
+void QwCorrelator::ConstructTreeBranches(
+    QwRootFile *treerootfile,
+    const std::string& treeprefix,
+    const std::string& branchprefix)
 {
-  // Create ROOT file
-  std::string SlopeFileName = fAlphaOutputFileBase + run_label.Data() + fAlphaOutputFileSuff;
-  std::string SlopeFilePath = fAlphaOutputPath + "/";
-  std::string SlopeFile = SlopeFilePath + SlopeFileName;
-
-  fAlphaOutputFile = new TFile(SlopeFile.c_str(), "RECREATE", "correlation coefficients");
-  if (! fAlphaOutputFile->IsWritable()) {
-    QwError << "QwCorrelator could not create output file " << SlopeFile << QwLog::endl;
-    delete fAlphaOutputFile;
-    fAlphaOutputFile = 0;
+  // Check if any channels are active
+  if (nP == 0 || nY == 0) {
+    return;
   }
 
-  nP = ivName.size();
-  nY = dvName.size();
+  // Check if tree name is specified
+  if (fTreeName == "") {
+    QwWarning << "QwCorrelator: no tree name specified, use 'tree-name = value'" << QwLog::endl;
+    return;
+  }
 
-  if (fDisableHistos == false)
-    initHistos(ivName,dvName);
+  // Create alpha and alias files before trying to create the tree
+  OpenAlphaFile(treeprefix);
+  OpenAliasFile(treeprefix);
 
-  linReg.setDims(nP, nY);
-  linReg.init();
+  // Construct tree name and create new tree
+  const std::string name = treeprefix + fTreeName;
+  treerootfile->NewTree(name, fTreeComment.c_str());
+  fTree = treerootfile->GetTree(name);
+  // Check to make sure the tree was created successfully
+  if (fTree == NULL) return;
 
-  // Set up tree and branches
-  fAlphaOutputTree = new TTree("lrb", fTreeComment.c_str());
+  // Set up branches
+  fTree->Branch(TString(branchprefix + "total_count"), &fTotalCount);
+  fTree->Branch(TString(branchprefix + "good_count"),  &fGoodCount);
 
-  fAlphaOutputTree->Branch("A",    "TMatrixD", &(linReg.mA));
-  fAlphaOutputTree->Branch("Asig", "TMatrixD", &(linReg.mAsig));
+  fTree->Branch(TString(branchprefix + "n"), &(linReg.fGoodEventNumber));
+  fTree->Branch(TString(branchprefix + "ErrorFlag"), &(linReg.fErrorFlag));
 
-  fAlphaOutputTree->Branch("RPP",  "TMatrixD", &(linReg.mRPP));
-  fAlphaOutputTree->Branch("RPY",  "TMatrixD", &(linReg.mRPY));
-  fAlphaOutputTree->Branch("RYY",  "TMatrixD", &(linReg.mRYY));
-  fAlphaOutputTree->Branch("RYYp", "TMatrixD", &(linReg.mRYYprime));
+  auto bn = [&](const TString& n) {
+    return TString(branchprefix + n);
+  };
+  auto pm = [](TMatrixD& m) {
+    return m.GetMatrixArray();
+  };
+  auto lm = [](TMatrixD& m, const TString& n) {
+    return Form("%s[%d][%d]/D", n.Data(), m.GetNrows(), m.GetNcols());
+  };
+  auto branchm = [&](TTree* tree, TMatrixD& m, const TString& n) {
+    tree->Branch(bn(n),pm(m),lm(m,n));
+  };
+  auto pv = [](TVectorD& v) {
+    return v.GetMatrixArray();
+  };
+  auto lv = [](TVectorD& v, const TString& n) {
+    return Form("%s[%d]/D", n.Data(), v.GetNrows());
+  };
+  auto branchv = [&](TTree* tree, TVectorD& v, const TString& n) {
+    tree->Branch(bn(n),pv(v),lv(v,n));
+  };
 
-  fAlphaOutputTree->Branch("MP",   "TVectorD", &(linReg.mMP));
-  fAlphaOutputTree->Branch("MY",   "TVectorD", &(linReg.mMY));
-  fAlphaOutputTree->Branch("MYp",  "TVectorD", &(linReg.mMYprime));
+  branchm(fTree,linReg.Axy,  "A");
+  branchm(fTree,linReg.dAxy, "dA");
+
+  branchm(fTree,linReg.mVPP,  "VPP");
+  branchm(fTree,linReg.mVPY,  "VPY");
+  branchm(fTree,linReg.mVYP,  "VYP");
+  branchm(fTree,linReg.mVYY,  "VYY");
+  branchm(fTree,linReg.mVYYp, "VYYp");
+
+  branchm(fTree,linReg.mSPP,  "SPP");
+  branchm(fTree,linReg.mSPY,  "SPY");
+  branchm(fTree,linReg.mSYP,  "SYP");
+  branchm(fTree,linReg.mSYY,  "SYY");
+  branchm(fTree,linReg.mSYYp, "SYYp");
+
+  branchm(fTree,linReg.mRPP,  "RPP");
+  branchm(fTree,linReg.mRPY,  "RPY");
+  branchm(fTree,linReg.mRYP,  "RYP");
+  branchm(fTree,linReg.mRYY,  "RYY");
+  branchm(fTree,linReg.mRYYp, "RYYp");
+
+  branchv(fTree,linReg.mMP,  "MP");   // Parameter mean
+  branchv(fTree,linReg.mMY,  "MY");   // Uncorrected mean 
+  branchv(fTree,linReg.mMYp, "MYp");  // Corrected mean
+
+  branchv(fTree,linReg.mSP,  "dMP");  // Parameter mean error
+  branchv(fTree,linReg.mSY,  "dMY");  // Uncorrected mean error
+  branchv(fTree,linReg.mSYp, "dMYp"); // Corrected mean error
+
 }
 
-void QwCorrelator::initHistos(std::vector<std::string> Pname, std::vector<std::string> Yname)
+/// \brief Construct the histograms in a folder with a prefix
+void QwCorrelator::ConstructHistograms(TDirectory *folder, TString &prefix)
 {
-  if (fAlphaOutputFile) fAlphaOutputFile->cd();
+  // Skip if disabled
+  if (fDisableHistos) return;
+
+  // Check if any channels are active
+  if (nP == 0 || nY == 0) {
+    return;
+  }
+
+  // Go to directory
+  TString name(fName);
+  name.ReplaceAll(" ","_");
+  folder->mkdir(name)->cd();
 
   //..... 1D,  iv
-  fH1iv = new TH1D*[nP];
-  for(int i=0;i<nP;i++) {
-    TH1D* h = fH1iv[i] = new TH1D(
-        Form(fNameNoSpaces+"P%d",i),
-        Form("iv P%d=%s, pass=%s ;iv=%s (ppm)",i,Pname[i].c_str(),fNameNoSpaces.Data(),Pname[i].c_str()),
+  fH1iv.resize(nP);
+  for (int i = 0; i < nP; i++) {
+    fH1iv[i] = TH1D(
+        Form("P%d",i),
+        Form("iv P%d=%s, pass=%s ;iv=%s (ppm)",i,fIndependentName[i].c_str(),fName.Data(),fIndependentName[i].c_str()),
         128,0.,0.);
-    h->GetXaxis()->SetNdivisions(4);
+    fH1iv[i].GetXaxis()->SetNdivisions(4);
   }
 
   //..... 2D,  iv correlations
   Double_t x1 = 0;
-  fH2iv = new TH2D*[nP*nP]; // not all are used
-  for(int i=0;i<nP;i++) {
-    for(int j=i+1;j<nP;j++) {
-      TH2D* h = fH2iv[i*nP+j] = new TH2D(
-          Form(fNameNoSpaces+"P%d_P%d",i,j),
+  fH2iv.resize(nP);
+  for (int i = 0; i < nP; i++) {
+    fH2iv[i].resize(nP);
+    for (int j = i+1; j < nP; j++) { // not all are used
+      fH2iv[i][j] = TH2D(
+          Form("P%d_P%d",i,j),
           Form("iv correlation  P%d_P%d, pass=%s ;P%d=%s (ppm);P%d=%s   (ppm)  ",
-              i,j,fNameNoSpaces.Data(),i,Pname[i].c_str(),j,Pname[j].c_str()),
+              i,j,fName.Data(),i,fIndependentName[i].c_str(),j,fIndependentName[j].c_str()),
           64,-x1,x1,
           64,-x1,x1);
-      h->GetXaxis()->SetTitleColor(kBlue);
-      h->GetYaxis()->SetTitleColor(kBlue);
-      h->GetXaxis()->SetNdivisions(4);
-      h->GetYaxis()->SetNdivisions(4);
+      fH2iv[i][j].GetXaxis()->SetTitleColor(kBlue);
+      fH2iv[i][j].GetYaxis()->SetTitleColor(kBlue);
+      fH2iv[i][j].GetXaxis()->SetNdivisions(4);
+      fH2iv[i][j].GetYaxis()->SetNdivisions(4);
     }
   }
 
   //..... 1D,  dv
-  fH1dv = new TH1D*[nY];
-  for(int i=0;i<nY;i++) {
-    TH1D* h = fH1dv[i] = new TH1D(
-        Form(fNameNoSpaces+"Y%d",i),
-        Form("dv Y%d=%s, pass=%s ;dv=%s (ppm)",i,Yname[i].c_str(),fNameNoSpaces.Data(),Yname[i].c_str()),
+  fH1dv.resize(nY);
+  for (int i = 0; i < nY; i++) {
+    fH1dv[i] = TH1D(
+        Form("Y%d",i),
+        Form("dv Y%d=%s, pass=%s ;dv=%s (ppm)",i,fDependentName[i].c_str(),fName.Data(),fDependentName[i].c_str()),
         128,0.,0.);
-    h->GetXaxis()->SetNdivisions(4);
+    fH1dv[i].GetXaxis()->SetNdivisions(4);
   }
 
   //..... 2D,  dv-iv correlations
   Double_t y1 = 0;
-  fH2dv = new TH2D*[nP*nY]; // not all are used
-  for(int i=0;i<nP;i++) {
-    for(int j=0;j<nY;j++) {
-      TH2D* h = fH2dv[i*nY+j] = new TH2D(
-          Form(fNameNoSpaces+"P%d_Y%d",i,j),
+  fH2dv.resize(nP);
+  for (int i = 0; i < nP; i++) {
+    fH2dv[i].resize(nY);
+    for (int j = 0; j < nY; j++) {
+      fH2dv[i][j] = TH2D(
+          Form("P%d_Y%d",i,j),
           Form("iv-dv correlation  P%d_Y%d, pass=%s ;P%d=%s (ppm);Y%d=%s   (ppm)  ",
-              i,j,fNameNoSpaces.Data(),i,Pname[i].c_str(),j,Yname[j].c_str()),
+              i,j,fName.Data(),i,fIndependentName[i].c_str(),j,fDependentName[j].c_str()),
           64,-x1,x1,
           64,-y1,y1);
-      h->GetXaxis()->SetTitleColor(kBlue);
-      h->GetYaxis()->SetTitleColor(kBlue);
-      h->GetXaxis()->SetNdivisions(4);
-      h->GetYaxis()->SetNdivisions(4);
+      fH2dv[i][j].GetXaxis()->SetTitleColor(kBlue);
+      fH2dv[i][j].GetYaxis()->SetTitleColor(kBlue);
+      fH2dv[i][j].GetXaxis()->SetNdivisions(4);
+      fH2dv[i][j].GetYaxis()->SetNdivisions(4);
     }
   }
 
   // store list of names to be archived
-  hA[0] = new TH1D(fNameNoSpaces+"NamesIV",Form("IV name list nIV=%d",nP),nP,0,1);
-  for(int i=0;i<nP;i++)
-    hA[0]->Fill(Pname[i].c_str(),1.*i);
-  hA[1] = new TH1D(fNameNoSpaces+"NamesDV",Form("DV name list nIV=%d",nY),nY,0,1);
-  for(int i=0;i<nY;i++)
-    hA[1]->Fill(Yname[i].c_str(),i*1.);
+  fHnames.resize(2);
+  fHnames[0] = TH1D("NamesIV",Form("IV name list nIV=%d",nP),nP,0,1);
+  for (int i = 0; i < nP; i++)
+    fHnames[0].Fill(fIndependentName[i].c_str(),1.*i);
+  fHnames[1] = TH1D("NamesDV",Form("DV name list nIV=%d",nY),nY,0,1);
+  for (int i = 0; i < nY; i++)
+    fHnames[1].Fill(fDependentName[i].c_str(),i*1.);
 }
 
-void QwCorrelator::addEvent(double *Pvec, double *Yvec)
+/// \brief Fill the histograms
+void QwCorrelator::FillHistograms()
 {
-  linReg.accumulate(Pvec, Yvec);
-  // .... monitoring
+  // Skip if disabled
+  if (fDisableHistos) return;
 
-  if (fDisableHistos == false) {
-    for(int i=0;i<nP;i++) {
-      fH1iv[i]->Fill(Pvec[i]);
-      for(int j=i+1;j<nP;j++) fH2iv[i*nP+j]->Fill(Pvec[i],Pvec[j]);
-    }
-    for(int j=0;j<nY;j++) {
-      fH1dv[j]->Fill(Yvec[j]);
-      for(int i=0;i<nP;i++)  fH2dv[i*nY+j]->Fill(Pvec[i],Yvec[j]);
-    }
+  // Check if any channels are active
+  if (nP == 0 || nY == 0) {
+    return;
+  }
+
+  // Skip if bad event
+  if (fGoodEvent != 0) return;
+
+  // Fill histograms
+  for (size_t i = 0; i < fIndependentValues.size(); i++) {
+    fH1iv[i].Fill(fIndependentValues[i]);
+    for (size_t j = i+1; j < fIndependentValues.size(); j++)
+      fH2iv[i][j].Fill(fIndependentValues[i], fIndependentValues[j]);
+  }
+  for (size_t j = 0; j < fDependentValues.size(); j++) {
+    fH1dv[j].Fill(fDependentValues[j]);
+    for (size_t i = 0; i < fIndependentValues.size(); i++)
+      fH2dv[i][j].Fill(fIndependentValues[i], fDependentValues[j]);
   }
 }
 
-void QwCorrelator::exportAlphas(
-    std::vector < TString > ivName,
-    std::vector < TString > dvName)
+void QwCorrelator::WriteAlphaFile()
 {
+  // Ensure in output file
   if (fAlphaOutputFile) fAlphaOutputFile->cd();
 
-  linReg.mA.Write("slopes");
-  linReg.mAsig.Write("sigSlopes");
+  // Write objects
+  linReg.Axy.Write("slopes");
+  linReg.dAxy.Write("sigSlopes");
 
   linReg.mRPP.Write("IV_IV_correlation");
   linReg.mRPY.Write("IV_DV_correlation");
   linReg.mRYY.Write("DV_DV_correlation");
-  linReg.mRYYprime.Write("DV_DV_correlation_prime");
+  linReg.mRYYp.Write("DV_DV_correlation_prime");
 
   linReg.mMP.Write("IV_mean");
   linReg.mMY.Write("DV_mean");
-  linReg.mMYprime.Write("DV_mean_prime");
+  linReg.mMYp.Write("DV_mean_prime");
 
   // number of events
   TMatrixD Mstat(1,1);
@@ -458,72 +615,120 @@ void QwCorrelator::exportAlphas(
 
   //... IVs
   TH1D hiv("IVname","names of IVs",nP,-0.5,nP-0.5);
-  for (int i=0;i<nP;i++) hiv.Fill(ivName[i],i);
+  for (int i=0;i<nP;i++) hiv.Fill(fIndependentFull[i].c_str(),i);
   hiv.Write();
 
   //... DVs
   TH1D hdv("DVname","names of IVs",nY,-0.5,nY-0.5);
-  for (int i=0;i<nY;i++) hdv.Fill(dvName[i],i);
+  for (int i=0;i<nY;i++) hdv.Fill(fDependentFull[i].c_str(),i);
   hdv.Write();
 
   // sigmas
-  linReg.sigX.Write("IV_sigma");
-  linReg.sigY.Write("DV_sigma");
-  linReg.sigYprime.Write("DV_sigma_prime");
+  linReg.mSP.Write("IV_sigma");
+  linReg.mSY.Write("DV_sigma");
+  linReg.mSYp.Write("DV_sigma_prime");
 
   // raw covariances
   linReg.mVPP.Write("IV_IV_rawVariance");
   linReg.mVPY.Write("IV_DV_rawVariance");
   linReg.mVYY.Write("DV_DV_rawVariance");
-  linReg.mVYYprime.Write("DV_DV_rawVariance_prime");
+  linReg.mVYYp.Write("DV_DV_rawVariance_prime");
   TVectorD mVY2(TMatrixDDiag(linReg.mVYY));
   mVY2.Write("DV_rawVariance");
   TVectorD mVP2(TMatrixDDiag(linReg.mVPP));
   mVP2.Write("IV_rawVariance");
-  TVectorD mVY2prime(TMatrixDDiag(linReg.mVYYprime));
+  TVectorD mVY2prime(TMatrixDDiag(linReg.mVYYp));
   mVY2prime.Write("DV_rawVariance_prime");
 
   // normalized covariances
-  linReg.sigXX.Write("IV_IV_normVariance");
-  linReg.sigXY.Write("IV_DV_normVariance");
-  linReg.sigYY.Write("DV_DV_normVariance");
-  linReg.sigYYprime.Write("DV_DV_normVariance_prime");
-  TVectorD sigY2(TMatrixDDiag(linReg.sigYY));
+  linReg.mSPP.Write("IV_IV_normVariance");
+  linReg.mSPY.Write("IV_DV_normVariance");
+  linReg.mSYY.Write("DV_DV_normVariance");
+  linReg.mSYYp.Write("DV_DV_normVariance_prime");
+  TVectorD sigY2(TMatrixDDiag(linReg.mSYY));
   sigY2.Write("DV_normVariance");
-  TVectorD sigX2(TMatrixDDiag(linReg.sigXX));
+  TVectorD sigX2(TMatrixDDiag(linReg.mSPP));
   sigX2.Write("IV_normVariance");
-  TVectorD sigY2prime(TMatrixDDiag(linReg.sigYYprime));
+  TVectorD sigY2prime(TMatrixDDiag(linReg.mSYYp));
   sigY2prime.Write("DV_normVariance_prime");
 
   linReg.Axy.Write("A_xy");
   linReg.Ayx.Write("A_yx");
 }
 
-
-void QwCorrelator::exportAlias(
-    TString outPath,
-    TString macroName,
-    std::vector < TString > Pname,
-    std::vector < TString > Yname)
+void QwCorrelator::OpenAlphaFile(const std::string& prefix)
 {
-  FILE *fd=fopen(outPath+macroName+".C","w");
-  if (fd == 0) {
-    QwError << "QwCorrelator could not create alias file " << outPath+macroName+".C" << QwLog::endl;
+  // Create old-style blueR ROOT file
+  std::string name = prefix + fAlphaOutputFileBase + run_label.Data() + fAlphaOutputFileSuff;
+  std::string path = fAlphaOutputPath + "/";
+  std::string file = path + name;
+  fAlphaOutputFile = new TFile(TString(file), "RECREATE", "correlation coefficients");
+  if (! fAlphaOutputFile->IsWritable()) {
+    QwError << "QwCorrelator could not create output file " << file << QwLog::endl;
+    delete fAlphaOutputFile;
+    fAlphaOutputFile = 0;
+  }
+}
+
+void QwCorrelator::OpenAliasFile(const std::string& prefix)
+{
+  // Turn "." into "_" in run_label (no "." allowed in function name, and must
+  // agree with the filename)
+  std::string label(run_label);
+  std::replace(label.begin(), label.end(), '.', '_');
+  // Create old-style regalias script
+  std::string name = prefix + fAliasOutputFileBase + label + fAliasOutputFileSuff;
+  std::string path = fAliasOutputPath + "/";
+  std::string file = path + name + ".C"; // add extension outside of file suffix
+  fAliasOutputFile.open(file, std::ofstream::out);
+  if (fAliasOutputFile.good()) {
+    fAliasOutputFile << Form("void %s(int i = 0) {", name.c_str()) << std::endl;
+  } else {
+    QwWarning << "QwCorrelator: Could not write to alias output file " << QwLog::endl;
+  }
+}
+
+void QwCorrelator::CloseAlphaFile()
+{
+  // Close slopes output file
+  if (fAlphaOutputFile) {
+    fAlphaOutputFile->Write();
+    fAlphaOutputFile->Close();
+  }
+}
+
+void QwCorrelator::CloseAliasFile()
+{
+  // Close alias output file
+  if (fAliasOutputFile.good()) {
+    fAliasOutputFile << "}" << std::endl << std::endl;
+    fAliasOutputFile.close();
+  } else {
+    QwWarning << "QwCorrelator: Unable to close alias output file." << QwLog::endl;
+  }
+}
+
+void QwCorrelator::WriteAliasFile()
+{
+  // Ensure output file is open
+  if (fAliasOutputFile.bad()) {
+    QwWarning << "QwCorrelator: Could not write to alias output file " << QwLog::endl;
     return;
   }
-  fprintf(fd,"void %s() {\n",macroName.Data());
-  fprintf(fd,"  TTree* tree = (TTree*) gDirectory->Get(\"mul\");\n");
-  for (int iy = 0; iy <nY; iy++) {
-    fprintf(fd,"  tree->SetAlias(\"reg_%s\",\n         \"%s",Yname[iy].Data(),Yname[iy].Data());
-    for (int j = 0; j < nP; j++) {
-      double val= -linReg.mA(j,iy);
-      if(val>0)  fprintf(fd,"+");
-      fprintf(fd,"%.4e*%s",val,Pname[j].Data());
-    }
-    fprintf(fd,"\");\n");
 
+  fAliasOutputFile << " if (i == " << fCycleCounter << ") {" << std::endl;
+  fAliasOutputFile << Form("  TTree* tree = (TTree*) gDirectory->Get(\"mul\");") << std::endl;
+  for (int i = 0; i < nY; i++) {
+    fAliasOutputFile << Form("  tree->SetAlias(\"reg_%s\",",fDependentFull[i].c_str()) << std::endl;
+    fAliasOutputFile << Form("         \"%s",fDependentFull[i].c_str());
+    for (int j = 0; j < nP; j++) {
+      fAliasOutputFile << Form("%+.4e*%s", -linReg.Axy(j,i), fIndependentFull[j].c_str());
+    }
+    fAliasOutputFile << "\");" << std::endl;
   }
-  fprintf(fd,"}\n");
-  fclose(fd);
+  fAliasOutputFile << " }" << std::endl;
+
+  // Increment call counter
+  fCycleCounter++;
 }
 

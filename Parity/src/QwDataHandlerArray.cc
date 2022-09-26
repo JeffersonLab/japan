@@ -20,7 +20,7 @@
  * Create a handler array based on the configuration option 'detectors'
  */
 QwDataHandlerArray::QwDataHandlerArray(QwOptions& options, QwHelicityPattern& helicitypattern, const TString &run)
-: fHelicityPattern(0),fSubsystemArray(0),fDataHandlersMapFile("")
+  : fHelicityPattern(0),fSubsystemArray(0),fDataHandlersMapFile(""),fArrayScope(kPatternScope)
 {
   ProcessOptions(options);
   if (fDataHandlersMapFile != ""){
@@ -34,7 +34,7 @@ QwDataHandlerArray::QwDataHandlerArray(QwOptions& options, QwHelicityPattern& he
  * Create a handler array based on the configuration option 'detectors'
  */
 QwDataHandlerArray::QwDataHandlerArray(QwOptions& options, QwSubsystemArrayParity& detectors, const TString &run)
-: fHelicityPattern(0),fSubsystemArray(0),fDataHandlersMapFile("")
+  : fHelicityPattern(0),fSubsystemArray(0),fDataHandlersMapFile(""),fArrayScope(kEventScope)
 {
   ProcessOptions(options);
   if (fDataHandlersMapFile != ""){
@@ -61,7 +61,7 @@ QwDataHandlerArray::QwDataHandlerArray(const QwDataHandlerArray& source)
     /*
     // Instruct the handler to publish variables
     if (this->back()->PublishInternalValues() == kFALSE) {
-      QwError << "Not all variables for " << this->back()->GetDataHandlerName()
+      QwError << "Not all variables for " << this->back()->GetName()
              << " could be published!" << QwLog::endl;
     */
   }
@@ -109,10 +109,18 @@ void QwDataHandlerArray::LoadDataHandlersFromParameterFile(
     // Determine type and name of handler
     std::string handler_type = section_name;
     std::string handler_name;
+    std::string handler_scope;
     if (! section->FileHasVariablePair("=","name",handler_name)) {
       QwError << "No name defined in section for handler " << handler_type << "." << QwLog::endl;
       delete section; section = 0;
       continue;
+    }
+    if (section->FileHasVariablePair("=","scope",handler_scope)) {
+      if (ScopeMismatch(handler_scope)) continue;
+    } else {
+      //  Assume the scope of a handler without a scope specifier is
+      //  "pattern".
+      if (fArrayScope != kPatternScope) continue;
     }
 
     // If handler type is explicitly disabled
@@ -166,18 +174,20 @@ void QwDataHandlerArray::LoadDataHandlersFromParameterFile(
     }
 
     // Pass detector maps
+    handler->SetParent(this);
     handler->SetRunLabel(run);
     handler->SetPointer(&detectors);
     handler->ParseConfigFile(*section);
     handler->LoadChannelMap();
     handler->ConnectChannels(detectors);
-    
+    handler->InitRunningSum();
+
     // Add to array
     this->push_back(handler);
     /*    
     // Instruct the handler to publish variables
     if (handler->PublishInternalValues() == kFALSE) {
-      QwError << "Not all variables for " << handler->GetDataHandlerName()
+      QwError << "Not all variables for " << handler->GetName()
               << " could be published!" << QwLog::endl;
     }
     */
@@ -200,14 +210,14 @@ void QwDataHandlerArray::push_back(VQwDataHandler* handler)
     //  This is an empty handler...
     //  Do nothing for now.
 
-  } else if (!this->empty() && GetDataHandlerByName(handler->GetDataHandlerName())){
+  } else if (!this->empty() && GetDataHandlerByName(handler->GetName())){
     //  There is already a handler with this name!
-    QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetDataHandlerName()
+    QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetName()
             << " already exists" << QwLog::endl;
 
   } else if (!CanContain(handler)) {
     //  There is no support for this type of handler
-    QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetDataHandlerName()
+    QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetName()
             << " is not supported by this handler array" << QwLog::endl;
 
   } else {
@@ -280,8 +290,8 @@ VQwDataHandler* QwDataHandlerArray::GetDataHandlerByName(const TString& name)
     // Loop over the handlers
     for (const_iterator handler = begin(); handler != end(); ++handler) {
       // Check the name of this handler
-      // std::cout<<"QwDataHandlerArray::GetDataHandlerByName available name=="<<(*handler)->GetDataHandlerName()<<"== to be compared to =="<<name<<"==\n";
-      if ((*handler)->GetDataHandlerName() == name) {
+      // std::cout<<"QwDataHandlerArray::GetDataHandlerByName available name=="<<(*handler)->GetName()<<"== to be compared to =="<<name<<"==\n";
+      if ((*handler)->GetName() == name) {
         tmp = (*handler).get();
         //std::cout<<"QwDataHandlerArray::GetDataHandlerByName found a matching name \n";
       } else {
@@ -324,9 +334,8 @@ std::vector<VQwDataHandler*> QwDataHandlerArray::GetDataHandlerByType(const std:
 void  QwDataHandlerArray::ClearEventData()
 {
   if (!empty()) {
-    /*    std::for_each(begin(), end(),
+    std::for_each(begin(), end(),
 		  boost::mem_fn(&VQwDataHandler::ClearEventData));
-    */
   }
 }
 
@@ -382,6 +391,23 @@ void  QwDataHandlerArray::FillTreeVector(std::vector <Double_t> &values) const
       handler_parity->FillTreeVector(values);
     }
   }
+}
+
+
+//*****************************************************************
+void  QwDataHandlerArray::ConstructHistograms(TDirectory *folder, TString &prefix)
+{
+  if (!empty()) {
+    for (iterator subsys = begin(); subsys != end(); ++subsys){
+      (*subsys)->ConstructHistograms(folder,prefix);
+    }
+  }
+}
+
+void  QwDataHandlerArray::FillHistograms()
+{
+  if (!empty())
+    std::for_each(begin(), end(), boost::mem_fn(&VQwDataHandler::FillHistograms));
 }
 
 
@@ -589,14 +615,14 @@ void QwDataHandlerArray::push_back(boost::shared_ptr<VQwDataHandler> handler)
    //  This is an empty handler...
    //  Do nothing for now.
 
- } else if (!this->empty() && GetDataHandlerByName(handler->GetDataHandlerName())){
+ } else if (!this->empty() && GetDataHandlerByName(handler->GetName())){
    //  There is already a handler with this name!
-   QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetDataHandlerName()
+   QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetName()
            << " already exists" << QwLog::endl;
 
  } else if (!CanContain(handler.get())) {
    //  There is no support for this type of handler
-   QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetDataHandlerName()
+   QwError << "QwDataHandlerArray::push_back(): handler " << handler->GetName()
            << " is not supported by this handler array" << QwLog::endl;
 
  } else {
@@ -610,7 +636,7 @@ void QwDataHandlerArray::push_back(boost::shared_ptr<VQwDataHandler> handler)
 
    // Instruct the handler to publish variables
    if (handler_tmp->PublishInternalValues() == kFALSE) {
-     QwError << "Not all variables for " << handler_tmp->GetDataHandlerName()
+     QwError << "Not all variables for " << handler_tmp->GetName()
              << " could be published!" << QwLog::endl;
    }
 */
@@ -663,6 +689,7 @@ void QwDataHandlerArray::ProcessDataHandlerEntry()
   if (!empty()) {
     for(iterator handler = begin(); handler != end(); ++handler){
       (*handler)->ProcessData();
+      (*handler)->AccumulateRunningSum();
     }
   }
 }
@@ -671,9 +698,8 @@ void QwDataHandlerArray::FinishDataHandler()
 {
   if (!empty()) {
     for(iterator handler = begin(); handler != end(); ++handler){
-      (*handler)->CalcCorrelations();
+      (*handler)->FinishDataHandler();
     }
-    this->CalculateRunningAverage();  
   }
 }
   

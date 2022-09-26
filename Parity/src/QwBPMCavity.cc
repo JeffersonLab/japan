@@ -625,8 +625,8 @@ void  QwBPMCavity::ConstructHistograms(TDirectory *folder, TString &prefix)
     fElement[kQElem].ConstructHistograms(folder, prefix);
     TString thisprefix=prefix;
 
-    if(prefix=="asym_")
-      thisprefix="diff_";
+    if(prefix.Contains("asym_"))
+      thisprefix.ReplaceAll("asym_","diff_");
     SetRootSaveStatus(prefix);
     size_t i = 0;
     for(i=kXAxis;i<kNumAxes;i++) {
@@ -663,8 +663,8 @@ void  QwBPMCavity::ConstructBranchAndVector(TTree *tree, TString &prefix, std::v
   }
   else {
     TString thisprefix=prefix;
-    if(prefix=="asym_")
-      thisprefix="diff_";
+    if(prefix.Contains("asym_"))
+      thisprefix.ReplaceAll("asym_","diff_");
     SetRootSaveStatus(prefix);
 
     fElement[kQElem].ConstructBranchAndVector(tree,prefix,values);
@@ -686,8 +686,8 @@ void  QwBPMCavity::ConstructBranchAndVector(TTree *tree, TString &prefix, std::v
    }
    else {
      TString thisprefix=prefix;
-     if(prefix=="asym_")
-       thisprefix="diff_";
+     if(prefix.Contains("asym_"))
+       thisprefix.ReplaceAll("asym_","diff_");
      SetRootSaveStatus(prefix);
 
      fElement[kQElem].ConstructBranch(tree,prefix);
@@ -723,8 +723,8 @@ void  QwBPMCavity::ConstructBranchAndVector(TTree *tree, TString &prefix, std::v
      {
        if (modulelist.HasValue(devicename)){
        TString thisprefix=prefix;
-       if(prefix=="asym_")
-         thisprefix="diff_";
+       if(prefix.Contains("asym_"))
+         thisprefix.ReplaceAll("asym_","diff_");
        SetRootSaveStatus(prefix);
 
        fElement[kQElem].ConstructBranch(tree,prefix);

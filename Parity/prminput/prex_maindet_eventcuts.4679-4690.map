@@ -1,0 +1,14 @@
+! Want to cut out glitch events on ATs as well to preserve regression down the line (postpan - remove the ATs once postpan is treating device error code correctly)
+! left arm running of slug 74
+
+EVENTCUTS = 3
+IntegrationPMT, usl,		-1000,	100000,	g,	0
+IntegrationPMT, dsl,		-1000,	100000,	g,	0
+IntegrationPMT, usr,		-1000,	100000,	l,	0
+IntegrationPMT, dsr,		-1000,	100000,	l,	0
+
+IntegrationPMT, atl1,		-1000,	120000,	g,	0
+IntegrationPMT, atl2,		-1000,	120000,	g,	0
+IntegrationPMT, atr1,		-1000,	120000,	l,	0
+IntegrationPMT, atr2,		-1000,	120000,	l,	0
+

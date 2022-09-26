@@ -1,16 +1,10 @@
 #ifndef __CAMREG__
 #define __CAMREG__
 #include "../camguin.hh"
-#include <vector>
-#include <TString.h>
-#include <algorithm>
-#include <iostream>
-#include <TMatrix.h>
-#include <string>
-#include <TChain.h>
 using namespace std;
-void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInput.txt", char delim = ' '){
+void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t minirunNumber = -2, Int_t splitNumber = 0, Int_t nRuns = -1, TString regInput = "regressionInput.txt", char delim = ' ', TString filename = "NULL"){
   Double_t speed = 0.66;
+  TString fit = "parity";
   Double_t nonLinearFit = 0.0; // 1.0 = nonLinear fit with fit parameter uncertaintites included in weight
   Int_t passLimitValue = 1;
   Double_t fitCriteria = 0.01;
@@ -18,19 +12,30 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
   Double_t parameterLimitRMS = 0.000001;
   Double_t parameterLimitValue = 2.0;
   Double_t parRms2 = 10.0;
+  Int_t parameterLimits = 0;
 
   runNumber = getRunNumber_h(runNumber);
   splitNumber = getSplitNumber_h(splitNumber);
+  minirunNumber = getMinirunNumber_h(minirunNumber);
   nRuns     = getNruns_h(nRuns);
   vector<vector<string>> textFile = textFileParse_h(regInput,delim);
-  TTree * oldTree = getTree_h(tree, runNumber, splitNumber, nRuns, "NULL");
+  TTree * oldTree;
+  TChain *chain = new TChain(tree);
+  TFile * candidateFile = new TFile(filename.Data(),"READ");
+  if (filename != "NULL" && candidateFile->GetListOfKeys()->Contains(tree)){
+    chain->Add(filename);
+    oldTree = chain;
+  }
+  else {
+    oldTree = getTree_h(tree, runNumber, minirunNumber, splitNumber, nRuns, "NULL");
+  } 
   if (oldTree==0){
     Printf("Root file does not exist");
     return;
   }
   TTreeReader oldTreeReader(oldTree);
   TTree * newTree = new TTree("reg"+tree,"Regressed "+tree+" tree");
-  TFile * outFile = new TFile(Form("outputReg_%s_%d.%03d.root",(const char*)tree,runNumber,splitNumber),"RECREATE");
+  TFile * outFile = new TFile(Form("outputReg_%s_%d.%d.%03d.root",(const char*)tree,runNumber,minirunNumber,splitNumber),"RECREATE");
   TDirectory *folder = outFile->mkdir("histos_"+tree);
   outFile->cd();
   gSystem->Exec("mkdir plots");
@@ -39,16 +44,22 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
   Int_t    n_data   = 0;
   vector<Double_t> newRegressedValues;
   vector<Double_t> parameters;
+  vector<Double_t> parametersLowerLimit;
+  vector<Double_t> parametersUpperLimit;
   vector<Double_t> weighting;
   vector<Double_t> oldManipulatedValues;
   vector<Double_t> oldManipulatedErrors;
+  vector<Double_t> oldManipulatedUncertainties;
+  vector<Double_t> oldRespondingUncertainties;
   //vector<Double_t> oldRespondingValues;
   //vector<Double_t> oldRespondingErrors;
   vector<TString> newRegressedBranchList;
   vector<TString> oldManipulatedDataBranchList;
   vector<TString> oldManipulatedErrorBranchList;
+  vector<TString> oldManipulatedUncertaintiesBranchList;
   vector<TString> oldRespondingDataBranchList;
   vector<TString> oldRespondingErrorBranchList;
+  vector<TString> oldRespondingUncertaintiesBranchList;
   TString errorBranchName  = "ErrorFlag"; // == 0 means no error, means its ok
   Double_t oldTreeErrorFlag = 0.0;
   TString okFlagReg  = "ok_cut"; // == 1 means true, means its ok
@@ -58,6 +69,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
   Int_t fitN = 0;
   Bool_t manip = false;
   Int_t nmanip = 0;
+  Int_t nmanipInputs = 0;
   if (debug > -1) Printf("Data structures initialized");
   for (UInt_t listEntryN = 0; listEntryN < textFile.size(); listEntryN++){
     if (textFile[listEntryN][0] == "Global"){
@@ -69,6 +81,14 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
     }
     if (textFile[listEntryN][0] == "Speed"){
       speed = stof(textFile[listEntryN][1]);
+      continue;
+    }
+    if (textFile[listEntryN][0] == "Parameter-Limits"){
+      parameterLimits = stod(textFile[listEntryN][1]);
+      continue;
+    }
+    if (textFile[listEntryN][0] == "Fit-Type"){
+      fit = textFile[listEntryN][1];
       continue;
     }
     if (textFile[listEntryN][0] == "Non-Linear-Fit"){
@@ -102,58 +122,134 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
       continue;
     }
     if (resp){
-      if (debug > 2) Printf("Branch %s",textFile[listEntryN][0].c_str());
-      oldRespondingDataBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][1]);
+      if (debug > 2) Printf("Responding Branch %s",textFile[listEntryN][0].c_str());
+      if (textFile[listEntryN][1]!="NULL"){
+        oldRespondingDataBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][1]);
+      }
+      else {
+        oldRespondingDataBranchList.push_back(textFile[listEntryN][0]);
+      }
       //oldRespondingValues.push_back(0.0); 
-      oldRespondingErrorBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][2]);
+      if (textFile[listEntryN][2]!="NULL"){
+        oldRespondingErrorBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][2]);
+      }
+      else {
+        oldRespondingErrorBranchList.push_back(errorBranchName);
+      }
       //oldRespondingErrors.push_back(0.0); 
       newRegressedBranchList.push_back("reg_"+textFile[listEntryN][0]);
       newRegressedValues.push_back(0.0); 
+      listEntryN++; // Read next line for uncertainty data
+      if (textFile[listEntryN][0]=="File" && textFile[listEntryN][2]!="NULL"){
+        oldRespondingUncertaintiesBranchList.push_back(textFile[listEntryN][1]+textFile[listEntryN][2]);
+        oldRespondingUncertainties.push_back(0.0);
+      }
+      else if (textFile[listEntryN][0]=="File" && textFile[listEntryN][2]=="NULL") {
+        oldRespondingUncertaintiesBranchList.push_back(textFile[listEntryN][1]);
+        oldRespondingUncertainties.push_back(0.0);
+      }
+      else if (textFile[listEntryN][0]=="User"){
+        oldRespondingUncertaintiesBranchList.push_back(textFile[listEntryN][0]);
+        oldRespondingUncertainties.push_back(stof(textFile[listEntryN][1].c_str()));
+      }
       nresp++;
     }
     if (manip){
-      if (debug > 2) Printf("Branch %s",textFile[listEntryN][0].c_str());
-      oldManipulatedDataBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][1]);
-      oldManipulatedValues.push_back(0.0); 
-      oldManipulatedErrorBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][2]);
-      oldManipulatedErrors.push_back(0.0); 
-      parameters.push_back(stof(textFile[listEntryN][3])); // Initial parameter correlation slope guess for iterating fit
-      weighting.push_back(stof(textFile[listEntryN][4])); // Initial weighting guess for errors
+      if (debug > 2) Printf("Manipulated Branch %s",textFile[listEntryN][0].c_str());
+      if (textFile[listEntryN][1]!="NULL"){
+        oldManipulatedDataBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][1]);
+      }
+      else {
+        oldManipulatedDataBranchList.push_back(textFile[listEntryN][0]);
+      }
+      if (textFile[listEntryN][0] == "constant"){
+        oldManipulatedValues.push_back(1.0); // The physics asymmetry is asymmetry*1 (the number 1 is the type of value it is, an exact scalar)
+        oldManipulatedErrors.push_back(0.0); // The physics asymmetry applies for all Global Cuts passing entries
+        parameters.push_back(stof(textFile[listEntryN][3])); // Push back the physics asymmetry value placeholder at nmanip+1 position... assume it is trivially 0 for first pass
+        weighting.push_back(stof(textFile[listEntryN][4])); // Push back the physics asymmetry relative weighting factor for uncertainty calculations
+        if (parameterLimits) {
+          parametersLowerLimit.push_back(stof(textFile[listEntryN][5])); 
+          parametersUpperLimit.push_back(stof(textFile[listEntryN][6])); 
+        }
+        nmanipInputs=nmanip; // This is our constant term
+      }
+      else {
+        oldManipulatedValues.push_back(0.0); 
+        if (textFile[listEntryN][2]!="NULL"){
+          oldManipulatedErrorBranchList.push_back(textFile[listEntryN][0]+textFile[listEntryN][2]);
+        }
+        else {
+          oldManipulatedErrorBranchList.push_back(errorBranchName);
+        }
+        oldManipulatedErrors.push_back(0.0); 
+        parameters.push_back(stof(textFile[listEntryN][3])); // Initial parameter correlation slope guess for iterating fit
+        weighting.push_back(stof(textFile[listEntryN][4])); // Initial weighting guess for errors
+        if (parameterLimits) {
+          parametersLowerLimit.push_back(stof(textFile[listEntryN][5])); 
+          parametersUpperLimit.push_back(stof(textFile[listEntryN][6])); 
+        }
+      }
+      listEntryN++; // Read next line for uncertainty data
+      if (textFile[listEntryN][0]=="File" && textFile[listEntryN][2]!="NULL") {
+        oldManipulatedUncertaintiesBranchList.push_back(textFile[listEntryN][1]+textFile[listEntryN][2]);
+        oldManipulatedUncertainties.push_back(0.0);
+      }
+      else if (textFile[listEntryN][0]=="File" && textFile[listEntryN][2]=="NULL") {
+        oldManipulatedUncertaintiesBranchList.push_back(textFile[listEntryN][1]);
+        oldManipulatedUncertainties.push_back(0.0);
+      }
+      else if (textFile[listEntryN][0]=="User"){
+        oldManipulatedUncertaintiesBranchList.push_back(textFile[listEntryN][0]);
+        oldManipulatedUncertainties.push_back(stof(textFile[listEntryN][1].c_str()));
+      }
       nmanip++;
     }
     if (debug > 1) Printf("Branch %d initialized",listEntryN);
   }
-  oldManipulatedValues.push_back(1.0); // The physics asymmetry is asymmetry*1 (the number 1 is the type of value it is, an exact scalar)
-  oldManipulatedErrors.push_back(0.0); // The physics asymmetry applies for all Global Cuts passing entries
-  parameters.push_back(0.0); // Push back the physics asymmetry value placeholder at nmanip+1 position... assume it is trivially 0 for first pass
-  weighting.push_back(1.0); // Push back the physics asymmetry relative weighting factor for uncertainty calculations
-  nmanip++; // The physics asymmetry value adds ++ to the parameters of the fit
-  Int_t nmanipInputs = nmanip-1;
 
   vector<TTreeReaderValue<Double_t>> oldRespondingValuesReader;
   vector<TTreeReaderValue<Double_t>> oldRespondingErrorsReader;
+  vector<TTreeReaderValue<Double_t>> oldRespondingUncertaintiesReader;
   vector<TTreeReaderValue<Double_t>> oldManipulatedValuesReader;
   vector<TTreeReaderValue<Double_t>> oldManipulatedErrorsReader;
+  vector<TTreeReaderValue<Double_t>> oldManipulatedUncertaintiesReader;
 
   for(Int_t iBranch = 0; iBranch < oldManipulatedDataBranchList.size(); iBranch++) {
-    TTreeReaderValue<Double_t> temp1(oldTreeReader,oldManipulatedDataBranchList[iBranch]);
-    TTreeReaderValue<Double_t> temp2(oldTreeReader,oldManipulatedErrorBranchList[iBranch]);
-    oldManipulatedValuesReader.push_back(temp1);
-    oldManipulatedErrorsReader.push_back(temp2);
-    //oldTree->SetBranchAddress(oldManipulatedDataBranchList[iBranch],&oldManipulatedValues[iBranch]);
-    //oldTree->SetBranchAddress(oldManipulatedErrorBranchList[iBranch],&oldManipulatedErrors[iBranch]);
+    if (oldManipulatedDataBranchList[iBranch]!="constant"){
+      TTreeReaderValue<Double_t> temp1(oldTreeReader,oldManipulatedDataBranchList[iBranch]);
+      TTreeReaderValue<Double_t> temp2(oldTreeReader,oldManipulatedErrorBranchList[iBranch]);
+      if (oldManipulatedUncertaintiesBranchList[iBranch]=="User"){
+        TTreeReaderValue<Double_t> temp3(oldTreeReader,oldManipulatedDataBranchList[iBranch]); // trivially just put something here to avoid errors, doesn't get used in this if case later...
+        oldManipulatedUncertaintiesReader.push_back(temp3);
+      }
+      else {
+        TTreeReaderValue<Double_t> temp3(oldTreeReader,oldManipulatedUncertaintiesBranchList[iBranch]);
+        oldManipulatedUncertaintiesReader.push_back(temp3);
+      }
+      oldManipulatedValuesReader.push_back(temp1);
+      oldManipulatedErrorsReader.push_back(temp2);
+      //oldTree->SetBranchAddress(oldManipulatedDataBranchList[iBranch],&oldManipulatedValues[iBranch]);
+      //oldTree->SetBranchAddress(oldManipulatedErrorBranchList[iBranch],&oldManipulatedErrors[iBranch]);
+    }
   }
-  oldManipulatedDataBranchList.push_back("PV_Asymmetry");
   for(Int_t iBranch = 0; iBranch < oldRespondingDataBranchList.size(); iBranch++) {
     TTreeReaderValue<Double_t> temp1(oldTreeReader,oldRespondingDataBranchList[iBranch]);
     TTreeReaderValue<Double_t> temp2(oldTreeReader,oldRespondingErrorBranchList[iBranch]);
+    if (oldRespondingUncertaintiesBranchList[iBranch]=="User"){
+      TTreeReaderValue<Double_t> temp3(oldTreeReader,oldRespondingDataBranchList[iBranch]); // trivially just put something here to avoid errors, doesn't get used in this if case later...
+      oldRespondingUncertaintiesReader.push_back(temp3);
+    }
+    else {
+      TTreeReaderValue<Double_t> temp3(oldTreeReader,oldRespondingUncertaintiesBranchList[iBranch]);
+      oldRespondingUncertaintiesReader.push_back(temp3);
+    }
     oldRespondingValuesReader.push_back(temp1);
     oldRespondingErrorsReader.push_back(temp2);
     //oldTree->SetBranchAddress(oldRespondingDataBranchList[iBranch],&oldRespondingValues[iBranch]);
     //oldTree->SetBranchAddress(oldRespondingErrorBranchList[iBranch],&oldRespondingErrors[iBranch]);
     newTree->Branch(          newRegressedBranchList[iBranch],&newRegressedValues[iBranch]);
   }
-  TTreeReaderValue<Double_t> oldTreeErrorFlagValue(oldTreeReader,errorBranchName);
+  TTreeReaderValue<Double_t> oldTreeErrorFlagValue(oldTreeReader,errorBranchName); // Constraint: all input ROOT files must have a parallel branch that denotes whether the event is to be taken seriously or not -> 0 == good event
   //oldTree->SetBranchAddress(errorBranchName,&oldTreeErrorFlag);
   newTree->Branch(okFlagReg,&newRegressedValuesOkCut);
   newTree->SetBranchStatus("*",1);
@@ -170,7 +266,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
   vector<Double_t> chi2;
   Double_t chi2sum;
   Double_t fi = 0.0; // The functional value per data entry
-  Double_t si2 = 1.0-nonLinearFit + nonLinearFit*uncertainty*uncertainty;// The total sigma value per data entry
+  Double_t si2 = 1.0-nonLinearFit + nonLinearFit*0;//FIXME-needsWork uncertainty*uncertainty;// The total sigma value per data entry
   Double_t si = 0.0; // The total sigma value per data entry
   Double_t chi2i = 0.0;
   vector<Double_t> dfi;   // The first derivative of the functional value per data entry
@@ -219,7 +315,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
   Int_t numEntries = oldTree->GetEntries();
   newTree->SetEntries(numEntries); // Set the total number of entries to match
   Int_t numErrorEntries = 0;
-  if (debug > -1) Printf("Looping over %d entries",numEntries);
+  if (debug > -1) Printf("Will loop over %d entries",numEntries);
   if (numEntries>100000) numEntries=100000;
   Int_t eventN = 0;
   Int_t iterateAgain = 1;
@@ -231,42 +327,70 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
     while(oldTreeReader.Next() && oldTreeReader.GetCurrentEntry()<numEntries){
       //for (int i = 0; i < numEntries; i++)  // Loop over the input file's entries
       //oldTree->GetEntry(eventN);
-      if (*oldTreeErrorFlagValue==0){
-        newRegressedValuesOkCut = 1.0;
-      }
-      else {
-        if (debug > 3) Printf("error encountered in event %d",eventN);
+      if (*oldTreeErrorFlagValue!=0.0){
         newRegressedValuesOkCut = 0.0;
       }
+      //else {
+      //  if (debug > 2) Printf("error encountered in event %d, global error = %f",eventN,*oldTreeErrorFlagValue);
+      //  newRegressedValuesOkCut = 0.0;
+      //}
       for (Int_t j = 0 ; j<nmanip ; j++){ // Loop over fit parameters j
         if (debug > 3) Printf("Looping, j = %d",j);
-        if (j<nmanipInputs){
+        if (j<nmanip && j!=nmanipInputs){
           oldManipulatedValues[j]=*oldManipulatedValuesReader[j]*weighting[j];
           oldManipulatedErrors[j]=*oldManipulatedErrorsReader[j];
+          if (oldManipulatedErrors[j] != 0.0) {
+            newRegressedValuesOkCut = 0.0;
+            if (debug > 2) Printf("Error in event manipulated variable %s, event %d",(const char*)oldManipulatedDataBranchList[j],eventN);
+            continue;
+          }
+          if (oldManipulatedUncertaintiesBranchList[j]!="User"){
+            oldManipulatedUncertainties[j]=*oldManipulatedUncertaintiesReader[j];
+          } // use the ROOT file supplied branch with uncertainties in it
         }
         else {
-          oldManipulatedValues[j]=1.0; // User input values here - this is the asymmetry
+          oldManipulatedValues[j]=1.0;// User input values here - this is the asymmetry/constant term
         }
-        if(oldManipulatedErrors[j]==0){
+      }
+      // Define the function here
+      if ( fit=="linear" || fit=="parity" ) {
+        for (Int_t j = 0 ; j<nmanip ; j++){ // Loop over fit parameters j
           fi += parameters[j]*oldManipulatedValues[j]; // Functional form of f
           dfi[j] = 1*oldManipulatedValues[j]; // Functional form of first derivative of f
           for (Int_t k = 0 ; k<nmanip ; k++){ // Loop over fit parameters k
             ddfi[j][k] = 0; // Functional form of second derivative of f
             for (Int_t l = 0 ; l<nmanip ; l++){ // Loop over fit parameters l
               dddfi[j][k][l] = 0; // Functional form of third derivative of f
-            }
-          } // end l
-        } // end k
-        else {
-          if (debug > 3) Printf("Entry %d has an error in input %s",eventN,(const char*)oldManipulatedDataBranchList[j]);
-          newRegressedValuesOkCut = 0.0;
-          continue; // Abort this entry
-        }
-      } // end j (f)
-      if((*oldRespondingErrorsReader[fitN])!=0){ 
+            } // end l
+          } // end k
+        } // end j (f)
+      }
+      if ( fit=="dipole" ) {
+        Double_t Q2 = oldManipulatedValues[0];
+        Double_t in = 1-0.5*parameters[1]*Q2;
+        fi = parameters[0]*pow(in,-2.0);
+        dfi[0] = fi/parameters[0];
+        dfi[1] = parameters[0]*pow(in,-3.0)*Q2;
+        ddfi[0][0] = 0.0;
+        ddfi[0][1] = dfi[1]/parameters[0];
+        ddfi[1][0] = dfi[1]/parameters[0];
+        ddfi[1][1] = 1.5*parameters[0]*pow(in,-4.0)*pow(Q2,2.0);
+        dddfi[0][0][0] = 0.0;
+        dddfi[0][0][1] = 0.0;
+        dddfi[0][1][0] = 0.0;
+        dddfi[0][1][1] = ddfi[1][1]/parameters[0];
+        dddfi[1][1][0] = ddfi[1][1]/parameters[0];
+        dddfi[1][1][1] = 3.0*parameters[0]*pow(in,-5.0)*pow(Q2,3.0);
+        dddfi[1][0][0] = 0.0;
+        dddfi[1][0][1] = ddfi[1][1]/parameters[0];
+      }
+      if((*oldRespondingErrorsReader[fitN])!=0.0){ 
         if (debug > 3) Printf("Entry %d has an error in input %s",eventN,(const char*)oldRespondingDataBranchList[fitN]);
         newRegressedValuesOkCut = 0.0;
       }
+      if (oldRespondingUncertaintiesBranchList[fitN]!="User"){
+        oldRespondingUncertainties[fitN]=*oldRespondingUncertaintiesReader[fitN];
+      } // use the ROOT file supplied branch with uncertainties in it
       f.push_back(fi);
       newRegressedValues[fitN] = *oldRespondingValuesReader[fitN] - fi + (parameters[nmanip]*1); // Regressed asymmetry of main detector [fitN]
       if (newRegressedValuesOkCut==0.0){ 
@@ -277,9 +401,12 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
         //newTree->Fill(); // Empty event here with error flag set to not ok
 
         newRegressedValuesOkCut = 1.0;
+        //eventN++;
         continue; 
       }
+      si2 += oldRespondingUncertainties[fitN]*oldRespondingUncertainties[fitN];
       for (Int_t j = 0 ; j<nmanip ; j++){ // Loop over fit parameters j
+        si2 += oldManipulatedUncertainties[j]*oldManipulatedUncertainties[j];
         si2 += nonLinearFit*covariance[j][j]*dfi[j]*dfi[j];
         for (Int_t k = j+1; k<nmanip ; k++){ // Loop over fit parameters k
           si2  += nonLinearFit*2*dfi[j]*dfi[k]*covariance[j][k];
@@ -351,7 +478,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
       fi=0.0;
       chi2i=0.0;
       si=0.0;
-      si2 = 1.0-nonLinearFit + nonLinearFit*uncertainty*uncertainty;// The total sigma value per data entry
+      si2 = 1.0-nonLinearFit + nonLinearFit*0;//FIXME-needsWork uncertainty*uncertainty;// The total sigma value per data entry
       newRegressedValuesOkCut = 1.0; // Reset true value
 
       //{}
@@ -391,7 +518,8 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
     }
     iterateAgain = 0;
     if (passLimit == 1){ // Last pass, go for it
-      speed=1.0;
+      Printf("Last pass of fit, speed = 1");
+      speed=0.5*1.0;
     }
     if (passLimit>0){
       if (debug > -1) {
@@ -414,6 +542,8 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
       for (Int_t j = 0 ; j<parameters.size(); j++){
         Printf("Relative change in parameter %d = %f",j,(delta_parameters[j]+parameters[j])/parameters[j]);
         if (abs(abs((parameters[j]+delta_parameters[j])/parameters[j])-1)>fitCriteria){
+        //if (!isnormal(parameters[j]) || !isnormal(delta_parameters[j]) || abs(abs((parameters[j]+delta_parameters[j])/parameters[j])-1)>fitCriteria){
+          Printf("\nRe-fitting, needs to be less change in parameters between subsequent fits to be convergent \n");
           iterateAgain = 1;
           numErrorEntries=0;
           oldTreeReader.Restart();
@@ -424,10 +554,27 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
         }
         if (parRms2<parameterLimitRMS && parAvg > parameterLimitValue){
           parameters[j]=(parameters[j]+speed*delta_parameters[j])/(parAvg*parAvg);
-          Printf("\nNormalized \n");
+          Printf("\nData out of control, redoing but normalized \n");
+        /*  iterateAgain = 1;
+          numErrorEntries=0;
+          oldTreeReader.Restart();
+          //newTree->Reset();
+          newTree->GetBranch(newRegressedBranchList[fitN])->Reset(); 
+          newTree->GetBranch(okFlagReg)->Reset(); 
+          newTree->SetEntries(0);*/
         }
         else{
           parameters[j]=parameters[j]+speed*delta_parameters[j];
+          if (parameterLimits){
+            if (parameters[j]>parametersUpperLimit[j]){
+              parameters[j]=parametersUpperLimit[j];
+              Printf("\nUpper limit encountered on parameter %d \n",j);
+            }
+            if (parameters[j]<parametersLowerLimit[j]){
+              parameters[j]=parametersLowerLimit[j];
+              Printf("\nLower limit encountered on parameter %d \n",j);
+            }
+          }
         }
         //if (parameters[j]>0.2) parameters[j]=0.2;
         //if (parameters[j]<-0.2) parameters[j]=-0.2;
@@ -435,6 +582,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
 
       if (parRms2<0.001 && parAvg > 2.0) {
         for (Int_t j = 0 ; j<parameters.size(); j++){
+          Printf("\nParameters exceed runaway false stability limit\n");
           parameters[j]=1.0e-9*parameters[j];
         }
       }
@@ -450,6 +598,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
     else {
       iterateAgain = 0;
     }
+    Printf("Fit pass %d completed",passLimitValue-passLimit);
     passLimit = passLimit - 1;
     if (iterateAgain == 0){
       if (debug > -1) {
@@ -475,7 +624,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
       newTree->Draw(Form("%s",(const char*)newRegressedBranchList[fitN]),(const char*)okFlagReg);
       TH1 *h1 = (TH1*)gROOT->FindObject("htemp");
       h1->Write(Form("reg_%s_histogram",(const char*)newRegressedBranchList[fitN]));
-      c1->SaveAs(Form("plots/reg_%s_%s_%d.%03d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber,splitNumber));
+      c1->SaveAs(Form("plots/reg_%s_%s_%d.%d.%03d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber,minirunNumber,splitNumber));
 
       TCanvas * c1_2 = new TCanvas();
       c1_2->SetLogy();
@@ -489,37 +638,43 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
       TString h2_name = h2_2->GetName();
       newTree->Draw(Form("%s>>%s",(const char*)newRegressedBranchList[fitN],(const char*)h2_name),(const char*)okFlagReg); // Manual
       h2_2->Write(Form("reg_rebin_%s_histogram",(const char*)newRegressedBranchList[fitN]));
-      c1_2->SaveAs(Form("plots/reg_rebin_%s_%s_%d.%03d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber,splitNumber));
+      c1_2->SaveAs(Form("plots/reg_rebin_%s_%s_%d.%d.%03d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber,minirunNumber,splitNumber));
 
       TCanvas * c2 = new TCanvas();
       c2->SetLogy();
 
-      oldTree->Draw(Form("%s",(const char*)oldRespondingDataBranchList[fitN]),"ErrorFlag==0");
+      oldTree->Draw(Form("%s",(const char*)oldRespondingDataBranchList[fitN]),Form("%s==0",(const char*)errorBranchName));
       TH1 *h1old = (TH1*)gROOT->FindObject("htemp");
       h1old->Write(Form("orig_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
-      c2->SaveAs(Form("plots/orig_%s_%s_%d.%03d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber,splitNumber));
+      c2->SaveAs(Form("plots/orig_%s_%s_%d.%d.%03d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber,minirunNumber,splitNumber));
 
       TCanvas * c2_2 = new TCanvas();
       c2_2->SetLogy();
 
-      oldTree->Draw(Form("%s",(const char*)oldRespondingDataBranchList[fitN]),"ErrorFlag==0");
+      oldTree->Draw(Form("%s",(const char*)oldRespondingDataBranchList[fitN]),Form("%s==0",(const char*)errorBranchName));
       TH1 *h1_2old = (TH1*)gROOT->FindObject("htemp");
       h1_2old->SetName("h1old");
       TH1 *h2_3old = (TH1*)rebinTH1_h(h1_2old,"clean",1,2,1000); // example use case of rebinTH1_h method
       TH1 *h2_2old = (TH1*)h2_3old->Clone(); // example use case of rebinTH1_h method
       h2_3old->Delete();
       TString h2old_name = h2_2old->GetName();
-      oldTree->Draw(Form("%s>>%s",(const char*)oldRespondingDataBranchList[fitN],(const char*)h2old_name),"ErrorFlag==0"); // Manual
+      oldTree->Draw(Form("%s>>%s",(const char*)oldRespondingDataBranchList[fitN],(const char*)h2old_name),Form("%s==0",(const char*)errorBranchName)); // Manual
       h2_2old->Write(Form("orig_rebin_%s_histogram",(const char*)oldRespondingDataBranchList[fitN]));
-      c2_2->SaveAs(Form("plots/orig_rebin_%s_%s_%d.%03d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber,splitNumber));
+      c2_2->SaveAs(Form("plots/orig_rebin_%s_%s_%d.%d.%03d.pdf",(const char*)tree,(const char*)oldRespondingDataBranchList[fitN],runNumber,minirunNumber,splitNumber));
 
       outFile->cd();
 
       if (debug > -1) {
         Printf("Covariance matrix: ");
         displayMatrix_h(covariance,-2);
-        for (Int_t j = 0 ; j<parameters.size(); j++){
-          Printf("Parameter %s +- error = %5.3e +- %5.3e",(const char*)oldManipulatedDataBranchList[j],parameters[j],sqrt(covariance[j][j]));
+        if (fit=="linear"||fit=="parity"){
+          for (Int_t j = 0 ; j<parameters.size(); j++){
+            Printf("Parameter %s +- error = %5.3e +- %5.3e",(const char*)oldManipulatedDataBranchList[j],parameters[j],sqrt(covariance[j][j]));
+          }
+        }
+        if (fit=="dipole"){
+          Printf("Par: Normalization = %5.3e +- %5.3e",parameters[0],sqrt(covariance[0][0]));
+          Printf("Par: Radius = %5.3e +- %5.3e",sqrt(-1*6*parameters[1]),1.224*sqrt(covariance[1][1]));
         }
         Printf("Regressed reg %s average %5.3e +- %5.3e, std dev %5.3e +- %5.3e",(const char*)oldRespondingDataBranchList[fitN],h1->GetMean(),h1->GetMeanError(),h1->GetRMS(),h1->GetRMSError());
         Printf("Regressed old %s average %5.3e +- %5.3e, std dev %5.3e +- %5.3e",(const char*)oldRespondingDataBranchList[fitN],h1old->GetMean(),h1old->GetMeanError(),h1old->GetRMS(),h1old->GetRMSError());
@@ -559,7 +714,7 @@ void regress_h(TString tree = "mul", Int_t runNumber = 0, Int_t splitNumber = 0,
   newTree->Write();
   outFile->Close();
   if (aggregatorStatus){
-  //writeFile_h("test_n_data",n_data,runNumber,splitNumber,nRuns);
+  //writeFile_h("test_n_data",n_data,runNumber,minirunNumber, splitNumber,nRuns);
   }
 }
 #endif // __CAMREG__

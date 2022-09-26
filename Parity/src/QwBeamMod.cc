@@ -93,7 +93,7 @@ Int_t QwBeamMod::LoadChannelMap(TString mapfile){
         if (lineok){
          VQwHardwareChannel* localchan1 = new QwVQWK_Channel();
 	
-	 localchan1->InitializeChannel(GetSubsystemName(),"QwBeamMod",localModChannelID.fmodulename,"raw");
+	 localchan1->InitializeChannel(GetName(),"QwBeamMod",localModChannelID.fmodulename,"raw");
           fModChannel.push_back(localchan1);
 	  fModChannel[fModChannel.size()-1]->LoadChannelParameters(mapstr);
           localModChannelID.fIndex=fModChannel.size()-1;
@@ -123,7 +123,7 @@ Int_t QwBeamMod::LoadChannelMap(TString mapfile){
         if (lineok){
 	  VQwHardwareChannel* localchan2 = new QwSIS3801D24_Channel();
 	  
-          localchan2->InitializeChannel(GetSubsystemName(),"QwBeamMod",localModChannelID.fmodulename,"raw");
+          localchan2->InitializeChannel(GetName(),"QwBeamMod",localModChannelID.fmodulename,"raw");
           fModChannel.push_back(localchan2);
 	  fModChannel[fModChannel.size()-1]->LoadChannelParameters(mapstr);
           localModChannelID.fIndex=fModChannel.size()-1;
@@ -153,7 +153,7 @@ Int_t QwBeamMod::LoadChannelMap(TString mapfile){
         if (lineok){
 	  VQwHardwareChannel* localchan3 = new QwSIS3801D32_Channel();
        
-          localchan3->InitializeChannel(GetSubsystemName(),"QwBeamMod",localModChannelID.fmodulename,"raw");
+          localchan3->InitializeChannel(GetName(),"QwBeamMod",localModChannelID.fmodulename,"raw");
           fModChannel.push_back(localchan3);
 	  fModChannel[fModChannel.size()-1]->LoadChannelParameters(mapstr);
           localModChannelID.fIndex=fModChannel.size()-1;
@@ -308,7 +308,7 @@ Int_t QwBeamMod::LoadEventCuts(TString  filename)
       //std::cout << "device_name= "<< device_name << std::endl;
 
       if (device_type == "VQWK"||device_type=="SCALER" ||device_type=="SIS3801D24" ||device_type=="SIS3801D32"){
-
+	device_name.ToLower();
 	Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for BCM value
 	Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for BCM value
 	varvalue = mapstr.GetTypedNextToken<TString>();//global/loacal
