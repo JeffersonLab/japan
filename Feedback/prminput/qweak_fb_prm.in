@@ -17,7 +17,7 @@ cia_patterns = 1800
 #for Hall A IA = 7 seconds
 #aia_patterns = 210
 #1min
-aia_patterns = 1800
+aia_patterns = 180
 
 #for Hall B IA =1min
 bia_patterns = 1800
@@ -26,7 +26,7 @@ bia_patterns = 1800
 # 7 seconds
 #HAF_patterns = 200
 #1min
-HAF_patterns = 1800
+HAF_patterns = 180
 
 
 # Interval time period can vary - 5 minutes -> 30*60*5 = 9000

@@ -1,0 +1,26 @@
+ROC=23
+bank=0x2
+
+scaler_buffer_offset=1
+header=0
+
+! module.type  module.num  chan.num, det.type, det.name 
+  SIS3801D32, 0,   13,  bcm, ch_4mhz_1
+  SIS3801D32, 0,   15,  bcm, ch_4mhz_2
+  !!!!
+  SIS3801D32, 0,   16,  bcm, sca_d3
+  SIS3801D32, 0,   17,  bcm, sca_d3_2
+  SIS3801D32, 0,   18,  bcm, sca_u1
+  SIS3801D32, 0,   19,  bcm, sca_d1
+  SIS3801D32, 0,   20,  bcm, sca_d1_2
+  !!!
+  SIS3801D32, 0,   22,  bcm, sca_d10
+  SIS3801D32, 0,   23,  bcm, sca_d10_2
+  SIS3801D32, 0,   24,  bcm, sca_unser
+  !!!
+  SIS3801D32, 0,   26,  bcm, sca_unew
+  !!!
+  SIS3801D32, 0,   28,  bcm, sca_unew_2
+  !!!
+  SIS3801D32, 0,   31,  bcm, sca_dnew
+

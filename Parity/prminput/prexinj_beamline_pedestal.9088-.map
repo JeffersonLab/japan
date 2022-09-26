@@ -1,0 +1,106 @@
+
+!Used calibration 9088 to FC1 at 20uA 
+bpm2i00XP, 2403.02, 1.0 
+bpm2i00XM, 2263.16, 1.0 
+bpm2i00YP, 310.39, 1.0 
+bpm2i00YM, 2214.27, 1.0 
+bpm2i00aXP, 1604.62, 1.0 
+bpm2i00aXM, 1112.25, 1.0 
+bpm2i00aYP, 2220.23, 1.0 
+bpm2i00aYM, 2468.31, 1.0 
+bpm2i01aXP, 2232.82, 1.0 
+bpm2i01aXM, 744.04, 1.0 
+bpm2i01aYP, 3271.82, 1.0 
+bpm2i01aYM, 2391.93, 1.0 
+bpm1i02XP, 1570.87, 1.0 
+bpm1i02XM, 1418.95, 1.0 
+bpm1i02YP, 1960.64, 1.0 
+bpm1i02YM, 558.93, 1.0 
+bpm1i04XP, 2021.45, 1.0 
+bpm1i04XM, 2106.29, 1.0 
+bpm1i04YP, 1483.46, 1.0 
+bpm1i04YM, 2367.26, 1.0 
+bpm1i05XP, 599.07, 1.0 
+bpm1i05XM, -378.23, 1.0 
+bpm1i05YP, 1549.41, 1.0 
+bpm1i05YM, 1142.07, 1.0 
+bpm1i07XP, -723.25, 1.0 
+bpm1i07XM, 1438.13, 1.0 
+bpm1i07YP, 2294.59, 1.0 
+bpm1i07YM, 1256.97, 1.0 
+bpm0i01XP, 1462.41, 1.0 
+bpm0i01XM, 1384.64, 1.0 
+bpm0i01YP, 1291.45, 1.0 
+bpm0i01YM, 316.28, 1.0 
+bpm0i05XP, 1509.57, 1.0 
+bpm0i05XM, 2353.87, 1.0 
+bpm0i05YP, 1236.92, 1.0 
+bpm0i05YM, 2259.17, 1.0 
+bpm0l01XP, 236.44, 1.0 
+bpm0l01XM, 1313.26, 1.0 
+bpm0l01YP, -26.24, 1.0 
+bpm0l01YM, 458.97, 1.0 
+bpm0l02XP, 1852.25, 1.0 
+bpm0l02XM, 1626.77, 1.0 
+bpm0l02YP, 1045.10, 1.0 
+bpm0l02YM, 1381.44, 1.0 
+bpm0l03XP, 14762.60, 1.0 
+bpm0l03XM, 74069.11, 1.0 
+bpm0l03YP, 2971.89, 1.0 
+bpm0l03YM, 52461.92, 1.0 
+bpm0l04XP, 6478.07, 1.0 
+bpm0l04XM, 6314.63, 1.0 
+bpm0l04YP, 11564.19, 1.0 
+bpm0l04YM, 9395.53, 1.0 
+bpm0l05XP, 20384.15, 1.0 
+bpm0l05XM, 23860.81, 1.0 
+bpm0l05YP, 44139.29, 1.0 
+bpm0l05YM, 7733.79, 1.0 
+bpm0l06XP, 30247.29, 1.0 
+bpm0l06XM, 25400.28, 1.0 
+bpm0l06YP, 17234.00, 1.0 
+bpm0l06YM, 19249.53, 1.0 
+bpm0l07XP, 18962.96, 1.0 
+bpm0l07XM, 11406.37, 1.0 
+bpm0l07YP, 6588.15, 1.0 
+bpm0l07YM, 8301.10, 1.0 
+bpm0l08XP, 4817.11, 1.0 
+bpm0l08XM, 4582.21, 1.0 
+bpm0l08YP, 4876.23, 1.0 
+bpm0l08YM, 4098.42, 1.0 
+bpm0l09XP, 4334.85, 1.0 
+bpm0l09XM, 4885.26, 1.0 
+bpm0l09YP, 4907.13, 1.0 
+bpm0l09YM, 6933.99, 1.0 
+bpm0l10XP, 4251.65, 1.0 
+bpm0l10XM, 4417.65, 1.0 
+bpm0l10YP, 5193.76, 1.0 
+bpm0l10YM, 5229.86, 1.0 
+bpm0i07XP, 1973.19, 1.0 
+bpm0i07XM, 1999.51, 1.0 
+bpm0i07YP, 1793.62, 1.0 
+bpm0i07YM, 2233.58, 1.0 
+bpm0r05XP, 1095.05, 1.0 
+bpm0r05XM, 1438.54, 1.0 
+bpm0r05YP, 667.36, 1.0 
+bpm0r05YM, 744.33, 1.0 
+bpm0r03XP, 3583.22, 1.0 
+bpm0r03XM, 3748.62, 1.0 
+bpm0r03YP, 4367.64, 1.0 
+bpm0r03YM, 4352.52, 1.0 
+bpm0i01bXP, 621.98, 1.0 
+bpm0i01bXM, 1521.27, 1.0 
+bpm0i01bYP, 3109.49, 1.0 
+bpm0i01bYM, 1722.21, 1.0 
+
+
+
+ !from run 9068 fit by hand 5uA to FC2
+ ! bcm0l02, -1544.7,0.00195
+  bcm0l02, -65,0.00204
+
+
+!Use calibration into volts for batteries and phase monitor.
+ batery6                         -295.052     76.2939e-6
+ batery7                         -445.764     76.2939e-6
+ phasemonitor                    -162.172     76.2939e-6
