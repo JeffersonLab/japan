@@ -14,3 +14,4 @@
 [QwScaler]
   name  = SyncScalers
   map  = prexCH_scaler.map
+  param    = prexCH_scaler_pedestal.map

@@ -1,6 +1,6 @@
 !Unser calibration based on Run 9161
-  UNSER,     70995.500, 0.0018872019
-  SCA_UNSER, 18161.4    0.0074139976 
+UNSER       71070.714    0.0019160502
+!!!! SCA_UNSER   18183.87     0.00753151
 
 !From run 5382 https://logbooks.jlab.org/entry/3755873
  hallc_bcm_4c, -155, 0.001507
