@@ -56,15 +56,25 @@ sample_size=15000
   MollerADC, 4, 6, bpmstripline, QWK_1H06YP
   MollerADC, 4, 7, bpmstripline, QWK_1H06YM
 
+!ADCxx 
+  MollerADC, 5, 0, bpmstripline, QWK_1H11XP
+  MollerADC, 5, 1, bpmstripline, QWK_1H11XM
+  MollerADC, 5, 2, bpmstripline, QWK_1H11YP
+  MollerADC, 5, 3, bpmstripline, QWK_1H11YM
+  MollerADC, 5, 4, bpmstripline, QWK_1H14XP
+  MollerADC, 5, 5, bpmstripline, QWK_1H14XM
+  MollerADC, 5, 6, bpmstripline, QWK_1H14YP
+  MollerADC, 5, 7, bpmstripline, QWK_1H14YM
+
 !MollerADC
-  MollerADC, 5, 0,  bpmstripline,  QWK_0R06AXP
-  MollerADC, 5, 1,  bpmstripline,  QWK_0R06AXM
-  MollerADC, 5, 2,  bpmstripline,  QWK_0R06AYP
-  MollerADC, 5, 3,  bpmstripline,  QWK_0R06AYM
-  MollerADC, 5, 4,  bpmstripline,  QWK_0L06AXP
-  MollerADC, 5, 5,  bpmstripline,  QWK_0L06AXM
-  MollerADC, 5, 6,  bpmstripline,  QWK_0L06AYP
-  MollerADC, 5, 7,  bpmstripline,  QWK_0L06AYM
+  MollerADC, 6, 0,  bpmstripline,  QWK_0R06AXP
+  MollerADC, 6, 1,  bpmstripline,  QWK_0R06AXM
+  MollerADC, 6, 2,  bpmstripline,  QWK_0R06AYP
+  MollerADC, 6, 3,  bpmstripline,  QWK_0R06AYM
+  MollerADC, 6, 4,  bpmstripline,  QWK_0L06AXP
+  MollerADC, 6, 5,  bpmstripline,  QWK_0L06AXM
+  MollerADC, 6, 6,  bpmstripline,  QWK_0L06AYP
+  MollerADC, 6, 7,  bpmstripline,  QWK_0L06AYM
 
 
 
@@ -79,6 +89,8 @@ name=bpm_target
 qwk_1h04, bpmstripline, 1.0, 1.0, 1.0
 qwk_1h05, bpmstripline, 1.0, 1.0, 1.0
 qwk_1h06, bpmstripline, 1.0, 1.0, 1.0
+qwk_1h11, bpmstripline, 1.0, 1.0, 1.0
+qwk_1H14, bpmstripline, 1.0, 1.0, 1.0
 end=combinedbpm
 
 begin=combinedbcm
