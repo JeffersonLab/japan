@@ -15,6 +15,7 @@
 #include "QwQPD.h"
 #include "QwLinearDiodeArray.h"
 #include "QwBPMCavity.h"
+#include "QwMollerADC_Channel.h"
 
 //*****************************************************************
 QwBeamDetectorID::QwBeamDetectorID(Int_t subbankid, Int_t offset,
@@ -55,6 +56,11 @@ QwBeamDetectorID::QwBeamDetectorID(Int_t subbankid,
   } else if (fmoduletype == "SCALER") {
     fWordInSubbank = VQwScaler_Channel::GetBufferOffset(modnum, channum);
     if (paramfile.ReturnValue("scaler_buffer_offset",offset)) {
+      fWordInSubbank += offset;
+    }
+  } else if (fmoduletype == "MOLLERADC") {
+    fWordInSubbank = QwMollerADC_Channel::GetBufferOffset(modnum, channum);
+    if (paramfile.ReturnValue("MollerADC_buffer_offset",offset)) {
       fWordInSubbank += offset;
     }
   } else {

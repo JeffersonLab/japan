@@ -145,69 +145,69 @@ Int_t QwBeamLine::LoadChannelMap(TString mapfile)
 
       if (varname=="begin"){
 	
-	// Start to decode derived beamline devices combined+energy
-	deviceok = kTRUE;
-	combotype = varvalue;
-	combolistdecoded = kFALSE;
+	      // Start to decode derived beamline devices combined+energy
+	      deviceok = kTRUE;
+	      combotype = varvalue;
+	      combolistdecoded = kFALSE;
 
-	TString dettype;
+	      TString dettype;
 	
-	while(mapstr.ReadNextLine()&&!combolistdecoded) {
-	  if (mapstr.HasVariablePair("=",varname,varvalue)) {
-	    varname.ToLower();
-	    if (varname=="end"){
-	      // calculate the total weights of the charge
-	      sumQweights = 0.0;
-	      for(size_t i=0;i<fDeviceName.size();i++)
-		sumQweights+=abs(fQWeight[i]);
-	      combolistdecoded = kTRUE;
-	      break;
-	    }
-	  }
+	      while(mapstr.ReadNextLine()&&!combolistdecoded) {
+	        if (mapstr.HasVariablePair("=",varname,varvalue)) {
+	          varname.ToLower();
+	          if (varname=="end"){
+	          // calculate the total weights of the charge
+	            sumQweights = 0.0;
+	            for(size_t i=0;i<fDeviceName.size();i++)
+		            sumQweights+=abs(fQWeight[i]);
+	            combolistdecoded = kTRUE;
+	            break;
+	          }
+	        }
 
-	  if (mapstr.PopValue("name",varvalue)) {
-	    comboname = varvalue;
-	  }
+	        if (mapstr.PopValue("name",varvalue)) {
+	          comboname = varvalue;
+	        }
 	  
-	  dev_name = mapstr.GetTypedNextToken<TString>();
-	  dev_name.ToLower();
-	  dettype  = mapstr.GetTypedNextToken<TString>();
-	  dettype.ToLower();
+	        dev_name = mapstr.GetTypedNextToken<TString>();
+	        dev_name.ToLower();
+	        dettype  = mapstr.GetTypedNextToken<TString>();
+	        dettype.ToLower();
 
-	  // Check to see if the device being read is a valid physical device.
-	  // If not, discard the combination.
-	  index=GetDetectorIndex(GetQwBeamInstrumentType(dettype),dev_name);
+	        // Check to see if the device being read is a valid physical device.
+	        // If not, discard the combination.
+	        index=GetDetectorIndex(GetQwBeamInstrumentType(dettype),dev_name);
 
-	  if (index == -1) {
-	    QwError << "QwBeamLine::LoadChannelMap:  Unknown device: "
-		    <<  dev_name <<" used in "<< comboname
-		    <<". This combination  will not be decoded!"
-		    <<  QwLog::endl;
-	    deviceok = kFALSE;
-	    combolistdecoded = kTRUE;
-	  }else{
-	    // Found the device
-	    // Add to the array of names
-	    fDeviceName.push_back(dev_name);
+	        if (index == -1) {
+	          QwError << "QwBeamLine::LoadChannelMap:  Unknown device: "
+		          <<  dev_name <<" used in "<< comboname
+		          <<". This combination  will not be decoded!"
+		          <<  QwLog::endl;
+	          deviceok = kFALSE;
+	          combolistdecoded = kTRUE;
+	        }else{
+	          // Found the device
+	          // Add to the array of names
+	          fDeviceName.push_back(dev_name);
 	    
-	    // Read in the weights.
-	    // For combined bpms and combined bcms these are charge weights.
-	    // For the energy calculator these are the ratios of the transport matrix elements.
-	    fQWeight.push_back(mapstr.GetTypedNextToken<Double_t>());
+	          // Read in the weights.
+	          // For combined bpms and combined bcms these are charge weights.
+	          // For the energy calculator these are the ratios of the transport matrix elements.
+	          fQWeight.push_back(mapstr.GetTypedNextToken<Double_t>());
 	    
-	    // For combined BPMs,in addition, there are weights for the X & Y positions.
-	    if(combotype == "combinedbpm"){
-	      fXWeight.push_back(mapstr.GetTypedNextToken<Double_t>());
-	      fYWeight.push_back(mapstr.GetTypedNextToken<Double_t>());
-	    }
+	          // For combined BPMs,in addition, there are weights for the X & Y positions.
+	          if(combotype == "combinedbpm"){
+	            fXWeight.push_back(mapstr.GetTypedNextToken<Double_t>());
+	            fYWeight.push_back(mapstr.GetTypedNextToken<Double_t>());
+	          }
 	    
-	    // For the enrgy calculator there are device type and the specified beam parameters.
-	    if(combotype == "energycalculator"){
-	      fType.push_back(dettype);
-	      fProperty.push_back(mapstr.GetTypedNextToken<TString>());
-	    }
-	  }
-	}
+	          // For the enrgy calculator there are device type and the specified beam parameters.
+	          if(combotype == "energycalculator"){
+	            fType.push_back(dettype);
+	            fProperty.push_back(mapstr.GetTypedNextToken<TString>());
+	          }
+	        }
+	      }
 	
 	// Now create the combined device
 	QwBeamDetectorID localComboID(-1, -1, comboname, combotype,
@@ -431,147 +431,84 @@ Int_t QwBeamLine::LoadChannelMap(TString mapfile)
 
 
 //*****************************************************************//
-Int_t QwBeamLine::LoadEventCuts(TString  filename)
-{
-  Int_t eventcut_flag = 1;
 
-  // Open the file
-  QwParameterFile mapstr(filename.Data());
-  fDetectorMaps.insert(mapstr.GetParamFileNameContents());
-  while (mapstr.ReadNextLine()){
-    mapstr.TrimComment('!');   // Remove everything after a '!' character.
-    mapstr.TrimWhitespace();   // Get rid of leading and trailing spaces.
-    if (mapstr.LineIsEmpty())  {continue;}
+void QwBeamLine::LoadEventCuts_Line(QwParameterFile &mapstr, TString &varvalue, Int_t &eventcut_flag) {
+  TString device_type = mapstr.GetTypedNextToken<TString>();
+  device_type.ToLower();
+  TString device_name = mapstr.GetTypedNextToken<TString>();
+  device_name.ToLower();
 
-    TString varname, varvalue;
-    if (mapstr.HasVariablePair("=",varname,varvalue)){
-      if (varname == "EVENTCUTS"){
-	eventcut_flag = QwParameterFile::GetUInt(varvalue);
-      }
-    }
-    else{
-      TString device_type = mapstr.GetTypedNextToken<TString>();
-      device_type.ToLower();
-      TString device_name = mapstr.GetTypedNextToken<TString>();
-      device_name.ToLower();
+  Int_t det_index = GetDetectorIndex(GetQwBeamInstrumentType(device_type),device_name);
+  if (det_index == -1) {
+    QwWarning << " Device not found " << device_name << " of type " << device_type << QwLog::endl;
+    //continue;
+  }
 
-      Int_t det_index = GetDetectorIndex(GetQwBeamInstrumentType(device_type),device_name);
-      if (det_index == -1) {
-	QwWarning << " Device not found " << device_name << " of type " << device_type << QwLog::endl;
-	continue;
-      }
+  TString channel_name;
 
-      if (device_type == GetQwBeamInstrumentTypeName(kQwBCM)){
+  if(device_type == GetQwBeamInstrumentTypeName(kQwBPMStripline) ||
+     device_type == GetQwBeamInstrumentTypeName(kQwQPD) ||
+     device_type == GetQwBeamInstrumentTypeName(kQwLinearArray)||
+     device_type ==  GetQwBeamInstrumentTypeName(kQwBPMCavity)||
+     device_type == GetQwBeamInstrumentTypeName(kQwCombinedBPM)){
+
+    channel_name =  mapstr.GetTypedNextToken<TString>();
+	  channel_name.ToLower();
+  }
+
 	Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for BCM value
 	Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for BCM value
 	varvalue = mapstr.GetTypedNextToken<TString>();//global/loacal
-	Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
-    Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
-	varvalue.ToLower();
-	QwMessage<<"QwBeamLine Error Code passing to QwBCM "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<", burp = "<<burplevel<<QwLog::endl;
+  varvalue.ToLower();
+
+  Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
+  Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
+
+
+  if (device_type == GetQwBeamInstrumentTypeName(kQwBCM)){
+	  QwMessage<<"QwBeamLine Error Code passing to QwBCM "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<", burp = "<<burplevel<<QwLog::endl;
     fBCM[det_index].get()->SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut,burplevel);//(fBCMEventCuts);
-      }
-      else if (device_type == GetQwBeamInstrumentTypeName(kQwHaloMonitor)){
-	Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for HaloMonitor value
-	Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for HaloMonitor value
-	varvalue = mapstr.GetTypedNextToken<TString>();//global/loacal
-	Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
-    Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
-	varvalue.ToLower();
-	QwMessage<<"QwBeamLine Error Code passing to QwHaloMonitor "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
-    fHaloMonitor[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut,burplevel);//(fBCMEventCuts);
-      }
-	else if (device_type ==GetQwBeamInstrumentTypeName(kQwEnergyCalculator)){
-	Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for energy
-	Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for energy
-	varvalue = mapstr.GetTypedNextToken<TString>();//global/loacal
-	Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
-    Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
-	varvalue.ToLower();
-	QwMessage<<"QwBeamLine Error Code passing to QwEnergyCalculator "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
+
+  } else if (device_type == GetQwBeamInstrumentTypeName(kQwHaloMonitor)){
+	  QwMessage<<"QwBeamLine Error Code passing to QwHaloMonitor "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
+    fHaloMonitor[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut,burplevel);//(fBCMEventCuts);     
+
+  } else if (device_type == GetQwBeamInstrumentTypeName(kQwEnergyCalculator)){
+	  QwMessage<<"QwBeamLine Error Code passing to QwEnergyCalculator "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
     fECalculator[det_index].SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut),LLX,ULX,stabilitycut,burplevel);//(fEnergyEventCuts);
-      }
-	else if (device_type == GetQwBeamInstrumentTypeName(kQwBPMStripline)){
-	TString channel_name =  mapstr.GetTypedNextToken<TString>();
-	channel_name.ToLower();
-	Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for BPMStripline X
-	Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for BPMStripline X
-	varvalue = mapstr.GetTypedNextToken<TString>();//global/loacal
-	Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
-    Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
-	varvalue.ToLower();
-	QwMessage<<"QwBeamLine:QwBPMStripline "<<channel_name<<" "<<varvalue<<" "<<stabilitycut<<QwLog::endl;
-	//QwMessage<<"QwBeamLine Error Code passing to QwBPMStripline "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<" stability  "<<stabilitycut <<QwLog::endl;
-	fStripline[det_index].get()->SetSingleEventCuts(channel_name, GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut), LLX, ULX, stabilitycut, burplevel);
-      }
-	else if (device_type == GetQwBeamInstrumentTypeName(kQwQPD)){
-	TString channel_name =  mapstr.GetTypedNextToken<TString>();
-	channel_name.ToLower();
-	Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for QPD X
-	Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for QPD X
-	varvalue = mapstr.GetTypedNextToken<TString>();//global/loacal
-	Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
-    Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
-	varvalue.ToLower();
-	QwMessage<<"QwBeamLine Error Code passing to QwQPD "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
-	fQPD[det_index].SetSingleEventCuts(channel_name, GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut), LLX, ULX, stabilitycut, burplevel);
-	}
-	else if (device_type == GetQwBeamInstrumentTypeName(kQwLinearArray)){
-	TString channel_name =  mapstr.GetTypedNextToken<TString>();
-	channel_name.ToLower();
-	Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for LinearArray X
-	Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for LinearArray X
-	varvalue = mapstr.GetTypedNextToken<TString>();//global/loacal
-	Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
-    Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
-	varvalue.ToLower();
-	QwMessage<<"QwBeamLine Error Code passing to QwLinearArray "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
-	fLinearArray[det_index].SetSingleEventCuts(channel_name, GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut), LLX, ULX, stabilitycut, burplevel);
-	}
-	else if (device_type ==  GetQwBeamInstrumentTypeName(kQwBPMCavity)){
-	TString channel_name =  mapstr.GetTypedNextToken<TString>();
-	channel_name.ToLower();
-	  Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for cavity bpm X
-	  Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for cavity bpm X
-	  varvalue = mapstr.GetTypedNextToken<TString>();//global/loacal
-	  Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
-      Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
-	  varvalue.ToLower();
-	  QwMessage<<"QwBeamLine Error Code passing to QwBPMCavity "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<" "<<det_index<<QwLog::endl;	  
-	  fCavity[det_index].SetSingleEventCuts(channel_name, GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut), LLX, ULX, stabilitycut, burplevel);
-	}
-	else if (device_type == GetQwBeamInstrumentTypeName(kQwCombinedBCM)){
-	  Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for BCM value
-	  Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for BCM value
-	  varvalue = mapstr.GetTypedNextToken<TString>();//global/loacal
-	  Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
-      Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
-	  varvalue.ToLower();
-	  QwMessage<<"QwBeamLine Error Code passing to QwCombinedBCM "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
-	  fBCMCombo[det_index].get()->PrintInfo();
-      fBCMCombo[det_index].get()->SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut), LLX, ULX, stabilitycut, burplevel);
-	}
-	else if (device_type == GetQwBeamInstrumentTypeName(kQwCombinedBPM)){
-	  TString channel_name =  mapstr.GetTypedNextToken<TString>();
-	  channel_name.ToLower();
-	  
-	  Double_t LLX = mapstr.GetTypedNextToken<Double_t>();	//lower limit for combined bpm X
-	  Double_t ULX = mapstr.GetTypedNextToken<Double_t>();	//upper limit for combined bpm X
-	  varvalue = mapstr.GetTypedNextToken<TString>();//global/loacal
-	  Double_t stabilitycut = mapstr.GetTypedNextToken<Double_t>();
-      Double_t burplevel = mapstr.GetTypedNextToken<Double_t>();
-	  varvalue.ToLower();
-	  QwMessage<<"QwBeamLine Error Code passing to QwCombinedBPM "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
-	  fBPMCombo[det_index].get()->SetSingleEventCuts(channel_name, GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut), LLX, ULX, stabilitycut, burplevel);
-	}
 
-    }
+  } else if (device_type == GetQwBeamInstrumentTypeName(kQwBPMStripline)){
+	  QwMessage<<"QwBeamLine:QwBPMStripline "<<channel_name<<" "<<varvalue<<" "<<stabilitycut<<QwLog::endl;
+	  //QwMessage<<"QwBeamLine Error Code passing to QwBPMStripline "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<" stability  "<<stabilitycut <<QwLog::endl;
+	  fStripline[det_index].get()->SetSingleEventCuts(channel_name, GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut), LLX, ULX, stabilitycut, burplevel);      
 
+  } else if (device_type == GetQwBeamInstrumentTypeName(kQwQPD)){
+	  QwMessage<<"QwBeamLine Error Code passing to QwQPD "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
+	  fQPD[det_index].SetSingleEventCuts(channel_name, GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut), LLX, ULX, stabilitycut, burplevel);	    
+
+  } else if (device_type == GetQwBeamInstrumentTypeName(kQwLinearArray)){
+	  QwMessage<<"QwBeamLine Error Code passing to QwLinearArray "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
+	  fLinearArray[det_index].SetSingleEventCuts(channel_name, GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut), LLX, ULX, stabilitycut, burplevel);	    
+
+  } else if (device_type ==  GetQwBeamInstrumentTypeName(kQwBPMCavity)){
+    varvalue.ToLower();
+    QwMessage<<"QwBeamLine Error Code passing to QwBPMCavity "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<" "<<det_index<<QwLog::endl;	  
+    fCavity[det_index].SetSingleEventCuts(channel_name, GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut), LLX, ULX, stabilitycut, burplevel);	    
+
+  } else if (device_type == GetQwBeamInstrumentTypeName(kQwCombinedBCM)){
+    varvalue.ToLower();
+    QwMessage<<"QwBeamLine Error Code passing to QwCombinedBCM "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
+    fBCMCombo[det_index].get()->PrintInfo();
+    fBCMCombo[det_index].get()->SetSingleEventCuts(GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut), LLX, ULX, stabilitycut, burplevel);	    
+
+  } else if (device_type == GetQwBeamInstrumentTypeName(kQwCombinedBPM)){
+    varvalue.ToLower();
+    QwMessage<<"QwBeamLine Error Code passing to QwCombinedBPM "<<GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut)<<QwLog::endl;
+    fBPMCombo[det_index].get()->SetSingleEventCuts(channel_name, GetGlobalErrorFlag(varvalue,eventcut_flag,stabilitycut), LLX, ULX, stabilitycut, burplevel);
   }
+}
 
-
-  //update the event cut ON/OFF for all the devices
-  //std::cout<<"EVENT CUT FLAG"<<eventcut_flag<<std::endl;
+void QwBeamLine::LoadEventCuts_Fin(Int_t &eventcut_flag) {
   for (size_t i=0;i<fStripline.size();i++)
     fStripline[i].get()->SetEventCutMode(eventcut_flag);
 
@@ -603,11 +540,7 @@ Int_t QwBeamLine::LoadEventCuts(TString  filename)
     fECalculator[i].SetEventCutMode(eventcut_flag);
 
   fQwBeamLineErrorCount=0; //set the error counter to zero
-
-  mapstr.Close(); // Close the file (ifstream)
-  return 0;
 }
-
 
 //*****************************************************************//
 Int_t QwBeamLine::LoadGeometryDefinition(TString mapfile){
@@ -1039,11 +972,11 @@ Int_t QwBeamLine::LoadInputParameters(TString pedestalfile)
 void QwBeamLine::RandomizeEventData(int helicity, double time)
 {
   // Randomize all QwBPMStripline buffers
-  //for (size_t i = 0; i < fStripline.size(); i++)
-  //{
-  //  fStripline[i].get()->RandomizeEventData(helicity, time);
-    //    fStripline[i].get()->PrintInfo();
-  //}
+  for (size_t i = 0; i < fStripline.size(); i++)
+  {
+    fStripline[i].get()->RandomizeEventData(helicity, time);
+     // fStripline[i].get()->PrintInfo();
+  }
 
   for (size_t i = 0; i < fCavity.size(); i++)
     fCavity[i].RandomizeEventData(helicity, time);
@@ -2212,29 +2145,6 @@ VQwSubsystem&  QwBeamLine::operator-=  (VQwSubsystem *value)
     }
   return *this;
 }
-
-
-//*****************************************************************//
-void  QwBeamLine::Sum(VQwSubsystem  *value1, VQwSubsystem  *value2)
-{
-  if(Compare(value1)&&Compare(value2))
-    {
-      *this =  value1;
-      *this += value2;
-    }
-}
-
-
-//*****************************************************************//
-void  QwBeamLine::Difference(VQwSubsystem  *value1, VQwSubsystem  *value2)
-{
-  if(Compare(value1)&&Compare(value2))
-    {
-      *this =  value1;
-      *this -= value2;
-    }
-}
-
 
 //*****************************************************************//
 void QwBeamLine::Ratio(VQwSubsystem  *numer, VQwSubsystem  *denom)

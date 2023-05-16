@@ -7,44 +7,66 @@ Bank=0x3102
 
 sample_size=15000
 !ADC11
-  VQWK, 0, 0,  bpmstripline,  QWK_0R06XP
-  VQWK, 0, 1,  bpmstripline,  QWK_0R06XM
-  VQWK, 0, 2,  bpmstripline,  QWK_0R06YP
-  VQWK, 0, 3,  bpmstripline,  QWK_0R06YM
-  VQWK, 0, 4,  bpmstripline,  QWK_0L06XP
-  VQWK, 0, 5,  bpmstripline,  QWK_0L06XM
-  VQWK, 0, 6,  bpmstripline,  QWK_0L06YP
-  VQWK, 0, 7,  bpmstripline,  QWK_0L06YM
+  MollerADC, 0, 0,  bpmstripline,  QWK_0R06XP
+  MollerADC, 0, 1,  bpmstripline,  QWK_0R06XM
+  MollerADC, 0, 2,  bpmstripline,  QWK_0R06YP
+  MollerADC, 0, 3,  bpmstripline,  QWK_0R06YM
+  MollerADC, 0, 4,  bpmstripline,  QWK_0L06XP
+  MollerADC, 0, 5,  bpmstripline,  QWK_0L06XM
+  MollerADC, 0, 6,  bpmstripline,  QWK_0L06YP
+  MollerADC, 0, 7,  bpmstripline,  QWK_0L06YM
 
 !ADC12
-  VQWK, 1, 0,  bcm,  QWK_BCM0L00
-  VQWK, 1, 1,  bcm,  QWK_BCM0L01
-  VQWK, 1, 2,  bcm,  QWK_BCM0L02
-  VQWK, 1, 3,  bcm,  QWK_BCM0L03
-  VQWK, 1, 4,  bcm,  QWK_BCM0L04
-  VQWK, 1, 5,  bcm,  QWK_BCM0L05
-  VQWK, 1, 6,  bcm,  QWK_BCM0L06
-  VQWK, 1, 7,  bcm,  QWK_BCM0L07
+  MollerADC, 1, 0,  bcm,  QWK_BCM0L00
+  MollerADC, 1, 1,  bcm,  QWK_BCM0L01
+  MollerADC, 1, 2,  bcm,  QWK_BCM0L02
+  MollerADC, 1, 3,  bcm,  QWK_BCM0L03
+  MollerADC, 1, 4,  bcm,  QWK_BCM0L04
+  MollerADC, 1, 5,  bcm,  QWK_BCM0L05
+  MollerADC, 1, 6,  bcm,  QWK_BCM0L06
+  MollerADC, 1, 7,  bcm,  QWK_BCM0L07
 
 !ADC13
-  VQWK, 2, 0,  bpmstripline,  QWK_1C12XP
-  VQWK, 2, 1,  bpmstripline,  QWK_1C12XM
-  VQWK, 2, 2,  bpmstripline,  QWK_1C12YP
-  VQWK, 2, 3,  bpmstripline,  QWK_1C12YM
-  VQWK, 2, 4,  bpmstripline,  QWK_1H04XP
-  VQWK, 2, 5,  bpmstripline,  QWK_1H04XM
-  VQWK, 2, 6,  bpmstripline,  QWK_1H04YP
-  VQWK, 2, 7,  bpmstripline,  QWK_1H04YM
+  MollerADC, 2, 0,  bpmstripline,  QWK_1C12XP
+  MollerADC, 2, 1,  bpmstripline,  QWK_1C12XM
+  MollerADC, 2, 2,  bpmstripline,  QWK_1C12YP
+  MollerADC, 2, 3,  bpmstripline,  QWK_1C12YM
+  MollerADC, 2, 4,  bpmstripline,  QWK_1H04XP
+  MollerADC, 2, 5,  bpmstripline,  QWK_1H04XM
+  MollerADC, 2, 6,  bpmstripline,  QWK_1H04YP
+  MollerADC, 2, 7,  bpmstripline,  QWK_1H04YM
 
 !ADC14 
-  VQWK, 3, 0, bpmstripline, QWK_1H05XP
-  VQWK, 3, 1, bpmstripline, QWK_1H05XM
-  VQWK, 3, 2, bpmstripline, QWK_1H05YP
-  VQWK, 3, 3, bpmstripline, QWK_1H05YM
-  VQWK, 3, 4, bpmstripline, QWK_1H06XP
-  VQWK, 3, 5, bpmstripline, QWK_1H06XM
-  VQWK, 3, 6, bpmstripline, QWK_1H06YP
-  VQWK, 3, 7, bpmstripline, QWK_1H06YM
+  MollerADC, 3, 0, bpmstripline, QWK_1H05XP
+  MollerADC, 3, 1, bpmstripline, QWK_1H05XM
+  MollerADC, 3, 2, bpmstripline, QWK_1H05YP
+  MollerADC, 3, 3, bpmstripline, QWK_1H05YM
+  MollerADC, 3, 4, bpmstripline, QWK_1H06XP
+  MollerADC, 3, 5, bpmstripline, QWK_1H06XM
+  MollerADC, 3, 6, bpmstripline, QWK_1H06YP
+  MollerADC, 3, 7, bpmstripline, QWK_1H06YM
+
+!ADC15
+  MollerADC, 4, 0, bpmstripline, QWK_1H05XP
+  MollerADC, 4, 1, bpmstripline, QWK_1H05XM
+  MollerADC, 4, 2, bpmstripline, QWK_1H05YP
+  MollerADC, 4, 3, bpmstripline, QWK_1H05YM
+  MollerADC, 4, 4, bpmstripline, QWK_1H06XP
+  MollerADC, 4, 5, bpmstripline, QWK_1H06XM
+  MollerADC, 4, 6, bpmstripline, QWK_1H06YP
+  MollerADC, 4, 7, bpmstripline, QWK_1H06YM
+
+!MollerADC
+  MollerADC, 5, 0,  bpmstripline,  QWK_0R06AXP
+  MollerADC, 5, 1,  bpmstripline,  QWK_0R06AXM
+  MollerADC, 5, 2,  bpmstripline,  QWK_0R06AYP
+  MollerADC, 5, 3,  bpmstripline,  QWK_0R06AYM
+  MollerADC, 5, 4,  bpmstripline,  QWK_0L06AXP
+  MollerADC, 5, 5,  bpmstripline,  QWK_0L06AXM
+  MollerADC, 5, 6,  bpmstripline,  QWK_0L06AYP
+  MollerADC, 5, 7,  bpmstripline,  QWK_0L06AYM
+
+
 
 !begin=combinedbpm
 !name=bpm_target
@@ -87,5 +109,8 @@ end=energycalculator
  xp_targ,  combobpm,     bpm_target,     xp
  yp_targ,  combobpm,     bpm_target,     yp
  e_targ,   comboenergy,  target_energy,  e
+
+
+
 
 !END

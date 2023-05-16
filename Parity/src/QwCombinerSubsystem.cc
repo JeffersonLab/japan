@@ -83,20 +83,6 @@ VQwSubsystem& QwCombinerSubsystem:: operator/=(VQwSubsystem* value)
 }
 
 
-void QwCombinerSubsystem::Sum(VQwSubsystem* value1, VQwSubsystem* value2)
-{
-  *this = value1;
-  *this += value2;
-}
-
-
-void QwCombinerSubsystem::Difference(VQwSubsystem* value1, VQwSubsystem* value2)
-{
-  *this = value1;
-  *this -= value2;
-}
-
-
 void QwCombinerSubsystem::Ratio(VQwSubsystem* value1, VQwSubsystem* value2)
 {
   *this = value1;

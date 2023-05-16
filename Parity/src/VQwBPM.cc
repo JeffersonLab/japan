@@ -16,6 +16,7 @@
 #include "QwCombinedBPM.h"
 #include "QwVQWK_Channel.h"
 #include "QwScaler_Channel.h"
+#include "QwMollerADC_Channel.h"
 
 
 /* With X being vertical up and Z being the beam direction toward the beamdump */
@@ -238,6 +239,8 @@ VQwBPM* VQwBPM::CreateStripline(TString subsystemname, TString name, TString typ
     return new QwBPMStripline<QwSIS3801_Channel>(subsystemname,name,type);
   } else if ( type == "SCALER" || type == "SIS3801D24" ) {
     return new QwBPMStripline<QwSIS3801D24_Channel>(subsystemname,name,type);
+  } else if ( type == "MOLLERADC" ) {
+    return new QwBPMStripline<QwMollerADC_Channel>(subsystemname,name,type);
   } else { // Unsupported one!
     QwWarning << "BPM of type="<<type<<" is UNSUPPORTED!!\n";
     exit(-1);
@@ -258,6 +261,8 @@ VQwBPM* VQwBPM::CreateStripline(const VQwBPM& source)
     return new QwBPMStripline<QwSIS3801_Channel>(dynamic_cast<const QwBPMStripline<QwSIS3801_Channel>&>(source));
   } else if ( type == "SCALER" || type == "SIS3801D24" ) {
     return new QwBPMStripline<QwSIS3801D24_Channel>(dynamic_cast<const QwBPMStripline<QwSIS3801D24_Channel>&>(source));
+  } else if ( type == "MOLLERADC" ) {
+    return new QwBPMStripline<QwMollerADC_Channel>(dynamic_cast<const QwBPMStripline<QwMollerADC_Channel>&>(source));
   } else { // Unsupported one!
     QwWarning << "BPM of type="<<type<<" is UNSUPPORTED!!\n";
     exit(-1);
@@ -282,6 +287,8 @@ VQwBPM* VQwBPM::CreateCombo(TString subsystemname, TString name,
     return new QwCombinedBPM<QwSIS3801_Channel>(subsystemname,name,type);
   } else if ( type == "SCALER" || type == "SIS3801D24" ) {
     return new QwCombinedBPM<QwSIS3801D24_Channel>(subsystemname,name,type);
+  } else if ( type == "MOLLERADC" ) {
+    return new QwCombinedBPM<QwMollerADC_Channel>(subsystemname,name,type);
   } else { // Unsupported one!
     QwWarning << "BPM of type="<<type<<" is UNSUPPORTED!!\n";
     exit(-1);
@@ -302,6 +309,8 @@ VQwBPM* VQwBPM::CreateCombo(const VQwBPM& source)
     return new QwCombinedBPM<QwSIS3801_Channel>(dynamic_cast<const QwCombinedBPM<QwSIS3801_Channel>&>(source));
   } else if ( type == "SCALER" || type == "SIS3801D24" ) {
     return new QwCombinedBPM<QwSIS3801D24_Channel>(dynamic_cast<const QwCombinedBPM<QwSIS3801D24_Channel>&>(source));
+  } else if ( type == "MOLLERADC" ) {
+    return new QwCombinedBPM<QwMollerADC_Channel>(dynamic_cast<const QwCombinedBPM<QwMollerADC_Channel>&>(source));
   } else { // Unsupported one!
     QwWarning << "BPM of type="<<type<<" is UNSUPPORTED!!\n";
     exit(-1);

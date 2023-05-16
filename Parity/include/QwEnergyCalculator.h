@@ -20,6 +20,7 @@
 #include "QwCombinedBPM.h"
 #include "VQwBPM.h"
 #include "VQwHardwareChannel.h"
+#include "QwMollerADC_Channel.h"
 
 // Forward declarations
 #ifdef __USE_DATABASE__
@@ -128,7 +129,7 @@ class QwEnergyCalculator : public VQwDataElement{
 #endif // __USE_DATABASE__
 
  protected:
-    QwVQWK_Channel fEnergyChange;
+    QwMollerADC_Channel fEnergyChange;
 
 
  private:

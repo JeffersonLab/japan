@@ -1,9 +1,6 @@
 /**********************************************************\
-<<<<<<< .working
 * File: QwCombinedBCM.h                                  *
-=======
 * File: QwBCM.h                                           *
->>>>>>> .merge-right.r3406
 *                                                         *
 * Author:                                                 *
 * Time-stamp:                                             *

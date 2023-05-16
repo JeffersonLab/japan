@@ -19,7 +19,7 @@
 #include "QwVQWK_Channel.h"
 #include "QwADC18_Channel.h"
 #include "QwScaler_Channel.h"
-
+#include "QwMollerADC_Channel.h"
 /********************************************************/
 template<typename T>
 void QwBCM<T>::SetPedestal(Double_t pedestal)
@@ -379,19 +379,6 @@ QwBCM<T>& QwBCM<T>::operator-= (const QwBCM<T> &value)
   return *this;
 }
 
-
-template<typename T>
-void QwBCM<T>::Sum(QwBCM<T> &value1, QwBCM<T> &value2){
-  *this =  value1;
-  *this += value2;
-}
-
-template<typename T>
-void QwBCM<T>::Difference(QwBCM<T> &value1, QwBCM<T> &value2){
-  *this =  value1;
-  *this -= value2;
-}
-
 template<typename T>
 void QwBCM<T>::Ratio(const VQwBCM &numer, const VQwBCM &denom)
 {
@@ -593,3 +580,4 @@ template class QwBCM<QwVQWK_Channel>;
 template class QwBCM<QwADC18_Channel>;
 template class QwBCM<QwSIS3801_Channel>;
 template class QwBCM<QwSIS3801D24_Channel>;
+template class QwBCM<QwMollerADC_Channel>;

@@ -324,10 +324,10 @@ EQwWienMode WienModeIndex(TString name);
 
 ///  Definitions for beam parameter quantities; use these types rather than
 ///  the raw "QwVQWK_Channel" to allow for future specification.
-class QwVQWK_Channel;
-typedef class QwVQWK_Channel QwBeamCharge;
-typedef class QwVQWK_Channel QwBeamPosition;
-typedef class QwVQWK_Channel QwBeamAngle;
-typedef class QwVQWK_Channel QwBeamEnergy;
+class QwMollerADC_Channel;
+typedef class QwMollerADC_Channel QwBeamCharge;
+typedef class QwMollerADC_Channel QwBeamPosition;
+typedef class QwMollerADC_Channel QwBeamAngle;
+typedef class QwMollerADC_Channel QwBeamEnergy;
 
 #endif

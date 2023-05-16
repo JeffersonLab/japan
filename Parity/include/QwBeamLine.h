@@ -66,7 +66,9 @@ class QwBeamLine : public VQwSubsystemParity, public MQwSubsystemCloneable<QwBea
   void   ProcessOptions(QwOptions &options);//Handle command line options
   Int_t  LoadChannelMap(TString mapfile);
   Int_t  LoadInputParameters(TString pedestalfile);
-  Int_t  LoadEventCuts(TString filename);//derived from VQwSubsystemParity
+  void LoadEventCuts_Init() {};
+  void LoadEventCuts_Line(QwParameterFile &mapstr, TString &varvalue, Int_t &eventcut_flag);
+  void LoadEventCuts_Fin(Int_t &eventcut_flag);
   Int_t  LoadGeometryDefinition(TString mapfile);
   Int_t  LoadMockDataParameters(TString mapfile);
   void   AssignGeometry(QwParameterFile* mapstr, VQwBPM * bpm);
@@ -104,8 +106,6 @@ class QwBeamLine : public VQwSubsystemParity, public MQwSubsystemCloneable<QwBea
   VQwSubsystem&  operator=  (VQwSubsystem *value);
   VQwSubsystem&  operator+= (VQwSubsystem *value);
   VQwSubsystem&  operator-= (VQwSubsystem *value);
-  void   Sum(VQwSubsystem  *value1, VQwSubsystem  *value2);
-  void   Difference(VQwSubsystem  *value1, VQwSubsystem  *value2);
   void   Ratio(VQwSubsystem *numer, VQwSubsystem *denom);
 
   void   Scale(Double_t factor);

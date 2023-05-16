@@ -17,7 +17,7 @@
 #include "QwVQWK_Channel.h"
 #include "QwScaler_Channel.h"
 #include "QwParameterFile.h"
-
+#include "QwMollerADC_Channel.h"
 
 template<typename T>
 void  QwCombinedBPM<T>::InitializeChannel(TString name)
@@ -1347,3 +1347,4 @@ std::vector<QwErrDBInterface> QwCombinedBPM<T>::GetErrDBEntry()
 template class QwCombinedBPM<QwVQWK_Channel>; 
 template class QwCombinedBPM<QwSIS3801_Channel>; 
 template class QwCombinedBPM<QwSIS3801D24_Channel>;
+template class QwCombinedBPM<QwMollerADC_Channel>;
