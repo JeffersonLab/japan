@@ -1,10 +1,19 @@
 void plotAq(Int_t flip_state=1) {
 
   TCanvas * c1 = new TCanvas();
+  TString treename = "mul_trip";
+  TChain *mul_tree = new TChain(treename);
+  mul_tree->SetCacheSize(20*1024*1024);
+  mul_tree->Add("respin2_rootfiles/test.root");
+  mul_tree->Add("respin2_rootfiles/test_1.root");
+  mul_tree->Add("respin2_rootfiles/test_2.root");
+  mul_tree->LoadTree(-1);
+  /*
   TFile * infile = new TFile("/chafs1/work1/apar/cameronc/rootfiles/respin1_prune_rootfiles/test.root");
   TTree *mul_tree;
   //TTree *eig_reg_tree_5_tr;
   infile->GetObject("mul_trip", mul_tree);
+  */
 
   std::vector<Double_t> means;
   std::vector<Double_t> meanerrs;

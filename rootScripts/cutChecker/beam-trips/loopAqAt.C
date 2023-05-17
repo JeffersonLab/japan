@@ -1,4 +1,5 @@
 void loopAqAt() {
+  /*
   //TFile *_file0 = TFile::Open("respin1_rootfiles/trip_6344.root");
   //TFile *_file1 = TFile::Open("prompt_rootfiles/trip_6344.root");
   //TFile *_file0 = TFile::Open("respin1_rootfiles/test.root");
@@ -17,6 +18,22 @@ void loopAqAt() {
   TTree *mul_trip_prompt;
   _file0->GetObject("mul_trip", mul_trip_respin1);
   _file1->GetObject("mul_trip", mul_trip_prompt);
+  */
+
+  TString outplotname = "plots/Aq_direct_compare_prompt_respin1.pdf";
+  TString treename = "mul_trip";
+  TChain *mul_trip_prompt = new TChain(treename);
+  mul_trip_prompt->SetCacheSize(20*1024*1024);
+  mul_trip_prompt->Add("prompt_rootfiles/test.root");
+  mul_trip_prompt->Add("prompt_rootfiles/test_1.root");
+  mul_trip_prompt->Add("prompt_rootfiles/test_2.root");
+  mul_trip_prompt->LoadTree(-1);
+  TChain *mul_trip_respin1 = new TChain(treename);
+  mul_trip_respin1->SetCacheSize(20*1024*1024);
+  mul_trip_respin1->Add("respin1_rootfiles/test.root");
+  mul_trip_respin1->Add("respin1_rootfiles/test_1.root");
+  mul_trip_respin1->Add("respin1_rootfiles/test_2.root");
+  mul_trip_respin1->LoadTree(-1);
 
 
   typedef struct {

@@ -4,7 +4,6 @@ FIND_PATH(MYSQLPP_INCLUDE_PATH mysql++.h
   $ENV{MYSQLPP_INC_DIR}
   /usr/include/mysql++/
   /usr/local/Cellar/mysql++/3.2.3_1/include/mysql++/
-  /group/qweak/QwAnalysis/Linux_CentOS6.5-x86_64/MySQL++/local/include/mysql++/
 )
 
 FIND_PATH(MYSQL_INCLUDE_PATH mysql.h

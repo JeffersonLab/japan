@@ -3,11 +3,20 @@ void tableSlugAq(Int_t flip_state = 1) {
 
   TCanvas * c1 = new TCanvas();
   c1->Divide(2,2);
-  TFile * respin1_infile = new TFile("/chafs1/work1/apar/cameronc/rootfiles/respin1_prune_rootfiles/test.root");
+  TString treename = "mul_trip";
+  TChain *mul_tree = new TChain(treename);
+  mul_tree->SetCacheSize(20*1024*1024);
+  mul_tree->Add("respin2_rootfiles/test.root");
+  mul_tree->Add("respin2_rootfiles/test_1.root");
+  mul_tree->Add("respin2_rootfiles/test_2.root");
+  mul_tree->LoadTree(-1);
+  /*
+  TFile * respin2_infile = new TFile("/chafs1/work1/apar/cameronc/rootfiles/respin2_prune_rootfiles/test.root");
+  //TFile * respin1_infile = new TFile("/chafs1/work1/apar/cameronc/rootfiles/respin1_prune_rootfiles/test.root");
   //TFile * prompt_infile = new TFile("/chafs1/work1/apar/cameronc/rootfiles/prompt_prune_rootfiles/test.root");
   TTree *mul_tree;
-  //TTree *eig_reg_tree_5_tr;
   respin1_infile->GetObject("mul_trip", mul_tree);
+  */
 
   std::vector<Double_t> oldPostTrip_means;
   std::vector<Double_t> oldPostTrip_meanerrs;
@@ -20,7 +29,7 @@ void tableSlugAq(Int_t flip_state = 1) {
   std::vector<Double_t> bins;
 
   ofstream outfile0;
-  outfile0.open(Form("plots/slugs_wienstate%d.csv",flip_state));
+  outfile0.open(Form("plots/slugs_wienstate%d_respin2.csv",flip_state));
 
   Int_t nSlugs = 223;
   Int_t ndata = 0;
@@ -105,6 +114,6 @@ void tableSlugAq(Int_t flip_state = 1) {
   tg4->SetMarkerSize(0.5);
   tg4->Fit("pol0","QW","");
   tg4->Draw("ap");
-  c1->SaveAs(Form("plots/test_slugs_wien%d.pdf",flip_state));
+  c1->SaveAs(Form("plots/test_slugs_wien%d_respin2.pdf",flip_state));
   outfile0.close();
 }

@@ -23,6 +23,11 @@ void addTripCounter(int runNum = 5408, TString ana = "prompt"){ //(int start, in
     output = new TFile(Form("respin1_rootfiles/trip_%d.root",runNum),"recreate");
     Printf("Using respin1");
   }
+  else if (ana.Contains("respin2")) {
+    input = new TFile(Form("/lustre/expphy/volatile/halla/parity/crex-respin2/japanOutput/prexPrompt_pass2_%d.000.root",runNum));
+    output = new TFile(Form("respin2_rootfiles/trip_%d.root",runNum),"recreate");
+    Printf("Using respin2");
+  }
   else {
     Printf("Error, no valid analysis name given");
   }
