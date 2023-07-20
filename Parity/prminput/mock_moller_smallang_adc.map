@@ -1,0 +1,15 @@
+ROC=28
+Bank=0x6110
+sample_size=15000
+!
+!
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 0, 0,  IntegrationPMT,  SA01
+MollerADC, 0, 1,  IntegrationPMT,  SA02
+MollerADC, 0, 2,  IntegrationPMT,  SA03
+MollerADC, 0, 3,  IntegrationPMT,  SA04
+MollerADC, 0, 4,  IntegrationPMT,  SA05
+MollerADC, 0, 5,  IntegrationPMT,  SA06
+MollerADC, 0, 6,  IntegrationPMT,  SA07
+MollerADC, 0, 7,  IntegrationPMT,  SA08
+

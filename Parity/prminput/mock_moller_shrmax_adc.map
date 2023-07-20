@@ -1,0 +1,40 @@
+ROC=7
+Bank=0x6110
+sample_size=15000
+!
+!
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 0, 0,  IntegrationPMT,  SM01
+MollerADC, 0, 1,  IntegrationPMT,  SM02
+MollerADC, 0, 2,  IntegrationPMT,  SM03
+MollerADC, 0, 3,  IntegrationPMT,  SM04
+MollerADC, 0, 4,  IntegrationPMT,  SM05
+MollerADC, 0, 5,  IntegrationPMT,  SM06
+MollerADC, 0, 6,  IntegrationPMT,  SM07
+MollerADC, 0, 7,  IntegrationPMT,  SM08
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 1, 0,  IntegrationPMT,  SM09
+MollerADC, 1, 1,  IntegrationPMT,  SM10
+MollerADC, 1, 2,  IntegrationPMT,  SM11
+MollerADC, 1, 3,  IntegrationPMT,  SM12
+MollerADC, 1, 4,  IntegrationPMT,  SM13
+MollerADC, 1, 5,  IntegrationPMT,  SM14
+MollerADC, 1, 6,  IntegrationPMT,  SM15
+MollerADC, 1, 7,  IntegrationPMT,  SM16
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 2, 0,  IntegrationPMT,  SM17
+MollerADC, 2, 1,  IntegrationPMT,  SM18
+MollerADC, 2, 2,  IntegrationPMT,  SM19
+MollerADC, 2, 3,  IntegrationPMT,  SM20
+MollerADC, 2, 4,  IntegrationPMT,  SM21
+MollerADC, 2, 5,  IntegrationPMT,  SM22
+MollerADC, 2, 6,  IntegrationPMT,  SM23
+MollerADC, 2, 7,  IntegrationPMT,  SM24
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 3, 0,  IntegrationPMT,  SM25
+MollerADC, 3, 1,  IntegrationPMT,  SM26
+MollerADC, 3, 2,  IntegrationPMT,  SM27
+MollerADC, 3, 3,  IntegrationPMT,  SM28

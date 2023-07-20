@@ -1,14 +1,14 @@
 # This is an example of a detector definition file.
 
-#[LRBCorrector]
-#  name       = LinRegBlue Corrector (run-level slopes)
-#  priority   = 10
-#  map        = mock_corrolator.conf
-#  slope-file-base = blueR
-#  slope-file-suff = new.slope.root
-#  slope-path = .
-#  tree-name  = mulc_lrb
-#  tree-comment = Corrected helicity event data tree (run-level slopes)
+[LRBCorrector]
+  name       = LinRegBlue Corrector (run-level slopes)
+  priority   = 10
+  map        = mock_corrolator.conf
+  slope-file-base = blueR
+  slope-file-suff = new.slope.root
+  slope-path = .
+  tree-name  = mulc_lrb
+  tree-comment = Corrected helicity event data tree (run-level slopes)
 
 [QwCorrelator]
   name       = lrb_std
@@ -22,4 +22,4 @@
   alias-path = .
   disable-histos = true
   tree-name  = lrb_std
-  tree-comment = Correlations
+ tree-comment = Correlations

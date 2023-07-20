@@ -1,0 +1,53 @@
+ROC=29
+Bank=0x6110
+sample_size=15000
+!
+!
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 0, 0,  IntegrationPMT,  LA01
+MollerADC, 0, 1,  IntegrationPMT,  LA02
+MollerADC, 0, 2,  IntegrationPMT,  LA03
+MollerADC, 0, 3,  IntegrationPMT,  LA04
+MollerADC, 0, 4,  IntegrationPMT,  LA05
+MollerADC, 0, 5,  IntegrationPMT,  LA06
+MollerADC, 0, 6,  IntegrationPMT,  LA07
+MollerADC, 0, 7,  IntegrationPMT,  LA08
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 1, 0,  IntegrationPMT,  LA09
+MollerADC, 1, 1,  IntegrationPMT,  LA10
+MollerADC, 1, 2,  IntegrationPMT,  LA11
+MollerADC, 1, 3,  IntegrationPMT,  LA12
+MollerADC, 1, 4,  IntegrationPMT,  LA13
+MollerADC, 1, 5,  IntegrationPMT,  LA14
+MollerADC, 1, 6,  IntegrationPMT,  LA15
+MollerADC, 1, 7,  IntegrationPMT,  LA16
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 2, 0,  IntegrationPMT,  LA17
+MollerADC, 2, 1,  IntegrationPMT,  LA18
+MollerADC, 2, 2,  IntegrationPMT,  LA19
+MollerADC, 2, 3,  IntegrationPMT,  LA20
+MollerADC, 2, 4,  IntegrationPMT,  LA21
+MollerADC, 2, 5,  IntegrationPMT,  LA22
+MollerADC, 2, 6,  IntegrationPMT,  LA23
+MollerADC, 2, 7,  IntegrationPMT,  LA24
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 3, 0,  IntegrationPMT,  LA25
+MollerADC, 3, 1,  IntegrationPMT,  LA26
+MollerADC, 3, 2,  IntegrationPMT,  LA27
+MollerADC, 3, 3,  IntegrationPMT,  LA28
+MollerADC, 3, 4,  IntegrationPMT,  LA29
+MollerADC, 3, 5,  IntegrationPMT,  LA30
+MollerADC, 3, 6,  IntegrationPMT,  LA31
+MollerADC, 3, 7,  IntegrationPMT,  LA32
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 4, 0,  IntegrationPMT,  LA33
+MollerADC, 4, 1,  IntegrationPMT,  LA34
+MollerADC, 4, 2,  IntegrationPMT,  LA35
+MollerADC, 4, 3,  IntegrationPMT,  LA36
+MollerADC, 4, 4,  IntegrationPMT,  LA37
+MollerADC, 4, 5,  IntegrationPMT,  LA38
+MollerADC, 4, 6,  IntegrationPMT,  LA39
+MollerADC, 4, 7,  IntegrationPMT,  LA40
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 5, 0,  IntegrationPMT,  LA41
+MollerADC, 5, 1,  IntegrationPMT,  LA42

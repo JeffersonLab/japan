@@ -1,0 +1,50 @@
+# This is the detectors map used for VQWK checks
+
+
+[QwHelicity]
+ name = Helicity Info
+ map  = mock_qweak_helicity.map
+
+[QwBeamLine]
+ name  = Main BeamLine
+ map   = mock_qweak_beamline.map
+ param = mock_qweak_pedestal.map
+ geom  = mock_beamline_geometry.map
+ eventcut = mock_beamline_eventcuts.map
+
+[QwBeamLine]
+ name  = Injector BeamLine
+ map   = mollinj_beamline.map
+ param = mollinj_beamline_pedestal.map
+ geom  = mollinj_beamline_geometry.map
+ eventcut = mollinj_beamline_eventcuts.map
+
+[QwDetectorArray]
+ name  = Thin Quartz Detector
+ map   = mock_moller_thinqtz_adc.map
+ param = pedestal_thinqtz.map
+ eventcut = mock_moller_maindet_eventcuts.map
+
+[QwDetectorArray]
+ name  = Shower Max Detector
+ map   = mock_moller_shrmax_adc.map
+ param = pedestal_shrmax.map
+ eventcut = mock_moller_maindet_eventcuts.map
+
+[QwDetectorArray]
+ name  = Pion Detector
+ map   = mock_moller_piondet_adc.map
+ param = pedestal_piondet.map
+ eventcut = mock_moller_maindet_eventcuts.map
+
+[QwDetectorArray]
+ name  = Small Angle Detector
+ map   = mock_moller_smallang_adc.map
+ param = pedestal_smallang.map
+ eventcut = mock_moller_maindet_eventcuts.map
+
+[QwDetectorArray]
+ name  = Large Angle Detector
+ map   = mock_moller_largeang_adc.map
+ param = pedestal_largeang.map
+ eventcut = mock_moller_maindet_eventcuts.map

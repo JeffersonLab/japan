@@ -1,0 +1,284 @@
+ROC=6
+Bank=0x6110
+sample_size=15000
+!
+!
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 0, 0,  IntegrationPMT,  TQ01_R1
+MollerADC, 0, 1,  IntegrationPMT,  TQ01_R2
+MollerADC, 0, 2,  IntegrationPMT,  TQ01_R3
+MollerADC, 0, 3,  IntegrationPMT,  TQ01_R4
+MollerADC, 0, 4,  IntegrationPMT,  TQ01_R5a
+MollerADC, 0, 5,  IntegrationPMT,  TQ01_R5b
+MollerADC, 0, 6,  IntegrationPMT,  TQ01_R5c
+MollerADC, 0, 7,  IntegrationPMT,  TQ01_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 1, 0,  IntegrationPMT,  TQ02_R1
+MollerADC, 1, 1,  IntegrationPMT,  TQ02_R2
+MollerADC, 1, 2,  IntegrationPMT,  TQ02_R3
+MollerADC, 1, 3,  IntegrationPMT,  TQ02_R4
+MollerADC, 1, 4,  IntegrationPMT,  TQ02_R5a
+MollerADC, 1, 5,  IntegrationPMT,  TQ02_R5b
+MollerADC, 1, 6,  IntegrationPMT,  TQ02_R5c
+MollerADC, 1, 7,  IntegrationPMT,  TQ02_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 2, 0,  IntegrationPMT,  TQ03_R1
+MollerADC, 2, 1,  IntegrationPMT,  TQ03_R2
+MollerADC, 2, 2,  IntegrationPMT,  TQ03_R3
+MollerADC, 2, 3,  IntegrationPMT,  TQ03_R4
+MollerADC, 2, 4,  IntegrationPMT,  TQ03_R5a
+MollerADC, 2, 5,  IntegrationPMT,  TQ03_R5b
+MollerADC, 2, 6,  IntegrationPMT,  TQ03_R5c
+MollerADC, 2, 7,  IntegrationPMT,  TQ03_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 3, 0,  IntegrationPMT,  TQ04_R1
+MollerADC, 3, 1,  IntegrationPMT,  TQ04_R2
+MollerADC, 3, 2,  IntegrationPMT,  TQ04_R3
+MollerADC, 3, 3,  IntegrationPMT,  TQ04_R4
+MollerADC, 3, 4,  IntegrationPMT,  TQ04_R5a
+MollerADC, 3, 5,  IntegrationPMT,  TQ04_R5b
+MollerADC, 3, 6,  IntegrationPMT,  TQ04_R5c
+MollerADC, 3, 7,  IntegrationPMT,  TQ04_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 4, 0,  IntegrationPMT,  TQ05_R1
+MollerADC, 4, 1,  IntegrationPMT,  TQ05_R2
+MollerADC, 4, 2,  IntegrationPMT,  TQ05_R3
+MollerADC, 4, 3,  IntegrationPMT,  TQ05_R4
+MollerADC, 4, 4,  IntegrationPMT,  TQ05_R5a
+MollerADC, 4, 5,  IntegrationPMT,  TQ05_R5b
+MollerADC, 4, 6,  IntegrationPMT,  TQ05_R5c
+MollerADC, 4, 7,  IntegrationPMT,  TQ05_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 5, 0,  IntegrationPMT,  TQ06_R1
+MollerADC, 5, 1,  IntegrationPMT,  TQ06_R2
+MollerADC, 5, 2,  IntegrationPMT,  TQ06_R3
+MollerADC, 5, 3,  IntegrationPMT,  TQ06_R4
+MollerADC, 5, 4,  IntegrationPMT,  TQ06_R5a
+MollerADC, 5, 5,  IntegrationPMT,  TQ06_R5b
+MollerADC, 5, 6,  IntegrationPMT,  TQ06_R5c
+MollerADC, 5, 7,  IntegrationPMT,  TQ06_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 6, 0,  IntegrationPMT,  TQ07_R1
+MollerADC, 6, 1,  IntegrationPMT,  TQ07_R2
+MollerADC, 6, 2,  IntegrationPMT,  TQ07_R3
+MollerADC, 6, 3,  IntegrationPMT,  TQ07_R4
+MollerADC, 6, 4,  IntegrationPMT,  TQ07_R5a
+MollerADC, 6, 5,  IntegrationPMT,  TQ07_R5b
+MollerADC, 6, 6,  IntegrationPMT,  TQ07_R5c
+MollerADC, 6, 7,  IntegrationPMT,  TQ07_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 7, 0,  IntegrationPMT,  TQ08_R1
+MollerADC, 7, 1,  IntegrationPMT,  TQ08_R2
+MollerADC, 7, 2,  IntegrationPMT,  TQ08_R3
+MollerADC, 7, 3,  IntegrationPMT,  TQ08_R4
+MollerADC, 7, 4,  IntegrationPMT,  TQ08_R5a
+MollerADC, 7, 5,  IntegrationPMT,  TQ08_R5b
+MollerADC, 7, 6,  IntegrationPMT,  TQ08_R5c
+MollerADC, 7, 7,  IntegrationPMT,  TQ08_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 8, 0,  IntegrationPMT,  TQ09_R1
+MollerADC, 8, 1,  IntegrationPMT,  TQ09_R2
+MollerADC, 8, 2,  IntegrationPMT,  TQ09_R3
+MollerADC, 8, 3,  IntegrationPMT,  TQ09_R4
+MollerADC, 8, 4,  IntegrationPMT,  TQ09_R5a
+MollerADC, 8, 5,  IntegrationPMT,  TQ09_R5b
+MollerADC, 8, 6,  IntegrationPMT,  TQ09_R5c
+MollerADC, 8, 7,  IntegrationPMT,  TQ09_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 9, 0,  IntegrationPMT,  TQ10_R1
+MollerADC, 9, 1,  IntegrationPMT,  TQ10_R2
+MollerADC, 9, 2,  IntegrationPMT,  TQ10_R3
+MollerADC, 9, 3,  IntegrationPMT,  TQ10_R4
+MollerADC, 9, 4,  IntegrationPMT,  TQ10_R5a
+MollerADC, 9, 5,  IntegrationPMT,  TQ10_R5b
+MollerADC, 9, 6,  IntegrationPMT,  TQ10_R5c
+MollerADC, 9, 7,  IntegrationPMT,  TQ10_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 10, 0,  IntegrationPMT,  TQ11_R1
+MollerADC, 10, 1,  IntegrationPMT,  TQ11_R2
+MollerADC, 10, 2,  IntegrationPMT,  TQ11_R3
+MollerADC, 10, 3,  IntegrationPMT,  TQ11_R4
+MollerADC, 10, 4,  IntegrationPMT,  TQ11_R5a
+MollerADC, 10, 5,  IntegrationPMT,  TQ11_R5b
+MollerADC, 10, 6,  IntegrationPMT,  TQ11_R5c
+MollerADC, 10, 7,  IntegrationPMT,  TQ11_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 11, 0,  IntegrationPMT,  TQ12_R1
+MollerADC, 11, 1,  IntegrationPMT,  TQ12_R2
+MollerADC, 11, 2,  IntegrationPMT,  TQ12_R3
+MollerADC, 11, 3,  IntegrationPMT,  TQ12_R4
+MollerADC, 11, 4,  IntegrationPMT,  TQ12_R5a
+MollerADC, 11, 5,  IntegrationPMT,  TQ12_R5b
+MollerADC, 11, 6,  IntegrationPMT,  TQ12_R5c
+MollerADC, 11, 7,  IntegrationPMT,  TQ12_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 12, 0,  IntegrationPMT,  TQ13_R1
+MollerADC, 12, 1,  IntegrationPMT,  TQ13_R2
+MollerADC, 12, 2,  IntegrationPMT,  TQ13_R3
+MollerADC, 12, 3,  IntegrationPMT,  TQ13_R4
+MollerADC, 12, 4,  IntegrationPMT,  TQ13_R5a
+MollerADC, 12, 5,  IntegrationPMT,  TQ13_R5b
+MollerADC, 12, 6,  IntegrationPMT,  TQ13_R5c
+MollerADC, 12, 7,  IntegrationPMT,  TQ13_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 13, 0,  IntegrationPMT,  TQ14_R1
+MollerADC, 13, 1,  IntegrationPMT,  TQ14_R2
+MollerADC, 13, 2,  IntegrationPMT,  TQ14_R3
+MollerADC, 13, 3,  IntegrationPMT,  TQ14_R4
+MollerADC, 13, 4,  IntegrationPMT,  TQ14_R5a
+MollerADC, 13, 5,  IntegrationPMT,  TQ14_R5b
+MollerADC, 13, 6,  IntegrationPMT,  TQ14_R5c
+MollerADC, 13, 7,  IntegrationPMT,  TQ14_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 14, 0,  IntegrationPMT,  TQ15_R1
+MollerADC, 14, 1,  IntegrationPMT,  TQ15_R2
+MollerADC, 14, 2,  IntegrationPMT,  TQ15_R3
+MollerADC, 14, 3,  IntegrationPMT,  TQ15_R4
+MollerADC, 14, 4,  IntegrationPMT,  TQ15_R5a
+MollerADC, 14, 5,  IntegrationPMT,  TQ15_R5b
+MollerADC, 14, 6,  IntegrationPMT,  TQ15_R5c
+MollerADC, 14, 7,  IntegrationPMT,  TQ15_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 15, 0,  IntegrationPMT,  TQ16_R1
+MollerADC, 15, 1,  IntegrationPMT,  TQ16_R2
+MollerADC, 15, 2,  IntegrationPMT,  TQ16_R3
+MollerADC, 15, 3,  IntegrationPMT,  TQ16_R4
+MollerADC, 15, 4,  IntegrationPMT,  TQ16_R5a
+MollerADC, 15, 5,  IntegrationPMT,  TQ16_R5b
+MollerADC, 15, 6,  IntegrationPMT,  TQ16_R5c
+MollerADC, 15, 7,  IntegrationPMT,  TQ16_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 16, 0,  IntegrationPMT,  TQ17_R1
+MollerADC, 16, 1,  IntegrationPMT,  TQ17_R2
+MollerADC, 16, 2,  IntegrationPMT,  TQ17_R3
+MollerADC, 16, 3,  IntegrationPMT,  TQ17_R4
+MollerADC, 16, 4,  IntegrationPMT,  TQ17_R5a
+MollerADC, 16, 5,  IntegrationPMT,  TQ17_R5b
+MollerADC, 16, 6,  IntegrationPMT,  TQ17_R5c
+MollerADC, 16, 7,  IntegrationPMT,  TQ17_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 17, 0,  IntegrationPMT,  TQ18_R1
+MollerADC, 17, 1,  IntegrationPMT,  TQ18_R2
+MollerADC, 17, 2,  IntegrationPMT,  TQ18_R3
+MollerADC, 17, 3,  IntegrationPMT,  TQ18_R4
+MollerADC, 17, 4,  IntegrationPMT,  TQ18_R5a
+MollerADC, 17, 5,  IntegrationPMT,  TQ18_R5b
+MollerADC, 17, 6,  IntegrationPMT,  TQ18_R5c
+MollerADC, 17, 7,  IntegrationPMT,  TQ18_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 18, 0,  IntegrationPMT,  TQ19_R1
+MollerADC, 18, 1,  IntegrationPMT,  TQ19_R2
+MollerADC, 18, 2,  IntegrationPMT,  TQ19_R3
+MollerADC, 18, 3,  IntegrationPMT,  TQ19_R4
+MollerADC, 18, 4,  IntegrationPMT,  TQ19_R5a
+MollerADC, 18, 5,  IntegrationPMT,  TQ19_R5b
+MollerADC, 18, 6,  IntegrationPMT,  TQ19_R5c
+MollerADC, 18, 7,  IntegrationPMT,  TQ19_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 19, 0,  IntegrationPMT,  TQ20_R1
+MollerADC, 19, 1,  IntegrationPMT,  TQ20_R2
+MollerADC, 19, 2,  IntegrationPMT,  TQ20_R3
+MollerADC, 19, 3,  IntegrationPMT,  TQ20_R4
+MollerADC, 19, 4,  IntegrationPMT,  TQ20_R5a
+MollerADC, 19, 5,  IntegrationPMT,  TQ20_R5b
+MollerADC, 19, 6,  IntegrationPMT,  TQ20_R5c
+MollerADC, 19, 7,  IntegrationPMT,  TQ20_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 20, 0,  IntegrationPMT,  TQ21_R1
+MollerADC, 20, 1,  IntegrationPMT,  TQ21_R2
+MollerADC, 20, 2,  IntegrationPMT,  TQ21_R3
+MollerADC, 20, 3,  IntegrationPMT,  TQ21_R4
+MollerADC, 20, 4,  IntegrationPMT,  TQ21_R5a
+MollerADC, 20, 5,  IntegrationPMT,  TQ21_R5b
+MollerADC, 20, 6,  IntegrationPMT,  TQ21_R5c
+MollerADC, 20, 7,  IntegrationPMT,  TQ21_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 21, 0,  IntegrationPMT,  TQ22_R1
+MollerADC, 21, 1,  IntegrationPMT,  TQ22_R2
+MollerADC, 21, 2,  IntegrationPMT,  TQ22_R3
+MollerADC, 21, 3,  IntegrationPMT,  TQ22_R4
+MollerADC, 21, 4,  IntegrationPMT,  TQ22_R5a
+MollerADC, 21, 5,  IntegrationPMT,  TQ22_R5b
+MollerADC, 21, 6,  IntegrationPMT,  TQ22_R5c
+MollerADC, 21, 7,  IntegrationPMT,  TQ22_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 22, 0,  IntegrationPMT,  TQ23_R1
+MollerADC, 22, 1,  IntegrationPMT,  TQ23_R2
+MollerADC, 22, 2,  IntegrationPMT,  TQ23_R3
+MollerADC, 22, 3,  IntegrationPMT,  TQ23_R4
+MollerADC, 22, 4,  IntegrationPMT,  TQ23_R5a
+MollerADC, 22, 5,  IntegrationPMT,  TQ23_R5b
+MollerADC, 22, 6,  IntegrationPMT,  TQ23_R5c
+MollerADC, 22, 7,  IntegrationPMT,  TQ23_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 23, 0,  IntegrationPMT,  TQ24_R1
+MollerADC, 23, 1,  IntegrationPMT,  TQ24_R2
+MollerADC, 23, 2,  IntegrationPMT,  TQ24_R3
+MollerADC, 23, 3,  IntegrationPMT,  TQ24_R4
+MollerADC, 23, 4,  IntegrationPMT,  TQ24_R5a
+MollerADC, 23, 5,  IntegrationPMT,  TQ24_R5b
+MollerADC, 23, 6,  IntegrationPMT,  TQ24_R5c
+MollerADC, 23, 7,  IntegrationPMT,  TQ24_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 24, 0,  IntegrationPMT,  TQ25_R1
+MollerADC, 24, 1,  IntegrationPMT,  TQ25_R2
+MollerADC, 24, 2,  IntegrationPMT,  TQ25_R3
+MollerADC, 24, 3,  IntegrationPMT,  TQ25_R4
+MollerADC, 24, 4,  IntegrationPMT,  TQ25_R5a
+MollerADC, 24, 5,  IntegrationPMT,  TQ25_R5b
+MollerADC, 24, 6,  IntegrationPMT,  TQ25_R5c
+MollerADC, 24, 7,  IntegrationPMT,  TQ25_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 25, 0,  IntegrationPMT,  TQ26_R1
+MollerADC, 25, 1,  IntegrationPMT,  TQ26_R2
+MollerADC, 25, 2,  IntegrationPMT,  TQ26_R3
+MollerADC, 25, 3,  IntegrationPMT,  TQ26_R4
+MollerADC, 25, 4,  IntegrationPMT,  TQ26_R5a
+MollerADC, 25, 5,  IntegrationPMT,  TQ26_R5b
+MollerADC, 25, 6,  IntegrationPMT,  TQ26_R5c
+MollerADC, 25, 7,  IntegrationPMT,  TQ26_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 26, 0,  IntegrationPMT,  TQ27_R1
+MollerADC, 26, 1,  IntegrationPMT,  TQ27_R2
+MollerADC, 26, 2,  IntegrationPMT,  TQ27_R3
+MollerADC, 26, 3,  IntegrationPMT,  TQ27_R4
+MollerADC, 26, 4,  IntegrationPMT,  TQ27_R5a
+MollerADC, 26, 5,  IntegrationPMT,  TQ27_R5b
+MollerADC, 26, 6,  IntegrationPMT,  TQ27_R5c
+MollerADC, 26, 7,  IntegrationPMT,  TQ27_R6
+
+! module.type, module.num, module.chan, det.type, det.name
+MollerADC, 27, 0,  IntegrationPMT,  TQ28_R1
+MollerADC, 27, 1,  IntegrationPMT,  TQ28_R2
+MollerADC, 27, 2,  IntegrationPMT,  TQ28_R3
+MollerADC, 27, 3,  IntegrationPMT,  TQ28_R4
+MollerADC, 27, 4,  IntegrationPMT,  TQ28_R5a
+MollerADC, 27, 5,  IntegrationPMT,  TQ28_R5b
+MollerADC, 27, 6,  IntegrationPMT,  TQ28_R5c
+MollerADC, 27, 7,  IntegrationPMT,  TQ28_R6
