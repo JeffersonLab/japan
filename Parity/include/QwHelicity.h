@@ -96,7 +96,7 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
   void   PredictHelicity();
   void   RunPredictor();
   void   SetHelicityDelay(Int_t delay);
-  void   SetHelicityBitPattern(UInt_t bits);
+  void   SetHelicityBitPattern(TString hex);
 
   Int_t  GetHelicityReported();
   Int_t  GetHelicityActual();
@@ -180,9 +180,9 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
   UInt_t fInputReg_PatternSync;
   UInt_t fInputReg_PairSync;
 
-  static const UInt_t kDefaultHelicityBitPattern;
+  static const std::vector<UInt_t> kDefaultHelicityBitPattern;
 
-  UInt_t fHelicityBitPattern;
+  std::vector<UInt_t> fHelicityBitPattern;
 
   std::vector <QwWord> fWord;
   std::vector < std::pair<Int_t, Int_t> > fWordsPerSubbank;  // The indices of the first & last word in each subbank

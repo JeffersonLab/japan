@@ -30,7 +30,7 @@
 
 
 // Multiplet structure
-static const int kMultiplet = 4;
+static const int kMultiplet = 64;
 
 // Beam trips on qwk_bcm0l03
 static const bool kBeamTrips = true;
@@ -93,17 +93,26 @@ int main(int argc, char* argv[])
   // - beam modulation
 
   // Get the beamline channels we want to correlate
-  QwBeamLine* beamline = dynamic_cast<QwBeamLine*>(detectors.GetSubsystemByName("Injector BeamLine"));
+  QwBeamLine* beamline = dynamic_cast<QwBeamLine*>(detectors.GetSubsystemByName("Main BeamLine"));
   if (! beamline) QwWarning << "No beamline subsystem defined!" << QwLog::endl;
   beamline->LoadMockDataParameters("mock_data_parameters.map");
 
-
-
 //-----------------------------------------------------------------------------------------------
   // Get the main detector channels we want to correlate
-  QwDetectorArray* maindetector =
-    dynamic_cast<QwDetectorArray*>(detectors.GetSubsystemByName("Main Detector"));
-  if (! maindetector) QwWarning << "No main detector subsystem defined!" << QwLog::endl;
+//  QwDetectorArray* maindetector = 
+//    dynamic_cast<QwDetectorArray*>(detectors.GetSubsystemByName("Main Detector"));
+//  if (! maindetector) QwWarning << "No main detector subsystem defined!" << QwLog::endl;
+
+  // new vectors for GetSubsystemByType
+  std::vector <QwDetectorArray*> detchannels;
+  std::vector <VQwSubsystem*> tempvector = detectors.GetSubsystemByType("QwDetectorArray");
+  //  detectors.GetSubsystemByType;
+
+  for (std::size_t i = 0; i < tempvector.size(); i++){
+    detchannels.push_back(dynamic_cast<QwDetectorArray*>(tempvector[i]));
+
+  //return detchannels;
+  }
 
 /*
 if(1==2){
@@ -232,8 +241,9 @@ if(1==2){
       double time = event * helicity_window;
 
       // Fill the detectors with randomized data
+      
       int myhelicity = helicity->GetHelicityActual() ? +1 : -1;
-
+      //std::cout << myhelicity << std::endl;
 
       // Secondly introduce correlations between variables
       //
@@ -281,8 +291,11 @@ if(1==2){
       detectors.RandomizeEventData(myhelicity, time);
 //      detectors.ProcessEvent();
 //      beamline-> ProcessEvent(); //Do we need to keep this line now?  Check the maindetector correlation with beamline devices with and without it.
-      maindetector->ExchangeProcessedData();
-      maindetector->RandomizeMollerEvent(myhelicity);
+      
+     for (std::size_t i = 0; i < detchannels.size(); i++){
+      detchannels[i]->ExchangeProcessedData();
+      detchannels[i]->RandomizeMollerEvent(myhelicity);
+      }
 
       // Write this event to file
       eventbuffer.EncodeSubsystemData(detectors);

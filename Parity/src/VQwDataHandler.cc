@@ -66,8 +66,9 @@ VQwDataHandler::VQwDataHandler(const VQwDataHandler &source)
   //  Create new objects for the the outputs.
   fOutputVar.resize(source.fOutputVar.size());
   for (size_t i = 0; i < this->fDependentVar.size(); i++) {
-    const QwVQWK_Channel* vqwk = dynamic_cast<const QwVQWK_Channel*>(source.fOutputVar[i]);
-    this->fOutputVar[i] = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
+    //const QwVQWK_Channel* vqwk = dynamic_cast<const QwVQWK_Channel*>(source.fOutputVar[i]);
+    this->fOutputVar[i] = source.fOutputVar[i]->Clone(VQwDataElement::kDerived);
+    //this->fOutputVar[i] = new QwVQWK_Channel(*vqwk, VQwDataElement::kDerived);
   }
 
 }

@@ -5,6 +5,7 @@ project(QwAnalysis VERSION 0.1 LANGUAGES CXX)
 
 # Local path for cmake modules
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules/")
+list(APPEND CMAKE_PREFIX_PATH "/work/halla/moller12gev/pking/local_devel/boost_1_82_0")
 
 # Default install path is the source directory
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
