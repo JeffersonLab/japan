@@ -10,7 +10,9 @@
 #include <iterator>
 
 // Copy C-style array a to b
-#define QwCopyArray(a,b) \
-  std::copy(std::begin(a), std::end(a), std::begin(b))
+template<typename T>
+void QwCopyArray( const T& a, T& b ) {
+  std::copy(std::begin(a), std::end(a), std::begin(b));
+}
 
 #endif //QWANALYSIS_QWUTIL_H
