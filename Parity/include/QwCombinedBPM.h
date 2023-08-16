@@ -17,6 +17,7 @@
 // Qweak headers
 #include "VQwHardwareChannel.h"
 #include "VQwBPM.h"
+#include "QwUtil.h"
 
 // Forward declarations
 #ifdef __USE_DATABASE__
@@ -39,7 +40,7 @@ class QwCombinedBPM : public VQwBPM {
 //-------------------------------------------------------------------------
   size_t GetNumberOfElements() {return fElement.size();};
   TString GetSubElementName(Int_t index) {return fElement.at(index)->GetElementName();};
-//-------------------------------------------------------------------------  
+//-------------------------------------------------------------------------
 
   QwCombinedBPM(){
   };
@@ -55,12 +56,13 @@ class QwCombinedBPM : public VQwBPM {
   };
   QwCombinedBPM(const QwCombinedBPM& source)
   : VQwBPM(source),
-    fSlope(source.fSlope),
-    fIntercept(source.fIntercept),
-    fMinimumChiSquare(source.fMinimumChiSquare),
-    fAbsPos(source.fAbsPos),
     fEffectiveCharge(source.fEffectiveCharge)
-  { }
+  {
+    QwCopyArray(source.fSlope, fSlope);
+    QwCopyArray(source.fIntercept, fIntercept);
+    QwCopyArray(source.fMinimumChiSquare, fMinimumChiSquare);
+    QwCopyArray(source.fAbsPos, fAbsPos);
+  }
   virtual ~QwCombinedBPM() { };
 
   using VQwBPM::EBeamPositionMonitorAxis;
@@ -184,7 +186,7 @@ class QwCombinedBPM : public VQwBPM {
   Double_t SumOver( std::vector <Double_t> weight , std::vector <T> val);
   void     LeastSquareFit(VQwBPM::EBeamPositionMonitorAxis axis, std::vector<Double_t> fWeights) ; //bbbbb
 
-  
+
 
   /////
  private:
@@ -217,7 +219,7 @@ class QwCombinedBPM : public VQwBPM {
   T fAbsPos[2];
   T fEffectiveCharge;
 
-private: 
+private:
   // Functions to be removed
   void    MakeBPMComboList();
   std::vector<T> fBPMComboElementList;
@@ -227,4 +229,3 @@ private:
 
 
 #endif
-

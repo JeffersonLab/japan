@@ -18,6 +18,7 @@
 #include "QwVQWK_Channel.h"
 #include "VQwBPM.h"
 #include "QwParameterFile.h"
+#include "QwUtil.h"
 
 // Forward declarations
 #ifdef __USE_DATABASE__
@@ -46,16 +47,17 @@ class QwQPD : public VQwBPM {
     InitializeChannel(subsystemname, name);
     fQwQPDCalibration[0] = 1.0;
     fQwQPDCalibration[1] = 1.0;
-  };    
+  };
   QwQPD(const QwQPD& source)
   : VQwBPM(source),
-    fPhotodiode(source.fPhotodiode),
-    fRelPos(source.fRelPos),
-    fAbsPos(source.fAbsPos),
     fEffectiveCharge(source.fEffectiveCharge)
-  { }
+  {
+    QwCopyArray(source.fPhotodiode, fPhotodiode);
+    QwCopyArray(source.fRelPos, fRelPos);
+    QwCopyArray(source.fAbsPos, fAbsPos);
+  }
   virtual ~QwQPD() { };
-  
+
   void    InitializeChannel(TString name);
   // new routine added to update necessary information for tree trimming
   void    InitializeChannel(TString subsystem, TString name);
@@ -66,7 +68,7 @@ class QwQPD : public VQwBPM {
   }
 
   void    GetCalibrationFactors(Double_t AlphaX, Double_t AlphaY);
-  
+
   void    ClearEventData();
   Int_t   ProcessEvBuffer(UInt_t* buffer,
 			UInt_t word_position_in_buffer,UInt_t indexnumber);
@@ -149,7 +151,7 @@ class QwQPD : public VQwBPM {
  private:
 
 
-  static const TString subelement[4]; 
+  static const TString subelement[4];
   /*  Position calibration factor, transform ADC counts in mm */
   Double_t fQwQPDCalibration[2];
 

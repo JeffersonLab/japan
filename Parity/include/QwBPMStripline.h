@@ -17,6 +17,7 @@
 // Qweak headers
 #include "VQwBPM.h"
 #include "QwParameterFile.h"
+#include "QwUtil.h"
 
 // Forward declarations
 #ifdef __USE_DATABASE__
@@ -38,7 +39,7 @@ class QwBPMStripline : public VQwBPM {
 
  public:
   static UInt_t  GetSubElementIndex(TString subname);
-  
+
  public:
   QwBPMStripline() { };
   QwBPMStripline(TString name) {
@@ -46,26 +47,29 @@ class QwBPMStripline : public VQwBPM {
     fRotationAngle = 45.0;
     SetRotation(fRotationAngle);
     bRotated=kTRUE;
-  };   
+  };
   QwBPMStripline(TString subsystemname, TString name) {
     SetSubsystemName(subsystemname);
     InitializeChannel(subsystemname, name);
     fRotationAngle = 45.0;
     SetRotation(fRotationAngle);
     bRotated=kTRUE;
-  };    
+  };
   QwBPMStripline(TString subsystemname, TString name, TString type) {
     SetSubsystemName(subsystemname);
     InitializeChannel(subsystemname, name, type);
     fRotationAngle = 45.0;
     SetRotation(fRotationAngle);
     bRotated=kTRUE;
-  };    
+  };
   QwBPMStripline(const QwBPMStripline& source)
   : VQwBPM(source),
-    fWire(source.fWire),fRelPos(source.fRelPos),fAbsPos(source.fAbsPos),
     fEffectiveCharge(source.fEffectiveCharge),fEllipticity(source.fEllipticity)
-  { }
+  {
+    QwCopyArray(source.fWire, fWire);
+    QwCopyArray(source.fRelPos, fRelPos);
+    QwCopyArray(source.fAbsPos, fAbsPos);
+  }
   virtual ~QwBPMStripline() { };
 
   void    InitializeChannel(TString name);
@@ -199,7 +203,7 @@ class QwBPMStripline : public VQwBPM {
   T fEffectiveCharge;
   T fEllipticity;
 
-private: 
+private:
   // Functions to be removed
   void    SetEventData(Double_t* block, UInt_t sequencenumber);
   std::vector<T> fBPMElementList;

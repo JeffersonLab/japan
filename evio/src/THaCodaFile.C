@@ -22,7 +22,7 @@ ClassImp(THaCodaFile)
 #endif
 #endif
 
-//Constructors 
+//Constructors
 
   THaCodaFile::THaCodaFile() {       // do nothing (must open file separately)
        ffirst = 0;
@@ -31,7 +31,7 @@ ClassImp(THaCodaFile)
   THaCodaFile::THaCodaFile(TString fname) {
        ffirst = 0;
        init(fname);
-       codaOpen(fname.Data(),"r");       // read only 
+       codaOpen(fname.Data(),"r");       // read only
   }
   THaCodaFile::THaCodaFile(TString fname, TString readwrite) {
        ffirst = 0;
@@ -43,9 +43,9 @@ ClassImp(THaCodaFile)
   THaCodaFile::~THaCodaFile () {
        codaClose();
        staterr("close",fStatus);
-  };       
+  };
 
-  int THaCodaFile::codaOpen(TString fname) {  
+  int THaCodaFile::codaOpen(TString fname) {
        init(fname);
        char rw[] ="r";
        // Introduce "char rw[]" to suppress  "warning: deprecated conversion from string constant to 'char*'"
@@ -55,7 +55,7 @@ ClassImp(THaCodaFile)
        return fStatus;
   };
 
-  int THaCodaFile::codaOpen(TString fname, TString readwrite) {  
+  int THaCodaFile::codaOpen(TString fname, TString readwrite) {
       init(fname);
       fStatus = evOpen((char*)fname.Data(),(char*)readwrite.Data(),&handle);
       staterr("open",fStatus);
@@ -120,8 +120,8 @@ ClassImp(THaCodaFile)
 
   int THaCodaFile::filterToFile(TString output_file) {
 // A call to filterToFile filters from present file to output_file
-// using filter criteria defined by evtypes, evlist, and max_to_filt 
-// which are loaded by public methods of this class.  If no conditions 
+// using filter criteria defined by evtypes, evlist, and max_to_filt
+// which are loaded by public methods of this class.  If no conditions
 // were loaded, it makes a copy of the input file (i.e. no filtering).
 
        int i;
@@ -144,7 +144,7 @@ ClassImp(THaCodaFile)
           fclose(fp);
           return CODA_ERROR;
        }
-       THaCodaFile* fout = new THaCodaFile(output_file.Data(),"w"); 
+       THaCodaFile* fout = new THaCodaFile(output_file.Data(),"w");
        int nfilt = 0;
 
        while (codaRead() == S_SUCCESS) {
@@ -152,16 +152,16 @@ ClassImp(THaCodaFile)
            int evtype = rawbuff[1]>>16;
            int evnum = rawbuff[4];
            int oktofilt = 1;
-           if (CODA_DEBUG) { 
+           if (CODA_DEBUG) {
 	     std::cout << "Input evtype " << std::dec << evtype;
-             std::cout << "  evnum " << evnum << std::endl; 
+             std::cout << "  evnum " << evnum << std::endl;
              std::cout << "max_to_filt = " << max_to_filt << std::endl;
              std::cout << "evtype size = " << evtypes[0] << std::endl;
              std::cout << "evlist size = " << evlist[0] << std::endl;
 	   }
            if ( evtypes[0] > 0 ) {
                oktofilt = 0;
-               for (i=1; i<=evtypes[0]; i++) {               
+               for (i=1; i<=evtypes[0]; i++) {
                    if (evtype == evtypes[i]) {
                        oktofilt = 1;
                        goto Cont1;
@@ -171,7 +171,7 @@ ClassImp(THaCodaFile)
 Cont1:
            if ( evlist[0] > 0 ) {
                oktofilt = 0;
-               for (i=1; i<=evlist[0]; i++) {               
+               for (i=1; i<=evlist[0]; i++) {
                    if (evnum == evlist[i]) {
                        oktofilt = 1;
                        goto Cont2;
@@ -264,19 +264,19 @@ void THaCodaFile::staterr(TString tried_to, unsigned int status) {
        std::cout << "   1.  You mistyped the name of file ?" << std::endl;
        std::cout << "   2.  The file has length zero ? " << std::endl;
     }
-    switch (status) {
+    switch (static_cast<Long64_t>(status)) {
       case S_EVFILE_TRUNC :
 	 std::cout << "THaCodaFile ERROR:  Truncated event on file read" << std::endl;
          std::cout << "Evbuffer size is too small.  Job aborted." << std::endl;
          exit(0);  //  If this ever happens, recompile with MAXEVLEN
-	           //  bigger, and mutter under your breath at the author.    
-      case S_EVFILE_BADBLOCK : 
+	           //  bigger, and mutter under your breath at the author.
+      case S_EVFILE_BADBLOCK :
         std::cout << "Bad block number encountered " << std::endl;
         break;
       case S_EVFILE_BADHANDLE :
         std::cout << "Bad handle (file/stream not open) " << std::endl;
         break;
-      case S_EVFILE_ALLOCFAIL : 
+      case S_EVFILE_ALLOCFAIL :
         std::cout << "Failed to allocate event I/O" << std::endl;
         break;
       case S_EVFILE_BADFILE :
@@ -288,7 +288,7 @@ void THaCodaFile::staterr(TString tried_to, unsigned int status) {
       case S_EVFILE_UNXPTDEOF :
         std::cout << "Unexpected end of file while reading event" << std::endl;
         break;
-      case EOF: 
+      case EOF:
         if(CODA_VERBOSE) {
           std::cout << "Normal end of file " << filename << " encountered" << std::endl;
 	}
@@ -314,15 +314,3 @@ void THaCodaFile::staterr(TString tried_to, unsigned int status) {
        evtypes[0] = 0;
     }
   };
-
-
-
-
-
-
-
-
-
-
-
-
