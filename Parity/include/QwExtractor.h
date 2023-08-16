@@ -25,6 +25,7 @@ class QwExtractor:public VQwDataHandler, public MQwDataHandlerCloneable<QwExtrac
 
     Int_t LoadChannelMap(const std::string& mapfile);
     Int_t ConnectChannels(QwSubsystemArrayParity& event);
+    Int_t ConnectChannels(QwSubsystemArrayParity& asym, QwSubsystemArrayParity& diff);
     void ConstructTreeBranches(
         QwRootFile *treerootfile,
         const std::string& treeprefix = "",
@@ -32,11 +33,16 @@ class QwExtractor:public VQwDataHandler, public MQwDataHandlerCloneable<QwExtrac
     void ProcessData();
     void SetPointer(QwSubsystemArrayParity *ptr){fSourcePointer = ptr;};
     void FillTreeBranches(QwRootFile *treerootfile);
+
+    void ParseConfigFile(QwParameterFile& file);
   
   protected:
     /// Default constructor (Protected for child class access)
 
     /// Error flag mask
+    std::string fTreeprefix = "";
+    std::string fBranchprefix = "";
+    UInt_t fCut;
     UInt_t fErrorFlagMask;
     const UInt_t* fErrorFlagPointer;
     Int_t fLocalFlag = 0;
