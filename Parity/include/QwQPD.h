@@ -157,12 +157,12 @@ class QwQPD : public VQwBPM {
 
 
  protected:
-  QwVQWK_Channel fPhotodiode[4];
-  QwVQWK_Channel fRelPos[2];
+  std::array<QwVQWK_Channel,4> fPhotodiode;//[4];
+  std::array<QwVQWK_Channel,2> fRelPos;//[2];
 
   //  These are the "real" data elements, to which the base class
   //  fAbsPos_base and fEffectiveCharge_base are pointers.
-  QwVQWK_Channel fAbsPos[2];
+  std::array<QwVQWK_Channel,2> fAbsPos;//[2];
   QwVQWK_Channel fEffectiveCharge;
 
   std::vector<QwVQWK_Channel> fQPDElementList;

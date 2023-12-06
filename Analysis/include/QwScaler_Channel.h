@@ -81,6 +81,20 @@ public:
   { }
   virtual ~VQwScaler_Channel() { };
 
+  void CopyFrom(const VQwScaler_Channel& value){
+    VQwHardwareChannel::CopyFrom(value);
+    fValue_Raw_Old = value.fValue_Raw_Old;
+    fValue_Raw = value.fValue_Raw;
+    fValue = value.fValue;
+    fValueM2 = value.fValueM2;
+    fValueError = value.fValueError;
+    fClockNormalization = value.fClockNormalization;
+    fNormChannelName = value.fNormChannelName;
+    fNeedsExternalClock = value.fNeedsExternalClock;
+    fIsDifferentialScaler = value.fIsDifferentialScaler;
+  };
+
+
   /// \brief Initialize the fields in this object
   void  InitializeChannel(TString name, TString datatosave = "raw");
 
@@ -241,6 +255,7 @@ class QwScaler_Channel: public VQwScaler_Channel
   QwScaler_Channel(const QwScaler_Channel& source, VQwDataElement::EDataToSave datatosave)
     : VQwScaler_Channel(source,datatosave) { };
 
+  using VQwScaler_Channel::CopyFrom;
   using VQwHardwareChannel::Clone;
   VQwHardwareChannel* Clone(VQwDataElement::EDataToSave datatosave) const;
 

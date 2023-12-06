@@ -39,6 +39,8 @@ public:
   VQwHardwareChannel(const VQwHardwareChannel& value, VQwDataElement::EDataToSave datatosave);
   virtual ~VQwHardwareChannel() { };
 
+  virtual void CopyFrom(const VQwHardwareChannel& value);
+
   void ProcessOptions();
 
   virtual VQwHardwareChannel* Clone() const{

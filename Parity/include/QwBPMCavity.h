@@ -150,12 +150,12 @@ class QwBPMCavity : public VQwBPM {
 
 
  protected:
-  QwVQWK_Channel fElement[kNumElements];
-  QwVQWK_Channel fRelPos[kNumAxes];
+  std::array<QwVQWK_Channel,kNumElements> fElement;//(kNumElements);
+  std::array<QwVQWK_Channel,kNumAxes> fRelPos;//(kNumAxes);
 
   //  These are the "real" data elements, to which the base class
   //  fAbsPos_base and fElement[kQElem]_base are pointers.
-  QwVQWK_Channel fAbsPos[kNumAxes];
+  std::array<QwVQWK_Channel,kNumAxes> fAbsPos;//(kNumAxes);
 
 
  private:

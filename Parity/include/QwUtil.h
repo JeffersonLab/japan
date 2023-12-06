@@ -12,7 +12,9 @@
 // Copy C-style array a to b
 template<typename T>
 void QwCopyArray( const T& a, T& b ) {
-  std::copy(std::begin(a), std::end(a), std::begin(b));
+  for (size_t i=0; i<a.size(); i++){
+    b.at(i).CopyFrom(a.at(i));
+  }
 }
 
 #endif //QWANALYSIS_QWUTIL_H

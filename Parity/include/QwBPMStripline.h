@@ -194,12 +194,12 @@ class QwBPMStripline : public VQwBPM {
 
 
  protected:
-  T fWire[4];
-  T fRelPos[2];
+  std::array<T,4> fWire;//[4];
+  std::array<T,2> fRelPos;//[2];
 
   //  These are the "real" data elements, to which the base class
   //  fAbsPos_base and fEffectiveCharge_base are pointers.
-  T fAbsPos[2];
+  std::array<T,2> fAbsPos;//[2];
   T fEffectiveCharge;
   T fEllipticity;
 

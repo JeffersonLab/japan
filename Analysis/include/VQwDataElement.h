@@ -82,6 +82,16 @@ class VQwDataElement: public MQwHistograms {
   /// Virtual destructor
   virtual ~VQwDataElement() { };
 
+  virtual void CopyFrom(const VQwDataElement& value){
+    fElementName       = value.fElementName;
+    //    fNumberOfDataWords = value.fNumberOfDataWords;
+    fGoodEventCount    = value.fGoodEventCount;
+    fSubsystemName     = value.fSubsystemName;
+    fModuleType        = value.fModuleType;
+    fErrorFlag         = value.fErrorFlag;
+    fErrorConfigFlag   = value.fErrorConfigFlag;
+  }
+
   /*! \brief Is the name of this element empty? */
   Bool_t IsNameEmpty() const { return fElementName.IsNull(); }
   /*! \brief Set the name of this element */

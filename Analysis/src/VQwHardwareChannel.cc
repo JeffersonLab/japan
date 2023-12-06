@@ -64,6 +64,29 @@ VQwHardwareChannel::VQwHardwareChannel(const VQwHardwareChannel& value, VQwDataE
 {
 }
 
+void VQwHardwareChannel::CopyFrom(const VQwHardwareChannel& value)
+{
+  VQwDataElement::CopyFrom(value);
+  fNumberOfDataWords = value.fNumberOfDataWords;
+  fNumberOfSubElements = value.fNumberOfSubElements;
+  fDataToSave = value.fDataToSave;
+  fTreeArrayIndex = value.fTreeArrayIndex;
+  fTreeArrayNumEntries = value.fTreeArrayNumEntries;
+  fPedestal = value.fPedestal;
+  fCalibrationFactor = value.fCalibrationFactor;
+  kFoundPedestal = value.kFoundPedestal;
+  kFoundGain = value.kFoundGain;
+  bEVENTCUTMODE = value.bEVENTCUTMODE;
+  fULimit = value.fULimit;
+  fLLimit = value.fLLimit;
+  fStability = value.fStability;
+  fBurpThreshold = value.fBurpThreshold;
+  fBurpCountdown = value.fBurpCountdown;
+  fBurpHoldoff = value.fBurpHoldoff;
+}
+
+
+
 void VQwHardwareChannel::ProcessOptions(){
   if (gQwOptions.HasValue("burp.holdoff"))
     fBurpHoldoff=gQwOptions.GetValue<int>("burp.holdoff");
