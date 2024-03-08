@@ -12,6 +12,7 @@
 
 // ROOT headers
 #include "TRegexp.h"
+#include "TMath.h"
 
 // Qweak headers
 #include "QwHistogramHelper.h"
@@ -32,7 +33,7 @@ RegisterSubsystemFactory(QwHelicity);
 /// Default helicity bit pattern of 0x69 represents a -++-+--+ octet
 /// (event polarity listed in reverse time order), where the LSB
 /// of the bit pattern is the first event of the pattern.
-const UInt_t QwHelicity::kDefaultHelicityBitPattern = 0x69;
+const std::vector<UInt_t> QwHelicity::kDefaultHelicityBitPattern{0x69};
 
 //**************************************************//
 /// Constructor with name
@@ -88,7 +89,7 @@ QwHelicity::QwHelicity(const QwHelicity& source)
   fInputReg_HelMinus(source.fInputReg_HelMinus),
   fInputReg_PatternSync(source.fInputReg_PatternSync),
   fInputReg_PairSync(source.fInputReg_PairSync),
-  fHelicityBitPattern(source.fHelicityBitPattern),
+  //fHelicityBitPattern(source.fHelicityBitPattern),
   kPatternCounter(source.kPatternCounter),
   kMpsCounter(source.kMpsCounter),
   kPatternPhase(source.kPatternPhase),
@@ -96,6 +97,8 @@ QwHelicity::QwHelicity(const QwHelicity& source)
   fEventNumberFirst(-1),fPatternNumberFirst(-1),
   fSuppressMPSErrorMsgs(kFALSE)
 {
+  fHelicityBitPattern = source.fHelicityBitPattern; 
+  //std::cout << source.fHelicityBitPattern.size() << " " << fHelicityBitPattern.size() << std::endl;
   ClearErrorCounters();
   // Default helicity delay to two patterns.
   fHelicityDelay = 2;
@@ -219,10 +222,8 @@ void QwHelicity::ProcessOptions(QwOptions &options)
 	      << options.GetValue<std::string>("helicity.bitpattern") 
 	      << QwLog::endl;
     std::string hex = options.GetValue<std::string>("helicity.bitpattern");
-    UInt_t bits = QwParameterFile::GetUInt(hex);
-    SetHelicityBitPattern(bits);
-  } else {
-    BuildHelicityBitPattern(fMaxPatternPhase);
+    //UInt_t bits = QwParameterFile::GetUInt(hex);
+    SetHelicityBitPattern(hex);
   }
 
   if (options.GetValue<bool>("helicity.toggle-mode")) {
@@ -724,7 +725,7 @@ void  QwHelicity::ProcessEvent()
       fActualPatternPolarity   = fHelicityReported;
       fDelayedPatternPolarity  = fHelicityReported;
     } 
-    
+   
   }
 
   if(ldebug){
@@ -736,8 +737,9 @@ void  QwHelicity::ProcessEvent()
 
 
   }
-
+  //std::cout << fPatternPhaseNumber << " " << fHelicityReported << " LOOK HERE !!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
   return;
+
 }
 
 
@@ -860,8 +862,8 @@ Int_t QwHelicity::LoadChannelMap(TString mapfile)
       fMaxPatternPhase=value;
       //QwMessage << " fMaxPatternPhase " << fMaxPatternPhase << QwLog::endl;
     }
-    if (mapstr.PopValue("patternbits",value)) {
-      SetHelicityBitPattern(value);
+    if (mapstr.PopValue("patternbits",valuestr)) {
+      SetHelicityBitPattern(valuestr);
     }
     if (mapstr.PopValue("inputregmask_fakemps",value)) {
       fInputReg_FakeMPS = value;
@@ -1025,6 +1027,8 @@ Int_t QwHelicity::LoadChannelMap(TString mapfile)
       exit(65);
     }
   }
+
+std::cout << fHelicityBitPattern.size() << std::endl;
   
   mapstr.Close(); // Close the file (ifstream)
   return 0;
@@ -1672,9 +1676,14 @@ void QwHelicity::RunPredictor()
 
   Int_t localphase = fPatternPhaseNumber-fMinPatternPhase;//Paul's modifications
 
-
+  Int_t localbit,indexnum,shiftnum;
+  indexnum = TMath::FloorNint(localphase/32.);
+  shiftnum = localphase - indexnum*32;
+  //std::cout << localphase << " " << indexnum << " " << shiftnum << " "<< fHelicityBitPattern.size() << std::endl;
+  localbit = ((fHelicityBitPattern.at(indexnum))>>shiftnum)&0x1;
+  //std::cout<< localphase << " " << indexnum << " " << shiftnum <<std::hex << fHelicityBitPattern.at(indexnum) << std::dec << " " << localbit << std::endl;
   // Use the stored helicity bit pattern to calculate the helicity of this window
-  if (((fHelicityBitPattern >> localphase) & 0x1) == (fHelicityBitPattern & 0x1)) {
+  if (localbit == (fHelicityBitPattern[0] & 0x1)) {
     fHelicityActual  = fActualPatternPolarity;
     fHelicityDelayed = fDelayedPatternPolarity;
   } else {
@@ -1933,14 +1942,38 @@ void QwHelicity::SetHelicityDelay(Int_t delay)
 }
 
 
-void QwHelicity::SetHelicityBitPattern(UInt_t bits)
+void QwHelicity::SetHelicityBitPattern(TString hex)
 {
-  // Set the helicity pattern bits
+  fHelicityBitPattern.clear();
+  if ((hex.Length()%8)!=0){
+    while ((hex.Length()%8)!=0){
+      hex.Insert(0,"0");
+    }
+  }
+  //  fHelicityBitPattern = kDefaultHelicityBitPattern;
+  std::cout << "SetHelicityBitPattern with value: " << hex <<". Num char==" << hex.Length() << std::endl;
+  int num_int = TMath::CeilNint(hex.Length()/8);
+  fHelicityBitPattern.resize(num_int);
+  UInt_t  val;
+  for (size_t i=0; i<num_int; i++){
+    TString tmp( hex(i*8,8));
+    tmp.Insert(0,"0x");
+    val = QwParameterFile::GetUInt(tmp);
+    std::cout << tmp << " " << std::hex << val << " : ";
+    fHelicityBitPattern.at(num_int-1-i) = val;
+  }
+  std::cout << std::endl;
+    /*  // Set the helicity pattern bits
   if (parity(bits) == 0)
     fHelicityBitPattern = bits;
   else QwError << "What, exactly, are you trying to do ?!?!?" << QwLog::endl;
+    */
   // Notify the user
-  QwMessage << " fPatternBits 0x" << std::hex << fHelicityBitPattern << std::dec << QwLog::endl;
+  QwMessage << " fPatternBits 0x" ;
+  for (int i = fHelicityBitPattern.size()-1;i>=0; i--){
+    QwMessage << std::hex << fHelicityBitPattern[i] << " ";
+  }
+  QwMessage << std::dec << QwLog::endl;
 }
 
 void QwHelicity::ResetPredictor()
@@ -2052,27 +2085,6 @@ void QwHelicity::MergeCounters(VQwSubsystem *value)
   }
 }
 
-void QwHelicity::Sum(VQwSubsystem  *value1, VQwSubsystem  *value2)
-{
-  //this routine is most likely to be called during the computatin of assymetry
-  //this call doesn't make too much sense for this class so the followign lines
-  //are only use to put safe gards testing for example if the two instantiation indeed
-  // refers to elements in the same pattern
-  if(Compare(value1)&&Compare(value2)) {
-    *this =  value1;
-    CheckPatternNum(value2);
-    MergeCounters(value2);
-  }
-}
-
-void QwHelicity::Difference(VQwSubsystem  *value1, VQwSubsystem  *value2)
-{
-  // this is stub function defined here out of completion and uniformity between each subsystem
-  *this =  value1;
-  CheckPatternNum(value2);
-  MergeCounters(value2);
-}
-
 void QwHelicity::Ratio(VQwSubsystem  *value1, VQwSubsystem  *value2)
 {
   // this is stub function defined here out of completion and uniformity between each subsystem
@@ -2117,26 +2129,47 @@ UInt_t QwHelicity::BuildHelicityBitPattern(Int_t patternsize){
   //  Hexo-quad:         -++--++--++-+--++--++--+ : 0x666999
   //  Octo-quad:         -++--++--++--++-+--++--++--++--+ : 0x66669999
   //
+  //std::cout << fHelicityBitPattern.size() << std::endl;
+  fHelicityBitPattern.clear();
   if (patternsize<8){
-    bitpattern = kDefaultHelicityBitPattern;
-  } else if (patternsize%8==0){
+    fHelicityBitPattern = kDefaultHelicityBitPattern;
+  } else if (patternsize%2==0 && patternsize>0 && patternsize < 129){
+    int num_int = TMath::CeilNint(patternsize/32.);
+    //std::cout << num_int << " " << patternsize << " " << TMath::Ceil(patternsize/32.) << std::endl;
+    fHelicityBitPattern.resize(num_int);
+    bitpattern = 0x69969669;
+    fHelicityBitPattern[0] = bitpattern;
+    for (int i = 1; i<num_int; i++){
+      fHelicityBitPattern[i] = ~fHelicityBitPattern[i-1];
+    }
+    /*if (patternsize%8==0){
     Int_t halfshift = patternsize/2;
     for (Int_t i=0; i<(patternsize/8); i++){
       bitpattern += (0x9<<(i*4));
       bitpattern += (0x6<<(halfshift+i*4));
     }
+    */
   } else {
     QwError << "QwHelicity::BuildHelicityBitPattern: "
 	    << "Unable to build standard bit pattern for pattern size of "
 	    << patternsize << ".  Try a pattern of 0x69."
 	    << QwLog::endl;
-    bitpattern = kDefaultHelicityBitPattern;
+    fHelicityBitPattern = kDefaultHelicityBitPattern;
   }
-  QwDebug << "QwHelicity::BuildHelicityBitPattern: "
+  //std::cout << fHelicityBitPattern.size() << std::endl;
+  /*QwMessage << "QwHelicity::BuildHelicityBitPattern: "
 	  << "Built pattern 0x" << std::hex << bitpattern
 	  << std::dec << " for pattern size "
 	  << patternsize << "." << QwLog::endl;
+	*/
+  QwMessage << "QwHelicity::BuildHelicityBitPattern: "
+          << "Built pattern 0x";
+  for (int i = fHelicityBitPattern.size()-1;i>=0; i--){
+    QwMessage << std::hex << fHelicityBitPattern[i] << " ";
+  }
+  QwMessage << std::dec << "for pattern size "
+          << patternsize << "." << QwLog::endl;
   //  Now set the bit pattern.
-  SetHelicityBitPattern(bitpattern);
-  return bitpattern;
+  //  SetHelicityBitPattern(bitpattern);
+  return fHelicityBitPattern[0];
 }

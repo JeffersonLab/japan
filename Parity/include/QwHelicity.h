@@ -96,7 +96,7 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
   void   PredictHelicity();
   void   RunPredictor();
   void   SetHelicityDelay(Int_t delay);
-  void   SetHelicityBitPattern(UInt_t bits);
+  void   SetHelicityBitPattern(TString hex);
 
   Int_t  GetHelicityReported();
   Int_t  GetHelicityActual();
@@ -115,12 +115,10 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
 
   VQwSubsystem&  operator=  (VQwSubsystem *value);
   VQwSubsystem&  operator+=  (VQwSubsystem *value);
-  void  Sum(VQwSubsystem  *value1, VQwSubsystem  *value2);
 
   //the following functions do nothing really : adding and subtracting helicity doesn't mean anything
   VQwSubsystem& operator-= (VQwSubsystem *value) {return *this;};
   void  Scale(Double_t factor) {return;};
-  void  Difference(VQwSubsystem  *value1, VQwSubsystem  *value2);
   void  Ratio(VQwSubsystem *numer, VQwSubsystem *denom);
   // end of "empty" functions
 
@@ -182,9 +180,9 @@ class QwHelicity: public VQwSubsystemParity, public MQwSubsystemCloneable<QwHeli
   UInt_t fInputReg_PatternSync;
   UInt_t fInputReg_PairSync;
 
-  static const UInt_t kDefaultHelicityBitPattern;
+  static const std::vector<UInt_t> kDefaultHelicityBitPattern;
 
-  UInt_t fHelicityBitPattern;
+  std::vector<UInt_t> fHelicityBitPattern;
 
   std::vector <QwWord> fWord;
   std::vector < std::pair<Int_t, Int_t> > fWordsPerSubbank;  // The indices of the first & last word in each subbank
