@@ -288,7 +288,7 @@ void THaCodaFile::staterr(TString tried_to, unsigned int status) {
       case S_EVFILE_UNXPTDEOF :
         std::cout << "Unexpected end of file while reading event" << std::endl;
         break;
-      case EOF: 
+    case (unsigned int)(EOF): 
         if(CODA_VERBOSE) {
           std::cout << "Normal end of file " << filename << " encountered" << std::endl;
 	}
